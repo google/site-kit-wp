@@ -23,30 +23,36 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
-import Icon from '../../../svg/graphics/sign-in-with-google.svg';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
+import Icon from '@/svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
 import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
 import {
-	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
-} from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+	NOTIFICATION_AREAS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_SETTINGS,
+} from '@/js/googlesitekit/constants';
 import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
-import { isURLUsingHTTPS } from '../../util/is-url-using-https';
-import { PRIORITY } from '../../googlesitekit/notifications/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import CompatibilityWarningSubtleNotification from './components/dashboard/CompatibilityWarningSubtleNotification';
 
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {
-	modules.registerModule( 'sign-in-with-google', {
+	modules.registerModule( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
 		storeName: MODULES_SIGN_IN_WITH_GOOGLE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
@@ -98,11 +104,11 @@ export function registerModule( modules ) {
 	} );
 }
 
-export const registerNotifications = ( notifications ) => {
-	notifications.registerNotification( 'sign-in-with-google-setup-cta', {
+export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
+	'sign-in-with-google-setup-cta': {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
@@ -115,7 +121,7 @@ export const registerNotifications = ( notifications ) => {
 			] );
 
 			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				'sign-in-with-google'
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			);
 			if ( isConnected ) {
 				return false;
@@ -129,10 +135,10 @@ export const registerNotifications = ( notifications ) => {
 			return true;
 		},
 		isDismissible: true,
-	} );
-	notifications.registerNotification( 'setup-success-notification-siwg', {
+	},
+	'setup-success-notification-siwg': {
 		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
@@ -140,12 +146,54 @@ export const registerNotifications = ( notifications ) => {
 
 			if (
 				'authentication_success' === notification &&
-				slug === 'sign-in-with-google'
+				slug === MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			) {
 				return true;
 			}
 
 			return false;
 		},
-	} );
+	},
+	'sign-in-with-google-compatibility-warning': {
+		Component: CompatibilityWarningSubtleNotification,
+		priority: PRIORITY.WARNING,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_SETTINGS,
+			VIEW_CONTEXT_ENTITY_DASHBOARD,
+		],
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await resolveSelect( CORE_MODULES ).getModules();
+
+			const isConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+			);
+
+			if ( ! isConnected ) {
+				return false;
+			}
+
+			// Ensure compatibility checks are loaded only when the module is connected.
+			const compatibilityChecks = await resolveSelect(
+				MODULES_SIGN_IN_WITH_GOOGLE
+			).getCompatibilityChecks();
+
+			const errors = compatibilityChecks?.checks || {};
+
+			return Object.keys( errors ).length > 0;
+		},
+		isDismissible: true,
+	},
 };
+
+export function registerNotifications( notifications ) {
+	for ( const [ notificationID, notificationSettings ] of Object.entries(
+		SIGN_IN_WITH_GOOGLE_NOTIFICATIONS
+	) ) {
+		notifications.registerNotification(
+			notificationID,
+			notificationSettings
+		);
+	}
+}

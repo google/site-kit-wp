@@ -31,7 +31,7 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
-import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
 

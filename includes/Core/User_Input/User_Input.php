@@ -15,6 +15,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\User_Surveys\Survey_Queue;
 use WP_Error;
 use WP_User;
@@ -26,7 +28,9 @@ use WP_User;
  * @access private
  * @ignore
  */
-class User_Input {
+class User_Input implements Provides_Feature_Metrics {
+
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Site_Specific_Answers instance.
@@ -93,9 +97,9 @@ class User_Input {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Survey_Queue $survey_queue = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Survey_Queue $survey_queue = null
 	) {
 		$this->site_specific_answers = new Site_Specific_Answers( $options ?: new Options( $context ) );
 		$this->user_options          = $user_options ?: new User_Options( $context );
@@ -116,6 +120,7 @@ class User_Input {
 		$this->site_specific_answers->register();
 		$this->user_specific_answers->register();
 		$this->rest_controller->register();
+		$this->register_feature_metrics();
 	}
 
 	/**
@@ -270,5 +275,18 @@ class User_Input {
 		$this->user_specific_answers->set( $user_settings );
 
 		return $this->get_answers();
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'site_purpose' => $this->site_specific_answers->get()['purpose']['values'] ?? array(),
+		);
 	}
 }

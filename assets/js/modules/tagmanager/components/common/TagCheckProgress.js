@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
 export default function TagCheckProgress( { className } ) {
 	const isResolvingLiveContainerVersion = useSelect( ( select ) => {

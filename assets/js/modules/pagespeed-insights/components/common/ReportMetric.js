@@ -34,9 +34,9 @@ import {
 	CATEGORY_FAST,
 	CATEGORY_AVERAGE,
 	CATEGORY_SLOW,
-} from '../../util/constants';
-import Badge from '../../../../components/Badge';
-import InfoTooltip from '../../../../components/InfoTooltip';
+} from '@/js/modules/pagespeed-insights/util/constants';
+import Badge from '@/js/components/Badge';
+import InfoTooltip from '@/js/components/InfoTooltip';
 
 export default function ReportMetric( {
 	title,

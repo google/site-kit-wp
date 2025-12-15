@@ -30,6 +30,14 @@ class REST_Modules_ControllerTest extends TestCase {
 	use RestTestTrait;
 
 	/**
+	 * Authentication object.
+	 *
+	 * @since 1.159.0
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Plugin context.
 	 *
 	 * @since 1.92.0
@@ -75,11 +83,12 @@ class REST_Modules_ControllerTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options      = new Options( $this->context );
-		$this->user_options = new User_Options( $this->context, $user_id );
-		$this->modules      = new Modules( $this->context, $this->options, $this->user_options );
-		$this->controller   = new REST_Modules_Controller( $this->modules );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context, $user_id );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $this->options, $this->user_options );
+		$this->controller     = new REST_Modules_Controller( $this->modules );
 
 		wp_set_current_user( $user_id );
 	}
@@ -154,11 +163,12 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Preload paths filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ), 'Features request data filter should be registered.' );
 		$this->assertContains(
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
-			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
+			apply_filters( 'googlesitekit_apifetch_preload_paths', array() ),
+			'Preload paths should include core/modules/data/list route.'
 		);
 	}
 
@@ -170,8 +180,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/list' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertNotEmpty( $response->get_data() );
+		$this->assertEquals( 200, $response->get_status(), 'List endpoint should return HTTP 200.' );
+		$this->assertNotEmpty( $response->get_data(), 'List endpoint should return module data.' );
 	}
 
 	public function test_list_rest_endpoint__no_post_method() {
@@ -182,7 +192,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/list' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'POST to list endpoint should be not found.' );
 	}
 
 	public function test_list_rest_endpoint__shape() {
@@ -208,11 +218,11 @@ class REST_Modules_ControllerTest extends TestCase {
 			'dependants',
 			'owner',
 		);
-		$this->assertNotEmpty( $response->get_data() );
+		$this->assertNotEmpty( $response->get_data(), 'List response should contain modules.' );
 
 		foreach ( $response->get_data() as $data ) {
 			foreach ( $module_data_keys as $module_data_key ) {
-				$this->assertArrayHasKey( $module_data_key, $data );
+				$this->assertArrayHasKey( $module_data_key, $data, 'Module data should include required key.' );
 			}
 		}
 	}
@@ -225,7 +235,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'GET should not be allowed for activation endpoint.' );
 	}
 
 	public function test_activation_rest_endpoint__requires_module_slug() {
@@ -236,8 +246,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'], 'Activation should require module slug param.' );
+		$this->assertEquals( 400, $response->get_status(), 'Missing module slug should return 400.' );
 	}
 
 	public function test_activation_rest_endpoint__requires_valid_module_slug() {
@@ -255,8 +265,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Invalid module slug should be rejected.' );
+		$this->assertEquals( 500, $response->get_status(), 'Invalid module slug should return 500.' );
 	}
 
 	public function test_activation_rest_endpoint__prevent_inactive_dependencies_activation() {
@@ -282,8 +292,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertTrue( $response->get_data()['success'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertTrue( $response->get_data()['success'], 'Activation response should indicate success.' );
+		$this->assertEquals( 200, $response->get_status(), 'Activation should return HTTP 200.' );
 	}
 
 	public function test_activation_rest_endpoint__deactivate_module() {
@@ -302,8 +312,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertTrue( $response->get_data()['success'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertTrue( $response->get_data()['success'], 'Deactivation response should indicate success.' );
+		$this->assertEquals( 200, $response->get_status(), 'Deactivation should return HTTP 200.' );
 	}
 
 	public function test_activation_rest_endpoint__deactivate_dependant_module() {
@@ -313,7 +323,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$this->modules->activate_module( 'analytics-4' );
 
-		$this->assertTrue( $this->modules->is_module_active( 'analytics-4' ) );
+		$this->assertTrue( $this->modules->is_module_active( 'analytics-4' ), 'Module should be active before deactivation.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/activation' );
 		$request->set_body_params(
@@ -326,7 +336,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $this->modules->is_module_active( 'analytics-4' ) );
+		$this->assertFalse( $this->modules->is_module_active( 'analytics-4' ), 'Module should be deactivated after request.' );
 	}
 
 	public function test_info_rest_endpoint__no_post_method() {
@@ -337,7 +347,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'GET should be required for info endpoint.' );
 	}
 
 	public function test_info_rest_endpoint__require_module_slug() {
@@ -348,8 +358,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/info' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Response code should indicate invalid module slug when module_slug is missing.' );
+		$this->assertEquals( 500, $response->get_status(), 'Invalid slug should return 500.' );
 	}
 
 	public function test_info_rest_endpoint__require_valid_module_slug() {
@@ -367,8 +377,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Response code should indicate invalid module slug when unknown module slug is requested' );
+		$this->assertEquals( 500, $response->get_status(), 'Invalid module slug should return 500.' );
 	}
 
 	public function test_info_rest_endpoint__valid_module_slug() {
@@ -380,8 +390,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_query_params( array( 'slug' => 'analytics-4' ) );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertNotEmpty( $response->get_data() );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertNotEmpty( $response->get_data(), 'Info endpoint should return module info.' );
+		$this->assertEquals( 200, $response->get_status(), 'Info endpoint should return HTTP 200.' );
 	}
 
 	public function test_check_access_rest_endpoint__no_get_method() {
@@ -392,7 +402,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'], 'GET should not be allowed for check-access endpoint.' );
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_slug() {
@@ -403,8 +413,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Missing slug should be invalid for check-access.' );
+		$this->assertEquals( 404, $response->get_status(), 'Missing slug should return 404 for check-access.' );
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_connected() {
@@ -422,8 +432,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
-		$this->assertEquals( 500, $response->get_status() );
+		$this->assertEquals( 'module_not_connected', $response->get_data()['code'], 'Response code should be "module_not_connected" when module is not connected.' );
+		$this->assertEquals( 500, $response->get_status(), 'Not connected should return 500.' );
 	}
 
 	public function test_check_access_rest_endpoint__shareable_module_does_not_have_service_entity() {
@@ -441,8 +451,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( true, $response->get_data()['access'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( true, $response->get_data()['access'], 'Shareable module should have access.' );
+		$this->assertEquals( 200, $response->get_status(), 'Check-access should return HTTP 200 for success.' );
 	}
 
 	public function test_check_access_rest_endpoint__success() {
@@ -463,6 +473,10 @@ class REST_Modules_ControllerTest extends TestCase {
 			)
 		);
 
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$analytics->get_scopes()
+		);
+
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
 			array(
@@ -477,9 +491,10 @@ class REST_Modules_ControllerTest extends TestCase {
 			array(
 				'access' => true,
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Access check should report access true for connected module.'
 		);
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Check-access should return HTTP 200 for success.' );
 	}
 
 	public function test_notifications_rest_endpoint__no_post_method() {
@@ -491,7 +506,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/notifications' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 400, $response->get_status(), 'Notifications endpoint should reject POST method.' );
 	}
 
 	public function test_notifications_rest_endpoint__require_valid_slug() {
@@ -502,7 +517,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/notifications' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'Notifications endpoint should return 404 for invalid slug.' );
 	}
 
 	public function test_settings_rest_endpoint__get_method() {
@@ -514,7 +529,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/settings' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Settings GET should return HTTP 200.' );
 	}
 
 	public function test_settings_rest_endpoint__get_invalid_slug() {
@@ -525,7 +540,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/settings' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'Settings GET should 404 for invalid slug.' );
 	}
 
 	public function test_settings_rest_endpoint__post_method() {
@@ -544,7 +559,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Settings POST should return HTTP 200.' );
 	}
 
 	public function test_settings_rest_endpoint__post_invalid_slug() {
@@ -554,7 +569,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 		$response = $this->request_get_module_setings( 'non-existent-module' );
 
-		$this->assertEquals( 404, $response->get_status() );
+		$this->assertEquals( 404, $response->get_status(), 'Settings POST should 404 for invalid slug.' );
 	}
 
 	public function test_settings_rest_endpoint__admins_with_no_view_only_settings() {
@@ -586,8 +601,8 @@ class REST_Modules_ControllerTest extends TestCase {
 
 			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '500', $response->get_status() );
-			$this->assertEquals( 'no_view_only_settings', $response->get_data()['code'] );
+			$this->assertEquals( '500', $response->get_status(), 'Response status should return 500 for shared roles without view-only settings.' );
+			$this->assertEquals( 'no_view_only_settings', $response->get_data()['code'], 'Error code should indicate no view-only settings.' );
 		}
 	}
 
@@ -620,7 +635,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '403', $response->get_status() );
+			$this->assertEquals( '403', $response->get_status(), 'Response status should return 403 Forbidden when a non-admin user attempts access without view-only permissions.' );
 		}
 	}
 
@@ -637,7 +652,7 @@ class REST_Modules_ControllerTest extends TestCase {
 
 			$response = $this->request_get_module_setings();
 
-			$this->assertEquals( '200', $response->get_status() );
+			$this->assertEquals( '200', $response->get_status(), 'Shared roles with view-only settings should succeed.' );
 			$this->assertEqualSetsWithIndex(
 				array(
 					'viewOnlyKey' => 'default-value',
@@ -657,7 +672,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'Non-implementing module should return invalid slug for data-available.' );
 	}
 
 	public function test_data_available_rest_endpoint__valid_method__implementing_module() {
@@ -671,13 +686,13 @@ class REST_Modules_ControllerTest extends TestCase {
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
 
 		$this->set_available_modules( array( $fake_module_with_data_available ) );
-		$this->assertEmpty( $fake_module_with_data_available->is_data_available() );
+		$this->assertEmpty( $fake_module_with_data_available->is_data_available(), 'data-available should not be set initially.' );
 
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/data-available' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertTrue( $fake_module_with_data_available->is_data_available() );
+		$this->assertEquals( 200, $response->get_status(), 'data-available should return HTTP 200.' );
+		$this->assertTrue( $fake_module_with_data_available->is_data_available(), 'data-available should set data availability.' );
 	}
 
 	public function test_datapoint_rest_endpoint__get_method() {
@@ -690,7 +705,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'test-request', $response->get_data()->datapoint );
+		$this->assertEquals( 'test-request', $response->get_data()->datapoint, 'GET datapoint should echo datapoint name.' );
 	}
 
 	public function test_datapoint_rest_endpoint__get_invalid_slug() {
@@ -701,7 +716,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'GET datapoint should return invalid slug for bad module.' );
 	}
 
 	public function test_datapoint_rest_endpoint__get_invalid_datapoint() {
@@ -713,7 +728,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/fake-datapoint' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'] );
+		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'], 'GET datapoint should report invalid datapoint.' );
 	}
 
 	public function test_datapoint_rest_endpoint__post_method() {
@@ -725,7 +740,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'test-request', $response->get_data()->datapoint );
+		$this->assertEquals( 'test-request', $response->get_data()->datapoint, 'POST datapoint should echo datapoint name.' );
 	}
 
 	public function test_datapoint_rest_endpoint__post_invalid_slug() {
@@ -736,7 +751,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/non-existent-module/data/settings' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'], 'POST datapoint should return invalid slug for bad module.' );
 	}
 
 	public function test_datapoint_rest_endpoint__post_invalid_datapoint() {
@@ -748,7 +763,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/fake-datapoint' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'] );
+		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'], 'POST datapoint should report invalid datapoint.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__no_get_method() {
@@ -759,7 +774,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'], 'GET should not be allowed for recover-modules endpoint.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_module_slugs() {
@@ -770,8 +785,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_param', $response->get_data()['code'] );
-		$this->assertEquals( 400, $response->get_status() );
+		$this->assertEquals( 'invalid_param', $response->get_data()['code'], 'Recover-modules should require slugs param.' );
+		$this->assertEquals( 400, $response->get_status(), 'Missing slugs should return 400.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__invalid_module_slug() {
@@ -789,8 +804,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'invalid_module_slug', $response->get_data()['error']['non-existent-module']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['error']['non-existent-module']['code'], 'Invalid module slug should be reported in errors.' );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules should return 200 with per-module errors.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_shareable_module() {
@@ -808,8 +823,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['adsense']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['error']['adsense']['code'], 'Non-shareable module should be reported.' );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules should return 200 even for non-shareable module.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_recoverable_module() {
@@ -827,8 +842,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_recoverable', $response->get_data()['error']['search-console']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 'module_not_recoverable', $response->get_data()['error']['search-console']['code'], 'Non-recoverable module should be reported.' );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules should return 200 even for non-recoverable module.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__requires_accessible_module() {
@@ -861,8 +876,8 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'module_not_accessible', $response->get_data()['error']['search-console']['code'] );
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 'module_not_accessible', $response->get_data()['error']['search-console']['code'], 'Not accessible module should be reported.' );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules should return 200 for not accessible module.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__success() {
@@ -905,9 +920,10 @@ class REST_Modules_ControllerTest extends TestCase {
 				),
 				'error'   => (object) array(),
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Recover-modules success response should include module success map.'
 		);
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules success should return HTTP 200.' );
 	}
 
 	public function test_recover_modules_rest_endpoint__analytics_4_exception() {
@@ -933,6 +949,10 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
+		$this->authentication->get_oauth_client()->set_granted_scopes(
+			$analytics_4->get_scopes()
+		);
+
 		// Make analytics-4 service requests accessible
 		FakeHttp::fake_google_http_handler( $analytics_4->get_client() );
 
@@ -953,9 +973,10 @@ class REST_Modules_ControllerTest extends TestCase {
 				),
 				'error'   => (object) array(),
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Recover-modules success response should include analytics-4.'
 		);
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Recover-modules success should return HTTP 200.' );
 	}
 
 	public function test_data_rest_endpoint__requires_active_module() {
@@ -965,14 +986,14 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->setup_fake_module( false );
 
 		delete_option( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( $this->modules->is_module_active( 'fake-module' ) );
+		$this->assertFalse( $this->modules->is_module_active( 'fake-module' ), 'Module should be inactive before requesting data.' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 403, $response->get_status() );
-		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
-		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+		$this->assertEquals( 403, $response->get_status(), 'GET on module data should return 403 when module is inactive.' );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'], 'Error code should indicate the module is not active.' );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'], 'Error message should indicate active module required.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$request->set_body_params(
@@ -984,9 +1005,9 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 403, $response->get_status() );
-		$this->assertEquals( 'module_not_active', $response->get_data()['code'] );
-		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'] );
+		$this->assertEquals( 403, $response->get_status(), 'POST request to module data endpoint should return 403 when module is inactive.' );
+		$this->assertEquals( 'module_not_active', $response->get_data()['code'], 'Error code should indicate module not active.' );
+		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'], 'Error message should indicate active module required.' );
 	}
 
 	public function test_data_rest_endpoint__success() {
@@ -996,16 +1017,16 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->setup_fake_module( false );
 
 		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
-		$this->assertTrue( $this->modules->is_module_active( 'fake-module' ) );
+		$this->assertTrue( $this->modules->is_module_active( 'fake-module' ), 'Module should be active after update option.' );
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'GET data should return HTTP 200 for active module.' );
 		$data = $response->get_data();
-		$this->assertIsObject( $data );
-		$this->assertEquals( 'GET', $data->method );
-		$this->assertEquals( 'test-request', $data->datapoint );
+		$this->assertIsObject( $data, 'GET data response should be an object.' );
+		$this->assertEquals( 'GET', $data->method, 'GET data response should indicate GET method.' );
+		$this->assertEquals( 'test-request', $data->datapoint, 'GET data response should echo datapoint name.' );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
 		$request->set_body_params(
@@ -1017,10 +1038,10 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'POST data should return HTTP 200 for active module.' );
 		$data = $response->get_data();
-		$this->assertIsObject( $data );
-		$this->assertEquals( 'POST', $data->method );
-		$this->assertEquals( 'test-request', $data->datapoint );
+		$this->assertIsObject( $data, 'POST data response should be an object.' );
+		$this->assertEquals( 'POST', $data->method, 'POST data response should indicate POST method.' );
+		$this->assertEquals( 'test-request', $data->datapoint, 'POST data response should echo datapoint name.' );
 	}
 }

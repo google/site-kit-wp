@@ -37,10 +37,10 @@ import GetHelpLink from './GetHelpLink';
 import MetricTileLoader from './MetricTileLoader';
 import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
-import ReportErrorActions from '../ReportErrorActions';
-import { isInsufficientPermissionsError } from '../../util/errors';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function MetricTileWrapper( props ) {
 	const {

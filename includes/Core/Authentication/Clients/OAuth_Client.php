@@ -18,8 +18,6 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
-use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
-use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -53,22 +51,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	private $owner_id;
 
 	/**
-	 * Activity_Metrics instance.
-	 *
-	 * @since 1.87.0
-	 * @var Activity_Metrics
-	 */
-	private $activity_metrics;
-
-	/**
-	 * Active_Consumers instance.
-	 *
-	 * @since 1.87.0
-	 * @var Active_Consumers
-	 */
-	private $active_consumers;
-
-	/**
 	 * Transients instance.
 	 *
 	 * @since 1.150.0
@@ -92,13 +74,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Credentials $credentials = null,
-		Google_Proxy $google_proxy = null,
-		Profile $profile = null,
-		Token $token = null,
-		Transients $transients = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Credentials $credentials = null,
+		?Google_Proxy $google_proxy = null,
+		?Profile $profile = null,
+		?Token $token = null,
+		?Transients $transients = null
 	) {
 		parent::__construct(
 			$context,
@@ -110,10 +92,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id         = new Owner_ID( $this->options );
-		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
-		$this->active_consumers = new Active_Consumers( $this->user_options );
-		$this->transients       = $transients ?: new Transients( $this->context );
+		$this->owner_id   = new Owner_ID( $this->options );
+		$this->transients = $transients ?: new Transients( $this->context );
 	}
 
 	/**
@@ -133,10 +113,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
-		$active_consumers = $this->activity_metrics->get_for_refresh_token();
-
 		try {
-			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'], $active_consumers );
+			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -147,7 +125,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
-		$this->active_consumers->delete();
 		$this->set_token( $token_response );
 	}
 
@@ -222,7 +199,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return string[] Filtered $scopes list, only including scopes that are not satisfied.
 	 */
-	public function get_unsatisfied_scopes( array $scopes = null ) {
+	public function get_unsatisfied_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
@@ -247,7 +224,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return bool True if all $scopes are satisfied, false otherwise.
 	 */
-	public function has_sufficient_scopes( array $scopes = null ) {
+	public function has_sufficient_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
@@ -687,16 +664,5 @@ final class OAuth_Client extends OAuth_Client_Base {
 		return current_user_can( Permissions::VIEW_DASHBOARD )
 			? $this->context->admin_url( 'dashboard' )
 			: $this->context->admin_url( 'splash' );
-	}
-
-	/**
-	 * Adds a user to the active consumers list.
-	 *
-	 * @since 1.87.0
-	 *
-	 * @param WP_User $user User object.
-	 */
-	public function add_active_consumer( WP_User $user ) {
-		$this->active_consumers->add( $user->ID, $user->roles );
 	}
 }

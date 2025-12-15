@@ -18,6 +18,28 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-sign-in-with-google-compatibility-notice {
+		margin-bottom: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			margin-right: $grid-gap-desktop;
+		}
+
+		.googlesitekit-notice__title {
+			margin-bottom: 4px;
+		}
+
+		.googlesitekit-notice__content {
+			span {
+				display: block;
+
+				&:not(:last-child) {
+					margin: 0 0 5px;
+				}
+			}
+		}
+	}
+
 	.googlesitekit-setup-cta-banner__svg-wrapper--sign-in-with-google-setup-cta {
 
 		@media (min-width: $bp-xxxlarge) {
@@ -146,12 +168,6 @@
 					max-width: 610px;
 				}
 			}
-		}
-
-		.googlesitekit-settings-notice__button {
-			align-items: center;
-			display: flex;
-			text-wrap: nowrap;
 		}
 	}
 

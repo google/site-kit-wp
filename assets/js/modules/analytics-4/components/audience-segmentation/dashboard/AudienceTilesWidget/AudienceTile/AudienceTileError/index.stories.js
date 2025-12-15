@@ -21,15 +21,14 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import AudienceTileError from '.';
-import { MODULES_ANALYTICS_4 } from '../../../../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	WithTestRegistry,
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../../../tests/js/WithRegistrySetup';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 function AudienceTileErrorWrapper( { ...args } ) {
 	const errors = useSelect( ( select ) =>
@@ -40,11 +39,11 @@ function AudienceTileErrorWrapper( { ...args } ) {
 }
 
 function Template( { setupRegistry = async () => {}, ...args } ) {
-	const setupRegistryCallback = async ( registry ) => {
+	async function setupRegistryCallback( registry ) {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		await setupRegistry( registry );
-	};
+	}
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
 			<AudienceTileErrorWrapper { ...args } />
@@ -86,7 +85,7 @@ InsufficientPermissions.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -127,13 +126,17 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTileError',
 	component: AudienceTileError,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

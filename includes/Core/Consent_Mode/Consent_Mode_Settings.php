@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Class to store user Consent Mode settings.
+ * Class to store user consent mode settings.
  *
  * @since 1.122.0
  * @access private
@@ -95,7 +95,7 @@ class Consent_Mode_Settings extends Setting {
 	 *
 	 * @since 1.122.0
 	 *
-	 * @return bool TRUE if Consent Mode is enabled, otherwise FALSE.
+	 * @return bool TRUE if consent mode is enabled, otherwise FALSE.
 	 */
 	public function is_consent_mode_enabled() {
 		return $this->get()['enabled'];

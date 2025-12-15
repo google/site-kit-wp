@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
@@ -79,16 +79,15 @@ export default {
 	component: AudienceCreationNotice,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -98,7 +97,8 @@ export default {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					accountID: '12345',
@@ -114,7 +114,7 @@ export default {
 					} );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

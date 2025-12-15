@@ -26,8 +26,8 @@ import {
 	provideUserInfo,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
-import { publications } from '../../datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import PublicationCreate from './PublicationCreate';
 
 describe( 'PublicationCreate', () => {

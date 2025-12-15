@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -29,12 +31,13 @@ import {
 	createRegistrySelector,
 	commonActions,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createReducer } from '../../../googlesitekit/data/create-reducer';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
-import { getDateString } from '../../../util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getDateString } from '@/js/util';
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 	'RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA';
@@ -42,9 +45,14 @@ const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 const fetchSaveCustomDimensionDataAvailableStateStore = createFetchStore( {
 	baseName: 'saveCustomDimensionDataAvailableState',
 	controlCallback: ( { customDimension } ) =>
-		set( 'modules', 'analytics-4', 'custom-dimension-data-available', {
-			customDimension,
-		} ),
+		set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'custom-dimension-data-available',
+			{
+				customDimension,
+			}
+		),
 	argsToParams: ( customDimension ) => ( { customDimension } ),
 	validateParams: ( { customDimension } ) => {
 		invariant(
@@ -216,9 +224,14 @@ const baseResolvers = {
 			return;
 		}
 
-		const dataAvailableOnLoad =
-			global._googlesitekitModulesData?.[ 'analytics-4' ]
-				?.customDimensionsDataAvailable?.[ customDimension ];
+		// Module data needs to be resolved to determine the custom dimensions data availability state.
+		yield commonActions.await(
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getModuleData()
+		);
+
+		const dataAvailableOnLoad = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getCustomDimensionsDataAvailable()?.[ customDimension ];
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
@@ -333,6 +346,8 @@ const baseSelectors = {
 				},
 				metrics: [ { name: 'eventCount' } ],
 				limit: 1,
+				reportID:
+					'analytics-4_get-data-availability-report-options_store:selector',
 			};
 		}
 	),

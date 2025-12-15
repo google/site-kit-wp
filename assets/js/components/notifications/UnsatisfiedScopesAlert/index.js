@@ -30,21 +30,22 @@ import { useCallback, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { getItem } from '../../../googlesitekit/api/cache';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-} from '../../../googlesitekit/datastore/user/constants';
-import NotificationError from '../../../googlesitekit/notifications/components/layout/NotificationError';
-import Description from '../../../googlesitekit/notifications/components/common/Description';
-import CTALink from '../../../googlesitekit/notifications/components/common/CTALink';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { getUnsatisfiedScopesMessage } from './utils';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
+	const [ isSaving, setIsSaving ] = useState( false );
+
 	const doingCTARef = useRef();
 	const [ inProgressModuleSetup, setInProgressModuleSetup ] =
 		useState( false );
@@ -54,11 +55,9 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
-	const temporaryPersistedPermissionsError = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-			'permissionsError'
-		)
+	const temporaryPersistedPermissionsError = useFormValue(
+		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+		'permissionsError'
 	);
 	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
@@ -98,6 +97,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 
 	const onCTAClick = useCallback( async () => {
 		doingCTARef.current = true;
+		setIsSaving( true );
 
 		if ( ! inProgressModuleSetup ) {
 			return;
@@ -141,20 +141,18 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	);
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.ERROR }
 				title={ title }
-				description={ <Description text={ message } /> }
-				actions={
-					<CTALink
-						id={ id }
-						ctaLabel={ ctaLabel }
-						ctaLink={
-							inProgressModuleSetup ? undefined : connectURL
-						}
-						onCTAClick={ onCTAClick }
-					/>
-				}
+				description={ message }
+				ctaButton={ {
+					label: ctaLabel,
+					href: inProgressModuleSetup ? undefined : connectURL,
+					onClick: onCTAClick,
+					inProgress: isSaving,
+				} }
 			/>
 		</Notification>
 	);

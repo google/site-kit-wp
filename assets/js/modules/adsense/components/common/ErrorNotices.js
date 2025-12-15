@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import PropTypes from 'prop-types';
 
 export default function ErrorNotices( { hasButton = false } ) {

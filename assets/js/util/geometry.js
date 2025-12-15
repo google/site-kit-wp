@@ -25,7 +25,7 @@
  * @param {Element} element2 The second element.
  * @return {boolean} Returns if the first and second elements overlap each other.
  */
-export const elementsOverlap = ( element1, element2 ) => {
+export function elementsOverlap( element1, element2 ) {
 	const rect1 = element1.getBoundingClientRect();
 	const rect2 = element2.getBoundingClientRect();
 
@@ -39,4 +39,4 @@ export const elementsOverlap = ( element1, element2 ) => {
 	}
 
 	return true;
-};
+}

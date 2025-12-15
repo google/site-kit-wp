@@ -118,7 +118,7 @@ async function makeRelease() {
 		cp( 'dist/manifest.php' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
-		cp( 'fpm' ),
+		cp( 'gtg' ),
 	];
 	await Promise.all( fileCopyPromises );
 

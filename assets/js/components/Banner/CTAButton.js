@@ -22,29 +22,54 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import { SpinnerButton } from 'googlesitekit-components';
+import ExternalIcon from '@/svg/icons/external.svg';
 
-export default function CTAButton( { label, disabled, onClick, href } ) {
+export default function CTAButton( {
+	label,
+	ariaLabel,
+	disabled,
+	inProgress,
+	onClick,
+	href,
+	external = false,
+	hideExternalIndicator = false,
+} ) {
 	if ( ! label || ( ! onClick && ! href ) ) {
 		return null;
 	}
 
+	let trailingIconToUse;
+	if ( external && ! hideExternalIndicator ) {
+		trailingIconToUse = <ExternalIcon width={ 14 } height={ 14 } />;
+	}
+
 	return (
-		<Button
+		<SpinnerButton
 			className="googlesitekit-banner__cta"
-			disabled={ disabled }
+			aria-label={ ariaLabel }
+			disabled={ disabled || inProgress }
+			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
+			target={ external ? '_blank' : undefined }
+			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
-		</Button>
+		</SpinnerButton>
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
-	label: PropTypes.string.isRequired,
+	label: PropTypes.string,
+	ariaLabel: PropTypes.string,
 	disabled: PropTypes.bool,
-	onClick: PropTypes.func.isRequired,
+	inProgress: PropTypes.bool,
+	onClick: PropTypes.func,
 	href: PropTypes.string,
+	dismissOnClick: PropTypes.bool,
+	dismissOptions: PropTypes.shape( {
+		expiresInSeconds: PropTypes.number,
+		skipHidingFromQueue: PropTypes.bool,
+	} ),
 };

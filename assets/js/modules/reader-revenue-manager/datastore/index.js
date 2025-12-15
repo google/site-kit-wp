@@ -34,8 +34,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( MODULES_READER_REVENUE_MANAGER, store );
-};
+}
 
 export default store;

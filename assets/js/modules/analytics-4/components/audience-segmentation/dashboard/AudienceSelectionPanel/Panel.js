@@ -25,8 +25,8 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
@@ -35,17 +35,19 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AudienceItems from './AudienceItems';
-import ErrorNotice from './ErrorNotice';
+import SyncErrorNotice from './SyncErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
-import SelectionPanel from '../../../../../../components/SelectionPanel';
+import SelectionPanel from '@/js/components/SelectionPanel';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+import useFormValue from '@/js/hooks/useFormValue';
+import SaveErrorNotice from './SaveErrorNotice';
 
 export default function Panel() {
 	const viewContext = useViewContext();
@@ -73,8 +75,9 @@ export default function Panel() {
 			.map( ( { name } ) => name );
 	} );
 
-	const isCreatingAudienceFromOAuth = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( AUDIENCE_CREATION_FORM, 'autoSubmit' )
+	const isCreatingAudienceFromOAuth = useFormValue(
+		AUDIENCE_CREATION_FORM,
+		'autoSubmit'
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -110,7 +113,8 @@ export default function Panel() {
 			<Header closePanel={ closePanel } />
 			<AudienceItems savedItemSlugs={ savedItemSlugs } />
 			<LearnMoreLink />
-			<ErrorNotice />
+			<SaveErrorNotice savedItemSlugs={ savedItemSlugs } />
+			<SyncErrorNotice />
 			<AudienceCreationSuccessNotice />
 			<Footer
 				closePanel={ closePanel }

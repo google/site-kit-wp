@@ -16,7 +16,7 @@ exports[`PlaceholderTile should render correctly when there are no configurable 
           class="googlesitekit-audience-segmentation-tile-placeholder__body googlesitekit-audience-segmentation-tile-placeholder__body--without-selectable-audiences"
         >
           <h3
-            class="googlesitekit-audience-segmentation-tile-placeholder__title"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-placeholder__title googlesitekit-typography--title googlesitekit-typography--small"
           >
             Create more visitor groups
           </h3>
@@ -67,7 +67,7 @@ exports[`PlaceholderTile when there are configurable non default audiences avail
           class="googlesitekit-audience-segmentation-tile-placeholder__body"
         >
           <h3
-            class="googlesitekit-audience-segmentation-tile-placeholder__title"
+            class="googlesitekit-typography googlesitekit-audience-segmentation-tile-placeholder__title googlesitekit-typography--title googlesitekit-typography--small"
           >
             Compare your group to other groups
           </h3>

@@ -15,7 +15,7 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top earning pages
           </h3>

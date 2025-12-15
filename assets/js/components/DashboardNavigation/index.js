@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import useViewOnly from '../../hooks/useViewOnly';
-import LoadingWrapper from '../LoadingWrapper';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
 import Navigation from './Navigation';
 
 export default function DashboardNavigation() {

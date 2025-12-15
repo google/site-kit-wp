@@ -1,0 +1,533 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Monday
+    </div>
+  </div>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Monday
+    </div>
+  </div>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+      <div
+        class="googlesitekit-frequency-selector__saved-indicator"
+      >
+        <svg />
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Monday
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+      <div
+        class="googlesitekit-frequency-selector__saved-indicator"
+      >
+        <svg />
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FrequencySelector Story states (visual + DOM) Quarterly selected renders and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Monday
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FrequencySelector Story states (visual + DOM) Weekly selected (default Monday) renders and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Monday
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FrequencySelector Story states (visual + DOM) Weekly selected with Sunday start shows "Sent every Sunday" and matches snapshot 1`] = `
+<div
+  aria-label="Frequency"
+  class="googlesitekit-frequency-selector"
+  role="radiogroup"
+>
+  <div
+    aria-checked="true"
+    class="googlesitekit-frequency-selector__card googlesitekit-frequency-selector__card--selected"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Weekly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 7 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent every Sunday
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Monthly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 28 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each month
+    </div>
+  </div>
+  <div
+    aria-checked="false"
+    class="googlesitekit-frequency-selector__card"
+    role="radio"
+    tabindex="0"
+  >
+    <div
+      class="googlesitekit-frequency-selector__label-row"
+    >
+      <div
+        class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Quarterly
+      </div>
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__period googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Last 90 days
+    </div>
+    <div
+      class="googlesitekit-typography googlesitekit-frequency-selector__description googlesitekit-typography--body googlesitekit-typography--small"
+    >
+      Sent on the 1st of each quarter
+    </div>
+  </div>
+</div>
+`;

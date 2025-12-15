@@ -29,8 +29,9 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../material-components';
-import Link from '../Link';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 
 class LayoutHeader extends Component {
 	render() {
@@ -55,18 +56,23 @@ class LayoutHeader extends Component {
 					<Row>
 						{ title && (
 							<Cell { ...titleCellProps }>
-								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
+								<Typography
+									as="h3"
+									size="small"
+									type="title"
+									className="googlesitekit-subheading-1 googlesitekit-layout__header-title"
+								>
 									{ title }
 									{ badge }
-								</h3>
+								</Typography>
 							</Cell>
 						) }
 						{ ctaLink && (
 							<Cell
-								alignMiddle
-								mdAlignRight
 								smSize={ 4 }
 								lgSize={ 6 }
+								alignMiddle
+								mdAlignRight
 							>
 								<Link href={ ctaLink } external>
 									{ ctaLabel }

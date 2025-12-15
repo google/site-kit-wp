@@ -31,9 +31,9 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { isValidPublicationID } from '../../utils/validation';
+import { isValidPublicationID } from '@/js/modules/reader-revenue-manager/utils/validation';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 
 export default function PublicationSelect( props ) {
@@ -82,7 +82,13 @@ export default function PublicationSelect( props ) {
 
 	if ( ! publicationsLoaded ) {
 		// Display progress bar while publications are loading.
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
+		return (
+			<ProgressBar
+				mobileVerticalSpacing={ 76 }
+				desktopVerticalSpacing={ 84 }
+				small
+			/>
+		);
 	}
 
 	const isValidSelection =

@@ -25,8 +25,8 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { createNotificationsStore } from '../data/create-notifications-store';
-import { createSettingsStore } from '../data/create-settings-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
+import { createSettingsStore } from '@/js/googlesitekit/data/create-settings-store';
 import { createInfoStore } from './create-info-store';
 import { createModuleStore } from './create-module-store';
 import { createSubmitChangesStore } from './create-submit-changes-store';

@@ -21,8 +21,8 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_WIDGETS } from './constants';
-import Null from '../../../components/Null';
-import SiteKitLogo from '../../../../svg/graphics/logo-sitekit.svg';
+import Null from '@/js/components/Null';
+import SiteKitLogo from '@/svg/graphics/logo-sitekit.svg';
 
 describe( 'core/widgets Widget areas', () => {
 	let registry;

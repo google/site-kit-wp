@@ -31,7 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Tick from '../../../svg/icons/tick.svg';
+import Tick from '@/svg/icons/tick.svg';
 import { STEP_STATUS } from './constants';
 
 export default function Stepper( { children, activeStep, className } ) {
@@ -72,6 +72,8 @@ export default function Stepper( { children, activeStep, className } ) {
 					childNumber,
 					childCount
 				);
+			default:
+				return '';
 		}
 	}
 

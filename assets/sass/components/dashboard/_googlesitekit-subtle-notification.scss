@@ -77,7 +77,6 @@
 	}
 
 	.mdc-button {
-		font-weight: $fw-medium;
 		margin: 0 auto;
 		min-height: 32px;
 		padding: 6px $grid-gap-phone;
@@ -91,7 +90,6 @@
 		}
 
 		&.mdc-button--raised {
-			font-weight: $fw-medium;
 			padding: 6px $grid-gap-phone;
 		}
 	}

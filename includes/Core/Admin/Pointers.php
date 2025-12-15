@@ -62,6 +62,8 @@ class Pointers {
 		}
 
 		wp_enqueue_style( 'wp-pointer' );
+		// Dashboard styles are required where pointers are used to ensure proper styling.
+		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
 		wp_enqueue_script( 'wp-pointer' );
 
 		add_action(
@@ -103,6 +105,7 @@ class Pointers {
 	 * Prints script for a given pointer.
 	 *
 	 * @since 1.83.0
+	 * @since 1.166.0 Updated to support buttons and header dismiss icon.
 	 *
 	 * @param Pointer $pointer Pointer to print.
 	 */
@@ -112,38 +115,82 @@ class Pointers {
 			return;
 		}
 
-		$slug = $pointer->get_slug();
+		$buttons = $pointer->get_buttons();
+		if ( $buttons ) {
+			// Content including buttons escaped below in the inline script with wp_kses.
+			$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
+		}
+
+		$class = array( 'wp-pointer' );
+		if ( $pointer->get_class() ) {
+			$class[] = $pointer->get_class();
+		}
+
+		$kses_title = array(
+			'span'   => array( 'class' => array() ),
+			'button' => array(
+				'class'       => array(),
+				'type'        => array(),
+				'data-action' => array(),
+			),
+		);
+
+		$kses_content = array(
+			'a'      => array(
+				'href'        => array(),
+				'class'       => array(),
+				'target'      => array(),
+				'rel'         => array(),
+				'data-action' => array(),
+			),
+			'h4'     => array(),
+			'p'      => array( 'class' => array() ),
+			'br'     => array(),
+			'strong' => array(),
+			'em'     => array(),
+			'button' => array(
+				'class'       => array(),
+				'type'        => array(),
+				'data-action' => array(),
+			),
+			'div'    => array( 'class' => array() ),
+		);
 
 		BC_Functions::wp_print_inline_script_tag(
-			sprintf(
-				'
-				jQuery( function() {
-					var options = {
-						content: "<h3>%s</h3>%s",
-						position: %s,
-						pointerWidth: 420,
-						close: function() {
-							jQuery.post(
-								window.ajaxurl,
-								{
-									pointer: "%s",
-									action:  "dismiss-wp-pointer",
-								}
-							);
-						}
-					};
+			<<<'JS'
+			(
+				function ( $, wp, config ) {
+					function initPointer() {
+						const options = {
+							content: '<h3>' + config.title + '</h3>' + config.content,
+							position: JSON.parse( config.position ),
+							pointerWidth: 420,
+							pointerClass: config.class,
+							close: function() {
+								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } );
+							},
+							buttons: function( event, container ) {
+								container.pointer.on( 'click', '[data-action="dismiss"]', function() {
+									container.element.pointer( 'close' );
+								} );
+							}
+						};
 
-					jQuery( "#%s" ).pointer( options ).pointer( "open" );
-				} );
-				',
-				esc_js( $pointer->get_title() ),
-				$content,
-				wp_json_encode( $pointer->get_position() ),
-				esc_js( $slug ),
-				esc_js( $pointer->get_target_id() )
-			),
+						$( '#' + config.targetId ).pointer( options ).pointer( 'open' );
+					}
+
+					$( initPointer );
+				}
+			)( window.jQuery, window.wp, { ...document.currentScript.dataset } );
+			JS
+			,
 			array(
-				'id' => $slug,
+				'data-slug'      => $pointer->get_slug(),
+				'data-class'     => implode( ' ', $class ),
+				'data-target-id' => $pointer->get_target_id(),
+				'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
+				'data-content'   => wp_kses( $content, $kses_content ),
+				'data-position'  => wp_json_encode( $pointer->get_position() ),
 			)
 		);
 	}

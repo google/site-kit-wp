@@ -25,8 +25,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 const selectors = {

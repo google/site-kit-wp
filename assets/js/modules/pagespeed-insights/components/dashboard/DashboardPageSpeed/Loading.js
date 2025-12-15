@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import PreviewBlocks from '../../../../../components/PreviewBlocks';
-import PreviewBlock from '../../../../../components/PreviewBlock';
+import PreviewBlocks from '@/js/components/PreviewBlocks';
+import PreviewBlock from '@/js/components/PreviewBlock';
 
 export default function Loading() {
 	return (

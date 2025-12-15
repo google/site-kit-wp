@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 
 export default function WebStoriesAdUnitSelect() {
 	const accountID = useSelect( ( select ) =>

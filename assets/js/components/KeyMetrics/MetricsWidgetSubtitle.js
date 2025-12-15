@@ -25,7 +25,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useSelect } from 'googlesitekit-data';
 
 export default function MetricsWidgetSubtitle() {

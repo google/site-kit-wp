@@ -26,11 +26,7 @@ import { createRegistry } from '@wordpress/data';
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore } from 'googlesitekit-data';
-import {
-	muteFetch,
-	subscribeUntil,
-	untilResolved,
-} from '../../../../tests/js/utils';
+import { muteFetch, subscribeUntil } from '../../../../tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
 
 const STORE_ARGS = [ 'core', 'site', 'notifications' ];
@@ -73,137 +69,6 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'addNotification', () => {
-			it( 'requires the notification param', () => {
-				expect( () => {
-					dispatch.addNotification();
-				} ).toThrow( 'notification is required.' );
-			} );
-
-			it( 'adds the notification to client notifications', () => {
-				const notification = { id: 'added_notification' };
-				dispatch.addNotification( notification );
-
-				const state = store.getState();
-
-				expect( state.clientNotifications ).toMatchObject( {
-					[ notification.id ]: notification,
-				} );
-			} );
-		} );
-
-		describe( 'removeNotification', () => {
-			it( 'requires the id param', () => {
-				expect( () => {
-					dispatch.removeNotification();
-				} ).toThrow( 'id is required.' );
-			} );
-
-			it( 'does not fail when there are no notifications', async () => {
-				dispatch.removeNotification( 'not_a_real_id' );
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					[]
-				);
-				expect( select.getNotifications() ).toEqual( undefined );
-
-				await untilResolved(
-					registry,
-					storeDefinition.STORE_NAME
-				).getNotifications();
-			} );
-
-			it( 'does not fail when no matching notification is found', async () => {
-				const notification = { id: 'client_notification' };
-				dispatch.addNotification( notification );
-
-				dispatch.removeNotification( 'not_a_real_id' );
-
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					[]
-				);
-				expect( select.getNotifications() ).toEqual( [ notification ] );
-
-				await untilResolved(
-					registry,
-					storeDefinition.STORE_NAME
-				).getNotifications();
-			} );
-
-			it( 'removes the notification from client notifications', () => {
-				const notification = { id: 'notification_to_remove' };
-				dispatch.addNotification( notification );
-
-				dispatch.removeNotification( notification.id );
-
-				const state = store.getState();
-
-				expect( state.clientNotifications ).toMatchObject( {} );
-			} );
-
-			it( 'removes the notification from client notifications even when no server notifications exist', async () => {
-				const notification = { id: 'notification_to_remove' };
-				dispatch.addNotification( notification );
-
-				dispatch.removeNotification( notification.id );
-
-				const state = store.getState();
-
-				expect( state.clientNotifications ).toMatchObject( {} );
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					[]
-				);
-				expect( select.getNotifications() ).toMatchObject( {} );
-
-				await untilResolved(
-					registry,
-					storeDefinition.STORE_NAME
-				).getNotifications();
-			} );
-
-			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
-				const serverNotifications = [ { id: 'server_notification' } ];
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					{ body: serverNotifications, status: 200 }
-				);
-
-				select.getNotifications();
-
-				await subscribeUntil(
-					registry,
-					() => store.getState().serverNotifications !== undefined
-				);
-
-				const clientNotification = { id: 'client_notification' };
-				dispatch.addNotification( clientNotification );
-
-				dispatch.removeNotification( serverNotifications[ 0 ].id );
-
-				expect( console ).toHaveWarned();
-				expect( global.console.warn ).toHaveBeenCalledWith(
-					`Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.`
-				);
-				expect( select.getNotifications() ).toEqual(
-					expect.arrayContaining( serverNotifications )
-				);
-				expect( select.getNotifications() ).toEqual(
-					expect.arrayContaining( [ clientNotification ] )
-				);
-			} );
-		} );
-
 		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
 				muteFetch(
@@ -265,35 +130,6 @@ describe( 'createNotificationsStore store', () => {
 				const notificationsSelect = select.getNotifications();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notificationsSelect ).toEqual( notifications );
-			} );
-
-			it( 'returns client notifications even if server notifications have not loaded', async () => {
-				const notification = { id: 'added_notification' };
-				fetchMock.getOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					{ body: [], status: 200 }
-				);
-				dispatch.addNotification( notification );
-
-				// Return client notifications even if the server notifications have not
-				// resolved yet. They won't have here because it's the first time
-				// the selector has run in this test. This ensures `undefined` is not
-				// returned when server notifications haven't loaded yet, but client
-				// notifications have been dispatched.
-				muteFetch(
-					new RegExp(
-						'^/google-site-kit/v1/core/site/data/notifications'
-					),
-					[]
-				);
-				expect( select.getNotifications() ).toEqual( [ notification ] );
-
-				await untilResolved(
-					registry,
-					storeDefinition.STORE_NAME
-				).getNotifications();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

@@ -27,21 +27,21 @@ class Auto_UpdatesTest extends TestCase {
 	public function test_sitekit_autoupdate_forced() {
 		// By default, auto updates are not forced to either be enabled
 		// or disabled.
-		$this->assertSame( Auto_Updates::AUTO_UPDATE_NOT_FORCED, Auto_Updates::sitekit_forced_autoupdates_status() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_NOT_FORCED, Auto_Updates::sitekit_forced_autoupdates_status(), 'Auto updates should not be forced by default.' );
 
 		// Force auto-updates to be enabled by a filter.
 		add_filter( 'auto_update_plugin', '__return_true' );
 
-		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_ENABLED, Auto_Updates::sitekit_forced_autoupdates_status() );
-		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_ENABLED, Auto_Updates::sitekit_forced_autoupdates_status(), 'Auto updates should be forced enabled when filter returns true.' );
+		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled(), 'Site Kit auto updates should be enabled when forced.' );
 
 		// Force auto-updates to be disabled by a filter.
 		remove_filter( 'auto_update_plugin', '__return_true' );
 		add_filter( 'auto_update_plugin', '__return_false' );
 
-		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_DISABLED, Auto_Updates::sitekit_forced_autoupdates_status() );
-		$this->assertFalse( Auto_Updates::is_plugin_autoupdates_enabled() );
-		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
+		$this->assertSame( Auto_Updates::AUTO_UPDATE_FORCED_DISABLED, Auto_Updates::sitekit_forced_autoupdates_status(), 'Auto updates should be forced disabled when filter returns false.' );
+		$this->assertFalse( Auto_Updates::is_plugin_autoupdates_enabled(), 'Plugin auto updates should be disabled when forced.' );
+		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled(), 'Site Kit auto updates should be disabled when forced.' );
 
 		remove_filter( 'auto_update_plugin', '__return_false' );
 	}
@@ -53,11 +53,11 @@ class Auto_UpdatesTest extends TestCase {
 	 * @requires function wp_is_auto_update_enabled_for_type
 	 */
 	public function test_sitekit_autoupdates_disabled() {
-		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
+		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled(), 'Site Kit auto updates should be disabled by default.' );
 
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php' ) );
 
-		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled() );
+		$this->assertFalse( Auto_Updates::is_sitekit_autoupdates_enabled(), 'Site Kit auto updates should be disabled when not in auto update list.' );
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Auto_UpdatesTest extends TestCase {
 	public function test_sitekit_autoupdates_enabled() {
 		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
 
-		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled() );
+		$this->assertTrue( Auto_Updates::is_sitekit_autoupdates_enabled(), 'Site Kit auto updates should be enabled when in auto update list.' );
 	}
 
 	/**
@@ -82,9 +82,9 @@ class Auto_UpdatesTest extends TestCase {
 
 		Auto_Updates::sitekit_forced_autoupdates_status();
 
-		$this->assertCount( 1, $spy->invocations['callback'] );
+		$this->assertCount( 1, $spy->invocations['callback'], 'Auto update plugin filter should be called once.' );
 		list( $update, $item ) = $spy->invocations['callback'][0];
-		$this->assertNull( $update );
-		$this->assertIsObject( $item );
+		$this->assertNull( $update, 'Update parameter should be null when checking forced status.' );
+		$this->assertIsObject( $item, 'Item parameter should be an object when checking forced status.' );
 	}
 }

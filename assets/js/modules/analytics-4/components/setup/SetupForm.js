@@ -24,8 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -38,26 +43,28 @@ import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { isPermissionScopeError } from '../../../../util/errors';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { isPermissionScopeError } from '@/js/util/errors';
 import SetupFormFields from './SetupFormFields';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 
-import useViewContext from '../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../util';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SetupEnhancedConversionTrackingNotice from '../../../../components/conversion-tracking/SetupEnhancedConversionTrackingNotice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
-	);
+	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
@@ -67,17 +74,40 @@ export default function SetupForm( { finishSetup } ) {
 			select( CORE_LOCATION ).isNavigating()
 	);
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const showProgress = getQueryArg( location.href, 'showProgress' );
+
+	const keyMetricsSetupURL = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return undefined;
+		}
+
+		const url = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-key-metrics-setup'
+		);
+
+		return showProgress
+			? addQueryArgs( url, {
+					showProgress: 'true',
+			  } )
+			: url;
+	} );
+
+	const pluginConversionsDocumentationURL = useSelect( ( select ) => {
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'plugin-conversion-tracking'
+		);
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
 
-	const isEnhancedMeasurementEnabled = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ENHANCED_MEASUREMENT_FORM,
-			ENHANCED_MEASUREMENT_ENABLED
-		)
+	const isEnhancedMeasurementEnabled = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
 	);
 
 	const submitForm = useCallback(
@@ -103,11 +133,12 @@ export default function SetupForm( { finishSetup } ) {
 						'ga4_setup_enhanced_measurement_enabled'
 					);
 				}
-				finishSetup();
+				finishSetup( keyMetricsSetupURL );
 			}
 		},
 		[
 			finishSetup,
+			keyMetricsSetupURL,
 			isEnhancedMeasurementEnabled,
 			setConversionTrackingEnabled,
 			saveConversionTrackingSettings,
@@ -136,10 +167,24 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			<SetupFormFields />
 
-			<SetupEnhancedConversionTrackingNotice
-				message={ __(
-					'To track how visitors interact with your site, Site Kit will enable enhanced conversion tracking. You can always disable it in settings.',
-					'google-site-kit'
+			<SetupPluginConversionTrackingNotice
+				message={ createInterpolateElement(
+					__(
+						'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
+						'google-site-kit'
+					),
+					{
+						LearnMoreLink: setupFlowRefreshEnabled ? (
+							<Link
+								href={ pluginConversionsDocumentationURL }
+								external
+							>
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</Link>
+						) : (
+							<Null />
+						),
+					}
 				) }
 			/>
 
@@ -148,7 +193,9 @@ export default function SetupForm( { finishSetup } ) {
 					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 				>
-					{ __( 'Complete setup', 'google-site-kit' ) }
+					{ setupFlowRefreshEnabled
+						? __( 'Set up', 'google-site-kit' )
+						: __( 'Complete setup', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</form>

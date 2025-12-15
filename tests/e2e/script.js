@@ -29,7 +29,7 @@ const { sync: spawn } = require( 'cross-spawn' );
 // getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11
 
-const getArgsFromCLI = ( excludePrefixes ) => {
+function getArgsFromCLI( excludePrefixes ) {
 	const args = process.argv.slice( 2 );
 	if ( excludePrefixes ) {
 		return args.filter( ( arg ) => {
@@ -39,21 +39,24 @@ const getArgsFromCLI = ( excludePrefixes ) => {
 		} );
 	}
 	return args;
-};
+}
 
 // getArgFromCLI and hasArgInCLI inlined from @wordpress/scripts utils/cli.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/cli.js#L13-L22
 
-const getArgFromCLI = ( arg ) => {
+function getArgFromCLI( arg ) {
 	for ( const cliArg of getArgsFromCLI() ) {
 		const [ name, value ] = cliArg.split( '=' );
 		if ( name === arg ) {
 			return value || null;
 		}
 	}
-};
+	return undefined;
+}
 
-const hasArgInCLI = ( arg ) => getArgFromCLI( arg ) !== undefined;
+function hasArgInCLI( arg ) {
+	return getArgFromCLI( arg ) !== undefined;
+}
 
 const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
 	stdio: 'inherit',

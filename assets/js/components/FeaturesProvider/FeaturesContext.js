@@ -24,7 +24,7 @@ import { createContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { enabledFeatures } from '../../features';
+import { enabledFeatures } from '@/js/features';
 
 const FeaturesContext = createContext( enabledFeatures );
 

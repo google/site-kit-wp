@@ -68,7 +68,7 @@ describe( 'WPDashboardReportError', () => {
 		} );
 
 		expect(
-			container.querySelectorAll( '.googlesitekit-error-text' )
+			container.querySelectorAll( '.googlesitekit-notice--error' )
 		).toHaveLength( 2 );
 
 		expect( container ).toMatchSnapshot();

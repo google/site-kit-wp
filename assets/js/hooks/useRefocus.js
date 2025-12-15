@@ -37,14 +37,14 @@ export function useRefocus( callback, milliseconds = 0 ) {
 		let runCallback = false;
 
 		// Count `milliseconds` once user focuses elsewhere.
-		const countIdleTime = () => {
+		function countIdleTime() {
 			timeout = global.setTimeout( () => {
 				runCallback = true;
 			}, milliseconds );
-		};
+		}
 
 		// Run the callback when user re-focuses after `milliseconds` or more.
-		const onFocus = () => {
+		function onFocus() {
 			global.clearTimeout( timeout );
 
 			// Do not run the callback if user has been away for less
@@ -55,7 +55,7 @@ export function useRefocus( callback, milliseconds = 0 ) {
 			runCallback = false;
 
 			callback();
-		};
+		}
 
 		global.addEventListener( 'focus', onFocus );
 		global.addEventListener( 'blur', countIdleTime );

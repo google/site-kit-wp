@@ -28,10 +28,12 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { ErrorNotices } from '../common';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupAccountPendingTasks() {
 	const viewContext = useViewContext();
@@ -46,21 +48,26 @@ export default function SetupAccountPendingTasks() {
 
 	return (
 		<Fragment>
-			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+			<Typography
+				as="h3"
+				type="title"
+				size="large"
+				className="googlesitekit-setup-module__title"
+			>
 				{ __(
 					'Your account isn’t ready to show ads yet',
 					'google-site-kit'
 				) }
-			</h3>
+			</Typography>
 
 			<ErrorNotices />
 
-			<p>
+			<P>
 				{ __(
 					'You need to fix some things before we can connect Site Kit to your AdSense account',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 
 			<SetupUseSnippetSwitch />
 

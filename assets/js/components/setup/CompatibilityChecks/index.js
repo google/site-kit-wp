@@ -31,11 +31,11 @@ import PropTypes from 'prop-types';
  */
 import { useRegistry } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import Warning from '../../../../svg/icons/warning.svg';
-import { Grid } from '../../../material-components';
-import { useChecks } from '../../../hooks/useChecks';
+import Warning from '@/svg/icons/warning.svg';
+import { Grid } from '@/js/material-components';
+import { useChecks } from '@/js/hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	checkAMPConnectivity,
 	checkHealthChecks,
@@ -43,7 +43,7 @@ import {
 	registryCheckSetupTag,
 } from './checks';
 
-const createCompatibilityChecks = ( registry ) => {
+function createCompatibilityChecks( registry ) {
 	if ( registry.select( CORE_SITE ).isConnected() ) {
 		return [];
 	}
@@ -54,7 +54,7 @@ const createCompatibilityChecks = ( registry ) => {
 		registryCheckSetupTag( registry ),
 		checkAMPConnectivity,
 	];
-};
+}
 
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
@@ -63,7 +63,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	);
 
 	const ctaFeedback = error && (
-		<Grid alignLeft className="googlesitekit-setup-compat">
+		<Grid className="googlesitekit-setup-compat" alignLeft>
 			<div className="googlesitekit-setup__warning">
 				<Warning />
 

@@ -24,17 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DataBlock from '../DataBlock';
+import DataBlock from '@/js/components/DataBlock';
 import { useSelect } from 'googlesitekit-data';
-import PreviewBlock from '../PreviewBlock';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { calculateChange } from '../../util';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { calculateChange } from '@/js/util';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 
 function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>
@@ -57,6 +57,7 @@ function AdminBarUniqueVisitorsGA4( { WidgetReportError } ) {
 			},
 		],
 		url,
+		reportID: 'adminbar_admin-bar-unique-visitors-ga4_component_reportArgs',
 	};
 
 	const analyticsData = useSelect( ( select ) =>

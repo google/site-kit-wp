@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { getLocale } from '../../../../util';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { getLocale } from '@/js/util';
 
 export default function Preview() {
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
@@ -45,7 +45,7 @@ export default function Preview() {
 
 	useEffect( () => {
 		const script = document.createElement( 'script' );
-		const onLoad = () => {
+		function onLoad() {
 			setScriptLoaded( true );
 
 			// Using a fake client ID here since the user won't be able
@@ -53,7 +53,7 @@ export default function Preview() {
 			global.google.accounts.id.initialize( {
 				client_id: 'notrealclientid',
 			} );
-		};
+		}
 
 		script.src = `https://accounts.google.com/gsi/client?hl=${ getLocale() }`;
 		script.addEventListener( 'load', onLoad );

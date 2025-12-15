@@ -21,3 +21,4 @@ export const ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY =
 	'adsense-connect-cta-tooltip-state';
 export const ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY =
 	'adsense-ga4-top-earnings-notice';
+export const MODULE_SLUG_ADSENSE = 'adsense';

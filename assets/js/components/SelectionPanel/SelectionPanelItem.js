@@ -29,8 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SelectionBox from '../SelectionBox';
-import Badge from '../Badge';
+import SelectionBox from '@/js/components/SelectionBox';
+import Badge from '@/js/components/Badge';
 
 export default function SelectionPanelItem( {
 	children,

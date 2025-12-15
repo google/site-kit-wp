@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import extractForSparkline from '../extract-for-sparkline';
+import extractForSparkline from '@/js/util/extract-for-sparkline';
 
 const valuesToTest = [
 	[

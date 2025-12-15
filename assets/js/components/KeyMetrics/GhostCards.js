@@ -23,7 +23,7 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 import GhostCardGreenSVG from './GhostCardGreenSVG';
 import GhostCardRedSVG from './GhostCardRedSVG';
 

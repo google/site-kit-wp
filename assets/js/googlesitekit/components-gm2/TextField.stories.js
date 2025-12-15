@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import TextField from './TextField';
-import WarningIcon from '../../../svg/icons/warning-v2.svg';
+import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 function Template() {
 	return (
@@ -34,8 +34,8 @@ function Template() {
 					<TextField
 						label="Text Field with Value"
 						name="textfield"
-						outlined
 						value="https://www.sitekitbygoogle.com"
+						outlined
 					/>
 				</div>
 
@@ -43,8 +43,8 @@ function Template() {
 					<TextField
 						label="Disabled Text Field"
 						name="textfield"
-						outlined
 						value="https://www.sitekitbygoogle.com"
+						outlined
 						disabled
 					/>
 				</div>
@@ -53,9 +53,9 @@ function Template() {
 					<TextField
 						label="With Helper Text"
 						name="textfield"
-						outlined
 						value="https://www.sitekitbygoogle.com"
 						helperText="Helper Text"
+						outlined
 						helperTextPersistent
 					/>
 				</div>
@@ -64,13 +64,13 @@ function Template() {
 					<TextField
 						label="With Icon"
 						name="textfield"
-						outlined
 						value="https://www.sitekitbygoogle.com"
 						trailingIcon={
 							<span className="googlesitekit-text-field-icon--error">
 								<WarningIcon width={ 14 } height={ 12 } />
 							</span>
 						}
+						outlined
 					/>
 				</div>
 
@@ -78,9 +78,9 @@ function Template() {
 					<TextField
 						label="Textarea"
 						name="textfield"
+						value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl"
 						outlined
 						textarea
-						value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl"
 					/>
 				</div>
 			</div>

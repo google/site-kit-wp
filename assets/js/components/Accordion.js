@@ -31,7 +31,7 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import ChevronDown from '../../svg/icons/chevron-down-v2.svg';
+import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from './IconWrapper';
 
 export default function Accordion( {

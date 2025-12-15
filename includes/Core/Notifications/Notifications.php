@@ -81,7 +81,7 @@ class Notifications {
 	 * @param Options        $options Options instance.
 	 * @param Authentication $authentication Authentication instance.
 	 */
-	public function __construct( Context $context, Options $options = null, Authentication $authentication = null ) {
+	public function __construct( Context $context, ?Options $options = null, ?Authentication $authentication = null ) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $context );
 		$this->google_proxy   = new Google_Proxy( $this->context );
@@ -125,6 +125,7 @@ class Notifications {
 							$endpoint = add_query_arg(
 								array(
 									'site_id' => $this->credentials->get()['oauth2_client_id'],
+									'hl'      => get_user_locale(),
 								),
 								$this->google_proxy->url( '/notifications/' )
 							);

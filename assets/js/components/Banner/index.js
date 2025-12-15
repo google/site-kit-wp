@@ -21,13 +21,19 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
+import TitleIcon from './TitleIcon';
 import Title from './Title';
 import Description from './Description';
 import HelpText from './HelpText';
@@ -35,62 +41,97 @@ import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
+import Notice from '@/js/components/Notice';
 
-export default function Banner( {
-	className,
-	title,
-	description,
-	helpText,
-	learnMoreLink,
-	dismissButton,
-	ctaButton,
-	svg, // NOTE: SVGs must be imported with the ?url suffix for use as a backgroundImage in this component.
-	footer,
-} ) {
-	const breakpoint = useBreakpoint();
-	const isMobileOrTablet =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+const Banner = forwardRef(
+	(
+		{
+			className,
+			titleIcon,
+			title,
+			description,
+			additionalDescription,
+			errorText,
+			helpText,
+			learnMoreLink,
+			dismissButton,
+			ctaButton,
+			svg, // NOTE: SVGs must be imported with the ?url suffix for use as a backgroundImage in this component.
+			footer,
+		},
+		ref
+	) => {
+		const breakpoint = useBreakpoint();
+		const isMobileOrTablet =
+			breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-	const SVGData = isMobileOrTablet && svg?.mobile ? svg.mobile : svg?.desktop;
+		let SVGData = null;
+		if ( isMobileOrTablet && svg?.mobile ) {
+			SVGData = svg.mobile;
+		} else if ( ! isMobileOrTablet && svg?.desktop ) {
+			SVGData = svg.desktop;
+		}
 
-	const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
+		const svgMode = svg?.verticalPosition ? svg.verticalPosition : 'center';
 
-	return (
-		<div className={ classnames( 'googlesitekit-banner', className ) }>
-			<div className="googlesitekit-banner__content">
-				<Title>{ title }</Title>
-
-				<Description>
-					{ description }{ ' ' }
-					{ learnMoreLink?.href && (
-						<LearnMoreLink { ...learnMoreLink } />
-					) }
-				</Description>
-
-				{ helpText && <HelpText>{ helpText }</HelpText> }
-
-				<div className="googlesitekit-notice__action">
-					<CTAButton { ...ctaButton } />
-					<DismissButton { ...dismissButton } />
-				</div>
-			</div>
-
+		return (
 			<div
-				className={ classnames( 'googlesitekit-banner__svg-wrapper', {
-					[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
-						svgMode,
-				} ) }
-				style={ { backgroundImage: `url(${ SVGData })` } }
-			/>
+				ref={ ref }
+				className={ classnames( 'googlesitekit-banner', className ) }
+			>
+				<div className="googlesitekit-banner__content">
+					{ titleIcon && <TitleIcon>{ titleIcon }</TitleIcon> }
 
-			{ footer && <Footer>{ footer }</Footer> }
-		</div>
-	);
-}
+					<Title>{ title }</Title>
+
+					<Description
+						description={ description }
+						learnMoreLink={ learnMoreLink }
+						additionalDescription={ additionalDescription }
+					/>
+
+					{ helpText && <HelpText>{ helpText }</HelpText> }
+
+					{ errorText && (
+						<Notice type="error" description={ errorText } />
+					) }
+
+					<div className="googlesitekit-notice__action">
+						{ ctaButton && <CTAButton { ...ctaButton } /> }
+						{ dismissButton?.onClick && (
+							<DismissButton { ...dismissButton } />
+						) }
+					</div>
+				</div>
+
+				{ SVGData && (
+					<div
+						className={ classnames(
+							'googlesitekit-banner__svg-wrapper',
+							{
+								[ `googlesitekit-banner__svg-wrapper--${ svgMode }` ]:
+									svgMode,
+							}
+						) }
+						style={ { backgroundImage: `url(${ SVGData })` } }
+					/>
+				) }
+
+				{ footer && <Footer>{ footer }</Footer> }
+			</div>
+		);
+	}
+);
 
 Banner.propTypes = {
+	titleIcon: PropTypes.node,
 	title: PropTypes.string,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
+	additionalDescription: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.node,
+	] ),
+	errorText: PropTypes.string,
 	helpText: PropTypes.string,
 	learnMoreLink: PropTypes.shape( LearnMoreLink.propTypes ),
 	dismissButton: PropTypes.shape( DismissButton.propTypes ),
@@ -102,3 +143,5 @@ Banner.propTypes = {
 	} ),
 	footer: PropTypes.node,
 };
+
+export default Banner;

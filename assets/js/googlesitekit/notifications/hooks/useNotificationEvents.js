@@ -24,43 +24,48 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
-export default function useNotificationEvents( id, category ) {
+export default function useNotificationEvents(
+	id,
+	category,
+	{
+		viewAction = 'view_notification',
+		confirmAction = 'confirm_notification',
+		dismissAction = 'dismiss_notification',
+		clickLearnMoreAction = 'click_learn_more_link',
+	} = {}
+) {
 	const viewContext = useViewContext();
 	const eventCategory = category ?? `${ viewContext }_${ id }`;
 
 	const view = useCallback(
 		( ...args ) => {
-			return trackEvent( eventCategory, 'view_notification', ...args );
+			return trackEvent( eventCategory, viewAction, ...args );
 		},
-		[ eventCategory ]
+		[ eventCategory, viewAction ]
 	);
 
 	const confirm = useCallback(
 		( ...args ) => {
-			return trackEvent( eventCategory, 'confirm_notification', ...args );
+			return trackEvent( eventCategory, confirmAction, ...args );
 		},
-		[ eventCategory ]
+		[ eventCategory, confirmAction ]
 	);
 
 	const dismiss = useCallback(
 		( ...args ) => {
-			return trackEvent( eventCategory, 'dismiss_notification', ...args );
+			return trackEvent( eventCategory, dismissAction, ...args );
 		},
-		[ eventCategory ]
+		[ eventCategory, dismissAction ]
 	);
 
 	const clickLearnMore = useCallback(
 		( ...args ) => {
-			return trackEvent(
-				eventCategory,
-				'click_learn_more_link',
-				...args
-			);
+			return trackEvent( eventCategory, clickLearnMoreAction, ...args );
 		},
-		[ eventCategory ]
+		[ eventCategory, clickLearnMoreAction ]
 	);
 
 	return {

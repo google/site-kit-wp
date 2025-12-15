@@ -27,16 +27,17 @@ import invariant from 'invariant';
 import { set } from 'googlesitekit-api';
 import { combineStores } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
-import { createNotificationsStore } from '../../data/create-notifications-store';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';
 
-const isValidNotificationID = ( notificationID ) =>
-	'string' === typeof notificationID;
+function isValidNotificationID( notificationID ) {
+	return 'string' === typeof notificationID;
+}
 
 const fetchMarkNotificationStore = createFetchStore( {
 	baseName: 'markNotification',

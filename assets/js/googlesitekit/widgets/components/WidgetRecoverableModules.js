@@ -29,8 +29,8 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
-import RecoverableModules from '../../../components/RecoverableModules';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
+import RecoverableModules from '@/js/components/RecoverableModules';
 
 // The supported props must match `RecoverableModules` (except `widgetSlug`).
 export default function WidgetRecoverableModules( {

@@ -26,7 +26,7 @@ import {
 	validateCanSubmitChanges,
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 } from './settings';
-import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
 
 describe( 'modules/search-console settings', () => {
 	let registry;

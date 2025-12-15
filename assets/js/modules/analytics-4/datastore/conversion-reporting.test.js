@@ -34,8 +34,9 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -61,7 +62,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				};
 
 				global._googlesitekitModulesData = {
-					'analytics-4': inlineData,
+					[ MODULE_SLUG_ANALYTICS_4 ]: inlineData,
 				};
 
 				registry
@@ -129,7 +130,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				};
 
 				global._googlesitekitModulesData = {
-					'analytics-4': inlineData,
+					[ MODULE_SLUG_ANALYTICS_4 ]: inlineData,
 				};
 
 				registry.select( MODULES_ANALYTICS_4 )[ selector ]();
@@ -292,7 +293,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 
@@ -311,7 +312,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					{
 						active: true,
 						connected: false,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 				] );
 

@@ -34,7 +34,7 @@ import { escapeRegExp } from 'lodash';
  * @return {(Object|null|undefined)} AdSense site object that matches the domain, null if no match
  * found or undefined if any of the parameters are undefined.
  */
-export const determineSiteFromDomain = ( sites, domain ) => {
+export function determineSiteFromDomain( sites, domain ) {
 	if (
 		undefined === sites ||
 		undefined === domain ||
@@ -66,4 +66,4 @@ export const determineSiteFromDomain = ( sites, domain ) => {
 	} );
 
 	return subdomainMatch || null;
-};
+}

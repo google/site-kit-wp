@@ -29,13 +29,16 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../googlesitekit/constants';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
-import { Provider as ViewContextProvider } from '../../Root/ViewContextContext';
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import MetricsSelectionPanel from './';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( { viewContext } ) {
 	return (
@@ -62,19 +65,19 @@ export default {
 	component: MetricsSelectionPanel,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 				provideSiteInfo( registry, {
 					postTypes: [ { slug: 'post', label: 'Post' } ],
 				} );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
@@ -87,9 +90,9 @@ export default {
 							...acc,
 							[ widget ]: {
 								modules: [
-									'search-console',
-									'analytics-4',
-									'adsense',
+									MODULE_SLUG_SEARCH_CONSOLE,
+									MODULE_SLUG_ANALYTICS_4,
+									MODULE_SLUG_ADSENSE,
 								],
 							},
 						} ),
@@ -102,7 +105,7 @@ export default {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

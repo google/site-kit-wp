@@ -31,12 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Cell } from '../../material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell } from '@/js/material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import { getUserInputQuestions } from './util/constants';
+import P from '@/js/components/Typography/P';
 
 export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 	const hasMultipleUser = useSelect( ( select ) =>
@@ -78,7 +79,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 				<UserInputQuestionNotice className="googlesitekit-desktop-display-none " />
 
 				{ scope === 'site' && hasMultipleUser && (
-					<p>
+					<P>
 						{ author
 							? __(
 									'This answer can be edited by all Site Kit admins',
@@ -88,7 +89,7 @@ export default function UserInputQuestionInfo( { slug, questionNumber } ) {
 									'Your answer to this question will apply to all Site Kit users. Any other admins with access to Site Kit can see and edit this response.',
 									'google-site-kit'
 							  ) }
-					</p>
+					</P>
 				) }
 
 				<UserInputQuestionAuthor slug={ slug } />

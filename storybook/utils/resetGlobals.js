@@ -26,7 +26,7 @@ import { cloneDeep } from 'lodash';
  */
 import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
 
-export const resetGlobals = () => {
+export function resetGlobals() {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
@@ -77,4 +77,4 @@ export const resetGlobals = () => {
 		userRoles: [ 'administrator' ],
 		isAuthenticated: false,
 	};
-};
+}

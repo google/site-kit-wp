@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
 import { CORE_USER } from './../googlesitekit/datastore/user/constants';
-import { WithTestRegistry } from './../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from './../googlesitekit/datastore/ui/constants';
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
@@ -195,7 +195,7 @@ function MockWPDashboard() {
 				<h2 className="step-3 googlesitekit-search-console-widget__title">
 					Top content over the last 28 days
 				</h2>
-				<div className="googlesitekit-table-overflow">
+				<div className="step-4 googlesitekit-table-overflow">
 					<div className="googlesitekit-table-overflow__container">
 						<div className="googlesitekit-table googlesitekit-table--with-list">
 							<table className="googlesitekit-table__wrapper googlesitekit-table__wrapper--2-col">
@@ -273,7 +273,7 @@ function MockWPDashboard() {
 										<td className="googlesitekit-table__body-item">
 											<div className="googlesitekit-table__body-item-content">
 												<a
-													className="step-4 googlesitekit-cta-link googlesitekit-table__body-item-link"
+													className="step-4-anchor googlesitekit-cta-link googlesitekit-table__body-item-link"
 													href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2F"
 												>
 													WordPress Websites –
@@ -362,10 +362,10 @@ function MockWPDashboard() {
 function TourControls() {
 	const { receiveGetDismissedTours } = useDispatch( CORE_USER );
 	const { setValue } = useDispatch( CORE_UI );
-	const reset = () => {
+	function reset() {
 		receiveGetDismissedTours( [] );
 		setValue( 'feature-step', 0 );
-	};
+	}
 
 	return (
 		<div style={ { textAlign: 'right' } }>
@@ -409,18 +409,21 @@ function Template() {
 					) }
 				</div>
 			),
+			floaterProps: {
+				target: '.step-4-anchor',
+			},
 		},
 	];
 	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
 		body: JSON.stringify( [ 'feature' ] ),
 		status: 200,
 	} );
-	const setupRegistry = ( registry ) => {
+	function setupRegistry( registry ) {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-	};
+	}
 
 	return (
-		<WithTestRegistry callback={ setupRegistry }>
+		<WithRegistrySetup func={ setupRegistry }>
 			<TourControls />
 			<MockWPDashboard />
 			<TourTooltips
@@ -428,7 +431,7 @@ function Template() {
 				tourID="feature"
 				gaEventCategory="storybook"
 			/>
-		</WithTestRegistry>
+		</WithRegistrySetup>
 	);
 }
 

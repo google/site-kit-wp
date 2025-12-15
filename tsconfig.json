@@ -1,18 +1,47 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "baseUrl": ".",
+    "checkJs": false,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "noImplicitAny": true,
     "noEmit": true,
-    "resolveJsonModule": true,
     "paths": {
-      "@/*": [ "./assets/*" ],
-      "googlesitekit-api": ["./assets/js/googlesitekit-api"],
-      "googlesitekit-components": ["./assets/js/googlesitekit-components"],
-      "googlesitekit-data": ["./assets/js/googlesitekit-data"],
-      "googlesitekit-modules": ["./assets/js/googlesitekit-modules"],
-      "googlesitekit-notifications": ["./assets/js/googlesitekit-notifications"],
-      "googlesitekit-widgets": ["./assets/js/googlesitekit-widgets"],
-    }
+      "@/*": [
+        "./assets/*"
+      ],
+      "googlesitekit-api": [
+        "./assets/js/googlesitekit-api"
+      ],
+      "googlesitekit-components": [
+        "./assets/js/googlesitekit-components"
+      ],
+      "googlesitekit-data": [
+        "./assets/js/googlesitekit-data"
+      ],
+      "googlesitekit-modules": [
+        "./assets/js/googlesitekit-modules"
+      ],
+      "googlesitekit-notifications": [
+        "./assets/js/googlesitekit-notifications"
+      ],
+      "googlesitekit-widgets": [
+        "./assets/js/googlesitekit-widgets"
+      ],
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "target": "es5"
   },
+  "include": [
+    "assets",
+    "storybook",
+    "tests/e2e",
+    "tests/js",
+    "webpack"
+  ],
   "exclude": [
     "coverage",
     "dist",

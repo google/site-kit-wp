@@ -32,15 +32,16 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	isValidAccountID,
 	isValidContainerID,
 	isValidContainerName,
 	isValidUsageContext,
-} from '../util/validation';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+} from '@/js/modules/tagmanager/util/validation';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',
@@ -56,21 +57,15 @@ const fetchGetContainersStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return get(
 			'modules',
-			'tagmanager',
+			MODULE_SLUG_TAGMANAGER,
 			'containers',
 			{ accountID },
 			{ useCache: false }
 		);
 	},
-	reducerCallback: ( state, containers, { accountID } ) => {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: containers,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, containers, { accountID } ) => {
+		state.containers[ accountID ] = containers;
+	} ),
 } );
 
 const fetchCreateContainerStore = createFetchStore( {
@@ -93,7 +88,7 @@ const fetchCreateContainerStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return set( 'modules', 'tagmanager', 'create-container', {
+		return set( 'modules', MODULE_SLUG_TAGMANAGER, 'create-container', {
 			accountID,
 			usageContext,
 			name,

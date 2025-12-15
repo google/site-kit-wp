@@ -99,7 +99,7 @@ describe( 'createReducer', () => {
 			switch ( action.type ) {
 				case 'set-counter':
 					state.counter = action.payload;
-					break;
+					return undefined;
 				case 'increment-nested-counter':
 					// We can mix mutation and vanilla-style returning of new objects.
 					return {
@@ -110,7 +110,7 @@ describe( 'createReducer', () => {
 						},
 					};
 				default:
-					break;
+					return undefined;
 			}
 		} );
 

@@ -37,12 +37,11 @@ import { Button } from 'googlesitekit-components';
 function ReportErrorButton( { message, componentStack } ) {
 	const [ copied, setCopied ] = useState( false );
 
-	const onErrorClick = () => {
+	function onErrorClick() {
 		// Copy message with wrapping backticks for code block formatting on wp.org.
-		copyToClipboard( `\`${ message }\n${ componentStack }\`` );
-
+		copyToClipboard( `\`\`\`\n${ message }\n${ componentStack }\n\`\`\`` );
 		setCopied( true );
-	};
+	}
 
 	return (
 		<Button

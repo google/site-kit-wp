@@ -48,7 +48,7 @@ function notInViewCallback() {
  * @param {Array}    deps      Deps passed to `useInViewSelect`'s `deps` argument.
  * @return {*} The result of the selector if in-view; `undefined` if not in-view.
  */
-export const useInViewSelect = ( mapSelect, deps ) => {
+export function useInViewSelect( mapSelect, deps ) {
 	const isInView = useInView( { sticky: true } );
 	const latestSelectorResult = useRef();
 
@@ -66,4 +66,4 @@ export const useInViewSelect = ( mapSelect, deps ) => {
 	}
 
 	return latestSelectorResult.current;
-};
+}

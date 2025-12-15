@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { ENUM_CONVERSION_EVENTS } from '../../../modules/analytics-4/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 
 export const USER_INPUT_QUESTIONS_PURPOSE = 'purpose';
 export const USER_INPUT_QUESTION_POST_FREQUENCY = 'postFrequency';

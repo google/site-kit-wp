@@ -30,10 +30,10 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
-} from '../../datastore/constants';
-import Accordion from '../../../../components/Accordion';
-import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import Accordion from '@/js/components/Accordion';
+import { sanitizeHTML, markdownToHTML, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;

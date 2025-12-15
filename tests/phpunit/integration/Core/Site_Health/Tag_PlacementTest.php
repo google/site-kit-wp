@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
@@ -170,8 +172,8 @@ class Tag_PlacementTest extends TestCase {
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
 		$check_if_tag_exists->setAccessible( true );
 
-		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript lintern error.
-		// phpcs:disable
+		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript linter error.
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		$response_body = "<html lang=\"en-US\"> \n
 			<head> \n
 			<meta charset=\"UTF-8\" /> \n
@@ -183,7 +185,7 @@ class Tag_PlacementTest extends TestCase {
 			</script>; \n
 			.....
 		";
-		// phpcs:enable
+		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
@@ -197,8 +199,8 @@ class Tag_PlacementTest extends TestCase {
 		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
 		$check_if_tag_exists->setAccessible( true );
 
-		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript lintern error.
-		// phpcs:disable
+		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript linter error.
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		$response_body = "<html lang=\"en-US\"> \n
 			<head> \n
 			<meta charset=\"UTF-8\" /> \n
@@ -209,7 +211,7 @@ class Tag_PlacementTest extends TestCase {
 			</script>; \n
 			....
 		";
-		// phpcs:enable
+		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 

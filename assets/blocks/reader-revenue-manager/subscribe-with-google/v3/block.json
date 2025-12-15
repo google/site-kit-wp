@@ -1,0 +1,14 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "google-site-kit/rrm-subscribe-with-google",
+	"version": "1.168.0",
+	"title": "Subscribe with Google",
+	"category": "widgets",
+	"icon": "google",
+	"description": "Allow users to subscribe using Reader Revenue Manager to access content behind a paywall.",
+	"textdomain": "google-site-kit",
+	"supports": {
+		"inserter": true
+	}
+}

@@ -22,7 +22,7 @@
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_TAGMANAGER } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 
 describe( 'module/tagmanager service store', () => {
@@ -49,7 +49,7 @@ describe( 'module/tagmanager service store', () => {
 					.getServiceURL();
 
 				expect( serviceURL ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 
@@ -59,7 +59,7 @@ describe( 'module/tagmanager service store', () => {
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
 
 				expect( serviceURLNoSlashes ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 
 				const serviceURLWithLeadingSlash = registry
@@ -67,7 +67,7 @@ describe( 'module/tagmanager service store', () => {
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
 
 				expect( serviceURLWithLeadingSlash ).toMatchInlineSnapshot(
-					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink&Email=admin%40example.com"'
+					'"https://accounts.google.com/accountchooser?continue=https%3A%2F%2Ftagmanager.google.com%2F%23%2Ftest%2Fpath%2Fto%2Fdeeplink%3Futm_source%3Dsitekit&Email=admin%40example.com&utm_source=sitekit"'
 				);
 			} );
 

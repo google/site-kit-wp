@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 function Template() {
 	return (
@@ -60,7 +60,7 @@ export default {
 	title: 'Modules/SignInWithGoogle/Settings/SettingsView',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				const { anyoneCanRegister = false } = args;
 				provideSiteInfo( registry, { anyoneCanRegister } );
 
@@ -79,7 +79,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

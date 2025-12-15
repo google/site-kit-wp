@@ -31,10 +31,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../Link';
-import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
-import { Cell } from '../../material-components/layout';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import Link from '@/js/components/Link';
+import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
+import { Cell } from '@/js/material-components/layout';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
 	const storeName = useSelect( ( select ) =>

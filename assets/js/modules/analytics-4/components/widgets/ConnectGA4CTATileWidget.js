@@ -25,15 +25,16 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
-import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
+import ConnectModuleCTATile from '@/js/components/KeyMetrics/ConnectModuleCTATile';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
 import {
 	CORE_USER,
 	keyMetricsGA4Widgets,
-} from '../../../../googlesitekit/datastore/user/constants';
-import Null from '../../../../components/Null';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Null from '@/js/components/Null';
 
-const metadata = { moduleSlug: 'analytics-4' };
+const metadata = { moduleSlug: MODULE_SLUG_ANALYTICS_4 };
 
 export default function ConnectGA4CTATileWidget( { Widget, widgetSlug } ) {
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {

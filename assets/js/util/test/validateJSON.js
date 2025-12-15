@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { validateJSON } from '../';
+import { validateJSON } from '@/js/util';
 
 const valuesToTest = [
 	[ '{"foo":"bar"}', true ],

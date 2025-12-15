@@ -25,7 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export const selectors = {
 	/**
@@ -45,7 +45,10 @@ export const selectors = {
 				let serviceURL = 'https://tagmanager.google.com/';
 
 				if ( query ) {
-					serviceURL = addQueryArgs( serviceURL, query );
+					serviceURL = addQueryArgs( serviceURL, {
+						...query,
+						utm_source: 'sitekit',
+					} );
 				}
 
 				if ( path ) {

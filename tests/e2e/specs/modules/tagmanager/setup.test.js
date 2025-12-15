@@ -31,7 +31,6 @@ import {
  */
 import {
 	deactivateUtilityPlugins,
-	pageWait,
 	resetSiteKit,
 	setAMPMode,
 	setupSiteKit,
@@ -193,14 +192,14 @@ describe( 'Tag Manager module setup', () => {
 				}
 			);
 
-			await pageWait( 1000 );
+			await page.waitForNetworkIdle();
 			await expect( page ).toClick( 'button', {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector( '.googlesitekit-subtle-notification' );
+			await page.waitForSelector( '.googlesitekit-notice__title' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-subtle-notification__content p',
+				'.googlesitekit-notice__title',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -287,14 +286,14 @@ describe( 'Tag Manager module setup', () => {
 				}
 			);
 
-			await pageWait( 1000 );
+			await page.waitForNetworkIdle();
 			await expect( page ).toClick( 'button', {
 				text: new RegExp( 'complete setup', 'i' ),
 			} );
 
-			await page.waitForSelector( '.googlesitekit-subtle-notification' );
+			await page.waitForSelector( '.googlesitekit-notice__title' );
 			await expect( page ).toMatchElement(
-				'.googlesitekit-subtle-notification__content p',
+				'.googlesitekit-notice__title',
 				{
 					text: /Congrats on completing the setup for Tag Manager!/i,
 				}
@@ -416,10 +415,10 @@ describe( 'Tag Manager module setup', () => {
 						text: new RegExp( 'complete setup', 'i' ),
 					} );
 					await page.waitForSelector(
-						'.googlesitekit-subtle-notification'
+						'.googlesitekit-notice__title'
 					);
 					await expect( page ).toMatchElement(
-						'.googlesitekit-subtle-notification__content p',
+						'.googlesitekit-notice__title',
 						{
 							text: /Congrats on completing the setup for Tag Manager!/i,
 						}

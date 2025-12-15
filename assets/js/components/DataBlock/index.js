@@ -30,7 +30,9 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import GatheringDataNotice, { NOTICE_STYLE } from '../GatheringDataNotice';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '@/js/components/GatheringDataNotice';
 import Content from './Content';
 
 function DataBlock( {

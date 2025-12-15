@@ -29,14 +29,15 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../Link';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import Link from '@/js/components/Link';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
-function HelpMenuLink( { children, href, gaEventLabel } ) {
+function HelpMenuLink( { children, href, gaEventLabel, onClick, icon } ) {
 	const viewContext = useViewContext();
 
-	const onClick = useCallback( async () => {
+	const handleClick = useCallback( async () => {
+		onClick?.();
 		if ( gaEventLabel ) {
 			await trackEvent(
 				`${ viewContext }_headerbar_helpmenu`,
@@ -44,17 +45,18 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 				gaEventLabel
 			);
 		}
-	}, [ gaEventLabel, viewContext ] );
+	}, [ onClick, gaEventLabel, viewContext ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
 			<Link
 				className="mdc-list-item__text"
 				href={ href }
+				role="menuitem"
+				onClick={ handleClick }
+				leadingIcon={ icon }
 				external
 				hideExternalIndicator
-				role="menuitem"
-				onClick={ onClick }
 			>
 				{ children }
 			</Link>
@@ -64,8 +66,9 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 
 HelpMenuLink.propTypes = {
 	children: PropTypes.node.isRequired,
-	href: PropTypes.string.isRequired,
+	href: PropTypes.string,
 	gaEventLabel: PropTypes.string,
+	onClick: PropTypes.func,
 };
 
 export default HelpMenuLink;

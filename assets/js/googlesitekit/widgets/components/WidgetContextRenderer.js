@@ -27,10 +27,10 @@ import classnames from 'classnames';
  */
 import { useSelect } from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { CORE_USER } from '../../datastore/user/constants';
-import { CORE_WIDGETS } from '../datastore/constants';
-import { Grid, Row, Cell } from '../../../material-components';
-import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function WidgetContextRenderer( props ) {
 	const { id, slug, className, Header, Footer } = props;

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-const WebpackBar = require( 'webpackbar' );
-const ManifestPlugin = require( 'webpack-manifest-plugin' );
+const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
  * Internal dependencies
@@ -30,12 +29,12 @@ const {
 	manifestArgs,
 	externals,
 	resolve,
-	noAMDParserRule,
 } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
+	name: 'Frontend Modules',
 	entry: {
-		// Consent Mode
+		// Consent mode
 		'googlesitekit-consent-mode': './js/consent-mode/consent-mode.js',
 		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
@@ -89,15 +88,10 @@ module.exports = ( mode ) => ( {
 					},
 				],
 			},
-			noAMDParserRule,
 		],
 	},
 	plugins: [
-		new WebpackBar( {
-			name: 'Frontend Modules',
-			color: '#34dbeb',
-		} ),
-		new ManifestPlugin( {
+		new WebpackManifestPlugin( {
 			...manifestArgs( mode ),
 			filter( file ) {
 				return ( file.name || '' ).match( /\.js$/ );
@@ -108,4 +102,5 @@ module.exports = ( mode ) => ( {
 		concatenateModules: true,
 	},
 	resolve,
+	amd: false,
 } );

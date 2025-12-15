@@ -25,8 +25,9 @@ import {
 	provideModules,
 } from '../../../../../tests/js/test-utils';
 import WidgetReportZero from './WidgetReportZero';
-import { CORE_WIDGETS } from '../datastore/constants';
-import ReportZero from '../../../components/ReportZero';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import ReportZero from '@/js/components/ReportZero';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'WidgetReportZero', () => {
 	let registry;
@@ -38,7 +39,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'sets widget state when rendered and unsets when unmounted', () => {
 		const widgetSlug = 'testWidget';
-		const moduleSlug = 'analytics-4';
+		const moduleSlug = MODULE_SLUG_ANALYTICS_4;
 
 		// Initial state should be null.
 		expect(
@@ -69,7 +70,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'only considers moduleSlug prop for widget state', () => {
 		const widgetSlug = 'testWidget';
-		const moduleSlug = 'analytics-4';
+		const moduleSlug = MODULE_SLUG_ANALYTICS_4;
 
 		// Pass extraProp (which should not be included in metadata).
 		render(
@@ -91,7 +92,7 @@ describe( 'WidgetReportZero', () => {
 
 	it( 'renders the same output as ReportZero with the same props (except widgetSlug)', () => {
 		const props = {
-			moduleSlug: 'analytics-4',
+			moduleSlug: MODULE_SLUG_ANALYTICS_4,
 			description: 'There is no data!',
 		};
 

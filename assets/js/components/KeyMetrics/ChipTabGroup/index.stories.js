@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SelectionPanel from '../../SelectionPanel';
-import Header from '../MetricsSelectionPanel/Header';
-import SelectionPanelItems from '../MetricsSelectionPanel/SelectionPanelItems';
-import CustomDimensionsNotice from '../MetricsSelectionPanel/CustomDimensionsNotice';
-import Footer from '../MetricsSelectionPanel/Footer';
+import SelectionPanel from '@/js/components/SelectionPanel';
+import Header from '@/js/components/KeyMetrics/MetricsSelectionPanel/Header';
+import SelectionPanelItems from '@/js/components/KeyMetrics/MetricsSelectionPanel/SelectionPanelItems';
+import CustomDimensionsNotice from '@/js/components/KeyMetrics/MetricsSelectionPanel/CustomDimensionsNotice';
+import Footer from '@/js/components/KeyMetrics/MetricsSelectionPanel/Footer';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import {
 	provideKeyMetrics,
@@ -33,26 +33,28 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '../test-utils';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	EFFECTIVE_SELECTION,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
-} from '../constants';
+} from '@/js/components/KeyMetrics/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../../modules/analytics-4/datastore/constants';
-import KeyMetricsError from '../MetricsSelectionPanel/KeyMetricsError';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import KeyMetricsError from '@/js/components/KeyMetrics/MetricsSelectionPanel/KeyMetricsError';
 
 function Template() {
 	const savedViewableMetrics = useSelect( ( select ) => {
@@ -67,7 +69,7 @@ function Template() {
 		return metrics.filter( isKeyMetricAvailable );
 	} );
 
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		const {
 			title,
 			description,
@@ -82,7 +84,7 @@ function Template() {
 				group,
 			},
 		};
-	};
+	}
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,
 		{}
@@ -90,8 +92,8 @@ function Template() {
 
 	return (
 		<SelectionPanel
-			isOpen
 			className="googlesitekit-km-selection-panel googlesitekit-acr-km-selection-panel"
+			isOpen
 		>
 			<Header closePanel={ () => null } />
 			<SelectionPanelItems
@@ -101,10 +103,10 @@ function Template() {
 			<CustomDimensionsNotice />
 			<KeyMetricsError savedMetrics={ savedViewableMetrics } />
 			<Footer
-				isOpen
 				closePanel={ () => null }
 				savedMetrics={ savedViewableMetrics }
 				onNavigationToOAuthURL={ () => null }
+				isOpen
 			/>
 		</SelectionPanel>
 	);
@@ -167,14 +169,14 @@ export default {
 	component: SelectionPanel,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 
 				provideSiteInfo( registry );
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -186,7 +188,10 @@ export default {
 						( acc, widget ) => ( {
 							...acc,
 							[ widget ]: {
-								modules: [ 'search-console', 'analytics-4' ],
+								modules: [
+									MODULE_SLUG_SEARCH_CONSOLE,
+									MODULE_SLUG_ANALYTICS_4,
+								],
 							},
 						} ),
 						{}
@@ -226,7 +231,7 @@ export default {
 				if ( args && args?.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup

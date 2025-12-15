@@ -9,20 +9,24 @@
 	},
 	"scripts": {
 		"prebuild": "npm run remove-dist",
-		"build": "build-storybook -c . -o ../dist --quiet --loglevel warn",
-		"start": "start-storybook -p 9001 -c . --no-version-updates",
+		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
+		"start": "storybook dev -p 9001 -c . --no-version-updates",
 		"remove-dist": "rimraf ../dist/"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
-		"@storybook/addon-postcss": "^2.0.0",
-		"@storybook/addon-viewport": "^6.5.16",
-		"@storybook/react": "^6.5.16",
-		"mini-css-extract-plugin": "^1.6.2",
-		"postcss-loader": "^4.3.0",
-		"puppeteer": "^10.4.0",
-		"rimraf": "^6.0.1",
-		"sass-loader": "^9.0.3",
-		"url-loader": "^4.1.1"
+		"@storybook/addon-viewport": "^8.6.12",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/react-webpack5": "^8.6.12",
+		"@storybook/test": "^8.6.12",
+		"css-loader": "^7.1.2",
+		"fetch-mock": "^9.11.0",
+		"mini-css-extract-plugin": "^2.9.2",
+		"postcss-loader": "^8.1.1",
+		"sass": "^1.30.0",
+		"sass-loader": "^16.0.5",
+		"storybook": "^8.6.12",
+		"url-loader": "^4.1.1",
+		"webpack": "^5.99.7"
 	}
 }

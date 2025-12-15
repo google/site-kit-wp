@@ -19,13 +19,15 @@
 import { getCurrencyFormat } from './currency';
 
 describe( 'getCurrencyFormat', () => {
-	const getMockAdsenseReportWithCurrency = ( currencyCode ) => ( {
-		headers: [
-			{
-				currencyCode,
-			},
-		],
-	} );
+	function getMockAdsenseReportWithCurrency( currencyCode ) {
+		return {
+			headers: [
+				{
+					currencyCode,
+				},
+			],
+		};
+	}
 
 	it.each( [ 'EUR', 'USD', 'JPY', 'GBP' ] )(
 		'Returns the correct currency code (%s) when given an Adsense report',

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -36,6 +37,13 @@ class ResetTest extends TestCase {
 	 */
 	protected $context_with_mutable_input;
 
+	/**
+	 * Indicates whether the email log post type and metadata were registered.
+	 *
+	 * @var bool
+	 */
+	protected $email_log_registered = false;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -46,9 +54,18 @@ class ResetTest extends TestCase {
 		$this->context_with_mutable_input = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 	}
 
+	public function tear_down() {
+		if ( $this->email_log_registered ) {
+			$this->unregister_email_log_dependencies();
+			$this->email_log_registered = false;
+		}
+
+		parent::tear_down();
+	}
+
 	public function test_all() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->assertFalse( $context->is_network_mode() );
+		$this->assertFalse( $context->is_network_mode(), 'Context should not be in network mode by default.' );
 		update_option( 'googlesitekitkeep', 'keep' );
 		update_option( 'googlesitekit-keep', 'keep' );
 
@@ -65,18 +82,47 @@ class ResetTest extends TestCase {
 		$this->run_reset( $context );
 
 		// Ensure options that don't start with googlesitekit_ are not deleted.
-		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep' ) );
-		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep' ) );
+		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep', 'Option without underscore should be kept.' ), 'Option without underscore should be kept.' );
+		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep', 'Option with dash should be kept.' ), 'Option with dash should be kept.' );
 
 		// Ensure post meta that do not start with googlesitekit_ are not deleted.
-		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ) );
-		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ) );
-		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ) );
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ), 'Post meta without underscore should be kept.' );
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ), 'Post meta with dash should be kept.' );
+		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ), 'Post meta with underscore should be deleted.' );
 
 		// Ensure term meta that do not start with googlesitekit_ are not deleted.
-		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekitkeep', true ) );
-		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekit-keep', true ) );
-		$this->assertEquals( '', get_term_meta( $term_id, 'googlesitekit_keep', true ) );
+		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekitkeep', true ), 'Term meta without underscore should be kept.' );
+		$this->assertEquals( 'keep', get_term_meta( $term_id, 'googlesitekit-keep', true ), 'Term meta with dash should be kept.' );
+		$this->assertEquals( '', get_term_meta( $term_id, 'googlesitekit_keep', true ), 'Term meta with underscore should be deleted.' );
+	}
+
+	public function test_all_deletes_email_log_posts() {
+		$this->register_email_log_dependencies();
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$first_log = $this->factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_SCHEDULED,
+			)
+		);
+		add_post_meta( $first_log, Email_Log::META_BATCH_ID, 'batch-a' );
+
+		$second_log = $this->factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_FAILED,
+			)
+		);
+		add_post_meta( $second_log, Email_Log::META_SEND_ATTEMPTS, 2 );
+
+		$this->run_reset( $context );
+
+		$this->assertNull( get_post( $first_log ), 'Email log posts should be deleted after reset.' );
+		$this->assertNull( get_post( $second_log ), 'Email log posts should be deleted after reset.' );
+		$this->assertFalse( metadata_exists( 'post', $first_log, Email_Log::META_BATCH_ID ), 'Email log post meta should be deleted after reset.' );
+		$this->assertFalse( metadata_exists( 'post', $second_log, Email_Log::META_SEND_ATTEMPTS ), 'Email log post meta should be deleted after reset.' );
 	}
 
 	/**
@@ -89,9 +135,70 @@ class ResetTest extends TestCase {
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should be in network mode when filter is enabled.' );
 
 		$this->run_reset( $context );
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_network_mode_all_deletes_email_log_posts() {
+		$this->network_activate_site_kit();
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
+		$this->register_email_log_dependencies();
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->assertTrue( $context->is_network_mode(), 'Context should be in network mode when filter is enabled.' );
+
+		$blog_ids = array(
+			get_current_blog_id(),
+			$this->factory()->blog->create(),
+		);
+
+		$email_logs = array();
+		foreach ( $blog_ids as $blog_id ) {
+			$switched = false;
+
+			if ( get_current_blog_id() !== (int) $blog_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+				switch_to_blog( $blog_id );
+				$switched = true;
+			}
+
+			$email_logs[ $blog_id ] = $this->factory()->post->create(
+				array(
+					'post_type'   => Email_Log::POST_TYPE,
+					'post_status' => Email_Log::STATUS_FAILED,
+				)
+			);
+			add_post_meta( $email_logs[ $blog_id ], Email_Log::META_BATCH_ID, 'network-batch' );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+
+		$this->run_reset( $context );
+
+		foreach ( $blog_ids as $blog_id ) {
+			$switched = false;
+
+			if ( get_current_blog_id() !== (int) $blog_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog
+				switch_to_blog( $blog_id );
+				$switched = true;
+			}
+
+			$log_id = $email_logs[ $blog_id ];
+			$this->assertNull( get_post( $log_id ), 'Email log posts in each site should be deleted after reset.' );
+			$this->assertFalse( metadata_exists( 'post', $log_id, Email_Log::META_BATCH_ID ), 'Email log post meta should be deleted for every site after reset.' );
+
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
 	}
 
 	public function test_handle_reset_action_with_bad_nonce() {
@@ -105,10 +212,10 @@ class ResetTest extends TestCase {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected invalid nonce exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertContains( $die_exception->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ) );
+			$this->assertContains( $die_exception->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ), 'Should show appropriate error message for invalid nonce.' );
 		}
 
-		$this->assertOptionExists( self::TEST_OPTION );
+		$this->assertOptionExists( self::TEST_OPTION, 'Test option should still exist after failed reset.' );
 	}
 
 	public function test_handle_reset_action__with_valid_nonce_and_insufficient_permissions() {
@@ -123,9 +230,9 @@ class ResetTest extends TestCase {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected insufficient permissions exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertStringContainsString( 'permissions to set up Site Kit', $die_exception->getMessage() );
+			$this->assertStringContainsString( 'permissions to set up Site Kit', $die_exception->getMessage(), 'Should show appropriate error message for insufficient permissions.' );
 		}
-		$this->assertOptionExists( self::TEST_OPTION );
+		$this->assertOptionExists( self::TEST_OPTION, 'Test option should still exist after failed reset.' );
 	}
 
 	public function test_handle_reset_action__resets_and_redirects() {
@@ -142,13 +249,13 @@ class ResetTest extends TestCase {
 			$this->fail( 'Expected redirection' );
 		} catch ( RedirectException $redirect ) {
 			$redirect_url = $redirect->get_location();
-			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'splash' ), $redirect_url );
-			$this->assertStringContainsString( '&googlesitekit_reset_session=1', $redirect_url );
-			$this->assertStringContainsString( '&notification=reset_success', $redirect_url );
+			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'splash' ), $redirect_url, 'Redirect URL should start with splash page.' );
+			$this->assertStringContainsString( '&googlesitekit_reset_session=1', $redirect_url, 'Redirect URL should contain reset session parameter.' );
+			$this->assertStringContainsString( '&notification=reset_success', $redirect_url, 'Redirect URL should contain success notification parameter.' );
 
 		}
 		// Reset ran and option no longer exists.
-		$this->assertOptionNotExists( self::TEST_OPTION );
+		$this->assertOptionNotExists( self::TEST_OPTION, 'Test option should be deleted after successful reset.' );
 	}
 
 	public function test_hard_reset() {
@@ -175,20 +282,20 @@ class ResetTest extends TestCase {
 
 		if ( $is_network_mode ) {
 			remove_all_filters( "default_site_option_{$option_name}" );
-			$this->assertFalse( get_network_option( null, $option_name ) );
-			$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ) );
-			$this->assertFalse( get_site_transient( $transient_key ) );
+			$this->assertFalse( get_network_option( null, $option_name ), 'Network option should be deleted after hard reset.' );
+			$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ), 'User meta should be deleted after hard reset.' );
+			$this->assertFalse( get_site_transient( $transient_key ), 'Site transient should be deleted after hard reset.' );
 		} else {
 			remove_all_filters( "default_option_{$option_name}" );
-			$this->assertFalse( get_option( $option_name ) );
-			$this->assertFalse( get_user_option( $option_name, $user_id ) );
-			$this->assertFalse( get_transient( $transient_key ) );
+			$this->assertFalse( get_option( $option_name ), 'Option should be deleted after hard reset.' );
+			$this->assertFalse( get_user_option( $option_name, $user_id ), 'User option should be deleted after hard reset.' );
+			$this->assertFalse( get_transient( $transient_key ), 'Transient should be deleted after hard reset.' );
 		}
 	}
 
 	protected function run_reset( Context $context ) {
 		wp_load_alloptions();
-		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
+		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ), 'Options cache should be loaded.' );
 
 		$user_id         = $this->factory()->user->create();
 		$reset           = new Reset( $context );
@@ -201,9 +308,48 @@ class ResetTest extends TestCase {
 		$reset->all();
 
 		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
-		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ) );
+		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ), 'Options cache should be flushed after reset.' );
 		$this->assertOptionsDeleted( $is_network_mode );
 		$this->assertUserOptionsDeleted( $user_id, $is_network_mode );
 		$this->assertTransientsDeleted( $is_network_mode );
+	}
+
+	private function register_email_log_dependencies() {
+		if ( $this->email_log_registered ) {
+			return;
+		}
+
+		$email_log       = new Email_Log( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
+		$register_method->setAccessible( true );
+		$register_method->invoke( $email_log );
+
+		$this->email_log_registered = true;
+	}
+
+	private function unregister_email_log_dependencies() {
+		if ( function_exists( 'unregister_post_type' ) && post_type_exists( Email_Log::POST_TYPE ) ) {
+			call_user_func( 'unregister_post_type', Email_Log::POST_TYPE );
+		}
+
+		if ( function_exists( 'unregister_post_status' ) ) {
+			foreach ( array( Email_Log::STATUS_SENT, Email_Log::STATUS_FAILED, Email_Log::STATUS_SCHEDULED ) as $status ) {
+				call_user_func( 'unregister_post_status', $status );
+			}
+		}
+
+		if ( function_exists( 'unregister_meta_key' ) ) {
+			foreach (
+				array(
+					Email_Log::META_REPORT_FREQUENCY,
+					Email_Log::META_BATCH_ID,
+					Email_Log::META_SEND_ATTEMPTS,
+					Email_Log::META_ERROR_DETAILS,
+					Email_Log::META_REPORT_REFERENCE_DATES,
+				) as $meta_key
+			) {
+				call_user_func( 'unregister_meta_key', 'post', Email_Log::POST_TYPE, $meta_key );
+			}
+		}
 	}
 }

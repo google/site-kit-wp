@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import SideSheet from '../SideSheet';
+import SideSheet from '@/js/components/SideSheet';
 
 export default function SelectionPanel( {
 	children,

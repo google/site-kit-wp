@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
@@ -25,37 +30,40 @@ import { useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
-import { isInvalidCustomDimensionError } from '../../../../../utils/custom-dimensions';
-import { reportRowsWithSetValues } from '../../../../../utils/report-rows-with-set-values';
-import useAudienceTilesReports from '../../../../../hooks/useAudienceTilesReports';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
+import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import useViewOnly from '../../../../../../../hooks/useViewOnly';
-import AudienceSegmentationErrorWidget from '../../AudienceSegmentationErrorWidget';
-import AudienceTileLoading from '../AudienceTile/AudienceTileLoading';
-import AudienceTileError from '../AudienceTile/AudienceTileError';
-import AudienceTile from '../AudienceTile';
-import AudienceTooltipMessage from '../AudienceTooltipMessage';
-import MaybePlaceholderTile from '../MaybePlaceholderTile';
+} from '@/js/hooks/useBreakpoint';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
+import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
+import AudienceTileError from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileError';
+import AudienceTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile';
+import AudienceTooltipMessage from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTooltipMessage';
+import MaybePlaceholderTile from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/MaybePlaceholderTile';
 
-const hasZeroDataForAudience = ( report, dimensionName ) => {
+function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
 		( row ) => row.dimensionValues?.[ 0 ]?.value === dimensionName
 	);
 	const totalUsers = audienceData?.metricValues?.[ 0 ]?.value || 0;
 	return totalUsers === 0;
-};
+}
 
 export default function Body( {
 	activeTileIndex,
 	allTilesError,
 	individualTileErrors,
 	loading,
+	topCitiesReportsLoaded,
+	topContentReportsLoaded,
+	topContentPageTitlesReportsLoaded,
 	visibleAudiences,
 	Widget,
 } ) {
@@ -112,7 +120,7 @@ export default function Body( {
 		otherAudiences,
 	} );
 
-	const getAudienceTileMetrics = ( audienceResourceName ) => {
+	function getAudienceTileMetrics( audienceResourceName ) {
 		const isSiteKitAudience = siteKitAudiences.some(
 			( audience ) => audience.name === audienceResourceName
 		);
@@ -122,7 +130,7 @@ export default function Body( {
 			( audience ) => audience.name === audienceResourceName
 		)?.audienceSlug;
 
-		const findMetricsForDateRange = ( dateRange ) => {
+		function findMetricsForDateRange( dateRange ) {
 			let row;
 
 			if ( isSiteKitAudience && isSiteKitAudiencePartialData ) {
@@ -150,15 +158,15 @@ export default function Body( {
 				Number( row?.metricValues?.[ 2 ]?.value || 0 ), // screenPageViewsPerSession
 				Number( row?.metricValues?.[ 3 ]?.value || 0 ), // screenPageViews
 			];
-		};
+		}
 
 		const currentMetrics = findMetricsForDateRange( 'date_range_0' );
 		const previousMetrics = findMetricsForDateRange( 'date_range_1' );
 
 		return { current: currentMetrics, previous: previousMetrics };
-	};
+	}
 
-	const getAudienceTileData = ( audienceResourceName, audienceIndex ) => {
+	function getAudienceTileData( audienceResourceName, audienceIndex ) {
 		const audienceName =
 			audiences?.filter(
 				( { name } ) => name === audienceResourceName
@@ -240,7 +248,7 @@ export default function Body( {
 			isZeroData,
 			isPartialData,
 		};
-	};
+	}
 
 	const hasInvalidCustomDimensionError =
 		Object.values( topContentReportErrors ).some(
@@ -321,6 +329,11 @@ export default function Body( {
 					// Return loading tile if data is not yet loaded.
 					if (
 						loading ||
+						! topCitiesReportsLoaded?.[ audienceResourceName ] ||
+						! topContentReportsLoaded?.[ audienceResourceName ] ||
+						! topContentPageTitlesReportsLoaded?.[
+							audienceResourceName
+						] ||
 						isZeroData === undefined ||
 						isPartialData === undefined
 					) {
@@ -442,3 +455,15 @@ export default function Body( {
 		</div>
 	);
 }
+
+Body.propTypes = {
+	activeTileIndex: PropTypes.number.isRequired,
+	allTilesError: PropTypes.bool.isRequired,
+	individualTileErrors: PropTypes.object,
+	loading: PropTypes.bool.isRequired,
+	topCitiesReportsLoaded: PropTypes.object.isRequired,
+	topContentReportsLoaded: PropTypes.object.isRequired,
+	topContentPageTitlesReportsLoaded: PropTypes.object.isRequired,
+	visibleAudiences: PropTypes.array.isRequired,
+	Widget: PropTypes.elementType.isRequired,
+};

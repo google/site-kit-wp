@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import UseSnippetSwitch from './UseSnippetSwitch';
 
 function Template( args ) {
@@ -43,10 +43,10 @@ export default {
 	component: UseSnippetSwitch,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 				registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

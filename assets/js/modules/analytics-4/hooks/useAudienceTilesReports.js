@@ -20,8 +20,11 @@
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Checks if the audience reports are loaded for the given report options.
@@ -32,16 +35,16 @@ import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from '../datastore/constants';
  * @param {Array}  configuredAudiences Configured audiences.
  * @return {boolean} Whether the report is loaded.
  */
-function useReportLoaded( reportOptions, configuredAudiences ) {
+function useReportsLoaded( reportOptions, configuredAudiences ) {
 	return useSelect( ( select ) =>
-		configuredAudiences.every( ( audienceResourceName ) => {
+		configuredAudiences.reduce( ( reportsLoaded, audienceResourceName ) => {
 			const partialDataSiteKitAudience =
 				select( MODULES_ANALYTICS_4 ).getPartialDataSiteKitAudience(
 					audienceResourceName
 				);
 
 			if ( partialDataSiteKitAudience === undefined ) {
-				return false;
+				return {};
 			}
 
 			const dimensionFilters = {};
@@ -55,19 +58,21 @@ function useReportLoaded( reportOptions, configuredAudiences ) {
 				dimensionFilters.audienceResourceName = audienceResourceName;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[
-					{
-						...reportOptions,
-						dimensionFilters: {
-							...reportOptions.dimensionFilters,
-							...dimensionFilters,
-						},
+			const isLoaded = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [
+				{
+					...reportOptions,
+					dimensionFilters: {
+						...reportOptions.dimensionFilters,
+						...dimensionFilters,
 					},
-				]
-			);
-		} )
+				},
+			] );
+
+			reportsLoaded[ audienceResourceName ] = isLoaded;
+			return reportsLoaded;
+		}, {} )
 	);
 }
 
@@ -177,6 +182,8 @@ export default function useAudienceTilesReports( {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_reportOptions',
 	};
 	const report = useInViewSelect(
 		( select ) => {
@@ -226,6 +233,8 @@ export default function useAudienceTilesReports( {
 			{ name: 'screenPageViewsPerSession' },
 			{ name: 'screenPageViews' },
 		],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_newVsReturningReportOptions',
 	};
 	const siteKitAudiencesReport = useInViewSelect(
 		( select ) => {
@@ -270,6 +279,8 @@ export default function useAudienceTilesReports( {
 		startDate,
 		endDate,
 		metrics: [ { name: 'screenPageViews' } ],
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_totalPageviewsReportOptions',
 	};
 	const totalPageviewsReport = useInViewSelect( ( select ) => {
 		return select( MODULES_ANALYTICS_4 ).getReport(
@@ -306,6 +317,8 @@ export default function useAudienceTilesReports( {
 			},
 		],
 		limit: 4, // Limit is set to 4 so that (not set) can be filtered out and 3 cities remain to display.
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect( ( select ) =>
@@ -315,7 +328,7 @@ export default function useAudienceTilesReports( {
 		)
 	);
 
-	const topCitiesReportLoaded = useReportLoaded(
+	const topCitiesReportsLoaded = useReportsLoaded(
 		topCitiesReportOptions,
 		configuredAudiences
 	);
@@ -339,6 +352,8 @@ export default function useAudienceTilesReports( {
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 3,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentReportOptions',
 	};
 	const topContentReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
@@ -346,7 +361,7 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentReportLoaded = useReportLoaded(
+	const topContentReportsLoaded = useReportsLoaded(
 		topContentReportOptions,
 		configuredAudiences
 	);
@@ -370,6 +385,8 @@ export default function useAudienceTilesReports( {
 		},
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID:
+			'audience-segmentation_use-audience-tiles-reports_hook_topContentPageTitlesReportOptions',
 	};
 	const topContentPageTitlesReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getReportForAllAudiences(
@@ -377,7 +394,7 @@ export default function useAudienceTilesReports( {
 			configuredAudiences
 		)
 	);
-	const topContentPageTitlesReportLoaded = useReportLoaded(
+	const topContentPageTitlesReportsLoaded = useReportsLoaded(
 		topContentPageTitlesReportOptions,
 		configuredAudiences
 	);
@@ -398,13 +415,13 @@ export default function useAudienceTilesReports( {
 		totalPageviewsReportLoaded,
 		totalPageviewsReportError,
 		topCitiesReport,
-		topCitiesReportLoaded,
+		topCitiesReportsLoaded,
 		topCitiesReportErrors,
 		topContentReport,
-		topContentReportLoaded,
+		topContentReportsLoaded,
 		topContentReportErrors,
 		topContentPageTitlesReport,
-		topContentPageTitlesReportLoaded,
+		topContentPageTitlesReportsLoaded,
 		topContentPageTitlesReportErrors,
 	};
 }

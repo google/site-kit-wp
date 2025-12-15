@@ -29,7 +29,7 @@ import { useEffect, useState } from '@wordpress/element';
  *
  * @return {boolean} `true` if the user has scrolled the page, `false` otherwise.
  */
-export const useHasScrolledEffect = () => {
+export function useHasScrolledEffect() {
 	const { y } = useWindowScroll();
 	const [ hasScrolled, setHasScrolled ] = useState( false );
 	const className = 'googlesitekit-plugin--has-scrolled';
@@ -49,4 +49,4 @@ export const useHasScrolledEffect = () => {
 	}
 
 	return hasScrolled;
-};
+}

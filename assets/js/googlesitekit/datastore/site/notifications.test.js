@@ -200,10 +200,8 @@ describe( 'core/site notifications', () => {
 
 		it.each( [
 			'acceptNotification',
-			'addNotification',
 			'dismissNotification',
 			'fetchMarkNotification',
-			'removeNotification',
 		] )( 'has the "%s" notification action.', ( actionName ) => {
 			expect( actions[ actionName ] ).toBeDefined();
 		} );

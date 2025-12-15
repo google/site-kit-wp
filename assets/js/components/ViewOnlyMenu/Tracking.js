@@ -25,15 +25,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import OptIn from '../OptIn';
-import useViewContext from '../../hooks/useViewContext';
+import OptIn from '@/js/components/OptIn';
+import useViewContext from '@/js/hooks/useViewContext';
+import P from '@/js/components/Typography/P';
 
 export default function Tracking() {
 	const viewContext = useViewContext();
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
-			<p>
+			<P>
 				{ createInterpolateElement(
 					__(
 						'Thanks for using Site Kit!<br />Help us make it even better',
@@ -43,7 +44,7 @@ export default function Tracking() {
 						br: <br />,
 					}
 				) }
-			</p>
+			</P>
 			<OptIn
 				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
 				alignCheckboxLeft

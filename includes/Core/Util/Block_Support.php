@@ -32,4 +32,18 @@ class Block_Support {
 	public static function has_block_support() {
 		return (bool) version_compare( '5.8', get_bloginfo( 'version' ), '<=' );
 	}
+
+	/**
+	 * Checks whether Block API version 3 is supported based on WordPress version.
+	 *
+	 * Block API version 3 introduces iframe rendering for blocks in the editor.
+	 * This is supported starting with WordPress 6.3.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return bool True if Block API version 3 is supported, false otherwise.
+	 */
+	public static function has_block_api_version_3_support() {
+		return (bool) version_compare( '6.3', get_bloginfo( 'version' ), '<=' );
+	}
 }

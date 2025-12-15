@@ -35,16 +35,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import ErrorNotice from '../../../../../../components/ErrorNotice';
-import Link from '../../../../../../components/Link';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
-} from '../../../../datastore/constants';
+} from '@/js/modules/adsense/datastore/constants';
 
 export default function PlaceTagsStep( { setActiveStep } ) {
 	const viewContext = useViewContext();
@@ -130,12 +131,12 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 
 	return (
 		<Fragment>
-			<p>
+			<P>
 				{ __(
 					'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			<Checkbox
 				checked={ useAdBlockingRecoveryErrorSnippet }
 				id="ad-blocking-recovery-error-protection-tag-checkbox"

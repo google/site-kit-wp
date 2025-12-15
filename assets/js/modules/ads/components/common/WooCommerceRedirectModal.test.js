@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { ADS_NOTIFICATIONS } from '../..';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	render,
@@ -28,21 +28,23 @@ import {
 	provideSiteInfo,
 	provideModules,
 	provideUserCapabilities,
+	provideUserAuthentication,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
 	PLUGINS,
-} from '../../datastore/constants';
+} from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
-import * as tracking from '../../../../util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -57,9 +59,9 @@ describe( 'WooCommerceRedirectModal', () => {
 	function ModalComponent() {
 		return (
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
+				dialogActive
 			/>
 		);
 	}
@@ -81,6 +83,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
@@ -189,7 +192,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		expect( onDismiss ).toHaveBeenCalled();
 
 		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+			registry
+				.select( CORE_MODULES )
+				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 		).toBe( true );
 	} );
 
@@ -205,10 +210,10 @@ describe( 'WooCommerceRedirectModal', () => {
 
 		const { getByText, waitForRegistry } = render(
 			<WooCommerceRedirectModal
-				dialogActive
 				onDismiss={ onDismiss }
 				onClose={ onClose }
 				onBeforeSetupCallback={ onBeforeSetupCallback }
+				dialogActive
 			/>,
 			{
 				registry,
@@ -444,9 +449,12 @@ describe( 'WooCommerceRedirectModal', () => {
 		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		const { getByText, waitForRegistry } = render( <ModalComponent />, {
-			registry,
-		} );
+		const { getByText, getByRole, waitForRegistry } = render(
+			<ModalComponent />,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -457,6 +465,8 @@ describe( 'WooCommerceRedirectModal', () => {
 		await act( async () => {
 			await fireEvent.click( viewCurrentAdsAccountButton );
 		} );
+
+		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 
 		expect( dismissNotificationSpy ).toHaveBeenCalled();
 
@@ -507,7 +517,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		fireEvent.click( createAnotherAccountButton );
 
 		expect(
-			registry.select( CORE_MODULES ).isDoingSetModuleActivation( 'ads' )
+			registry
+				.select( CORE_MODULES )
+				.isDoingSetModuleActivation( MODULE_SLUG_ADS )
 		).toBe( true );
 		expect( onDismiss ).toHaveBeenCalled();
 	} );

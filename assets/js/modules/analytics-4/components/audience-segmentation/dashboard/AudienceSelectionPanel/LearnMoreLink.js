@@ -26,8 +26,8 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../../../components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
 
 export default function LearnMoreLink() {
 	const audienceLearnMoreURL = useSelect( ( select ) =>
@@ -46,8 +46,8 @@ export default function LearnMoreLink() {
 				{
 					link: (
 						<Link
-							secondary
 							href={ audienceLearnMoreURL }
+							secondary
 							external
 						/>
 					),

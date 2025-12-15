@@ -62,19 +62,19 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 	// This assertion ensures these are constructed in the same way going forward.
 	expect( serviceURLsByStore ).toEqual( {
 		'modules/adsense': [
-			'https://www.google.com/adsense/new/u/0',
-			'https://www.google.com/adsense/new/u/0/foo-path',
-			'https://www.google.com/adsense/new/u/0/foo-path?bar=baz',
+			'https://www.google.com/adsense/new/u/0?utm_source=sitekit',
+			'https://www.google.com/adsense/new/u/0/foo-path?utm_source=sitekit',
+			'https://www.google.com/adsense/new/u/0/foo-path?bar=baz&utm_source=sitekit',
 		],
 		'modules/analytics-4': [
-			'https://analytics.google.com/analytics/web/',
-			'https://analytics.google.com/analytics/web/#/foo-path',
-			'https://analytics.google.com/analytics/web/?bar=baz#/foo-path',
+			'https://analytics.google.com/analytics/web/?utm_source=sitekit',
+			'https://analytics.google.com/analytics/web/#/foo-path?utm_source=sitekit',
+			'https://analytics.google.com/analytics/web/?bar=baz&utm_source=sitekit#/foo-path',
 		],
 		'modules/pagespeed-insights': [
-			'https://pagespeed.web.dev/',
-			'https://pagespeed.web.dev/foo-path',
-			'https://pagespeed.web.dev/foo-path?bar=baz',
+			'https://pagespeed.web.dev/?utm_source=sitekit',
+			'https://pagespeed.web.dev/foo-path?utm_source=sitekit',
+			'https://pagespeed.web.dev/foo-path?bar=baz&utm_source=sitekit',
 		],
 		'modules/reader-revenue-manager': [
 			'https://publishercenter.google.com/?utm_source=sitekit',
@@ -82,19 +82,19 @@ it( 'ensures all serviceURLs are properly constructed', () => {
 			'https://publishercenter.google.com/foo-path?bar=baz&utm_source=sitekit',
 		],
 		'modules/search-console': [
-			'https://search.google.com/search-console',
-			'https://search.google.com/search-console/foo-path',
-			'https://search.google.com/search-console/foo-path?bar=baz',
+			'https://search.google.com/search-console?utm_source=sitekit',
+			'https://search.google.com/search-console/foo-path?utm_source=sitekit',
+			'https://search.google.com/search-console/foo-path?bar=baz&utm_source=sitekit',
 		],
 		'modules/sign-in-with-google': [
-			'https://developers.google.com/identity/site-kit',
-			'https://developers.google.com/identity/site-kit#/foo-path',
-			'https://developers.google.com/identity/site-kit?bar=baz#/foo-path',
+			'https://developers.google.com/identity/site-kit?utm_source=sitekit',
+			'https://developers.google.com/identity/site-kit#/foo-path?utm_source=sitekit',
+			'https://developers.google.com/identity/site-kit?bar=baz&utm_source=sitekit#/foo-path',
 		],
 		'modules/tagmanager': [
-			'https://tagmanager.google.com/',
-			'https://tagmanager.google.com/#/foo-path',
-			'https://tagmanager.google.com/?bar=baz#/foo-path',
+			'https://tagmanager.google.com/?utm_source=sitekit',
+			'https://tagmanager.google.com/#/foo-path?utm_source=sitekit',
+			'https://tagmanager.google.com/?bar=baz&utm_source=sitekit#/foo-path',
 		],
 	} );
 } );

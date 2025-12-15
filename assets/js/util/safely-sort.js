@@ -26,6 +26,6 @@
  * @param {Array|*} arr Param to be sorted.
  * @return {Array|*} 	Safely sorted array without mutation.
  */
-export const safelySort = ( arr ) => {
+export function safelySort( arr ) {
 	return Array.isArray( arr ) ? [ ...arr ].sort() : arr;
-};
+}

@@ -27,12 +27,13 @@ import {
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createExistingTagStore } from './create-existing-tag-store';
-import { CORE_SITE } from '../datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const TEST_STORE = 'test/store';
 const tagMatchers = [ new RegExp( '<test-store-tag value="([^"]+)" />' ) ];
-const generateHTMLWithTag = ( tag ) =>
-	`<html><body><test-store-tag value="${ tag }" /></body></html>`;
+function generateHTMLWithTag( tag ) {
+	return `<html><body><test-store-tag value="${ tag }" /></body></html>`;
+}
 
 describe( 'createExistingTagStore store', () => {
 	let registry;
@@ -88,7 +89,9 @@ describe( 'createExistingTagStore store', () => {
 
 			it( 'allows custom validation for tags, and receives invalid tags as null', () => {
 				const storeName = 'is-valid-tag/store';
-				const isValidTag = ( tag ) => tag === 'valid-tag';
+				function isValidTag( tag ) {
+					return tag === 'valid-tag';
+				}
 				const storeDefinition = createExistingTagStore( {
 					storeName,
 					tagMatchers: [],

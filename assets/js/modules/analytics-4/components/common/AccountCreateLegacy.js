@@ -27,11 +27,15 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { trackEvent } from '../../../../util';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import Notice from './Notice';
-import useViewContext from '../../../../hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import P from '@/js/components/Typography/P';
+import CreatePropertyInfoNotice from './CreatePropertyInfoNotice';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) =>
@@ -79,35 +83,35 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			<Notice />
+			<CreatePropertyInfoNotice />
 			<StoreErrorNotices
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
 
 			{ ! isCreateAccount && accounts && accounts.length === 0 && (
-				<p>
+				<P>
 					{ __(
 						'Looks like you don’t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			) }
 
 			{ isCreateAccount && (
 				<Fragment>
-					<p>
+					<P>
 						{ __(
 							'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.',
 							'google-site-kit'
 						) }
-					</p>
-					<p>
+					</P>
+					<P>
 						{ __(
 							'Once completed, click the link below to re-fetch your accounts to continue.',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 				</Fragment>
 			) }
 
@@ -117,7 +121,7 @@ export default function AccountCreateLegacy() {
 				</Button>
 
 				<div className="googlesitekit-setup-module__sub-action">
-					<Button tertiary onClick={ refetchAccountsHandler }>
+					<Button onClick={ refetchAccountsHandler } tertiary>
 						{ __( 'Re-fetch My Account', 'google-site-kit' ) }
 					</Button>
 				</div>

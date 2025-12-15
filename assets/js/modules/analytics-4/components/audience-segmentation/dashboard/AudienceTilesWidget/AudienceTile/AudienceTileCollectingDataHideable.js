@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../../../components/Link';
-import VisibilityIcon from '../../../../../../../../svg/icons/visibility.svg';
+import Link from '@/js/components/Link';
+import VisibilityIcon from '@/svg/icons/visibility.svg';
 
 export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 	return (
@@ -43,11 +43,11 @@ export default function AudienceTileCollectingDataHideable( { onHideTile } ) {
 				) }
 			</p>
 			<Link
-				secondary
-				linkButton
 				className="googlesitekit-audience-segmentation-tile-hide-cta"
 				onClick={ onHideTile }
 				leadingIcon={ <VisibilityIcon width={ 22 } height={ 22 } /> }
+				secondary
+				linkButton
 			>
 				{ __( 'Temporarily hide', 'google-site-kit' ) }
 			</Link>

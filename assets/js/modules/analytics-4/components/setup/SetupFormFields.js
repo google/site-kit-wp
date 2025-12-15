@@ -26,21 +26,25 @@ import { Fragment, useCallback, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
+	PropertyHint,
 	PropertySelect,
+	WebDataStreamHint,
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
-} from '../common';
+} from '@/js/modules/analytics-4/components/common';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -53,6 +57,9 @@ export default function SetupFormFields() {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
+	);
 	const measurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
@@ -63,6 +70,8 @@ export default function SetupFormFields() {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	useEffect( () => {
 		if ( hasExistingTag ) {
@@ -79,7 +88,7 @@ export default function SetupFormFields() {
 	return (
 		<Fragment>
 			{ !! accounts.length && (
-				<p className="googlesitekit-margin-bottom-0">
+				<p className="googlesitekit-setup-module__select_account">
 					{ __(
 						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
@@ -88,11 +97,27 @@ export default function SetupFormFields() {
 			) }
 
 			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect onChange={ resetEnhancedMeasurementSetting } />
-				<PropertySelect onChange={ resetEnhancedMeasurementSetting } />
-				<WebDataStreamSelect
-					onChange={ resetEnhancedMeasurementSetting }
-				/>
+				<div>
+					<AccountSelect
+						onChange={ resetEnhancedMeasurementSetting }
+					/>
+				</div>
+				<div>
+					<PropertySelect
+						onChange={ resetEnhancedMeasurementSetting }
+						hasModuleAccess
+					/>
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <PropertyHint /> }
+				</div>
+				<div>
+					<WebDataStreamSelect
+						onChange={ resetEnhancedMeasurementSetting }
+						hasModuleAccess
+					/>
+					{ setupFlowRefreshEnabled &&
+						isValidAccountID( accountID ) && <WebDataStreamHint /> }
+				</div>
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (

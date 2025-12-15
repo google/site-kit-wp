@@ -29,9 +29,9 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import ViewedStateObserver from './ViewedStateObserver';
-import { useHasBeenViewed } from '../../hooks/useHasBeenViewed';
-import useNotificationEvents from '../../hooks/useNotificationEvents';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
+import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function Notification( {
 	id,
@@ -44,7 +44,8 @@ export default function Notification( {
 	const viewed = useHasBeenViewed( id );
 	const trackEvents = useNotificationEvents(
 		id,
-		gaTrackingEventArgs?.category
+		gaTrackingEventArgs?.category,
+		{ viewAction: gaTrackingEventArgs?.viewAction }
 	);
 
 	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
@@ -104,6 +105,7 @@ Notification.propTypes = {
 	className: PropTypes.string,
 	gaTrackingEventArgs: PropTypes.shape( {
 		category: PropTypes.string,
+		viewAction: PropTypes.string,
 		label: PropTypes.string,
 		value: PropTypes.string,
 	} ),

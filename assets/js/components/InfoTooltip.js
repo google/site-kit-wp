@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
-import InfoIcon from '../../svg/icons/info-green.svg';
+import InfoIcon from '@/svg/icons/info-green.svg';
 
 export default function InfoTooltip( { onOpen, title, tooltipClassName } ) {
 	if ( ! title ) {
@@ -44,8 +44,8 @@ export default function InfoTooltip( { onOpen, title, tooltipClassName } ) {
 			placement="top"
 			enterTouchDelay={ 0 }
 			leaveTouchDelay={ 5000 }
-			interactive
 			onOpen={ onOpen }
+			interactive
 		>
 			<span>
 				<InfoIcon width="16" height="16" />

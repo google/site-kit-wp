@@ -31,7 +31,7 @@ export const surveyTimeoutsEndpoint = new RegExp(
  *
  * @since 1.111.1
  */
-export const mockSurveyEndpoints = () => {
+export function mockSurveyEndpoints() {
 	fetchMock.postOnce( surveyTriggerEndpoint, {
 		status: 200,
 		body: {},
@@ -41,4 +41,4 @@ export const mockSurveyEndpoints = () => {
 		status: 200,
 		body: [],
 	} );
-};
+}

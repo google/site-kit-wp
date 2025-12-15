@@ -21,12 +21,13 @@
  */
 import {
 	createTestRegistry,
+	subscribeUntil,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'modules/analytics-4 audience settings', () => {
 	let registry;
@@ -124,10 +125,55 @@ describe( 'modules/analytics-4 audience settings', () => {
 	} );
 
 	describe( 'selectors', () => {
+		const audienceSettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+		);
+
 		describe( 'getOrSyncAvailableAudiences', () => {
 			const syncAvailableAudiences = new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 			);
+
+			it( 'should make a network request via the getAudienceSettings resolver', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						availableAudiences: availableAudiencesFixture,
+					},
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasStartedResolution( 'getAudienceSettings', [] )
+				).toBe( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getOrSyncAvailableAudiences()
+				).toEqual( undefined );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasFinishedResolution( 'getAudienceSettings', [] )
+				);
+
+				const audienceSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudienceSettings();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( audienceSettings ).toEqual( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getOrSyncAvailableAudiences()
+				).toEqual( audienceSettings.availableAudiences );
+			} );
 
 			it( 'should not sync cached audiences when the availableAudiences setting is not undefined', () => {
 				registry
@@ -188,6 +234,47 @@ describe( 'modules/analytics-4 audience settings', () => {
 		} );
 
 		describe( 'getAvailableAudiences', () => {
+			it( 'should make a network request via the getAudienceSettings resolver', async () => {
+				fetchMock.getOnce( audienceSettingsEndpoint, {
+					body: {
+						availableAudiences: availableAudiencesFixture,
+					},
+					status: 200,
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasStartedResolution( 'getAudienceSettings', [] )
+				).toBe( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( undefined );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.hasFinishedResolution( 'getAudienceSettings', [] )
+				);
+
+				const audienceSettings = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAudienceSettings();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( audienceSettings ).toEqual( {
+					availableAudiences: availableAudiencesFixture,
+				} );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getAvailableAudiences()
+				).toEqual( audienceSettings.availableAudiences );
+			} );
+
 			it( 'should return availableAudiences', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -201,6 +288,10 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 
 			it( 'should return undefined if availableAudiences is not loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
+
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )

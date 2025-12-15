@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -92,6 +92,92 @@ export const HTML = () => {};
 		{
 			code: 'const HTML = () => {};',
 		},
+		// New valid test cases for added acronyms
+		{
+			code: 'const mySDK = {};',
+		},
+		{
+			code: 'const emmManager = {};',
+		},
+		{
+			code: 'const restAPI = {};',
+		},
+		{
+			code: 'const gkeCluster = {};',
+		},
+		{
+			code: 'const uriParser = {};',
+		},
+		{
+			code: 'const uxDesign = {};',
+		},
+		{
+			code: 'const osVersion = {};',
+		},
+		{
+			code: 'const gcpProject = {};',
+		},
+		{
+			code: 'const dnsRecord = {};',
+		},
+		{
+			code: 'const fcmToken = {};',
+		},
+		{
+			code: 'const iamRole = {};',
+		},
+		{
+			code: 'const ipAddress = {};',
+		},
+		{
+			code: 'const isoDate = {};',
+		},
+		{
+			code: 'const SDK = {};',
+		},
+		{
+			code: 'const EMM = {};',
+		},
+		{
+			code: 'const REST = {};',
+		},
+		{
+			code: 'const GKE = {};',
+		},
+		{
+			code: 'const URI = {};',
+		},
+		{
+			code: 'const UX = {};',
+		},
+		{
+			code: 'const OS = {};',
+		},
+		{
+			code: 'const GCP = {};',
+		},
+		{
+			code: 'const DNS = {};',
+		},
+		{
+			code: 'const FCM = {};',
+		},
+		{
+			code: 'const IAM = {};',
+		},
+		{
+			code: 'const IP = {};',
+		},
+		{
+			code: 'const ISO = {};',
+		},
+		{
+			code: `
+CTAButton.propTypes = {
+	label: PropTypes.string,
+};
+			`,
+		},
 	],
 	invalid: [
 		{
@@ -161,6 +247,111 @@ const HTMLNode = '<div></div>';
 			errors: [
 				{
 					message: '`Html` violates naming rules.',
+				},
+			],
+		},
+		// New invalid test cases for added acronyms
+		{
+			code: 'const Sdk = {};',
+			errors: [
+				{
+					message: '`Sdk` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Emm = {};',
+			errors: [
+				{
+					message: '`Emm` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Rest = {};',
+			errors: [
+				{
+					message: '`Rest` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Gke = {};',
+			errors: [
+				{
+					message: '`Gke` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Uri = {};',
+			errors: [
+				{
+					message: '`Uri` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Ux = {};',
+			errors: [
+				{
+					message: '`Ux` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Os = {};',
+			errors: [
+				{
+					message: '`Os` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Gcp = {};',
+			errors: [
+				{
+					message: '`Gcp` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Dns = {};',
+			errors: [
+				{
+					message: '`Dns` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Fcm = {};',
+			errors: [
+				{
+					message: '`Fcm` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Iam = {};',
+			errors: [
+				{
+					message: '`Iam` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Ip = {};',
+			errors: [
+				{
+					message: '`Ip` violates naming rules.',
+				},
+			],
+		},
+		{
+			code: 'const Iso = {};',
+			errors: [
+				{
+					message: '`Iso` violates naming rules.',
 				},
 			],
 		},

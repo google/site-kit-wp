@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * External dependencies
  */
@@ -25,9 +27,8 @@ import { isPlainObject, isBoolean } from 'lodash';
 /**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import { CORE_UI } from './constants';
-import { CORE_USER } from '../user/constants';
 
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
@@ -75,68 +76,6 @@ export const actions = {
 	},
 
 	/**
-	 * Sets `activeOverlayNotification` state.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {string} overlayNotification Overlay notification component name.
-	 * @return {Object} Redux-style action.
-	 */
-	*setOverlayNotificationToShow( overlayNotification ) {
-		invariant( overlayNotification, 'overlayNotification is required.' );
-
-		const registry = yield commonActions.getRegistry();
-
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
-
-		// If `activeOverlayNotification` is already set, don't override it.
-		if ( activeOverlayNotification ) {
-			return;
-		}
-
-		return yield actions.setValue(
-			'activeOverlayNotification',
-			overlayNotification
-		);
-	},
-
-	/**
-	 * Resets the `activeOverlayNotification` state and dismiss the overlay from
-	 * the user's profile.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {string} overlayNotification Overlay notification component name.
-	 * @return {Object} Redux-style action.
-	 */
-	*dismissOverlayNotification( overlayNotification ) {
-		invariant( overlayNotification, 'overlayNotification is required.' );
-
-		const registry = yield commonActions.getRegistry();
-
-		const activeOverlayNotification = registry
-			.select( CORE_UI )
-			.getValue( 'activeOverlayNotification' );
-
-		yield commonActions.await(
-			registry.dispatch( CORE_USER ).dismissItem( overlayNotification )
-		);
-
-		if (
-			activeOverlayNotification &&
-			overlayNotification === activeOverlayNotification
-		) {
-			return yield actions.setValues( {
-				activeOverlayNotification: undefined,
-			} );
-		}
-	},
-
-	/**
 	 * Stores site ui information.
 	 *
 	 * @since 1.27.0
@@ -176,31 +115,20 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_VALUES: {
-			const { values } = payload;
+		case SET_VALUES:
+			Object.assign( state, payload.values );
+			break;
 
-			return {
-				...state,
-				...values,
-			};
-		}
+		case SET_VALUE:
+			state[ payload.key ] = payload.value;
+			break;
 
-		case SET_VALUE: {
-			const { key, value } = payload;
-
-			return {
-				...state,
-				[ key ]: value,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const resolvers = {};
 
@@ -243,21 +171,6 @@ export const selectors = {
 	 */
 	getIsOnline( state ) {
 		return state.isOnline;
-	},
-
-	/**
-	 * Returns `true` if the overlay notification name passed is currently
-	 * active, `false` otherwise.
-	 *
-	 * @since 1.123.0
-	 * @private
-	 *
-	 * @param {Object} state               Data store's state.
-	 * @param {string} overlayNotification Overlay notification name.
-	 * @return {boolean} `true` if the overlay notification is currently active.
-	 */
-	isShowingOverlayNotification( state, overlayNotification ) {
-		return state.activeOverlayNotification === overlayNotification;
 	},
 };
 

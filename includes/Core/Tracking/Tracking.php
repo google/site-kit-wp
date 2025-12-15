@@ -67,8 +67,8 @@ final class Tracking {
 	 */
 	public function __construct(
 		Context $context,
-		User_Options $user_options = null,
-		Screens $screens = null
+		?User_Options $user_options = null,
+		?Screens $screens = null
 	) {
 		$user_options          = $user_options ?: new User_Options( $context );
 		$this->screens         = $screens ?: new Screens( $context );

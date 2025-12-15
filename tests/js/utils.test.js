@@ -26,8 +26,10 @@ import { CORE_UI } from '../../assets/js/googlesitekit/datastore/ui/constants';
 import {
 	createTestRegistry,
 	createWaitForRegistry,
+	provideWidgetRegistrations,
 	subscribeUntil,
 } from './utils';
+import { CORE_WIDGETS } from '../../assets/js/googlesitekit/widgets/datastore/constants';
 
 const basicStore = {
 	initialState: {
@@ -47,16 +49,20 @@ const basicStore = {
 		getCount: ( state ) => state.count,
 	},
 };
-const wait = ( ms ) => new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+function wait( ms ) {
+	return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
+}
 
 describe( 'test utilities', () => {
 	describe( 'subscribeUntil', () => {
 		it( 'subscribes to registry updates until predicates are satisfied', async () => {
 			const registry = createTestRegistry();
 			let count = 0;
-			const updateRegistry = async () =>
-				// async to allow await and trigger next tick
-				await registry.dispatch( CORE_UI ).setValue( 'count', count++ );
+			async function updateRegistry() {
+				return await registry
+					.dispatch( CORE_UI )
+					.setValue( 'count', count++ );
+			}
 
 			const listener = jest.fn( () => false );
 
@@ -88,9 +94,11 @@ describe( 'test utilities', () => {
 		it( 'subscribes to registry updates until ALL predicates are satisfied', async () => {
 			const registry = createTestRegistry();
 			let count = 0;
-			const updateRegistry = async () =>
-				// async to allow await and trigger next tick
-				await registry.dispatch( CORE_UI ).setValue( 'count', count++ );
+			async function updateRegistry() {
+				return await registry
+					.dispatch( CORE_UI )
+					.setValue( 'count', count++ );
+			}
 
 			// eslint-disable-next-line camelcase
 			const listener_a = jest.fn( () => true );
@@ -199,6 +207,112 @@ describe( 'test utilities', () => {
 			await expect( waitForRegistry ).rejects.toThrow(
 				/No state changes were observed/i
 			);
+		} );
+	} );
+
+	describe( 'provideWidgetRegistrations', () => {
+		let registry;
+
+		beforeEach( () => {
+			registry = createTestRegistry();
+		} );
+
+		it.each( [
+			[ 'mainDashboardKeyMetricsPrimary', 'isWidgetAreaRegistered' ],
+			[ 'mainDashboardTrafficPrimary', 'isWidgetAreaRegistered' ],
+			[ 'keyMetricsSetupCTA', 'isWidgetRegistered' ],
+		] )( 'should register %s without extra data', ( key, selector ) => {
+			provideWidgetRegistrations( registry );
+			expect( registry.select( CORE_WIDGETS )[ selector ]( key ) ).toBe(
+				true
+			);
+		} );
+
+		it( 'should register extra widget areas', () => {
+			const extraWidgetAreas = [
+				{
+					slug: 'testWidgetArea',
+					title: 'Test Widget Area',
+					contextSlugs: 'testContext',
+				},
+			];
+
+			provideWidgetRegistrations( registry, extraWidgetAreas );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.isWidgetAreaRegistered( 'testWidgetArea' )
+			).toBe( true );
+		} );
+
+		it( 'should register extra widgets', () => {
+			const extraWidgets = [
+				{
+					slug: 'testWidget',
+					Component: () => 'Test Widget',
+					widgetAreaSlugs: 'mainDashboardKeyMetricsPrimary',
+				},
+			];
+
+			provideWidgetRegistrations( registry, [], extraWidgets );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.isWidgetRegistered( 'testWidget' )
+			).toBe( true );
+		} );
+
+		it( 'should override default widget settings with extra data', () => {
+			const extraWidgets = [
+				{
+					slug: 'keyMetricsSetupCTA',
+					priority: 999, // Override the default priority.
+				},
+			];
+
+			provideWidgetRegistrations( registry, [], extraWidgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'keyMetricsSetupCTA' );
+
+			expect( widget.priority ).toBe( 999 );
+		} );
+
+		it( 'should work with both extra widget areas and widgets', () => {
+			const extraWidgetAreas = [
+				{
+					slug: 'testArea',
+					title: 'Test Area',
+				},
+			];
+
+			const extraWidgets = [
+				{
+					slug: 'testWidget',
+					Component: () => 'Test',
+				},
+			];
+
+			provideWidgetRegistrations(
+				registry,
+				extraWidgetAreas,
+				extraWidgets
+			);
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.isWidgetAreaRegistered( 'testArea' )
+			).toBe( true );
+
+			expect(
+				registry
+					.select( CORE_WIDGETS )
+					.isWidgetRegistered( 'testWidget' )
+			).toBe( true );
 		} );
 	} );
 } );

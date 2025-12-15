@@ -45,7 +45,11 @@ trait Row_Trait {
 		// If we have multiple date ranges, we need to add "date_range_{i}" index to dimension values.
 		if ( false !== $date_range_index ) {
 			$date_range_dimension_value = new Google_Service_AnalyticsData_DimensionValue();
-			$date_range_dimension_value->setValue( "date_range_{$date_range_index}" );
+			$date_range_dimension_value->setValue(
+				is_numeric( $date_range_index )
+					? "date_range_{$date_range_index}"
+					: $date_range_index
+			);
 			$dimension_values[] = $date_range_dimension_value;
 		}
 

@@ -26,9 +26,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Link from '../Link';
-import Notice from '../Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
 
 export default function LostEventsSubtleNotification( {
 	onSelectMetricsCallback,
@@ -52,11 +52,11 @@ export default function LostEventsSubtleNotification( {
 					a: (
 						<Link
 							href={ lostEventsDocumentationURL }
-							external
 							aria-label={ __(
 								'Learn more about unavailable metric data',
 								'google-site-kit'
 							) }
+							external
 						/>
 					),
 				}

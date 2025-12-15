@@ -1,5 +1,5 @@
 /**
- * Consent Mode test.
+ * Consent mode test.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -65,7 +65,7 @@ const euUserConsentPolicyRegions = [
 	'SK',
 ];
 
-describe( 'Consent Mode snippet', () => {
+describe( 'Consent mode snippet', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'wp-consent-api' );
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
@@ -89,7 +89,7 @@ describe( 'Consent Mode snippet', () => {
 		await page.deleteCookie( ...cookies );
 	} );
 
-	it( 'configures the Consent Mode defaults', async () => {
+	it( 'configures the consent mode defaults', async () => {
 		const dataLayer = await page.evaluate( () => window.dataLayer );
 
 		expect( dataLayer ).toEqual( [
@@ -111,7 +111,7 @@ describe( 'Consent Mode snippet', () => {
 		] );
 	} );
 
-	it( 'enqueues a Consent Mode update in response to a `wp_set_consent()` call', async () => {
+	it( 'enqueues a consent mode update in response to a `wp_set_consent()` call', async () => {
 		await page.evaluate( () => {
 			window.wp_set_consent( 'marketing', 'allow' );
 		} );
@@ -146,7 +146,7 @@ describe( 'Consent Mode snippet', () => {
 		] );
 	} );
 
-	it( 'enqueues a Consent Mode update on page load when a CMP plugin is present', async () => {
+	it( 'enqueues a consent mode update on page load when a CMP plugin is present', async () => {
 		await page.evaluate( () => {
 			// `wp_set_consent()` will persist the consent choice in a cookie.
 			window.wp_set_consent( 'marketing', 'allow' );

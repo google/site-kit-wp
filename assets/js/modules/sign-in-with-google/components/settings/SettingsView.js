@@ -25,16 +25,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
-} from '../../datastore/constants';
-import { SettingsNotice } from '../common';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import DisplaySetting from '../../../../components/DisplaySetting';
+} from '@/js/modules/sign-in-with-google/datastore/constants';
+import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/common';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>
@@ -73,8 +75,8 @@ export default function SettingsView() {
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
 	);
 
-	const oneTapOnAllPages = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapOnAllPages()
+	const showNextToCommentsEnabled = useSelect( ( select ) =>
+		select( MODULES_SIGN_IN_WITH_GOOGLE ).getShowNextToCommentsEnabled()
 	);
 
 	// If Sign in with Google does not have a client ID, do not display the
@@ -92,9 +94,14 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Client ID', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ clientID } />
 					</p>
@@ -103,27 +110,42 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button text', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ buttonTextLabel } />
 					</p>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button theme', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ buttonThemeLabel } />
 					</p>
 				</div>
 
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'Button shape', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ buttonShapeLabel } />
 					</p>
@@ -132,39 +154,60 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'One Tap sign in', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ ! oneTapEnabled && (
-							<DisplaySetting
-								value={ __( 'Disabled', 'google-site-kit' ) }
-							/>
-						) }
-						{ !! oneTapEnabled && (
-							<DisplaySetting
-								value={
-									!! oneTapOnAllPages
-										? __(
-												'Enabled (on all pages)',
-												'google-site-kit'
-										  )
-										: __(
-												'Enabled (login pages only)',
-												'google-site-kit'
-										  )
-								}
-							/>
-						) }
+						<DisplaySetting
+							value={
+								!! oneTapEnabled
+									? __( 'Enabled', 'google-site-kit' )
+									: __( 'Disabled', 'google-site-kit' )
+							}
+						/>
 					</p>
 				</div>
 			</div>
 
+			{ anyoneCanRegister && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'Show next to comments', 'google-site-kit' ) }
+						</Typography>
+						<P className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting
+								value={
+									!! showNextToCommentsEnabled
+										? __( 'Enabled', 'google-site-kit' )
+										: __( 'Disabled', 'google-site-kit' )
+								}
+							/>
+						</P>
+					</div>
+				</div>
+			) }
+
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
+					<Typography
+						as="h5"
+						size="medium"
+						type="label"
+						className="googlesitekit-settings-module__meta-item-type"
+					>
 						{ __( 'User registration', 'google-site-kit' ) }
-					</h5>
+					</Typography>
 					{ anyoneCanRegister !== undefined && (
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting

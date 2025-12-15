@@ -32,15 +32,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { numFmt } from '../../../../../util';
+import { numFmt } from '@/js/util';
 import SearchConsoleStats from './SearchConsoleStats';
-import { ActivateAnalyticsCTA, AnalyticsStats } from '../../common';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { Grid, Row, Cell } from '../../../../../material-components';
 import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
+	ActivateAnalyticsCTA,
+	AnalyticsStats,
+} from '@/js/modules/search-console/components/common';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Chart( {
 	canViewSharedAnalytics4,
@@ -56,10 +57,10 @@ export default function Chart( {
 	const breakpoint = useBreakpoint();
 
 	const isGA4Active = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	return (
@@ -82,7 +83,7 @@ export default function Chart( {
 							<Cell>
 								<ActivateAnalyticsCTA
 									title={ __(
-										'Conversions completed',
+										'Key Events completed',
 										'google-site-kit'
 									) }
 								/>
@@ -118,7 +119,7 @@ export default function Chart( {
 						selectedStats={ selectedStats - 3 }
 						metrics={ metrics }
 						dataLabels={ [
-							__( 'Conversions', 'google-site-kit' ),
+							__( 'Key Events', 'google-site-kit' ),
 							__( 'Engagement Rate %', 'google-site-kit' ),
 						] }
 						tooltipDataFormats={ [

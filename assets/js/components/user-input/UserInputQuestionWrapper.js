@@ -32,15 +32,15 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Row, Cell } from '../../material-components';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Row, Cell } from '@/js/material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
-import ErrorNotice from '../ErrorNotice';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
-import SpinnerButton from '../../googlesitekit/components-gm2/SpinnerButton';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import WarningSVG from '../../../svg/icons/warning.svg';
+import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import WarningSVG from '@/svg/icons/warning.svg';
 
 export default function UserInputQuestionWrapper( props ) {
 	const { children, slug, questionNumber, next, back, complete, error } =
@@ -88,9 +88,9 @@ export default function UserInputQuestionWrapper( props ) {
 				<div className="googlesitekit-user-input__footer-nav">
 					{ back && (
 						<Button
-							tertiary
 							className="googlesitekit-user-input__buttons--back"
 							onClick={ back }
+							tertiary
 						>
 							{ __( 'Back', 'google-site-kit' ) }
 						</Button>

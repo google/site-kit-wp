@@ -31,12 +31,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { Cell, Grid, Row } from '../../../material-components';
-import { trackEvent } from '../../../util';
-import { clearCache } from '../../../googlesitekit/api/cache';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import useViewContext from '../../../hooks/useViewContext';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import FooterPrimaryAction from './FooterPrimaryAction';
 import FooterSecondaryAction from './FooterSecondaryAction';
 

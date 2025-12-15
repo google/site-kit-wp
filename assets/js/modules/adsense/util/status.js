@@ -61,12 +61,12 @@ export const legacyAccountStatuses = [
  * @param {(string|undefined)} accountStatus Account status.
  * @return {boolean} True if pending, false otherwise.
  */
-export const isPendingAccountStatus = ( accountStatus ) => {
+export function isPendingAccountStatus( accountStatus ) {
 	return (
 		accountStatus === ACCOUNT_STATUS_GRAYLISTED ||
 		accountStatus === ACCOUNT_STATUS_PENDING
 	);
-};
+}
 
 /**
  * Transforms an AdSense API error to the appropriate status.
@@ -76,15 +76,15 @@ export const isPendingAccountStatus = ( accountStatus ) => {
  * @param {(Object|undefined)} error Error object or undefined.
  * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
-export const errorToStatus = ( error ) => {
+export function errorToStatus( error ) {
 	return (
 		accountsErrorToStatus( error ) ||
 		alertsErrorToStatus( error ) ||
 		urlChannelsErrorToStatus( error )
 	);
-};
+}
 
-const accountsErrorToStatus = ( error ) => {
+function accountsErrorToStatus( error ) {
 	// These specific errors represent account statuses for our purposes.
 	// They can be returned from the 'accounts' datapoint.
 	if ( isError( error, 'noAdSenseAccount' ) ) {
@@ -95,9 +95,9 @@ const accountsErrorToStatus = ( error ) => {
 	}
 
 	return undefined;
-};
+}
 
-const alertsErrorToStatus = ( error ) => {
+function alertsErrorToStatus( error ) {
 	// These specific errors represent account statuses for our purposes.
 	// They can be returned from the 'alerts' datapoint.
 	if ( isError( error, 'accountPendingReview' ) ) {
@@ -105,7 +105,7 @@ const alertsErrorToStatus = ( error ) => {
 	}
 
 	return undefined;
-};
+}
 
 function urlChannelsErrorToStatus( error ) {
 	if (
@@ -118,10 +118,10 @@ function urlChannelsErrorToStatus( error ) {
 	return undefined;
 }
 
-const isError = ( error, errorReason ) => {
+function isError( error, errorReason ) {
 	if ( ! error || ! error.data ) {
 		return false;
 	}
 
 	return errorReason === error.data.reason;
-};
+}

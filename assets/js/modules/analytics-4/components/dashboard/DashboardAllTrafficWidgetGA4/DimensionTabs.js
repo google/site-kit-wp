@@ -32,16 +32,16 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, Select, Tab, TabBar } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
-} from '../../../datastore/constants';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import { trackEvent } from '../../../../../util';
-import useViewContext from '../../../../../hooks/useViewContext';
+} from '@/js/modules/analytics-4/datastore/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 const tabs = [
 	{
@@ -125,11 +125,11 @@ export default function DimensionTabs( {
 
 			<div className="googlesitekit-widget--analyticsAllTraffic__tabs--small">
 				<Select
-					enhanced
 					onEnhancedChange={ handleTabUpdate }
-					outlined
 					value={ `dimension-name-${ activeTab }` }
 					disabled={ gatheringData || isZeroData }
+					enhanced
+					outlined
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option

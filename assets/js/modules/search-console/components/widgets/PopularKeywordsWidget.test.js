@@ -26,22 +26,23 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
-} from '../../datastore/constants';
+} from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
-import { provideSearchConsoleMockReport } from '../../util/data-mock';
+} from '@/js/util/errors';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 
 describe( 'PopularKeywordsWidget', () => {
 	let registry;
@@ -56,7 +57,7 @@ describe( 'PopularKeywordsWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'search-console' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_SEARCH_CONSOLE ) );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com' );
@@ -69,6 +70,8 @@ describe( 'PopularKeywordsWidget', () => {
 			} ),
 			dimensions: 'query',
 			limit: 100,
+			reportID:
+				'search-console_popular-keywords-widget_widget_reportOptions',
 		};
 
 		provideSearchConsoleMockReport( registry, reportOptions );

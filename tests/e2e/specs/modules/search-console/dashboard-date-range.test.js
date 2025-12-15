@@ -103,7 +103,7 @@ describe( 'date range filtering on dashboard views', () => {
 			switchDateRange( 'last 28 days', 'last 14 days' ),
 		] );
 
-		await pageWait();
+		await page.waitForNetworkIdle();
 		const TOTAL_IMPRESSIONS_14_DAYS = await getTotalImpressions();
 
 		expect( TOTAL_IMPRESSIONS_14_DAYS ).not.toBe(

@@ -31,7 +31,7 @@
  * @param {string} ip The IP Address string.
  * @return {number} The IP Address converted to a number.
  */
-const ipNumber = ( ip ) => {
+function ipNumber( ip ) {
 	const ipArr = ip.split( '.' );
 	return (
 		( +ipArr[ 0 ] << 24 ) +
@@ -39,7 +39,7 @@ const ipNumber = ( ip ) => {
 		( +ipArr[ 2 ] << 8 ) +
 		+ipArr[ 3 ]
 	);
-};
+}
 /**
  * Gets IP Address Mask from Mask Size.
  *
@@ -48,7 +48,9 @@ const ipNumber = ( ip ) => {
  * @param {number} size Mask Size.
  * @return {number} The IP Address Mask.
  */
-const ipMask = ( size ) => -1 << ( 32 - size );
+function ipMask( size ) {
+	return -1 << ( 32 - size );
+}
 
 /**
  * Checks if a given IP is within a Subnet Range.
@@ -60,5 +62,6 @@ const ipMask = ( size ) => -1 << ( 32 - size );
  * @param {number} mask   The Mask Size.
  * @return {boolean} Whether the ip is within the subnet range.
  */
-export const isIPAddressInRange = ( ip, subnet, mask ) =>
-	( ipNumber( ip ) & ipMask( mask ) ) === ipNumber( subnet );
+export function isIPAddressInRange( ip, subnet, mask ) {
+	return ( ipNumber( ip ) & ipMask( mask ) ) === ipNumber( subnet );
+}

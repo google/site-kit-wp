@@ -46,12 +46,13 @@ export const MONTH_IN_SECONDS = 30 * DAY_IN_SECONDS;
  * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
  */
 export function getAvailableDateRanges() {
-	const label = ( days ) =>
-		sprintf(
+	function label( days ) {
+		return sprintf(
 			/* translators: %s: number of days */
 			_n( 'Last %s day', 'Last %s days', days, 'google-site-kit' ),
 			days
 		);
+	}
 
 	return {
 		'last-7-days': {

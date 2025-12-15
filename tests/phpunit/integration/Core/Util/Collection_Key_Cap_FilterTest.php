@@ -17,7 +17,7 @@ class Collection_Key_Cap_FilterTest extends TestCase {
 		$filter = new Collection_Key_Cap_Filter( $key, $cap );
 		$output = $filter->filter_key_by_cap( $input );
 
-		$this->assertEquals( $expected, $output );
+		$this->assertEquals( $expected, $output, 'Filtered collection should match expected output based on user capabilities.' );
 	}
 
 	public function data_filter_key_by_cap() {

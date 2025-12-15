@@ -30,13 +30,13 @@ import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 describe( 'ChangeMetricsLink', () => {

@@ -26,7 +26,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import whenInViewContext from './whenInViewContext';
 
 describe( 'whenInViewContext', () => {

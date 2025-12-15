@@ -21,9 +21,12 @@
  */
 import ContainerSelect from './ContainerSelect';
 import { render, act } from '../../../../../../tests/js/test-utils';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	ACCOUNT_CREATE,
+} from '@/js/modules/tagmanager/datastore/constants';
 import { createTestRegistry } from '../../../../../../tests/js/utils';
-import * as factories from '../../datastore/__factories__';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
 describe( 'ContainerSelect', () => {
 	let registry;

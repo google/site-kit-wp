@@ -32,21 +32,22 @@ import {
 	combineStores,
 	createReducer,
 } from 'googlesitekit-data';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
-} from '../utils/validation';
+} from '@/js/modules/analytics-4/utils/validation';
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams',
 			{ propertyID },
 			{
@@ -54,17 +55,13 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, webDataStreams, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: Array.isArray( webDataStreams )
-					? webDataStreams
-					: [],
-			},
-		};
-	},
+	reducerCallback: createReducer(
+		( state, webDataStreams, { propertyID } ) => {
+			state.webdatastreams[ propertyID ] = Array.isArray( webDataStreams )
+				? webDataStreams
+				: [];
+		}
+	),
 	argsToParams( propertyID ) {
 		return { propertyID };
 	},
@@ -81,7 +78,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	controlCallback( { propertyIDs } ) {
 		return get(
 			'modules',
-			'analytics-4',
+			MODULE_SLUG_ANALYTICS_4,
 			'webdatastreams-batch',
 			{ propertyIDs },
 			{
@@ -89,15 +86,12 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback( state, webDataStreams ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				...( webDataStreams || {} ),
-			},
+	reducerCallback: createReducer( ( state, webDataStreams ) => {
+		state.webdatastreams = {
+			...state.webdatastreams,
+			...( webDataStreams || {} ),
 		};
-	},
+	} ),
 	argsToParams( propertyIDs ) {
 		return { propertyIDs };
 	},
@@ -118,10 +112,15 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID, displayName } ) {
-		return set( 'modules', 'analytics-4', 'create-webdatastream', {
-			propertyID,
-			displayName,
-		} );
+		return set(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'create-webdatastream',
+			{
+				propertyID,
+				displayName,
+			}
+		);
 	},
 	reducerCallback: createReducer(
 		( state, webDataStream, { propertyID } ) => {
@@ -195,13 +194,6 @@ const baseActions = {
 };
 
 const baseControls = {};
-
-const baseReducer = createReducer( ( state, action ) => {
-	switch ( action.type ) {
-		default:
-			break;
-	}
-} );
 
 function* resolveGetWebDataStreams( propertyID ) {
 	const { resolveSelect } = yield commonActions.getRegistry();
@@ -501,7 +493,7 @@ const baseSelectors = {
 				for ( const datastream of datastreams[ propertyID ] ) {
 					const { _id: webDataStreamID, webStreamData } = datastream;
 					const {
-						defaultUri: defaultURI,
+						defaultUri: defaultURI, // eslint-disable-line sitekit/acronym-case
 						measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
 					} = webStreamData;
 
@@ -565,7 +557,7 @@ const baseSelectors = {
 				const propertyID =
 					select( MODULES_ANALYTICS_4 ).getPropertyID();
 				const loadedWebDataStreams =
-					isValidPropertyID( propertyID ) && hasModuleAccess !== false
+					isValidPropertyID( propertyID ) && hasModuleAccess
 						? select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 								'getWebDataStreams',
 								[ propertyID ]
@@ -636,7 +628,6 @@ const store = combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		controls: baseControls,
-		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}

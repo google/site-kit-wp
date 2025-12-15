@@ -28,9 +28,9 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 
 /**
  * Returns a callback to navigate users to the module's authentication URL.

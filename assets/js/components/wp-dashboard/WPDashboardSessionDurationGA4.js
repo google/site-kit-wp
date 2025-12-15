@@ -33,12 +33,12 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { calculateChange } from '../../util';
-import DataBlock from '../DataBlock';
-import PreviewBlock from '../PreviewBlock';
-import { NOTICE_STYLE } from '../GatheringDataNotice';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { calculateChange } from '@/js/util';
+import DataBlock from '@/js/components/DataBlock';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 
 function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -64,6 +64,8 @@ function WPDashboardSessionDurationGA4( { WPDashboardReportError } ) {
 				name: 'averageSessionDuration',
 			},
 		],
+		reportID:
+			'dashboard_wp-dashboard-session-duration-ga4_component_reportArgs',
 	};
 
 	const analytics4Data = useInViewSelect(

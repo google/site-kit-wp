@@ -19,15 +19,6 @@ namespace Google\Site_Kit\Modules\Analytics_4;
  */
 interface Tag_Interface {
 	/**
-	 * Sets the ads conversion ID.
-	 *
-	 * @since 1.118.0
-	 *
-	 * @param string $ads_conversion_id Ads ID.
-	 */
-	public function set_ads_conversion_id( $ads_conversion_id );
-
-	/**
 	 * Sets custom dimensions data.
 	 *
 	 * @since 1.113.0

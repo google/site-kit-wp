@@ -28,18 +28,19 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { ZeroDataMessage } from '../common';
-import { numFmt } from '../../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { numFmt } from '@/js/util';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function TopCitiesDrivingAddToCartWidget( { Widget } ) {
@@ -74,6 +75,8 @@ function TopCitiesDrivingAddToCartWidget( { Widget } ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-cities-driving-add-to-cart-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
@@ -139,6 +142,6 @@ TopCitiesDrivingAddToCartWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCitiesDrivingAddToCartWidget );

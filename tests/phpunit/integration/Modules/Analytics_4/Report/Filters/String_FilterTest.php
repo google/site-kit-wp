@@ -51,7 +51,8 @@ class String_FilterTest extends TestCase {
 					),
 				),
 			),
-			json_decode( wp_json_encode( $expression ), true )
+			json_decode( wp_json_encode( $expression ), true ),
+			'Exact string filter should be parsed into expected GA4 expression.'
 		);
 	}
 
@@ -80,7 +81,8 @@ class String_FilterTest extends TestCase {
 					),
 				),
 			),
-			json_decode( wp_json_encode( $expression ), true )
+			json_decode( wp_json_encode( $expression ), true ),
+			'Custom match type should be parsed into expected GA4 expression.'
 		);
 	}
 
@@ -133,7 +135,8 @@ class String_FilterTest extends TestCase {
 					),
 				),
 			),
-			json_decode( wp_json_encode( $expression ), true )
+			json_decode( wp_json_encode( $expression ), true ),
+			'Array of values should map to OR group of string filters.'
 		);
 	}
 }

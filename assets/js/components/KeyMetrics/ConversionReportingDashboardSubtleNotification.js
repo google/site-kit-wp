@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notice from '../../components/Notice';
+import Notice from '@/js/components/Notice';
 
 export default function ConversionReportingDashboardSubtleNotification( {
 	description,

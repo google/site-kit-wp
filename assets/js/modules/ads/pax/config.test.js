@@ -49,6 +49,7 @@ describe( 'PAX config', () => {
 			expect( config ).toEqual( {
 				clientConfig: {
 					contentContainer: '#testContainer',
+					partnerName: 'site-kit',
 				},
 				foo: 'bar',
 			} );

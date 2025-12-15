@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import { setItem } from '../../../googlesitekit/api/cache';
+import { setItem } from '@/js/googlesitekit/api/cache';
 
 // Actions.
 const CACHE_SET_ITEM = 'CACHE_SET_ITEM';

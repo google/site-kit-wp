@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	act,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS } from '../../datastore/constants';
-import { CORE_UI } from '../../../datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notification from '.';
 
 function NotificationWrapper() {

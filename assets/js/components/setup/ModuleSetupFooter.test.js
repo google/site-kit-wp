@@ -26,7 +26,7 @@ import {
 	render,
 	provideModules,
 } from '../../../../tests/js/test-utils';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'ModuleSetupFooter', () => {
 	let registry;

@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE } from '../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { ERROR_CODE_ADBLOCKER_ACTIVE } from '@/js/googlesitekit/datastore/user/constants';
 import AdBlockerWarning from './AdBlockerWarning';
-import Notice from '../Notice';
+import Notice from '@/js/components/Notice';
 
 export default function ModuleSettingsWarning( { slug } ) {
 	const error = useSelect( ( select ) =>

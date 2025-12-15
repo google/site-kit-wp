@@ -26,13 +26,13 @@ import { __, sprintf, _n } from '@wordpress/i18n';
  * Internal dependencies.
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../Link';
-import { Cell, Grid, Row } from '../../material-components';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { decodeHTMLEntity, trackEvent } from '../../util';
+import Link from '@/js/components/Link';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { decodeHTMLEntity, trackEvent } from '@/js/util';
 import AdminBarWidgets from './AdminBarWidgets';
-import useViewContext from '../../hooks/useViewContext';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AdminBarApp() {
 	const viewContext = useViewContext();
@@ -66,7 +66,7 @@ export default function AdminBarApp() {
 		<Fragment>
 			<Grid>
 				<Row>
-					<Cell alignMiddle size={ 3 }>
+					<Cell size={ 3 } alignMiddle>
 						<div className="googlesitekit-adminbar__subtitle">
 							{ __( 'Stats for', 'google-site-kit' ) }
 						</div>
@@ -89,11 +89,11 @@ export default function AdminBarApp() {
 						</div>
 					</Cell>
 
-					<Cell alignMiddle mdSize={ 8 } lgSize={ 7 }>
+					<Cell mdSize={ 8 } lgSize={ 7 } alignMiddle>
 						<AdminBarWidgets />
 					</Cell>
 
-					<Cell alignMiddle size={ 2 }>
+					<Cell size={ 2 } alignMiddle>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"

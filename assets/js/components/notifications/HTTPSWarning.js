@@ -26,10 +26,10 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { isURLUsingHTTPS } from '../../util/is-url-using-https';
-import Notice from '../Notice';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import Notice from '@/js/components/Notice';
 
 export default function HTTPSWarning( { moduleSlug } ) {
 	const module = useSelect( ( select ) =>

@@ -21,11 +21,11 @@
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import { useInViewSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../../../../datastore/constants';
-import { trackEvent } from '../../../../../../../util';
-import useViewContext from '../../../../../../../hooks/useViewContext';
-import AudienceTooltipMessage from '../AudienceTooltipMessage';
-import InfoTooltip from '../../../../../../../components/InfoTooltip';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import AudienceTooltipMessage from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTooltipMessage';
+import InfoTooltip from '@/js/components/InfoTooltip';
 
 export default function Header( {
 	activeTileIndex,

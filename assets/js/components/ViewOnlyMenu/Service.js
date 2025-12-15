@@ -31,11 +31,11 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 
 export default function Service( { module } ) {
 	const canAuthenticate = useSelect( ( select ) =>

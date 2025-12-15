@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import Link from '../../../components/Link';
+import Link from '@/js/components/Link';
 
 function WidgetHeaderCTA( { href, label, external } ) {
 	return (

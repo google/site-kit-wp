@@ -12,7 +12,12 @@ namespace Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers;
 
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
-use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use WC_Countries;
+use WC_Order;
+use WC_Order_Item_Product;
+use WC_Product;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -26,9 +31,9 @@ class WooCommerce extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
 	/**
-	 * Avaialble products on the page.
+	 * Available products on the page.
 	 *
-	 * @var Array
+	 * @var array
 	 *
 	 * @since 1.153.0
 	 */
@@ -54,14 +59,110 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
-	 * Gets the conversion event names that are tracked by this provider.
+	 * Gets the conversion event names that are tracked by this provider, and Google Analytics for WooCommerce addon when active.
 	 *
 	 * @since 1.127.0
 	 *
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
+		$wgai_event_names = $this->get_wgai_event_names();
+		$events_to_track  = $this->events_to_track();
+
+		return array_unique( array_merge( $events_to_track, $wgai_event_names ) );
+	}
+
+	/**
+	 * Gets the enhanced conversion event names that are tracked by this provider.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
 		return array( 'add_to_cart', 'purchase' );
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by Google Analytics for WooCommerce provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return array List of event names.
+	 */
+	protected function get_wgai_event_names() {
+		if ( ! class_exists( 'WC_Google_Analytics_Integration' ) ) {
+			return array();
+		}
+
+		$settings = get_option( 'woocommerce_google_analytics_settings' );
+
+		// If only product identifier is available in the saved settings, it means default options are used.
+		// And by default all events are tracked.
+		if ( isset( $settings['ga_product_identifier'] ) && count( $settings ) === 1 ) {
+			return array(
+				'purchase',
+				'add_to_cart',
+				'remove_from_cart',
+				'view_item_list',
+				'select_content',
+				'view_item',
+				'begin_checkout',
+			);
+		}
+
+		$event_mapping = array(
+			'ga_ecommerce_tracking_enabled'           => 'purchase',
+			'ga_event_tracking_enabled'               => 'add_to_cart',
+			'ga_enhanced_remove_from_cart_enabled'    => 'remove_from_cart',
+			'ga_enhanced_product_impression_enabled'  => 'view_item_list',
+			'ga_enhanced_product_click_enabled'       => 'select_content',
+			'ga_enhanced_product_detail_view_enabled' => 'view_item',
+			'ga_enhanced_checkout_process_enabled'    => 'begin_checkout',
+		);
+
+		$event_names = array();
+
+		foreach ( $event_mapping as $setting_key => $event_name ) {
+			if ( isset( $settings[ $setting_key ] ) && 'yes' === $settings[ $setting_key ] ) {
+				$event_names[] = $event_name;
+			}
+		}
+
+		return $event_names;
+	}
+
+	/**
+	 * Gets the conversion event names that should be tracked by this provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return array List of event names.
+	 */
+	protected function events_to_track() {
+		$event_names     = array( 'add_to_cart', 'purchase' );
+		$wgai_event_name = $this->get_wgai_event_names();
+
+		if ( ! empty( $wgai_event_name ) ) {
+			return array_values( array_diff( $event_names, $wgai_event_name ) );
+		}
+
+		return $event_names;
+	}
+
+	/**
+	 * Gets the conversion event names that are tracked by this provider.
+	 *
+	 * @since 1.154.0
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		if ( empty( $this->events_to_track() ) ) {
+			return esc_html__( 'Events tracked through Analytics integration addon', 'google-site-kit' );
+		}
+
+		return parent::get_debug_data();
 	}
 
 	/**
@@ -95,6 +196,12 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_filter(
 			'woocommerce_loop_add_to_cart_link',
 			function ( $button, $product ) {
+				// If the product is not a valid WC_Product instance, return
+				// early.
+				if ( ! $product instanceof WC_Product ) {
+					return $button;
+				}
+
 				$this->products[] = $this->get_formatted_product( $product );
 
 				return $button;
@@ -106,8 +213,14 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_action(
 			'woocommerce_add_to_cart',
 			function ( $cart_item_key, $product_id, $quantity, $variation_id, $variation ) {
+				$product = wc_get_product( $product_id );
+
+				if ( ! $product instanceof WC_Product ) {
+					return;
+				}
+
 				$this->add_to_cart = $this->get_formatted_product(
-					wc_get_product( $product_id ),
+					$product,
 					$variation_id,
 					$variation,
 					$quantity
@@ -118,23 +231,8 @@ class WooCommerce extends Conversion_Events_Provider {
 		);
 
 		add_action(
-			'wp_head',
-			function () {
-				if ( is_wc_endpoint_url( 'order-received' ) ) {
-					$order_id = absint( get_query_var( 'order-received' ) );
-
-					if ( ! wp_is_block_theme() ) {
-						return;
-					}
-
-					$this->maybe_add_purchase_inline_script( $order_id );
-				}
-			}
-		);
-
-		add_action(
 			'woocommerce_thankyou',
-			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id ),
+			fn( $order_id ) => $this->maybe_add_purchase_inline_script( $order_id, wp_is_block_theme() ),
 			10,
 			1
 		);
@@ -144,6 +242,8 @@ class WooCommerce extends Conversion_Events_Provider {
 			function () {
 				$script_slug = 'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG;
 
+				$events_to_track = $this->events_to_track();
+
 				$inline_script = join(
 					"\n",
 					array(
@@ -151,8 +251,15 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)
 				);
+
+				if ( is_wc_endpoint_url( 'order-received' ) && wp_is_block_theme() ) {
+					$order_id = absint( get_query_var( 'order-received' ) );
+
+					$this->maybe_add_purchase_inline_script( $order_id );
+				}
 
 				wp_add_inline_script( $script_slug, $inline_script, 'before' );
 			}
@@ -173,7 +280,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @return array
 	 */
-	public function get_formatted_product( $product, $variation_id = 0, $variation = false, $quantity = false ) {
+	protected function get_formatted_product( WC_Product $product, $variation_id = 0, $variation = false, $quantity = false ) {
 		$product_id = $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
 		$price      = $product->get_price();
 
@@ -236,12 +343,12 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since 1.153.0
 	 *
-	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
+	 * @param WC_Order $order An instance of the WooCommerce Order object.
 	 *
 	 * @return array
 	 */
 	public function get_formatted_order( $order ) {
-		return array(
+		$order_data = array(
 			'id'          => $order->get_id(),
 			'affiliation' => get_bloginfo( 'name' ),
 			'totals'      => array(
@@ -252,8 +359,18 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 			'items'       => array_map(
 				function ( $item ) {
+					// If the product is not a valid WC_Product instance, return early.
+					if (
+						! $item instanceof WC_Order_Item_Product
+						|| ! $item->get_product() instanceof WC_Product
+					) {
+						return $item;
+					}
+
+					$formatted_product = $this->get_formatted_product( $item->get_product() );
+
 					return array_merge(
-						$this->get_formatted_product( $item->get_product() ),
+						$formatted_product,
 						array(
 							'quantity'                    => $item->get_quantity(),
 							'price_after_coupon_discount' => $this->get_formatted_price( $item->get_total() ),
@@ -263,6 +380,176 @@ class WooCommerce extends Conversion_Events_Provider {
 				array_values( $order->get_items() ),
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'gtagUserData' ) && $order instanceof WC_Order ) {
+			$user_data = $this->extract_user_data_from_order( $order );
+			if ( ! empty( $user_data ) ) {
+				$order_data['user_data'] = $user_data;
+			}
+		}
+
+		return $order_data;
+	}
+
+	/**
+	 * Extracts and normalizes user data from WooCommerce order for Enhanced Conversions.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @param WC_Order $order An instance of the WooCommerce Order object.
+	 *
+	 * @return array Normalized user data or empty array if no supported fields are available.
+	 */
+	protected function extract_user_data_from_order( WC_Order $order ) {
+		$user_data = array();
+
+		// Extract billing information from the order.
+		$billing_email      = $order->get_billing_email();
+		$billing_phone      = $order->get_billing_phone();
+		$billing_first_name = $order->get_billing_first_name();
+		$billing_last_name  = $order->get_billing_last_name();
+		$billing_address_1  = $order->get_billing_address_1();
+		$billing_city       = $order->get_billing_city();
+		$billing_state      = $order->get_billing_state();
+		$billing_postcode   = $order->get_billing_postcode();
+		$billing_country    = $order->get_billing_country();
+
+		// Normalize and add email if available.
+		if ( ! empty( $billing_email ) ) {
+			$user_data['email'] = Enhanced_Conversions::get_normalized_email( $billing_email );
+		}
+
+		// Normalize and add phone number if available.
+		if ( ! empty( $billing_phone ) ) {
+			$normalized_phone = $this->get_normalized_phone( $billing_phone, $billing_country );
+			if ( ! empty( $normalized_phone ) ) {
+				$user_data['phone_number'] = $normalized_phone;
+			}
+		}
+
+		// Build address object if any address fields are available.
+		$address_data = array();
+
+		if ( ! empty( $billing_first_name ) ) {
+			$address_data['first_name'] = Enhanced_Conversions::get_normalized_value( $billing_first_name );
+		}
+
+		if ( ! empty( $billing_last_name ) ) {
+			$address_data['last_name'] = Enhanced_Conversions::get_normalized_value( $billing_last_name );
+		}
+
+		if ( ! empty( $billing_address_1 ) ) {
+			$address_data['street'] = Enhanced_Conversions::get_normalized_value( $billing_address_1 );
+		}
+
+		if ( ! empty( $billing_city ) ) {
+			$address_data['city'] = Enhanced_Conversions::get_normalized_value( $billing_city );
+		}
+
+		if ( ! empty( $billing_state ) ) {
+			$address_data['region'] = Enhanced_Conversions::get_normalized_value( $billing_state );
+		}
+
+		if ( ! empty( $billing_postcode ) ) {
+			$address_data['postal_code'] = Enhanced_Conversions::get_normalized_value( $billing_postcode );
+		}
+
+		if ( ! empty( $billing_country ) ) {
+			$address_data['country'] = Enhanced_Conversions::get_normalized_value( $billing_country );
+		}
+
+		// Only include address if it has at least one field.
+		if ( ! empty( $address_data ) ) {
+			$user_data['address'] = $address_data;
+		}
+
+		return $user_data;
+	}
+
+	/**
+	 * Gets a normalized phone number for Enhanced Conversions.
+	 *
+	 * @since 1.161.0
+	 *
+	 * @param string $phone The phone number to normalize.
+	 * @param string $country The country code (2-letter ISO 3166-1 alpha-2).
+	 * @return string Normalized phone number (E.164 format if possible, basic normalization otherwise).
+	 */
+	protected function get_normalized_phone( $phone, $country ) {
+		if ( empty( $phone ) ) {
+			return '';
+		}
+
+		// Check if the original input started with + (user explicitly provided country code).
+		$original_started_with_plus = strpos( trim( $phone ), '+' ) === 0;
+
+		// Remove any non-digit characters.
+		$phone_digits = preg_replace( '/[^0-9]/', '', $phone );
+
+		// Skip if phone is empty after cleaning.
+		if ( empty( $phone_digits ) ) {
+			return '';
+		}
+
+		// Try to use WooCommerce's country calling codes for proper E.164 formatting.
+		if ( class_exists( 'WC_Countries' ) && ! empty( $country ) ) {
+			$countries    = new WC_Countries();
+			$calling_code = $countries->get_country_calling_code( $country );
+
+			// If we have a valid calling code, format to E.164.
+			if ( ! empty( $calling_code ) ) {
+				// Extract country code digits (without the + sign).
+				$country_code_digits = ltrim( $calling_code, '+' );
+
+				// Check if the phone number starts with 00 (international dialing format).
+				// This is commonly used instead of + in many countries.
+				// To distinguish from national numbers with leading zeros, ensure that after
+				// stripping 00, there are at least 10 digits remaining (country code + number).
+				$starts_with_00_international = false;
+				if ( strpos( $phone_digits, '00' ) === 0 && strlen( $phone_digits ) > 2 ) {
+					$digits_after_00              = substr( $phone_digits, 2 );
+					$starts_with_00_international = strlen( $digits_after_00 ) >= 10;
+				}
+
+				// Check if the phone number already starts with the billing country code.
+				if ( strpos( $phone_digits, $country_code_digits ) === 0 ) {
+					// Phone already has the correct country code, just add + and validate.
+					$phone = '+' . $phone_digits;
+				} elseif ( $starts_with_00_international ) {
+					// Phone starts with 00 (international dialing format).
+					// Strip the 00 prefix and format as E.164.
+					// This handles any country code, not just the billing country.
+					$phone = '+' . substr( $phone_digits, 2 );
+				} elseif ( $original_started_with_plus ) {
+					// User explicitly entered a +, indicating they provided their own country code.
+					// Trust their input and use their number as-is.
+					$phone = '+' . $phone_digits;
+				} else {
+					// No country code detected, treat as national number.
+					// Remove leading zeros from the national number.
+					$phone_digits = ltrim( $phone_digits, '0' );
+
+					// Skip if phone is empty after removing leading zeros.
+					if ( empty( $phone_digits ) ) {
+						return '';
+					}
+
+					// Prepend the calling code (which already includes the + sign).
+					$phone = $calling_code . $phone_digits;
+				}
+
+				// Validate the number is the correct length (11-15 digits including +).
+				if ( strlen( $phone ) < 11 || strlen( $phone ) > 15 ) {
+					return '';
+				}
+
+				return $phone;
+			}
+		}
+
+		// Fallback: use Enhanced_Conversions basic normalization if WooCommerce is unavailable
+		// or country calling code cannot be determined.
+		return Enhanced_Conversions::get_normalized_value( $phone );
 	}
 
 	/**
@@ -287,11 +574,19 @@ class WooCommerce extends Conversion_Events_Provider {
 	/**
 	 * Prints the purchase event details.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.154.0
 	 *
-	 * @param int $order_id The order ID.
+	 * @param int  $order_id             The order ID.
+	 * @param bool $skip_meta_value_save Whether to skip saving the _googlesitekit_ga_purchase_event_tracked meta value.
 	 */
-	protected function maybe_add_purchase_inline_script( $order_id ) {
+	protected function maybe_add_purchase_inline_script( $order_id, $skip_meta_value_save = false ) {
+		$wgai_event_names = $this->get_wgai_event_names();
+		// If purchase event is tracked by the Google Analytics for WooCommerce addon,
+		// don't output the script tag to track the purchase event.
+		if ( in_array( 'purchase', $wgai_event_names, true ) ) {
+			return;
+		}
+
 		$input = $this->context->input();
 		$order = wc_get_order( $order_id );
 
@@ -311,9 +606,13 @@ class WooCommerce extends Conversion_Events_Provider {
 			return;
 		}
 
-		// Mark the order as tracked by Site Kit.
-		$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
-		$order->save();
+		// In case we are on block theme, this hook running on thank you page will not attach the script.
+		// So we need to skip it, and apply this on the later hook.
+		if ( ! $skip_meta_value_save ) {
+			// Mark the order as tracked by Site Kit.
+			$order->update_meta_data( '_googlesitekit_ga_purchase_event_tracked', 1 );
+			$order->save();
+		}
 
 		wp_add_inline_script(
 			'googlesitekit-events-provider-' . self::CONVERSION_EVENT_PROVIDER_SLUG,

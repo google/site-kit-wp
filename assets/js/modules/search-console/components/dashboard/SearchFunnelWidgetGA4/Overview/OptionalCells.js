@@ -31,38 +31,36 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Cell } from '../../../../../../material-components';
-import { CORE_MODULES } from '../../../../../../googlesitekit/modules/datastore/constants';
-import { ActivateAnalyticsCTA } from '../../../common';
-import CreateConversionCTA from '../CreateConversionCTA';
-import RecoverableModules from '../../../../../../components/RecoverableModules';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../../../hooks/useBreakpoint';
+import { Cell } from '@/js/material-components';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { ActivateAnalyticsCTA } from '@/js/modules/search-console/components/common';
+import CreateKeyEventCTA from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/CreateKeyEventCTA';
+import RecoverableModules from '@/js/components/RecoverableModules';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getCellProps } from './utils';
 
 export default function OptionalCells( {
 	canViewSharedAnalytics4,
-	error,
+	errors,
 	showGA4,
-	showConversionsCTA,
+	showKeyEventsCTA,
 	showRecoverableGA4,
 	WidgetReportError,
 } ) {
 	const breakpoint = useBreakpoint();
 
 	const ga4ModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const ga4ModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
 
 	const { quarterCellProps, halfCellProps } =
-		getCellProps( showConversionsCTA );
+		getCellProps( showKeyEventsCTA );
 
 	return (
 		<Fragment>
@@ -72,7 +70,7 @@ export default function OptionalCells( {
 						{ BREAKPOINT_SMALL !== breakpoint && (
 							<ActivateAnalyticsCTA
 								title={ __(
-									'Conversions completed',
+									'Key Events completed',
 									'google-site-kit'
 								) }
 							/>
@@ -83,18 +81,18 @@ export default function OptionalCells( {
 			{ ! showRecoverableGA4 &&
 				canViewSharedAnalytics4 &&
 				analyticsModuleActiveAndConnected &&
-				error && (
+				errors.length > 0 && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportError
 							moduleSlug="analytics-4"
-							error={ error }
+							error={ errors }
 						/>
 					</Cell>
 				) }
 
 			{ showGA4 && (
 				<Cell { ...quarterCellProps } smSize={ 4 }>
-					{ showConversionsCTA && <CreateConversionCTA /> }
+					{ showKeyEventsCTA && <CreateKeyEventCTA /> }
 				</Cell>
 			) }
 
@@ -102,7 +100,9 @@ export default function OptionalCells( {
 				analyticsModuleActiveAndConnected &&
 				showRecoverableGA4 && (
 					<Cell { ...halfCellProps }>
-						<RecoverableModules moduleSlugs={ [ 'analytics-4' ] } />
+						<RecoverableModules
+							moduleSlugs={ [ MODULE_SLUG_ANALYTICS_4 ] }
+						/>
 					</Cell>
 				) }
 		</Fragment>
@@ -111,9 +111,9 @@ export default function OptionalCells( {
 
 OptionalCells.propTypes = {
 	canViewSharedAnalytics4: PropTypes.bool.isRequired,
-	error: PropTypes.object,
+	error: PropTypes.arrayOf( PropTypes.object ),
 	showGA4: PropTypes.bool.isRequired,
-	showConversionsCTA: PropTypes.bool.isRequired,
+	showKeyEventsCTA: PropTypes.bool.isRequired,
 	showRecoverableGA4: PropTypes.bool,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

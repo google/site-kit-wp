@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import VisuallyHidden from './VisuallyHidden';
-import WarningIcon from '../../svg/icons/warning-v2.svg';
+import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 export default function AccessibleWarningIcon( {
 	height = 12,

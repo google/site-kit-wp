@@ -27,22 +27,23 @@ import { uniqWith } from 'lodash';
  */
 import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	isInsufficientPermissionsError,
 	getReportErrorMessage,
-} from '../util/errors';
-import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
-import { purify } from '../util/purify';
-import ErrorText from '../components/ErrorText';
+} from '@/js/util/errors';
+import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
+import { purify } from '@/js/util/purify';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import ErrorNotice from './ErrorNotice';
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();
@@ -54,7 +55,7 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	let title;
 
-	const getMessage = ( err ) => {
+	function getMessage( err ) {
 		if ( isInsufficientPermissionsError( err ) ) {
 			if ( isViewOnly ) {
 				title = sprintf(
@@ -86,13 +87,18 @@ export default function ReportError( { moduleSlug, error } ) {
 		}
 
 		return getReportErrorMessage( err );
-	};
+	}
 
 	const uniqueErrors = uniqWith(
 		errors.map( ( err ) => ( {
 			...err,
 			message: getMessage( err ),
-			reconnectURL: err.data?.reconnectURL,
+			// The `code` parameter contains a session ID which can vary
+			// between requests, so we ignore it for comparison below.
+			// To use the original `reconnectURL` elsewhere, use `err.data.reconnectURL`.
+			reconnectURL: err.data?.reconnectURL
+				? removeQueryArgs( err.data.reconnectURL, 'code' )
+				: undefined,
 		} ) ),
 		( errorA, errorB ) =>
 			errorA.message === errorB.message &&
@@ -119,17 +125,21 @@ export default function ReportError( { moduleSlug, error } ) {
 
 	const description = (
 		<Fragment>
-			{ uniqueErrors.map( ( err ) => {
-				const reconnectURL = error?.data?.reconnectURL;
+			{ uniqueErrors.map( ( errorForNotice ) => {
+				const reconnectURL = errorForNotice?.data?.reconnectURL;
 				return reconnectURL ? (
-					<ErrorText
-						key={ err.message }
-						message={ err.message }
-						reconnectURL={ reconnectURL }
+					<ErrorNotice
+						key={ errorForNotice.message }
+						error={ errorForNotice }
+						message={ errorForNotice.message }
 					/>
 				) : (
-					<p key={ err.message }>
-						{ purify.sanitize( err.message, { ALLOWED_TAGS: [] } ) }
+					<p key={ errorForNotice.message }>
+						{ purify.sanitize( errorForNotice.message, {
+							// Ensures no HTML tags are passed as they would be
+							// escaped by React and appear as strings.
+							ALLOWED_TAGS: [],
+						} ) }
 					</p>
 				);
 			} ) }

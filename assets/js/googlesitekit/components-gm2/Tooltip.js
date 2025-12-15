@@ -69,10 +69,10 @@ export default function Tooltip( {
 					tooltipClassName
 				),
 			} }
-			arrow
 			onOpen={ handleOpen }
 			onClose={ handleClose }
 			{ ...props }
+			arrow
 		>
 			{ children }
 		</MuiTooltip>

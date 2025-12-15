@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import { commonActions, createReducer } from 'googlesitekit-data';
 import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from './constants';
-import { getItem } from '../../../googlesitekit/api/cache';
+import { getItem } from '@/js/googlesitekit/api/cache';
 
 // Actions.
 const RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY =

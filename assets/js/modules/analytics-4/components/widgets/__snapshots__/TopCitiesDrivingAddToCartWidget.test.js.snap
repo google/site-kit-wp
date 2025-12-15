@@ -15,7 +15,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top cities driving add to cart
           </h3>
@@ -112,7 +112,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render the generic error variant
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top cities driving add to cart
         </h2>
@@ -127,7 +127,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render the generic error variant
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -174,7 +174,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render the insufficient permissi
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top cities driving add to cart
         </h2>
@@ -189,7 +189,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render the insufficient permissi
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -240,7 +240,7 @@ exports[`TopCitiesDrivingAddToCartWidget should render the loading state while r
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top cities driving add to cart
           </h3>

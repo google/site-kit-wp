@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import { properties } from './__fixtures__';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { getPreviousDate, stringToDate } from '../../../util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getPreviousDate, stringToDate } from '@/js/util';
 
 let {
 	createTestRegistry,
@@ -40,7 +41,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -225,7 +226,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			jest.resetModules();
 
 			global._googlesitekitModulesData = {
-				'analytics-4': {
+				[ MODULE_SLUG_ANALYTICS_4 ]: {
 					customDimensionsDataAvailable: {
 						[ customDimension ]: dataAvailable,
 					},
@@ -299,6 +300,8 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 					},
 					metrics: [ { name: 'eventCount' } ],
 					limit: 1,
+					reportID:
+						'analytics-4_get-data-availability-report-options_store:selector',
 				};
 
 				if ( report ) {

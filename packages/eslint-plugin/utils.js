@@ -22,10 +22,7 @@ const FUNCTION_TYPES = [
 	'FunctionExpression',
 ];
 
-function checkForEmptyLinesInGroup(
-	groupOfTags,
-	{ context, jsdoc, jsdocNode } = {}
-) {
+function checkForEmptyLinesInGroup( groupOfTags, { context, jsdocNode } = {} ) {
 	groupOfTags.forEach( ( tag, index ) => {
 		if ( index === 0 ) {
 			return;
@@ -33,8 +30,10 @@ function checkForEmptyLinesInGroup(
 
 		const previousTag = groupOfTags[ index - 1 ];
 
+		const source = getJsdocContent( context, jsdocNode );
+
 		if (
-			jsdoc.source.match(
+			source.match(
 				new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
 			)
 		) {
@@ -61,6 +60,16 @@ function findTagInGroup( tagsInGroup, utils, index = 0 ) {
 	}
 
 	return findTagInGroup( tagsInGroup, utils, index + 1 );
+}
+
+function getJsdocContent( context, jsdocNode ) {
+	const sourceCode = context.getSourceCode();
+
+	return sourceCode
+		.getText( jsdocNode )
+		.replace( /^\s*\/\*\*+/, '' ) // Remove opening `/**`.
+		.replace( /\s*\*\/\s*$/, '' ) // Remove closing `*/`.
+		.replace( /^\s*\* ?/gm, '' ); // Remove leading `*` and optional space.
 }
 
 function isDependencyBlock( jsdoc ) {
@@ -142,10 +151,17 @@ function isFunctionIdentifier( node ) {
 		return false;
 	}
 
-	return (
-		isTypeFunction( node?.parent?.type ) ||
-		isTypeFunction( node?.parent?.init?.type )
-	);
+	const parent = node?.parent;
+
+	if (
+		isTypeFunction( parent?.type ) ||
+		isTypeFunction( parent?.init?.type )
+	) {
+		// The identifier is the function name if it's the `id` property, as opposed to being in `params`.
+		return parent?.id === node;
+	}
+
+	return false;
 }
 
 function isFunctionExportOrVariable( node ) {
@@ -183,6 +199,7 @@ function isFunction( node ) {
 module.exports = {
 	checkForEmptyLinesInGroup,
 	findTagInGroup,
+	getJsdocContent,
 	isDependencyBlock,
 	isFunction,
 	isImported,

@@ -27,11 +27,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { Cell, Grid, Row } from '../../../../../material-components/layout';
-import { API_STATE_READY, MODULES_ADSENSE } from '../../../datastore/constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../../util/status';
-import Notice from '../../../../../components/Notice';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { Cell, Grid, Row } from '@/js/material-components/layout';
+import {
+	API_STATE_READY,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util/status';
+import Notice from '@/js/components/Notice';
 
 export default function StatusMigration() {
 	const accountID = useSelect( ( select ) =>
@@ -83,12 +89,12 @@ export default function StatusMigration() {
 		}
 	}, [ isReady, saveSettings, setAccountStatus, setSiteStatus ] );
 
-	const handleRedoSetup = async () => {
+	async function handleRedoSetup() {
 		await setAccountSetupComplete( false );
 		await setSiteSetupComplete( false );
 		await saveSettings();
 		navigateTo( adminReauthURL );
-	};
+	}
 
 	if ( isReady === true ) {
 		return null;

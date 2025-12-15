@@ -31,49 +31,50 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AudienceConnectAnalyticsCTAGraphic from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic.svg';
-import AudienceConnectAnalyticsCTAGraphicTablet from '../../../../../../svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
-import Link from '../../../../../components/Link';
-import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
-import {
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '../../../../../hooks/useBreakpoint';
-import LeanCTABanner from '../../../../../components/LeanCTABanner';
+import AudienceConnectAnalyticsCTAGraphic from '@/svg/graphics/audience-connect-analytics-cta-graphic.svg';
+import AudienceConnectAnalyticsCTAGraphicTablet from '@/svg/graphics/audience-connect-analytics-cta-graphic-tablet.svg';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { BREAKPOINT_TABLET, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import LeanCTABanner from '@/js/components/LeanCTABanner';
 
 export default function ConnectAnalyticsCTAWidget( { Widget } ) {
 	const breakpoint = useBreakpoint();
 
 	const isTabletBreakpoint = breakpoint === BREAKPOINT_TABLET;
 
-	const handleConnectModule = useActivateModuleCallback( 'analytics-4' );
+	const handleConnectModule = useActivateModuleCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
 
 	const Icon = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleIcon( 'analytics-4' )
+		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const content = isTabletBreakpoint ? (
-		<p>
+		<P>
 			{ createInterpolateElement(
 				__(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed. <a>Connect Google Analytics</a>',
 					'google-site-kit'
 				),
 				{
-					a: <Link secondary onClick={ handleConnectModule } />,
+					a: <Link onClick={ handleConnectModule } secondary />,
 				}
 			) }
-		</p>
+		</P>
 	) : (
 		<Fragment>
-			<p>
+			<P>
 				{ __(
 					'Google Analytics is disconnected, your audience metrics can’t be displayed',
 					'google-site-kit'
 				) }
-			</p>
-			<Link secondary onClick={ handleConnectModule }>
+			</P>
+			<Link onClick={ handleConnectModule } secondary>
 				{ __( 'Connect Google Analytics', 'google-site-kit' ) }
 			</Link>
 		</Fragment>

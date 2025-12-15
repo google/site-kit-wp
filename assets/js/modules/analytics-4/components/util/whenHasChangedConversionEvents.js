@@ -18,7 +18,7 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Higher-Order Component to render wrapped components when changed conversion events are detected.

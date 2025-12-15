@@ -25,7 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
-describe( 'core/site Consent Mode', () => {
+describe( 'core/site consent mode', () => {
 	let registry;
 
 	const consentModeSettingsEndpointRegExp = new RegExp(

@@ -138,7 +138,8 @@ class SortTest extends TestCase {
 				$unsorted_array,
 				$orderby
 			),
-			$expected_sorted_array
+			$expected_sorted_array,
+			'Sorted array should match expected result for case-insensitive sorting.'
 		);
 	}
 }

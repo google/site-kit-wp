@@ -88,7 +88,8 @@ class SettingsTest extends SettingsTestCase {
 				'lostConversionEventsLastUpdateAt' => 0,
 				'newConversionEventsLastUpdateAt'  => 0,
 			),
-			get_option( Settings::OPTION )
+			get_option( Settings::OPTION ),
+			'Analytics 4 default settings should match expected values.'
 		);
 	}
 
@@ -121,7 +122,7 @@ class SettingsTest extends SettingsTestCase {
 		$options[ $tag ] = $id;
 		$this->settings->set( $options );
 		$options = get_option( $options_key );
-		$this->assertEquals( $expected, $options[ $tag ] );
+		$this->assertEquals( $expected, $options[ $tag ], 'Sanitized Google Tag field should match expected.' );
 	}
 
 	/**
@@ -153,7 +154,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->settings->register();
 		$this->settings->merge( array( $property_name => $property_value ) );
 
-		$this->assertEquals( $this->user_id, $this->settings->get()['ownerID'] );
+		$this->assertEquals( $this->user_id, $this->settings->get()['ownerID'], 'ownerID should be set to current admin when owned keys change.' );
 	}
 
 	public function data_owned_keys() {

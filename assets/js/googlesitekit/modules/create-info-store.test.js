@@ -26,8 +26,8 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createTestRegistry } from '../../../../tests/js/utils';
 import { createInfoStore } from './create-info-store';
-import { CORE_SITE } from '../datastore/site/constants';
-import { CORE_USER } from '../datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const MODULE_SLUG = 'test-slug';
 const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;

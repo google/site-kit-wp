@@ -24,8 +24,8 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import FeaturesContext from '../components/FeaturesProvider/FeaturesContext';
-import { isFeatureEnabled } from '../features';
+import FeaturesContext from '@/js/components/FeaturesProvider/FeaturesContext';
+import { isFeatureEnabled } from '@/js/features';
 
 /**
  * Returns the enabled state of a feature flag.
@@ -35,8 +35,8 @@ import { isFeatureEnabled } from '../features';
  * @param {string} feature The feature flag name to check enabled state for.
  * @return {boolean} `true` if the feature is enabled, `false` otherwise.
  */
-export const useFeature = ( feature ) => {
+export function useFeature( feature ) {
 	const enabledFeatures = useContext( FeaturesContext );
 
 	return isFeatureEnabled( feature, enabledFeatures );
-};
+}

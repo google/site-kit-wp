@@ -26,8 +26,9 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -35,7 +36,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
 	controlCallback: () => {
-		return get( 'modules', 'adsense', 'accounts', undefined, {
+		return get( 'modules', MODULE_SLUG_ADSENSE, 'accounts', undefined, {
 			useCache: false,
 		} );
 	},

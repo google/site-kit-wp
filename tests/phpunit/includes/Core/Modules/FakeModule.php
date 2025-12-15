@@ -20,10 +20,11 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Activation;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Test_Request;
 use WP_Error;
 use Exception;
 
+#[\AllowDynamicProperties]
 class FakeModule extends Module implements Module_With_Activation, Module_With_Deactivation, Module_With_Owner, Module_With_Settings {
 
 	use Module_With_Owner_Trait;
@@ -118,6 +119,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	public function register() {
 		$this->is_registered = true;
+
+		add_action(
+			'googlesitekit_fake_module_data_request',
+			function ( Data_Request $data ) {
+				$this->made_shared_data_request = $this->is_shared_data_request( $data );
+			}
+		);
 	}
 
 	/**
@@ -129,41 +137,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:test-request'  => array(
-				'service'   => '',
-				'shareable' => true,
+			'GET:test-request'  => new FakeModule_Test_Request(
+				array(
+					'service' => '',
+				)
 			),
-			'POST:test-request' => array( 'service' => '' ),
+			'POST:test-request' => new FakeModule_Test_Request( array( 'service' => '' ) ),
 		);
-	}
-
-	/**
-	 * Creates a request object for the given datapoint.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 *
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
-	 */
-	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		$this->made_shared_data_request = $this->is_shared_data_request( $data );
-
-		switch ( "$method:$datapoint" ) {
-			// Intentional fallthrough.
-			case 'GET:test-request':
-			case 'POST:test-request':
-				return function () use ( $method, $datapoint, $data ) {
-					$data = $data->data;
-					return json_encode( compact( 'method', 'datapoint', 'data' ) );
-				};
-		}
-
-		return function () {
-		};
 	}
 
 	/**
@@ -175,30 +155,6 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	public function made_shared_data_request() {
 		return $this->made_shared_data_request;
-	}
-
-	/**
-	 * Parses a response for the given datapoint.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @param mixed $response Request response.
-	 *
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
-	 */
-	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		switch ( "$method:$datapoint" ) {
-			// Intentional fallthrough.
-			case 'GET:test-request':
-			case 'POST:test-request':
-				return json_decode( $response, $data['asArray'] );
-		}
-
-		return '';
 	}
 
 	/**

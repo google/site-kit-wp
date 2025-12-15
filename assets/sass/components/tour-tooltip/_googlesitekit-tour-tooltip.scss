@@ -64,6 +64,8 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
+
+	// The tooltip title overrides the default Typography styles.
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
@@ -181,4 +183,40 @@
 	.googlesitekit-tooltip-actions {
 		padding: 0 16px;
 	}
+}
+
+// Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 170px !important;
+	position: fixed !important;
+	top: 113px !important;
+	transform: none !important;
+}
+
+// Fix the tooltip so it doesn't go off-screen in user menu.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) > div.__floater {
+	left: -70px !important;
+	max-width: 302px !important;
+}
+
+// Fix the arrow alignment after moving the tooltip to keep it off-screen in user menu.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) .__floater__arrow > span {
+	left: 195px !important;
+}
+
+// !important is required to override Joyride's inline styles.
+.folded #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 46px !important;
+	top: 46px !important;
+}
+
+// Fix the arrow alignment to make it consistent to allow fixed positioning
+// to align reliably.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) div.__floater__arrow > span {
+	margin-top: 42px !important;
+	top: 0 !important;
 }

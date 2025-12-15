@@ -22,20 +22,18 @@ class Web_TagTest extends TestCase {
 	const ADS_CONVERSION_ID = 'AW-123456789';
 
 	public function test_register() {
-		remove_all_actions( 'googlesitekit_setup_gtag' );
-		do_action( 'wp_enqueue_scripts' );
-
 		$web_tag = new Web_Tag( self::ADS_CONVERSION_ID, Ads::MODULE_SLUG );
 		$web_tag->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ) );
+		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'googlesitekit_setup_gtag action should be registered.' );
 
 		$head_html = $this->capture_action( 'wp_head' );
-		$this->assertNotEmpty( $head_html );
+		$this->assertNotEmpty( $head_html, 'Head output should not be empty after registering Web_Tag.' );
 
 		$this->assertStringContainsString(
 			'gtag("config", "' . self::ADS_CONVERSION_ID . '")',
-			$head_html
+			$head_html,
+			'Head output should contain gtag config for Ads conversion ID.'
 		);
 	}
 }

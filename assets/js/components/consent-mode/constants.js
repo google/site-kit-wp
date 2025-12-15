@@ -1,5 +1,5 @@
 /**
- * Consent Mode components - constants.
+ * Consent mode components - constants.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

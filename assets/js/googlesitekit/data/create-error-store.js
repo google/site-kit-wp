@@ -34,7 +34,8 @@ const CLEAR_ERRORS = 'CLEAR_ERRORS';
 /**
  * Internal dependencies
  */
-import { stringifyObject } from '../../util';
+import { stringifyObject } from '@/js/util';
+import { createReducer } from 'googlesitekit-data';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {
@@ -94,65 +95,52 @@ export function createErrorStore( storeName ) {
 		errorArgs: {},
 	};
 
-	function reducer( state, { type, payload } ) {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case RECEIVE_ERROR: {
 				const { baseName, args, error } = payload;
 
 				const key = generateErrorKey( baseName, args );
-				return {
-					...state,
-					errors: {
-						...( state.errors || {} ),
-						[ key ]: error,
-					},
-					errorArgs: {
-						...( state.errorArgs || {} ),
-						[ key ]: args,
-					},
-				};
+				state.errors = state.errors || {};
+				state.errorArgs = state.errorArgs || {};
+				state.errors[ key ] = error;
+				state.errorArgs[ key ] = args;
+				break;
 			}
 
 			case CLEAR_ERROR: {
 				const { baseName, args } = payload;
-				const newState = { ...state };
 				const key = generateErrorKey( baseName, args );
-				newState.errors = { ...( state.errors || {} ) };
-				newState.errorArgs = { ...( state.errorArgs || {} ) };
+				state.errors = state.errors || {};
+				state.errorArgs = state.errorArgs || {};
 
-				delete newState.errors[ key ];
-				delete newState.errorArgs[ key ];
-
-				return newState;
+				delete state.errors[ key ];
+				delete state.errorArgs[ key ];
+				break;
 			}
 
 			case CLEAR_ERRORS: {
 				const { baseName } = payload;
-				const newState = { ...state };
 				if ( baseName ) {
-					newState.errors = { ...( state.errors || {} ) };
-					newState.errorArgs = { ...( state.errorArgs || {} ) };
-					for ( const key in newState.errors ) {
+					state.errors = state.errors || {};
+					state.errorArgs = state.errorArgs || {};
+					for ( const key in state.errors ) {
 						if (
 							key === baseName ||
 							key.startsWith( `${ baseName }::` )
 						) {
-							delete newState.errors[ key ];
-							delete newState.errorArgs[ key ];
+							delete state.errors[ key ];
+							delete state.errorArgs[ key ];
 						}
 					}
 				} else {
-					newState.errors = {};
-					newState.errorArgs = {};
+					state.errors = {};
+					state.errorArgs = {};
 				}
-				return newState;
-			}
-
-			default: {
-				return state;
+				break;
 			}
 		}
-	}
+	} );
 
 	const controls = {};
 

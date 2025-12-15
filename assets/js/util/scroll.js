@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL } from '../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import { finiteNumberOrZero } from './finite-number-or-zero';
 
 /**

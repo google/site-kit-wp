@@ -24,8 +24,8 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import useViewContext from '../hooks/useViewContext';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 /**
  * Higher-Order Component to render wrapped components based on view context.

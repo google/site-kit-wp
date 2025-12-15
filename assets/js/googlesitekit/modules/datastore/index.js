@@ -24,7 +24,7 @@ import settingsPanel from './settings-panel';
 import settings from './settings';
 import modules from './modules';
 import sharingSettings from './sharing-settings';
-import { createErrorStore } from '../../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_MODULES } from './constants';
 
 const store = combineStores(
@@ -43,8 +43,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_MODULES, store );
-};
+}
 
 export default store;

@@ -23,6 +23,8 @@ export const AUDIENCE_SELECTION_PANEL_OPENED_KEY =
 export const AUDIENCE_SELECTION_FORM = 'audience-selection-form';
 export const AUDIENCE_SELECTED = 'audience-selected';
 export const AUDIENCE_SELECTION_CHANGED = 'audience-selection-changed';
+export const AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG =
+	'audience-selection-dismissed-items-error';
 export const AUDIENCE_CREATION_NOTICE_SLUG =
 	'audience-segmentation-creation-notice';
 export const AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG =

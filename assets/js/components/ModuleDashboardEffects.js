@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
-} from '../hooks/useDashboardType';
+} from '@/js/hooks/useDashboardType';
 
 const dashboardTypeComponentMap = {
 	[ DASHBOARD_TYPE_MAIN ]: 'DashboardMainEffectComponent',

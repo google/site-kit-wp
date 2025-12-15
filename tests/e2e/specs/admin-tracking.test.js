@@ -32,6 +32,7 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../utils';
+import { DATA_LAYER } from '@/js/util/tracking/constants';
 
 async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );
@@ -351,6 +352,40 @@ describe( 'admin tracking', () => {
 
 				await expect( page ).not.toHaveTracking();
 			} );
+		} );
+	} );
+
+	describe( 'config validation', () => {
+		afterEach( async () => await resetSiteKit() );
+
+		it( 'should include plugin_version in dataLayer when tracking is enabled', async () => {
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
+			await toggleOptIn();
+			await setupSiteKit();
+			await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+			// Wait for the gtag script to be loaded.
+			await page.waitForSelector(
+				'script[src^="https://www.googletagmanager.com/gtag/js?id=G-EQDN3BWDSD"]'
+			);
+
+			await expect( page ).toHaveTracking();
+
+			// Extract the plugin_version from the dataLayer.
+			const pluginVersion = await page.evaluate( ( dataLayerName ) => {
+				const dataLayer = window[ dataLayerName ] || [];
+
+				const configEvent = dataLayer.find(
+					( event ) => event[ 0 ] === 'config'
+				);
+
+				return configEvent ? configEvent[ 2 ]?.plugin_version : null;
+			}, DATA_LAYER );
+
+			// Validate the plugin version.
+			expect( pluginVersion ).toBeTruthy();
+			expect( typeof pluginVersion ).toBe( 'string' );
+			expect( pluginVersion ).toMatch( /^\d+\.\d+\.\d+/ );
 		} );
 	} );
 } );

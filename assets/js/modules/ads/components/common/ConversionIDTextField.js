@@ -26,17 +26,18 @@ import classnames from 'classnames';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useDebounce } from '../../../../hooks/useDebounce';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
-import { MODULES_ADS } from '../../datastore/constants';
-import VisuallyHidden from '../../../../components/VisuallyHidden';
-import { isValidConversionID } from '../../utils/validation';
-import WarningIcon from '../../../../../svg/icons/warning-v2.svg';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { isValidConversionID } from '@/js/modules/ads/utils/validation';
+import WarningIcon from '@/svg/icons/warning-v2.svg';
+import Typography from '@/js/components/Typography';
 
 export default function ConversionIDTextField( {
 	helperText,
@@ -75,9 +76,14 @@ export default function ConversionIDTextField( {
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
 			{ ! hideHeading && (
-				<h4 className="googlesitekit-settings-module__fields-group-title">
+				<Typography
+					as="h4"
+					size="small"
+					type="title"
+					className="googlesitekit-settings-module__fields-group-title"
+				>
 					{ __( 'Conversion ID', 'google-site-kit' ) }
-				</h4>
+				</Typography>
 			) }
 
 			{ helperText && (
@@ -118,10 +124,10 @@ export default function ConversionIDTextField( {
 						</span>
 					)
 				}
-				outlined
 				value={ conversionID?.replace( /^(AW)?-?/, '' ) }
 				onChange={ onChange }
 				maxLength={ 20 }
+				outlined
 			/>
 		</div>
 	);

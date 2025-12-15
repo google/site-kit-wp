@@ -41,7 +41,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  * @param {(Intl.NumberFormatOptions)} [options]         Optional formatting options.
  * @return {string} Human readable string indicating time elapsed.
  */
-const durationFormat = ( durationInSeconds, options = {} ) => {
+function durationFormat( durationInSeconds, options = {} ) {
 	const { formatUnit, formatDecimal } = createDurationFormat(
 		durationInSeconds,
 		options
@@ -55,7 +55,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
 		// Fallback to XXh YYm ZZs using localized decimals with hardcoded units.
 		return formatDecimal();
 	}
-};
+}
 
 /**
  * Converts seconds to a display ready string indicating
@@ -73,7 +73,7 @@ const durationFormat = ( durationInSeconds, options = {} ) => {
  * @param {number} durationInSeconds The number of seconds.
  * @return {string} Human readable string indicating time elapsed.
  */
-const durationISOFormat = ( durationInSeconds ) => {
+function durationISOFormat( durationInSeconds ) {
 	let { hours, minutes, seconds } = parseDuration( durationInSeconds );
 
 	seconds = ( '0' + seconds ).slice( -2 );
@@ -83,7 +83,7 @@ const durationISOFormat = ( durationInSeconds ) => {
 	return hours === '00'
 		? `${ minutes }:${ seconds }`
 		: `${ hours }:${ minutes }:${ seconds }`;
-};
+}
 
 /**
  * Parses the duration in seconds into hours, minutes and seconds.
@@ -95,7 +95,7 @@ const durationISOFormat = ( durationInSeconds ) => {
  * @return {Object} Number of hours, minutes and seconds equivalent
  * to the given duration in seconds.
  */
-const parseDuration = ( durationInSeconds ) => {
+function parseDuration( durationInSeconds ) {
 	durationInSeconds = parseInt( durationInSeconds, 10 );
 
 	if ( Number.isNaN( durationInSeconds ) ) {
@@ -107,7 +107,7 @@ const parseDuration = ( durationInSeconds ) => {
 	const seconds = Math.floor( durationInSeconds % 60 );
 
 	return { hours, minutes, seconds };
-};
+}
 
 /**
  * Creates duration formatting utilities.
@@ -122,7 +122,7 @@ const parseDuration = ( durationInSeconds ) => {
  * @param {Object} [options]         Formatting options.
  * @return {Object} Formatting functions.
  */
-export const createDurationFormat = ( durationInSeconds, options = {} ) => {
+export function createDurationFormat( durationInSeconds, options = {} ) {
 	const { hours, minutes, seconds } = parseDuration( durationInSeconds );
 
 	return {
@@ -211,7 +211,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
 			).trim();
 		},
 	};
-};
+}
 
 /**
  * Prepares a number to be used in readableLargeNumber.
@@ -221,7 +221,7 @@ export const createDurationFormat = ( durationInSeconds, options = {} ) => {
  * @param {number} number The large number to prepare.
  * @return {number} The prepared number.
  */
-export const prepareForReadableLargeNumber = ( number ) => {
+export function prepareForReadableLargeNumber( number ) {
 	if ( 1000000 <= number ) {
 		return Math.round( number / 100000 ) / 10;
 	}
@@ -234,7 +234,7 @@ export const prepareForReadableLargeNumber = ( number ) => {
 		return Math.round( number / 100 ) / 10;
 	}
 	return number;
-};
+}
 
 /**
  * Formats a large number for shortened display.
@@ -244,7 +244,7 @@ export const prepareForReadableLargeNumber = ( number ) => {
  * @param {number} number The large number to format.
  * @return {string} The formatted number.
  */
-export const readableLargeNumber = ( number ) => {
+export function readableLargeNumber( number ) {
 	const withSingleDecimal = {
 		minimumFractionDigits: 1,
 		maximumFractionDigits: 1,
@@ -287,7 +287,7 @@ export const readableLargeNumber = ( number ) => {
 		signDisplay: 'never',
 		maximumFractionDigits: 1,
 	} );
-};
+}
 
 /**
  * Parses formatting options and returns an object with options for selected formatting.
@@ -382,7 +382,7 @@ const warnOnce = memize( console.warn ); // eslint-disable-line no-console
  * @param {string}                   [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
  * @return {string} The formatted number.
  */
-export const numberFormat = ( number, options = {} ) => {
+export function numberFormat( number, options = {} ) {
 	const { locale = getLocale(), ...formatOptions } = options;
 
 	try {
@@ -438,7 +438,7 @@ export const numberFormat = ( number, options = {} ) => {
 	} catch {
 		return new Intl.NumberFormat( locale ).format( number );
 	}
-};
+}
 
 /**
  * Flattens an array of strings into a string using the JS Internationalization List Format API.
@@ -455,7 +455,7 @@ export const numberFormat = ( number, options = {} ) => {
  *                                  Also available 'unit' (5 pounds, 12 ounces)
  * @return {string} The flattened list.
  */
-export const listFormat = ( list, options = {} ) => {
+export function listFormat( list, options = {} ) {
 	const {
 		locale = getLocale(),
 		style = 'long',
@@ -473,7 +473,7 @@ export const listFormat = ( list, options = {} ) => {
 	/* translators: used between list items, there is a space after the comma. */
 	const listSeparator = __( ', ', 'google-site-kit' );
 	return list.join( listSeparator );
-};
+}
 
 /**
  * Gets the current locale for use with browser APIs.
@@ -484,7 +484,7 @@ export const listFormat = ( list, options = {} ) => {
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */
-export const getLocale = ( _global = global ) => {
+export function getLocale( _global = global ) {
 	const siteKitLocale = get( _global, [
 		'_googlesitekitLegacyData',
 		'locale',
@@ -497,4 +497,4 @@ export const getLocale = ( _global = global ) => {
 	}
 
 	return _global.navigator.language;
-};
+}

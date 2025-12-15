@@ -33,11 +33,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useRegistry } from 'googlesitekit-data';
-import PreviewBlock from '../../../../components/PreviewBlock';
-import CTA from '../../../../components/notifications/CTA';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET } from '../../../analytics-4/datastore/constants';
-import { createPaxConfig, createPaxServices, formatPaxDate } from '../../pax';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import CTA from '@/js/components/notifications/CTA';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	createPaxConfig,
+	createPaxServices,
+	formatPaxDate,
+} from '@/js/modules/ads/pax';
 
 export default function PAXEmbeddedApp( {
 	displayMode = 'default',

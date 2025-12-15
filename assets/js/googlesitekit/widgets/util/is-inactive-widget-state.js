@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import Null from '../../../components/Null';
+import Null from '@/js/components/Null';
 
 /**
  * Combines consecutive widgets with similar states within the same row.

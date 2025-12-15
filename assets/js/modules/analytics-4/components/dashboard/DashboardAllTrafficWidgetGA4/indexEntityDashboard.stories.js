@@ -20,23 +20,24 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../../utils/data-mock';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { dateSub, DAY_IN_SECONDS } from '../../../../../util';
-import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import * as __fixtures__ from '../../../datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../../tests/js/utils/zeroReports';
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { dateSub, DAY_IN_SECONDS } from '@/js/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,
@@ -48,7 +49,12 @@ const widgetComponentProps = getWidgetComponentProps(
 );
 
 function Template() {
-	return <DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />;
+	// Min height added to fix rare VRT instability where the mobile VRT for Zero Data was not capturing the full height.
+	return (
+		<div style={ { minHeight: '980px' } }>
+			<DashboardAllTrafficWidgetGA4 { ...widgetComponentProps } />
+		</div>
+	);
 }
 
 const baseAllTrafficOptions = {
@@ -77,6 +83,7 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with country dimension.
@@ -91,6 +98,7 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Pie chart, with deviceCategory dimension.
@@ -105,11 +113,14 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	},
 	{
 		// Totals.
 		...baseAllTrafficOptions,
 		url: 'https://www.elasticpress.io/features/',
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 	},
 	{
 		// Line chart.
@@ -129,6 +140,8 @@ const allTrafficReportOptions = [
 			},
 		],
 		url: 'https://www.elasticpress.io/features/',
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 	},
 	{
 		// Gathering data check.
@@ -157,7 +170,10 @@ EntityDashboardLoaded.args = {
 		} );
 	},
 };
-EntityDashboardLoaded.scenario = {};
+EntityDashboardLoaded.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardLoading = Template.bind( {} );
 EntityDashboardLoading.storyName = 'Loading';
@@ -212,7 +228,10 @@ EntityDashboardDataUnavailable.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardDataUnavailable.scenario = {};
+EntityDashboardDataUnavailable.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardZeroData = Template.bind( {} );
 EntityDashboardZeroData.storyName = 'Zero Data';
@@ -253,7 +272,10 @@ EntityDashboardZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
 	},
 };
-EntityDashboardZeroData.scenario = {};
+EntityDashboardZeroData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export const EntityDashboardError = Template.bind( {} );
 EntityDashboardError.storyName = 'Error';
@@ -297,42 +319,63 @@ EntityDashboardOneRowOfData.args = {
 		} );
 	},
 };
-EntityDashboardOneRowOfData.scenario = {};
+EntityDashboardOneRowOfData.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		allTrafficReportOptions.forEach( ( options ) => {
+			provideAnalyticsReportWithoutDateRangeData( registry, options, {
+				emptyRowBehavior: 'remove',
+			} );
+		} );
+	},
+};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
+};
 
 export default {
 	title: 'Modules/Analytics4/Widgets/All Traffic Widget GA4/Entity Dashboard',
 	component: DashboardAllTrafficWidgetGA4,
 	decorators: [
 		( Story, { args } ) => {
-			const registry = createTestRegistry();
-			// Activate the module.
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-				},
-			] );
+			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideModuleRegistrations( registry );
+				provideModuleRegistrations( registry );
 
-			// Set some site information.
-			provideSiteInfo( registry );
-			provideUserAuthentication( registry );
+				// Set some site information.
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 
-			provideSiteInfo( registry, {
-				currentEntityURL: 'https://www.elasticpress.io/features/',
-			} );
+				provideSiteInfo( registry, {
+					currentEntityURL: 'https://www.elasticpress.io/features/',
+				} );
 
-			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
-			// Call story-specific setup.
-			args.setupRegistry( registry );
+				if ( args?.setupRegistry ) {
+					// Call story-specific setup.
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

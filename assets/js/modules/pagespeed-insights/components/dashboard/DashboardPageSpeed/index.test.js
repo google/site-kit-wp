@@ -35,9 +35,9 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
-} from '../../../datastore/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import * as fixtures from '../../../datastore/__fixtures__';
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -84,7 +84,7 @@ describe( 'DashboardPageSpeed', () => {
 
 	afterEach( fetchMock.mockClear );
 
-	const setupRegistryNoFieldDataDesktop = () => {
+	function setupRegistryNoFieldDataDesktop() {
 		registry = createTestRegistry();
 
 		const { dispatch } = registry;
@@ -115,7 +115,7 @@ describe( 'DashboardPageSpeed', () => {
 			referenceSiteURL: url,
 			currentEntityURL: null,
 		} );
-	};
+	}
 
 	it( 'renders preview blocks while reports are requested', async () => {
 		registry = createTestRegistry();
@@ -367,9 +367,6 @@ describe( 'DashboardPageSpeed', () => {
 		const inTheFieldTab = getByRole( 'tab', {
 			name: /In the Field/i,
 		} );
-		const howToImproveTab = getByRole( 'tab', {
-			name: /How to improve/i,
-		} );
 
 		await act( async () => {
 			fireEvent.click( runTestAgainBtn );
@@ -379,8 +376,6 @@ describe( 'DashboardPageSpeed', () => {
 				expect( inTheLabTab ).toBeDisabled();
 				// Verifies the `In the Field` tab is disabled.
 				expect( inTheFieldTab ).toBeDisabled();
-				// Verifies the `How to improve` tab is disabled.
-				expect( howToImproveTab ).toBeDisabled();
 			} );
 		} );
 	} );
@@ -424,5 +419,62 @@ describe( 'DashboardPageSpeed', () => {
 				expect( desktopTab ).toBeDisabled();
 			} );
 		} );
+	} );
+
+	it( 'does not render the `How to improve` tab when there are no recommendations', () => {
+		const { queryByRole } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		const inTheLabTab = queryByRole( 'tab', {
+			name: /In the Lab/i,
+		} );
+		const inTheFieldTab = queryByRole( 'tab', {
+			name: /In the Field/i,
+		} );
+
+		expect( inTheLabTab ).toBeInTheDocument();
+		expect( inTheFieldTab ).toBeInTheDocument();
+		expect(
+			queryByRole( 'tab', { name: /How to improve/i } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the `How to improve` tab when recommendations exist', () => {
+		registry = createTestRegistry();
+		const { dispatch } = registry;
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobile,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktop,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
+
+		const { getByRole } = render( <DashboardPageSpeed />, { registry } );
+
+		expect(
+			getByRole( 'tab', { name: /How to improve/i } )
+		).toBeInTheDocument();
 	} );
 } );

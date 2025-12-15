@@ -25,11 +25,15 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { getPreviousDate, stringToDate } from '../../../util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPreviousDate, stringToDate } from '@/js/util';
 import { properties } from './__fixtures__';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
-import { RESOURCE_TYPE_AUDIENCE } from './partial-data';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+	RESOURCE_TYPE_AUDIENCE,
+} from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const testAudience1 = {
 	name: 'properties/12345/audiences/12345',
@@ -75,7 +79,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -91,112 +95,13 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 	} );
 
-	describe( 'actions', () => {
-		describe( 'receiveResourceDataAvailabilityDates', () => {
-			it( 'requires resourceAvailabilityDates to be a plain object', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveResourceDataAvailabilityDates( 'test' );
-				} ).toThrow(
-					'resourceAvailabilityDates must be a plain object.'
-				);
-			} );
-
-			it( 'receives a plain object and sets it as the resourceDataAvailabilityDates', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates(
-						resourceAvailabilityDates
-					);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getResourceDataAvailabilityDates()
-				).toEqual( resourceAvailabilityDates );
-			} );
-
-			it( 'converts empty array to empty object', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
-						audience: [],
-						customDimension: [],
-						property: {
-							[ testPropertyID ]: 20201218,
-						},
-					} );
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getResourceDataAvailabilityDates()
-				).toEqual( {
-					audience: {},
-					customDimension: {},
-					property: {
-						[ testPropertyID ]: 20201218,
-					},
-				} );
-			} );
-		} );
-
-		describe( 'setResourceDataAvailabilityDate', () => {
-			it( 'requires resourceSlug to be a non-empty string', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate( '' );
-				} ).toThrow( 'resourceSlug must be a non-empty string.' );
-			} );
-
-			it( 'requires resourceType to be a valid resource type', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate( 'test', 'invalid' );
-				} ).toThrow( 'resourceType must be a valid resource type.' );
-			} );
-
-			it( 'requires date to be an integer', () => {
-				expect( () => {
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setResourceDataAvailabilityDate(
-							'test',
-							RESOURCE_TYPE_AUDIENCE,
-							'2020-20-20'
-						);
-				} ).toThrow( 'date must be an integer.' );
-			} );
-
-			it( 'sets the date for the resource', () => {
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setResourceDataAvailabilityDate(
-						testAudience1ResourceName,
-						RESOURCE_TYPE_AUDIENCE,
-						20201220
-					);
-
-				expect(
-					registry
-						.select( MODULES_ANALYTICS_4 )
-						.getResourceDataAvailabilityDate(
-							testAudience1ResourceName,
-							RESOURCE_TYPE_AUDIENCE
-						)
-				).toEqual( 20201220 );
-			} );
-		} );
-	} );
-
 	describe( 'selectors', () => {
 		describe( 'getResourceDataAvailabilityDates', () => {
 			it( 'uses a resolver to read data from _googlesitekitModulesData', async () => {
+				const originalModulesData = global._googlesitekitModulesData;
+
 				global._googlesitekitModulesData = {
-					'analytics-4': {
+					[ MODULE_SLUG_ANALYTICS_4 ]: {
 						resourceAvailabilityDates,
 					},
 				};
@@ -210,25 +115,23 @@ describe( 'modules/analytics-4 partial data', () => {
 				await untilResolved(
 					registry,
 					MODULES_ANALYTICS_4
-				).getResourceDataAvailabilityDates();
+				).getModuleData();
 
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getResourceDataAvailabilityDates()
 				).toEqual( resourceAvailabilityDates );
-			} );
 
-			global._googlesitekitModulesData = undefined;
+				global._googlesitekitModulesData = originalModulesData;
+			} );
 		} );
 
 		describe( 'getResourceDataAvailabilityDate', () => {
 			it( 'returns the date for the resource', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates(
-						resourceAvailabilityDates
-					);
+					.receiveModuleData( { resourceAvailabilityDates } );
 
 				expect(
 					registry
@@ -277,11 +180,9 @@ describe( 'modules/analytics-4 partial data', () => {
 						accountID,
 					} );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates(
-						resourceAvailabilityDates
-					);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates,
+				} );
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
@@ -361,9 +262,7 @@ describe( 'modules/analytics-4 partial data', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates(
-						resourceAvailabilityDates
-					);
+					.receiveModuleData( { resourceAvailabilityDates } );
 
 				registry
 					.select( MODULES_ANALYTICS_4 )
@@ -456,15 +355,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {
 							[ testAudience1ResourceName ]: 0,
 						},
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -492,16 +391,16 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, 1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {
 							[ testAudience1ResourceName ]: audience1Date,
 							[ testAudience2ResourceName ]: audience2Date,
 						},
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -537,15 +436,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -572,15 +471,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -605,7 +504,7 @@ describe( 'modules/analytics-4 partial data', () => {
 		} );
 
 		describe( 'isAudiencePartialData', () => {
-			it( 'returns whether the given auduence is in partial data', () => {
+			it( 'returns whether the given audience is in partial data', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
@@ -620,15 +519,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {
 							[ testAudience1ResourceName ]: dataAvailabilityDate,
 						},
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -662,15 +561,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {},
 						customDimension: {
 							[ testCustomDimension ]: dataAvailabilityDate,
 						},
 						property: {},
-					} );
+					},
+				} );
 
 				expect(
 					registry
@@ -704,15 +603,15 @@ describe( 'modules/analytics-4 partial data', () => {
 					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 				);
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: {},
 						customDimension: {},
 						property: {
 							[ testPropertyID ]: dataAvailabilityDate,
 						},
-					} );
+					},
+				} );
 
 				expect(
 					registry

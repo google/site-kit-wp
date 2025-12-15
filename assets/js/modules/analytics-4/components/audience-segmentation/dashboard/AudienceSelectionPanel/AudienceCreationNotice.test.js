@@ -29,21 +29,23 @@ import {
 	fireEvent,
 	muteFetch,
 	act,
+	waitFor,
 } from '../../../../../../../../tests/js/test-utils';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
-import * as tracking from '../../../../../../util/tracking';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import * as tracking from '@/js/util/tracking';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../googlesitekit/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -72,7 +74,7 @@ describe( 'AudienceCreationNotice', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -91,6 +93,10 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render null if no audiences are available', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		const { container } = render( <AudienceCreationNotice />, {
 			registry,
 		} );
@@ -100,12 +106,15 @@ describe( 'AudienceCreationNotice', () => {
 
 	it( 'should render null if the user has dismissed the notice', async () => {
 		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
+		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ AUDIENCE_CREATION_NOTICE_SLUG ] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -113,7 +122,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -135,9 +145,8 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render the notice if the user has not dismissed the notice and there are 2 available audiences', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -145,7 +154,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -184,9 +194,8 @@ describe( 'AudienceCreationNotice', () => {
 	} );
 
 	it( 'should render the notice if the user has not dismissed the notice and there is 1 available audience', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -194,7 +203,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -255,9 +265,8 @@ describe( 'AudienceCreationNotice', () => {
 				didSetAudiences: true,
 			} );
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveResourceDataAvailabilityDates( {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
 					audience: availableAudiences.reduce( ( acc, { name } ) => {
 						acc[ name ] = 20201220;
 
@@ -265,7 +274,8 @@ describe( 'AudienceCreationNotice', () => {
 					}, {} ),
 					customDimension: {},
 					property: {},
-				} );
+				},
+			} );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 				accountID: '12345',
@@ -310,9 +320,8 @@ describe( 'AudienceCreationNotice', () => {
 			grantedScopes: [],
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -320,7 +329,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -363,9 +373,8 @@ describe( 'AudienceCreationNotice', () => {
 			grantedScopes: [],
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -373,7 +382,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -416,9 +426,8 @@ describe( 'AudienceCreationNotice', () => {
 				AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 			] );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 
@@ -426,7 +435,8 @@ describe( 'AudienceCreationNotice', () => {
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: '12345',
@@ -454,5 +464,54 @@ describe( 'AudienceCreationNotice', () => {
 		);
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should dismiss the audience creation notice when clicking the `No thanks` button', async () => {
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ AUDIENCE_CREATION_NOTICE_SLUG ] ),
+			status: 200,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
+				audience: availableAudiences.reduce( ( acc, { name } ) => {
+					acc[ name ] = 20201220;
+
+					return acc;
+				}, {} ),
+				customDimension: {},
+				property: {},
+			},
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			accountID: '12345',
+			propertyID: '34567',
+			measurementID: '56789',
+			webDataStreamID: '78901',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: availableAudiences.filter(
+				( { audienceType } ) => audienceType !== 'SITE_KIT_AUDIENCE'
+			),
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<AudienceCreationNotice />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		await waitForRegistry();
+
+		const button = getByRole( 'button', { name: /No thanks/i } );
+
+		fireEvent.click( button );
+
+		await waitFor( () =>
+			expect( registry.select( CORE_USER ).getDismissedItems() ).toEqual(
+				[ AUDIENCE_CREATION_NOTICE_SLUG ]
+			)
+		);
 	} );
 } );

@@ -24,9 +24,9 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Header from '../../../../../components/Header';
-import HelpMenu from '../../../../../components/help/HelpMenu';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import { Cell, Grid, Row } from '@/js/material-components';
 import SetupMain from './SetupMain';
 
 export default function AdBlockingRecoveryApp() {

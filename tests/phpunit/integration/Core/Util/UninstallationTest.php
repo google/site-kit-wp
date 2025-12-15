@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Uninstallation;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use WP_Error;
 
 /**
@@ -41,7 +43,15 @@ class UninstallationTest extends TestCase {
 	public function test_register() {
 		remove_all_actions( 'googlesitekit_uninstallation' );
 		$this->uninstallation->register();
-		$this->assertTrue( has_action( 'googlesitekit_uninstallation' ) );
+		$this->assertTrue( has_action( 'googlesitekit_uninstallation' ), 'Uninstallation action should be registered.' );
+	}
+
+	public function test_scheduled_events_include_email_reporting_hooks() {
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_INITIATOR, Uninstallation::SCHEDULED_EVENTS, 'Initiator hook should be cleared on uninstall/reset/deactivation.' );
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_WORKER, Uninstallation::SCHEDULED_EVENTS, 'Worker hook should be cleared on uninstall/reset/deactivation.' );
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_FALLBACK, Uninstallation::SCHEDULED_EVENTS, 'Fallback hook should be cleared on uninstall/reset/deactivation.' );
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_MONITOR, Uninstallation::SCHEDULED_EVENTS, 'Monitor hook should be cleared on uninstall/reset/deactivation.' );
+		$this->assertContains( Email_Reporting_Scheduler::ACTION_CLEANUP, Uninstallation::SCHEDULED_EVENTS, 'Cleanup hook should be cleared on uninstall/reset/deactivation.' );
 	}
 
 	public function test_uninstall_using_proxy() {
@@ -53,7 +63,7 @@ class UninstallationTest extends TestCase {
 		do_action( 'googlesitekit_uninstallation' );
 
 		// Assert HTTP request to proxy was made.
-		$this->assertTrue( $this->issued_delete_site_request );
+		$this->assertTrue( $this->issued_delete_site_request, 'Delete site request should be issued when using proxy.' );
 	}
 
 	public function test_uninstall_not_using_proxy() {
@@ -65,7 +75,7 @@ class UninstallationTest extends TestCase {
 		do_action( 'googlesitekit_uninstallation' );
 
 		// Assert no HTTP request was made.
-		$this->assertFalse( $this->issued_delete_site_request );
+		$this->assertFalse( $this->issued_delete_site_request, 'Delete site request should not be issued when not using proxy.' );
 	}
 
 	public function test_clear_scheduled_events__uninstall() {
@@ -73,7 +83,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before uninstallation.' );
 		}
 
 		remove_all_actions( 'googlesitekit_uninstallation' );
@@ -84,8 +94,24 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after uninstallation.' );
 		}
+	}
+
+	public function test_clear_scheduled_events__email_reporting_events_with_args() {
+		$worker_timestamp = time();
+
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) );
+		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+
+		remove_all_actions( 'googlesitekit_uninstallation' );
+		$this->uninstallation->register();
+		do_action( 'googlesitekit_uninstallation' );
+
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator event with args should be cleared.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker event with args should be cleared.' );
+		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Fallback event with args should be cleared.' );
 	}
 
 	public function test_clear_scheduled_events__reset() {
@@ -93,7 +119,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before reset.' );
 		}
 
 		remove_all_actions( 'googlesitekit_reset' );
@@ -104,7 +130,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after reset.' );
 		}
 	}
 
@@ -113,7 +139,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were set.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertNotEmpty( wp_next_scheduled( $event ) );
+			$this->assertNotEmpty( wp_next_scheduled( $event ), 'Scheduled event should be set before deactivation.' );
 		}
 
 		remove_all_actions( 'googlesitekit_deactivation' );
@@ -124,7 +150,7 @@ class UninstallationTest extends TestCase {
 
 		// Assert scheduled events were cleared.
 		foreach ( Uninstallation::SCHEDULED_EVENTS as $event ) {
-			$this->assertEmpty( wp_next_scheduled( $event ) );
+			$this->assertEmpty( wp_next_scheduled( $event ), 'Scheduled event should be cleared after deactivation.' );
 		}
 	}
 

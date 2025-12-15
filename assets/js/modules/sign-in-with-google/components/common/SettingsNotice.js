@@ -23,10 +23,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import RegistrationDisabledNotice from './RegistrationDisabledNotice';
 import AnyoneCanRegisterDisabledNotice from './AnyoneCanRegisterDisabledNotice';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 export default function SettingsNotice() {
 	const anyoneCanRegister = useSelect( ( select ) =>
@@ -34,9 +34,6 @@ export default function SettingsNotice() {
 	);
 	const oneTapEnabled = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapEnabled()
-	);
-	const oneTapOnAllPages = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getOneTapOnAllPages()
 	);
 	const isWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_SIGN_IN_WITH_GOOGLE ).getIsWooCommerceActive()
@@ -49,17 +46,17 @@ export default function SettingsNotice() {
 
 	let shouldShowRegistrationDisabledNotice =
 		oneTapEnabled &&
-		oneTapOnAllPages &&
 		anyoneCanRegister === false &&
 		isWooCommerceActive === false;
 
 	if ( isWooCommerceActive ) {
-		// If WooCommerce is active we will take isWooCommerceRegistrationEnabled option into the account
-		// to determine if notice should be shown. It is cleaner to redefine variable here than stuff all conditionals
+		// If WooCommerce is active, we take the `isWooCommerceRegistrationEnabled`
+		// option into the account to determine if this notice should be shown.
+		//
+		// It is cleaner to redefine the variable here than place all conditionals
 		// in a single check.
 		shouldShowRegistrationDisabledNotice =
 			oneTapEnabled &&
-			oneTapOnAllPages &&
 			anyoneCanRegister === false &&
 			isWooCommerceRegistrationEnabled === false;
 	}

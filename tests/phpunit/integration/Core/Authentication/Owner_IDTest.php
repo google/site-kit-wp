@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -45,47 +45,47 @@ class Owner_IDTest extends SettingsTestCase {
 	}
 
 	public function test_get() {
-		$this->assertEquals( 0, $this->owner_id->get() );
-		$this->assertIsInt( $this->owner_id->get() );
+		$this->assertEquals( 0, $this->owner_id->get(), 'Owner ID should be 0 by default.' );
+		$this->assertIsInt( $this->owner_id->get(), 'Owner ID should be an integer.' );
 
 		$this->options->set( Owner_ID::OPTION, 1 );
-		$this->assertIsInt( $this->owner_id->get() );
-		$this->assertEquals( 1, $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get(), 'Owner ID should be an integer when set to 1.' );
+		$this->assertEquals( 1, $this->owner_id->get(), 'Owner ID should return the set value of 1.' );
 
 		$this->options->set( Owner_ID::OPTION, 'xxx' );
-		$this->assertIsInt( $this->owner_id->get() );
-		$this->assertEquals( 0, $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get(), 'Owner ID should be an integer even when set to invalid value.' );
+		$this->assertEquals( 0, $this->owner_id->get(), 'Owner ID should return 0 for invalid values.' );
 
 		// When setting with a string, WP sanitizes it before caching.
 		// However, the value will be stored in the DB as a string and so loading
 		// from the DB with a cold cache will result in a string return value.
 		$this->options->set( Owner_ID::OPTION, '3' );
 		wp_cache_flush(); // The option value is cached on set, so we have to flush after.
-		$this->assertIsInt( $this->owner_id->get() );
-		$this->assertEquals( 3, $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get(), 'Owner ID should be an integer when set to string "3".' );
+		$this->assertEquals( 3, $this->owner_id->get(), 'Owner ID should return 3 when set to string "3".' );
 	}
 
 	public function test_set() {
-		$this->assertTrue( $this->owner_id->set( 1 ) );
-		$this->assertSame( 1, $this->options->get( Owner_ID::OPTION ) );
+		$this->assertTrue( $this->owner_id->set( 1 ), 'Setting owner ID to 1 should return true.' );
+		$this->assertSame( 1, $this->options->get( Owner_ID::OPTION ), 'Options should contain the set owner ID value.' );
 
 		// Setting with a string value is sanitized as an integer.
-		$this->assertTrue( $this->owner_id->set( '2' ) );
-		$this->assertSame( 2, $this->options->get( Owner_ID::OPTION ) );
+		$this->assertTrue( $this->owner_id->set( '2' ), 'Setting owner ID to string "2" should return true.' );
+		$this->assertSame( 2, $this->options->get( Owner_ID::OPTION ), 'Options should contain the sanitized integer value.' );
 
 		// An invalid value will result in a 0 as a result of sanitization.
-		$this->assertTrue( $this->owner_id->set( 'xxx' ) );
-		$this->assertSame( 0, $this->options->get( Owner_ID::OPTION ) );
+		$this->assertTrue( $this->owner_id->set( 'xxx' ), 'Setting owner ID to invalid value should return true.' );
+		$this->assertSame( 0, $this->options->get( Owner_ID::OPTION ), 'Options should contain 0 for invalid values.' );
 	}
 
 	public function test_has() {
-		$this->assertFalse( $this->owner_id->has() );
+		$this->assertFalse( $this->owner_id->has(), 'Owner ID should not exist initially.' );
 
 		$this->owner_id->set( 1 );
-		$this->assertTrue( $this->owner_id->has() );
+		$this->assertTrue( $this->owner_id->has(), 'Owner ID should exist after being set to 1.' );
 
 		$this->owner_id->set( 'xxx' );
-		$this->assertTrue( $this->owner_id->has() );
+		$this->assertTrue( $this->owner_id->has(), 'Owner ID should exist even when set to invalid value.' );
 	}
 
 	/**

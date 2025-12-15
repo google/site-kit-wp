@@ -26,6 +26,7 @@ export const selectors = {
 	 * Gets a URL to the service.
 	 *
 	 * @since 1.14.0
+	 * @since 1.168.0 Adds `utm_source` to the returned URL.
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {Object} [args]       Object containing optional path and query args.
@@ -34,12 +35,17 @@ export const selectors = {
 	 * @return {string} The URL to the service.
 	 */
 	getServiceURL: ( state, { path, query } = {} ) => {
-		const baseURI = 'https://pagespeed.web.dev';
+		let serviceURL = 'https://pagespeed.web.dev';
+
 		if ( path ) {
 			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );
+			serviceURL = `${ serviceURL }${ sanitizedPath }`;
 		}
-		return addQueryArgs( baseURI, query );
+
+		return addQueryArgs( serviceURL, {
+			...query,
+			utm_source: 'sitekit',
+		} );
 	},
 };
 

@@ -26,18 +26,18 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 		$default = get_option( Settings::OPTION );
 
-		$this->assertIsArray( $default );
-		$this->assertArrayHasKey( 'clientID', $default );
-		$this->assertArrayHasKey( 'text', $default );
-		$this->assertArrayHasKey( 'theme', $default );
-		$this->assertArrayHasKey( 'shape', $default );
-		$this->assertArrayHasKey( 'oneTapEnabled', $default );
+		$this->assertIsArray( $default, 'Default settings should be an array.' );
+		$this->assertArrayHasKey( 'clientID', $default, 'Default settings should include clientID.' );
+		$this->assertArrayHasKey( 'text', $default, 'Default settings should include text.' );
+		$this->assertArrayHasKey( 'theme', $default, 'Default settings should include theme.' );
+		$this->assertArrayHasKey( 'shape', $default, 'Default settings should include shape.' );
+		$this->assertArrayHasKey( 'oneTapEnabled', $default, 'Default settings should include oneTapEnabled.' );
 
-		$this->assertSame( '', $default['clientID'] );
-		$this->assertSame( Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'], $default['text'] );
-		$this->assertSame( Settings::THEME_LIGHT['value'], $default['theme'] );
-		$this->assertSame( Settings::SHAPE_RECTANGULAR['value'], $default['shape'] );
-		$this->assertSame( false, $default['oneTapEnabled'] );
+		$this->assertSame( '', $default['clientID'], 'Default clientID should be empty.' );
+		$this->assertSame( Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'], $default['text'], 'Default text should be Sign in with Google.' );
+		$this->assertSame( Settings::THEME_LIGHT['value'], $default['theme'], 'Default theme should be Light.' );
+		$this->assertSame( Settings::SHAPE_RECTANGULAR['value'], $default['shape'], 'Default shape should be Rectangular.' );
+		$this->assertSame( false, $default['oneTapEnabled'], 'Default oneTapEnabled should be false.' );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class SettingsTest extends SettingsTestCase {
 	 */
 	public function test_get_label( $setting_name, $value, $label ) {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$this->assertEquals( $label, $settings->get_label( $setting_name, $value ) );
+		$this->assertEquals( $label, $settings->get_label( $setting_name, $value ), 'Label for setting should match expected.' );
 	}
 
 	public function data_value_label_map() {

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import CTA from '../notifications/CTA';
-import InfoTooltip from '../InfoTooltip';
+import CTA from '@/js/components/notifications/CTA';
+import InfoTooltip from '@/js/components/InfoTooltip';
 
 export default function MetricTileError( props ) {
 	const { children, headerText, infoTooltip, title } = props;

@@ -201,15 +201,15 @@ class Entity_FactoryTest extends TestCase {
 
 		// Set admin context.
 		set_current_screen( 'dashboard' );
-		$this->assertTrue( is_admin() );
+		$this->assertTrue( is_admin(), 'Should be in admin context.' );
 
 		// Set up a global public post.
 		$public_post_id = $this->factory()->post->create();
 		( new WP_Query( array( 'p' => $public_post_id ) ) )->the_post();
-		$this->assertEquals( $public_post_id, get_post()->ID );
+		$this->assertEquals( $public_post_id, get_post()->ID, 'Global post should match created post ID.' );
 
 		// The entity is null by default.
-		$this->assertNull( Entity_Factory::from_context() );
+		$this->assertNull( Entity_Factory::from_context(), 'Entity should be null by default in admin context.' );
 
 		// The post edit screen should reference the global post.
 		set_current_screen( 'post.php' );
@@ -228,28 +228,28 @@ class Entity_FactoryTest extends TestCase {
 		// Set up a global private post.
 		$private_post_id = $this->factory()->post->create( array( 'post_status' => 'private' ) );
 		( new WP_Query( array( 'p' => $private_post_id ) ) )->the_post();
-		$this->assertEquals( $private_post_id, get_post()->ID );
+		$this->assertEquals( $private_post_id, get_post()->ID, 'Global post should match created private post ID.' );
 
 		// The entity is null despite editing a post, because that post is private.
-		$this->assertNull( Entity_Factory::from_context() );
+		$this->assertNull( Entity_Factory::from_context(), 'Entity should be null for private posts.' );
 	}
 
 	public function test_from_context_frontend() {
 		global $wp_the_query;
 
-		$this->assertFalse( is_admin() );
+		$this->assertFalse( is_admin(), 'Should not be in admin context.' );
 
 		// The entity is null by default (no main `WP_Query` available).
 		$wp_the_query = null;
-		$this->assertNull( Entity_Factory::from_context() );
+		$this->assertNull( Entity_Factory::from_context(), 'Entity should be null when no main query is available.' );
 
 		// Set up main `WP_Query` to query default 'posts' home page archive.
 		update_option( 'show_on_front', 'posts' );
 		$wp_the_query = new WP_Query();
 		$wp_the_query->query( array() );
-		$this->assertFalse( $wp_the_query->is_singular() );
-		$this->assertTrue( $wp_the_query->is_home() );
-		$this->assertTrue( $wp_the_query->is_front_page() );
+		$this->assertFalse( $wp_the_query->is_singular(), 'Query should not be singular for posts home.' );
+		$this->assertTrue( $wp_the_query->is_home(), 'Query should be home for posts home.' );
+		$this->assertTrue( $wp_the_query->is_front_page(), 'Query should be front page for posts home.' );
 
 		// Ensure that query instance is used (thus returns the home 'blog' entity).
 		$this->assertEntity(
@@ -266,7 +266,7 @@ class Entity_FactoryTest extends TestCase {
 
 	public function test_from_url() {
 		// URL is not part of the site.
-		$this->assertNull( Entity_Factory::from_url( 'https://www.google.com' ) );
+		$this->assertNull( Entity_Factory::from_url( 'https://www.google.com' ), 'External URL should return null entity.' );
 
 		// Set 'show_on_front' to 'posts' home page archive.
 		update_option( 'show_on_front', 'posts' );
@@ -288,7 +288,7 @@ class Entity_FactoryTest extends TestCase {
 
 		// High-level assertion to ensure 404s are considered as expected.
 		// In this example, it is a valid taxonomy term archive, but the pagination is out of bounds.
-		$this->assertNull( Entity_Factory::from_url( trailingslashit( get_term_link( self::$term_names_to_ids['Food'] ) ) . 'page/2/' ) );
+		$this->assertNull( Entity_Factory::from_url( trailingslashit( get_term_link( self::$term_names_to_ids['Food'] ) ) . 'page/2/' ), '404 URLs should return null entity.' );
 	}
 
 	/**
@@ -327,7 +327,7 @@ class Entity_FactoryTest extends TestCase {
 		if ( $expected_entity ) {
 			$this->assertEntity( $expected_entity, $entity );
 		} else {
-			$this->assertNull( $entity );
+			$this->assertNull( $entity, 'Entity should be null for invalid queries.' );
 		}
 	}
 
@@ -844,12 +844,12 @@ class Entity_FactoryTest extends TestCase {
 	 */
 	public function test_create_entity_for_post( Closure $post_factory, $expected_url, $expected_title, $pagenum = 1 ) {
 		$post = $post_factory();
-		$this->assertInstanceOf( WP_Post::class, $post );
+		$this->assertInstanceOf( WP_Post::class, $post, 'Post should be an instance of WP_Post.' );
 
 		$entity = Entity_Factory::create_entity_for_post( $post, $pagenum );
 
-		$this->assertEquals( $expected_url, $entity->get_url() );
-		$this->assertEquals( $expected_title, $entity->get_title() );
+		$this->assertEquals( $expected_url, $entity->get_url(), 'Entity URL should match expected URL.' );
+		$this->assertEquals( $expected_title, $entity->get_title(), 'Entity title should match expected title.' );
 	}
 
 	public function data_posts() {
@@ -912,7 +912,7 @@ class Entity_FactoryTest extends TestCase {
 	}
 
 	protected function assertEntity( Entity $expected, $actual ) {
-		$this->assertInstanceOf( Entity::class, $actual );
+		$this->assertInstanceOf( Entity::class, $actual, 'Entity should be an instance of Entity class.' );
 		$this->assertSame( $expected->get_url(), $actual->get_url(), "Failed asserting that entity URL {$actual->get_url()} is {$expected->get_url()}." );
 		$this->assertSame( $expected->get_type(), $actual->get_type(), "Failed asserting that entity type {$actual->get_type()} is {$expected->get_type()}." );
 		$this->assertSame( $expected->get_title(), $actual->get_title(), "Failed asserting that entity title {$actual->get_title()} is {$expected->get_title()}." );

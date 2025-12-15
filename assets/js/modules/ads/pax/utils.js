@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { stringToDate } from '../../../util';
+import { stringToDate } from '@/js/util';
 
 /**
  * Returns formatted date object.

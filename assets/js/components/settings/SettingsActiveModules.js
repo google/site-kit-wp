@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import Layout from '../layout/Layout';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import Layout from '@/js/components/layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
 
 export default function SettingsActiveModules() {

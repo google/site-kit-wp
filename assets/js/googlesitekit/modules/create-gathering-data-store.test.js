@@ -26,7 +26,7 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
 import { createGatheringDataStore } from './create-gathering-data-store';
-import { createErrorStore } from '../data/create-error-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 const MODULE_SLUG = 'test-slug';
 const STORE_NAME = `modules/${ MODULE_SLUG }`;

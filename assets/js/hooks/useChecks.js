@@ -42,7 +42,7 @@ export function useChecks( checks ) {
 	const [ error, setError ] = useState( undefined );
 
 	useMount( () => {
-		const runChecks = async () => {
+		async function runChecks() {
 			try {
 				for ( const check of stableChecks ) {
 					await check();
@@ -51,7 +51,7 @@ export function useChecks( checks ) {
 				setError( err );
 			}
 			setComplete( true );
-		};
+		}
 
 		if ( ! complete ) {
 			runChecks();

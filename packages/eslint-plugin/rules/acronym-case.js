@@ -36,20 +36,26 @@ const { isImported, isFunction } = require( '../utils' );
 function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
 	// The acronym was found in the variable with the correct capitalization
 	if ( acronymMatch === acronym ) {
-		// Catch instances of URL() and JSON() that weren't identified as globals above
+		// Catch instances of URL() and JSON() that weren't identified as globals above.
 		if ( acronym.length === name.length ) {
 			return true;
 		}
-		// If the acronym is not at the start that's fine, e.g. fooBarID
+		// If the acronym is not at the start that's fine, e.g. fooBarID.
 		if ( ! name.startsWith( acronym ) ) {
 			return true;
 		}
-		// or if the acronym IS at the start but it is a function, see #2195
+		// Or if the acronym IS at the start but it is a function, see #2195.
 		if ( isFunction( node ) ) {
 			return true;
 		}
-		// Constants in all-caps are fine
+		// Constants in all-caps are fine.
 		if ( name === name.toUpperCase() ) {
+			return true;
+		}
+		// Allow identifiers used in member expressions. This allows properties to be set on objects with acronyms in their names,
+		// the intention being to allow setting propTypes on components, e.g., CTAButton.propTypes.
+		// The rule will still catch an invalid acronym when defining the component itself.
+		if ( node.parent?.type === 'MemberExpression' ) {
 			return true;
 		}
 	}
@@ -114,6 +120,19 @@ module.exports = {
 			'ID',
 			'JSON',
 			'URL',
+			'SDK',
+			'EMM',
+			'REST',
+			'GKE',
+			'URI',
+			'UX',
+			'OS',
+			'GCP',
+			'DNS',
+			'FCM',
+			'IAM',
+			'IP',
+			'ISO',
 		];
 
 		/**

@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useContext } from '@wordpress/element';
-import ViewContextContext from '../components/Root/ViewContextContext';
+import ViewContextContext from '@/js/components/Root/ViewContextContext';
 
 /**
  * Returns the current Site Kit viewing context, eg. "dashboard",

@@ -23,8 +23,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Notice from '../../../../components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Notice from '@/js/components/Notice';
 
 export default function RegistrationDisabledNotice() {
 	const isMultisite = useSelect( ( select ) =>
@@ -41,7 +41,7 @@ export default function RegistrationDisabledNotice() {
 			description={ sprintf(
 				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 				__(
-					'Using “One Tap sign in on all pages” will cause errors for users without an account. Enable “%1$s” in WordPress settings to allow anyone to use %2$s.',
+					'Using “One Tap sign in” will cause errors for users without an existing account on your site. Enable “%1$s” in WordPress settings to allow anyone to use %2$s.',
 					'google-site-kit'
 				),
 				isMultisite

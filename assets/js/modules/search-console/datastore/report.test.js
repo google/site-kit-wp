@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
@@ -29,7 +29,7 @@ import {
 	provideSiteInfo,
 	subscribeUntil,
 	untilResolved,
-	waitForTimeouts,
+	createWaitForRegistry,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -59,6 +59,7 @@ describe( 'modules/search-console report', () => {
 	];
 
 	let registry;
+	let waitForRegistry;
 
 	beforeAll( () => {
 		setUsingCache( false );
@@ -66,6 +67,7 @@ describe( 'modules/search-console report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		waitForRegistry = createWaitForRegistry( registry );
 	} );
 
 	afterAll( () => {
@@ -183,7 +185,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
@@ -198,7 +200,7 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 				expect( isGatheringData() ).toBe( true );
@@ -260,7 +262,7 @@ describe( 'modules/search-console report', () => {
 				);
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( searchAnalyticsRegexp );
 			} );
@@ -275,7 +277,7 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 

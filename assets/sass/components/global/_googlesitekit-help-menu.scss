@@ -1,0 +1,68 @@
+/**
+ * HelpMenuLink styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-help-menu-link {
+		padding: 0;
+
+		&:hover {
+			background-color: unset;
+			color: rgba($c-black, 0.87);
+
+			&::before {
+				background-color: $c-interactive-tertiary-hover;
+				opacity: 1;
+			}
+		}
+
+		.googlesitekit-cta-link {
+			align-items: center;
+			color: $c-surfaces-on-surface;
+			display: flex;
+			height: 100%;
+			padding: 0 16px;
+			width: 100%;
+		}
+	}
+
+	.googlesitekit-help-menu {
+
+		.mdc-list {
+			padding: 12px 0;
+		}
+
+		.mdc-list-item {
+			height: 44px;
+		}
+
+		.googlesitekit-cta-link {
+			letter-spacing: 0.25px;
+			line-height: 20px;
+			padding: 0 24px;
+
+			.googlesitekit-icon-wrapper {
+				// The use of `!important` is necessary to override the inline style in the `IconWrapper` component.
+				margin-right: 16px !important;
+			}
+
+			svg {
+				fill: none;
+			}
+		}
+	}
+}

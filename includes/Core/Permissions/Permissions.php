@@ -601,7 +601,7 @@ final class Permissions {
 	 * @param string[]|null $shared_roles Optional. List of shared role IDs to check against the user's. Defaults to all shared module roles.
 	 * @return bool
 	 */
-	private function user_has_shared_role( $user_id, array $shared_roles = null ) {
+	private function user_has_shared_role( $user_id, ?array $shared_roles = null ) {
 		if ( ! is_array( $shared_roles ) ) {
 			$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
 		}

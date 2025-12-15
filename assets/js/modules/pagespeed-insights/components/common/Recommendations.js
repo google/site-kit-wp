@@ -30,10 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
-import ZeroRecommendations from '../../../../../svg/graphics/zero-state-yellow.svg';
+import {
+	STRATEGY_MOBILE,
+	STRATEGY_DESKTOP,
+} from '@/js/modules/pagespeed-insights/datastore/constants';
 import Recommendation from './Recommendation';
-import { Cell, Grid, Row } from '../../../../material-components';
 
 export default function Recommendations( {
 	className,
@@ -41,24 +42,6 @@ export default function Recommendations( {
 	referenceURL,
 	strategy,
 } ) {
-	if ( ! recommendations?.length ) {
-		return (
-			<Grid>
-				<Row>
-					<Cell>
-						{ __(
-							'No recommendations for now',
-							'google-site-kit'
-						) }
-					</Cell>
-					<Cell className="googlesitekit-pagespeed__zero-recommendations">
-						<ZeroRecommendations />
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
-
 	return (
 		<div
 			className={ classNames(

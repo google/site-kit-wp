@@ -18,12 +18,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import ExternalIcon from '../../../svg/icons/external.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export default function CTAButton( {
 	label,
@@ -31,8 +32,8 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
-	external,
-	hideExternalIndicator,
+	external = false,
+	hideExternalIndicator = false,
 } ) {
 	let trailingIconToUse;
 	if ( external && ! hideExternalIndicator ) {
@@ -40,12 +41,14 @@ export default function CTAButton( {
 	}
 	return (
 		<SpinnerButton
-			className="googlesitekit-notice__cta"
+			className={ classNames( 'googlesitekit-notice__cta', {
+				'googlesitekit-notice__cta--spinner__running': inProgress,
+			} ) }
 			disabled={ disabled }
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
-			target={ external ? '_blank' : '_self' }
+			target={ external ? '_blank' : undefined }
 			trailingIcon={ trailingIconToUse }
 		>
 			{ label }
@@ -53,7 +56,6 @@ export default function CTAButton( {
 	);
 }
 
-// eslint-disable-next-line sitekit/acronym-case
 CTAButton.propTypes = {
 	label: PropTypes.string.isRequired,
 	disabled: PropTypes.bool,

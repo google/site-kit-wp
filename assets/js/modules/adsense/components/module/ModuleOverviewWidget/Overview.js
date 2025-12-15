@@ -24,10 +24,10 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Grid, Cell } from '../../../../../material-components';
-import { calculateChange } from '../../../../../util';
-import DataBlock from '../../../../../components/DataBlock';
-import DataBlockGroup from '../../../../../components/DataBlockGroup';
+import { Grid, Cell } from '@/js/material-components';
+import { calculateChange } from '@/js/util';
+import DataBlock from '@/js/components/DataBlock';
+import DataBlockGroup from '@/js/components/DataBlockGroup';
 
 function Overview( {
 	metrics,

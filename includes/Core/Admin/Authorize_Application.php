@@ -51,7 +51,7 @@ final class Authorize_Application {
 	 */
 	public function __construct(
 		Context $context,
-		Assets $assets = null
+		?Assets $assets = null
 	) {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );

@@ -30,11 +30,11 @@ import { useKey } from 'react-use';
  * @param {Object}   ref      React ref to element containing target.
  * @param {Function} handler  Callback function.
  */
-export const useKeyCodesInside = ( keyCodes, ref, handler ) => {
+export function useKeyCodesInside( keyCodes, ref, handler ) {
 	useKey( ( event ) => {
 		return (
 			keyCodes.includes( event.keyCode ) &&
 			ref.current.contains( event.target )
 		);
 	}, handler );
-};
+}

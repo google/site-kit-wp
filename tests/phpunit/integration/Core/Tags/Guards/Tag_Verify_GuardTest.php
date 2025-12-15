@@ -28,7 +28,7 @@ class Tag_Verify_GuardTest extends TestCase {
 
 	public function test_can_activate_by_default() {
 		// Should return TRUE when "tagverify" isn't set.
-		$this->assertTrue( $this->tagverify->can_activate() );
+		$this->assertTrue( $this->tagverify->can_activate(), 'Tag should be able to activate by default when tagverify is not set.' );
 	}
 
 	public function test_can_activate() {

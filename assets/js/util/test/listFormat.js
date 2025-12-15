@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { listFormat } from '../';
+import { listFormat } from '@/js/util';
 
 describe( 'listFormat', () => {
 	it( 'flattens a list of strings correctly according to the locale provided', () => {

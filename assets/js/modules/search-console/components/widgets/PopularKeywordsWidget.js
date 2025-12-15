@@ -33,20 +33,20 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
-} from '../../datastore/constants';
-import { generateDateRangeArgs } from '../../util';
-import { numFmt } from '../../../../util';
-import Link from '../../../../components/Link';
-import useViewOnly from '../../../../hooks/useViewOnly';
+} from '@/js/modules/search-console/datastore/constants';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import { numFmt } from '@/js/util';
+import Link from '@/js/components/Link';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import { ZeroDataMessage } from '../common';
+} from '@/js/components/KeyMetrics';
+import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
 
 export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -61,6 +61,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		...dates,
 		dimensions: 'query',
 		limit: 100,
+		reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 	};
 
 	const report = useInViewSelect(
@@ -135,7 +136,7 @@ export default function PopularKeywordsWidget( { Widget } ) {
 		},
 	];
 
-	const rows = ( report || [] ).sort(
+	const rows = [ ...( report || [] ) ].sort(
 		( { ctr: ctrA = 0 }, { ctr: ctrB = 0 } ) => ctrB - ctrA
 	);
 

@@ -40,6 +40,7 @@ class Web_Tag extends Module_Web_Tag implements Tag_With_Linker_Interface {
 			$this->get_method_proxy( 'setup_gtag' ),
 			20
 		);
+		add_filter( 'script_loader_tag', $this->get_method_proxy( 'filter_tag_output' ), 10, 2 );
 
 		$this->do_init_tag_action();
 	}
@@ -62,18 +63,25 @@ class Web_Tag extends Module_Web_Tag implements Tag_With_Linker_Interface {
 	 */
 	protected function setup_gtag( $gtag ) {
 		$gtag->add_tag( $this->tag_id );
+	}
 
-		$filter_google_gtagjs = function ( $tag, $handle ) {
-			if ( GTag::HANDLE !== $handle ) {
-				return $tag;
-			}
 
-			// Retain this comment for detection of Site Kit placed tag.
-			$snippet_comment = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Ads snippet added by Site Kit', 'google-site-kit' ) );
+	/**
+	 * Filters output of tag HTML.
+	 *
+	 * @param string $tag Tag HTML.
+	 * @param string $handle WP script handle of given tag.
+	 * @return string
+	 */
+	protected function filter_tag_output( $tag, $handle ) {
+		// The tag will either have its own handle or use the common GTag handle, not both.
+		if ( GTag::get_handle_for_tag( $this->tag_id ) !== $handle && GTag::HANDLE !== $handle ) {
+			return $tag;
+		}
 
-			return $snippet_comment . $tag;
-		};
+		// Retain this comment for detection of Site Kit placed tag.
+		$snippet_comment = sprintf( "<!-- %s -->\n", esc_html__( 'Google Ads snippet added by Site Kit', 'google-site-kit' ) );
 
-		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+		return $snippet_comment . $tag;
 	}
 }

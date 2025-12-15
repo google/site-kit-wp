@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -27,10 +27,10 @@ class Verification_FileTest extends TestCase {
 
 		$verification_file = new Verification_File( $user_options );
 
-		$this->assertFalse( $user_options->get( Verification_File::OPTION ) );
-		$this->assertEquals( '', $verification_file->get() );
+		$this->assertFalse( $user_options->get( Verification_File::OPTION ), 'Verification file option should not exist initially.' );
+		$this->assertEquals( '', $verification_file->get(), 'Verification file should return empty string when not set.' );
 		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
-		$this->assertEquals( 'a1b2c3d4f5', $verification_file->get() );
+		$this->assertEquals( 'a1b2c3d4f5', $verification_file->get(), 'Verification file should return the set value.' );
 	}
 
 	public function test_set() {
@@ -40,8 +40,8 @@ class Verification_FileTest extends TestCase {
 
 		$verification_file = new Verification_File( $user_options );
 
-		$this->assertTrue( $verification_file->set( 'a1b2c3d4f5' ) );
-		$this->assertEquals( 'a1b2c3d4f5', $user_options->get( Verification_File::OPTION ) );
+		$this->assertTrue( $verification_file->set( 'a1b2c3d4f5' ), 'Setting verification file should return true.' );
+		$this->assertEquals( 'a1b2c3d4f5', $user_options->get( Verification_File::OPTION ), 'User options should contain the set verification file value.' );
 	}
 
 	public function test_has() {
@@ -51,8 +51,8 @@ class Verification_FileTest extends TestCase {
 
 		$verification_file = new Verification_File( $user_options );
 
-		$this->assertFalse( $verification_file->has() );
+		$this->assertFalse( $verification_file->has(), 'Verification file should not exist initially.' );
 		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
-		$this->assertTrue( $verification_file->has() );
+		$this->assertTrue( $verification_file->has(), 'Verification file should exist after being set.' );
 	}
 }

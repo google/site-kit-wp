@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import sumObjectListValue from '../sum-object-list-value.js';
+import sumObjectListValue from '@/js/util/sum-object-list-value.js';
 
 describe( 'sumObjectListValue', () => {
 	it( 'returns the sum of fieldName in a list of objects', () => {

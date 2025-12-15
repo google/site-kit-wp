@@ -61,7 +61,7 @@ final class Activation_Notice {
 	public function __construct(
 		Context $context,
 		Activation_Flag $activation_flag,
-		Assets $assets = null
+		?Assets $assets = null
 	) {
 		$this->context         = $context;
 		$this->activation_flag = $activation_flag;

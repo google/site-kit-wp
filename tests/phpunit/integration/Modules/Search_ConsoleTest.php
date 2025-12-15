@@ -44,9 +44,9 @@ class Search_ConsoleTest extends TestCase {
 	public function test_magic_methods() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertEquals( 'search-console', $search_console->slug );
-		$this->assertTrue( $search_console->force_active );
-		$this->assertEquals( 'https://search.google.com/search-console', $search_console->homepage );
+		$this->assertEquals( 'search-console', $search_console->slug, 'Search Console module slug should be correct.' );
+		$this->assertTrue( $search_console->force_active, 'Search Console module should be force active.' );
+		$this->assertEquals( 'https://search.google.com/search-console', $search_console->homepage, 'Search Console module homepage should be correct.' );
 	}
 
 	public function test_register() {
@@ -56,8 +56,8 @@ class Search_ConsoleTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_setup_complete' );
 
-		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
+		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ), 'Auth scopes should be empty before registration.' );
+		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ), 'Setup should be complete before registration.' );
 
 		// Register search console.
 		$search_console->register();
@@ -65,25 +65,26 @@ class Search_ConsoleTest extends TestCase {
 		// Test registers scopes.
 		$this->assertEquals(
 			$search_console->get_scopes(),
-			apply_filters( 'googlesitekit_auth_scopes', array() )
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Search Console should register correct auth scopes.'
 		);
 
 		// Test sitekit setup complete requires property set.
-		$this->assertFalse( apply_filters( 'googlesitekit_setup_complete', true ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_setup_complete', true ), 'Setup should not be complete if property is not set.' );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( 'googlesitekit_search_console_property', $property_url );
-		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ), 'Setup should be complete after property is set.' );
 	}
 
 	public function test_register__add_googlesitekit_authorize_user_action() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_actions( 'googlesitekit_authorize_user' );
-		$this->assertFalse( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertFalse( has_action( 'googlesitekit_authorize_user' ), 'No authorize user action should exist before registration.' );
 
 		$search_console->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ), 'Authorize user action should be added after registration.' );
 	}
 
 	public function test_register__property_id_saved_if_not_set() {
@@ -112,7 +113,8 @@ class Search_ConsoleTest extends TestCase {
 				'propertyID' => 'https://example.com',
 				'ownerID'    => '',
 			),
-			get_option( 'googlesitekit_search-console_settings' )
+			get_option( 'googlesitekit_search-console_settings' ),
+			'Property ID should be set from token response if not set.'
 		);
 	}
 
@@ -142,7 +144,8 @@ class Search_ConsoleTest extends TestCase {
 				'propertyID' => 'https://example.org',
 				'ownerID'    => $admin,
 			),
-			get_option( 'googlesitekit_search-console_settings' )
+			get_option( 'googlesitekit_search-console_settings' ),
+			'Property ID should update if authorized user is owner.'
 		);
 	}
 
@@ -173,7 +176,8 @@ class Search_ConsoleTest extends TestCase {
 				'propertyID' => 'https://example.com',
 				'ownerID'    => $admin + 10,
 			),
-			get_option( 'googlesitekit_search-console_settings' )
+			get_option( 'googlesitekit_search-console_settings' ),
+			'Property ID should not update if authorized user is not owner.'
 		);
 	}
 
@@ -187,7 +191,8 @@ class Search_ConsoleTest extends TestCase {
 				'matched-sites',
 				'searchanalytics',
 			),
-			$search_console->get_datapoints()
+			$search_console->get_datapoints(),
+			'Search Console should return correct datapoints.'
 		);
 	}
 
@@ -234,10 +239,10 @@ class Search_ConsoleTest extends TestCase {
 
 		$data = $search_console->get_data( 'matched-sites' );
 
-		$this->assertNotWPError( $data );
-		$this->assertCount( 2, $data );
-		$this->assertEquals( $site_root->getSiteUrl(), $data[0]['siteURL'] );
-		$this->assertEquals( $site_www->getSiteUrl(), $data[1]['siteURL'] );
+		$this->assertNotWPError( $data, 'Matched sites data should not be a WP_Error.' );
+		$this->assertCount( 2, $data, 'Matched sites data should contain two sites.' );
+		$this->assertEquals( $site_root->getSiteUrl(), $data[0]['siteURL'], 'Root site URL should be first in matched sites.' );
+		$this->assertEquals( $site_www->getSiteUrl(), $data[1]['siteURL'], 'WWW site URL should be second in matched sites.' );
 	}
 
 	public function test_get_module_scopes() {
@@ -247,7 +252,8 @@ class Search_ConsoleTest extends TestCase {
 			array(
 				'https://www.googleapis.com/auth/webmasters',
 			),
-			$search_console->get_scopes()
+			$search_console->get_scopes(),
+			'Search Console should return correct module scopes.'
 		);
 	}
 
@@ -266,7 +272,7 @@ class Search_ConsoleTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $search_console->is_data_available() );
+		$this->assertFalse( $search_console->is_data_available(), 'Data should not be available after property change.' );
 	}
 
 	/**

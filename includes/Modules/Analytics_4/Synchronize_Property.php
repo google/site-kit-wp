@@ -120,7 +120,13 @@ class Synchronize_Property {
 		$settings = $this->analytics_4->get_settings()->get();
 
 		$property_id = $settings['propertyID'];
-		$property    = $this->analytics_4->get_data( 'property', array( 'propertyID' => $property_id ) );
+
+		$has_property_access = $this->analytics_4->has_property_access( $property_id );
+		if ( is_wp_error( $has_property_access ) || ! $has_property_access ) {
+			return null;
+		}
+
+		$property = $this->analytics_4->get_data( 'property', array( 'propertyID' => $property_id ) );
 
 		if ( is_wp_error( $property ) ) {
 			return null;

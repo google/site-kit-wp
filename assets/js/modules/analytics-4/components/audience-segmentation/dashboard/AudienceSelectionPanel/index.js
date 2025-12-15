@@ -21,8 +21,8 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import InViewProvider from '../../../../../../components/InViewProvider';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import InViewProvider from '@/js/components/InViewProvider';
 import Panel from './Panel';
 
 export default function AudienceSelectionPanel() {

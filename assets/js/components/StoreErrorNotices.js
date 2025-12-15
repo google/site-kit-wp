@@ -26,9 +26,9 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import ErrorNotice from './ErrorNotice';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { isInsufficientPermissionsError } from '../util/errors';
-import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 
 export default function StoreErrorNotices( {
 	hasButton = false,

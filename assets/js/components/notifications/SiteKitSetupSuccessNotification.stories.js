@@ -25,7 +25,7 @@ import { withQuery } from '@storybook/addon-queryparams';
  * Internal dependencies
  */
 import SiteKitSetupSuccessNotification from './SiteKitSetupSuccessNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-site-kit'

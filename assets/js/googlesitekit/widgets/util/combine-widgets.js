@@ -41,9 +41,9 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  *
  * @param {Array.<Object>} widgets      List of widgets.
  * @param {Object}         widgetStates Map of widget slug and their
- *                                             state (either an object with
- *                                             `Component` and `metadata`, or
- *                                             `null`).
+ *                                      state (either an object with
+ *                                      `Component` and `metadata`, or
+ *                                      `null`).
  * @return {boolean} 			Whether all the widgets should be combined.
  */
 function shouldCombineAllWidgets( widgets, widgetStates ) {

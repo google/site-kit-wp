@@ -26,16 +26,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	RRM_PRODUCT_ID_INFO_NOTICE_SLUG,
 	RRM_PRODUCT_ID_OPEN_ACCESS_NOTICE_SLUG,
-} from '../../constants';
-import { ProductIDSelect } from '../common';
-import Link from '../../../../components/Link';
-import Notice from '../../../../components/Notice';
+} from '@/js/modules/reader-revenue-manager/constants';
+import { ProductIDSelect } from '@/js/modules/reader-revenue-manager/components/common';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
 
 export default function ProductIDSettings( { hasModuleAccess } ) {
 	const productID = useSelect( ( select ) =>

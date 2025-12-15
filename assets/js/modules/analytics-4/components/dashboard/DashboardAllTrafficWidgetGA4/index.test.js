@@ -19,15 +19,20 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '../../../utils/data-mock';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { render } from '../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import DashboardAllTrafficWidgetGA4 from '.';
 
 describe( 'DashboardAllTrafficWidgetGA4', () => {
@@ -43,6 +48,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 				name: 'totalUsers',
 			},
 		],
+		reportID:
+			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
 	};
 
 	const reportOptions = [
@@ -58,6 +65,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					desc: true,
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		{
 			// Pie chart, with country dimension.
@@ -71,6 +80,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					desc: true,
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		{
 			// Pie chart, with deviceCategory dimension.
@@ -85,6 +96,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 				},
 			],
 			limit: 6,
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 		},
 		// Totals.
 		baseOptions,
@@ -98,6 +111,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					name: 'totalUsers',
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 		},
 		{
 			// Line chart.
@@ -116,6 +131,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 					},
 				},
 			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
 		},
 		{
 			// Gathering data check.
@@ -137,9 +154,12 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideSiteInfo( registry );
+		provideUserInfo( registry );
+		provideUserAuthentication( registry );
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -147,7 +167,16 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			propertyID: '123456789',
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				_id: '123456789',
+			},
+			{ propertyID: '123456789' }
+		);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -159,6 +188,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	} );
 
 	it( 'should render the widget', async () => {
+		mockSurveyEndpoints();
+
 		reportOptions.forEach( ( options ) => {
 			provideAnalytics4MockReport( registry, options );
 		} );

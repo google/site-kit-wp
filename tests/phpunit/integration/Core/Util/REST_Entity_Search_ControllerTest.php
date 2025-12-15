@@ -45,7 +45,7 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'REST routes filter should be registered.' );
 	}
 
 	public function test_unauthorized_request() {
@@ -60,9 +60,9 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'rest_forbidden', $data['code'] );
+		$this->assertNotEquals( 200, $response->get_status(), 'Unauthorized request should not return 200 status.' );
+		$this->assertArrayHasKey( 'code', $data, 'Error response should contain code key.' );
+		$this->assertEquals( 'rest_forbidden', $data['code'], 'Unauthorized request should return rest_forbidden error.' );
 	}
 
 	public function test_authorized_request() {
@@ -79,7 +79,7 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 200, $response->get_status(), 'Authorized request should return 200 status.' );
 	}
 
 	public function test_authorized_request_without_query() {
@@ -92,9 +92,9 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $data );
-		$this->assertEquals( 'rest_missing_callback_param', $data['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'Request without query should return 400 status.' );
+		$this->assertArrayHasKey( 'code', $data, 'Error response should contain code key.' );
+		$this->assertEquals( 'rest_missing_callback_param', $data['code'], 'Request without query should return missing callback param error.' );
 	}
 
 	public function test_post_search() {
@@ -133,16 +133,16 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( 2, count( $data ) );
-		$this->assertEquals( 'post', $data[0]['type'] );
-		$this->assertArrayHasKey( 'title', $data[0] );
-		$this->assertArrayHasKey( 'url', $data[0] );
+		$this->assertEquals( 200, $response->get_status(), 'Post search should return 200 status.' );
+		$this->assertEquals( 2, count( $data ), 'Should find exactly 2 posts matching query.' );
+		$this->assertEquals( 'post', $data[0]['type'], 'First result should be a post type.' );
+		$this->assertArrayHasKey( 'title', $data[0], 'Post result should have title key.' );
+		$this->assertArrayHasKey( 'url', $data[0], 'Post result should have url key.' );
 
 		$postIDs = wp_list_pluck( $data, 'id' );
 
-		$this->assertContains( $earthID, $postIDs );
-		$this->assertContains( $marsID, $postIDs );
+		$this->assertContains( $earthID, $postIDs, 'Search results should contain Earth post.' );
+		$this->assertContains( $marsID, $postIDs, 'Search results should contain Mars post.' );
 	}
 
 	public function test_entity_search() {
@@ -174,9 +174,9 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( 1, count( $data ) );
-		$this->assertEquals( $term->term_id, $data[0]['id'] );
-		$this->assertEquals( 'term', $data[0]['type'] );
+		$this->assertEquals( 200, $response->get_status(), 'Term search should return 200 status.' );
+		$this->assertEquals( 1, count( $data ), 'Should find exactly 1 term matching query.' );
+		$this->assertEquals( $term->term_id, $data[0]['id'], 'Search result should match the created term ID.' );
+		$this->assertEquals( 'term', $data[0]['type'], 'Search result should be a term type.' );
 	}
 }

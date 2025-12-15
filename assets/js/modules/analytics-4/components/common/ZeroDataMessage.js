@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function ZeroDataMessage( { skipPrefix } ) {
 	const url = useSelect( ( select ) =>
@@ -38,26 +38,38 @@ export default function ZeroDataMessage( { skipPrefix } ) {
 	);
 
 	if ( skipPrefix ) {
-		return url
-			? __(
+		return url ? (
+			<span>
+				{ __(
 					'Your page hasn’t received any visitors yet',
 					'google-site-kit'
-			  )
-			: __(
+				) }
+			</span>
+		) : (
+			<span>
+				{ __(
 					'Your site hasn’t received any visitors yet',
 					'google-site-kit'
-			  );
+				) }
+			</span>
+		);
 	}
 
-	return url
-		? __(
+	return url ? (
+		<span>
+			{ __(
 				'No data to display: your page hasn’t received any visitors yet',
 				'google-site-kit'
-		  )
-		: __(
+			) }
+		</span>
+	) : (
+		<span>
+			{ __(
 				'No data to display: your site hasn’t received any visitors yet',
 				'google-site-kit'
-		  );
+			) }
+		</span>
+	);
 }
 
 ZeroDataMessage.propTypes = {

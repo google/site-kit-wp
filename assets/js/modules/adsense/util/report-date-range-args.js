@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { isValidDateString } from '../../../util';
+import { isValidDateString } from '@/js/util';
 
 /**
  * Generates an object with the appropriate structure to pass to report selectors.
@@ -36,7 +36,7 @@ import { isValidDateString } from '../../../util';
  * @param {string} dates.endDate   End date in YYYY-MM-DD format.
  * @return {Object} Date range object.
  */
-export const generateDateRangeArgs = ( dates ) => {
+export function generateDateRangeArgs( dates ) {
 	invariant( dates, 'A dates object is required.' );
 	const { startDate, endDate } = dates;
 	invariant(
@@ -51,4 +51,4 @@ export const generateDateRangeArgs = ( dates ) => {
 			'/'
 		) }`,
 	};
-};
+}

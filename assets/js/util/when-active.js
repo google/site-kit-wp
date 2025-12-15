@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { hyphenCaseToPascalCase } from '../googlesitekit/data/transform-case';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { hyphenCaseToPascalCase } from '@/js/googlesitekit/data/transform-case';
 
 /**
  * Higher-Order Component to render wrapped components when selected module is active and connected.

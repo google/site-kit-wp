@@ -32,7 +32,7 @@ import { useInstanceId } from '@wordpress/compose';
  */
 import { Button, TextField } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
-import VisuallyHidden from '../VisuallyHidden';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
 
 function SurveyQuestionOpenText( {
@@ -45,9 +45,9 @@ function SurveyQuestionOpenText( {
 } ) {
 	const [ value, setValue ] = useState( '' );
 
-	const handleSubmit = () => {
+	function handleSubmit() {
 		answerQuestion( { answer: value } );
-	};
+	}
 
 	const onChange = useCallback(
 		( event ) => {
@@ -75,10 +75,10 @@ function SurveyQuestionOpenText( {
 					helperText={ subtitle }
 					onChange={ onChange }
 					label={ placeholder }
-					textarea
 					inputType="textarea"
 					id={ instanceID }
 					value={ value }
+					textarea
 				/>
 			</div>
 			<div className="googlesitekit-survey__footer">

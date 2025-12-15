@@ -25,10 +25,12 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  * Internal dependencies
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	render,
 	createTestRegistry,
@@ -89,13 +91,15 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	it( 'does not render when GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
 		] );
 
-		provideGatheringDataState( registry, { 'search-console': false } );
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );
@@ -114,26 +118,28 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when SC is in the gathering data state', async () => {
+		mockSurveyEndpoints();
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': true,
-			'analytics-4': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -160,19 +166,19 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
 		} );
 
 		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
@@ -216,12 +222,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -246,16 +252,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
+			container.querySelector( '.googlesitekit-banner__title' )
 		).toHaveTextContent(
 			'Get personalized suggestions for user interaction metrics based on your goals'
 		);
 		const button = getByRole( 'button', { name: /get tailored metrics/i } );
 		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveAttribute(
-			'href',
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
-		);
 
 		// Should also trigger a survey view.
 		await waitFor( () =>

@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { availableAudiences } from '../../../datastore/__fixtures__';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,

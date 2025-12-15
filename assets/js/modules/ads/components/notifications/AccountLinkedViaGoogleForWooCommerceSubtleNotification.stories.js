@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -42,7 +42,7 @@ export default {
 	component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
 					plugins: {
@@ -55,7 +55,7 @@ export default {
 						},
 					},
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

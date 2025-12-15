@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
@@ -45,23 +47,21 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'ads'                 => 'Google\\Site_Kit\\Modules\\Ads',
-				'adsense'             => 'Google\\Site_Kit\\Modules\\AdSense',
-				'analytics-4'         => 'Google\\Site_Kit\\Modules\\Analytics_4',
-				'pagespeed-insights'  => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
-				'search-console'      => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification'   => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'          => 'Google\\Site_Kit\\Modules\\Tag_Manager',
-				'sign-in-with-google' => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
+				'ads'                    => 'Google\\Site_Kit\\Modules\\Ads',
+				'adsense'                => 'Google\\Site_Kit\\Modules\\AdSense',
+				'analytics-4'            => 'Google\\Site_Kit\\Modules\\Analytics_4',
+				'pagespeed-insights'     => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+				'search-console'         => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'      => 'Google\\Site_Kit\\Modules\\Site_Verification',
+				'tagmanager'             => 'Google\\Site_Kit\\Modules\\Tag_Manager',
+				'sign-in-with-google'    => 'Google\\Site_Kit\\Modules\\Sign_In_With_Google',
+				'reader-revenue-manager' => 'Google\\Site_Kit\\Modules\\Reader_Revenue_Manager',
 			),
 			$available
 		);
 	}
 
 	public function test_get_available_modules__with_rrm_module_feature_flag_enabled() {
-		// Enable the `rrmModule` feature flag.
-		$this->enable_feature( 'rrmModule' );
-
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$available = array_map(
@@ -397,6 +397,7 @@ class ModulesTest extends TestCase {
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 			Sign_In_With_Google::MODULE_SLUG,
+			Reader_Revenue_Manager::MODULE_SLUG,
 		);
 
 		yield 'should return all the modules if filter does not change the modules keys' => array(
@@ -507,26 +508,7 @@ class ModulesTest extends TestCase {
 			PageSpeed_Insights::MODULE_SLUG,
 			Tag_Manager::MODULE_SLUG,
 			Sign_In_With_Google::MODULE_SLUG,
-		);
-
-		yield 'should include the `reader-revenue-manager` module when enabled' => array(
-			// Module feature flag.
-			'rrmModule',
-			// Module enabled or disabled
-			true,
 			Reader_Revenue_Manager::MODULE_SLUG,
-			// Expected
-			array_merge( $default_modules, array( Reader_Revenue_Manager::MODULE_SLUG ) ),
-		);
-
-		yield 'should not include the `reader-revenue-manager` module when disabled' => array(
-			// Module feature flag.
-			'rrmModule',
-			// Module enabled or disabled
-			false,
-			Reader_Revenue_Manager::MODULE_SLUG,
-			// Expected
-			$default_modules,
 		);
 	}
 
@@ -1110,5 +1092,134 @@ class ModulesTest extends TestCase {
 
 		// Connecting the module makes it shareable.
 		$this->assertTrue( $modules->is_module_shareable( 'pagespeed-insights' ) );
+	}
+
+	public function test_list_shared_modules__no_shared_roles() {
+			$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+			// By default, no modules have shared roles, so list_shared_modules should return an empty array.
+			$this->assertEquals( array(), $modules->list_shared_modules() );
+	}
+
+	public function test_list_shared_modules__single_module_has_shared_roles() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Activate and connect PageSpeed Insights.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights' ) );
+
+		// Add shared roles for pagespeed-insights.
+		$sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
+
+		// Should return pagespeed-insights as shared.
+		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules() );
+	}
+
+	public function test_list_shared_modules__multiple_modules_has_shared_roles() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Activate and connect multiple modules.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights', 'adsense' ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+
+		// Add shared roles for both modules.
+		$sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
+
+		$this->assertEqualsCanonicalizing( array( 'adsense', 'pagespeed-insights' ), $modules->list_shared_modules() );
+	}
+
+	public function test_list_shared_modules__ignore_disconnected_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Only activate pagespeed-insights, do not connect adsense.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights', 'adsense' ) );
+
+		// Only pagespeed-insights is connected by default.
+		$sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
+
+		$this->assertEquals( array( 'pagespeed-insights' ), $modules->list_shared_modules() );
+	}
+
+	public function test_get_feature_metrics__no_shared_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		// By default, no modules have shared roles.
+		$this->assertEquals(
+			array( 'shared_modules' => array() ),
+			$modules->get_feature_metrics()
+		);
+	}
+
+	public function test_get_feature_metrics__multiple_and_disconnected_shared_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Activate and connect multiple modules.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'pagespeed-insights', 'adsense', 'analytics-4' ) );
+		update_option(
+			'googlesitekit_adsense_settings',
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+		// Do NOT connect analytics-4 (leave it disconnected).
+
+		// Add shared roles for all modules.
+		$sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'analytics-4'        => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $sharing_settings );
+
+		$feature_metrics = $modules->get_feature_metrics();
+		$this->assertArrayHasKey( 'shared_modules', $feature_metrics );
+		$shared = $feature_metrics['shared_modules'];
+		sort( $shared );
+		// Only adsense and pagespeed-insights are connected and shared.
+		$this->assertEquals( array( 'adsense', 'pagespeed-insights' ), $shared );
 	}
 }

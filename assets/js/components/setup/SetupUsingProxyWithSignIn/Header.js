@@ -17,36 +17,33 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
-import MainHeader from '../../Header';
-import HelpMenu from '../../help/HelpMenu';
-import BannerNotification from '../../notifications/BannerNotification';
+import MainHeader from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Header() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const viewContext = useViewContext();
+
 	return (
-		<Fragment>
-			<MainHeader>
-				<HelpMenu />
-			</MainHeader>
-			{ getQueryArg( location.href, 'notification' ) ===
-				'reset_success' && (
-				<BannerNotification
-					id="reset_success"
-					title={ __(
-						'Site Kit by Google was successfully reset.',
-						'google-site-kit'
-					) }
-					isDismissible={ false }
+		<MainHeader
+			subHeader={ setupFlowRefreshEnabled ? <ProgressIndicator /> : null }
+		>
+			{ setupFlowRefreshEnabled ? (
+				<ExitSetup
+					gaTrackingEventArgs={ {
+						category: viewContext,
+						label: 'splash',
+					} }
 				/>
+			) : (
+				<HelpMenu />
 			) }
-		</Fragment>
+		</MainHeader>
 	);
 }

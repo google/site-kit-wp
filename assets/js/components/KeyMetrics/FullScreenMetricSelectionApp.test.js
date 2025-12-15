@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import FullScreenMetricSelectionApp from './FullScreenMetricSelectionApp';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_PAGES_PER_VISIT,
@@ -29,15 +29,16 @@ import {
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../../modules/analytics-4/datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-import { VIEW_CONTEXT_METRIC_SELECTION } from '../../googlesitekit/constants';
+import { VIEW_CONTEXT_METRIC_SELECTION } from '@/js/googlesitekit/constants';
 import {
 	act,
 	createTestRegistry,
@@ -52,7 +53,7 @@ import {
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { provideKeyMetricsWidgetRegistrations } from './test-utils';
-import { withConnected } from '../../googlesitekit/modules/datastore/__fixtures__';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'FullScreenMetricSelectionApp', () => {
 	mockLocation();
@@ -84,7 +85,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserInfo( registry, { id: 1 } );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 		provideKeyMetrics( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -107,7 +108,7 @@ describe( 'FullScreenMetricSelectionApp', () => {
 				( acc, widget ) => ( {
 					...acc,
 					[ widget ]: {
-						modules: [ 'analytics-4' ],
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
 					},
 				} ),
 				{}

@@ -32,7 +32,7 @@ import { ENTER } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import { MDCSwitch } from '../../material-components';
+import { MDCSwitch } from '@/js/material-components';
 
 function Switch( { onClick, label, checked, disabled, hideLabel } ) {
 	const instanceID = useInstanceId( Switch );

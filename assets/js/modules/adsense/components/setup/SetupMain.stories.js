@@ -20,17 +20,16 @@
  * Internal dependencies
  */
 import SetupMain from './SetupMain';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '../../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 import {
-	createTestRegistry,
-	WithTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const defaultSettings = {
 	accountID: '',
@@ -42,21 +41,19 @@ const defaultSettings = {
 	siteSetupComplete: false,
 };
 
-function Template( { setupRegistry } ) {
+function Template() {
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<div className="googlesitekit-setup">
-				<section className="googlesitekit-setup__wrapper">
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<SetupMain />
-							</Cell>
-						</Row>
-					</Grid>
-				</section>
-			</div>
-		</WithRegistrySetup>
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<SetupMain />
+						</Cell>
+					</Row>
+				</Grid>
+			</section>
+		</div>
 	);
 }
 
@@ -259,27 +256,33 @@ export default {
 	title: 'Modules/AdSense/Components/Setup/SetupMain',
 	component: SetupMain,
 	decorators: [
-		( Story ) => {
-			const registry = createTestRegistry();
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						storeName: MODULES_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideModules( registry, [
-				{
-					slug: 'adsense',
-					storeName: MODULES_ADSENSE,
-					active: true,
-					connected: true,
-				},
-			] );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetSettings( defaultSettings );
+				registry
+					.dispatch( CORE_USER )
+					.receiveIsAdBlockerActive( false );
 
-			registry
-				.dispatch( MODULES_ADSENSE )
-				.receiveGetSettings( defaultSettings );
-			registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( false );
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

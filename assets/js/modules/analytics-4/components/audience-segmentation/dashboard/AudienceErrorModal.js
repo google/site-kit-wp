@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../../../../../components/Link';
-import ModalDialog from '../../../../../components/ModalDialog';
-import Portal from '../../../../../components/Portal';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { isInsufficientPermissionsError } from '../../../../../util/errors';
-import { trackEvent } from '../../../../../util';
+import Link from '@/js/components/Link';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import Portal from '@/js/components/Portal';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import { trackEvent } from '@/js/util';
 
 export default function AudienceErrorModal( {
 	apiErrors,
@@ -93,7 +93,7 @@ export default function AudienceErrorModal( {
 		} );
 	}
 
-	function handleDialog() {
+	function handleCancel() {
 		let action;
 
 		if ( hasOAuthError ) {
@@ -160,14 +160,13 @@ export default function AudienceErrorModal( {
 
 	return (
 		<Portal>
-			<ModalDialog
-				dialogActive
+			<RefocusableModalDialog
 				buttonLink={ buttonLink }
 				title={ errorTitle }
 				subtitle={ errorDescription }
 				handleConfirm={ handleConfirm }
 				confirmButton={ confirmButton }
-				handleDialog={ handleDialog }
+				handleCancel={ handleCancel }
 				onOpen={ () => {
 					let action;
 
@@ -182,8 +181,10 @@ export default function AudienceErrorModal( {
 					trackEvent( trackEventCategory, action );
 				} }
 				onClose={ onCancel }
-				danger
 				inProgress={ inProgress }
+				refocusQuerySelector="#audience_segmentation_setup_cta-notification .googlesitekit-banner__cta"
+				danger
+				dialogActive
 			/>
 		</Portal>
 	);

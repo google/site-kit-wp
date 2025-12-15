@@ -25,9 +25,9 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import KeyMetricsSelectionPanelItems from './SelectionPanelItems';
 
 export default function MetricItems( { savedMetrics } ) {
@@ -40,16 +40,16 @@ export default function MetricItems( { savedMetrics } ) {
 	const displayInSelectionPanel = useInViewSelect(
 		( select ) => {
 			return ( metric ) =>
-				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel(
+				KEY_METRICS_WIDGETS[ metric ].displayInSelectionPanel( {
 					select,
 					isViewOnlyDashboard,
-					metric
-				);
+					slug: metric,
+				} );
 		},
 		[ isViewOnlyDashboard ]
 	);
 
-	const metricsListReducer = ( acc, metricSlug ) => {
+	function metricsListReducer( acc, metricSlug ) {
 		if ( ! isKeyMetricAvailable( metricSlug ) ) {
 			return acc;
 		}
@@ -77,7 +77,7 @@ export default function MetricItems( { savedMetrics } ) {
 				group,
 			},
 		};
-	};
+	}
 
 	const allMetricItems = Object.keys( KEY_METRICS_WIDGETS ).reduce(
 		metricsListReducer,

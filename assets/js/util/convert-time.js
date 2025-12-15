@@ -30,7 +30,7 @@
  * @param {number} seconds The number of seconds.
  * @return {Array} Array containing the hours, minutes, seconds and milliseconds.
  */
-export const convertSecondsToArray = ( seconds ) => {
+export function convertSecondsToArray( seconds ) {
 	seconds = parseFloat( seconds );
 
 	if ( isNaN( seconds ) || 0 === seconds ) {
@@ -43,7 +43,7 @@ export const convertSecondsToArray = ( seconds ) => {
 		Math.floor( seconds % 60 ),
 		Math.floor( seconds * 1000 ) - Math.floor( seconds ) * 1000,
 	];
-};
+}
 
 /**
  * Converts Date time string into UNIX timestamp in milliseconds.
@@ -55,7 +55,7 @@ export const convertSecondsToArray = ( seconds ) => {
  * @param {string} dateStringValue The date time string.
  * @return {number} UNIX timestamp in milliseconds.
  */
-export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
+export function convertDateStringToUNIXTimestamp( dateStringValue ) {
 	const unixTimestamp =
 		dateStringValue && ! Number.isInteger( dateStringValue )
 			? // Valid use of `new Date()` with an argument, because this should only
@@ -71,4 +71,4 @@ export const convertDateStringToUNIXTimestamp = ( dateStringValue ) => {
 	}
 
 	return unixTimestamp;
-};
+}

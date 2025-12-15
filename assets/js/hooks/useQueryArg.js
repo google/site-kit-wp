@@ -37,14 +37,14 @@ function useQueryArg( key, initialValue, _global = global ) {
 		getQueryArg( _global.location.href, key ) || initialValue
 	);
 
-	const onSetValue = ( newValue ) => {
+	function onSetValue( newValue ) {
 		setValue( newValue );
 
 		const newURL = addQueryArgs( _global.location.href, {
 			[ key ]: newValue,
 		} );
 		_global.history.replaceState( null, '', newURL );
-	};
+	}
 
 	return [ value, onSetValue ];
 }

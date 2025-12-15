@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { HIDDEN_CLASS } from '../util/constants';
-import { Cell } from '../../../material-components';
+import { HIDDEN_CLASS } from '@/js/googlesitekit/widgets/util/constants';
+import { Cell } from '@/js/material-components';
 
 function WidgetCellWrapper( { gridColumnWidth, children } ) {
 	if ( 0 === gridColumnWidth ) {

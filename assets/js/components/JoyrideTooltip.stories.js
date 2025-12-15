@@ -36,20 +36,22 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	delay: 300,
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
 };
 
 export const PlacementTooltip = Template.bind( {} );
 PlacementTooltip.storyName = 'Tooltip with Custom Placement';
 PlacementTooltip.args = {
-	title: 'Tooltip with Top Placement',
-	content: 'This tooltip is positioned at the top of the target element.',
+	title: 'Tooltip with Bottom Placement',
+	content: 'This tooltip is positioned at the bottom of the target element.',
 	dismissLabel: 'Got it',
 	target: '.target',
-	placement: 'top',
+	placement: 'bottom',
 };
 PlacementTooltip.scenario = {
-	delay: 300,
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
 };
 
 export const MobileModalTooltip = Template.bind( {} );
@@ -65,7 +67,12 @@ MobileModalTooltip.args = {
 	disableOverlay: false,
 };
 MobileModalTooltip.scenario = {
-	delay: 300,
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
+// Skip 100vh-based story padding for this mobile variant to avoid a variable margin in the Joyride overlay on different runs.
+MobileModalTooltip.parameters = {
+	padding: '20',
 };
 
 export default {

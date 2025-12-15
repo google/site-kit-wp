@@ -25,9 +25,9 @@
  * @param {string} name "camelCase" name to transform.
  * @return {string} PascalCase name.
  */
-export const camelCaseToPascalCase = ( name ) => {
+export function camelCaseToPascalCase( name ) {
 	return name.charAt( 0 ).toUpperCase() + name.slice( 1 );
-};
+}
 
 /**
  * Transforms a camelCase name into its CONSTANT_CASE name.
@@ -38,9 +38,9 @@ export const camelCaseToPascalCase = ( name ) => {
  * @param {string} name "camelCase" name to transform.
  * @return {string} CONSTANT_CASE name.
  */
-export const camelCaseToConstantCase = ( name ) => {
+export function camelCaseToConstantCase( name ) {
 	return name.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
-};
+}
 
 /**
  * Transforms a hyphen-case name into its PascalCase name.

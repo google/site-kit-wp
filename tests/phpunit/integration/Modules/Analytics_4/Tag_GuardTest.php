@@ -45,7 +45,7 @@ class Tag_GuardTest extends TestCase {
 			)
 		);
 
-		$this->assertTrue( $this->guard->can_activate() );
+		$this->assertTrue( $this->guard->can_activate(), 'Guard should allow activation when measurementID set and useSnippet true.' );
 	}
 
 	public function test_can_activate__with_use_snippet_false() {

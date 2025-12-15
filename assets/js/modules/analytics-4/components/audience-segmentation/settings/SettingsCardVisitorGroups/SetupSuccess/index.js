@@ -17,52 +17,22 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import useViewContext from '../../../../../../../hooks/useViewContext';
-import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
-import { trackEvent } from '../../../../../../../util';
-import SetupSuccessContent from './SetupSuccessContent';
+import useViewContext from '@/js/hooks/useViewContext';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { trackEvent } from '@/js/util';
+import SetupSuccessContent, {
+	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
+} from './SetupSuccessContent';
+
+export { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION };
 
 const SetupSuccessContentWithIntersectionObserver =
 	withIntersectionObserver( SetupSuccessContent );
 
-export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
-	'settings_visitor_groups_setup_success_notification';
-
 export default function SetupSuccess() {
 	const viewContext = useViewContext();
-	const { dismissItem } = useDispatch( CORE_USER );
-
-	const isAudienceSegmentationWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-	);
-
-	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		)
-	);
-
-	const triggerDismissal =
-		isAudienceSegmentationWidgetHidden && isDismissed === false;
-
-	useEffect( () => {
-		if ( triggerDismissal ) {
-			dismissItem( SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION );
-		}
-	}, [ dismissItem, triggerDismissal ] );
-
-	if ( isDismissed === undefined || isDismissed || triggerDismissal ) {
-		return null;
-	}
 
 	return (
 		<SetupSuccessContentWithIntersectionObserver

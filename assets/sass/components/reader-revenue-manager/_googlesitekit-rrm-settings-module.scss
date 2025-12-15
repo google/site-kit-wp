@@ -68,6 +68,15 @@
 			.googlesitekit-rrm-settings-edit__product-id-info-notice {
 				width: 100%;
 			}
+
+			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
+				@media (min-width: $bp-wpAdminBarTablet) {
+					left: 220px;
+					max-width: 442px;
+					position: absolute;
+					top: -10px;
+				}
+			}
 		}
 
 		.googlesitekit-rrm-settings-edit__post-types {
@@ -79,11 +88,6 @@
 		}
 
 		.googlesitekit-rrm-settings-edit__post-types h5 {
-			font-family: $f-primary;
-			font-size: $fs-label-sm;
-			font-weight: $fw-medium;
-			letter-spacing: $ls-xs;
-			line-height: $lh-label-sm;
 			margin: 0 0 14px;
 		}
 	}

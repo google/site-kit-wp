@@ -26,7 +26,7 @@ import {
 	subscribeUntil,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { getAdSenseMockResponse } from '../util/data-mock';
+import { getAdSenseMockResponse } from '@/js/modules/adsense/util/data-mock';
 
 describe( 'modules/adsense report', () => {
 	let registry;

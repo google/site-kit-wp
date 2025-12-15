@@ -15,7 +15,7 @@ exports[`TopRecentTrendingPagesWidget should render correctly with the expected 
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top recent trending pages
           </h3>
@@ -139,7 +139,7 @@ exports[`TopRecentTrendingPagesWidget should render the custom dimension error w
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top recent trending pages
         </h2>
@@ -154,7 +154,7 @@ exports[`TopRecentTrendingPagesWidget should render the custom dimension error w
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -216,7 +216,7 @@ exports[`TopRecentTrendingPagesWidget should render the generic error variant wh
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top recent trending pages
         </h2>
@@ -231,7 +231,7 @@ exports[`TopRecentTrendingPagesWidget should render the generic error variant wh
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -278,7 +278,7 @@ exports[`TopRecentTrendingPagesWidget should render the insufficient permissions
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top recent trending pages
         </h2>
@@ -293,7 +293,7 @@ exports[`TopRecentTrendingPagesWidget should render the insufficient permissions
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -344,7 +344,7 @@ exports[`TopRecentTrendingPagesWidget should render the loading state while reso
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top recent trending pages
           </h3>
@@ -401,7 +401,7 @@ exports[`TopRecentTrendingPagesWidget should render the missing custom dimension
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top recent trending pages
         </h2>
@@ -416,7 +416,7 @@ exports[`TopRecentTrendingPagesWidget should render the missing custom dimension
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           No data to show
         </h3>

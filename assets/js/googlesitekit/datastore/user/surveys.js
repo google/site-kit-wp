@@ -33,8 +33,9 @@ import {
 	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
@@ -77,14 +78,11 @@ const fetchGetSurveyTimeoutsStore = createFetchStore( {
 			{ useCache: false }
 		);
 	},
-	reducerCallback( state, surveyTimeouts ) {
-		return {
-			...state,
-			surveyTimeouts: Array.isArray( surveyTimeouts )
-				? surveyTimeouts
-				: [],
-		};
-	},
+	reducerCallback: createReducer( ( state, surveyTimeouts ) => {
+		state.surveyTimeouts = Array.isArray( surveyTimeouts )
+			? surveyTimeouts
+			: [];
+	} ),
 } );
 
 const fetchGetSurveyStore = createFetchStore( {
@@ -92,18 +90,15 @@ const fetchGetSurveyStore = createFetchStore( {
 	controlCallback() {
 		return get( 'core', 'user', 'survey', {} );
 	},
-	reducerCallback: ( state, { survey } ) => {
+	reducerCallback: createReducer( ( state, { survey } ) => {
 		const {
 			survey_payload: currentSurvey = null,
 			session: currentSurveySession = null,
 		} = survey ? survey : {};
 
-		return {
-			...state,
-			currentSurvey,
-			currentSurveySession,
-		};
-	},
+		state.currentSurvey = currentSurvey;
+		state.currentSurveySession = currentSurveySession;
+	} ),
 } );
 
 const baseInitialState = {
@@ -164,6 +159,8 @@ const baseActions = {
 				isSurveyTriggerLocked,
 				getSurveyTimeouts,
 			} = select( CORE_USER );
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const { isUsingProxy } = select( CORE_SITE );
 
 			// The lock prevents multiple concurrent triggers for the same ID.
 			if ( isSurveyTriggerLocked( triggerID ) ) {
@@ -172,12 +169,15 @@ const baseActions = {
 			yield lockSurveyTrigger( triggerID );
 
 			try {
-				// Wait for user authentication state to be available before selecting.
+				// Wait for state to be available before selecting.
 				yield commonActions.await(
-					resolveSelect( CORE_USER ).getAuthentication()
+					Promise.all( [
+						resolveSelect( CORE_USER ).getAuthentication(),
+						resolveSelect( CORE_SITE ).getSiteInfo(),
+					] )
 				);
 
-				if ( ! isAuthenticated() ) {
+				if ( ! isAuthenticated() || ! isUsingProxy() ) {
 					return {};
 				}
 
@@ -252,6 +252,8 @@ const baseActions = {
 					);
 				return { response, error };
 			}
+
+			return { response: null, error: 'no session found' };
 		}
 	),
 };

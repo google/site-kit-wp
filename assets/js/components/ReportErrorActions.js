@@ -36,13 +36,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	isErrorRetryable,
 	isInsufficientPermissionsError,
-} from '../util/errors';
-import useViewOnly from '../hooks/useViewOnly';
+} from '@/js/util/errors';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import Link from './Link';
 
 export default function ReportErrorActions( props ) {

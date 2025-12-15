@@ -25,12 +25,12 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	ENABLE_AUTO_UPDATES_BANNER_SLUG
@@ -54,7 +54,7 @@ export default {
 		( Story, { args } ) => {
 			global.ajaxurl = '/admin-ajax.php';
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					changePluginAutoUpdatesCapacity: true,
 					siteKitAutoUpdatesEnabled: false,
@@ -70,7 +70,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			/**
 			 * Mock the admin-ajax.php endpoint.

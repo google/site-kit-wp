@@ -20,7 +20,7 @@
 import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
-} from '../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Provides custom dimension error data to the given registry.
@@ -32,10 +32,10 @@ import {
  * @param {string} options.customDimension The custom dimension slug.
  * @param {Object} options.error           The error object.
  */
-export const provideCustomDimensionError = (
+export function provideCustomDimensionError(
 	registry,
 	{ customDimension, error }
-) => {
+) {
 	const propertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 	const options = [
@@ -46,7 +46,7 @@ export const provideCustomDimensionError = (
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveError( error, 'createCustomDimension', options );
-};
+}
 
 /**
  * Checks whether the given error is an invalid custom dimension error.

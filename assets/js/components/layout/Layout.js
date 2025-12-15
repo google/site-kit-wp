@@ -51,6 +51,7 @@ class Layout extends Component {
 			relative,
 			rounded = false,
 			transparent = false,
+			...otherProps
 		} = this.props;
 
 		return (
@@ -61,6 +62,7 @@ class Layout extends Component {
 					'googlesitekit-layout--rounded': rounded,
 					'googlesitekit-layout--transparent': transparent,
 				} ) }
+				{ ...otherProps }
 			>
 				{ header && (
 					<LayoutHeader

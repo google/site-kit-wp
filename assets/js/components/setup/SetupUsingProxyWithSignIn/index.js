@@ -20,33 +20,42 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '../../../util';
-import Layout from '../../layout/Layout';
-import { Grid, Row, Cell } from '../../../material-components';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
+import Layout from '@/js/components/layout/Layout';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
-} from '../constants';
-import { setItem } from '../../../googlesitekit/api/cache';
-import useViewContext from '../../../hooks/useViewContext';
+} from '@/js/components/setup/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import useViewContext from '@/js/hooks/useViewContext';
 import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
+import Notice from '@/js/components/Notice';
+import { TYPES } from '@/js/components/Notice/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupUsingProxyWithSignIn() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
+	const { saveInitialSetupSettings } = useDispatch( CORE_USER );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -54,11 +63,9 @@ export default function SetupUsingProxyWithSignIn() {
 	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
-	const connectAnalytics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ANALYTICS_NOTICE_FORM_NAME,
-			ANALYTICS_NOTICE_CHECKBOX
-		)
+	const connectAnalytics = useFormValue(
+		ANALYTICS_NOTICE_FORM_NAME,
+		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const onButtonClick = useCallback(
@@ -69,16 +76,28 @@ export default function SetupUsingProxyWithSignIn() {
 
 			if ( connectAnalytics ) {
 				const { error, response } = await activateModule(
-					'analytics-4'
+					MODULE_SLUG_ANALYTICS_4
 				);
 
 				if ( ! error ) {
 					await trackEvent(
 						`${ viewContext }_setup`,
-						'start_setup_with_analytics'
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_with_analytics'
+							: 'start_setup_with_analytics'
 					);
 
 					moduleReauthURL = response.moduleReauthURL;
+
+					if ( setupFlowRefreshEnabled ) {
+						moduleReauthURL = addQueryArgs( moduleReauthURL, {
+							showProgress: true,
+						} );
+
+						await saveInitialSetupSettings( {
+							isAnalyticsSetupComplete: false,
+						} );
+					}
 				}
 			}
 
@@ -87,7 +106,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_user_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_user_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_user_setup'
+							: 'start_user_setup',
 						'proxy'
 					),
 				] );
@@ -98,7 +119,9 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_site_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						'start_site_setup',
+						setupFlowRefreshEnabled
+							? 'setup_flow_v3_start_site_setup'
+							: 'start_site_setup',
 						'proxy'
 					),
 				] );
@@ -113,12 +136,14 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		},
 		[
+			connectAnalytics,
 			proxySetupURL,
-			navigateTo,
 			isConnected,
 			activateModule,
-			connectAnalytics,
 			viewContext,
+			setupFlowRefreshEnabled,
+			saveInitialSetupSettings,
+			navigateTo,
 		]
 	);
 
@@ -129,9 +154,27 @@ export default function SetupUsingProxyWithSignIn() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
+							{ getQueryArg( location.href, 'notification' ) ===
+								'reset_success' && (
+								<Fragment>
+									<Notice
+										id="reset_success"
+										title={ __(
+											'Site Kit by Google was successfully reset.',
+											'google-site-kit'
+										) }
+										type={ TYPES.SUCCESS }
+									/>
+									<br />
+								</Fragment>
+							) }
 							<Layout rounded>
 								<Splash>
-									{ ( { complete, inProgressFeedback } ) => (
+									{ ( {
+										complete,
+										inProgressFeedback,
+										ctaFeedback,
+									} ) => (
 										<Actions
 											proxySetupURL={ proxySetupURL }
 											onButtonClick={ onButtonClick }
@@ -139,6 +182,7 @@ export default function SetupUsingProxyWithSignIn() {
 											inProgressFeedback={
 												inProgressFeedback
 											}
+											ctaFeedback={ ctaFeedback }
 										/>
 									) }
 								</Splash>

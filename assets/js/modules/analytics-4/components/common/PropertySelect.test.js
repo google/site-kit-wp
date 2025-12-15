@@ -20,9 +20,12 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import * as fixtures from '../../datastore/__fixtures__';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	fireEvent,
 	act,
@@ -89,7 +92,7 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should render an option for each analytics property of the currently selected account.', () => {
-		const { getAllByRole } = render( <PropertySelect />, {
+		const { getAllByRole } = render( <PropertySelect hasModuleAccess />, {
 			registry,
 		} );
 
@@ -160,9 +163,12 @@ describe( 'PropertySelect', () => {
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', () => {
-		const { getAllByRole, container } = render( <PropertySelect />, {
-			registry,
-		} );
+		const { getAllByRole, container } = render(
+			<PropertySelect hasModuleAccess />,
+			{
+				registry,
+			}
+		);
 		const allProperties = registry
 			.select( MODULES_ANALYTICS_4 )
 			.getProperties( accountID );

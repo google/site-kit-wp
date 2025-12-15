@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import { createReducer } from 'googlesitekit-data';
 import {
 	getPreviousDate,
 	getDateString,
@@ -31,7 +32,7 @@ import {
 	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
-} from '../../../util';
+} from '@/js/util';
 
 export const initialState = {
 	dateRange: 'last-28-days',
@@ -106,23 +107,20 @@ export const actions = {
 
 export const controls = {};
 
-export function reducer( state, { type, payload } ) {
+export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SET_DATE_RANGE:
-			return {
-				...state,
-				dateRange: payload.slug,
-			};
+			state.dateRange = payload.slug;
+			break;
+
 		case SET_REFERENCE_DATE:
-			return {
-				...state,
-				referenceDate: payload.dateString,
-			};
-		default: {
-			return state;
-		}
+			state.referenceDate = payload.dateString;
+			break;
+
+		default:
+			break;
 	}
-}
+} );
 
 export const resolvers = {};
 
