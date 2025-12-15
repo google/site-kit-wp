@@ -220,3 +220,65 @@
 	margin-top: 42px !important;
 	top: 0 !important;
 }
+
+// Setup Flow Refresh variant styles.
+.googlesitekit-tour-tooltip--setupFlowRefresh {
+
+	.googlesitekit-tooltip-title {
+		font-family: $f-primary;
+		font-size: $fs-title-lg;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xxs;
+		line-height: $lh-title-lg;
+		margin-bottom: 8px;
+	}
+
+	.googlesitekit-tooltip-content {
+		font-family: $f-primary;
+		font-size: $fs-body-md;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+	}
+
+	.googlesitekit-tooltip-body {
+		max-width: 332px;
+		padding: 32px $grid-gap-phone 0;
+	}
+
+	.googlesitekit-tooltip-close {
+		right: $grid-gap-phone;
+		top: $grid-gap-phone;
+	}
+
+	.googlesitekit-tooltip-button {
+		border-radius: $br-lg;
+		line-height: 20px;
+
+		&:focus {
+			outline: none;
+		}
+
+		&:focus:not(:active) {
+			outline: 2px solid $c-interactive-inverse-focus;
+		}
+	}
+
+	.googlesitekit-tooltip-button--primary {
+		background-color: $c-site-kit-sk-300;
+		padding: 6px $grid-gap-phone;
+	}
+
+	.googlesitekit-tooltip-steps {
+		font-family: $f-primary;
+		font-size: $fs-label-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xs;
+		line-height: $lh-label-md;
+		margin: 0;
+	}
+
+	.googlesitekit-tooltip-actions {
+		padding: $grid-gap-phone;
+	}
+}
