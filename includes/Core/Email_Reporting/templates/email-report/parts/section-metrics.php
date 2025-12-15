@@ -43,7 +43,8 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 			<table role="presentation" width="100%" style="margin-bottom:12px;">
 				<tr>
 					<td>&nbsp;</td>
-					<td width="110" style="text-align: right; font-size:12px; line-height:16px; font-weight:500; color:#6C726E; width: 110px;">
+					<td width="110"
+						style="text-align: right; font-size:12px; line-height:16px; font-weight:500; color:#6C726E; width: 110px;">
 						<?php echo esc_html( $subtitle ); ?>
 					</td>
 				</tr>
@@ -57,27 +58,34 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 					$data         = $part_config['data'];
 					$is_last      = $current === $total_parts;
 					$border_style = $is_last ? 'none' : '1px solid #EBEEF0';
+
+					if ( empty( $data ) ) {
+						continue;
+					}
 					?>
-					<tr>
-						<td style="vertical-align: top; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
-							<div style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
-								<?php echo esc_html( $data['label'] ); ?>
-							</div>
-							<div style="font-size:14px; line-height:20px; font-weight:500;">
-								<?php echo esc_html( $data['value'] ); ?>
-							</div>
-						</td>
-						<td style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
-							<?php
+				<tr>
+					<td
+						style="vertical-align: top; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
+						<div
+							style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
+							<?php echo esc_html( $data['label'] ); ?>
+						</div>
+						<div style="font-size:14px; line-height:20px; font-weight:500;">
+							<?php echo esc_html( $data['value'] ); ?>
+						</div>
+					</td>
+					<td
+						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
+						<?php
 							$render_shared_part(
 								'change-badge',
 								array(
 									'value' => $data['change'],
 								)
 							);
-							?>
-						</td>
-					</tr>
+						?>
+					</td>
+				</tr>
 					<?php
 				}
 				?>
@@ -96,4 +104,3 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 		</td>
 	</tr>
 </table>
-
