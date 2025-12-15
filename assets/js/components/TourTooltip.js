@@ -54,7 +54,7 @@ export default function TourTooltip( {
 		} );
 	}
 
-	// Determine close icon size based on feature flag
+	// Determine close icon size based on feature flag.
 	const closeIconSize = setupFlowRefreshEnabled ? 10 : 14;
 
 	return (
