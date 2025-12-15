@@ -67,8 +67,9 @@ export default function EmailReportingCardNotice( { className } ) {
 	}, [ setValue, trackEvents ] );
 
 	const handleDismiss = useCallback( async () => {
+		trackEvents.dismiss();
 		await dismissItem( EMAIL_REPORTING_CARD_NOTICE );
-	}, [ dismissItem ] );
+	}, [ dismissItem, trackEvents ] );
 
 	if ( settings === undefined ) {
 		return null;
