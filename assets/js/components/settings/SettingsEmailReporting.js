@@ -40,7 +40,7 @@ import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_CARD_NOTICE,
 } from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 
@@ -58,9 +58,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
+		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =

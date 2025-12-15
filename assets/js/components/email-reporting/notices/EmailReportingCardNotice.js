@@ -37,8 +37,7 @@ import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 
-export const EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM =
-	'email-reporting-card-notice';
+export const EMAIL_REPORTING_CARD_NOTICE = 'email_reports_settings_new_notice';
 
 export default function EmailReportingCardNotice( { className } ) {
 	const settings = useSelect( ( select ) =>
@@ -50,9 +49,7 @@ export default function EmailReportingCardNotice( { className } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
+		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -63,7 +60,7 @@ export default function EmailReportingCardNotice( { className } ) {
 	}, [ setValue ] );
 
 	const handleDismiss = useCallback( async () => {
-		await dismissItem( EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM );
+		await dismissItem( EMAIL_REPORTING_CARD_NOTICE );
 	}, [ dismissItem ] );
 
 	if ( settings === undefined ) {
