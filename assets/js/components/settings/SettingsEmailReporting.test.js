@@ -96,7 +96,7 @@ describe( 'SettingsEmailReporting', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should toggle enabled state when switch is clicked', async () => {
+	it( 'should toggle enabled and disabled state when switch is clicked', async () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
@@ -138,6 +138,17 @@ describe( 'SettingsEmailReporting', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'settings_email_reports_settings',
 			'activate_periodic_email_reports'
+		);
+
+		toggle.click();
+
+		await waitFor( () => {
+			expect( toggle ).toHaveAttribute( 'aria-checked', 'false' );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'deactivate_periodic_email_reports'
 		);
 	} );
 
@@ -185,6 +196,7 @@ describe( 'SettingsEmailReporting', () => {
 
 		const { getByText } = render( <SettingsEmailReporting />, {
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		const manageLink = getByText( 'Manage email reports subscription' );
@@ -195,5 +207,10 @@ describe( 'SettingsEmailReporting', () => {
 				.select( CORE_UI )
 				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 		).toBe( true );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'manage_email_reports_subscription'
+		);
 	} );
 } );
