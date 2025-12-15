@@ -93,8 +93,12 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	] );
 
 	const handleManageClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'manage_email_reports_subscription'
+		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	}, [ setValue, viewContext ] );
 
 	if ( loading || settings === undefined ) {
 		return null;
