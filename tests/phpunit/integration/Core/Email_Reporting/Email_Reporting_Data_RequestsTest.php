@@ -134,6 +134,11 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->fake_search_console_report( $search_console );
 		$this->fake_adsense_report( $adsense );
 
+		FakeHttp::fake_google_http_handler(
+			$this->authentication->get_oauth_client()->get_client(),
+			$this->get_analytics_batch_handler()
+		);
+
 		$data_requests = $this->create_data_requests( $conversion_tracking );
 		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
 
@@ -212,22 +217,49 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$analytics->register();
 		$this->fake_analytics_report( $analytics );
 
-		$http_filter = function ( $preempt, $args, $url ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		$http_filter = function ( $preempt, $args, $url ) {
 			if ( false !== strpos( $url, 'analyticsdata.googleapis.com' ) ) {
+				$single_report = array(
+					'rows'          => array(
+						array(
+							'dimensionValues' => array( array( 'value' => '20240101' ) ),
+							'metricValues'    => array( array( 'value' => '1' ) ),
+						),
+					),
+					'metricHeaders' => array( array( 'name' => 'totalUsers' ) ),
+					'rowCount'      => 1,
+				);
+
+				// Check if this is a batch request.
+				if ( false !== strpos( $url, 'batchRunReports' ) ) {
+					$body         = isset( $args['body'] ) ? $args['body'] : '';
+					$request_data = json_decode( $body, true );
+					$report_count = isset( $request_data['requests'] ) ? count( $request_data['requests'] ) : 1;
+
+					$reports = array();
+					for ( $i = 0; $i < $report_count; $i++ ) {
+						$reports[] = $single_report;
+					}
+
+					return array(
+						'headers'  => array(),
+						'body'     => wp_json_encode(
+							array(
+								'kind'    => 'analyticsData#batchRunReports',
+								'reports' => $reports,
+							)
+						),
+						'response' => array(
+							'code'    => 200,
+							'message' => 'OK',
+						),
+						'cookies'  => array(),
+					);
+				}
+
 				return array(
 					'headers'  => array(),
-					'body'     => wp_json_encode(
-						array(
-							'rows'          => array(
-								array(
-									'dimensionValues' => array( array( 'value' => '20240101' ) ),
-									'metricValues'    => array( array( 'value' => '1' ) ),
-								),
-							),
-							'metricHeaders' => array( array( 'name' => 'totalUsers' ) ),
-							'rowCount'      => 1,
-						)
-					),
+					'body'     => wp_json_encode( $single_report ),
 					'response' => array(
 						'code'    => 200,
 						'message' => 'OK',
@@ -345,38 +377,67 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, $slugs );
 	}
 
-	private function fake_analytics_report( Analytics_4 $analytics ) {
-		$handler = function ( Request $request ) {
+	private function get_analytics_batch_handler() {
+		return function ( Request $request ) {
 			if ( $request->getUri()->getHost() !== 'analyticsdata.googleapis.com' ) {
 				return new FulfilledPromise( new Response( 200 ) );
 			}
 
-			$dimension_value = new DimensionValue();
-			$dimension_value->setValue( '20240101' );
+			$single_report_array = array(
+				'dimensionHeaders' => array( array( 'name' => 'date' ) ),
+				'metricHeaders'    => array(
+					array(
+						'name' => 'totalUsers',
+						'type' => 'TYPE_INTEGER',
+					),
+				),
+				'rows'             => array(
+					array(
+						'dimensionValues' => array( array( 'value' => '20240101' ) ),
+						'metricValues'    => array( array( 'value' => '1' ) ),
+					),
+				),
+				'rowCount'         => 1,
+				'kind'             => 'analyticsData#runReport',
+			);
 
-			$metric_value = new MetricValue();
-			$metric_value->setValue( '1' );
+			$path = $request->getUri()->getPath();
+			if ( false !== strpos( $path, 'batchRunReports' ) ) {
+				$body         = (string) $request->getBody();
+				$request_data = json_decode( $body, true );
+				$report_count = isset( $request_data['requests'] ) ? count( $request_data['requests'] ) : 1;
 
-			$row = new Analytics_Data_Row();
-			$row->setDimensionValues( array( $dimension_value ) );
-			$row->setMetricValues( array( $metric_value ) );
+				$reports = array();
+				for ( $i = 0; $i < $report_count; $i++ ) {
+					$reports[] = $single_report_array;
+				}
 
-			$metric_header = new MetricHeader();
-			$metric_header->setName( 'totalUsers' );
+				$batch_response = array(
+					'kind'    => 'analyticsData#batchRunReports',
+					'reports' => $reports,
+				);
 
-			$response = new RunReportResponse();
-			$response->setRows( array( $row ) );
-			$response->setMetricHeaders( array( $metric_header ) );
-			$response->setRowCount( 1 );
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode( $batch_response )
+					)
+				);
+			}
 
 			return new FulfilledPromise(
 				new Response(
 					200,
 					array(),
-					json_encode( $response )
+					json_encode( $single_report_array )
 				)
 			);
 		};
+	}
+
+	private function fake_analytics_report( Analytics_4 $analytics ) {
+		$handler = $this->get_analytics_batch_handler();
 
 		FakeHttp::fake_google_http_handler(
 			$analytics->get_client(),
