@@ -27,11 +27,16 @@ import {
 	provideUserCapabilities,
 	provideModules,
 } from '../../../../tests/js/utils';
+import * as tracking from '@/js/util/tracking';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SettingsEmailReporting from './SettingsEmailReporting';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsEmailReporting', () => {
 	let registry;
@@ -47,6 +52,8 @@ describe( 'SettingsEmailReporting', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the toggle with correct label', () => {
@@ -104,6 +111,7 @@ describe( 'SettingsEmailReporting', () => {
 
 		const { getAllByRole } = render( <SettingsEmailReporting />, {
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		// The interactive control is the wrapper element with role="switch" (first match).
@@ -126,6 +134,11 @@ describe( 'SettingsEmailReporting', () => {
 		await waitFor( () => {
 			expect( toggle ).toHaveAttribute( 'aria-checked', 'true' );
 		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'activate_periodic_email_reports'
+		);
 	} );
 
 	it( 'should show "Manage email reports" link when enabled and subscribed', () => {
