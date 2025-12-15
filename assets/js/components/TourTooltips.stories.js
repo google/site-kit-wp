@@ -374,50 +374,47 @@ function TourControls() {
 	);
 }
 
+const steps = [
+	{
+		target: '.step-1',
+		title: 'See where your visitors are coming from',
+		content:
+			'Click on a slice of the chart to see how it changed over time just for that source',
+		placement: 'bottom-start',
+	},
+	{
+		target: '.step-2',
+		title: "It's now easier to see your site's traffic at a glance",
+		content:
+			'Check the trend graph to see how your traffic changed over time',
+		placement: 'top-end',
+	},
+	{
+		target: '.step-3',
+		title: 'Check how your traffic changed since you last looked',
+		content:
+			'Select a time frame to see the comparison with the previous time period',
+	},
+	{
+		target: '.step-4',
+		title: 'Generic step title for the fourth step',
+		content: (
+			<div>
+				{ createInterpolateElement(
+					'This is the fourth step with an external link that should go to Google, <a>link</a>.',
+					{
+						a: <Link href="http://google.com" external />,
+					}
+				) }
+			</div>
+		),
+		floaterProps: {
+			target: '.step-4-anchor',
+		},
+	},
+];
+
 function Template() {
-	const steps = [
-		{
-			target: '.step-1',
-			title: 'See where your visitors are coming from',
-			content:
-				'Click on a slice of the chart to see how it changed over time just for that source',
-			placement: 'bottom-start',
-		},
-		{
-			target: '.step-2',
-			title: "It's now easier to see your site's traffic at a glance",
-			content:
-				'Check the trend graph to see how your traffic changed over time',
-			placement: 'top-end',
-		},
-		{
-			target: '.step-3',
-			title: 'Check how your traffic changed since you last looked',
-			content:
-				'Select a time frame to see the comparison with the previous time period',
-		},
-		{
-			target: '.step-4',
-			title: 'Generic step title for the fourth step',
-			content: (
-				<div>
-					{ createInterpolateElement(
-						'This is the fourth step with an external link that should go to Google, <a>link</a>.',
-						{
-							a: <Link href="http://google.com" external />,
-						}
-					) }
-				</div>
-			),
-			floaterProps: {
-				target: '.step-4-anchor',
-			},
-		},
-	];
-	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
-		body: JSON.stringify( [ 'feature' ] ),
-		status: 200,
-	} );
 	function setupRegistry( registry ) {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 	}
@@ -437,7 +434,28 @@ function Template() {
 
 export const Default = Template.bind( {} );
 
+export const SetupFlowRefresh = Template.bind( {} );
+SetupFlowRefresh.storyName = 'Setup Flow Refresh';
+SetupFlowRefresh.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
 export default {
 	title: 'Components/TourTooltips',
 	component: TourTooltips,
+	decorators: [
+		( Story ) => {
+			// Set up fetchMock with overwriteRoutes to handle story switching
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
+				{
+					body: JSON.stringify( [ 'feature' ] ),
+					status: 200,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			return <Story />;
+		},
+	],
 };
