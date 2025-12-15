@@ -61,9 +61,10 @@ export default function EmailReportingCardNotice( { className } ) {
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const handleSetup = useCallback( () => {
+	const handleOnCTAClick = useCallback( () => {
+		trackEvents.confirm();
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	}, [ setValue, trackEvents ] );
 
 	const handleDismiss = useCallback( async () => {
 		await dismissItem( EMAIL_REPORTING_CARD_NOTICE );
@@ -88,7 +89,7 @@ export default function EmailReportingCardNotice( { className } ) {
 			) }
 			ctaButton={ {
 				label: __( 'Set up', 'google-site-kit' ),
-				onClick: handleSetup,
+				onClick: handleOnCTAClick,
 			} }
 			dismissButton={ {
 				label: __( 'Maybe later', 'google-site-kit' ),
