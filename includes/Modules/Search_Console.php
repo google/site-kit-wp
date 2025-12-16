@@ -35,6 +35,7 @@ use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalyticsBatch;
+use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalytics;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse as Google_Service_SearchConsole_SitesListResponse;
@@ -182,9 +183,17 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:matched-sites'          => array( 'service' => 'searchconsole' ),
-			'GET:searchanalytics'        => array(
-				'service'   => 'searchconsole',
-				'shareable' => true,
+			'GET:searchanalytics'        => new SearchAnalytics(
+				array(
+					'service'        => 'searchconsole',
+					'shareable'      => true,
+					'prepare_args'   => function ( array $request_data ) {
+						return $this->prepare_search_analytics_request_args( $request_data );
+					},
+					'create_request' => function ( array $args ) {
+						return $this->create_search_analytics_data_request( $args );
+					},
+				)
 			),
 			'POST:searchanalytics-batch' => new SearchAnalyticsBatch(
 				array(
@@ -220,10 +229,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				return $this->get_searchconsole_service()->sites->listSites();
-			case 'GET:searchanalytics':
-				$request_args = $this->prepare_search_analytics_request_args( $data->data );
-
-				return $this->create_search_analytics_data_request( $request_args );
 			case 'POST:site':
 				if ( empty( $data['siteURL'] ) ) {
 					return new WP_Error(
@@ -332,8 +337,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 						}
 					)
 				);
-			case 'GET:searchanalytics':
-				return $response->getRows();
 			case 'GET:sites':
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				return $this->map_sites( (array) $response->getSiteEntry() );
