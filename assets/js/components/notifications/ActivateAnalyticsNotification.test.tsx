@@ -34,6 +34,7 @@ import {
 	fireEvent,
 } from '../../../../tests/js/test-utils';
 import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -163,7 +164,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 
 		fireEvent.click(
 			getByRole( 'button', {
-				name: /Set up Analytics/i,
+				name: 'Set up Analytics',
 			} )
 		);
 
@@ -221,6 +222,46 @@ describe( 'ActivateAnalyticsNotification', () => {
 		} );
 	} );
 
+	it( 'should show a tooltip when the "Maybe later" button is clicked', async () => {
+		provideModules( registry );
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+					expires: 2 * WEEK_IN_SECONDS,
+					count: 1,
+				},
+			},
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ActivateAnalyticsNotificationComponent />,
+			{
+				registry,
+			}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Maybe later',
+			} )
+		);
+
+		await waitForRegistry();
+
+		const tooltip = registry
+			.select( CORE_UI )
+			.getValue( 'admin-screen-tooltip' );
+
+		expect( tooltip ).toEqual( {
+			isTooltipVisible: true,
+			tooltipSlug: ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
+			title: 'You can always set up Analytics from Settings later',
+			dismissLabel: 'Got it',
+		} );
+	} );
+
 	it( 'should dismiss the notification permanently when the "Don’t show again" button is clicked', async () => {
 		provideModules( registry );
 
@@ -264,6 +305,53 @@ describe( 'ActivateAnalyticsNotification', () => {
 				},
 			},
 			method: 'POST',
+		} );
+	} );
+
+	it( 'should show a tooltip when the "Don’t show again" button is clicked', async () => {
+		provideModules( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+			[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+				expires: 0,
+				count: 2,
+			},
+		} );
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+					expires: 2 * WEEK_IN_SECONDS,
+					count: 3,
+				},
+			},
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<ActivateAnalyticsNotificationComponent />,
+			{
+				registry,
+			}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+		) as any;
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Don’t show again',
+			} )
+		);
+
+		await waitForRegistry();
+
+		const tooltip = registry
+			.select( CORE_UI )
+			.getValue( 'admin-screen-tooltip' );
+
+		expect( tooltip ).toEqual( {
+			isTooltipVisible: true,
+			tooltipSlug: ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
+			title: 'You can always set up Analytics from Settings later',
+			dismissLabel: 'Got it',
 		} );
 	} );
 
