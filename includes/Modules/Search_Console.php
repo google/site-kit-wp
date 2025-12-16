@@ -573,7 +573,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 						'googlesitekit-datastore-user',
 						'googlesitekit-modules',
 						'googlesitekit-components',
-						'googlesitekit-modules-data',
 					),
 				)
 			),

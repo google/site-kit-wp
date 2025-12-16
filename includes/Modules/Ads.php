@@ -214,7 +214,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 						'execution'    => 'async',
 						'dependencies' => array(
 							'googlesitekit-ads-pax-config',
-							'googlesitekit-modules-data',
 						),
 						'version'      => null,
 					)
