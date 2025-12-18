@@ -15,6 +15,8 @@
  * @var callable $get_asset_url      Function to get asset URLs.
  */
 
+use Google\Site_Kit\Core\Email_Reporting\Sections_Map;
+
 $section_title = $section['title'];
 $section_icon  = $section['icon'];
 $dashboard_url = $section['dashboard_url'];
@@ -24,20 +26,6 @@ $section_parts = $section['section_parts'];
 $first_part      = reset( $section_parts );
 $first_data_item = ! empty( $first_part['data'] ) ? $first_part['data'] : array();
 $subtitle        = $first_data_item['change_context'] ?? '';
-
-/**
- * Mapping of section part keys to their display labels.
- */
-$part_labels = array(
-	'traffic_channels'      => __( 'Traffic channels by visitor count', 'google-site-kit' ),
-	'top_ctr_keywords'      => __( 'Keywords with highest CTR in Search', 'google-site-kit' ),
-	'popular_content'       => __( 'Pages with the most pageviews', 'google-site-kit' ),
-	'top_pages_by_clicks'   => __( 'Pages with the most clicks from Search', 'google-site-kit' ),
-	'top_authors'           => __( 'Top authors by pageviews', 'google-site-kit' ),
-	'top_categories'        => __( 'Top categories by pageviews', 'google-site-kit' ),
-	'keywords_ctr_increase' => __( 'Search keywords with the biggest increase in CTR', 'google-site-kit' ),
-	'pages_clicks_increase' => __( 'Pages with the biggest increase in Search clicks', 'google-site-kit' ),
-);
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
@@ -58,7 +46,7 @@ $part_labels = array(
 			foreach ( $section_parts as $part_key => $part_config ) {
 				$is_last_section_part = array_key_last( $section_parts ) === $part_key;
 				$data                 = $part_config['data'];
-				$part_label           = $part_labels[ $part_key ] ?? ucwords( str_replace( '_', ' ', $part_key ) );
+				$part_label           = Sections_Map::get_part_label( $part_key );
 
 				if ( empty( $data ) ) {
 					continue;
