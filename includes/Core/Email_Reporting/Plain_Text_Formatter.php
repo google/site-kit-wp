@@ -18,23 +18,6 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Plain_Text_Formatter {
 
 	/**
-	 * Mapping of section part keys to their display labels.
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	protected static $part_labels = array(
-		'traffic_channels'      => 'Traffic channels by visitor count',
-		'top_ctr_keywords'      => 'Keywords with highest CTR in Search',
-		'popular_content'       => 'Pages with the most pageviews',
-		'top_pages_by_clicks'   => 'Pages with the most clicks from Search',
-		'top_authors'           => 'Top authors by pageviews',
-		'top_categories'        => 'Top categories by pageviews',
-		'keywords_ctr_increase' => 'Search keywords with the biggest increase in CTR',
-		'pages_clicks_increase' => 'Pages with the biggest increase in Search clicks',
-	);
-
-	/**
 	 * Formats the email header.
 	 *
 	 * @since n.e.x.t
@@ -359,7 +342,7 @@ class Plain_Text_Formatter {
 			}
 
 			$data       = $part_config['data'];
-			$part_label = self::$part_labels[ $part_key ] ?? ucwords( str_replace( '_', ' ', $part_key ) );
+			$part_label = Sections_Map::get_part_label( $part_key );
 
 			// Part heading.
 			$output .= $part_label . "\n";
