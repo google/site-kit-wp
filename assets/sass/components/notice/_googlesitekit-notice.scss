@@ -45,7 +45,7 @@
 	gap: 10px;
 	padding: 14px $grid-gap-phone;
 
-	@media (min-width: $bp-tablet) {
+	@container (width > #{$container-width-desktop}) {
 		align-items: center;
 		flex-direction: row;
 		gap: $grid-gap-phone;
@@ -62,7 +62,7 @@
 		font-weight: $fw-normal;
 		line-height: $lh-title-sm;
 
-		@media (min-width: $bp-tablet) {
+		@container (width > #{$container-width-desktop}) {
 			flex: 1;
 		}
 
@@ -76,7 +76,7 @@
 
 		p {
 			margin: 0 0 10px;
-			@media (min-width: $bp-tablet) {
+			@container (width > #{$container-width-desktop}) {
 				margin: 0;
 			}
 
@@ -122,7 +122,7 @@
 			color: $c-content-on-primary-container;
 		}
 
-		@media (min-width: $bp-tablet) {
+		@container (width > #{$container-width-desktop}) {
 			margin: 0;
 		}
 
@@ -139,7 +139,7 @@
 		justify-content: end;
 		width: 100%;
 
-		@media (min-width: $bp-tablet) {
+		@container (width > #{$container-width-desktop}) {
 			justify-content: initial;
 			width: initial;
 		}
