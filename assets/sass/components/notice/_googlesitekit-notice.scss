@@ -31,6 +31,10 @@
 	}
 }
 
+.googlesitekit-notice-container {
+	container-type: inline-size;
+}
+
 .googlesitekit-notice {
 	align-items: flex-start;
 	background-color: $c-content-primary-container;
