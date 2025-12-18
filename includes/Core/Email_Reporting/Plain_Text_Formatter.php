@@ -282,7 +282,7 @@ class Plain_Text_Formatter {
 		if ( ! empty( $data['event_name'] ) ) {
 			$event_label = sprintf(
 				/* translators: %s: Event name (e.g., "Purchase") */
-				__( '"%s" events', 'google-site-kit' ),
+				__( '“%s“ events', 'google-site-kit' ),
 				ucfirst( $data['event_name'] )
 			);
 			$lines[] = self::format_metric(
