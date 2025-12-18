@@ -243,7 +243,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Is my site helping my business grow?', $result, 'Conversions section should contain title.' );
 		$this->assertStringContainsString( 'Total conversions: 150 (+25%)', $result, 'Conversions section should contain total conversions.' );
 		$this->assertStringContainsString( 'Purchases', $result, 'Conversions section should contain purchases label.' );
-		$this->assertStringContainsString( '"Purchase" events', $result, 'Conversions section should contain event name.' );
+		$this->assertStringContainsString( '“Purchase“ events', $result, 'Conversions section should contain event name.' );
 		$this->assertStringContainsString( 'Top traffic channel driving the most conversions: Organic Search', $result, 'Conversions section should contain top traffic channel.' );
 	}
 
