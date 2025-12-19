@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf210a5cda3567ce09a6a40b85ccc25c",
+    "content-hash": "e3ac9db7bf844de483605be326702595",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -229,25 +229,6 @@
                 "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.355.0"
             },
             "time": "2024-05-11T01:02:11+00:00"
-        },
-        {
-            "name": "google/apiclient-services-adsenselinks",
-            "version": "v0.1",
-            "dist": {
-                "type": "path",
-                "url": "packages/apiclient-services-adsenselinks",
-                "reference": "cab6e024be947d3690f317ed63fa33da5f5dcecf"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "AdSenseLinks.php"
-                ]
-            },
-            "transport-options": {
-                "symlink": false,
-                "relative": true
-            }
         },
         {
             "name": "google/apiclient-services-analyticsadmin-v1alpha",
