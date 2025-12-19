@@ -93,6 +93,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google_Service_GoogleAnalyticsAdminV1alpha;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -1942,6 +1943,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
+	 * Gets the configured Analytics Admin v1alpha service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_GoogleAnalyticsAdminV1alpha
+	 */
+	protected function get_analyticsadminv1alpha_service() {
+		return $this->get_service( 'analyticsadmin-v1alpha' );
+	}
+
+	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
 	 * @since 1.93.0
@@ -2002,6 +2014,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		return array(
 			'analyticsadmin'               => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsadmin-v1alpha'       => new Google_Service_GoogleAnalyticsAdminV1alpha( $client ),
 			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
 			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
 			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
