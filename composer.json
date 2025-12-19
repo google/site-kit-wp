@@ -73,13 +73,6 @@
   "repositories": [
     {
       "type": "path",
-      "url": "packages/apiclient-services-adsenselinks",
-      "options": {
-        "symlink": false
-      }
-    },
-    {
-      "type": "path",
       "url": "packages/apiclient-services-analyticsadmin-v1alpha",
       "options": {
         "symlink": false
