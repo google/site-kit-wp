@@ -71,7 +71,43 @@ class Has_Multiple_Admins {
 	 */
 	public function get() {
 		$admins_count = $this->transients->get( self::OPTION );
-		if ( false === $admins_count ) {
+
+		if ( false !== $admins_count ) {
+			return $admins_count > 1;
+		}
+
+		if ( is_multisite() ) {
+			$super_admins = get_super_admins();
+			// If there are multiple super admins, we definitely have multiple admins.
+			if ( count( $super_admins ) > 1 ) {
+				$admins_count = count( $super_admins );
+				// There's no need to check local admins in this case, although we should be aware that
+				// the cached value may not include local admins.
+				// We should consider making the cached value a boolean to avoid this ambiguity.
+			} else {
+				// If there is 0 or 1 super admin, we need to check local admins.
+				// We exclude the super admin from the local check to avoid double counting
+				// if they are also added as a local administrator.
+				$exclude_users = array();
+				if ( ! empty( $super_admins ) ) {
+					$super_admin = get_user_by( 'login', $super_admins[0] );
+					if ( $super_admin ) {
+						$exclude_users[] = $super_admin->ID;
+					}
+				}
+
+				$user_query_args = array(
+					'number'      => 1,
+					'role__in'    => array( 'Administrator' ),
+					'count_total' => true,
+					'exclude'     => $exclude_users,
+				);
+
+				$user_query = new WP_User_Query( $user_query_args );
+				// Add 1 if there is a super admin, plus any other local admins found.
+				$admins_count = ( ! empty( $super_admins ) ? 1 : 0 ) + $user_query->get_total();
+			}
+		} else {
 			$user_query_args = array(
 				'number'      => 1,
 				'role__in'    => array( 'Administrator' ),
@@ -80,9 +116,9 @@ class Has_Multiple_Admins {
 
 			$user_query   = new WP_User_Query( $user_query_args );
 			$admins_count = $user_query->get_total();
-
-			$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
 		}
+
+		$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
 
 		return $admins_count > 1;
 	}
