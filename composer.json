@@ -29,6 +29,7 @@
     "symfony/polyfill-intl-idn": "^1.29.0"
   },
   "replace": {
+    "google/apiclient-services": "*",
     "paragonie/random_compat": ">=2"
   },
   "autoload": {
@@ -53,16 +54,6 @@
     }
   },
   "extra": {
-    "google/apiclient-services": [
-      "Adsense",
-      "AnalyticsData",
-      "GoogleAnalyticsAdmin",
-      "PagespeedInsights",
-      "PeopleService",
-      "SearchConsole",
-      "SiteVerification",
-      "TagManager"
-    ],
     "wordpress-install-dir": "vendor/roots/wordpress",
     "patches": {
       "google/apiclient-services": {
