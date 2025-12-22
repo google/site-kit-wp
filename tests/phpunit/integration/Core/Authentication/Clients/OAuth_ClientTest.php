@@ -398,44 +398,6 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( $post_auth_redirect, $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ) );
 	}
 
-	public function test_authorize_user__with_show_search_console() {
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$user_options = new User_Options( $context );
-		$client       = new OAuth_Client( $context, null, $user_options );
-		$this->fake_site_connection();
-
-		// Add a notification query parameter to the redirect URL.
-		$success_redirect = add_query_arg(
-			array(
-				'notification' => 'some_notification_value',
-			),
-			admin_url( 'success-redirect' )
-		);
-
-		$client->get_authentication_url( $success_redirect );
-
-		$this->mock_google_client( $client );
-
-		$_GET['searchConsoleSetupSuccess'] = '1';
-
-		try {
-			$client->authorize_user();
-			$this->fail( 'Expected to throw a RedirectException!' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg(
-					array(
-						'searchConsoleSetupSuccess' => 'true',
-					),
-					$success_redirect
-				),
-				$redirect->get_location()
-			);
-		}
-	}
-
 	public function test_authorize_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
@@ -489,6 +451,44 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'fresh@foo.com', $profile['email'] );
 		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'] );
 		$this->assertEquals( 'Dr Funkenstein', $profile['full_name'] );
+	}
+
+	public function test_authorize_user__with_show_search_console() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+		$this->fake_site_connection();
+
+		// Add a notification query parameter to the redirect URL.
+		$success_redirect = add_query_arg(
+			array(
+				'notification' => 'some_notification_value',
+			),
+			admin_url( 'success-redirect' )
+		);
+
+		$client->get_authentication_url( $success_redirect );
+
+		$this->mock_google_client( $client );
+
+		$_GET['searchConsoleSetupSuccess'] = '1';
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'searchConsoleSetupSuccess' => 'true',
+					),
+					$success_redirect
+				),
+				$redirect->get_location()
+			);
+		}
 	}
 
 	public function test_authorize_user__with_redirect_url_notification() {
