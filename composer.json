@@ -24,6 +24,7 @@
     "cweagans/composer-patches": "^1.7",
     "google/apiclient": "^2.16",
     "google/apiclient-services-analyticsadmin-v1alpha": "dev-latest",
+    "google/apiclient-services-analyticsadmin-v1beta": "dev-latest",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
@@ -56,7 +57,6 @@
     "google/apiclient-services": [
       "Adsense",
       "AnalyticsData",
-      "GoogleAnalyticsAdmin",
       "PagespeedInsights",
       "PeopleService",
       "SearchConsole",
@@ -74,6 +74,13 @@
     {
       "type": "path",
       "url": "packages/apiclient-services-analyticsadmin-v1alpha",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-analyticsadmin-v1beta",
       "options": {
         "symlink": false
       }

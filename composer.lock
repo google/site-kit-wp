@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f179555c987aa5e185eca681c546abdc",
+    "content-hash": "ad885fd10b3b1d8570a9811f0c155aa0",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -237,6 +237,20 @@
                 "type": "path",
                 "url": "packages/apiclient-services-analyticsadmin-v1alpha",
                 "reference": "797a3c0e3c1ad821a147a0a464b7f57d50945a4b"
+            },
+            "type": "library",
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
+        },
+        {
+            "name": "google/apiclient-services-analyticsadmin-v1beta",
+            "version": "dev-latest",
+            "dist": {
+                "type": "path",
+                "url": "packages/apiclient-services-analyticsadmin-v1beta",
+                "reference": "43db6137aea228b05d9a45a2e686337b1f56cb05"
             },
             "type": "library",
             "transport-options": {
@@ -5236,6 +5250,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "google/apiclient-services-analyticsadmin-v1alpha": 20,
+        "google/apiclient-services-analyticsadmin-v1beta": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
