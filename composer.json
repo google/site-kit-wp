@@ -24,6 +24,7 @@
     "cweagans/composer-patches": "^1.7",
     "google/apiclient": "^2.16",
     "google/apiclient-services-adsenselinks": "^0.1.0",
+    "google/apiclient-services-siteverification": "dev-latest",
     "google/apiclient-services-subscribewithgoogle": "^0.1.0",
     "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
@@ -60,7 +61,6 @@
       "PagespeedInsights",
       "PeopleService",
       "SearchConsole",
-      "SiteVerification",
       "TagManager"
     ],
     "wordpress-install-dir": "vendor/roots/wordpress",
@@ -74,6 +74,13 @@
     {
       "type": "path",
       "url": "packages/apiclient-services-adsenselinks",
+      "options": {
+        "symlink": false
+      }
+    },
+    {
+      "type": "path",
+      "url": "packages/apiclient-services-siteverification",
       "options": {
         "symlink": false
       }
