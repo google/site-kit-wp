@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c71ae91707a1e63e890687b66846c64c",
+    "content-hash": "f179555c987aa5e185eca681c546abdc",
     "packages": [
         {
             "name": "cweagans/composer-patches",
@@ -231,19 +231,14 @@
             "time": "2024-05-11T01:02:11+00:00"
         },
         {
-            "name": "google/apiclient-services-adsenselinks",
-            "version": "v0.1",
+            "name": "google/apiclient-services-analyticsadmin-v1alpha",
+            "version": "dev-latest",
             "dist": {
                 "type": "path",
-                "url": "packages/apiclient-services-adsenselinks",
-                "reference": "cab6e024be947d3690f317ed63fa33da5f5dcecf"
+                "url": "packages/apiclient-services-analyticsadmin-v1alpha",
+                "reference": "797a3c0e3c1ad821a147a0a464b7f57d50945a4b"
             },
             "type": "library",
-            "autoload": {
-                "classmap": [
-                    "AdSenseLinks.php"
-                ]
-            },
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5240,6 +5235,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "google/apiclient-services-analyticsadmin-v1alpha": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
