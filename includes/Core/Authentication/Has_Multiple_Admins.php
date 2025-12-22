@@ -29,7 +29,7 @@ class Has_Multiple_Admins {
 	/**
 	 * The option_name for this transient.
 	 */
-	const OPTION = 'googlesitekit_has_multiple_admins';
+	const OPTION = 'googlesitekit_has_multiple_administrators';
 
 	/**
 	 * Transients instance.
@@ -70,10 +70,10 @@ class Has_Multiple_Admins {
 	 * @return boolean TRUE if the site kit has multiple admins, otherwise FALSE.
 	 */
 	public function get() {
-		$admins_count = $this->transients->get( self::OPTION );
+		$has_multiple_admins = $this->transients->get( self::OPTION );
 
-		if ( false !== $admins_count ) {
-			return $admins_count > 1;
+		if ( false !== $has_multiple_admins ) {
+			return 1 === $has_multiple_admins;
 		}
 
 		if ( is_multisite() ) {
@@ -81,9 +81,7 @@ class Has_Multiple_Admins {
 			// If there are multiple super admins, we definitely have multiple admins.
 			if ( count( $super_admins ) > 1 ) {
 				$admins_count = count( $super_admins );
-				// There's no need to check local admins in this case, although we should be aware that
-				// the cached value may not include local admins.
-				// We should consider making the cached value a boolean to avoid this ambiguity.
+				// There's no need to check local admins in this case.
 			} else {
 				// If there is 0 or 1 super admin, we need to check local admins.
 				// We exclude the super admin from the local check to avoid double counting
@@ -118,9 +116,11 @@ class Has_Multiple_Admins {
 			$admins_count = $user_query->get_total();
 		}
 
-		$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
+		$has_multiple_admins = $admins_count > 1 ? 1 : 0;
 
-		return $admins_count > 1;
+		$this->transients->set( self::OPTION, $has_multiple_admins, WEEK_IN_SECONDS );
+
+		return $has_multiple_admins;
 	}
 
 	/**
