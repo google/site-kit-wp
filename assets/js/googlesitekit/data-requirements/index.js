@@ -69,6 +69,23 @@ export function requireCanViewSharedModule( slug ) {
 }
 
 /**
+ * Returns a function that checks if the given module is active.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is active or not.
+ */
+export function requireModuleActive( slug ) {
+	return async function ( { resolveSelect } ) {
+		return (
+			true ===
+			( await resolveSelect( CORE_MODULES ).isModuleActive( slug ) )
+		);
+	};
+}
+
+/**
  * Returns a function that checks if the given module is connected.
  *
  * @since 1.166.0
@@ -141,4 +158,31 @@ export function requireAudienceSegmentationWidgetHidden() {
 			true === select( CORE_USER ).isAudienceSegmentationWidgetHidden()
 		);
 	};
+}
+
+/**
+ * Returns a function that checks if the given module'sdatastore is gathering data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} datastoreSlug Datastore slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given datastore is gathering data or not.
+ */
+export function requireModuleGatheringData( datastoreSlug ) {
+	return async ( { resolveSelect } ) =>
+		true === ( await resolveSelect( datastoreSlug ).isGatheringData() );
+}
+
+/**
+ * Returns a function that checks if the current user can activate the given module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user can activate the given module or not.
+ */
+export function requireCanActivateModule( slug ) {
+	return async ( { resolveSelect } ) =>
+		true ===
+		( await resolveSelect( CORE_MODULES ).canActivateModule( slug ) );
 }
