@@ -21,7 +21,6 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-openssl": "*",
-    "cweagans/composer-patches": "^1.7",
     "google/apiclient": "^2.16",
     "google/apiclient-services-adsenselinks": "^0.1.0",
     "google/apiclient-services-analyticsdata": "dev-latest",
@@ -49,8 +48,7 @@
     "sort-packages": true,
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "roots/wordpress-core-installer": true,
-      "cweagans/composer-patches": true
+      "roots/wordpress-core-installer": true
     }
   },
   "extra": {
@@ -63,12 +61,7 @@
       "SiteVerification",
       "TagManager"
     ],
-    "wordpress-install-dir": "vendor/roots/wordpress",
-    "patches": {
-      "google/apiclient-services": {
-        "Fixes for empty filter": "patches-composer/google-api-client-services-v0.355.0.patch"
-      }
-    }
+    "wordpress-install-dir": "vendor/roots/wordpress"
   },
   "repositories": [
     {
