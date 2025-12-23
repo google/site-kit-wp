@@ -177,7 +177,7 @@ export const parameters = {
 		},
 	},
 	async puppeteerTest( page ) {
-		await page.waitForTimeout( 50 );
+		await new Promise( ( resolve ) => setTimeout( resolve, 50 ) );
 
 		expect(
 			await page.$eval( 'body', ( el ) =>

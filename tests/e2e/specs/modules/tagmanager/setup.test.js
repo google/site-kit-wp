@@ -84,7 +84,7 @@ describe( 'Tag Manager module setup', () => {
 					/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
 				)
 			) {
-				request.respond( { status: 200 } );
+				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
 				request.respond( { status: 200, body: '[]' } );
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {

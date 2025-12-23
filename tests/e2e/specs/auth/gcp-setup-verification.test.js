@@ -57,10 +57,6 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await resetSiteKit();
 	} );
 
-	afterAll( async () => {
-		await page.setRequestInterception( false );
-	} );
-
 	it( 'prompts for confirmation if user is not verified for the site', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 

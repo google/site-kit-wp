@@ -63,7 +63,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			} else if (
 				request.url().match( 'analytics-4/data/create-account-ticket' )
 			) {
-				request.respond( { status: 200 } ); // Do nothing for now, return 200 to prevent error.
+				request.respond( { status: 200, body: '[]' } ); // Do nothing for now, return 200 to prevent error.
 			} else {
 				request.continue();
 			}
@@ -129,13 +129,13 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			'.googlesitekit-analytics__select-country'
 		);
 
-		await page.waitForTimeout( 10 );
+		await new Promise( ( resolve ) => setTimeout( resolve, 10 ) );
 
 		await expect( page ).toClick( '.mdc-menu-surface--open li', {
 			text: /united kingdom/i,
 		} );
 
-		await page.waitForTimeout( 10 );
+		await new Promise( ( resolve ) => setTimeout( resolve, 10 ) );
 
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
@@ -147,12 +147,11 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			} ),
 		] );
 
-		await page.waitForTimeout( 10 );
+		await new Promise( ( resolve ) => setTimeout( resolve, 10 ) );
 
 		// When returning from OAuth, the form will resubmit automatically, so we won't be able to see the form to verify the values there.
 		// Instead, we can ensure that they were passed in the request to `create-account-ticket`
 		// Everything else is difficult to mock out here.
-
 		let reqBody;
 		await page.waitForRequest(
 			( req ) =>

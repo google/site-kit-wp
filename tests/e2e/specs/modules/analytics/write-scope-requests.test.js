@@ -178,11 +178,10 @@ describe( 'Analytics write scope requests', () => {
 			} else if (
 				request.url().match( 'analytics-4/data/container-destinations' )
 			) {
-				const googleTagID = global.googlesitekit.data
-					.select( 'modules/analytics-4' )
-					.googleTagID();
-				// eslint-disable-next-line sitekit/acronym-case
-				const destination = { destinationId: googleTagID };
+				const destination = {
+					// eslint-disable-next-line sitekit/acronym-case
+					destinationId: fixtures.googleTagSettings.googleTagID,
+				};
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( [ destination ] ),
@@ -236,6 +235,10 @@ describe( 'Analytics write scope requests', () => {
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
+
+	// it( 'works', () => {
+	// 	expect( true ).toBeTruthy();
+	// } );
 
 	/*
 	 * @TODO Fix this test which fails with a generic TimeoutError

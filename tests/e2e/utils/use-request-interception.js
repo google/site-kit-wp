@@ -1,3 +1,5 @@
+import { InterceptResolutionAction } from 'puppeteer';
+
 /**
  * Adds a request handler for intercepting requests.
  *
@@ -13,7 +15,11 @@
 export function useRequestInterception( config ) {
 	function requestHandler( request ) {
 		// Prevent errors for requests that happen after interception is disabled.
-		if ( ! request._allowInterception ) {
+		const { action } = request.interceptResolutionState();
+		if (
+			action === InterceptResolutionAction.Disabled ||
+			action === InterceptResolutionAction.AlreadyHandled
+		) {
 			return;
 		}
 
@@ -72,7 +78,11 @@ export function useSharedRequestInterception( requestCases ) {
 	const cases = [ ...requestCases ];
 	function requestHandler( request ) {
 		// Prevent errors for requests that happen after interception is disabled.
-		if ( ! request._allowInterception ) {
+		const { action } = request.interceptResolutionState();
+		if (
+			action === InterceptResolutionAction.Disabled ||
+			action === InterceptResolutionAction.AlreadyHandled
+		) {
 			return;
 		}
 
