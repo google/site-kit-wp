@@ -77,7 +77,7 @@ describe( 'ErrorNotice', () => {
 		[ 'retrieving user count', 'getReport', [ reportOptions ] ],
 	];
 
-	function addDatesToArgs( args = [], select ) {
+	function addDatesToReportOptions( args = [], select ) {
 		if ( args.length === 0 ) {
 			return args;
 		}
@@ -86,7 +86,9 @@ describe( 'ErrorNotice', () => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
 
-		return [ { ...args[ 0 ], ...dates } ];
+		const options = args[ 0 ] || {};
+
+		return [ { ...options, ...dates } ];
 	}
 
 	beforeEach( () => {
@@ -154,7 +156,7 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should display an error notice when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
-			args = addDatesToArgs( args, registry.select );
+			args = addDatesToReportOptions( args, registry.select );
 
 			const error = {
 				code: 'test_error',
@@ -192,7 +194,7 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Get help" link when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
-			args = addDatesToArgs( args, registry.select );
+			args = addDatesToReportOptions( args, registry.select );
 
 			const error = {
 				code: 'test_error',
@@ -228,7 +230,7 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Request access" link when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
-			args = addDatesToArgs( args, registry.select );
+			args = addDatesToReportOptions( args, registry.select );
 
 			const error = {
 				code: 'test_error',
@@ -275,7 +277,7 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should display an error notice when %s fails',
 		async ( _, storeFunctionName, args ) => {
-			args = addDatesToArgs( args, registry.select );
+			args = addDatesToReportOptions( args, registry.select );
 
 			const error = {
 				code: 'test_error',
@@ -309,7 +311,7 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Retry" button when %s fails',
 		async ( _, storeFunctionName, args ) => {
-			args = addDatesToArgs( args, registry.select );
+			args = addDatesToReportOptions( args, registry.select );
 
 			const error = {
 				code: 'test_error',
