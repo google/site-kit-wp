@@ -201,7 +201,7 @@ export default {
 						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 					] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
