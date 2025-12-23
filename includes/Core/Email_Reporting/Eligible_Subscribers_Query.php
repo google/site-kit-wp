@@ -10,7 +10,9 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_User_Query;
 
 /**
@@ -25,6 +27,13 @@ class Eligible_Subscribers_Query {
 	const QUERY_LIMIT = 1000;
 
 	/**
+	 * User options instance.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Modules manager instance.
 	 *
 	 * @var Modules
@@ -36,10 +45,12 @@ class Eligible_Subscribers_Query {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Modules $modules Modules instance.
+	 * @param Modules      $modules      Modules instance.
+	 * @param User_Options $user_options User options instance.
 	 */
-	public function __construct( Modules $modules ) {
-		$this->modules = $modules;
+	public function __construct( Modules $modules, User_Options $user_options ) {
+		$this->modules      = $modules;
+		$this->user_options = $user_options;
 	}
 
 	/**
@@ -73,20 +84,29 @@ class Eligible_Subscribers_Query {
 	}
 
 	/**
-	 * Queries administrators.
+	 * Queries Site Kit administrators.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int[] $excluded_user_ids User IDs to exclude.
 	 * @return \WP_User[] List of admin users.
 	 */
-	private function query_admins( array $excluded_user_ids ) {
+	private function query_admins( $excluded_user_ids ) {
+		$meta_key = $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+
 		$query = new WP_User_Query(
 			array(
 				'role'        => 'administrator',
 				'number'      => self::QUERY_LIMIT,
 				'count_total' => false,
 				'exclude'     => $excluded_user_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excluding the requesting user from eligibility results.
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Limit to Site Kit authenticated administrators.
+				'meta_query'  => array(
+					array(
+						'key'     => $meta_key,
+						'compare' => 'EXISTS',
+					),
+				),
 			)
 		);
 
@@ -101,7 +121,7 @@ class Eligible_Subscribers_Query {
 	 * @param int[] $excluded_user_ids User IDs to exclude.
 	 * @return \WP_User[] List of users with shared roles.
 	 */
-	private function query_shared_roles( array $excluded_user_ids ) {
+	private function query_shared_roles( $excluded_user_ids ) {
 		$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
 
 		if ( empty( $shared_roles ) ) {
