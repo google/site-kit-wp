@@ -175,7 +175,7 @@ class Email_Reporting_Data_Requests {
 	 * @param array $date_range Date range payload.
 	 * @return array|WP_Error Flat section payload map or WP_Error from a failing module.
 	 */
-	private function collect_payloads( $modules, $date_range ) {
+	private function collect_payloads( array $modules, array $date_range ) {
 		$payload = array();
 
 		foreach ( $modules as $slug => $module ) {
@@ -279,7 +279,7 @@ class Email_Reporting_Data_Requests {
 	 * @param array  $date_range Date range payload.
 	 * @return array|WP_Error AdSense payload or WP_Error from module call.
 	 */
-	private function collect_adsense_payloads( $module, $date_range ) {
+	private function collect_adsense_payloads( $module, array $date_range ) {
 		$account_id     = $this->get_adsense_account_id( $module );
 		$report_options = new AdSense_Report_Options( $date_range, array(), $account_id );
 
