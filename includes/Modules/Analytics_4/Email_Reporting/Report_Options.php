@@ -46,9 +46,11 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether audience segmentation is enabled.
 	 *
-	 * Null value means the 'audienceSegmentationSetupCompletedBy' setting value will be used to
-	 * determine whether Audience Segmentation is enabled.
-	 * See is_audience_segmentation_enabled method for more info.
+	 * Null value means the 'audienceSegmentationSetupCompletedBy'
+	 * setting value will be used to determine whether Audience
+	 * Segmentation is enabled.
+	 *
+	 * See `is_audience_segmentation_enabled` method for more info.
 	 *
 	 * @since n.e.x.t
 	 * @var bool|null
