@@ -79,19 +79,21 @@ class REST_Email_Reporting_Controller {
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Was_Analytics_4_Connected     $was_analytics_4_connected      Was_Analytics_4_Connected instance.
 	 * @param Modules                       $modules                        Modules instance.
-	 * @param User_Email_Reporting_Settings $user_email_reporting_settings User email reporting settings instance.
+	 * @param User_Options                  $user_options                   User options instance.
+	 * @param User_Email_Reporting_Settings $user_email_reporting_settings  User email reporting settings instance.
 	 */
 	public function __construct(
 		Email_Reporting_Settings $settings,
 		Was_Analytics_4_Connected $was_analytics_4_connected,
 		Modules $modules,
+		User_Options $user_options,
 		User_Email_Reporting_Settings $user_email_reporting_settings
 	) {
 		$this->settings                      = $settings;
 		$this->modules                       = $modules;
 		$this->was_analytics_4_connected     = $was_analytics_4_connected;
 		$this->user_email_reporting_settings = $user_email_reporting_settings;
-		$this->eligible_subscribers_query    = new Eligible_Subscribers_Query( $this->modules );
+		$this->eligible_subscribers_query    = new Eligible_Subscribers_Query( $this->modules, $user_options );
 	}
 
 	/**
