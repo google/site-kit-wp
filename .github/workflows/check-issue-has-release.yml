@@ -38,8 +38,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          # Use modern Node for native fetch in script.
-          node-version: '18.x'
+          node-version-file: .nvmrc
 
       - name: Check issue for release tag
         run: ./bin/check-issue-has-release.js
