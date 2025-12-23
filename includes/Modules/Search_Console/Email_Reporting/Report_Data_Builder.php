@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Search_Console\Email_Reporting;
 
 use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Processor;
+use WP_Error;
 
 /**
  * Builds Search Console email section payloads.
@@ -47,12 +48,17 @@ class Report_Data_Builder {
 	 *
 	 * @param array    $module_payload        Module payload keyed by section slug.
 	 * @param int|null $current_period_length Optional. Current period length in days.
-	 * @return array Section payloads.
+	 * @return array|WP_Error Section payloads or WP_Error.
 	 */
 	public function build_sections_from_module_payload( $module_payload, $current_period_length = null ) {
 		$sections = array();
 
 		foreach ( $module_payload as $section_key => $section_data ) {
+			$error = $this->get_section_error( $section_data );
+			if ( $error instanceof WP_Error ) {
+				return $error;
+			}
+
 			// If compare/current are provided (for list sections), pass through unchanged.
 			if ( is_array( $section_data ) && isset( $section_data['current'] ) ) {
 				$rows = $section_data;
@@ -70,6 +76,30 @@ class Report_Data_Builder {
 		}
 
 		return $sections;
+	}
+
+	/**
+	 * Extracts any WP_Error from the section data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $section_data Section payload.
+	 * @return WP_Error|null WP_Error instance when present, otherwise null.
+	 */
+	private function get_section_error( $section_data ) {
+		if ( is_wp_error( $section_data ) ) {
+			return $section_data;
+		}
+
+		if ( is_array( $section_data ) ) {
+			foreach ( $section_data as $value ) {
+				if ( is_wp_error( $value ) ) {
+					return $value;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
