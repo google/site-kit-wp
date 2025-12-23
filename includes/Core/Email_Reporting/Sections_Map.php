@@ -28,6 +28,39 @@ class Sections_Map {
 	protected $context;
 
 	/**
+	 * Gets the mapping of section part keys to their display labels.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array<string, string> Mapping of part keys to localized labels.
+	 */
+	public static function get_part_labels() {
+		return array(
+			'traffic_channels'      => __( 'Traffic channels by visitor count', 'google-site-kit' ),
+			'top_ctr_keywords'      => __( 'Keywords with highest CTR in Search', 'google-site-kit' ),
+			'popular_content'       => __( 'Pages with the most pageviews', 'google-site-kit' ),
+			'top_pages_by_clicks'   => __( 'Pages with the most clicks from Search', 'google-site-kit' ),
+			'top_authors'           => __( 'Top authors by pageviews', 'google-site-kit' ),
+			'top_categories'        => __( 'Top categories by pageviews', 'google-site-kit' ),
+			'keywords_ctr_increase' => __( 'Search keywords with the biggest increase in CTR', 'google-site-kit' ),
+			'pages_clicks_increase' => __( 'Pages with the biggest increase in Search clicks', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets the label for a specific part key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $part_key The part key to get the label for.
+	 * @return string The localized label, or empty string if not found.
+	 */
+	public static function get_part_label( $part_key ) {
+		$labels = self::get_part_labels();
+		return $labels[ $part_key ] ?? '';
+	}
+
+	/**
 	 * Payload data for populating section templates.
 	 *
 	 * @since 1.168.0

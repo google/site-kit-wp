@@ -164,6 +164,41 @@ class Email_Template_Renderer {
 	}
 
 	/**
+	 * Renders the email template as plain text.
+	 *
+	 * Generates a plain text version of the email by walking the same
+	 * structured section data as the HTML renderer, using the
+	 * Plain_Text_Formatter for formatting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data          The data to render (metadata like subject, preheader, etc.).
+	 * @return string The rendered plain text.
+	 */
+	public function render_text( $data ) {
+		$sections = $this->sections_map->get_sections();
+
+		$output = Plain_Text_Formatter::format_header(
+			$data['site']['domain'] ?? '',
+			$data['date_range']['label'] ?? ''
+		);
+
+		foreach ( $sections as $section_key => $section ) {
+			if ( empty( $section['section_parts'] ) ) {
+				continue;
+			}
+			$output .= Plain_Text_Formatter::format_section( $section );
+		}
+
+		$output .= Plain_Text_Formatter::format_footer(
+			$data['primary_call_to_action'] ?? array(),
+			$data['footer'] ?? array()
+		);
+
+		return $output;
+	}
+
+	/**
 	 * Resolves the template file path.
 	 *
 	 * @since 1.168.0

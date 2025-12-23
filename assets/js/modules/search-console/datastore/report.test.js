@@ -21,7 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -328,12 +328,18 @@ describe( 'modules/search-console report', () => {
 			it( 'should return report arguments relative to the current reference date', () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
 
+				const dates = registry.select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
 				const args = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.getSampleReportArgs();
 
-				expect( args.startDate ).toBe( '2024-03-06' );
-				expect( args.endDate ).toBe( '2024-04-30' );
+				// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+				expect( args.startDate ).toBe( dates.compareStartDate );
+				expect( args.endDate ).toBe( dates.endDate );
 				expect( args.dimensions ).toBe( 'date' );
 				expect( args.url ).toBeUndefined();
 			} );
