@@ -24,7 +24,10 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
@@ -57,16 +60,10 @@ describe( 'ErrorNotice', () => {
 		'^/google-site-kit/v1/core/user/data/audience-settings'
 	);
 
-	const baseReportOptions = {
-		startDate: '2024-02-29',
-		endDate: '2024-03-27',
+	const reportOptions = {
 		metrics: [ { name: 'totalUsers' } ],
 		reportID:
 			'audience-segmentation_get-audiences-user-count-report-options_store:selector',
-	};
-
-	const reportOptions = {
-		...baseReportOptions,
 		dimensions: [ { name: 'audienceResourceName' } ],
 		dimensionFilters: {
 			audienceResourceName: availableAudiences.map(
@@ -79,6 +76,20 @@ describe( 'ErrorNotice', () => {
 		[ 'resyncing available audiences', 'syncAvailableAudiences', [] ],
 		[ 'retrieving user count', 'getReport', [ reportOptions ] ],
 	];
+
+	function addDatesToReportOptions( args = [], select ) {
+		if ( args.length === 0 ) {
+			return args;
+		}
+
+		const dates = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const options = args[ 0 ] || {};
+
+		return [ { ...options, ...dates } ];
+	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -145,6 +156,8 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should display an error notice when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
+			args = addDatesToReportOptions( args, registry.select );
+
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -181,6 +194,8 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Get help" link when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
+			args = addDatesToReportOptions( args, registry.select );
+
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -215,6 +230,8 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Request access" link when there is an insufficient permissions error while %s',
 		async ( _, storeFunctionName, args ) => {
+			args = addDatesToReportOptions( args, registry.select );
+
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -260,6 +277,8 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should display an error notice when %s fails',
 		async ( _, storeFunctionName, args ) => {
+			args = addDatesToReportOptions( args, registry.select );
+
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
@@ -292,6 +311,8 @@ describe( 'ErrorNotice', () => {
 	it.each( errorCases )(
 		'should render a "Retry" button when %s fails',
 		async ( _, storeFunctionName, args ) => {
+			args = addDatesToReportOptions( args, registry.select );
+
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
