@@ -40,7 +40,7 @@ async function checkIssueHasRelease({ repositoryGhId, prNumber }) {
     const { data, errors } = response;
 
     if (errors) {
-      console.error(`Error: ${errors[0].message}. ⚠️`);
+      console.error(`Error: ${errors[0].message}. ⚠️`, ...errors);
 
       process.exit(1);
     }
