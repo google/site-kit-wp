@@ -66,13 +66,19 @@ class Email_Report_Sender {
 	 * @return true|WP_Error True on success, WP_Error on failure.
 	 */
 	public function send( WP_User $user, $sections_payload, $template_data ) {
-		$html_content = $this->render_template( $sections_payload, $template_data );
+		$renderer = $this->template_renderer_factory->create( $sections_payload );
+
+		if ( ! $renderer instanceof Email_Template_Renderer ) {
+			return new WP_Error( 'email_report_renderer_missing', __( 'Unable to render email template.', 'google-site-kit' ) );
+		}
+
+		$html_content = $this->render_template( $renderer, $template_data );
 
 		if ( is_wp_error( $html_content ) ) {
 			return $html_content;
 		}
 
-		$text_content = $this->render_text_template( $sections_payload, $template_data );
+		$text_content = $this->render_text_template( $renderer, $template_data );
 
 		if ( is_wp_error( $text_content ) ) {
 			return $text_content;
@@ -100,17 +106,11 @@ class Email_Report_Sender {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $sections_payload Sections payload.
-	 * @param array $template_data    Template data.
+	 * @param Email_Template_Renderer $renderer      Template renderer instance.
+	 * @param array                   $template_data Template data.
 	 * @return string|WP_Error Rendered HTML or WP_Error.
 	 */
-	private function render_template( $sections_payload, $template_data ) {
-		$renderer = $this->template_renderer_factory->create( $sections_payload );
-
-		if ( ! $renderer instanceof Email_Template_Renderer ) {
-			return new WP_Error( 'email_report_renderer_missing', __( 'Unable to render email template.', 'google-site-kit' ) );
-		}
-
+	private function render_template( Email_Template_Renderer $renderer, $template_data ) {
 		$rendered = $renderer->render( 'email-report', $template_data );
 
 		if ( is_wp_error( $rendered ) ) {
@@ -129,17 +129,11 @@ class Email_Report_Sender {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $sections_payload Sections payload.
-	 * @param array $template_data    Template data.
+	 * @param Email_Template_Renderer $renderer      Template renderer instance.
+	 * @param array                   $template_data Template data.
 	 * @return string|WP_Error Rendered plain text or WP_Error.
 	 */
-	private function render_text_template( $sections_payload, $template_data ) {
-		$renderer = $this->template_renderer_factory->create( $sections_payload );
-
-		if ( ! $renderer instanceof Email_Template_Renderer ) {
-			return new WP_Error( 'email_report_renderer_missing', __( 'Unable to render email template.', 'google-site-kit' ) );
-		}
-
+	private function render_text_template( Email_Template_Renderer $renderer, $template_data ) {
 		$rendered = $renderer->render_text( 'email-report', $template_data );
 
 		if ( is_wp_error( $rendered ) ) {
