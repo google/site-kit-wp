@@ -76,8 +76,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		// Verify no settings or health data was created.
-		$this->assertFalse( $this->options->has( Google_Tag_Gateway_Settings::OPTION ), 'GTG settings should not be created if they did not exist.' );
-		$this->assertFalse( $this->options->has( Google_Tag_Gateway_Health::OPTION ), 'GTG health should not be created if settings did not exist.' );
+		$this->assertOptionNotExists( Google_Tag_Gateway_Settings::OPTION, 'GTG settings should not be created if they did not exist.' );
+		$this->assertOptionNotExists( Google_Tag_Gateway_Health::OPTION, 'GTG health should not be created if settings did not exist.' );
 	}
 
 	public function test_migrate_gtg_enabled_true() {
@@ -139,8 +139,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		// Verify settings option was deleted.
-		$this->assertFalse(
-			$this->options->has( Google_Tag_Gateway_Settings::OPTION ),
+		$this->assertOptionNotExists(
+			Google_Tag_Gateway_Settings::OPTION,
 			'GTG settings should be deleted when isEnabled is false.'
 		);
 
@@ -235,14 +235,14 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		// Verify settings option was deleted (empty array means default state).
-		$this->assertFalse(
-			$this->options->has( Google_Tag_Gateway_Settings::OPTION ),
+		$this->assertOptionNotExists(
+			Google_Tag_Gateway_Settings::OPTION,
 			'GTG settings should be deleted when settings are empty.'
 		);
 
 		// Verify no health data was created.
-		$this->assertFalse(
-			$this->options->has( Google_Tag_Gateway_Health::OPTION ),
+		$this->assertOptionNotExists(
+			Google_Tag_Gateway_Health::OPTION,
 			'GTG health should not be created when settings are empty.'
 		);
 	}
@@ -291,8 +291,8 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		// Verify settings were not re-migrated (still false, not deleted).
-		$this->assertTrue(
-			$this->options->has( Google_Tag_Gateway_Settings::OPTION ),
+		$this->assertOptionExists(
+			Google_Tag_Gateway_Settings::OPTION,
 			'Migration should not run again after DB version is set.'
 		);
 		$this->assertEqualSetsWithIndex(
