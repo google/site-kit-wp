@@ -25,14 +25,14 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_CARD_NOTICE,
 } from './EmailReportingCardNotice';
 import {
 	createTestRegistry,
 	render,
 	fireEvent,
 	freezeFetch,
-} from '../../../../tests/js/test-utils';
+} from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
@@ -100,7 +100,7 @@ describe( 'EmailReportingCardNotice', () => {
 		// Mock dismissed item POST.
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [ EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM ],
+			body: [ EMAIL_REPORTING_CARD_NOTICE ],
 		} );
 
 		registry
@@ -135,9 +135,7 @@ describe( 'EmailReportingCardNotice', () => {
 	it( 'does not render when notice is dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
-			] );
+			.receiveGetDismissedItems( [ EMAIL_REPORTING_CARD_NOTICE ] );
 
 		registry
 			.dispatch( CORE_USER )

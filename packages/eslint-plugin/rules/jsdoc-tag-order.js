@@ -31,7 +31,7 @@ const { getJsdocContent } = require( '../utils' );
 /**
  * Compares tags by line number.
  *
- * @since n.e.x.t
+ * @since 1.168.0
  *
  * @param {Object} tagA The first tag to compare.
  * @param {Object} tagB The second tag to compare.

@@ -204,7 +204,7 @@ export default {
 					},
 				] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions:

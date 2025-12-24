@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
@@ -40,7 +41,9 @@ export default function CTAButton( {
 	}
 	return (
 		<SpinnerButton
-			className="googlesitekit-notice__cta"
+			className={ classNames( 'googlesitekit-notice__cta', {
+				'googlesitekit-notice__cta--spinner__running': inProgress,
+			} ) }
 			disabled={ disabled }
 			isSaving={ inProgress }
 			onClick={ onClick }

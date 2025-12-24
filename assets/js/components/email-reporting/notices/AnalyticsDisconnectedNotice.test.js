@@ -25,7 +25,7 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import AnalyticsDisconnectedNotice, {
-	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
 } from './AnalyticsDisconnectedNotice';
 import {
 	createTestRegistry,
@@ -36,11 +36,12 @@ import {
 	provideUserAuthentication,
 	provideModuleRegistrations,
 	provideSiteInfo,
-} from '../../../../tests/js/test-utils';
+} from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'AnalyticsDisconnectedNotice', () => {
 	mockLocation();
@@ -90,6 +91,29 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'renders the view only description without action buttons when the user is view only', () => {
+		const { getByText, container } = render(
+			<AnalyticsDisconnectedNotice />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		// Title and description should be present.
+		expect( getByText( /Analytics is disconnected/i ) ).toBeInTheDocument();
+		expect(
+			getByText(
+				/Email reports won’t include Analytics data and metrics. To fix the issue contact your administrator./i
+			)
+		).toBeInTheDocument();
+
+		// CTA button should not be present.
+		expect(
+			container.querySelector( '.googlesitekit-notice__cta-button' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders the "Reconnect Analytics" button and activates the module on click', async () => {
 		const moduleActivationEndpoint = RegExp(
 			'google-site-kit/v1/core/modules/data/activation'
@@ -125,9 +149,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	it( 'dismisses the notice when "Got it" is clicked', async () => {
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
-			],
+			body: [ EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE ],
 		} );
 
 		const { getByRole } = render( <AnalyticsDisconnectedNotice />, {
@@ -157,7 +179,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
+				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
 			] );
 
 		const { container } = render( <AnalyticsDisconnectedNotice />, {

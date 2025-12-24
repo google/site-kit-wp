@@ -31,11 +31,22 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function UserSettingsSelectionPanel() {
+	const viewContext = useViewContext();
+
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
+
+	const onSideSheetOpen = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'user_settings_sidebar_view'
+		);
+	}, [ viewContext ] );
 
 	const settings = useSelect( ( select ) => {
 		if ( ! isOpen ) {
@@ -51,6 +62,9 @@ export default function UserSettingsSelectionPanel() {
 
 		return select( CORE_USER ).isSavingEmailReportingSettings();
 	} );
+	const frequency = useSelect( ( select ) =>
+		select( CORE_USER ).getEmailReportingFrequency()
+	);
 
 	const [ notice, setNotice ] = useState( null );
 
@@ -66,11 +80,21 @@ export default function UserSettingsSelectionPanel() {
 				setNotice( null );
 			}, 310 ); // Wait until after the panel close animation.
 			setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+			trackEvent(
+				`${ viewContext }_email_reports_user_settings-sidebar`,
+				'user_settings_sidebar_close'
+			);
 		}
-	}, [ isOpen, resetEmailReportingSettings, setValue ] );
+	}, [ isOpen, resetEmailReportingSettings, setValue, viewContext ] );
 
 	const onSaveCallback = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings();
+
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'update_settings',
+			frequency
+		);
 
 		if ( ! error ) {
 			setNotice( {
@@ -88,12 +112,18 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext, frequency ] );
 
 	const onSubscribe = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings( {
 			subscribed: true,
 		} );
+
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'subscribe',
+			frequency
+		);
 
 		if ( ! error ) {
 			setNotice( {
@@ -111,12 +141,17 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext, frequency ] );
 
 	const onUnsubscribe = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings( {
 			subscribed: false,
 		} );
+
+		trackEvent(
+			`${ viewContext }_email_reports_user_settings-sidebar`,
+			'unsubscribe'
+		);
 
 		if ( ! error ) {
 			setNotice( {
@@ -134,7 +169,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings ] );
+	}, [ saveEmailReportingSettings, viewContext ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
 
@@ -142,6 +177,7 @@ export default function UserSettingsSelectionPanel() {
 		<SelectionPanel
 			className="googlesitekit-user-settings-selection-panel"
 			isOpen={ !! isOpen }
+			onOpen={ onSideSheetOpen }
 			closePanel={ closePanel }
 		>
 			<PanelContent

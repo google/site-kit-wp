@@ -195,7 +195,7 @@ function MockWPDashboard() {
 				<h2 className="step-3 googlesitekit-search-console-widget__title">
 					Top content over the last 28 days
 				</h2>
-				<div className="googlesitekit-table-overflow">
+				<div className="step-4 googlesitekit-table-overflow">
 					<div className="googlesitekit-table-overflow__container">
 						<div className="googlesitekit-table googlesitekit-table--with-list">
 							<table className="googlesitekit-table__wrapper googlesitekit-table__wrapper--2-col">
@@ -273,7 +273,7 @@ function MockWPDashboard() {
 										<td className="googlesitekit-table__body-item">
 											<div className="googlesitekit-table__body-item-content">
 												<a
-													className="step-4 googlesitekit-cta-link googlesitekit-table__body-item-link"
+													className="step-4-anchor googlesitekit-cta-link googlesitekit-table__body-item-link"
 													href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2F"
 												>
 													WordPress Websites –
@@ -409,6 +409,9 @@ function Template() {
 					) }
 				</div>
 			),
+			floaterProps: {
+				target: '.step-4-anchor',
+			},
 		},
 	];
 	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {

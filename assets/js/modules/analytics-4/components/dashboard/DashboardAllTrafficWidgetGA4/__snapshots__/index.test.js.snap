@@ -36,7 +36,7 @@ exports[`DashboardAllTrafficWidgetGA4 should render an error state if there is a
               <a
                 aria-label="Get help (opens in a new tab)"
                 class="googlesitekit-cta-link"
-                href="undefined?error_id=missing_required_param"
+                href="https://sitekit.withgoogle.com/support/?error_id=missing_required_param"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -444,7 +444,7 @@ exports[`DashboardAllTrafficWidgetGA4 should render the widget 1`] = `
         <a
           aria-label="Analytics (opens in a new tab)"
           class="googlesitekit-cta-link"
-          href=""
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3Fpli%3D1%26utm_source%3Dsitekit%23%2Fp123456789%2Freports%2Fexplorer%3Fparams%3D_r..nav%253Dmaui%2526_u.date00%253D20201210%2526_u.date01%253D20210106%2526_u.date10%253D20201112%2526_u.date11%253D20201209%26r%3Dlifecycle-traffic-acquisition-v2%26collectionId%3Dlife-cycle&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
           rel="noopener noreferrer"
           target="_blank"
         >

@@ -139,7 +139,7 @@ final class Email_Reporting_Pointer {
 					}
 
 					// If the overlay notification has already been dismissed, bail early.
-					if ( $this->dismissed_items->is_dismissed( 'email-reporting-overlay-notification' ) ) {
+					if ( $this->dismissed_items->is_dismissed( 'email_reports_setup_overlay_notification' ) ) {
 						return false;
 					}
 

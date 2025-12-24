@@ -25,17 +25,46 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Link from './Link';
+import { trackEvent } from '@/js/util';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import useViewContext from '@/js/hooks/useViewContext';
+import useWidget from '@/js/googlesitekit/widgets/hooks/useWidget';
 
-function SourceLink( { name, href, className, external } ) {
+export interface SourceLinkProps {
+	name?: string;
+	href?: string;
+	className?: string;
+	external?: boolean;
+}
+
+function SourceLink( {
+	name = '',
+	href = '',
+	className = '',
+	external = false,
+}: SourceLinkProps ) {
+	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
+	const widget = useWidget();
+
+	const handleClick = useCallback( () => {
+		if ( ! widget.slug || ! viewContext ) {
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_widget`,
+			'click_source_link',
+			widget.slug
+		);
+	}, [ viewContext, widget ] );
 
 	if ( viewOnlyDashboard ) {
 		return null;
@@ -50,7 +79,15 @@ function SourceLink( { name, href, className, external } ) {
 					`<a>${ name }</a>`
 				),
 				{
-					a: <Link key="link" href={ href } external={ external } />,
+					a: (
+						<Link
+							key="link"
+							// @ts-expect-error - The `Link` component is not currently typed.
+							href={ href }
+							external={ external }
+							onClick={ handleClick }
+						/>
+					),
 				}
 			) }
 		</div>
@@ -62,13 +99,6 @@ SourceLink.propTypes = {
 	href: PropTypes.string,
 	className: PropTypes.string,
 	external: PropTypes.bool,
-};
-
-SourceLink.defaultProps = {
-	name: '',
-	href: '',
-	className: '',
-	external: false,
 };
 
 export default SourceLink;

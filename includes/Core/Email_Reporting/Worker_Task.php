@@ -38,6 +38,15 @@ class Worker_Task {
 	private $scheduler;
 
 	/**
+	 * Email log processor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Email_Log_Processor
+	 */
+	private $log_processor;
+
+	/**
 	 * Max execution limiter.
 	 *
 	 * @since 1.167.0
@@ -54,15 +63,18 @@ class Worker_Task {
 	 * @param Max_Execution_Limiter     $max_execution_limiter Execution limiter instance.
 	 * @param Email_Log_Batch_Query     $batch_query           Batch query helper.
 	 * @param Email_Reporting_Scheduler $scheduler             Scheduler instance.
+	 * @param Email_Log_Processor       $log_processor         Log processor instance.
 	 */
 	public function __construct(
 		Max_Execution_Limiter $max_execution_limiter,
 		Email_Log_Batch_Query $batch_query,
-		Email_Reporting_Scheduler $scheduler
+		Email_Reporting_Scheduler $scheduler,
+		Email_Log_Processor $log_processor
 	) {
 		$this->max_execution_limiter = $max_execution_limiter;
 		$this->batch_query           = $batch_query;
 		$this->scheduler             = $scheduler;
+		$this->log_processor         = $log_processor;
 	}
 
 	/**
@@ -101,20 +113,31 @@ class Worker_Task {
 				return;
 			}
 
-			foreach ( $pending_ids as $post_id ) {
-				if ( $this->should_abort( $initiator_timestamp ) ) {
-					return;
-				}
-
-				$this->batch_query->increment_attempt( $post_id );
-			}
-
-			if ( $this->should_abort( $initiator_timestamp ) ) {
-				return;
-			}
+			$this->process_pending_logs( $pending_ids, $frequency, $initiator_timestamp );
 		} finally {
 			delete_transient( $lock_handle );
 		}
+	}
+
+	/**
+	 * Processes a list of pending email log IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $pending_ids         Pending post IDs.
+	 * @param string $frequency           Frequency slug.
+	 * @param int    $initiator_timestamp Initiator timestamp.
+	 */
+	private function process_pending_logs( array $pending_ids, $frequency, $initiator_timestamp ) {
+		foreach ( $pending_ids as $post_id ) {
+			if ( $this->should_abort( $initiator_timestamp ) ) {
+				return;
+			}
+
+			$this->log_processor->process( $post_id, $frequency );
+		}
+
+		$this->should_abort( $initiator_timestamp );
 	}
 
 	/**
