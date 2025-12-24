@@ -47,7 +47,6 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->gtg_settings = new Google_Tag_Gateway_Settings( $this->options );
 		$this->gtg_health   = new Google_Tag_Gateway_Health( $this->options );
 
-		$this->gtg_settings->register();
 		$this->gtg_health->register();
 		$this->delete_db_version();
 	}
@@ -90,9 +89,7 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => false,
 		);
 
-		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
-		// in order to simulate the pre-migration state.
-		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		// Set legacy data before registering the settings class to avoid sanitization.
 		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
 		$this->gtg_settings->register();
 
@@ -130,9 +127,7 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => true,
 		);
 
-		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
-		// in order to simulate the pre-migration state.
-		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		// Set legacy data before registering the settings class to avoid sanitization.
 		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
 		$this->gtg_settings->register();
 
@@ -166,9 +161,7 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => null,
 		);
 
-		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
-		// in order to simulate the pre-migration state.
-		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		// Set legacy data before registering the settings class to avoid sanitization.
 		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
 		$this->gtg_settings->register();
 
@@ -206,9 +199,7 @@ class Migration_N_E_X_TTest extends TestCase {
 			'isScriptAccessEnabled' => true,
 		);
 
-		// Bypass sanitization to allow setting legacy health fields (which are stripped by the current class)
-		// in order to simulate the pre-migration state.
-		remove_all_filters( 'sanitize_option_' . Google_Tag_Gateway_Settings::OPTION );
+		// Set legacy data before registering the settings class to avoid sanitization.
 		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
 		$this->gtg_settings->register();
 
@@ -228,6 +219,9 @@ class Migration_N_E_X_TTest extends TestCase {
 
 	public function test_migrate_gtg_empty_settings() {
 		$migration = $this->get_new_migration_instance();
+
+		// Register settings class first (needed for set()).
+		$this->gtg_settings->register();
 
 		// Set empty GTG settings.
 		$this->gtg_settings->set( array() );
@@ -250,14 +244,15 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate_preserves_db_version() {
 		$migration = $this->get_new_migration_instance();
 
-		// Set GTG settings.
-		$this->gtg_settings->set(
-			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => true,
-			)
+		$pre_migration_settings = array(
+			'isEnabled'             => true,
+			'isGTGHealthy'          => true,
+			'isScriptAccessEnabled' => true,
 		);
+
+		// Set legacy data before registering the settings class to avoid sanitization.
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		$migration->migrate();
 
@@ -272,14 +267,15 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate_runs_once() {
 		$migration = $this->get_new_migration_instance();
 
-		// Set GTG settings.
 		$pre_migration_settings = array(
 			'isEnabled'             => true,
 			'isGTGHealthy'          => true,
 			'isScriptAccessEnabled' => true,
 		);
 
-		$this->gtg_settings->set( $pre_migration_settings );
+		// Set legacy data before registering the settings class to avoid sanitization.
+		$this->options->set( Google_Tag_Gateway_Settings::OPTION, $pre_migration_settings );
+		$this->gtg_settings->register();
 
 		// Run migration once.
 		$migration->migrate();
