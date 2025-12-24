@@ -169,7 +169,7 @@ export default {
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.setPropertyID( 'https://example.com' );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
