@@ -32,8 +32,7 @@ jobs:
           )
         ) ||
         github.event.pull_request.head.repo.fork
-      ) &&
-      github.event.review.state == 'approved'
+      )
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
