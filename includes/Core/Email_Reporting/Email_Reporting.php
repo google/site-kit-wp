@@ -11,8 +11,9 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -195,18 +196,19 @@ class Email_Reporting {
 		$this->user_settings             = new User_Email_Reporting_Settings( $this->user_options );
 		$this->was_analytics_4_connected = new Was_Analytics_4_Connected( $this->options );
 
-		$frequency_planner         = new Frequency_Planner();
-		$subscribed_users_query    = new Subscribed_Users_Query( $this->user_settings, $this->modules );
-		$max_execution_limiter     = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
-		$batch_query               = new Email_Log_Batch_Query();
-		$email_sender              = new Email();
-		$section_builder           = new Email_Report_Section_Builder( $this->context );
-		$template_formatter        = new Email_Template_Formatter( $this->context, $section_builder );
-		$template_renderer_factory = new Email_Template_Renderer_Factory( $this->context );
-		$report_sender             = new Email_Report_Sender( $template_renderer_factory, $email_sender );
-		$log_processor             = new Email_Log_Processor( $batch_query, $this->data_requests, $template_formatter, $report_sender );
+		$frequency_planner          = new Frequency_Planner();
+		$subscribed_users_query     = new Subscribed_Users_Query( $this->user_settings, $this->modules );
+		$eligible_subscribers_query = new Eligible_Subscribers_Query( $this->modules, $this->user_options );
+		$max_execution_limiter      = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
+		$batch_query                = new Email_Log_Batch_Query();
+		$email_sender               = new Email();
+		$section_builder            = new Email_Report_Section_Builder( $this->context );
+		$template_formatter         = new Email_Template_Formatter( $this->context, $section_builder );
+		$template_renderer_factory  = new Email_Template_Renderer_Factory( $this->context );
+		$report_sender              = new Email_Report_Sender( $template_renderer_factory, $email_sender );
+		$log_processor              = new Email_Log_Processor( $batch_query, $this->data_requests, $template_formatter, $report_sender );
 
-		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected, $this->modules, $this->user_options, $this->user_settings );
+		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected, $this->modules, $this->user_settings, $eligible_subscribers_query, $email_sender );
 		$this->email_log         = new Email_Log( $this->context );
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );
