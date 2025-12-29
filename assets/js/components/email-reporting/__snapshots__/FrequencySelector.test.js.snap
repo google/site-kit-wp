@@ -87,7 +87,7 @@ exports[`FrequencySelector Story states (visual + DOM) Monthly selected renders 
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot 1`] = `
+exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (same as the current frequency) shows current subscription pill above selected card and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -132,11 +132,6 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
         class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
       >
         Monthly
-      </div>
-      <div
-        class="googlesitekit-frequency-selector__saved-indicator"
-      >
-        <svg />
       </div>
     </div>
     <div
@@ -179,7 +174,7 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
 </div>
 `;
 
-exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot 1`] = `
+exports[`FrequencySelector Story states (visual + DOM) Previously saved frequency (saved monthly, current weekly) shows current subscription pill above monthly card and matches snapshot 1`] = `
 <div
   aria-label="Frequency"
   class="googlesitekit-frequency-selector"
@@ -224,11 +219,6 @@ exports[`FrequencySelector Story states (visual + DOM) Previously saved frequenc
         class="googlesitekit-typography googlesitekit-frequency-selector__label googlesitekit-typography--label googlesitekit-typography--large"
       >
         Monthly
-      </div>
-      <div
-        class="googlesitekit-frequency-selector__saved-indicator"
-      >
-        <svg />
       </div>
     </div>
     <div

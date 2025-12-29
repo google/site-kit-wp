@@ -39,7 +39,6 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
-import Tick from '@/svg/icons/tick.svg';
 
 export default function FrequencySelector( { isUserSubscribed } ) {
 	const DAY_NAMES = useMemo(
@@ -118,6 +117,12 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 		}
 	}
 
+	// Determine which column the saved frequency is in (0, 1, or 2).
+	const savedFrequencyIndex =
+		EMAIL_REPORT_FREQUENCIES.indexOf( savedFrequency );
+	const showCurrentSubscription =
+		isUserSubscribed && savedFrequencyIndex !== -1;
+
 	return (
 		<Fragment>
 			<Typography
@@ -128,6 +133,32 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 			>
 				{ __( 'Frequency', 'google-site-kit' ) }
 			</Typography>
+			{ showCurrentSubscription && (
+				<div className="googlesitekit-frequency-selector__badge-row">
+					{ EMAIL_REPORT_FREQUENCIES.map(
+						( reportFrequency, index ) => (
+							<div
+								key={ reportFrequency }
+								className="googlesitekit-frequency-selector__badge-cell"
+							>
+								{ index === savedFrequencyIndex && (
+									<Typography
+										className="googlesitekit-frequency-selector__current-subscription"
+										type="body"
+										size="small"
+										as="div"
+									>
+										{ __(
+											'Current subscription',
+											'google-site-kit'
+										) }
+									</Typography>
+								) }
+							</div>
+						)
+					) }
+				</div>
+			) }
 			<div
 				className="googlesitekit-frequency-selector"
 				role="radiogroup"
@@ -167,15 +198,6 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								>
 									{ label }
 								</Typography>
-								{ savedFrequency === reportFrequency &&
-									isUserSubscribed && (
-										<div className="googlesitekit-frequency-selector__saved-indicator">
-											<Tick
-												className="googlesitekit-frequency-selector__label-tick"
-												aria-hidden="true"
-											/>
-										</div>
-									) }
 							</div>
 
 							<Typography
