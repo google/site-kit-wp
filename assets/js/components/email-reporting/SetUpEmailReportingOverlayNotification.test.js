@@ -34,6 +34,7 @@ import {
 	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
@@ -43,7 +44,10 @@ import {
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
 import Notifications from '@/js/components/notifications/Notifications';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 const fetchDismissItem = new RegExp(
@@ -76,7 +80,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'returns false when proactive user engagement is already subscribed', async () => {
+		it( 'returns false when user is already subscribed', async () => {
 			const registry = createTestRegistry();
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: true,
@@ -90,7 +94,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			expect( result ).toBe( false );
 		} );
 
-		it( 'returns true when proactive user engagement is not yet subscribed', async () => {
+		it( 'returns true when user is not subscribed (authenticated users always have access)', async () => {
 			const registry = createTestRegistry();
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: false,
@@ -102,6 +106,101 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			expect( result ).toBe( true );
+		} );
+
+		describe( 'view-only users', () => {
+			const shareableModules = [
+				{
+					slug: 'analytics-4',
+					name: 'Analytics',
+					shareable: true,
+				},
+				{
+					slug: 'search-console',
+					name: 'Search Console',
+					shareable: true,
+				},
+			];
+
+			function setupViewableModules(
+				registry,
+				viewableModuleSlugs = []
+			) {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( shareableModules );
+
+				const capabilities = {
+					googlesitekit_view_dashboard: true,
+					'googlesitekit_read_shared_module_data::["analytics-4"]':
+						viewableModuleSlugs.includes( 'analytics-4' ),
+					'googlesitekit_read_shared_module_data::["search-console"]':
+						viewableModuleSlugs.includes( 'search-console' ),
+				};
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetCapabilities( capabilities );
+			}
+
+			it( 'returns true when view-only user can view Analytics', async () => {
+				const registry = createTestRegistry();
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: false,
+					} );
+				setupViewableModules( registry, [ 'analytics-4' ] );
+
+				const result = await notification.checkRequirements(
+					{
+						select: registry.select,
+						resolveSelect: registry.resolveSelect,
+					},
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				);
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns true when view-only user can view Search Console', async () => {
+				const registry = createTestRegistry();
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: false,
+					} );
+				setupViewableModules( registry, [ 'search-console' ] );
+
+				const result = await notification.checkRequirements(
+					{
+						select: registry.select,
+						resolveSelect: registry.resolveSelect,
+					},
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				);
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'returns false when view-only user cannot view Analytics or Search Console', async () => {
+				const registry = createTestRegistry();
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetEmailReportingSettings( {
+						subscribed: false,
+					} );
+				setupViewableModules( registry, [] );
+
+				const result = await notification.checkRequirements(
+					{
+						select: registry.select,
+						resolveSelect: registry.resolveSelect,
+					},
+					VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+				);
+
+				expect( result ).toBe( false );
+			} );
 		} );
 	} );
 

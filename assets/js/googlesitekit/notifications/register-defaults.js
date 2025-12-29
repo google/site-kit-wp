@@ -721,13 +721,35 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
 			const settings = await resolveSelect(
 				CORE_USER
 			).getEmailReportingSettings();
 
 			if ( settings === undefined || settings?.subscribed ) {
 				return false;
+			}
+
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			// For view-only users, check if user has access to at least one
+			// of the required email report data modules.
+			// Admins always have access to the overlay notification.
+			if ( viewOnly ) {
+				await Promise.all( [
+					resolveSelect( CORE_MODULES ).getModules(),
+					resolveSelect( CORE_USER ).getCapabilities(),
+				] );
+				const viewableModules =
+					select( CORE_USER ).getViewableModules();
+
+				if (
+					! viewableModules?.includes( MODULE_SLUG_ANALYTICS_4 ) &&
+					! viewableModules?.includes( MODULE_SLUG_SEARCH_CONSOLE )
+				) {
+					return false;
+				}
 			}
 
 			return ! select( CORE_USER ).isEmailReportingSubscribed();
