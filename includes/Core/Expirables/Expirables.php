@@ -48,7 +48,7 @@ class Expirables {
 	 * @param Context      $context Plugin context.
 	 * @param User_Options $user_options Optional. User option API. Default is a new instance.
 	 */
-	public function __construct( Context $context, User_Options $user_options = null ) {
+	public function __construct( Context $context, ?User_Options $user_options = null ) {
 		$this->expirable_items = new Expirable_Items( $user_options ?: new User_Options( $context ) );
 		$this->rest_controller = new REST_Expirable_Items_Controller( $this->expirable_items );
 	}

@@ -26,15 +26,15 @@ import { activatePlugin } from '@wordpress/e2e-test-utils';
  */
 import { setSiteVerification, setSearchConsoleProperty } from '.';
 
-export const setupSiteKit = async ( {
+export async function setupSiteKit( {
 	verified,
 	property,
 	auth = 'proxy',
-} = {} ) => {
+} = {} ) {
 	if ( auth !== 'proxy' && auth !== 'gcp' ) {
 		throw new Error( 'Auth type must be either proxy or gcp' );
 	}
 	await activatePlugin( `e2e-tests-${ auth }-auth-plugin` );
 	await setSiteVerification( verified );
 	await setSearchConsoleProperty( property );
-};
+}

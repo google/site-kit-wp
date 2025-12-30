@@ -20,12 +20,18 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import Typography from '@/js/components/Typography';
 
 function WidgetHeaderTitle( { title } ) {
 	return (
-		<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
+		<Typography
+			className="googlesitekit-widget__header-title"
+			as="h3"
+			type="title"
+			size="small"
+		>
 			{ title }
-		</h3>
+		</Typography>
 	);
 }
 

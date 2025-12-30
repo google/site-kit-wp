@@ -32,19 +32,20 @@ import { useState, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import ModuleIcon from '../ModuleIcon';
-import Spinner from '../Spinner';
-import Link from '../Link';
-import Badge from '../Badge';
-import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
-import NewBadge from '../NewBadge.js';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import ModuleIcon from '@/js/components/ModuleIcon';
+import Spinner from '@/js/components/Spinner';
+import Link from '@/js/components/Link';
+import Badge from '@/js/components/Badge';
+import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
+import NewBadge from '@/js/components/NewBadge.js';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
-import { setItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
 
 export default function SetupModule( { slug, name, description } ) {
 	const viewContext = useViewContext();
@@ -103,14 +104,17 @@ export default function SetupModule( { slug, name, description } ) {
 				<ModuleIcon slug={ slug } />
 			</div>
 			<div className="googlesitekit-settings-connect-module__heading">
-				<h3
+				<Typography
+					as="h3"
+					type="title"
+					size="small"
 					className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
 				"
 				>
 					{ name }
-				</h3>
+				</Typography>
 				<div className="googlesitekit-settings-connect-module__badges">
 					{ EXPERIMENTAL_MODULES.includes( slug ) && (
 						<Badge
@@ -136,7 +140,7 @@ export default function SetupModule( { slug, name, description } ) {
 				<Link
 					onClick={ onSetup }
 					href=""
-					disabled={ ! canActivateModule }
+					disabled={ ! canActivateModule || isSaving }
 					arrow
 				>
 					{ sprintf(

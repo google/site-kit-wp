@@ -29,7 +29,7 @@ import {
 	createRegistryControl,
 } from 'googlesitekit-data';
 import { CORE_MODULES } from './constants';
-import { createValidatedAction } from '../../data/utils';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 const ROLLBACK_MODULE_CHANGES = 'ROLLBACK_MODULE_CHANGES';
@@ -118,6 +118,10 @@ export const controls = {
 				if ( rollbackChanges ) {
 					return rollbackChanges( slug );
 				}
+
+				return {
+					error: `The module '${ slug }' does not support rollbackChanges().`,
+				};
 			}
 	),
 };

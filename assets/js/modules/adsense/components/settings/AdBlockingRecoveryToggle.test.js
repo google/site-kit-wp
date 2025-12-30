@@ -26,13 +26,17 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_SETTINGS } from '../../../../googlesitekit/constants';
-import * as tracking from '../../../../util/tracking';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-} from '../../datastore/constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../util';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -55,7 +59,7 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'adsense',
+				slug: MODULE_SLUG_ADSENSE,
 				active: true,
 				connected: true,
 			},
@@ -175,7 +179,9 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		// Verify that the notice is rendered.
 		expect(
-			container.querySelector( '.googlesitekit-settings-notice__text' )
+			container.querySelector(
+				'.googlesitekit-notice--info .googlesitekit-notice__content'
+			)
 		).toHaveTextContent(
 			'You’ve already enabled an ad blocking recovery message on your site. We recommend using Site Kit to manage this to get the most out of AdSense.'
 		);
@@ -199,7 +205,9 @@ describe( 'AdBlockingRecoveryToggle', () => {
 
 		// Verify that the notice is rendered.
 		expect(
-			container.querySelector( '.googlesitekit-settings-notice__text' )
+			container.querySelector(
+				'.googlesitekit-notice--info .googlesitekit-notice__content'
+			)
 		).toHaveTextContent(
 			'Site Kit detected Ad Blocking Recovery code for a different account pub-1234567890123456 on your site. For a better ad blocking recovery experience, you should remove Ad Blocking Recovery code that’s not linked to this AdSense account.'
 		);

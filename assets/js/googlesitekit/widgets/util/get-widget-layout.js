@@ -128,9 +128,15 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 	let counter = 0;
 	let rowIndex = 0;
-	const ascending = ( { counter: a }, { counter: b } ) => a - b;
-	const descending = ( { counter: a }, { counter: b } ) => b - a;
-	const fitIntoRow = ( { counter: width } ) => width <= 12;
+	function ascending( { counter: a }, { counter: b } ) {
+		return a - b;
+	}
+	function descending( { counter: a }, { counter: b } ) {
+		return b - a;
+	}
+	function fitIntoRow( { counter: width } ) {
+		return width <= 12;
+	}
 
 	widgets.forEach( ( widget, i ) => {
 		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.

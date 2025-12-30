@@ -27,11 +27,11 @@ import {
 	createTestRegistry,
 	muteFetch,
 } from '../../../../../../tests/js/test-utils';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import * as factories from '../../datastore/__factories__';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
 describe( 'AccountCreate', () => {
 	let registry;
@@ -135,8 +135,10 @@ describe( 'AccountCreate', () => {
 			expect( openSpy ).toHaveBeenCalledWith(
 				expect.stringContaining(
 					`${ encodeURIComponent(
-						'/admin/accounts/create'
-					) }&Email=${ encodeURIComponent( 'user@example.com' ) }`
+						'/admin/accounts/create?utm_source=sitekit'
+					) }&Email=${ encodeURIComponent(
+						'user@example.com'
+					) }&utm_source=sitekit`
 				),
 				'_blank'
 			);

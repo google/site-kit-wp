@@ -27,10 +27,10 @@ import {
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../util/errors';
+} from '@/js/util/errors';
 import { fireEvent, render } from '../../../tests/js/test-utils';
 import ErrorNotice from './ErrorNotice';
-import { MODULES_TAGMANAGER } from '../modules/tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
 describe( 'ErrorNotice', () => {
 	let registry;

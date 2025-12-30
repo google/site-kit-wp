@@ -31,25 +31,27 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopTrafficSourceWidget from './TopTrafficSourceWidget';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
+} from '@/js/util/errors';
 
 describe( 'TopTrafficSourceWidget', () => {
 	const widgetProps = getWidgetComponentProps(
@@ -69,10 +71,20 @@ describe( 'TopTrafficSourceWidget', () => {
 			compare: true,
 		} );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
+		provideAnalytics4MockReport( registry, {
+			...dateRangeDates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		} );
 		provideAnalytics4MockReport( registry, {
 			...dateRangeDates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
@@ -83,15 +95,87 @@ describe( 'TopTrafficSourceWidget', () => {
 			],
 			limit: 1,
 			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
 		} );
-		provideAnalytics4MockReport( registry, {
+
+		const { container, waitForRegistry } = render(
+			<TopTrafficSourceWidget { ...widgetProps } />,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'renders correctly with no data in comparison date range', async () => {
+		const channelGroupReportOptions = {
+			...dateRangeDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			limit: 1,
+			orderBy: 'totalUsers',
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_trafficSourceReportOptions',
+		};
+		const channelGroupReport = getAnalytics4MockResponse(
+			channelGroupReportOptions
+		);
+
+		const modifiedChannelGroupReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				channelGroupReport,
+				'date_range_1',
+				'remove'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedChannelGroupReport, {
+				options: channelGroupReportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ channelGroupReportOptions ] );
+
+		const totalUsersReportOptions = {
 			...dateRangeDates,
 			metrics: [
 				{
 					name: 'totalUsers',
 				},
 			],
-		} );
+			reportID:
+				'analytics-4_top-traffic-source-widget_widget_totalUsersReportOptions',
+		};
+		const totalUsersReport = getAnalytics4MockResponse(
+			totalUsersReportOptions
+		);
+
+		const modifiedTotalUsersReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				totalUsersReport,
+				'date_range_1',
+				'zero'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedTotalUsersReport, {
+				options: totalUsersReportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ totalUsersReportOptions ] );
+
 		const { container, waitForRegistry } = render(
 			<TopTrafficSourceWidget { ...widgetProps } />,
 			{

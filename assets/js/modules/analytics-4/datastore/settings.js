@@ -27,20 +27,20 @@ import { isEqual, pick } from 'lodash';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
 	isValidWebDataStreamName,
 	isValidWebDataStreamSelection,
-} from '../utils/validation';
+} from '@/js/modules/analytics-4/utils/validation';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -50,10 +50,11 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { isValidConversionID } from '../../ads/utils/validation';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '../../../googlesitekit/notifications/datastore/constants';
-import { FPM_SETUP_CTA_BANNER_NOTIFICATION } from '../../../googlesitekit/notifications/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidConversionID } from '@/js/modules/ads/utils/validation';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION =
@@ -173,7 +174,7 @@ export async function submitChanges( { dispatch, select, resolveSelect } ) {
 
 	dispatch( CORE_USER ).resetUserAudienceSettings();
 
-	await invalidateCache( 'modules', 'analytics-4' );
+	await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
 
 	return {};
 }
@@ -201,26 +202,26 @@ async function saveSettings( select, dispatch ) {
 		}
 	}
 
-	const haveFirstPartyModeSettingsChanged =
-		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
-	if ( haveFirstPartyModeSettingsChanged ) {
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
+	if ( haveGoogleTagGatewaySettingsChanged ) {
 		const { error } = await dispatch(
 			CORE_SITE
-		).saveFirstPartyModeSettings();
+		).saveGoogleTagGatewaySettings();
 
 		if ( error ) {
 			return { error };
 		}
 
 		if (
-			select( CORE_SITE ).isFirstPartyModeEnabled() &&
+			select( CORE_SITE ).isGoogleTagGatewayEnabled() &&
 			! select( CORE_NOTIFICATIONS ).isNotificationDismissed(
-				FPM_SETUP_CTA_BANNER_NOTIFICATION
+				GTG_SETUP_CTA_BANNER_NOTIFICATION
 			)
 		) {
 			const { error: dismissError } =
 				( await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
-					FPM_SETUP_CTA_BANNER_NOTIFICATION
+					GTG_SETUP_CTA_BANNER_NOTIFICATION
 				) ) || {};
 
 			if ( dismissError ) {
@@ -239,11 +240,11 @@ async function updateEnhancedMeasurementSettings( {
 	webDataStreamID,
 	isEnhancedMeasurementEnabled,
 } ) {
-	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled(
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled( {
 		propertyID,
 		webDataStreamID,
-		isEnhancedMeasurementEnabled
-	);
+		enabled: isEnhancedMeasurementEnabled,
+	} );
 
 	if (
 		select( MODULES_ANALYTICS_4 ).haveEnhancedMeasurementSettingsChanged(
@@ -278,7 +279,7 @@ export function rollbackChanges( { select, dispatch } ) {
 	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
 		dispatch( CORE_SITE ).resetConversionTrackingSettings();
-		dispatch( CORE_SITE ).resetFirstPartyModeSettings();
+		dispatch( CORE_SITE ).resetGoogleTagGatewaySettings();
 	}
 
 	dispatch( MODULES_ANALYTICS_4 ).resetEnhancedMeasurementSettings();
@@ -347,14 +348,14 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	const haveConversionTrackingSettingsChanged =
 		select( CORE_SITE ).haveConversionTrackingSettingsChanged();
 
-	const haveFirstPartyModeSettingsChanged =
-		select( CORE_SITE ).haveFirstPartyModeSettingsChanged();
+	const haveGoogleTagGatewaySettingsChanged =
+		select( CORE_SITE ).haveGoogleTagGatewaySettingsChanged();
 
 	if ( keys ) {
 		invariant(
 			! isEqual( pick( settings, keys ), pick( savedSettings, keys ) ) ||
 				haveConversionTrackingSettingsChanged ||
-				haveFirstPartyModeSettingsChanged,
+				haveGoogleTagGatewaySettingsChanged,
 			INVARIANT_SETTINGS_NOT_CHANGED
 		);
 	}
@@ -362,7 +363,7 @@ export function validateHaveSettingsChanged( select, state, keys ) {
 	invariant(
 		! isEqual( settings, savedSettings ) ||
 			haveConversionTrackingSettingsChanged ||
-			haveFirstPartyModeSettingsChanged,
+			haveGoogleTagGatewaySettingsChanged,
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 }

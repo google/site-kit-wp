@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -66,7 +66,7 @@ export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationErrorNotice',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 				provideModules( registry );
 				provideModuleRegistrations( registry );
@@ -78,7 +78,7 @@ export default {
 					measurementID: '56789',
 					webDataStreamID: '78901',
 				} );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

@@ -15,7 +15,7 @@ exports[`PagesPerVisitWidget should render correctly with the expected metrics 1
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Pages per visit
           </h3>
@@ -71,7 +71,7 @@ exports[`PagesPerVisitWidget should render the generic error variant when the re
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Pages per visit
         </h2>
@@ -86,7 +86,7 @@ exports[`PagesPerVisitWidget should render the generic error variant when the re
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -133,7 +133,7 @@ exports[`PagesPerVisitWidget should render the insufficient permissions error va
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Pages per visit
         </h2>
@@ -148,7 +148,7 @@ exports[`PagesPerVisitWidget should render the insufficient permissions error va
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -199,7 +199,7 @@ exports[`PagesPerVisitWidget should render the loading state while resolving the
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Pages per visit
           </h3>

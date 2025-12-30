@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { isValidNumericID } from '../../../util';
+import { isValidNumericID } from '@/js/util';
 import {
 	ACCOUNT_CREATE,
 	CONTAINER_CREATE,
 	CONTEXT_WEB,
 	CONTEXT_AMP,
-} from '../datastore/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
 import { getNormalizedContainerName } from './container';
 
 /**

@@ -30,15 +30,17 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { actions as errorStoreActions } from '../../data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 
-function fetchStoreReducerCallback( state, inputSettings ) {
-	return { ...state, inputSettings, savedInputSettings: inputSettings };
-}
+const fetchStoreReducerCallback = createReducer( ( state, inputSettings ) => {
+	state.inputSettings = inputSettings;
+	state.savedInputSettings = inputSettings;
+} );
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
@@ -103,8 +105,12 @@ const baseActions = {
 		const registry = yield commonActions.getRegistry();
 		yield clearError( 'saveUserInputSettings', [] );
 
-		const trim = ( value ) => value.trim();
-		const notEmpty = ( value ) => value.length > 0;
+		function trim( value ) {
+			return value.trim();
+		}
+		function notEmpty( value ) {
+			return value.length > 0;
+		}
 
 		const settings = registry.select( CORE_USER ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce(
@@ -176,7 +182,7 @@ const baseActions = {
 		);
 
 		if ( ! settingsAnsweredOther.length > 0 ) {
-			return;
+			return {};
 		}
 
 		const triggerID = `userInput_answered_other__${ settingsAnsweredOther.join(
@@ -191,39 +197,35 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, action ) => {
+	const { type, payload } = action;
+
 	switch ( type ) {
 		case SET_USER_INPUT_SETTING: {
-			return {
-				...state,
-				inputSettings: {
-					...state.inputSettings,
-					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
-						values: payload.values,
-					},
-				},
-			};
+			state.inputSettings = state.inputSettings || {};
+
+			if ( ! state.inputSettings[ payload.settingID ] ) {
+				state.inputSettings[ payload.settingID ] = {};
+			}
+
+			state.inputSettings[ payload.settingID ].values = payload.values;
+			break;
 		}
+
 		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingInputSettings: payload.isSaving,
-			};
+			state.isSavingInputSettings = payload.isSaving;
+			break;
 		}
+
 		case RESET_USER_INPUT_SETTINGS: {
-			return {
-				...state,
-				inputSettings: state.savedInputSettings,
-			};
+			state.inputSettings = state.savedInputSettings;
+			break;
 		}
-		default: {
-			return state;
-		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getUserInputSettings() {

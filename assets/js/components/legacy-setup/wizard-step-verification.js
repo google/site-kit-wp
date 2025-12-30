@@ -29,7 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import SiteVerification from './site-verification';
 
 class WizardStepVerification extends Component {

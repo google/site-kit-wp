@@ -26,7 +26,7 @@ import { useParams } from 'react-router-dom';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function SettingsRenderer( { slug } ) {
 	const { action, moduleSlug } = useParams();

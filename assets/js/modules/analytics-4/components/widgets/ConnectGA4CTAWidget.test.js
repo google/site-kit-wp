@@ -28,8 +28,12 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	CORE_USER,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import {
 	render,
 	createTestRegistry,
@@ -38,8 +42,9 @@ import {
 	provideUserCapabilities,
 	provideModules,
 } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetricsWidgetRegistrations } from '../../../../components/KeyMetrics/test-utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
@@ -57,7 +62,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
 			},
@@ -66,13 +71,17 @@ describe( 'ConnectGA4CTAWidget', () => {
 
 	it( 'should not render unless at least 3 analytics dependant metrics are chosen to be displayed', async () => {
 		const keyMetricWidgets = {
-			[ KM_ANALYTICS_RETURNING_VISITORS ]: { modules: [ 'analytics-4' ] },
-			[ KM_ANALYTICS_NEW_VISITORS ]: { modules: [ 'analytics-4' ] },
+			[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
+			[ KM_ANALYTICS_NEW_VISITORS ]: {
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
 			[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
-				modules: [ 'adsense' ],
+				modules: [ MODULE_SLUG_ADSENSE ],
 			},
 			[ KM_SEARCH_CONSOLE_POPULAR_KEYWORDS ]: {
-				modules: [ 'search-console' ],
+				modules: [ MODULE_SLUG_SEARCH_CONSOLE ],
 			},
 		};
 
@@ -115,7 +124,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 			keyMetricWidgets.reduce(
 				( acc, widget ) => ( {
 					...acc,
-					[ widget ]: { modules: [ 'analytics-4' ] },
+					[ widget ]: { modules: [ MODULE_SLUG_ANALYTICS_4 ] },
 				} ),
 				{}
 			)
@@ -131,7 +140,7 @@ describe( 'ConnectGA4CTAWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
+			container.querySelector( '.googlesitekit-banner__title' )
 		).toHaveTextContent( 'Analytics is disconnected' );
 		const button = getByRole( 'button', {
 			name: /Connect Analytics/i,

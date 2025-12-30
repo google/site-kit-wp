@@ -19,22 +19,23 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { getAnalytics4MockResponse } from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopCitiesDrivingAddToCartWidget from './TopCitiesDrivingAddToCartWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = {
 	startDate: '2020-08-11',
@@ -57,6 +58,8 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID:
+		'analytics-4_top-cities-driving-add-to-cart-widget_widget_topCitiesReportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -82,10 +85,7 @@ Ready.args = {
 		} );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/TopCitiesDrivingAddToCartWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -165,10 +165,10 @@ export default {
 	title: 'Key Metrics/TopCitiesDrivingAddToCartWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -197,13 +197,13 @@ export default {
 						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 					] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

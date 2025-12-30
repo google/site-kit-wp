@@ -24,7 +24,8 @@ import { renderToString } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Link from '../../../../../components/Link';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 
 /**
  * Creates a GA4 report row for the given date, with a zero for the metric value.
@@ -62,16 +63,20 @@ export function createZeroDataRow( date ) {
  * @param {string} rowLabel The label for the row.
  * @return {string} The HTML string for the tooltip help link.
  */
-export const getTooltipHelp = ( url, label, rowLabel ) =>
-	renderToString(
-		<p>
+export function getTooltipHelp( url, label, rowLabel ) {
+	return renderToString(
+		// We're not using the `P` component here because that uses `useBreakpoint`
+		// under the hood. This causes issues when this function is used inside a
+		// tooltip callback as that is not at the top-level of a component.
+		<Typography as="p" size="medium" type="body">
 			<Link
 				className="googlesitekit-cta-link__tooltip"
-				external
 				href={ url }
 				data-row-label={ rowLabel }
+				external
 			>
 				{ label }
 			</Link>
-		</p>
+		</Typography>
 	);
+}

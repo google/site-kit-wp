@@ -1,6 +1,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ANALYTICS_4 } from '../../../assets/js/modules/analytics-4/constants';
 import { wpApiFetch } from './wp-api-fetch';
 
 const defaultAnalytics4Settings = {
@@ -28,7 +29,7 @@ export async function setupAnalytics4( settingsOverrides = {} ) {
 		method: 'post',
 		path: 'google-site-kit/v1/core/modules/data/activation',
 		data: {
-			data: { slug: 'analytics-4', active: true },
+			data: { slug: MODULE_SLUG_ANALYTICS_4, active: true },
 		},
 	} );
 	// Set placeholder connection data.

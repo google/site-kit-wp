@@ -31,7 +31,8 @@ import { Icon, closeSmall } from '@wordpress/icons';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Logo from '../../../svg/graphics/logo-g.svg';
+import Logo from '@/svg/graphics/logo-g.svg';
+import Typography from '@/js/components/Typography';
 
 function SurveyHeader( { title, dismissSurvey } ) {
 	return (
@@ -41,7 +42,9 @@ function SurveyHeader( { title, dismissSurvey } ) {
 			</div>
 
 			<div className="googlesitekit-survey__header-details">
-				<h3>{ title }</h3>
+				<Typography as="h3" type="headline" size="small">
+					{ title }
+				</Typography>
 
 				<Button
 					aria-label={ __( 'Dismiss', 'google-site-kit' ) }

@@ -27,14 +27,11 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import {
-	BREAKPOINT_SMALL,
-	useBreakpoint,
-} from '../../../../hooks/useBreakpoint';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { HelperText } from 'googlesitekit-components';
-import Link from '../../../../components/Link';
+import Link from '@/js/components/Link';
 
 export default function AnyoneCanRegisterReadOnly() {
 	const breakpoint = useBreakpoint();
@@ -84,6 +81,7 @@ export default function AnyoneCanRegisterReadOnly() {
 								breakpoint !== BREAKPOINT_SMALL ? (
 									<br />
 								) : (
+									// eslint-disable-next-line react/jsx-no-useless-fragment
 									<Fragment />
 								),
 						}

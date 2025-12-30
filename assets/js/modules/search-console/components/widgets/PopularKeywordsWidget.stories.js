@@ -22,24 +22,26 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import { provideSearchConsoleMockReport } from '../../util/data-mock';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+} from '@/js/googlesitekit/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
 	dimensions: 'query',
 	limit: 100,
+	reportID: 'search-console_popular-keywords-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -65,10 +67,7 @@ Ready.args = {
 		provideSearchConsoleMockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -78,10 +77,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -102,10 +98,7 @@ ZeroData.args = {
 		} );
 	},
 };
-ZeroData.scenario = {
-	label: 'Key Metrics/PopularKeywordsWidget/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
@@ -161,10 +154,10 @@ export default {
 	title: 'Key Metrics/PopularKeywordsWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},
@@ -176,13 +169,13 @@ export default {
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.setPropertyID( 'https://example.com' );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

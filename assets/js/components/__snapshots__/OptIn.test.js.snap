@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OptIn should render correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-opt-in googlesitekit-opt-in-test"
+  >
+    <div
+      class="mdc-form-field"
+    >
+      <div
+        class="mdc-checkbox mdc-checkbox--align-left"
+      >
+        <input
+          class="mdc-checkbox__native-control"
+          id="googlesitekit-opt-in-test"
+          name="optInTest"
+          type="checkbox"
+          value="1"
+        />
+        <div
+          class="mdc-checkbox__background"
+        >
+          <svg
+            class="mdc-checkbox__checkmark"
+            viewBox="0 0 12 9"
+          >
+            <path
+              class="mdc-checkbox__checkmark-path"
+              d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+              fill="none"
+              stroke="none"
+            />
+          </svg>
+          <div
+            class="mdc-checkbox__mixedmark"
+          />
+        </div>
+      </div>
+      <label
+        for="googlesitekit-opt-in-test"
+      >
+        <span>
+          Help us improve Site Kit by sharing anonymous usage data.
+        </span>
+         
+        <span>
+          All collected data is treated in accordance with the 
+          <a
+            aria-label="Google Privacy Policy. (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="https://policies.google.com/privacy"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              Google Privacy Policy.
+            </span>
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
+          </a>
+        </span>
+      </label>
+      
+    </div>
+  </div>
+</div>
+`;
+
+exports[`OptIn should show a spinner when tracking is loading 1`] = `
+<div>
+  <div
+    class="googlesitekit-opt-in"
+  >
+    <div
+      class="mdc-form-field"
+    >
+      <div
+        class="mdc-checkbox"
+      >
+        <span
+          class="spinner"
+          style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+        />
+      </div>
+      <label
+        for="googlesitekit-opt-in"
+      >
+        <span>
+          Help us improve Site Kit by sharing anonymous usage data.
+        </span>
+         
+        <span>
+          All collected data is treated in accordance with the 
+          <a
+            aria-label="Google Privacy Policy. (opens in a new tab)"
+            class="googlesitekit-cta-link"
+            href="https://policies.google.com/privacy"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              Google Privacy Policy.
+            </span>
+            <span
+              class="googlesitekit-icon-wrapper"
+              style="margin-left: 5px;"
+            >
+              <svg />
+            </span>
+          </a>
+        </span>
+      </label>
+      
+    </div>
+  </div>
+</div>
+`;

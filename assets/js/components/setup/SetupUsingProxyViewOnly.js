@@ -31,19 +31,21 @@ import {
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import OptIn from '../OptIn';
-import Header from '../Header';
-import Layout from '../layout/Layout';
-import Link from '../Link';
-import HelpMenu from '../help/HelpMenu';
-import SideKickSVG from '../../../svg/graphics/view-only-setup-sidekick.svg';
+import OptIn from '@/js/components/OptIn';
+import Header from '@/js/components/Header';
+import Layout from '@/js/components/layout/Layout';
+import Link from '@/js/components/Link';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import SideKickSVG from '@/svg/graphics/view-only-setup-sidekick.svg';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Grid, Row, Cell } from '../../material-components';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
@@ -106,12 +108,17 @@ export default function SetupUsingProxyViewOnly() {
 												lgSize={ 8 }
 												lgOrder={ 1 }
 											>
-												<h1 className="googlesitekit-setup__title">
+												<Typography
+													as="h1"
+													className="googlesitekit-setup__title"
+													size="large"
+													type="headline"
+												>
 													{ __(
 														'View-only Dashboard Access',
 														'google-site-kit'
 													) }
-												</h1>
+												</Typography>
 												<p className="googlesitekit-setup__description">
 													{ createInterpolateElement(
 														__(
@@ -134,12 +141,12 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													) }
 												</p>
-												<p>
+												<P>
 													{ __(
 														'Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard',
 														'google-site-kit'
 													) }
-												</p>
+												</P>
 
 												<OptIn />
 
@@ -150,7 +157,7 @@ export default function SetupUsingProxyViewOnly() {
 														}
 													>
 														{ __(
-															'Go to Dashboard',
+															'Go to dashboard',
 															'google-site-kit'
 														) }
 													</Button>

@@ -32,13 +32,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import useQueryArg from '../../../../hooks/useQueryArg';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function PAXSetupSuccessSubtleNotification( {
 	id,
@@ -61,6 +60,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 				accountOverviewURL
 			);
 		}
+		return null;
 	} );
 
 	const onPrimaryCTAClickCallback = useCallback( () => {
@@ -70,7 +70,9 @@ export default function PAXSetupSuccessSubtleNotification( {
 
 	return (
 		<Notification>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'Your Ads campaign was successfully set up!',
 					'google-site-kit'
@@ -79,23 +81,15 @@ export default function PAXSetupSuccessSubtleNotification( {
 					'Track your conversions, measure your campaign results and make the most of your ad spend',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-						onDismiss={ dismissNotice }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Show me', 'google-site-kit' ) }
-						ctaLink={ accountSelectorWrappedAccountOverviewURL }
-						onCTAClick={ onPrimaryCTAClickCallback }
-						isCTALinkExternal
-					/>
-				}
+				dismissButton={ {
+					onClick: dismissNotice,
+				} }
+				ctaButton={ {
+					onClick: onPrimaryCTAClickCallback,
+					label: __( 'Show me', 'google-site-kit' ),
+					href: accountSelectorWrappedAccountOverviewURL,
+					external: true,
+				} }
 			/>
 		</Notification>
 	);

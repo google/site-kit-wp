@@ -25,22 +25,25 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '../../util';
-import useModuleGatheringZeroData from '../../hooks/useModuleGatheringZeroData';
-import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import ActionsCTALinkDismiss from '../../googlesitekit/notifications/components/common/ActionsCTALinkDismiss';
-import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import useModuleGatheringZeroData from '@/js/hooks/useModuleGatheringZeroData';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import SVGGraphic from '@/svg/graphics/banner-gathering-data.svg?url';
 
 export default function GatheringDataNotification( { id, Notification } ) {
-	const settingsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const [ isNavigating, setIsNavigating ] = useState( false );
+
+	const connectMoreServicesURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getConnectMoreServicesURL()
 	);
 
 	const { analyticsGatheringData, searchConsoleGatheringData } =
@@ -74,36 +77,44 @@ export default function GatheringDataNotification( { id, Notification } ) {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win">
-			<NotificationWithSmallSVG
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.INFO }
 				title={ gatheringDataTitle }
-				description={
-					<Description
-						text={ sprintf(
-							/* translators: %s: the number of hours the site can be in a gathering data state */
-							_n(
-								'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-								'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
-								gatheringDataWaitTimeInHours,
-								'google-site-kit'
-							),
-							gatheringDataWaitTimeInHours
-						) }
-					/>
-				}
-				actions={
-					<ActionsCTALinkDismiss
-						id={ id }
-						ctaLabel={ __(
-							'See other services',
-							'google-site-kit'
-						) }
-						ctaLink={ `${ settingsAdminURL }#/connect-more-services` }
-						dismissLabel={ __( 'Maybe later', 'google-site-kit' ) }
-						dismissExpires={ DAY_IN_SECONDS }
-					/>
-				}
-				SmallImageSVG={ GatheringDataIcon }
+				description={ sprintf(
+					/* translators: %s: the number of hours the site can be in a gathering data state */
+					_n(
+						'It can take up to %s hour before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						'It can take up to %s hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						gatheringDataWaitTimeInHours,
+						'google-site-kit'
+					),
+					gatheringDataWaitTimeInHours
+				) }
+				ctaButton={ {
+					label: __( 'Connect more services', 'google-site-kit' ),
+					href: connectMoreServicesURL,
+					dismissOnClick: true,
+					dismissOptions: {
+						expiresInSeconds: DAY_IN_SECONDS,
+						skipHidingFromQueue: true,
+					},
+					onClick: () => setIsNavigating( true ),
+					inProgress: isNavigating,
+				} }
+				dismissButton={ {
+					label: __( 'Got it', 'google-site-kit' ),
+					dismissOptions: {
+						expiresInSeconds: DAY_IN_SECONDS,
+					},
+					disabled: isNavigating,
+				} }
+				svg={ {
+					desktop: SVGGraphic,
+					mobile: undefined,
+					verticalPosition: 'center',
+				} }
 			/>
 		</Notification>
 	);

@@ -52,6 +52,7 @@ export function createPaxConfig( options = {} ) {
 		contentContainer
 			? {
 					clientConfig: {
+						partnerName: 'site-kit',
 						contentContainer,
 					},
 			  }

@@ -24,15 +24,15 @@ import {
 	createTestRegistry,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '../../datastore/__fixtures__';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {
@@ -111,11 +111,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	it( 'should render with the switch defaulting to the on position when enhanced measurement is enabled for the web data stream', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setEnhancedMeasurementStreamEnabled(
+			.setEnhancedMeasurementStreamEnabled( {
 				propertyID,
 				webDataStreamID,
-				true
-			);
+				enabled: true,
+			} );
 
 		const { container, getByLabelText } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
@@ -134,11 +134,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	it( 'should render with the switch defaulting to the off position when enhanced measurement is disabled for the web data stream', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setEnhancedMeasurementStreamEnabled(
+			.setEnhancedMeasurementStreamEnabled( {
 				propertyID,
 				webDataStreamID,
-				false
-			);
+				enabled: false,
+			} );
 
 		const { container, getByLabelText } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess />,
@@ -287,11 +287,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 	it( 'should render correctly, with the switch disabled when hasModuleAccess is false', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setEnhancedMeasurementStreamEnabled(
+			.setEnhancedMeasurementStreamEnabled( {
 				propertyID,
 				webDataStreamID,
-				false
-			);
+				enabled: false,
+			} );
 
 		const { container, getByLabelText } = render(
 			<SettingsEnhancedMeasurementSwitch hasModuleAccess={ false } />,
@@ -364,11 +364,11 @@ describe( 'SettingsEnhancedMeasurementSwitch', () => {
 		beforeEach( async () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.setEnhancedMeasurementStreamEnabled(
+				.setEnhancedMeasurementStreamEnabled( {
 					propertyID,
 					webDataStreamID,
-					true
-				);
+					enabled: true,
+				} );
 		} );
 
 		it( 'should revert the switch from off to on', async () => {

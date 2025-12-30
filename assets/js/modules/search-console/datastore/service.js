@@ -26,9 +26,9 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { untrailingslashit } from '../../../util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { untrailingslashit } from '@/js/util';
 
 export const selectors = {
 	/**

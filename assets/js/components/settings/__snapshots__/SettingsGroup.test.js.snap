@@ -5,7 +5,9 @@ exports[`SettingsGroup renders correctly 1`] = `
   <div
     class="googlesitekit-module-settings-group"
   >
-    <h4>
+    <h4
+      class="googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium"
+    >
       Test Title
     </h4>
     <div>

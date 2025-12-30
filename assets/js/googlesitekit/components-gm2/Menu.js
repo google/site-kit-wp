@@ -37,7 +37,7 @@ import {
 /**
  * Internal dependencies
  */
-import { MDCMenu } from '../../material-components';
+import { MDCMenu } from '@/js/material-components';
 
 const Menu = forwardRef(
 	(
@@ -70,7 +70,8 @@ const Menu = forwardRef(
 
 		useEffect( () => {
 			if ( ! menuRef?.current ) {
-				return;
+				// Return noop cleanup function to satisfy consistent-return rule.
+				return () => {};
 			}
 
 			const menuComponent = new MDCMenu( menuRef.current );

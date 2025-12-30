@@ -20,33 +20,36 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	WithTestRegistry,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
-} from '../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
-} from '../../../../../googlesitekit/datastore/user/constants';
-import { getMetaCapabilityPropertyName } from '../../../../../googlesitekit/datastore/util/permissions';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '../../../../analytics-4/datastore/constants';
-import { provideAnalytics4MockReport } from '../../../../analytics-4/utils/data-mock';
-import * as fixtures from '../../../../analytics-4/datastore/__fixtures__';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
-import { DAY_IN_SECONDS } from '../../../../../util';
-import { provideSearchConsoleMockReport } from '../../../util/data-mock';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 import SearchFunnelWidgetGA4 from './index';
 
 const { accountSummaries } = fixtures;
@@ -74,7 +77,7 @@ const ga4ReportArgs = [
 		compareEndDate: '2021-09-14',
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -83,6 +86,8 @@ const ga4ReportArgs = [
 		dimensionFilters: {
 			sessionDefaultChannelGrouping: [ 'Organic Search' ],
 		},
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4OverviewArgs',
 	},
 	{
 		startDate: '2021-09-15',
@@ -96,7 +101,7 @@ const ga4ReportArgs = [
 		],
 		metrics: [
 			{
-				name: 'conversions',
+				name: 'keyEvents',
 			},
 			{
 				name: 'engagementRate',
@@ -112,6 +117,7 @@ const ga4ReportArgs = [
 				},
 			},
 		],
+		reportID: 'search-console_search-funnel-widget-ga4_widget_ga4StatsArgs',
 	},
 	{
 		startDate: '2021-09-15',
@@ -138,6 +144,8 @@ const ga4ReportArgs = [
 				},
 			},
 		],
+		reportID:
+			'search-console_search-funnel-widget-ga4_widget_ga4VisitorsOverviewAndStatsArgs',
 	},
 	{
 		dimensions: [
@@ -252,12 +260,12 @@ ReadyWithAnalyticsNotActive.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 
@@ -273,12 +281,12 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -286,10 +294,9 @@ ReadyWithActivateAnalyticsCTA.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
 };
-
 ReadyWithActivateAnalyticsCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithActivateAnalyticsCTA',
-	delay: 3000,
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
@@ -301,12 +308,12 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 			},
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -316,25 +323,22 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 	},
 };
 
-export const ReadyWithCreateConversionCTA = Template.bind( {} );
-ReadyWithCreateConversionCTA.storyName = 'Ready with Set up Conversions CTA';
-ReadyWithCreateConversionCTA.args = {
+export const ReadyWithCreateKeyEventCTA = Template.bind( {} );
+ReadyWithCreateKeyEventCTA.storyName = 'Ready with Set up Key Events CTA';
+ReadyWithCreateKeyEventCTA.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetConversionEvents( [], {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetKeyEvents( [], {} );
 
 		for ( const options of ga4ReportArgs ) {
 			provideAnalytics4MockReport( registry, options );
 		}
 	},
 };
-
-ReadyWithCreateConversionCTA.scenario = {
-	label: 'SearchConsole/SearchFunnelWidgetGA4/ReadyWithCreateConversionCTA',
-	delay: 3000,
+ReadyWithCreateKeyEventCTA.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export const Loading = Template.bind( {} );
@@ -443,24 +447,24 @@ ViewOnlySearchConsoleOnlyReady.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				shareable: true,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				shareable: false,
 			},
 		] );
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'search-console'
+				MODULE_SLUG_SEARCH_CONSOLE
 			) ]: true,
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
-				'analytics-4'
+				MODULE_SLUG_ANALYTICS_4
 			) ]: false,
 		} );
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -469,6 +473,21 @@ ViewOnlySearchConsoleOnlyReady.args = {
 		}
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		for ( const options of ga4ReportArgs ) {
+			provideAnalyticsReportWithoutDateRangeData( registry, options );
+		}
+	},
+};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400, // This extended delay is required to fix rare VRT instability where the chart in this scenario does not render in the standard delay.
 };
 
 export default {
@@ -481,50 +500,55 @@ export default {
 				</div>
 			</div>
 		),
-		( Story ) => {
-			const registry = createTestRegistry();
-			provideSiteInfo( registry );
-			registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
-			registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-				needsReauthentication: false,
-			} );
-
-			provideModules( registry, [
-				{
-					active: true,
-					connected: true,
-					slug: 'search-console',
-				},
-				{
-					active: true,
-					connected: true,
-					slug: 'analytics-4',
-				},
-			] );
-			provideUserAuthentication( registry );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetAccountSummaries( {
-					accountSummaries: accounts,
-					nextPageToken: null,
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideSiteInfo( registry );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-12' );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: false,
 				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperty( properties[ 0 ], {
-					propertyID,
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setPropertyID( propertyID );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetConversionEvents( fixtures.conversionEvents, {} );
+
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+					},
+					{
+						active: true,
+						connected: true,
+						slug: MODULE_SLUG_ANALYTICS_4,
+					},
+				] );
+				provideUserAuthentication( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( {
+						accountSummaries: accounts,
+						nextPageToken: null,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperty( properties[ 0 ], {
+						propertyID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( propertyID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetKeyEvents( fixtures.keyEvents, {} );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

@@ -24,7 +24,7 @@ import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
-} from '../../datastore/constants';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;

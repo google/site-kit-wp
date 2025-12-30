@@ -24,7 +24,7 @@ import { each } from 'lodash';
 /*
  * Internal dependencies
  */
-import { stringToDate } from '../../../util';
+import { stringToDate } from '@/js/util';
 
 export * from './is-zero-report';
 export * from './parsing';

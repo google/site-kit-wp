@@ -34,6 +34,8 @@ export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY = 'wpDashboardViewOnly';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
 export const VIEW_CONTEXT_METRIC_SELECTION = 'metricSelection';
+export const VIEW_CONTEXT_WP_BLOCK_EDITOR = 'wpBlockEditor';
+export const VIEW_CONTEXT_KEY_METRICS_SETUP = 'keyMetricsSetup';
 
 // Anchor ID Constants
 export const ANCHOR_ID_KEY_METRICS = 'key-metrics';

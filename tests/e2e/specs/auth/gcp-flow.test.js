@@ -53,7 +53,7 @@ function handleRequest( request ) {
 	}
 }
 
-const disconnectFromSiteKit = async () => {
+async function disconnectFromSiteKit() {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
@@ -65,7 +65,7 @@ const disconnectFromSiteKit = async () => {
 	);
 	await page.click( '.mdc-dialog__container button.mdc-button--danger' );
 	await page.waitForNavigation();
-};
+}
 
 describe( 'Site Kit set up flow for the first time', () => {
 	beforeEach( async () => {
@@ -94,12 +94,9 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await expect( page ).toMatchElement(
 			'#js-googlesitekit-main-dashboard'
 		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Site Kit!/i,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-banner__title', {
+			text: /Congrats on completing the setup for Site Kit!/i,
+		} );
 	} );
 
 	it( 'disconnects user from Site Kit', async () => {

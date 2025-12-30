@@ -24,12 +24,14 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { getPreviousDate } from '@/js/util';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
@@ -39,8 +41,9 @@ import {
 	MODULES_ANALYTICS_4,
 	SITE_KIT_AUDIENCE_DEFINITIONS,
 } from './constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../util/errors';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	properties as propertiesFixture,
 	audiences as audiencesFixture,
@@ -586,7 +589,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+			const startDate = getPreviousDate(
+				referenceDate,
+				90 + DATE_RANGE_OFFSET
+			);
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -612,12 +618,13 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
 				] );
 
+				provideSiteInfo( registry );
 				provideUserAuthentication( registry );
 
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
@@ -1078,9 +1085,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiencesFixture[ 1 ], // Purchaser
 				];
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -1091,7 +1097,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const options = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1836,7 +1843,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+			const startDate = getPreviousDate(
+				referenceDate,
+				90 + DATE_RANGE_OFFSET
+			);
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -1856,7 +1866,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			beforeEach( () => {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -1878,6 +1888,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					configuredAudiences: null,
 					isAudienceSegmentationWidgetHidden,
 				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
 			} );
 
 			it( 'sets `isSettingUpAudiences` to true while the action is in progress', async () => {
@@ -2616,9 +2630,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					} );
 
 				// Simulate no data available state for "Purchasers".
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { audienceSlug, name } ) => {
 								if ( 'purchasers' === audienceSlug ) {
@@ -2633,7 +2646,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2654,9 +2668,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					} );
 
 				// Simulate data available state for all available audiences.
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -2667,7 +2680,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const configurableAudiences = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -2692,6 +2706,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						( { name } ) => name
 					),
 				},
+				reportID:
+					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
 			it( 'should return report options to get user count for passed audiences', () => {
@@ -2740,9 +2756,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			beforeEach( () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -2753,7 +2768,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -2829,9 +2845,8 @@ describe( 'modules/analytics-4 audiences', () => {
 					getSiteKitAudiencesUserCountReportOptions,
 				} = registry.select( MODULES_ANALYTICS_4 );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiencesFixture.reduce(
 							( acc, { name, audienceType } ) => {
 								if ( 'SITE_KIT_AUDIENCE' === audienceType ) {
@@ -2846,7 +2861,8 @@ describe( 'modules/analytics-4 audiences', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				receiveGetAudienceSettings( {
 					availableAudiences: availableAudiencesFixture,

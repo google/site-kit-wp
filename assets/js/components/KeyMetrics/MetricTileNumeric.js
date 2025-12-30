@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { numFmt, expandNumFmtOptions } from '../../util';
-import ChangeBadge from '../ChangeBadge';
+import { numFmt, expandNumFmtOptions } from '@/js/util';
+import ChangeBadge from '@/js/components/ChangeBadge';
 import MetricTileWrapper from './MetricTileWrapper';
 
 export default function MetricTileNumeric( {

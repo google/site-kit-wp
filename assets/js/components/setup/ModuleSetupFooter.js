@@ -32,11 +32,11 @@ import { useState, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { Cell, Grid, Row } from '../../material-components';
-import Link from '../Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import Link from '@/js/components/Link';
 import { SpinnerButton } from 'googlesitekit-components';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -73,7 +73,7 @@ export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 		>
 			<Grid>
 				<Row>
-					<Cell alignMiddle smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 } alignMiddle>
 						<Link
 							id={ `setup-${ module.slug }-cancel` }
 							href={ settingsPageURL }
@@ -85,7 +85,7 @@ export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 						</Link>
 					</Cell>
 					{ onComplete && (
-						<Cell alignRight smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+						<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 } alignRight>
 							<SpinnerButton
 								id={ `setup-${ module.slug }-complete` }
 								onClick={ onCompleteSubmit }

@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
-import { Provider as ViewContextProvider } from '../Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -39,8 +40,10 @@ import {
 	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
 	widgetDecorators,
-} from './common-GA4.stories';
-import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '../../googlesitekit/constants';
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+} from './common-GA4-stories';
+import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 function Template( { setupRegistry, viewContext } ) {
 	return (
@@ -60,7 +63,15 @@ ReadyGA4.args = {
 		provideAnalytics4ReportTitles( registry );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
+};
+ReadyGA4.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
 };
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
@@ -71,7 +82,7 @@ ReadyWithActivateModuleCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -92,7 +103,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 			{
 				active: false,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -105,10 +116,7 @@ ReadyWithActivateAnalyticsCTA.args = {
 	},
 };
 
-ReadyWithActivateAnalyticsCTA.scenario = {
-	label: 'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
-	delay: 6000, // This extra delay is required to fix unstable VRTs.
-};
+ReadyWithActivateAnalyticsCTA.scenario = {};
 
 export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
 ReadyWithCompleteAnalyticsActivationCTA.storyName =
@@ -119,7 +127,7 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			{
 				active: true,
 				connected: false,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideSiteInfo( registry );
@@ -136,21 +144,17 @@ ViewOnlyAnalyticsAndSearchConsole.storyName =
 	'View Only Analytics And Search Console';
 ViewOnlyAnalyticsAndSearchConsole.args = {
 	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserAuthentication( registry );
 		provideUserCapabilities( registry, {
 			'googlesitekit_read_shared_module_data::["search-console"]': true,
 			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 		} );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
 	viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
 };
@@ -161,18 +165,21 @@ ViewOnlyAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 		provideModuleRegistrations( registry );
-		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserAuthentication( registry );
 		provideUserCapabilities( registry, {
 			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
 		} );
 		setupSearchConsoleMockReports( registry );
 		setupAnalytics4MockReports( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
 	viewContext: VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
 };
@@ -183,7 +190,7 @@ ViewOnlySearchConsole.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -216,7 +223,29 @@ ZeroDataGA4.args = {
 		provideUserAuthentication( registry );
 		setupSearchConsoleZeroData( registry );
 		setupAnalytics4ZeroData( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 	},
+};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideAnalytics4ReportTitles( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReportsWithNoDataInComparisonDateRange( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+	},
+};
+NoDataInComparisonDateRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 200,
 };
 
 export default {

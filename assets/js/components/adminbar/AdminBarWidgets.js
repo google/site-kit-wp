@@ -30,10 +30,12 @@ import AdminBarClicks from './AdminBarClicks';
 import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { Row, Cell } from '../../material-components';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Row, Cell } from '@/js/material-components';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';
@@ -56,19 +58,23 @@ const AdminBarSessionsGA4Widget =
 
 export default function AdminBarWidgets() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleAvailable( 'analytics-4' )
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics-4' )
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
 	);
 	const canViewSharedAnalytics = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'analytics-4' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		)
 	);
 	const canViewSharedSearchConsole = useSelect( ( select ) =>
-		select( CORE_USER ).hasAccessToShareableModule( 'search-console' )
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_SEARCH_CONSOLE
+		)
 	);
 
 	const searchConsoleSize = canViewSharedAnalytics
@@ -79,54 +85,49 @@ export default function AdminBarWidgets() {
 		: { lg: 6, md: 4 };
 
 	return (
-		<Fragment>
-			<Row>
-				{ canViewSharedSearchConsole && (
+		<Row>
+			{ canViewSharedSearchConsole && (
+				<Fragment>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarImpressionsWidget />
+					</Cell>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarClicksWidget />
+					</Cell>
+				</Fragment>
+			) }
+
+			{ analyticsModuleConnected &&
+				analyticsModuleActive &&
+				canViewSharedAnalytics && (
 					<Fragment>
 						<Cell
-							lgSize={ searchConsoleSize.lg }
-							mdSize={ searchConsoleSize.md }
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
 						>
-							<AdminBarImpressionsWidget />
+							<AdminBarUniqueVisitorsGA4Widget />
 						</Cell>
 						<Cell
-							lgSize={ searchConsoleSize.lg }
-							mdSize={ searchConsoleSize.md }
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
 						>
-							<AdminBarClicksWidget />
+							<AdminBarSessionsGA4Widget />
 						</Cell>
 					</Fragment>
 				) }
 
-				{ analyticsModuleConnected &&
-					analyticsModuleActive &&
-					canViewSharedAnalytics && (
-						<Fragment>
-							<Fragment>
-								<Cell
-									lgSize={ analyticsSize.lg }
-									mdSize={ analyticsSize.md }
-								>
-									<AdminBarUniqueVisitorsGA4Widget />
-								</Cell>
-								<Cell
-									lgSize={ analyticsSize.lg }
-									mdSize={ analyticsSize.md }
-								>
-									<AdminBarSessionsGA4Widget />
-								</Cell>
-							</Fragment>
-						</Fragment>
-					) }
-
-				{ analyticsModuleAvailable &&
-					( ! analyticsModuleConnected ||
-						! analyticsModuleActive ) && (
-						<Cell lgSize={ 6 } mdSize={ 4 }>
-							<AdminBarActivateAnalyticsCTA />
-						</Cell>
-					) }
-			</Row>
-		</Fragment>
+			{ analyticsModuleAvailable &&
+				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<Cell lgSize={ 6 } mdSize={ 4 }>
+						<AdminBarActivateAnalyticsCTA />
+					</Cell>
+				) }
+		</Row>
 	);
 }

@@ -216,6 +216,7 @@ $c-user-input-color: $c-content-on-primary-container;
 // Badge
 $c-badge-background: $c-alabaster;
 $c-badge-text: $c-cape-cod;
+$c-splash-analytics-recommended-badge-bg: $c-site-kit-sk-10;
 
 // Entity Search
 $c-entity-search-button: $c-surfaces-on-surface-variant;
@@ -270,6 +271,7 @@ $width-desktop: 960;
 $width-xlarge: 1280;
 $width-xxlarge: 1440;
 $width-xxxlarge: 1500;
+$page-content-max-width: 1366px;
 
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
@@ -334,6 +336,7 @@ $z-index-sk-side-sheet: 10000;
 $z-index-sk-side-sheet-overlay: 9990;
 $z-index-sk-header: 9980;
 $z-index-sk-overlay-notification: 9970;
+$z-index-sk-notice-snackbar: 9;
 
 // Start Authorize Application screen specific styles.
 $c-authorize-application-background: $c-base;

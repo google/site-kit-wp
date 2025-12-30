@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      6.8
+Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag:        1.151.0
+Stable tag:        1.168.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,26 +109,26 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.151.0 =
+= 1.168.0 =
 
 **Enhanced**
 
-* Remove old feature tours. See [#10574](https://github.com/google/site-kit-wp/issues/10574).
-* Remove the `conversionReporting` feature flag. See [#10552](https://github.com/google/site-kit-wp/issues/10552).
-* Update the WooCommerce modal to deactivate the Google For WooCommerce linked account notification when the user selects to install that plugin. See [#10542](https://github.com/google/site-kit-wp/issues/10542).
-* Add OverlayCard components to use for overlay notifications. See [#10532](https://github.com/google/site-kit-wp/issues/10532).
-* Remove the ESLint complexity override from the Reader Revenue Manager `SettingsEdit` component. See [#10363](https://github.com/google/site-kit-wp/issues/10363).
-* Enhance Ads measurement checks to avoid extra requests on dashboard. See [#10190](https://github.com/google/site-kit-wp/issues/10190).
-* Limit display of Visitor groups setup success notice to user who set up the feature. See [#10089](https://github.com/google/site-kit-wp/issues/10089).
-* Improve language intended to direct users to Site Kit settings. Props mxbclang. See [#7756](https://github.com/google/site-kit-wp/issues/7756).
-
-**Changed**
-
-* Update PAX SDK version to 1.1.4. See [#10614](https://github.com/google/site-kit-wp/issues/10614).
-* Replace all usage of `deprecatedProvideNotifications` with the updated `provideNotifications` utility and remove the deprecated utility. See [#10465](https://github.com/google/site-kit-wp/issues/10465).
+* Add the welcome modal as part of the setup flow refresh. See [#11808](https://github.com/google/site-kit-wp/issues/11808).
+* Update the uninstall script to unregister all email reporting events when the plugin is unininstalled. See [#11805](https://github.com/google/site-kit-wp/issues/11805).
+* Add opt-in internal tracking for the new key metrics setup screen. See [#11723](https://github.com/google/site-kit-wp/issues/11723).
+* Add GA event tracking for user interaction with the Analytics setup screen in the new setup flow. See [#11722](https://github.com/google/site-kit-wp/issues/11722).
+* Add a class to send emails. See [#11564](https://github.com/google/site-kit-wp/issues/11564).
+* Add email reporting templates. See [#11550](https://github.com/google/site-kit-wp/issues/11550).
+* Add a base template for reports sent by Email Reporting. See [#11549](https://github.com/google/site-kit-wp/issues/11549).
+* Implement “Fallback” scheduled events for Email Reporting. See [#11548](https://github.com/google/site-kit-wp/issues/11548).
+* Detect if Analytics has previously been connected when displaying certain notices in the Email Reporting notices. See [#11435](https://github.com/google/site-kit-wp/issues/11435).
+* Add `utm_source=sitekit` query parameter to all external service links for source tracking. See [#11160](https://github.com/google/site-kit-wp/issues/11160).
+* Update Ads Module Disconnect Messaging for PAX Setup Flow. See [#10607](https://github.com/google/site-kit-wp/issues/10607).
 
 **Fixed**
 
-* Fix issue where syncing audiences and custom dimensions in parallel could result in the cached audiences not being persisted. See [#8888](https://github.com/google/site-kit-wp/issues/8888).
+* Fix in-progress spinner not appearing in CTA buttons for banners and notices. See [#11876](https://github.com/google/site-kit-wp/issues/11876).
+* Fix banner width for Sign in with Google content on very large displays. See [#11800](https://github.com/google/site-kit-wp/issues/11800).
+* Fix enhanced conversion tracking fatal errors. See [#11049](https://github.com/google/site-kit-wp/issues/11049).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

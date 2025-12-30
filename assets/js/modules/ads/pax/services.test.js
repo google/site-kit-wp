@@ -28,8 +28,8 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ADS } from '../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { createPaxServices } from './services';
 
 const getTokenEndpoint = new RegExp(
@@ -337,7 +337,7 @@ describe( 'PAX partner services', () => {
 				it( 'should contain correct Date values', async () => {
 					registry
 						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
+						.setReferenceDate( '2020-09-07' );
 					// Set the date range so that it selects the range we should expect:
 					// Sept 1 - Sept 7
 					registry

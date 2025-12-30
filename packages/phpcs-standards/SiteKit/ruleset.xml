@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ruleset name="SiteKit">
+    <description>Google Site Kit custom coding standards</description>
+
+    <!-- Include all sniffs in the SiteKit directory -->
+    <rule ref="SiteKit"/>
+</ruleset>

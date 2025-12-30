@@ -24,20 +24,18 @@ import ModalDialog from './ModalDialog';
 function Template( args ) {
 	return (
 		<ModalDialog
-			dialogActive
 			title="Modal Dialog Title"
 			subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed commodo urna vitae commodo sollicitudin."
 			handleConfirm={ () => {} }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Global/ModalDialog',
-};
+Default.scenario = {};
 
 export const Danger = Template.bind( {} );
 Danger.storyName = 'Danger';
@@ -46,39 +44,48 @@ Danger.args = {
 	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
 	danger: true,
 };
-Danger.scenario = {
-	label: 'Global/ModalDialog/Danger',
-};
+Danger.scenario = {};
 
-export const DependentModules = Template.bind( {} );
-DependentModules.storyName = 'Danger With Dependent Modules';
-DependentModules.args = {
-	dependentModules:
-		'Fusce sit amet tellus neque. Praesent egestas dapibus ipsum vel vulputate.',
+export const DangerWithStringNote = Template.bind( {} );
+DangerWithStringNote.storyName = 'Danger with string note';
+DangerWithStringNote.args = {
+	notes: [ 'this is a single string note' ],
 	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
 	danger: true,
 };
-DependentModules.scenario = {
-	label: 'Global/ModalDialog/DangerWithDependentModules',
+DangerWithStringNote.scenario = {};
+
+function ComponentNote() {
+	return (
+		<div>
+			<strong>Note:</strong> This is a note rendered as a component. It
+			can include <a href="https://example.com">HTML links</a> and other
+			React components.
+		</div>
+	);
+}
+export const DangerWithComponentNote = Template.bind( {} );
+DangerWithComponentNote.storyName = 'Danger with component note';
+DangerWithComponentNote.args = {
+	notes: [ 'This is the first string note.', ComponentNote ],
+	provides: [ 'Audience overview', 'Top pages', 'Top acquisition channels' ],
+	danger: true,
 };
+DangerWithComponentNote.scenario = {};
 
 export const SmallModal = Template.bind( {} );
 SmallModal.storyName = 'Small';
 SmallModal.args = {
 	small: true,
 };
-SmallModal.scenario = {
-	label: 'Global/ModalDialog/Small',
-};
+SmallModal.scenario = {};
 
 export const MediumModal = Template.bind( {} );
 MediumModal.storyName = 'Medium';
 MediumModal.args = {
 	medium: true,
 };
-MediumModal.scenario = {
-	label: 'Global/ModalDialog/Medium',
-};
+MediumModal.scenario = {};
 
 export default {
 	title: 'Global/Modal Dialog',

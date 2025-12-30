@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import SignInWithGoogleSetupCTABanner from './SignInWithGoogleSetupCTABanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -32,9 +32,7 @@ function Template() {
 
 export const Default = Template.bind();
 Default.storyName = 'SignInWithGoogleSetupCTABanner';
-Default.scenario = {
-	label: 'Modules/SignInWithGoogle/Dashboard/SignInWithGoogleSetupCTABanner',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/SignInWithGoogle/Dashboard/SignInWithGoogleSetupCTABanner',

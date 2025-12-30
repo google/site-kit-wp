@@ -26,9 +26,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../util/sanitize';
-import Link from '../../Link';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { sanitizeHTML } from '@/js/util/sanitize';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
 	ERROR_API_UNAVAILABLE,
@@ -39,8 +39,9 @@ import {
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
 } from './constants';
 import GetHelpLink from './GetHelpLink';
+import P from '@/js/components/Typography/P';
 
-const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
+function helperCTA( developerPlugin, stagingDocumentationURL ) {
 	const { installed, active, installURL, activateURL, configureURL } =
 		developerPlugin;
 
@@ -80,7 +81,7 @@ const helperCTA = ( developerPlugin, stagingDocumentationURL ) => {
 		href: stagingDocumentationURL,
 		external: true,
 	};
-};
+}
 
 export default function CompatibilityErrorNotice( { error } ) {
 	const developerPlugin =
@@ -101,7 +102,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 	switch ( error ) {
 		case ERROR_API_UNAVAILABLE:
 			return (
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Site Kit cannot access the WordPress REST API. Please ensure it is enabled on your site. <GetHelpLink />',
@@ -111,12 +112,12 @@ export default function CompatibilityErrorNotice( { error } ) {
 							GetHelpLink: <GetHelpLink errorCode={ error } />,
 						}
 					) }
-				</p>
+				</P>
 			);
 		case ERROR_INVALID_HOSTNAME:
 		case ERROR_FETCH_FAIL:
 			return (
-				<p>
+				<P>
 					{ ! installed && (
 						<span>
 							{ createInterpolateElement(
@@ -157,11 +158,11 @@ export default function CompatibilityErrorNotice( { error } ) {
 							) }
 						</span>
 					) }
-				</p>
+				</P>
 			);
 		case ERROR_TOKEN_MISMATCH:
 			return (
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard. <GetHelpLink />',
@@ -169,11 +170,11 @@ export default function CompatibilityErrorNotice( { error } ) {
 						),
 						{ GetHelpLink: <GetHelpLink errorCode={ error } /> }
 					) }
-				</p>
+				</P>
 			);
 		case ERROR_GOOGLE_API_CONNECTION_FAIL:
 			return (
-				<p
+				<P
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						`
 						${ __(
@@ -201,7 +202,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 			);
 		case ERROR_AMP_CDN_RESTRICTED:
 			return (
-				<p>
+				<P>
 					{ createInterpolateElement(
 						__(
 							'Looks like the AMP CDN is restricted in your region, which could interfere with setup on the Site Kit service. <GetHelpLink />',
@@ -211,11 +212,11 @@ export default function CompatibilityErrorNotice( { error } ) {
 							GetHelpLink: <GetHelpLink errorCode={ error } />,
 						}
 					) }
-				</p>
+				</P>
 			);
 		case ERROR_SK_SERVICE_CONNECTION_FAIL:
 			return (
-				<p
+				<P
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						`
 						${ __(

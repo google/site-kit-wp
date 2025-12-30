@@ -31,22 +31,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import Link from '../../../../components/Link';
-import { getPreviousDate, numFmt } from '../../../../util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Link from '@/js/components/Link';
+import { getPreviousDate, numFmt } from '@/js/util';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import withCustomDimensions from '../../utils/withCustomDimensions';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { decodeAmpersand } from '../../utils';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
 /**
  * Returns the date range (eg. the `startDate` and `endDate`) for this widget's
@@ -118,6 +119,8 @@ export function getReportOptions( referenceDate ) {
 		],
 		limit: 3,
 		keepEmptyRows: false,
+		reportID:
+			'analytics-4_top-recent-trending-pages-widget_widget_reportOptions',
 	};
 
 	return reportOptions;
@@ -242,7 +245,7 @@ TopRecentTrendingPagesWidget.propTypes = {
 
 export default compose(
 	whenActive( {
-		moduleName: 'analytics-4',
+		moduleName: MODULE_SLUG_ANALYTICS_4,
 		FallbackComponent: ConnectGA4CTATileWidget,
 	} ),
 	withCustomDimensions( {

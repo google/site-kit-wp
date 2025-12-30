@@ -33,11 +33,11 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import PlusIcon from '../../../svg/icons/plus.svg';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import PlusIcon from '@/svg/icons/plus.svg';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AddMetricCTATile( { Widget } ) {
 	const trackingRef = useRef();

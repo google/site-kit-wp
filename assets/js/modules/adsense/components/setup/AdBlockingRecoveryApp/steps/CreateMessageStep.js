@@ -31,18 +31,19 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import ErrorNotice from '../../../../../../components/ErrorNotice';
-import Link from '../../../../../../components/Link';
-import { CORE_LOCATION } from '../../../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import useViewContext from '../../../../../../hooks/useViewContext';
-import { trackEvent } from '../../../../../../util';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
-} from '../../../../datastore/constants';
+} from '@/js/modules/adsense/datastore/constants';
 
 export default function CreateMessageStep() {
 	const viewContext = useViewContext();
@@ -152,28 +153,28 @@ export default function CreateMessageStep() {
 		}
 	}, [ createMessageCTAClicked, viewContext ] );
 
-	const handleSecondaryCTAClick = () => {
+	function handleSecondaryCTAClick() {
 		trackEvent(
 			`${ viewContext }_adsense-abr`,
 			'create_message',
 			'secondary_cta'
 		);
-	};
+	}
 
 	return (
 		<Fragment>
-			<p>
+			<P>
 				{ __(
 					'Create and publish an ad blocking recovery message in AdSense',
 					'google-site-kit'
 				) }
-			</p>
-			<p>
+			</P>
+			<P>
 				{ __(
 					'Site visitors will be given the option to allow ads on your site. You can also present them with other options to fund your site (optional)',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 			{ saveSettingsError && <ErrorNotice error={ saveSettingsError } /> }
 			<div className="googlesitekit-ad-blocking-recovery__create-message-footer">
 				<div className="googlesitekit-ad-blocking-recovery__create-message-footer-actions">

@@ -27,9 +27,9 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
-import { trackEvent } from '../../../../util/tracking';
-import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function PropertySelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();

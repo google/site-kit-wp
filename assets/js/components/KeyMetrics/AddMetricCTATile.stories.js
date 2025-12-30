@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import AddMetricCTATile from './AddMetricCTATile';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -32,9 +32,7 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'AddMetricCTATile';
-Default.scenario = {
-	label: 'KeyMetrics/AddMetricCTATile',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/AddMetricCTATile',

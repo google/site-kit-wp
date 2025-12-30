@@ -24,9 +24,9 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
@@ -53,9 +53,7 @@ PluginSetupError.args = {
 		} );
 	},
 };
-PluginSetupError.scenario = {
-	label: 'Global/ErrorNotifications/PluginSetupError',
-};
+PluginSetupError.scenario = {};
 
 export const PermissionError = Template.bind( {} );
 PermissionError.storyName =
@@ -72,9 +70,7 @@ PermissionError.args = {
 		} );
 	},
 };
-PermissionError.scenario = {
-	label: 'Global/ErrorNotifications/PluginSetupError',
-};
+PermissionError.scenario = {};
 
 export const AdditionalScopeError = Template.bind( {} );
 AdditionalScopeError.storyName = 'Additional Scope Error - Grant Permission';
@@ -104,18 +100,16 @@ AdditionalScopeError.args = {
 		} );
 	},
 };
-AdditionalScopeError.scenario = {
-	label: 'Global/ErrorNotifications/AdditionalScopeError',
-};
+AdditionalScopeError.scenario = {};
 
 export default {
-	title: 'Components/ErrorNotifications',
+	title: 'Components/Notifications/Errors/SetupErrorMessageNotification',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

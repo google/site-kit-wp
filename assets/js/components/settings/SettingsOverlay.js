@@ -30,7 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import LockIcon from '../../../svg/icons/lock.svg';
+import LockIcon from '@/svg/icons/lock.svg';
+import Typography from '@/js/components/Typography';
 
 function SettingsOverlay( { compress } ) {
 	return (
@@ -43,14 +44,17 @@ function SettingsOverlay( { compress } ) {
 				<div className="googlesitekit-overlay__icon">
 					<LockIcon width="22" height="30" />
 				</div>
-				<h3
+				<Typography
+					as="h3"
+					size="medium"
+					type="title"
 					className="
 				googlesitekit-heading-2
 				googlesitekit-overlay__title
 			"
 				>
 					{ __( 'Section locked while editing', 'google-site-kit' ) }
-				</h3>
+				</Typography>
 			</div>
 		</div>
 	);

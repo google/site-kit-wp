@@ -21,13 +21,17 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ADSENSE } from './constants';
-import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../util/status';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ACCOUNT_STATUS_APPROVED,
+	SITE_STATUS_ADDED,
+} from '@/js/modules/adsense/util/status';
 import {
 	createTestRegistry,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
-import { getItem, setItem } from '../../../googlesitekit/api/cache';
-import { createCacheKey } from '../../../googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { createCacheKey } from '@/js/googlesitekit/api';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_CLIENT_ID,
@@ -130,7 +134,7 @@ describe( 'modules/adsense settings', () => {
 
 				const cacheKey = createCacheKey(
 					'modules',
-					'adsense',
+					MODULE_SLUG_ADSENSE,
 					'arbitrary-datapoint'
 				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );

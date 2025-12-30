@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Badge from '../Badge';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Badge from '@/js/components/Badge';
 
 export default function KeyMetricsNewBadge() {
 	// This is necessary to conditionally render the badge

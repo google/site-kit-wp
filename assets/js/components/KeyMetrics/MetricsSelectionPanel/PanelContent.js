@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { noop } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
@@ -41,7 +42,7 @@ export default function PanelContent( {
 	closePanel,
 	savedViewableMetrics,
 	showHeader = true,
-	setIsNavigatingToOAuthURL,
+	setIsNavigatingToOAuthURL = noop,
 	isFullScreen = false,
 } ) {
 	return (
@@ -75,7 +76,7 @@ export default function PanelContent( {
 
 PanelContent.propTypes = {
 	isOpen: PropTypes.bool,
-	closePanel: PropTypes.func.isRequired,
+	closePanel: PropTypes.func,
 	savedViewableMetrics: PropTypes.array,
 	showHeader: PropTypes.bool,
 	setIsNavigatingToOAuthURL: PropTypes.func,

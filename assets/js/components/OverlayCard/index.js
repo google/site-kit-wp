@@ -26,7 +26,7 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import Body from './Body';
 import { buttonProps } from './DismissButton';
 
@@ -61,16 +61,17 @@ export default function OverlayCard( props ) {
 OverlayCard.propTypes = {
 	className: PropTypes.string,
 	title: PropTypes.string,
-	description: PropTypes.string,
+	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
 	ctaButton: PropTypes.shape( {
 		...buttonProps,
 		href: PropTypes.string,
 		target: PropTypes.string,
-		trailingIcon: PropTypes.elementType,
+		trailingIcon: PropTypes.object,
 	} ),
 	dismissButton: PropTypes.shape( buttonProps ),
 	GraphicDesktop: PropTypes.elementType,
 	GraphicMobile: PropTypes.elementType,
+	newBadge: PropTypes.bool,
 	visible: PropTypes.bool,
 };
 

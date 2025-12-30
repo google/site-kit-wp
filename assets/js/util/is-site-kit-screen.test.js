@@ -31,7 +31,7 @@ import {
 	VIEW_CONTEXT_MODULE,
 	VIEW_CONTEXT_WP_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
-} from '../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 
 describe( 'isSiteKitScreen', () => {
 	it.each( [

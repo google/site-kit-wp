@@ -26,19 +26,27 @@ import {
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
-import { withConnected } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../../../../util/errors';
-import { provideAnalytics4MockReport } from '../../../analytics-4/utils/data-mock';
+} from '@/js/util/errors';
+import {
+	provideAnalytics4MockReport,
+	getAnalytics4MockResponse,
+} from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
 	let registry;
@@ -53,7 +61,7 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
-		provideModules( registry, withConnected( 'analytics-4' ) );
+		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -65,14 +73,62 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [
 				{
-					name: 'sessionConversionRate',
+					name: 'sessionKeyEventRate',
 				},
 			],
 			limit: 1,
-			orderBy: 'sessionConversionRate',
+			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
+
+		const { container, waitForRegistry } = render(
+			<TopConvertingTrafficSourceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'renders correctly with no data in the comparison date range', async () => {
+		const reportOptions = {
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [
+				{
+					name: 'sessionKeyEventRate',
+				},
+			],
+			limit: 1,
+			orderBy: 'sessionKeyEventRate',
+			reportID:
+				'analytics-4_top-converting-traffic-source-widget_widget_reportOptions',
+		};
+
+		const report = getAnalytics4MockResponse( reportOptions );
+
+		const modifiedReport =
+			replaceValuesOrRemoveRowForDateRangeInAnalyticsReport(
+				report,
+				'date_range_1',
+				'remove'
+			);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( modifiedReport, {
+				options: reportOptions,
+			} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ reportOptions ] );
 
 		const { container, waitForRegistry } = render(
 			<TopConvertingTrafficSourceWidget { ...widgetProps } />,

@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { storageAvailable } from '../';
+import { storageAvailable } from '@/js/util';
 
 const valuesToTest = [
 	[ 'localStorage', true, false ],

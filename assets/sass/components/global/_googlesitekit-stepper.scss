@@ -68,11 +68,7 @@
 		align-items: center;
 		color: $c-surfaces-on-surface;
 		display: flex;
-		font-family: $f-primary;
-		font-size: $fs-title-md;
-		font-weight: $fw-medium;
 		height: 24px;
-		line-height: $lh-title-md;
 
 		@media (min-width: $bp-tablet) {
 			margin: 0;

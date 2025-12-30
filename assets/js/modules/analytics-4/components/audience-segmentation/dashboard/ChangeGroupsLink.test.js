@@ -17,16 +17,16 @@
  */
 
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
-import { availableAudiences } from '../../../datastore/__fixtures__';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../../../../tests/js/test-utils';
-import * as tracking from '../../../../../util/tracking';
+import * as tracking from '@/js/util/tracking';
 import ChangeGroupsLink from './ChangeGroupsLink';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -44,6 +44,10 @@ describe( 'ChangeGroupsLink', () => {
 	} );
 
 	it( 'should not render if available audiences are undefined', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
 		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
 
 		const button = queryByRole( 'button' );
@@ -66,16 +70,16 @@ describe( 'ChangeGroupsLink', () => {
 			availableAudiences,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
 
@@ -89,16 +93,16 @@ describe( 'ChangeGroupsLink', () => {
 			availableAudiences,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: availableAudiences.reduce( ( acc, { name } ) => {
 					acc[ name ] = 20201220;
 					return acc;
 				}, {} ),
 				customDimension: {},
 				property: {},
-			} );
+			},
+		} );
 
 		registry
 			.dispatch( CORE_UI )

@@ -34,7 +34,7 @@ import { useEffect, useState } from '@wordpress/element';
  * @param {Object} options Options for the Intersection Observer.
  * @return {IntersectionObserverEntry | null} The latest Intersection Observer entry.
  */
-const useLatestIntersection = ( ref, options ) => {
+function useLatestIntersection( ref, options ) {
 	const [ intersectionObserverEntry, setIntersectionObserverEntry ] =
 		useState( null );
 
@@ -43,9 +43,9 @@ const useLatestIntersection = ( ref, options ) => {
 			ref.current &&
 			typeof global.IntersectionObserver === 'function'
 		) {
-			const handler = ( entries ) => {
+			function handler( entries ) {
 				setIntersectionObserverEntry( entries[ entries.length - 1 ] );
-			};
+			}
 
 			const observer = new global.IntersectionObserver(
 				handler,
@@ -63,6 +63,6 @@ const useLatestIntersection = ( ref, options ) => {
 	}, [ ref.current, options.threshold, options.root, options.rootMargin ] );
 
 	return intersectionObserverEntry;
-};
+}
 
 export default useLatestIntersection;

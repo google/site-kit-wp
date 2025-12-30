@@ -34,12 +34,12 @@ class Exit_HandlerTest extends TestCase {
 				};
 			}
 		);
-		$this->assertArrayNotHasKey( 'invoke', $spy->invocations );
+		$this->assertArrayNotHasKey( 'invoke', $spy->invocations, 'Spy should not have invoke key before handler is called.' );
 
 		$handler->invoke();
 		$handler->invoke();
 		$handler->invoke();
 
-		$this->assertCount( 3, $spy->invocations['invoke'] );
+		$this->assertCount( 3, $spy->invocations['invoke'], 'Spy should be invoked three times when handler is called three times.' );
 	}
 }

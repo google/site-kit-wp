@@ -22,7 +22,10 @@
 import ConfirmDisconnect from './ConfirmDisconnect';
 import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { SettingsDisconnectNote } from '@/js/modules/ads/components/settings';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 
 function Template( args ) {
 	return <ConfirmDisconnect { ...args } />;
@@ -32,14 +35,14 @@ export const ConfirmDisconnectWithFeatures = Template.bind( {} );
 ConfirmDisconnectWithFeatures.storyName =
 	'ConfirmDisconnect dialog with features';
 ConfirmDisconnectWithFeatures.args = {
-	slug: 'analytics-4',
+	slug: MODULE_SLUG_ANALYTICS_4,
 };
 ConfirmDisconnectWithFeatures.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
-					slug: 'analytics-4',
+					slug: MODULE_SLUG_ANALYTICS_4,
 					active: true,
 					connected: true,
 					features: [
@@ -53,7 +56,7 @@ ConfirmDisconnectWithFeatures.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-analytics-4-dialogActive', true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -72,7 +75,7 @@ ConfirmDisconnectWithFeaturesAndLongText.args = {
 };
 ConfirmDisconnectWithFeaturesAndLongText.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					slug: 'third-party-module',
@@ -89,7 +92,43 @@ ConfirmDisconnectWithFeaturesAndLongText.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-third-party-module-dialogActive', true );
-		};
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const ConfirmDisconnectWithDisconnectNote = Template.bind( {} );
+ConfirmDisconnectWithDisconnectNote.storyName =
+	'ConfirmDisconnect dialog with features, long text and disconnect note component';
+ConfirmDisconnectWithDisconnectNote.args = {
+	slug: MODULE_SLUG_ADS,
+};
+ConfirmDisconnectWithDisconnectNote.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ADS,
+					active: true,
+					connected: true,
+					name: 'Ads',
+					features: [
+						'Module overview, on a long line to test wrapping, and more text to test wrapping with a long line of text',
+						'Another feature',
+					],
+					SettingsDisconnectNoteComponent: SettingsDisconnectNote,
+				},
+			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'module-ads-dialogActive', true );
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -107,7 +146,7 @@ ConfirmDisconnectWithoutFeatures.args = {
 };
 ConfirmDisconnectWithoutFeatures.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			provideModules( registry, [
 				{
 					slug: 'third-party-module',
@@ -119,7 +158,7 @@ ConfirmDisconnectWithoutFeatures.decorators = [
 			registry
 				.dispatch( CORE_UI )
 				.setValue( 'module-third-party-module-dialogActive', true );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>

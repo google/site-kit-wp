@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { convertArrayListToKeyedObjectMap } from '../convert-array-to-keyed-object-map';
+import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
 
 const arrayToConvert = [
 	{ slug: 'objectOne', name: 'First', order: 1 },

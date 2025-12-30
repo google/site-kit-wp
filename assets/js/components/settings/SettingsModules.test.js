@@ -31,9 +31,9 @@ import {
 	provideModules,
 	muteFetch,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`

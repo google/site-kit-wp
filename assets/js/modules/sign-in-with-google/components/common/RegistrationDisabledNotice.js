@@ -15,12 +15,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -29,15 +23,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { Button } from 'googlesitekit-components';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../components/SettingsNotice';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import InfoIcon from '../../../../../svg/icons/info-circle.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Notice from '@/js/components/Notice';
 
-export default function RegistrationDisabledNotice( { className } ) {
+export default function RegistrationDisabledNotice() {
 	const isMultisite = useSelect( ( select ) =>
 		select( CORE_SITE ).isMultisite()
 	);
@@ -47,18 +36,12 @@ export default function RegistrationDisabledNotice( { className } ) {
 	);
 
 	return (
-		<SettingsNotice
-			className={ classnames(
-				'googlesitekit-registration-disabled-notice',
-				'googlesitekit-registration-disabled-notice--with-outer-cta',
-				className
-			) }
-			Icon={ InfoIcon }
-			type={ TYPE_WARNING }
-			notice={ sprintf(
+		<Notice
+			type={ Notice.TYPES.WARNING }
+			description={ sprintf(
 				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 				__(
-					'Using “One Tap sign in on all pages” will cause errors for users without an account. Enable “%1$s” in WordPress settings to allow anyone to use %2$s.',
+					'Using “One Tap sign in” will cause errors for users without an existing account on your site. Enable “%1$s” in WordPress settings to allow anyone to use %2$s.',
 					'google-site-kit'
 				),
 				isMultisite
@@ -66,19 +49,11 @@ export default function RegistrationDisabledNotice( { className } ) {
 					: __( 'Anyone can register', 'google-site-kit' ),
 				_x( 'Sign in with Google', 'Service name', 'google-site-kit' )
 			) }
-			OuterCTA={ () => (
-				<Button
-					href={ generalSettingsURL }
-					target="_blank"
-					trailingIcon={ <ExternalIcon width={ 13 } height={ 13 } /> }
-				>
-					{ __( 'Manage settings', 'google-site-kit' ) }
-				</Button>
-			) }
+			ctaButton={ {
+				label: __( 'Manage settings', 'google-site-kit' ),
+				href: generalSettingsURL,
+				external: true,
+			} }
 		/>
 	);
 }
-
-RegistrationDisabledNotice.propTypes = {
-	className: PropTypes.string,
-};

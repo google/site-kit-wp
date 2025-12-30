@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 import { AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG } from './constants';
 
@@ -30,20 +30,18 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationSuccessNotice/Default',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceCreationSuccessNotice',
 	component: AudienceCreationSuccessNotice,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

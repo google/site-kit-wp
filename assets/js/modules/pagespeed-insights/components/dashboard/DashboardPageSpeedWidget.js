@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
-import whenActive from '../../../../util/when-active';
+import whenActive from '@/js/util/when-active';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function DashboardPageSpeedWidget( { Widget } ) {
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
@@ -32,5 +33,5 @@ function DashboardPageSpeedWidget( { Widget } ) {
 }
 
 export default whenActive( {
-	moduleName: 'pagespeed-insights',
+	moduleName: MODULE_SLUG_PAGESPEED_INSIGHTS,
 } )( DashboardPageSpeedWidget );

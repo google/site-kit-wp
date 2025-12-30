@@ -32,17 +32,18 @@ import {
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	CONTEXT_AMP,
-} from '../../datastore/constants';
-import { buildAccountWithContainers } from '../../datastore/__factories__';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { buildAccountWithContainers } from '@/js/modules/tagmanager/datastore/__factories__';
 import SettingsEdit from './SettingsEdit';
 
 describe( 'SettingsEdit', () => {
@@ -74,7 +75,9 @@ describe( 'SettingsEdit', () => {
 		provideSiteInfo( registry, { siteName } );
 		provideUserInfo( registry );
 
-		provideModules( registry, [ { slug: 'tagmanager', active: true } ] );
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_TAGMANAGER, active: true },
+		] );
 		provideModuleRegistrations( registry );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
@@ -119,7 +122,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(
@@ -140,11 +143,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
@@ -223,7 +226,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(
@@ -244,11 +247,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'
@@ -337,7 +340,7 @@ describe( 'SettingsEdit', () => {
 					.dispatch( CORE_MODULES )
 					.receiveCheckModuleAccess(
 						{ access: false },
-						{ slug: 'tagmanager' }
+						{ slug: MODULE_SLUG_TAGMANAGER }
 					);
 
 				const { container, waitForRegistry } = render(
@@ -361,11 +364,11 @@ describe( 'SettingsEdit', () => {
 
 				// Verify that the current user doesn't have access warning is displayed.
 				expect(
-					container.querySelector( '.googlesitekit-settings-notice' )
+					container.querySelector( '.googlesitekit-notice--info' )
 				).toBeInTheDocument();
 				expect(
 					container.querySelector(
-						'.googlesitekit-settings-notice__text'
+						'.googlesitekit-notice--info .googlesitekit-notice__content'
 					)
 				).toHaveTextContent(
 					'Another admin configured Tag Manager and you don’t have access to this Tag Manager account. Contact them to share access or change the Tag Manager account.'

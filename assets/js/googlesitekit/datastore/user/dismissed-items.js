@@ -29,19 +29,19 @@ import {
 	commonActions,
 	createRegistrySelector,
 	combineStores,
+	createReducer,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, dismissedItems ) {
-	return {
-		...state,
-		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
-	};
-}
+const reducerCallback = createReducer( ( state, dismissedItems ) => {
+	state.dismissedItems = Array.isArray( dismissedItems )
+		? dismissedItems
+		: [];
+} );
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
@@ -160,7 +160,7 @@ const baseActions = {
 				'All slugs must be strings.'
 			);
 		},
-		function ( ...slugs ) {
+		( ...slugs ) => {
 			return fetchRemoveDismissedItemsStore.actions.fetchRemoveDismissedItems(
 				slugs
 			);
@@ -174,21 +174,18 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case 'SET_IS_ITEM_DISMISSING':
+		case 'SET_IS_ITEM_DISMISSING': {
 			const { slug, isDismissing } = payload;
-			return {
-				...state,
-				isDismissingItems: {
-					[ slug ]: isDismissing,
-				},
-			};
-		default: {
-			return state;
+			state.isDismissingItems = { [ slug ]: isDismissing };
+			break;
 		}
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getDismissedItems() {
@@ -199,6 +196,7 @@ const baseResolvers = {
 		}
 	},
 };
+baseResolvers.isItemDismissed = baseResolvers.getDismissedItems;
 
 const baseSelectors = {
 	/**

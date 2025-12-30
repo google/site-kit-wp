@@ -25,7 +25,7 @@ import WebContainerNameTextField from './WebContainerNameTextField';
 import {
 	CONTAINER_CREATE,
 	MODULES_TAGMANAGER,
-} from '../../datastore/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
 
 export default function ContainerNames() {
 	const containerID = useSelect( ( select ) =>

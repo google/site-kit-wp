@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { SITE_KIT_VIEW_ONLY_CONTEXTS } from '../googlesitekit/constants';
+import { SITE_KIT_VIEW_ONLY_CONTEXTS } from '@/js/googlesitekit/constants';
 import useViewContext from './useViewContext';
 
 /**

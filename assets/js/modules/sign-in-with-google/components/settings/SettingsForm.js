@@ -25,15 +25,22 @@ import {
 	ButtonTextSelect,
 	ButtonThemeSelect,
 	ClientIDTextField,
-	OneTapToggles,
+	OneTapToggle,
 	Preview,
 	SettingsNotice,
-} from '../common';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { Cell, Grid, Row } from '../../../../material-components';
+	ShowNextToCommentsToggle,
+} from '@/js/modules/sign-in-with-google/components/common';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SettingsForm() {
+	const anyoneCanRegister = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegister()
+	);
+
 	return (
 		<div className="googlesitekit-sign-in-with-google-settings-fields">
 			<StoreErrorNotices
@@ -77,8 +84,13 @@ export default function SettingsForm() {
 				</Row>
 				<Row>
 					<Cell size={ 12 }>
-						<OneTapToggles />
+						<OneTapToggle />
 					</Cell>
+					{ !! anyoneCanRegister && (
+						<Cell size={ 12 }>
+							<ShowNextToCommentsToggle />
+						</Cell>
+					) }
 					<Cell size={ 12 }>
 						<AnyoneCanRegisterReadOnly />
 						<SettingsNotice />

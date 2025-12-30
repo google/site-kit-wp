@@ -17,28 +17,29 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import MostEngagingPagesWidget from './MostEngagingPagesWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const pageViewsReportOptions = {
 	startDate: '2020-08-11',
@@ -46,6 +47,8 @@ const pageViewsReportOptions = {
 	dimensions: [ 'pagePath' ],
 	metrics: [ { name: 'screenPageViews' } ],
 	limit: 1,
+	reportID:
+		'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -61,6 +64,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -136,15 +140,14 @@ Ready.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/MostEngagingPagesWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -203,16 +206,15 @@ ReadyViewOnly.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/MostEngagingPagesWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -286,6 +288,8 @@ ZeroData.args = {
 				},
 			},
 			limit: 3,
+			reportID:
+				'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 		};
 
 		const report = getAnalytics4MockResponse( reportOptions );
@@ -353,10 +357,10 @@ export default {
 	title: 'Key Metrics/MostEngagingPagesWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -380,13 +384,13 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

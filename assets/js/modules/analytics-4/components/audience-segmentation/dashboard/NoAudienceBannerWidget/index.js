@@ -25,13 +25,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import whenActive from '../../../../../../util/when-active';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
+import whenActive from '@/js/util/when-active';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoAudienceBanner from './NoAudienceBanner';
-import withIntersectionObserver from '../../../../../../util/withIntersectionObserver';
-import { trackEvent } from '../../../../../../util';
-import useViewContext from '../../../../../../hooks/useViewContext';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 const NoAudienceBannerWithIntersectionObserver =
 	withIntersectionObserver( NoAudienceBanner );
@@ -87,6 +88,6 @@ NoAudienceBannerWidget.propTypes = {
 	WidgetNull: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'analytics-4' } )(
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
 	NoAudienceBannerWidget
 );

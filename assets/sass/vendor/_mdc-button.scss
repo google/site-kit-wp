@@ -5,6 +5,7 @@
 
 		@include mdc-button-ink-color($c-content-primary);
 		box-shadow: none;
+		font-weight: $fw-medium;
 		text-transform: none;
 
 		@media (max-width: $bp-desktop) {
@@ -30,7 +31,6 @@
 
 		box-shadow: none;
 		font-family: $f-primary;
-		font-weight: $fw-normal;
 		height: auto;
 		letter-spacing: normal;
 		min-height: $mdc-button-min-height;
@@ -115,7 +115,6 @@
 		@include mdc-button-ink-color( $c-surfaces-on-surface-variant );
 
 		font-family: $f-primary;
-		font-weight: $fw-medium;
 		height: auto;
 		letter-spacing: normal;
 		min-height: $mdc-button-min-height;
@@ -141,7 +140,6 @@
 
 	.mdc-button--callout {
 		font-family: $f-primary;
-		font-weight: $fw-medium;
 		height: auto;
 		letter-spacing: normal;
 		min-height: $mdc-button-callout-min-height;

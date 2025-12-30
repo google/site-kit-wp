@@ -41,13 +41,13 @@ export function partitionAnalytics4Report( report, { dateRangeLength } ) {
 		'dateRangeLength must be a positive integer.'
 	);
 
-	const getRowsForDateRange = ( dateRange ) => {
+	function getRowsForDateRange( dateRange ) {
 		// Filter the report to get only rows that match the given date range.
 		return report.filter(
 			( { dimensionValues: [ , dateValue ] } ) =>
 				dateValue.value === dateRange
 		);
-	};
+	}
 
 	// Use a negative date range length for reverse slicing.
 	const reverseDateRangeLength = -1 * dateRangeLength;

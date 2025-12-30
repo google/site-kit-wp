@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useLifecycles, useInterval } from 'react-use';
+import { useInterval, useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,7 +31,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 /**
  * Monitors the user's internet connection status.
@@ -65,16 +65,8 @@ export function useMonitorInternetConnection() {
 		setIsOnline( true );
 	}, [ setIsOnline ] );
 
-	useLifecycles(
-		() => {
-			global.addEventListener( 'online', checkInternetConnection );
-			global.addEventListener( 'offline', checkInternetConnection );
-		},
-		() => {
-			global.removeEventListener( 'online', checkInternetConnection );
-			global.removeEventListener( 'offline', checkInternetConnection );
-		}
-	);
+	useEvent( 'online', checkInternetConnection );
+	useEvent( 'offline', checkInternetConnection );
 
 	useInterval( checkInternetConnection, isOnline ? 120000 : 15000 );
 }

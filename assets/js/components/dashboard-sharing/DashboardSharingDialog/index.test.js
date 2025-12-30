@@ -32,20 +32,21 @@ import {
 	provideSiteConnection,
 	provideUserInfo,
 } from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
-} from '../DashboardSharingSettings/constants';
+} from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import DashboardSharingDialog from '.';
 import {
 	sharingSettings,
 	modules,
 	roles,
 } from './../DashboardSharingSettings/__fixtures__';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 describe( 'DashboardSharingDialog', () => {
 	let registry;
@@ -66,7 +67,9 @@ describe( 'DashboardSharingDialog', () => {
 		registry.dispatch( CORE_MODULES ).receiveShareableRoles( roles );
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveSharedOwnershipModules( [ 'pagespeed-insights' ] );
+			.receiveSharedOwnershipModules( [
+				MODULE_SLUG_PAGESPEED_INSIGHTS,
+			] );
 
 		registry.dispatch( CORE_USER ).receiveCapabilities( {
 			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
@@ -83,7 +86,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.queryByText( 'Dashboard sharing & permissions' )
 		).not.toBeInTheDocument();
 		expect(
-			screen.queryByText( 'Reset Dashboard Sharing permissions' )
+			screen.queryByText( 'Reset dashboard sharing permissions' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -96,7 +99,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.getByText( 'Dashboard sharing & permissions' )
 		).toBeInTheDocument();
 		expect(
-			screen.queryByText( 'Reset Dashboard Sharing permissions' )
+			screen.queryByText( 'Reset dashboard sharing permissions' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -109,7 +112,7 @@ describe( 'DashboardSharingDialog', () => {
 			screen.queryByText( 'Dashboard sharing & permissions' )
 		).not.toBeInTheDocument();
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 	} );
 
@@ -150,7 +153,7 @@ describe( 'DashboardSharingDialog', () => {
 				registry.select( CORE_UI ).getValue( RESET_SETTINGS_DIALOG )
 			).toBe( true );
 			expect(
-				screen.getByText( 'Reset Dashboard Sharing permissions' )
+				screen.getByText( 'Reset dashboard sharing permissions' )
 			).toBeInTheDocument();
 		} );
 	} );
@@ -161,7 +164,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		fireEvent.click( screen.getByText( 'Cancel' ) );
@@ -210,7 +213,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		// Simulate pressing the Escape key.
@@ -261,7 +264,7 @@ describe( 'DashboardSharingDialog', () => {
 		render( <DashboardSharingDialog />, { registry } );
 
 		expect(
-			screen.getByText( 'Reset Dashboard Sharing permissions' )
+			screen.getByText( 'Reset dashboard sharing permissions' )
 		).toBeInTheDocument();
 
 		// Find the scrim element and click it.

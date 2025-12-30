@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { useState, useEffect } from '@wordpress/element';
@@ -31,10 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { TYPE_WARNING } from '../SettingsNotice';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
-import SettingsNoticeSingleRow from '../SettingsNotice/SettingsNoticeSingleRow';
-import { Button } from 'googlesitekit-components';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import Notice from '@/js/components/Notice';
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );
@@ -50,34 +43,18 @@ function OfflineNotification() {
 	return (
 		<div aria-live="polite">
 			{ ! isOnline && ! dismissed && (
-				<div
-					className={ classnames(
-						'googlesitekit-margin-top-0',
-						'googlesitekit-margin-bottom-0',
-						'googlesitekit-settings-notice-offline-notice',
-						'googlesitekit-settings-notice',
-						'googlesitekit-settings-notice--single-row',
-						`googlesitekit-settings-notice--${ TYPE_WARNING }`
+				<Notice
+					className="googlesitekit-notice-snackbar--bottom-right"
+					type={ Notice.TYPES.WARNING }
+					description={ __(
+						'You are currently offline. Some features may not be available.',
+						'google-site-kit'
 					) }
-				>
-					<div className="googlesitekit-settings-notice__body">
-						<SettingsNoticeSingleRow
-							notice={ __(
-								'You are currently offline. Some features may not be available.',
-								'google-site-kit'
-							) }
-						/>
-					</div>
-					<div className="googlesitekit-settings-notice__button">
-						<Button
-							onClick={ () => {
-								setDismissed( true );
-							} }
-						>
-							{ __( 'OK, Got it!', 'google-site-kit' ) }
-						</Button>
-					</div>
-				</div>
+					ctaButton={ {
+						label: __( 'OK, Got it!', 'google-site-kit' ),
+						onClick: () => setDismissed( true ),
+					} }
+				/>
 			) }
 		</div>
 	);

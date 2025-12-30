@@ -31,7 +31,7 @@ import {
 	BREAKPOINT_TABLET,
 	BREAKPOINT_DESKTOP,
 	BREAKPOINT_XLARGE,
-} from '../hooks/useBreakpoint';
+} from '@/js/hooks/useBreakpoint';
 
 function PreviewBlock( {
 	className,

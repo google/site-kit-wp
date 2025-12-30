@@ -25,8 +25,9 @@ import {
 	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import * as fixtures from '../../../datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 
 function Template() {
 	return <StatusMigration />;
@@ -40,12 +41,12 @@ export default {
 	component: StatusMigration,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 					},
 				] );
 				provideSiteInfo( registry );
@@ -60,7 +61,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetClients( fixtures.clients, { accountID } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

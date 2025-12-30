@@ -33,9 +33,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { TextField } from 'googlesitekit-components';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
-import { isValidClientID } from '../../utils/validation';
-import { useDebounce } from '../../../../hooks/useDebounce';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { isValidClientID } from '@/js/modules/sign-in-with-google/utils/validation';
+import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function ClientIDTextField( { existingClientID = '' } ) {
 	const clientID = useSelect( ( select ) =>
@@ -97,10 +97,10 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 					'mdc-text-field--error': ! isValid,
 				} ) }
 				helperText={ helperText }
-				outlined
 				value={ clientID }
 				onChange={ onChange }
 				maxLength={ 120 }
+				outlined
 			/>
 		</div>
 	);

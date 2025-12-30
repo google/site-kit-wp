@@ -52,7 +52,7 @@ class Activation_FlagTest extends TestCase {
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$activation_flag = new Activation_Flag( $context );
 		$this->options   = new Options( $context );
-		$this->assertTrue( $context->is_network_mode() );
+		$this->assertTrue( $context->is_network_mode(), 'Context should be in network mode when filter is enabled.' );
 		remove_all_filters( 'googlesitekit_admin_data' );
 		remove_all_actions( 'googlesitekit_activation' );
 
@@ -64,12 +64,12 @@ class Activation_FlagTest extends TestCase {
 
 	protected function assertAdminDataExtended() {
 		$data = apply_filters( 'googlesitekit_admin_data', array() );
-		$this->assertArrayHasKey( 'newSitePosts', $data );
+		$this->assertArrayHasKey( 'newSitePosts', $data, 'Admin data should contain newSitePosts key.' );
 	}
 
 	protected function assertActivationActions( $network_wide ) {
-		$this->assertFalse( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ) );
-		$this->assertFalse( $this->options->get( Activation_Flag::OPTION_NEW_SITE_POSTS ) );
+		$this->assertFalse( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ), 'Activation notice should not be shown initially.' );
+		$this->assertFalse( $this->options->get( Activation_Flag::OPTION_NEW_SITE_POSTS ), 'New site posts should not be set initially.' );
 		$this->assertCount(
 			0,
 			get_posts(
@@ -77,12 +77,13 @@ class Activation_FlagTest extends TestCase {
 					'post_type'   => 'post',
 					'post_status' => 'publish',
 				)
-			)
+			),
+			'Should have no published posts initially.'
 		);
 		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post
 
 		do_action( 'googlesitekit_activation', $network_wide );
 
-		$this->assertNotEmpty( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ) );
+		$this->assertNotEmpty( $this->options->get( Activation_Flag::OPTION_SHOW_ACTIVATION_NOTICE ), 'Activation notice should be set after activation action.' );
 	}
 }

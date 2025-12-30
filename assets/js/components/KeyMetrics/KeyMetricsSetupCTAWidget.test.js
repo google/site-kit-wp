@@ -25,10 +25,12 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  * Internal dependencies
  */
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { getWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	render,
 	createTestRegistry,
@@ -38,11 +40,13 @@ import {
 	provideGatheringDataState,
 	provideUserAuthentication,
 	waitFor,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
 
 jest.mock( 'react-use' );
 mockUseIntersection.mockImplementation( () => ( {
@@ -51,6 +55,26 @@ mockUseIntersection.mockImplementation( () => ( {
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
+	let oldLocation;
+	const locationAssignMock = jest.fn();
+
+	beforeAll( () => {
+		oldLocation = global.location;
+		delete global.location;
+		global.location = Object.defineProperties(
+			{},
+			{
+				assign: {
+					configurable: true,
+					value: locationAssignMock,
+				},
+			}
+		);
+	} );
+
+	afterAll( () => {
+		global.location = oldLocation;
+	} );
 
 	const { Widget, WidgetNull } =
 		getWidgetComponentProps( 'keyMetricsSetupCTA' );
@@ -89,13 +113,15 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	it( 'does not render when GA4 is not connected', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
 			},
 		] );
 
-		provideGatheringDataState( registry, { 'search-console': false } );
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsDataAvailableOnLoad( true );
@@ -114,26 +140,28 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 	} );
 
 	it( 'does not render when SC is in the gathering data state', async () => {
+		mockSurveyEndpoints();
+
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': true,
-			'analytics-4': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -160,19 +188,19 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
 		] );
 
 		provideGatheringDataState( registry, {
-			'search-console': false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
 		} );
 
 		// The provideGatheringDataState() helper cannot handle the true case for Analytics 4, due to its dependence on additional state
@@ -216,12 +244,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		provideModules( registry, [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				active: true,
 				connected: true,
 			},
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -246,16 +274,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-publisher-win__title' )
+			container.querySelector( '.googlesitekit-banner__title' )
 		).toHaveTextContent(
 			'Get personalized suggestions for user interaction metrics based on your goals'
 		);
 		const button = getByRole( 'button', { name: /get tailored metrics/i } );
 		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveAttribute(
-			'href',
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-user-input'
-		);
 
 		// Should also trigger a survey view.
 		await waitFor( () =>
@@ -268,5 +292,173 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				} )
 			)
 		);
+	} );
+
+	it( 'dismisses the item for this user when "Get tailored metrics" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', { name: /get tailored metrics/i } );
+		fireEvent.click( button );
+
+		// Item should be dismissed when either button is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+	} );
+
+	it( 'dismisses the item for this user when "Maybe later" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', { name: /maybe later/i } );
+		fireEvent.click( button );
+
+		// Item should be dismissed when the "Maybe later" button is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+	} );
+
+	it( 'dismisses the item for this user when "Select your own metrics" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', {
+			name: /select your own metrics/i,
+		} );
+		fireEvent.click( button );
+
+		// Item should be dismissed when the "Select your own metrics" link
+		// is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
 	} );
 } );

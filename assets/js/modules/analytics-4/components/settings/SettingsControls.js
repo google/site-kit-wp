@@ -28,15 +28,15 @@ import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	AccountSelect,
 	PropertySelect,
 	WebDataStreamSelect,
 	WebDataStreamNameInput,
-} from '../common';
+} from '@/js/modules/analytics-4/components/common';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
@@ -80,7 +80,10 @@ export default function SettingsControls( props ) {
 				</div>
 			) }
 
-			<AnalyticsSettingsNotice hasModuleAccess={ hasModuleAccess } />
+			<AnalyticsSettingsNotice
+				hasModuleAccess={ hasModuleAccess }
+				className="googlesitekit-margin-top-0"
+			/>
 
 			{ propertyID && (
 				<div className="googlesitekit-settings-module__meta-item">

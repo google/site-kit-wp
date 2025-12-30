@@ -26,7 +26,7 @@ import { useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,27 +34,42 @@ import { useEffect, useState } from '@wordpress/element';
 import TourTooltip from './TourTooltip';
 import Portal from './Portal';
 import { joyrideStyles, floaterProps } from './TourTooltips';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 
 export default function JoyrideTooltip( props ) {
 	const {
 		title,
 		content,
 		dismissLabel,
+		disableOverlay = true,
 		target,
 		cta = false,
 		className,
 		styles = {},
 		slug = '',
+		placement = 'auto',
 		onDismiss = () => {},
 		onView = () => {},
 		onTourStart = () => {},
 		onTourEnd = () => {},
 	} = props;
 
-	const checkIfTargetExists = () =>
-		!! global.document.querySelector( target );
+	function checkIfTargetExists() {
+		return !! global.document.querySelector( target );
+	}
 
 	const [ targetExists, setTargetExists ] = useState( checkIfTargetExists );
+
+	const breakpoint = useBreakpoint();
+	const isMobileTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+	const [ shouldRun, setShouldRun ] = useState( true );
+	const previousIsMobileTabletRef = useRef( isMobileTablet );
+
 	useInterval(
 		() => {
 			if ( checkIfTargetExists() ) {
@@ -66,19 +81,47 @@ export default function JoyrideTooltip( props ) {
 	);
 
 	useEffect( () => {
-		if ( targetExists && global.ResizeObserver ) {
-			const targetElement = global.document.querySelector( target );
-			const resizeObserver = new ResizeObserver( () => {
-				// Dispatch a window resize event to trigger the tooltip to reposition.
-				global.dispatchEvent( new Event( 'resize' ) );
-			} );
-			resizeObserver.observe( targetElement );
+		// eslint-disable-next-line sitekit/function-declaration-consistency
+		let disconnect = () => {};
 
-			return () => {
-				resizeObserver.disconnect();
-			};
+		if ( typeof global.ResizeObserver === 'function' ) {
+			const targetElement = global.document.querySelector( target );
+
+			if ( targetElement ) {
+				const resizeObserver = new ResizeObserver( () => {
+					// Dispatch a window resize event to trigger the tooltip to reposition.
+					global.dispatchEvent( new Event( 'resize' ) );
+				} );
+
+				resizeObserver.observe( targetElement );
+				disconnect = () => resizeObserver.disconnect();
+			}
 		}
+
+		return disconnect;
 	}, [ target, targetExists ] );
+
+	// Reset the component between mobile and desktop layouts they use different
+	// targets which requires the tooltip to be re-rendered to display correctly.
+	useEffect( () => {
+		let timeoutID;
+
+		if ( previousIsMobileTabletRef.current !== isMobileTablet ) {
+			setShouldRun( false );
+
+			timeoutID = setTimeout( () => {
+				setShouldRun( true );
+			}, 50 );
+
+			previousIsMobileTabletRef.current = isMobileTablet;
+		}
+
+		return () => {
+			if ( timeoutID ) {
+				clearTimeout( timeoutID );
+			}
+		};
+	}, [ isMobileTablet ] );
 
 	// Joyride expects the step's target to be in the DOM immediately
 	// so we need to wait for it in some cases, e.g. loading data.
@@ -93,7 +136,7 @@ export default function JoyrideTooltip( props ) {
 			content,
 			disableBeacon: true,
 			isFixed: true,
-			placement: 'auto',
+			placement,
 			cta,
 			className,
 		},
@@ -105,7 +148,7 @@ export default function JoyrideTooltip( props ) {
 		last: dismissLabel,
 	};
 
-	const callback = ( { type } ) => {
+	function callback( { type } ) {
 		switch ( type ) {
 			case EVENTS.TOUR_START:
 				onTourStart();
@@ -129,14 +172,13 @@ export default function JoyrideTooltip( props ) {
 				onView();
 				break;
 		}
-	};
+	}
 
 	return (
 		<Portal slug={ slug }>
 			<Joyride
 				callback={ callback }
-				disableOverlay
-				disableScrolling
+				disableOverlay={ disableOverlay }
 				spotlightPadding={ 0 }
 				floaterProps={ floaterProps }
 				locale={ joyrideLocale }
@@ -154,7 +196,8 @@ export default function JoyrideTooltip( props ) {
 					},
 				} }
 				tooltipComponent={ TourTooltip }
-				run
+				run={ shouldRun }
+				disableScrolling
 			/>
 		</Portal>
 	);
@@ -163,6 +206,7 @@ export default function JoyrideTooltip( props ) {
 JoyrideTooltip.propTypes = {
 	title: PropTypes.node,
 	content: PropTypes.string,
+	disableOverlay: PropTypes.bool,
 	dismissLabel: PropTypes.string,
 	target: PropTypes.string.isRequired,
 	onDismiss: PropTypes.func,
@@ -170,5 +214,6 @@ JoyrideTooltip.propTypes = {
 	className: PropTypes.string,
 	styles: PropTypes.object,
 	slug: PropTypes.string,
+	placement: PropTypes.string,
 	onView: PropTypes.func,
 };

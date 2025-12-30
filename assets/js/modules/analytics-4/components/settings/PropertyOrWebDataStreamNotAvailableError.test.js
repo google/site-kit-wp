@@ -25,8 +25,8 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '../../datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
 const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;
@@ -36,7 +36,7 @@ const propertyID = properties[ 0 ]._id;
 const measurementID =
 	fixtures.webDataStreamsBatch[ propertyID ][ 0 ].webStreamData.measurementId; // eslint-disable-line sitekit/acronym-case
 
-const provideGA4PropertyAndWebDataStream = ( registry ) => {
+function provideGA4PropertyAndWebDataStream( registry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetAccountSummaries( fixtures.accountSummaries );
@@ -45,7 +45,7 @@ const provideGA4PropertyAndWebDataStream = ( registry ) => {
 		.receiveGetWebDataStreamsBatch( fixtures.webDataStreamsBatch, {
 			propertyIDs: [ propertyID ],
 		} );
-};
+}
 
 describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 	let registry;
@@ -88,8 +88,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -112,8 +112,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -128,8 +128,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -182,8 +182,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);
@@ -208,8 +208,8 @@ describe( 'PropertyOrWebDataStreamNotAvailableError', () => {
 
 		const { container, waitForRegistry } = render(
 			<PropertyOrWebDataStreamNotAvailableError
-				hasModuleAccess
 				isDisabled={ false }
+				hasModuleAccess
 			/>,
 			{ registry }
 		);

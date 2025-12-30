@@ -59,10 +59,6 @@ export default function ReportTable( props ) {
 		'limit must be an integer, if provided.'
 	);
 
-	function isHiddenOnMobile( hideOnMobile ) {
-		return ! tabbedLayout && hideOnMobile;
-	}
-
 	const hasBadges = columns.some( ( { badge } ) => !! badge );
 
 	const [ activeColumnIndex, setActiveColumnIndex ] = useState( 0 );
@@ -73,10 +69,6 @@ export default function ReportTable( props ) {
 	const contentColumns = tabbedLayout
 		? [ columns[ 0 ], tabColumns[ activeColumnIndex ] ]
 		: columns;
-
-	const mobileColumns = contentColumns.filter(
-		( { hideOnMobile } ) => ! isHiddenOnMobile( hideOnMobile )
-	);
 
 	return (
 		<div className={ className }>
@@ -105,7 +97,6 @@ export default function ReportTable( props ) {
 					className={ classnames(
 						'googlesitekit-table__wrapper',
 						`googlesitekit-table__wrapper--${ contentColumns.length }-col`,
-						`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`,
 						{
 							'googlesitekit-table__wrapper--tabbed-layout':
 								tabbedLayout,
@@ -115,27 +106,14 @@ export default function ReportTable( props ) {
 					{ ! tabbedLayout && (
 						<thead className="googlesitekit-table__head">
 							{ hasBadges && (
-								<tr
-									className={ classnames(
-										'googlesitekit-table__head-badges',
-										{
-											'hidden-on-mobile': ! columns.some(
-												( { badge, hideOnMobile } ) =>
-													!! badge &&
-													! isHiddenOnMobile(
-														hideOnMobile
-													)
-											),
-										}
-									) }
-								>
+								<tr className="googlesitekit-table__head-badges">
 									{ columns.map(
 										(
 											{
 												badge,
 												primary,
-												hideOnMobile,
 												className: columnClassName,
+												columnHeaderClassName,
 											},
 											colIndex
 										) => (
@@ -146,12 +124,9 @@ export default function ReportTable( props ) {
 													{
 														'googlesitekit-table__head-item--primary':
 															primary,
-														'hidden-on-mobile':
-															isHiddenOnMobile(
-																hideOnMobile
-															),
 													},
-													columnClassName
+													columnClassName,
+													columnHeaderClassName
 												) }
 												key={ `googlesitekit-table__head-row-badge-${ colIndex }` }
 											>
@@ -168,8 +143,8 @@ export default function ReportTable( props ) {
 											title,
 											description,
 											primary,
-											hideOnMobile,
 											className: columnClassName,
+											columnHeaderClassName,
 										},
 										colIndex
 									) => (
@@ -179,12 +154,9 @@ export default function ReportTable( props ) {
 												{
 													'googlesitekit-table__head-item--primary':
 														primary,
-													'hidden-on-mobile':
-														isHiddenOnMobile(
-															hideOnMobile
-														),
 												},
-												columnClassName
+												columnClassName,
+												columnHeaderClassName
 											) }
 											data-tooltip={ description }
 											key={ `googlesitekit-table__head-row-${ colIndex }` }
@@ -230,7 +202,6 @@ export default function ReportTable( props ) {
 											{
 												Component,
 												field,
-												hideOnMobile,
 												className: columnClassName,
 											},
 											colIndex
@@ -244,12 +215,6 @@ export default function ReportTable( props ) {
 													key={ `googlesitekit-table__body-item-${ colIndex }` }
 													className={ classnames(
 														'googlesitekit-table__body-item',
-														{
-															'hidden-on-mobile':
-																isHiddenOnMobile(
-																	hideOnMobile
-																),
-														},
 														columnClassName
 													) }
 												>
@@ -289,8 +254,7 @@ ReportTable.propTypes = {
 			primary: PropTypes.bool,
 			className: PropTypes.string,
 			field: PropTypes.string,
-			hideOnMobile: PropTypes.bool,
-			Component: PropTypes.componentType,
+			Component: PropTypes.elementType,
 			badge: PropTypes.node,
 		} )
 	).isRequired,

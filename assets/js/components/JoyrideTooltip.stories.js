@@ -36,8 +36,43 @@ DefaultTooltip.args = {
 	target: '.target',
 };
 DefaultTooltip.scenario = {
-	label: 'Global/JoyrideTooltip/DefaultTooltip',
-	delay: 1000,
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
+
+export const PlacementTooltip = Template.bind( {} );
+PlacementTooltip.storyName = 'Tooltip with Custom Placement';
+PlacementTooltip.args = {
+	title: 'Tooltip with Bottom Placement',
+	content: 'This tooltip is positioned at the bottom of the target element.',
+	dismissLabel: 'Got it',
+	target: '.target',
+	placement: 'bottom',
+};
+PlacementTooltip.scenario = {
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
+
+export const MobileModalTooltip = Template.bind( {} );
+MobileModalTooltip.storyName = 'Mobile Modal Tooltip';
+MobileModalTooltip.args = {
+	title: 'Mobile Modal Style Tooltip',
+	content:
+		'This tooltip is displayed as modals are displayed on mobile and tablet viewports targeting the body element with a visible overlay.',
+	dismissLabel: 'Got it',
+	target: 'body',
+	placement: 'center',
+	className: 'googlesitekit-tour-tooltip__modal_step',
+	disableOverlay: false,
+};
+MobileModalTooltip.scenario = {
+	readySelector: '#react-joyride-step-0 div.__floater__open',
+	delay: 150,
+};
+// Skip 100vh-based story padding for this mobile variant to avoid a variable margin in the Joyride overlay on different runs.
+MobileModalTooltip.parameters = {
+	padding: '20',
 };
 
 export default {
@@ -53,4 +88,7 @@ export default {
 			);
 		},
 	],
+	parameters: {
+		padding: 'calc((100vh - 40px) / 2) calc((100vw - 88px) / 2)',
+	},
 };

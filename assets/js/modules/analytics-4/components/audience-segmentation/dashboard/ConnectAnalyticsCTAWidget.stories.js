@@ -21,7 +21,7 @@
  */
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ConnectAnalyticsCTAWidget from './ConnectAnalyticsCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -34,17 +34,15 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConnectAnalyticsCTAWidget';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ConnectAnalyticsCTAWidget',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModuleRegistrations( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

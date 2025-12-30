@@ -7,6 +7,8 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
+// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
+
 
 namespace Google\Site_Kit\Tests\Core\Consent_Mode;
 
@@ -50,6 +52,16 @@ class Consent_ModeTest extends TestCase {
 		$this->consent_mode = new Consent_Mode( $this->context, $modules, $this->options );
 	}
 
+	public function test_register__feature_metrics() {
+		remove_all_filters( 'googlesitekit_feature_metrics' );
+
+		$this->assertFalse( has_filter( 'googlesitekit_feature_metrics' ), 'There should be no filter for features metrics initially.' );
+
+		$this->consent_mode->register();
+
+		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
+	}
+
 	public function test_renders_consent_mode_snippet_when_enabled() {
 		remove_all_actions( 'wp_head' );
 
@@ -59,7 +71,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
 	}
 
 	public function test_does_not_render_consent_mode_snippet_when_disabled() {
@@ -69,7 +81,7 @@ class Consent_ModeTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringNotContainsString( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', $output );
+		$this->assertStringNotContainsString( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', $output );
 	}
 
 	public function test_register__googlesitekit_consent_mode_status() {
@@ -78,5 +90,20 @@ class Consent_ModeTest extends TestCase {
 		$this->consent_mode->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_consent_mode_status' ) );
+	}
+
+	public function test_get_feature_metrics() {
+		( new Consent_Mode_Settings( $this->options ) )->set( array( 'enabled' => true ) );
+
+		$feature_metrics = $this->consent_mode->get_feature_metrics();
+
+		$this->assertEquals(
+			array(
+				'consent_mode_enabled' => true,
+				'wp_consent_api'       => 'none',
+			),
+			$feature_metrics,
+			'Feature metrics should indicate that consent mode is enabled and WP Consent API is not installed.'
+		);
 	}
 }

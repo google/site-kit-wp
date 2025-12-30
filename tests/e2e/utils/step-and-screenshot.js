@@ -81,10 +81,10 @@ export function step( name, cb, { screenshotArgs = {} } = {} ) {
 	return new Promise( async ( resolve, reject ) => {
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );
-			await screenshot( name, screenshotArgs );
+			await screenshot( `pass-${ name }`, screenshotArgs );
 			resolve( results );
 		} catch ( err ) {
-			await screenshot( name, screenshotArgs );
+			await screenshot( `fail-${ name }`, screenshotArgs );
 			reject( err );
 		}
 	} );

@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AudienceTileCollectingDataImage from '../../../../../../../../svg/graphics/audience-segmentation-collecting-data.svg';
+import AudienceTileCollectingDataImage from '@/svg/graphics/audience-segmentation-collecting-data.svg';
 
 export default function AudienceTileCollectingData() {
 	return (

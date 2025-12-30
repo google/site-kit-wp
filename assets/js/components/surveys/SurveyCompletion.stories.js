@@ -60,3 +60,8 @@ SurveyCompletionForumStory.args = {
 		global.console.log( 'Dismissed Completed Survey' );
 	},
 };
+
+export default {
+	title: 'Components/Surveys/SurveyCompletion',
+	component: SurveyCompletion,
+};

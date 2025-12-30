@@ -30,41 +30,35 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import CTALinkSubtle from '../../../../googlesitekit/notifications/components/common/CTALinkSubtle';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import Notice from '@/js/components/Notice';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 export default function ProductIDSubscriptionsNotification( {
 	id,
 	Notification,
 } ) {
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	const rrmSettingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsEditURL(
+			MODULE_SLUG_READER_REVENUE_MANAGER
+		)
 	);
 
 	return (
 		<Notification>
-			<SubtleNotification
-				type="warning"
+			<NoticeNotification
+				notificationID={ id }
+				type={ Notice.TYPES.WARNING }
 				description={ __(
 					'To complete your Reader Revenue Manager paywall setup, add your product IDs in settings',
 					'google-site-kit'
 				) }
-				dismissCTA={
-					<Dismiss
-						id={ id }
-						primary={ false }
-						dismissLabel={ __( 'Got it', 'google-site-kit' ) }
-					/>
-				}
-				additionalCTA={
-					<CTALinkSubtle
-						id={ id }
-						ctaLabel={ __( 'Edit settings', 'google-site-kit' ) }
-						ctaLink={ `${ settingsURL }#connected-services/reader-revenue-manager/edit` }
-					/>
-				}
+				ctaButton={ {
+					label: __( 'Edit settings', 'google-site-kit' ),
+					href: rrmSettingsURL,
+				} }
+				dismissButton
 			/>
 		</Notification>
 	);

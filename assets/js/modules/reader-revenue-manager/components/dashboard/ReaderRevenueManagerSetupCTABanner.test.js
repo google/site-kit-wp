@@ -33,24 +33,25 @@ import {
 	provideModules,
 	waitFor,
 	provideUserAuthentication,
+	provideSiteInfo,
 } from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '../../../../googlesitekit/notifications/util/component-props';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
-} from '../../datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { WEEK_IN_SECONDS } from '../../../../util';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATIONS } from '../..';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
@@ -58,6 +59,7 @@ jest.mock( '../../../../hooks/useActivateModuleCallback' );
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
 	let activateModuleMock;
+	let activateModuleCallbackMock;
 
 	const ReaderRevenueManagerSetupCTABannerComponent =
 		withNotificationComponentProps( 'rrm-setup-notification' )(
@@ -68,9 +70,11 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		activateModuleMock = jest.fn( () => jest.fn() );
+		activateModuleCallbackMock = jest.fn();
+		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 
 		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 
@@ -80,7 +84,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 		provideModules( registry, [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: false,
 			},
 		] );
@@ -109,18 +113,19 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should call the "useActivateModuleCallback" hook when the setup CTA is clicked', async () => {
+	it( 'should call the "useActivateModuleCallback" hook and dismiss the notification when the setup CTA is clicked', async () => {
 		mockSurveyEndpoints();
 
 		fetchMock.postOnce( dismissPromptEndpoint, {
-			body: JSON.stringify( [ 'rrm-setup-notification' ] ),
-			status: 200,
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
 		} );
 
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckRequirementsSuccess(
-				READER_REVENUE_MANAGER_MODULE_SLUG
+				MODULE_SLUG_READER_REVENUE_MANAGER
 			);
 
 		const { container, getByRole, waitForRegistry } = render(
@@ -143,7 +148,8 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			);
 		} );
 
-		expect( activateModuleMock ).toHaveBeenCalledTimes( 1 );
+		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {
@@ -330,7 +336,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			// Throw error from checkRequirements to simulate non-HTTPS site error.
 			provideModules( registry, [
 				{
-					slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 					active: false,
 					checkRequirements: () => {
 						throw {

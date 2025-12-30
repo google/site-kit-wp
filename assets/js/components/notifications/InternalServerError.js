@@ -20,10 +20,11 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import NotificationError from '../../googlesitekit/notifications/components/layout/NotificationError';
-import Notification from '../../googlesitekit/notifications/components/Notification';
-import Description from '../../googlesitekit/notifications/components/common/Description';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import Notification from '@/js/googlesitekit/notifications/components/Notification';
 
 export default function InternalServerError() {
 	const error = useSelect( ( select ) =>
@@ -35,10 +36,12 @@ export default function InternalServerError() {
 	}
 
 	return (
-		<Notification className="googlesitekit-publisher-win googlesitekit-publisher-win--win-error">
-			<NotificationError
+		<Notification id="internal-server-error">
+			<BannerNotification
+				notificationID="internal-server-error"
+				type={ TYPES.ERROR }
 				title={ error.title }
-				description={ <Description text={ error.description } /> }
+				description={ error.description }
 			/>
 		</Notification>
 	);

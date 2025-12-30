@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
-import { createErrorStore } from '../../data/create-error-store';
-import { createSnapshotStore } from '../../data/create-snapshot-store';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import ui from './ui';
 import { CORE_UI } from './constants';
 
@@ -39,8 +39,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_UI, store );
-};
+}
 
 export default store;

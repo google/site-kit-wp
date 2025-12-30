@@ -24,14 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
-import { DAY_IN_SECONDS } from '../../util';
-import NotificationWithSmallSVG from '../../googlesitekit/notifications/components/layout/NotificationWithSmallSVG';
-import Description from '../../googlesitekit/notifications/components/common/Description';
-import LearnMoreLink from '../../googlesitekit/notifications/components/common/LearnMoreLink';
-import Dismiss from '../../googlesitekit/notifications/components/common/Dismiss';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import BannerNotification, {
+	TYPES,
+} from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {
@@ -40,39 +39,34 @@ export default function ZeroDataNotification( { id, Notification } ) {
 		);
 	} );
 
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	function ctaClick() {
+		dismissNotification( id, {
+			expiresInSeconds: DAY_IN_SECONDS,
+		} );
+	}
+
 	return (
-		<Notification className="googlesitekit-publisher-win">
-			<NotificationWithSmallSVG
+		<Notification>
+			<BannerNotification
+				notificationID={ id }
+				type={ TYPES.WARNING }
 				title={ __(
 					'Not enough traffic yet to display stats',
 					'google-site-kit'
 				) }
-				description={
-					<Description
-						text={ __(
-							'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-							'google-site-kit'
-						) }
-						learnMoreLink={
-							<LearnMoreLink
-								id={ id }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url={ notEnoughTrafficURL }
-							/>
-						}
-					></Description>
-				}
-				actions={
-					<Dismiss
-						id={ id }
-						dismissLabel={ __(
-							'Remind me later',
-							'google-site-kit'
-						) }
-						dismissExpires={ DAY_IN_SECONDS }
-					/>
-				}
-				SmallImageSVG={ ZeroStateIcon }
+				description={ __(
+					'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+					'google-site-kit'
+				) }
+				learnMoreLink={ {
+					href: notEnoughTrafficURL,
+				} }
+				ctaButton={ {
+					label: __( 'OK, got it', 'google-site-kit' ),
+					onClick: ctaClick,
+				} }
 			/>
 		</Notification>
 	);

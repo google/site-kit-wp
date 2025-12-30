@@ -31,10 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CTA from '../notifications/CTA';
-import GenericErrorHandlerActions from '../GenericErrorHandlerActions';
-import ViewContextContext from '../Root/ViewContextContext';
-import { trackEvent } from '../../util';
+import CTA from '@/js/components/notifications/CTA';
+import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActions';
+import ViewContextContext from '@/js/components/Root/ViewContextContext';
+import { trackEvent } from '@/js/util';
+import P from '@/js/components/Typography/P';
 
 class WidgetErrorHandler extends Component {
 	constructor( props ) {
@@ -85,22 +86,22 @@ class WidgetErrorHandler extends Component {
 				<CTA
 					description={
 						<Fragment>
-							<p>
+							<P>
 								{ __(
 									'An error prevented this Widget from being displayed properly. Report the exact contents of the error on the support forum to find out what caused it.',
 									'google-site-kit'
 								) }
-							</p>
+							</P>
 							<GenericErrorHandlerActions
 								message={ error.message }
 								componentStack={ info.componentStack }
 							/>
 						</Fragment>
 					}
-					error
 					onErrorClick={ this.onErrorClick }
 					onClick={ this.onErrorClick }
 					title={ __( 'Error in Widget', 'google-site-kit' ) }
+					error
 				/>
 			</div>
 		);

@@ -24,7 +24,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import NewBadge from '../NewBadge';
+import NewBadge from '@/js/components/NewBadge';
 import SelectionPanel from './SelectionPanel';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import SelectionPanelHeader from './SelectionPanelHeader';
@@ -105,9 +105,8 @@ function Template( {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {
-	label: 'Components/SelectionPanel/Default',
-	// Delay to ensure the component focus is set consistently.
-	delay: 1500,
+	readySelector:
+		'.googlesitekit-selection-panel-item:first-of-type .mdc-checkbox__native-control:focus',
 };
 
 export const WithSavedItems = Template.bind( {} );
@@ -132,9 +131,7 @@ WithSavedItems.args = {
 	},
 	savedItemSlugs: [ 'item-1', 'item-2', 'item-3' ],
 };
-WithSavedItems.scenario = {
-	label: 'Components/SelectionPanel/WithSavedItems',
-};
+WithSavedItems.scenario = {};
 
 export const withZeroUnsavedItems = Template.bind( {} );
 withZeroUnsavedItems.storyName = 'With zero unsaved items';
@@ -168,9 +165,7 @@ WithNewBadges.args = {
 		badge: <NewBadge />,
 	},
 };
-WithNewBadges.scenario = {
-	label: 'Components/SelectionPanel/WithNewBadges',
-};
+WithNewBadges.scenario = {};
 
 export default {
 	title: 'Components/Selection Panel',

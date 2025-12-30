@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PreviewBlock from '../../components/PreviewBlock';
-import MediaErrorHandler from '../../components/MediaErrorHandler';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import MediaErrorHandler from '@/js/components/MediaErrorHandler';
 const LazyGhostCardRedSVG = lazy( () =>
 	import( '../../../svg/graphics/ghost-card-red.svg' )
 );

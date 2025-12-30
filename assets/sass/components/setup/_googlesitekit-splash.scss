@@ -1,0 +1,151 @@
+/**
+ * Splash styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-splash {
+		@include googlesitekit-inner-padding;
+		overflow: hidden;
+
+		@media (min-width: $bp-tablet) {
+			padding-bottom: 0;
+			padding-right: 0;
+
+			.googlesitekit-layout {
+				overflow: hidden;
+			}
+
+			& > .mdc-layout-grid {
+				padding-bottom: 0;
+				padding-right: 0;
+			}
+		}
+
+		.googlesitekit-setup__title {
+			color: $c-surfaces-on-surface;
+		}
+
+		.googlesitekit-setup__description {
+			margin-top: 24px;
+		}
+
+		.mdc-form-field {
+			align-items: flex-start;
+		}
+
+		.googlesitekit-setup__analytics-opt-in-wrapper {
+			margin-top: 24px;
+
+			.mdc-checkbox {
+				margin-top: -10px;
+			}
+
+			.mdc-checkbox__content {
+				display: flex;
+				flex-direction: column;
+				gap: $cta-gap-phone;
+			}
+
+			.mdc-checkbox__description {
+				color: $c-surfaces-on-background-variant;
+				font-size: $fs-label-sm;
+			}
+
+			&::after {
+				background-color: $c-silver;
+				content: "";
+				display: block;
+				height: 1px;
+				margin: $grid-gap-desktop 0;
+			}
+
+			.googlesitekit-splash__analytics-recommended-badge {
+				background-color: $c-splash-analytics-recommended-badge-bg;
+				border-radius: 4px;
+				color: $c-content-primary;
+				display: block;
+				margin-top: 14px;
+				padding: 4px 10px;
+				width: fit-content;
+			}
+		}
+
+		.googlesitekit-opt-in {
+			margin-bottom: 42px;
+
+			label {
+				color: $c-surfaces-on-background-variant;
+
+				span {
+					display: inline;
+				}
+			}
+
+			.mdc-checkbox {
+				margin-top: -13px;
+			}
+		}
+
+		.googlesitekit-setup__splash-graphic-background {
+			position: absolute;
+			right: 0;
+			z-index: 10;
+		}
+
+		.googlesitekit-setup__splash-graphic-screenshot {
+			height: 100%;
+			width: 100%;
+
+			@media (max-width: $bp-desktop) {
+				max-height: 230px;
+			}
+
+			svg {
+				margin: 0 4%;
+				position: relative;
+				top: 40px;
+				z-index: 11;
+
+				@media (max-width: $bp-desktop) {
+					left: 0;
+				}
+			}
+		}
+
+		.googlesitekit-setup__icon {
+			position: relative;
+
+			@media (max-width: $bp-desktop) {
+				align-items: content;
+				display: flex;
+				margin-bottom: $grid-gap-desktop;
+				overflow: hidden;
+			}
+		}
+
+		.googlesitekit-setup__content {
+			@media (max-width: $bp-desktop) {
+				padding-top: 1rem;
+			}
+
+			@media (min-width: $bp-nonTablet) {
+				padding-bottom: $grid-gap-desktop;
+			}
+		}
+	}
+}

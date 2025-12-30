@@ -83,8 +83,6 @@
 		.googlesitekit-settings-module__title {
 			align-items: center;
 			display: flex;
-			font-size: $fs-title-md;
-			line-height: $lh-title-md;
 			margin: 0;
 		}
 
@@ -150,15 +148,6 @@
 			margin: 0;
 		}
 
-		.googlesitekit-error-notice__icon {
-			height: 32px;
-			width: 32px;
-		}
-
-		.googlesitekit-error-notice__retry-button + .googlesitekit-settings-module__meta-items {
-			margin-top: 14px;
-		}
-
 		.googlesitekit-settings-module__meta-select {
 			margin: 0 $grid-gap-phone $grid-gap-phone 0;
 
@@ -186,10 +175,6 @@
 
 			.googlesitekit-settings-module__meta-item-type {
 				color: $c-primary;
-				font-size: $fs-body-md;
-				font-weight: $fw-bold;
-				letter-spacing: $ls-s;
-				line-height: $lh-body-sm;
 				margin: 0 0 8px;
 			}
 
@@ -311,7 +296,6 @@
 
 			.mdc-button {
 				color: $c-surfaces-inverse-on-surface;
-				font-weight: $fw-medium;
 			}
 
 			.mdc-button:disabled {

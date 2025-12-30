@@ -30,13 +30,13 @@ import {
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { EDIT_SCOPE } from '../../../datastore/constants';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 import SetupBanner from './SetupBanner';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
-import { withNotificationComponentProps } from '../../../../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 describe( 'SetupBanner', () => {
 	const SetupBannerComponent = withNotificationComponentProps(

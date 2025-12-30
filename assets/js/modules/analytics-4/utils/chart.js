@@ -163,7 +163,7 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
  * @param {Object} report The report data object.
  * @return {(boolean|undefined)} Returns undefined if report is undefined, true/false for the above conditions.
  */
-export const isSingleSlice = ( report ) => {
+export function isSingleSlice( report ) {
 	if ( report === undefined ) {
 		return undefined;
 	}
@@ -181,4 +181,4 @@ export const isSingleSlice = ( report ) => {
 	}
 
 	return false;
-};
+}

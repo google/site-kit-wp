@@ -29,8 +29,8 @@ import { map, reduce, take } from 'rxjs/operators';
 /**
  * Internal dependencies
  */
-import { MODULES_SEARCH_CONSOLE } from '../datastore/constants';
-import { getDateString, isValidDateString, stringToDate } from '../../../util';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { getDateString, isValidDateString, stringToDate } from '@/js/util';
 
 /**
  * Generates mock data for Search Console reports.

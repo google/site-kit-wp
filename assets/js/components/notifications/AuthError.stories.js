@@ -21,9 +21,9 @@
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideUserAuthentication } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import AuthError from './AuthError';
-import { withNotificationComponentProps } from '../../googlesitekit/notifications/util/component-props';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps =
 	withNotificationComponentProps( 'auth-error' )( AuthError );
@@ -40,7 +40,7 @@ export default {
 	title: 'Components/Notifications/Banners',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry );
 
 				const authError = {
@@ -54,7 +54,7 @@ export default {
 				};
 
 				registry.dispatch( CORE_USER ).setAuthError( authError );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

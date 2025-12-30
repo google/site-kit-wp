@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import * as fixtures from '../datastore/__fixtures__';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {

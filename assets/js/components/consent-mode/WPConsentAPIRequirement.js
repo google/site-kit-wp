@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import Typography from '@/js/components/Typography';
 
 export default function WPConsentAPIRequirement( {
 	title,
@@ -26,7 +27,9 @@ export default function WPConsentAPIRequirement( {
 } ) {
 	return (
 		<div className="googlesitekit-settings-consent-mode-requirement">
-			<h4>{ title }</h4>
+			<Typography as="h4" size="large" type="title">
+				{ title }
+			</Typography>
 			<p className="googlesitekit-settings-consent-mode-requirement__description">
 				{ description }
 			</p>

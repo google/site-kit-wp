@@ -33,18 +33,22 @@ import { __ } from '@wordpress/i18n';
 import {
 	MODULES_ADSENSE,
 	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { SITE_STATUS_ADDED, legacyAccountStatuses } from '../../../util';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import whenActive from '../../../../../util/when-active';
+} from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	SITE_STATUS_ADDED,
+	legacyAccountStatuses,
+} from '@/js/modules/adsense/util';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import whenActive from '@/js/util/when-active';
 import Header from './Header';
 import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();
@@ -80,19 +84,24 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate,
 		endDate,
+		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
 	};
 	const previousRangeArgs = {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
 		startDate: compareStartDate,
 		endDate: compareEndDate,
+		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
 	};
 	const currentRangeChartArgs = {
 		...currentRangeArgs,
 		dimensions: [ 'DATE' ],
+		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
 	};
 	const previousRangeChartArgs = {
 		...previousRangeArgs,
 		dimensions: [ 'DATE' ],
+		reportID:
+			'adsense_module-overview-widget_widget_previousRangeChartArgs',
 	};
 
 	const currentRangeData = useInViewSelect(
@@ -171,7 +180,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } Footer={ Footer }>
+		<Widget Header={ Header } Footer={ Footer } noPadding>
 			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
@@ -205,5 +214,5 @@ ModuleOverviewWidget.metrics = {
 };
 
 export default whenActive( {
-	moduleName: 'adsense',
+	moduleName: MODULE_SLUG_ADSENSE,
 } )( ModuleOverviewWidget );

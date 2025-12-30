@@ -25,12 +25,12 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
-} from '../../../datastore/constants';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+} from '@/js/modules/adsense/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import AdBlockingRecoveryApp from '.';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 function Template() {
 	return (
@@ -49,10 +49,7 @@ StepOne.args = {
 		} );
 	},
 };
-StepOne.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Place Tags',
-	delay: 250,
-};
+StepOne.scenario = {};
 
 export const StepTwo = Template.bind( {} );
 StepTwo.storyName = 'Step 2';
@@ -64,10 +61,7 @@ StepTwo.args = {
 		} );
 	},
 };
-StepTwo.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message',
-	delay: 250,
-};
+StepTwo.scenario = {};
 
 export const StepTwoAfterCTAClick = Template.bind( {} );
 StepTwoAfterCTAClick.storyName = 'Step 2 - After CTA Click';
@@ -83,9 +77,7 @@ StepTwoAfterCTAClick.args = {
 		} );
 	},
 };
-StepTwoAfterCTAClick.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Step Create Message After CTA Click',
-};
+StepTwoAfterCTAClick.scenario = {};
 
 export const StepTwoSetupConfirmed = Template.bind( {} );
 StepTwoSetupConfirmed.storyName = 'Step 2 - Setup Confirmed';
@@ -101,15 +93,13 @@ StepTwoSetupConfirmed.args = {
 		} );
 	},
 };
-StepTwoSetupConfirmed.scenario = {
-	label: 'Modules/AdSense/AdBlockingRecoveryApp/Ad Blocking Recovery Setup Confirmed',
-};
+StepTwoSetupConfirmed.scenario = {};
 
 export default {
 	title: ' Modules/AdSense/Components/Setup/AdBlockingRecoveryApp',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
 
 				registry
@@ -117,7 +107,7 @@ export default {
 					.receiveIsAdBlockerActive( false );
 
 				args.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

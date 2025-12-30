@@ -37,6 +37,8 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Core\Util\URL;
@@ -585,6 +587,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 *
 	 * @since 1.24.0
 	 * @since 1.119.0 Made method public.
+	 * @since 1.162.0 Updated to pass Google tag gateway status to Web_Tag.
 	 */
 	public function register_tag() {
 		$is_amp          = $this->context->is_amp();
@@ -594,6 +597,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$tag = $is_amp
 			? new AMP_Tag( $settings['ampContainerID'], self::MODULE_SLUG )
 			: new Web_Tag( $settings['containerID'], self::MODULE_SLUG );
+
+		if ( ! $is_amp ) {
+			$tag->set_is_google_tag_gateway_active( $this->is_google_tag_gateway_active() );
+		}
 
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
@@ -649,5 +656,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		);
 
 		return empty( array_diff( $configured_containers, $all_containers ) );
+	}
+
+	/**
+	 * Checks if Google tag gateway is active.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @return bool True if Google tag gateway is active, false otherwise.
+	 */
+	protected function is_google_tag_gateway_active() {
+		if ( ! Feature_Flags::enabled( 'googleTagGateway' ) ) {
+			return false;
+		}
+
+		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+
+		return $google_tag_gateway_settings->is_google_tag_gateway_active();
 	}
 }

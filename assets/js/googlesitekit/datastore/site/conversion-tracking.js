@@ -28,9 +28,9 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createReducer } from '../../data/create-reducer';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from './constants';
 
 const { getRegistry } = commonActions;
@@ -99,7 +99,7 @@ const baseActions = {
 	 *
 	 * @since 1.128.0
 	 *
-	 * @param {string} enabled Consent Mode enabled status.
+	 * @param {string} enabled Consent mode enabled status.
 	 * @return {Object} Redux-style action.
 	 */
 	setConversionTrackingEnabled( enabled ) {
@@ -159,11 +159,11 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the Consent Mode enabled status.
+	 * Gets the consent mode enabled status.
 	 *
 	 * @since 1.128.0
 	 *
-	 * @return {boolean|undefined} Consent Mode enabled status, or `undefined` if not loaded.
+	 * @return {boolean|undefined} Consent mode enabled status, or `undefined` if not loaded.
 	 */
 	isConversionTrackingEnabled: createRegistrySelector( ( select ) => () => {
 		const { enabled } =

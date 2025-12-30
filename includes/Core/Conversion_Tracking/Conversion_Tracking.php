@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Conversion_Tracking;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Contact_Form_7;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Easy_Digital_Downloads;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Mailchimp;
@@ -21,6 +22,9 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooComme
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use LogicException;
 
 /**
@@ -30,7 +34,9 @@ use LogicException;
  * @access private
  * @ignore
  */
-class Conversion_Tracking {
+class Conversion_Tracking implements Provides_Feature_Metrics {
+
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context object.
@@ -81,7 +87,7 @@ class Conversion_Tracking {
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
+	public function __construct( Context $context, ?Options $options = null ) {
 		$this->context                             = $context;
 		$options                                   = $options ?: new Options( $context );
 		$this->conversion_tracking_settings        = new Conversion_Tracking_Settings( $options );
@@ -96,6 +102,7 @@ class Conversion_Tracking {
 	public function register() {
 		$this->conversion_tracking_settings->register();
 		$this->rest_conversion_tracking_controller->register();
+		$this->register_feature_metrics();
 
 		add_action( 'wp_enqueue_scripts', fn () => $this->maybe_enqueue_scripts(), 30 );
 
@@ -127,7 +134,9 @@ class Conversion_Tracking {
 			$active_providers,
 			function ( Conversion_Events_Provider $active_provider ) {
 				$script_asset = $active_provider->register_script();
-				$script_asset->enqueue();
+				if ( $script_asset instanceof Script ) {
+					$script_asset->enqueue();
+				}
 			}
 		);
 
@@ -146,8 +155,16 @@ class Conversion_Tracking {
 				}, 5 );
 
 				gtag( "event", name, { ...data, event_source: "site-kit" } );
-			}
+			};
 		';
+
+		if ( function_exists( 'edd_get_currency' ) ) {
+			$gtag_event .= "window._googlesitekit.easyDigitalDownloadsCurrency = '" . edd_get_currency() . "';";
+		}
+
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$gtag_event .= 'window._googlesitekit.gtagUserData = true;';
+		}
 
 		wp_add_inline_script( GTag::HANDLE, preg_replace( '/\s+/', ' ', $gtag_event ) );
 	}
@@ -203,5 +220,69 @@ class Conversion_Tracking {
 		}
 
 		return $active_providers;
+	}
+
+	/**
+	 * Returns events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since 1.163.0 Moved this method here from the Ads class.
+	 *
+	 * @return array Array of supported conversion events, or empty array.
+	 */
+	public function get_supported_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
+	 * Returns enhanced conversion events supported by active providers from the conversion tracking infrastructure.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array Array of supported enhanced conversion events, or empty array.
+	 */
+	public function get_enhanced_conversion_events() {
+		$providers = $this->get_active_providers();
+
+		if ( empty( $providers ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $providers as $provider ) {
+			$supported_enhanced_events = array_intersect( $provider->get_enhanced_event_names(), $provider->get_event_names() );
+
+			$events = array_merge( $events, array_values( $supported_enhanced_events ) );
+		}
+
+		return array_unique( $events );
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		return array(
+			'conversion_tracking_enabled'    => $this->conversion_tracking_settings->is_conversion_tracking_enabled(),
+			'conversion_tracking_providers'  => array_keys( $this->get_active_providers() ),
+			'conversion_tracking_events'     => $this->get_supported_conversion_events(),
+			'conversion_tracking_events_enh' => $this->get_enhanced_conversion_events(),
+		);
 	}
 }

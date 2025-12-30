@@ -26,7 +26,13 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useMemo, Fragment, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useMemo,
+	Fragment,
+	useState,
+	useEffect,
+} from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -41,14 +47,18 @@ import {
 	DialogTitle,
 	CircularProgress,
 } from 'googlesitekit-components';
-import { MODULES_ADS, PLUGINS } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_NOTIFICATIONS } from '../../../../googlesitekit/notifications/datastore/constants';
-import WooLogoIcon from '../../../../../svg/graphics/woo-logo.svg';
-import ExternalIcon from '../../../../../svg/icons/external.svg';
-import useActivateModuleCallback from '../../../../hooks/useActivateModuleCallback';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import P from '@/js/components/Typography/P';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,
@@ -58,6 +68,7 @@ export default function WooCommerceRedirectModal( {
 	onBeforeSetupCallback = null,
 } ) {
 	const [ isSaving, setIsSaving ] = useState( '' );
+	const viewContext = useViewContext();
 
 	const adminURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL()
@@ -68,6 +79,18 @@ export default function WooCommerceRedirectModal( {
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
 	);
+	const trackEventLabel = isGoogleForWooCommerceActive ? 'gfw' : 'wc';
+
+	useEffect( () => {
+		if ( dialogActive ) {
+			trackEvent(
+				`${ viewContext }_pax_wc-redirect`,
+				'view_modal',
+				trackEventLabel
+			);
+		}
+	}, [ dialogActive, viewContext, trackEventLabel ] );
+
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {
 		const hasGoogleForWooCommerceAdsAccount =
 			select( MODULES_ADS ).hasGoogleForWooCommerceAdsAccount();
@@ -114,27 +137,45 @@ export default function WooCommerceRedirectModal( {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	const handleGoogleForWooCommerceRedirect = useCallback( () => {
+	const handleGoogleForWooCommerceRedirect = useCallback( async () => {
 		if ( ! isAccountLinkedViaGoogleForWoocommerceNoticeDismissed ) {
 			dismissNotification( 'account-linked-via-google-for-woocommerce' );
 		}
 
-		setIsSaving( 'primary' );
-		onDismiss?.();
+		await trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_gfw',
+			trackEventLabel
+		);
 
-		navigateTo( googleForWooCommerceRedirectURI );
+		if ( isGoogleForWooCommerceAdsConnected ) {
+			setIsSaving( 'primary' );
+			navigateTo( googleForWooCommerceRedirectURI );
+		}
+		onDismiss?.();
+		onClose?.();
 	}, [
 		isAccountLinkedViaGoogleForWoocommerceNoticeDismissed,
 		dismissNotification,
 		setIsSaving,
 		onDismiss,
+		onClose,
 		navigateTo,
 		googleForWooCommerceRedirectURI,
+		viewContext,
+		trackEventLabel,
+		isGoogleForWooCommerceAdsConnected,
 	] );
 
-	const onSetupCallback = useActivateModuleCallback( 'ads' );
+	const onSetupCallback = useActivateModuleCallback( MODULE_SLUG_ADS );
 
 	const onContinueWithSiteKit = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_pax_wc-redirect`,
+			'choose_sk',
+			trackEventLabel
+		);
+
 		if ( ! onContinue ) {
 			setIsSaving( 'tertiary' );
 			onDismiss?.();
@@ -156,6 +197,8 @@ export default function WooCommerceRedirectModal( {
 		onBeforeSetupCallback,
 		onSetupCallback,
 		onContinue,
+		viewContext,
+		trackEventLabel,
 	] );
 
 	if ( isModalDismissed && ! isSaving ) {
@@ -188,7 +231,7 @@ export default function WooCommerceRedirectModal( {
 					: __( 'Using the WooCommerce plugin?', 'google-site-kit' ) }
 			</DialogTitle>
 			<DialogContent>
-				<p>
+				<P>
 					{ isGoogleForWooCommerceAdsConnected ? (
 						<Fragment>
 							{ __(
@@ -207,7 +250,7 @@ export default function WooCommerceRedirectModal( {
 							'google-site-kit'
 						)
 					) }
-				</p>
+				</P>
 			</DialogContent>
 			<DialogFooter>
 				<Button
@@ -218,6 +261,7 @@ export default function WooCommerceRedirectModal( {
 							<CircularProgress size={ 14 } />
 						) : undefined
 					}
+					disabled={ !! isSaving }
 					tertiary
 				>
 					{ isGoogleForWooCommerceAdsConnected
@@ -253,7 +297,8 @@ export default function WooCommerceRedirectModal( {
 					target={
 						isGoogleForWooCommerceAdsConnected ? '_self' : '_blank'
 					}
-					tertiary
+					disabled={ !! isSaving }
+					tertiary={ ! isGoogleForWooCommerceAdsConnected }
 				>
 					{ isGoogleForWooCommerceAdsConnected
 						? __( 'View current Ads account', 'google-site-kit' )
@@ -270,7 +315,7 @@ export default function WooCommerceRedirectModal( {
 WooCommerceRedirectModal.propTypes = {
 	dialogActive: PropTypes.bool.isRequired,
 	onDismiss: PropTypes.func,
-	onClose: PropTypes.func.isRequired,
+	onClose: PropTypes.func,
 	onContinue: PropTypes.func,
 	onBeforeSetupCallback: PropTypes.func,
 };

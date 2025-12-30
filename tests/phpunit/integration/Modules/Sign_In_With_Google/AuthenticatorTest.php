@@ -89,7 +89,7 @@ class AuthenticatorTest extends TestCase {
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Should redirect to login with invalid request error when profile reader returns error.' );
 	}
 
 	public function test_authenticate_user_fails_when_find_user_returns_error() {
@@ -99,7 +99,7 @@ class AuthenticatorTest extends TestCase {
 		$expected = add_query_arg( 'error', Authenticator::ERROR_SIGNIN_FAILED, wp_login_url() );
 		$actual   = $this->do_authenticate_user( self::$nonexisting_user_payload );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Should redirect to login with sign-in failed error when user not found and registration disabled.' );
 	}
 
 	public function test_authenticate_user_redirects_when_user_is_found_by_sub() {
@@ -110,8 +110,8 @@ class AuthenticatorTest extends TestCase {
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
-		$this->assertEquals( $user->ID, get_current_user_id() );
+		$this->assertEquals( $expected, $actual, 'Should redirect to profile when user found by sub.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match found user.' );
 	}
 
 	public function test_authenticate_user_redirects_when_user_is_found_by_email() {
@@ -120,8 +120,8 @@ class AuthenticatorTest extends TestCase {
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
-		$this->assertEquals( $user->ID, get_current_user_id() );
+		$this->assertEquals( $expected, $actual, 'Should redirect to profile when user found by email.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match found user.' );
 	}
 
 	public function test_authenticate_user_redirects_to_url_set_in_cookie() {
@@ -135,8 +135,8 @@ class AuthenticatorTest extends TestCase {
 
 		$actual = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
-		$this->assertEquals( $user->ID, get_current_user_id() );
+		$this->assertEquals( $expected, $actual, 'Should redirect to URL from cookie when set.' );
+		$this->assertEquals( $user->ID, get_current_user_id(), 'Authenticated user ID should match after cookie redirect.' );
 	}
 
 	public function test_authenticate_user_creates_new_user_when_registration_is_allowed() {
@@ -146,17 +146,17 @@ class AuthenticatorTest extends TestCase {
 		$expected = admin_url();
 		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Should redirect to admin URL after creating new user when registration allowed.' );
 
 		$user = wp_get_current_user();
-		$this->assertNotEmpty( $user );
+		$this->assertNotEmpty( $user, 'Newly created user should be current user.' );
 
-		$this->assertEquals( self::$new_user_payload['email'], $user->user_email );
-		$this->assertEquals( self::$new_user_payload['name'], $user->display_name );
-		$this->assertEquals( self::$new_user_payload['given_name'], $user->first_name );
-		$this->assertEquals( self::$new_user_payload['family_name'], $user->last_name );
+		$this->assertEquals( self::$new_user_payload['email'], $user->user_email, 'New user email should match payload.' );
+		$this->assertEquals( self::$new_user_payload['name'], $user->display_name, 'New user display name should match payload.' );
+		$this->assertEquals( self::$new_user_payload['given_name'], $user->first_name, 'New user first name should match payload.' );
+		$this->assertEquals( self::$new_user_payload['family_name'], $user->last_name, 'New user last name should match payload.' );
 
-		$this->assertTrue( in_array( 'editor', $user->roles, true ) );
+		$this->assertTrue( in_array( 'editor', $user->roles, true ), 'New user role should be editor.' );
 	}
 
 	/**
@@ -172,13 +172,13 @@ class AuthenticatorTest extends TestCase {
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$new_user_payload );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'On multisite, should redirect to profile after creating new user.' );
 
 		$user = wp_get_current_user();
-		$this->assertNotEmpty( $user );
+		$this->assertNotEmpty( $user, 'Current user should be set after multisite creation.' );
 
 		$blog_id = get_current_blog_id();
-		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ) );
+		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ), 'New user should be member of current blog.' );
 	}
 
 	/**
@@ -198,13 +198,13 @@ class AuthenticatorTest extends TestCase {
 		}
 
 		switch_to_blog( $blog );
-		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ) );
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ), 'Existing user should not initially be member of new blog.' );
 
 		$expected = admin_url();
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
-		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog ) );
+		$this->assertEquals( $expected, $actual, 'Should redirect to admin URL after adding existing user to blog.' );
+		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog ), 'Existing user should be added to blog.' );
 	}
 
 	/**
@@ -224,12 +224,12 @@ class AuthenticatorTest extends TestCase {
 		}
 
 		switch_to_blog( $blog );
-		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ) );
+		$this->assertFalse( is_user_member_of_blog( $user->ID, $blog ), 'Existing user should not be a member before auth.' );
 
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Should redirect to login with invalid request error if not added to blog.' );
 	}
 
 	/**
@@ -250,6 +250,6 @@ class AuthenticatorTest extends TestCase {
 		$expected = admin_url( '/profile.php' );
 		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Should redirect to profile when user is already a member of current blog.' );
 	}
 }

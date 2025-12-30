@@ -40,23 +40,24 @@ import {
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../../../../googlesitekit/constants';
-import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../../util/errors';
-import * as tracking from '../../../../../../../util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	MODULES_ANALYTICS_4,
 	DATE_RANGE_OFFSET,
-} from '../../../../../datastore/constants';
-import { provideCustomDimensionError } from '../../../../../utils/custom-dimensions';
-import { getAnalytics4MockResponse } from '../../../../../utils/data-mock';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../../../tests/js/viewport-width-utils';
-import { getPreviousDate } from '../../../../../../../util';
+import { getPreviousDate } from '@/js/util';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -173,7 +174,7 @@ describe( 'AudienceTile', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -216,9 +217,8 @@ describe( 'AudienceTile', () => {
 			propertyID: '12345',
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: 20201220,
 				},
@@ -226,7 +226,8 @@ describe( 'AudienceTile', () => {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	} );
 
 	afterEach( () => {
@@ -261,6 +262,7 @@ describe( 'AudienceTile', () => {
 		);
 
 		// Wait for the tooltip to appear, its delay is 100ms.
+		// waitForRegistry() is not suitable to use here as no state changes occur.
 		await act( () => waitForTimeouts( 100 ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -413,6 +415,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -448,6 +451,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -557,6 +561,7 @@ describe( 'AudienceTile', () => {
 			);
 
 			// Wait for the tooltip to appear, its delay is 100ms.
+			// waitForRegistry() is not suitable to use here as no state changes occur.
 			await act( () => waitForTimeouts( 100 ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -594,6 +599,7 @@ describe( 'AudienceTile', () => {
 					);
 
 					// Allow the `trackEvent()` promise to resolve so the custom dimension creation logic can be executed.
+					// waitForRegistry() is not suitable to use here as no state changes occur.
 					await waitForTimeouts( 10 );
 				} );
 			} );

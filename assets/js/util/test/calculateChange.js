@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { calculateChange } from '../';
+import { calculateChange } from '@/js/util';
 
 const valuesToTest = [
 	[ 100, 110, 0.1 ],

@@ -32,9 +32,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function UseSnippetSwitch( { description } ) {
 	const viewContext = useViewContext();

@@ -25,13 +25,11 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import SettingsEdit from './SettingsEdit';
-import { Cell, Grid, Row } from '../../../../material-components';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../datastore/constants';
-import {
-	provideModules,
-	WithTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
@@ -56,17 +54,14 @@ function Template( args ) {
 
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/Default',
-	delay: 250,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: 'AW-123456789',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -80,15 +75,15 @@ export default {
 	title: 'Modules/Ads/Settings/SettingsEdit',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
 				] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
@@ -101,16 +96,13 @@ export default {
 
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
-PaxConnected.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/PAX',
-	delay: 250,
-};
+PaxConnected.scenario = {};
 PaxConnected.parameters = {
 	features: [ 'adsPax' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the prrevious scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -118,7 +110,7 @@ PaxConnected.decorators = [
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-872756827HGFSD',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -130,13 +122,10 @@ PaxConnected.decorators = [
 
 export const IceEnabled = Template.bind( null );
 IceEnabled.storyName = 'With ICE Enabled';
-IceEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE',
-	delay: 250,
-};
+IceEnabled.scenario = {};
 IceEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			// Unset the value set in the previous scenario.
 			registry.dispatch( MODULES_ADS ).setConversionID( null );
 
@@ -145,7 +134,7 @@ IceEnabled.decorators = [
 				paxConversionID: '',
 				extCustomerID: '',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -157,22 +146,19 @@ IceEnabled.decorators = [
 
 export const IcePaxEnabled = Template.bind( null );
 IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
-IcePaxEnabled.scenario = {
-	label: 'Modules/Ads/Settings/SettingsEdit/ICE_PAX',
-	delay: 250,
-};
+IcePaxEnabled.scenario = {};
 IcePaxEnabled.parameters = {
 	features: [ 'adsPax' ],
 };
 IcePaxEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry.dispatch( MODULES_ADS ).receiveGetSettings( {
 				conversionID: '',
 				paxConversionID: 'AW-54321',
 				extCustomerID: 'C-23482345986',
 			} );
-		};
+		}
 
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
@@ -182,73 +168,73 @@ IcePaxEnabled.decorators = [
 	},
 ];
 
-export const FirstPartyModeEnabled = Template.bind( null );
-FirstPartyModeEnabled.storyName = 'FirstPartyModeEnabled';
-FirstPartyModeEnabled.decorators = [
+export const GTGEnabled = Template.bind( null );
+GTGEnabled.storyName = 'With Google tag gateway enabled';
+GTGEnabled.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GTGEnabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		function setupRegistry( registry ) {
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: true,
+				isGTGHealthy: true,
 				isScriptAccessEnabled: true,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
-		};
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];
 
-export const FirstPartyModeDisabledWithWarning = Template.bind( null );
-FirstPartyModeDisabledWithWarning.storyName =
-	'FirstPartyModeDisabledWithWarning';
-FirstPartyModeDisabledWithWarning.decorators = [
+export const GTGDisabledWithWarning = Template.bind( null );
+GTGDisabledWithWarning.storyName =
+	'With Google tag gateway disabled with warning';
+GTGDisabledWithWarning.parameters = {
+	features: [ 'googleTagGateway' ],
+};
+GTGDisabledWithWarning.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const fpmServerRequirementsEndpoint = new RegExp(
-				'^/google-site-kit/v1/core/site/data/fpm-server-requirement-status'
+		function setupRegistry( registry ) {
+			const gtgServerRequirementsEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 			);
 
-			const fpmSettings = {
+			const gtgSettings = {
 				isEnabled: true,
-				isFPMHealthy: false,
+				isGTGHealthy: false,
 				isScriptAccessEnabled: false,
 			};
 
-			fetchMock.getOnce( fpmServerRequirementsEndpoint, {
-				body: fpmSettings,
+			fetchMock.getOnce( gtgServerRequirementsEndpoint, {
+				body: gtgSettings,
 			} );
 
 			registry
 				.dispatch( CORE_SITE )
-				.receiveGetFirstPartyModeSettings( fpmSettings );
-		};
+				.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		}
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'firstPartyMode' ] }
-			>
+			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
-			</WithTestRegistry>
+			</WithRegistrySetup>
 		);
 	},
 ];

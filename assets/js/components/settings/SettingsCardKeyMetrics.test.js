@@ -29,8 +29,8 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 describe( 'SettingsCardKeyMetrics', () => {
@@ -94,7 +94,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 	} );
 
@@ -115,7 +115,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).toBeInTheDocument();
 
 		// Default content should be replaced with ConversionReportingSettingsSubtleNotification,
@@ -140,7 +140,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		await waitForRegistry();
 
 		expect(
-			container.querySelector( '.googlesitekit-acr-subtle-notification' )
+			container.querySelector( '.googlesitekit-notice--new' )
 		).not.toBeInTheDocument();
 	} );
 } );

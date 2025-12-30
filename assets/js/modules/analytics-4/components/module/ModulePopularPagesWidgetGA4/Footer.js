@@ -25,13 +25,13 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../datastore/constants';
-import SourceLink from '../../../../../components/SourceLink';
-import useViewOnly from '../../../../../hooks/useViewOnly';
+} from '@/js/modules/analytics-4/datastore/constants';
+import SourceLink from '@/js/components/SourceLink';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function Footer() {
 	const viewOnlyDashboard = useViewOnly();

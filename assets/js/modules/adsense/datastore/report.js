@@ -26,31 +26,34 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
-import { commonActions, combineStores } from 'googlesitekit-data';
+import {
+	commonActions,
+	combineStores,
+	createReducer,
+} from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { stringifyObject } from '../../../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { stringifyObject } from '@/js/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	isValidDateRange,
 	isValidOrders,
 	isValidStringularItems,
-} from '../../../util/report-validation';
-import { validateDimensions, validateMetrics } from '../util/report-validation';
+} from '@/js/util/report-validation';
+import {
+	validateDimensions,
+	validateMetrics,
+} from '@/js/modules/adsense/util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return get( 'modules', 'adsense', 'report', options );
+		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options );
 	},
-	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
-	},
+	reducerCallback: createReducer( ( state, report, { options } ) => {
+		state.reports = state.reports || {};
+		state.reports[ stringifyObject( options ) ] = report;
+	} ),
 	argsToParams: ( options ) => {
 		return { options };
 	},
@@ -115,9 +118,9 @@ const baseSelectors = {
 	 *
 	 * The report generated will include the following metrics:
 	 *
-	 * * 'ESTIMATED_EARNINGS'
-	 * * 'PAGE_VIEWS_RPM'
-	 * * 'IMPRESSIONS'
+	 * - 'ESTIMATED_EARNINGS'
+	 * - 'PAGE_VIEWS_RPM'
+	 * - 'IMPRESSIONS'
 	 *
 	 * An AdSense report will be returned; `undefined` if the report is not yet loaded.
 	 *

@@ -24,9 +24,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import Notice from '.';
-import Link from '../Link';
+import Link from '@/js/components/Link';
 
 function Template() {
 	return (
@@ -191,6 +191,40 @@ function Template() {
 							onClick: () => {},
 						} }
 						type={ Notice.TYPES.NEW }
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<h3>Notice with External Link Icon</h3>
+
+					<Notice
+						title="With external link icon"
+						description="Click the link to manage your settings"
+						dismissButton={ {
+							label: 'Got it',
+							onClick: () => {},
+						} }
+						ctaButton={ {
+							label: 'Manage settings',
+							external: true,
+							href: 'https://example.com',
+						} }
+					/>
+				</Cell>
+				<Cell size={ 12 }>
+					<h3>Notice with Spinner</h3>
+
+					<Notice
+						title="With spinner"
+						description="This will take a few seconds to complete"
+						dismissButton={ {
+							label: 'Got it',
+							onClick: () => {},
+						} }
+						ctaButton={ {
+							label: 'Save',
+							onClick: () => {},
+							inProgress: true,
+						} }
 					/>
 				</Cell>
 			</Row>

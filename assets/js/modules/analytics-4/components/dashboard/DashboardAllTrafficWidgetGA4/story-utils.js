@@ -17,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse } from '../../../utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Limits the response to a single date range.

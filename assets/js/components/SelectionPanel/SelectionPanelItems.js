@@ -36,7 +36,7 @@ export default function SelectionPanelItems( {
 	ItemComponent,
 	notice,
 } ) {
-	const renderItems = ( items ) => {
+	function renderItems( items ) {
 		return Object.keys( items ).map( ( slug ) => (
 			<ItemComponent
 				key={ slug }
@@ -45,7 +45,7 @@ export default function SelectionPanelItems( {
 				{ ...items[ slug ] }
 			/>
 		) );
-	};
+	}
 
 	const availableUnsavedItemsCount = Object.keys(
 		availableUnsavedItems

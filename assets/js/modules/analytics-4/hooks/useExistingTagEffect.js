@@ -25,7 +25,7 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Toggles `useSnippet` depending on whether there is a existing tag matching the selected GA4 property.

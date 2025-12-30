@@ -26,7 +26,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'module/search-console service store', () => {
@@ -62,8 +62,10 @@ describe( 'module/search-console service store', () => {
 					pathname: '/accountchooser',
 				} );
 				expect( serviceURL ).toMatchQueryParameters( {
-					continue: 'https://search.google.com/search-console',
+					continue:
+						'https://search.google.com/search-console?utm_source=sitekit',
 					Email: 'admin@example.com',
+					utm_source: 'sitekit',
 				} );
 			} );
 

@@ -27,21 +27,19 @@ import invariant from 'invariant';
 import { get, set } from 'googlesitekit-api';
 import {
 	commonActions,
+	createReducer,
 	createRegistrySelector,
 	combineStores,
 } from 'googlesitekit-data';
 import { CORE_USER } from './constants';
-import { createFetchStore } from '../../data/create-fetch-store';
-import { createValidatedAction } from '../../data/utils';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const { getRegistry } = commonActions;
 
-function reducerCallback( state, expirableItems ) {
-	return {
-		...state,
-		expirableItems,
-	};
-}
+const reducerCallback = createReducer( ( state, expirableItems ) => {
+	state.expirableItems = expirableItems;
+} );
 
 const fetchGetExpirableItemsStore = createFetchStore( {
 	baseName: 'getExpirableItems',
@@ -96,7 +94,7 @@ const baseActions = {
 				);
 			} );
 		},
-		function ( items ) {
+		( items ) => {
 			return fetchSetExpirableItemTimersStore.actions.fetchSetExpirableItemTimers(
 				items
 			);

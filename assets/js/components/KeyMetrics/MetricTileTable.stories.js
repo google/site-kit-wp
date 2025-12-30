@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import MetricTileTable from './MetricTileTable';
 
 const WidgetWithComponentProps =
@@ -63,10 +63,7 @@ Ready.args = {
 	],
 	columns,
 };
-Ready.scenario = {
-	label: 'KeyMetrics/MetricTileTable/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyWithInfoTooltip = Template.bind( {} );
 ReadyWithInfoTooltip.storyName = 'Ready With Info Tooltip';
@@ -89,10 +86,7 @@ ReadyWithInfoTooltip.args = {
 	columns,
 	infoTooltip: 'This is a tooltip',
 };
-ReadyWithInfoTooltip.scenario = {
-	label: 'KeyMetrics/MetricTileTable/ReadyWithInfoTooltip',
-	delay: 250,
-};
+ReadyWithInfoTooltip.scenario = {};
 
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
@@ -106,10 +100,7 @@ ZeroData.args = {
 };
 // Since the "Zero" state is similar for all "tabular" KMW tiles, this should be
 // the sole scenario and should not be added to any other "table" type KMW components.
-ZeroData.scenario = {
-	label: 'KeyMetrics/MetricTileTable/ZeroData',
-	delay: 250,
-};
+ZeroData.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

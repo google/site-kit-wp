@@ -17,28 +17,30 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import TopEarningContentWidget from './TopEarningContentWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../../analytics-4/utils/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 const adSenseAccountID = 'pub-1234567890';
 
@@ -57,6 +59,7 @@ const reportOptions = {
 		},
 	],
 	limit: 3,
+	reportID: 'adsense_top-earning-content-widget_widget_reportOptions',
 };
 
 const pageTitlesReportOptions = {
@@ -72,6 +75,7 @@ const pageTitlesReportOptions = {
 	metrics: [ { name: 'screenPageViews' } ],
 	orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 	limit: 15,
+	reportID: 'analytics-4_get-page-titles_store:selector_options',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -111,10 +115,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'Ready View Only';
@@ -135,10 +136,7 @@ ReadyViewOnly.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/ReadyViewOnly',
-	delay: 250,
-};
+ReadyViewOnly.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -221,30 +219,27 @@ AdSenseNotLinked.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAdSenseLinked( false );
 	},
 };
-AdSenseNotLinked.scenario = {
-	label: 'KeyMetrics/TopEarningContentWidget/AdSenseNotLinked',
-	delay: 250,
-};
+AdSenseNotLinked.scenario = {};
 
 export default {
 	title: 'Key Metrics/TopEarningContentWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'adsense',
+						slug: MODULE_SLUG_ADSENSE,
 						active: true,
 						connected: true,
 					},
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
 				] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
@@ -258,7 +253,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

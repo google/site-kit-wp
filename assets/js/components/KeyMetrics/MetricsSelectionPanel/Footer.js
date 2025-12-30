@@ -19,54 +19,62 @@
 /**
  * External dependencies
  */
+import { noop } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { addQueryArgs } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import {
+	useSelect,
+	useDispatch,
+	useInViewSelect,
+	useRegistry,
+} from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
-} from '../constants';
+} from '@/js/components/KeyMetrics/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
-} from '../../../modules/analytics-4/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../key-metrics-widgets';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../util/errors';
-import useViewContext from '../../../hooks/useViewContext';
-import { trackEvent } from '../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import useViewContext from '@/js/hooks/useViewContext';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import { trackEvent } from '@/js/util';
 import SelectionPanelFooter from './SelectionPanelFooter';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function Footer( {
 	isOpen,
-	closePanel,
+	closePanel = noop,
 	savedMetrics,
 	onNavigationToOAuthURL = () => {},
 	isFullScreen = false,
 } ) {
+	const registry = useRegistry();
 	const viewContext = useViewContext();
 
-	const selectedMetrics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			KEY_METRICS_SELECTION_FORM,
-			KEY_METRICS_SELECTED
-		)
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
@@ -98,15 +106,17 @@ export default function Footer( {
 	);
 
 	const isGA4Connected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	// The `custom_dimensions` query value is arbitrary and serves two purposes:
 	// 1. To ensure that `authentication_success` isn't appended when returning from OAuth.
 	// 2. To guarantee it doesn't match any existing notifications in the `BannerNotifications` component, thus preventing any unintended displays.
-	const redirectURL = addQueryArgs( global.location.href, {
-		notification: 'custom_dimensions',
-	} );
+	const redirectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			notification: 'custom_dimensions',
+		} )
+	);
 
 	const isNavigatingToOAuthURL = useSelect( ( select ) => {
 		const OAuthURL = select( CORE_USER ).getConnectURL( {
@@ -121,9 +131,22 @@ export default function Footer( {
 		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 	} );
 
+	const mainDashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const isNavigatingToMainDashboard = useSelect( ( select ) => {
+		return (
+			!! mainDashboardURL &&
+			select( CORE_LOCATION ).isNavigatingTo( mainDashboardURL )
+		);
+	} );
+
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
 	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
 		( select ) =>
 			select( MODULES_ANALYTICS_4 ).getKeyMetricsConversionEventWidgets()
@@ -143,7 +166,7 @@ export default function Footer( {
 	);
 
 	const onSaveSuccess = useCallback(
-		( selectedItemSlugs ) => {
+		async ( selectedItemSlugs ) => {
 			const userSavedConversionReportingKeyMetricsList = Object.values(
 				conversionReportingSpecificKeyMetricsWidgets
 			)
@@ -188,26 +211,48 @@ export default function Footer( {
 							redirectURL,
 						},
 					} );
+
+					return;
 				}
+
+				// Snapshot `CORE_FORMS` store to ensure the form data is retained
+				// across page navigations.
+				if ( isFullScreen ) {
+					await snapshotAllStores( registry );
+				}
+			}
+
+			// In the full screen app, navigate to the dashboard after saving.
+			if ( isFullScreen ) {
+				navigateTo( mainDashboardURL );
 			}
 		},
 		[
-			trackingCategory,
+			conversionReportingSpecificKeyMetricsWidgets,
 			isGA4Connected,
 			hasMissingCustomDimensions,
+			isFullScreen,
+			trackingCategory,
 			setValues,
 			hasAnalytics4EditScope,
 			onNavigationToOAuthURL,
 			closePanel,
 			setPermissionScopeError,
 			redirectURL,
-			conversionReportingSpecificKeyMetricsWidgets,
+			registry,
+			navigateTo,
+			mainDashboardURL,
 		]
 	);
 
 	const onCancel = useCallback( () => {
 		trackEvent( trackingCategory, 'metrics_sidebar_cancel' );
-	}, [ trackingCategory ] );
+
+		// In the full screen app, navigate to the dashboard after canceling.
+		if ( isFullScreen ) {
+			navigateTo( mainDashboardURL );
+		}
+	}, [ isFullScreen, mainDashboardURL, navigateTo, trackingCategory ] );
 
 	return (
 		<SelectionPanelFooter
@@ -216,7 +261,11 @@ export default function Footer( {
 			saveSettings={ saveSettings }
 			minSelectedItemCount={ MIN_SELECTED_METRICS_COUNT }
 			maxSelectedItemCount={ MAX_SELECTED_METRICS_COUNT }
-			isBusy={ isSavingSettings || isNavigatingToOAuthURL }
+			isBusy={
+				isSavingSettings ||
+				isNavigatingToOAuthURL ||
+				( isNavigatingToMainDashboard && isFullScreen )
+			}
 			onSaveSuccess={ () => {
 				onSaveSuccess( selectedMetrics );
 			} }
@@ -230,7 +279,7 @@ export default function Footer( {
 
 Footer.propTypes = {
 	isOpen: PropTypes.bool,
-	closePanel: PropTypes.func.isRequired,
+	closePanel: PropTypes.func,
 	savedMetrics: PropTypes.array,
 	onNavigationToOAuthURL: PropTypes.func,
 	isFullScreen: PropTypes.bool,

@@ -23,8 +23,8 @@ import notifications from './notifications';
 
 const store = combineStores( commonStore, notifications );
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_NOTIFICATIONS, store );
-};
+}
 
 export default store;

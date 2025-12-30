@@ -509,8 +509,8 @@
         "id": "unused-javascript",
         "title": "Remove unused JavaScript",
         "description": "Remove unused JavaScript to reduce bytes consumed by network activity. [Learn more](https://web.dev/remove-unused-code/).",
-        "score": 1,
-        "scoreDisplayMode": "numeric",
+        "score": 0.65,
+        "scoreDisplayMode": "metricSavings",
         "details": {
           "headings": [],
           "items": [],

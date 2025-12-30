@@ -37,14 +37,14 @@ export default function DismissButton( {
 	disabled,
 } ) {
 	return (
-		<Button tertiary onClick={ onClick } disabled={ disabled }>
+		<Button onClick={ onClick } disabled={ disabled } tertiary>
 			{ label }
 		</Button>
 	);
 }
 
 export const buttonProps = {
-	label: PropTypes.string.isRequired,
+	label: PropTypes.string,
 	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 };

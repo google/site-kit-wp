@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -67,7 +68,7 @@ export default {
 	component: SettingsForm,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_SEARCH_CONSOLE )
 					.receiveGetSettings( {} );
@@ -75,7 +76,7 @@ export default {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'search-console',
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
 						active: true,
 						connected: true,
 					},
@@ -104,7 +105,7 @@ export default {
 							siteURL: 'sc-domain:example.com',
 						},
 					] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

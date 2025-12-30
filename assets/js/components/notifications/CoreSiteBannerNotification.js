@@ -31,78 +31,27 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import BannerNotification from './BannerNotification';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
 
-function CoreSiteBannerNotification( {
-	content,
-	ctaLabel,
-	ctaTarget,
-	ctaURL,
-	dismissLabel,
-	dismissible,
-	id,
-	learnMoreLabel,
-	learnMoreURL,
-	title,
-} ) {
+function CoreSiteBannerNotification( { id, ...props } ) {
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
-	const viewContext = useViewContext();
-
-	const handleOnView = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'view_notification',
-			id
-		);
-	}, [ id, viewContext ] );
 
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'confirm_notification',
-			id
-		);
-	}, [ id, acceptNotification, viewContext ] );
+	}, [ id, acceptNotification ] );
 
-	const onDismiss = useCallback( () => {
+	const onDismissClick = useCallback( () => {
 		dismissNotification( id );
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'dismiss_notification',
-			id
-		);
-	}, [ id, dismissNotification, viewContext ] );
-
-	const onLearnMoreClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_remote-site-notification`,
-			'click_learn_more_link',
-			id
-		);
-	}, [ id, viewContext ] );
+	}, [ id, dismissNotification ] );
 
 	return (
-		<BannerNotification
-			key={ id }
-			id={ id }
-			title={ title }
-			description={ content }
-			learnMoreURL={ learnMoreURL }
-			learnMoreLabel={ learnMoreLabel }
-			ctaLink={ ctaURL }
-			ctaLabel={ ctaLabel }
-			ctaTarget={ ctaTarget }
-			dismiss={ dismissLabel }
-			isDismissible={ dismissible }
+		<NotificationFromServer
 			onCTAClick={ onCTAClick }
-			onView={ handleOnView }
-			onDismiss={ onDismiss }
-			onLearnMoreClick={ onLearnMoreClick }
+			onDismissClick={ onDismissClick }
+			{ ...props }
+			id={ id }
 		/>
 	);
 }
@@ -114,6 +63,7 @@ CoreSiteBannerNotification.propTypes = {
 	ctaURL: PropTypes.string,
 	dismissLabel: PropTypes.string,
 	dismissible: PropTypes.bool,
+	gaTrackingEventArgs: PropTypes.object,
 	id: PropTypes.string.isRequired,
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,

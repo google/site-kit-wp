@@ -29,8 +29,8 @@ import { map, reduce } from 'rxjs/operators';
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '../datastore/constants';
-import { getDateString, isValidDateString, stringToDate } from '../../../util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { getDateString, isValidDateString, stringToDate } from '@/js/util';
 import { validateMetrics } from './report-validation';
 import { dateInstanceToAdSenseDate } from './date';
 

@@ -37,16 +37,18 @@ import {
 	FORM_USER_INPUT_QUESTION_NUMBER,
 	getUserInputAnswersDescription,
 } from './util/constants';
-import useQueryArg from '../../hooks/useQueryArg';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { trackEvent } from '../../util';
-import useViewContext from '../../hooks/useViewContext';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import ProgressSegments from '../ProgressSegments';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import ProgressSegments from '@/js/components/ProgressSegments';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();
@@ -61,13 +63,12 @@ export default function UserInputQuestionnaire() {
 	}
 
 	const { setValues } = useDispatch( CORE_FORMS );
+	const questionNumberExists = useFormValue(
+		FORM_USER_INPUT_QUESTION_NUMBER,
+		'questionNumber'
+	);
 	const questionNumber =
-		useSelect( ( select ) =>
-			select( CORE_FORMS ).getValue(
-				FORM_USER_INPUT_QUESTION_NUMBER,
-				'questionNumber'
-			)
-		) || 1;
+		questionNumberExists !== undefined ? questionNumberExists : 1;
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -109,13 +110,13 @@ export default function UserInputQuestionnaire() {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
 
-	const scrollToQuestion = () => {
+	function scrollToQuestion() {
 		global.scrollTo( {
 			top: 0,
 			left: 0,
 			behavior: 'smooth',
 		} );
-	};
+	}
 
 	const nextCallback = useCallback( () => {
 		trackEvent(
@@ -156,8 +157,9 @@ export default function UserInputQuestionnaire() {
 	] );
 
 	const userInputPurposeConversionEvents = useSelect( ( select ) => {
-		const isGA4Connected =
-			select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+		const isGA4Connected = select( CORE_MODULES ).isModuleConnected(
+			MODULE_SLUG_ANALYTICS_4
+		);
 
 		if ( ! isGA4Connected ) {
 			return [];

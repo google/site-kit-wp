@@ -31,7 +31,7 @@ class Method_Proxy_TraitTest extends TestCase {
 		$callback();
 		$callback();
 
-		$this->assertEquals( 2, $this->calls );
+		$this->assertEquals( 2, $this->calls, 'Method proxy should be called twice when callback is invoked twice.' );
 	}
 
 	public function test_method_proxy_once() {
@@ -41,7 +41,7 @@ class Method_Proxy_TraitTest extends TestCase {
 		$callback();
 		$callback();
 
-		$this->assertEquals( 1, $this->calls );
+		$this->assertEquals( 1, $this->calls, 'Method proxy once should only be called once even when callback is invoked twice.' );
 	}
 
 	private function hidden_function() {

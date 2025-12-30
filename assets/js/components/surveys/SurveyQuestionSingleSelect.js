@@ -57,7 +57,7 @@ function SurveyQuestionSingleSelect( {
 			) => answer_ordinal === value && write_in // eslint-disable-line camelcase
 		).length > 0;
 
-	const handleSubmit = () => {
+	function handleSubmit() {
 		const answerTextOptionalKey = currentSelectedOptionHasWriteIn
 			? { answer_text: writeIn }
 			: {};
@@ -67,7 +67,7 @@ function SurveyQuestionSingleSelect( {
 				...answerTextOptionalKey,
 			},
 		} );
-	};
+	}
 
 	const isSubmitButtonDisabled =
 		value === '' || ( currentSelectedOptionHasWriteIn && writeIn === '' );

@@ -56,7 +56,8 @@ export default function ContentAutoUpdate( { hasBeenInView } ) {
 
 	useEffect( () => {
 		if ( ! hasBeenInView ) {
-			return;
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
 		}
 
 		const timeoutID = setTimeout( () => {

@@ -61,11 +61,11 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$auth = new Authentication( $this->context );
 		$auth->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
-		$this->assertTrue( has_action( 'googlesitekit_reauthorize_user' ) );
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ), 'Authorize user action should be registered.' );
+		$this->assertTrue( has_action( 'googlesitekit_reauthorize_user' ), 'Reauthorize user action should be registered.' );
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'REST routes filter should be registered.' );
+		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'API fetch preload paths filter should be registered.' );
 	}
 
 	/**
@@ -91,7 +91,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$auth->disconnect();
 
 		foreach ( $this->get_user_option_keys() as $key ) {
-			$this->assertFalse( $this->user_options->get( $key ) );
+			$this->assertFalse( $this->user_options->get( $key ), "User option {$key} should be removed after disconnect." );
 		}
 	}
 
@@ -110,7 +110,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/connection' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertTrue( $response->data['connected'] );
+		$this->assertTrue( $response->data['connected'], 'Site should be connected when proxy connection is established.' );
 	}
 
 	/**
@@ -125,7 +125,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/connection' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $response->data['connected'] );
+		$this->assertFalse( $response->data['connected'], 'Site should not be connected when no proxy connection exists.' );
 	}
 
 	/**
@@ -142,7 +142,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/authentication' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $response->data['authenticated'] );
+		$this->assertFalse( $response->data['authenticated'], 'User should not be authenticated when no token is set.' );
 	}
 
 	/**
@@ -168,7 +168,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/authentication' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertTrue( $response->data['authenticated'] );
+		$this->assertTrue( $response->data['authenticated'], 'User should be authenticated when valid token is set.' );
 	}
 
 	/**
@@ -185,7 +185,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/get-token' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertFalse( $response->data['token'] );
+		$this->assertFalse( $response->data['token'], 'Token should be false when no OAuth token is set.' );
 	}
 
 	/**
@@ -213,7 +213,7 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/get-token' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 'valid-auth-token', $response->data['token'] );
+		$this->assertEquals( 'valid-auth-token', $response->data['token'], 'Token should match the set access token.' );
 	}
 
 	private function grant_manage_options_permission() {

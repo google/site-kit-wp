@@ -30,12 +30,12 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '../../datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	ChipMultiSelect,
 	ChipMultiSelectItem,
-} from '../../../../components/ChipMultiSelect';
+} from '@/js/components/ChipMultiSelect';
 
 export default function PostTypesSelect( props ) {
 	const { isDisabled, hasModuleAccess, onChange = () => {} } = props;

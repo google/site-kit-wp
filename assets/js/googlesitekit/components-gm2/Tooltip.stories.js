@@ -33,10 +33,7 @@ DefaultTooltip.args = {
 	children: <Button>A button</Button>,
 	open: true,
 };
-DefaultTooltip.scenario = {
-	label: 'Global/Tooltip/DefaultTooltip',
-	delay: 250,
-};
+DefaultTooltip.scenario = {};
 
 export default {
 	title: 'Components/Tooltip',

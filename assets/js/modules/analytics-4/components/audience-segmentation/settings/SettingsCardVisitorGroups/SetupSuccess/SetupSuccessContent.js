@@ -26,18 +26,19 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '../../../../../../../googlesitekit/widgets/default-areas';
-import { CORE_LOCATION } from '../../../../../../../googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '../../../../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
-import { trackEvent } from '../../../../../../../util';
-import useViewContext from '../../../../../../../hooks/useViewContext';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import CheckFill from '../../../../../../../../svg/icons/check-fill.svg';
+import P from '@/js/components/Typography/P';
+import CheckFill from '@/svg/icons/check-fill.svg';
 
-export const SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION =
-	'settings_visitor_groups_setup_success_notification';
+export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
+	'show_settings_visitor_groups_success_notification';
 
 const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
@@ -53,12 +54,10 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
 
 	function dismissNotificationForUser() {
-		return dismissItem(
-			SETTINGS_VISITOR_GROUPS_SETUP_SUCCESS_NOTIFICATION
-		);
+		setValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION, false );
 	}
 
 	function handleDismiss() {
@@ -87,15 +86,15 @@ const SetupSuccessContent = forwardRef( ( props, ref ) => {
 				<CheckFill width={ 24 } height={ 24 } />
 			</div>
 			<div className="googlesitekit-subtle-notification__content">
-				<p>
+				<P>
 					{ __(
 						'We’ve added the visitor groups section to your dashboard!',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			</div>
 			<div className="googlesitekit-subtle-notification__action">
-				<Button tertiary onClick={ handleDismiss }>
+				<Button onClick={ handleDismiss } tertiary>
 					{ __( 'Got it', 'google-site-kit' ) }
 				</Button>
 				<Button onClick={ scrollToWidgetArea }>

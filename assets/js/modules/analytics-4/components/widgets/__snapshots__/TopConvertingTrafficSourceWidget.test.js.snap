@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopConvertingTrafficSourceWidget should render correctly with the expected metrics 1`] = `
+exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the comparison date range 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
@@ -15,13 +15,13 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top converting traffic source
           </h3>
           <span
             class="googlesitekit-info-tooltip"
-            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
           >
             <svg />
           </span>
@@ -40,7 +40,66 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
             <p
               class="googlesitekit-km-widget-tile__subtext"
             >
-              54.9% of visits led to conversions
+              54.9% of visits led to key events
+            </p>
+          </div>
+          <div
+            class="googlesitekit-km-widget-tile__metric-change-container"
+          >
+            <div
+              class="googlesitekit-change-badge"
+            >
+              +54.9%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TopConvertingTrafficSourceWidget should render correctly with the expected metrics 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--kmAnalyticsTopConvertingTrafficSource googlesitekit-widget--no-padding"
+  >
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--text"
+      >
+        <div
+          class="googlesitekit-km-widget-tile__title-container"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
+          >
+            Top converting traffic source
+          </h3>
+          <span
+            class="googlesitekit-info-tooltip"
+            title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
+          >
+            <svg />
+          </span>
+        </div>
+        <div
+          class="googlesitekit-km-widget-tile__body"
+        >
+          <div
+            class="googlesitekit-km-widget-tile__metric-container"
+          >
+            <div
+              class="googlesitekit-km-widget-tile__metric"
+            >
+              Organic Search
+            </div>
+            <p
+              class="googlesitekit-km-widget-tile__subtext"
+            >
+              54.9% of visits led to key events
             </p>
           </div>
           <div
@@ -71,13 +130,13 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
         </span>
@@ -86,7 +145,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Data loading failed
         </h3>
@@ -133,13 +192,13 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         class="googlesitekit-cta__header"
       >
         <h2
-          class="googlesitekit-cta__header_text"
+          class="googlesitekit-typography googlesitekit-cta__header_text googlesitekit-typography--label googlesitekit-typography--small"
         >
           Top converting traffic source
         </h2>
         <span
           class="googlesitekit-info-tooltip"
-          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+          title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
         </span>
@@ -148,7 +207,7 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         class="googlesitekit-cta__body"
       >
         <h3
-          class="googlesitekit-cta__title"
+          class="googlesitekit-typography googlesitekit-cta__title googlesitekit-typography--title googlesitekit-typography--small"
         >
           Insufficient permissions
         </h3>
@@ -199,7 +258,7 @@ exports[`TopConvertingTrafficSourceWidget should render the loading state while 
           class="googlesitekit-km-widget-tile__title-container"
         >
           <h3
-            class="googlesitekit-km-widget-tile__title"
+            class="googlesitekit-typography googlesitekit-km-widget-tile__title googlesitekit-typography--label googlesitekit-typography--small"
           >
             Top converting traffic source
           </h3>
@@ -208,7 +267,7 @@ exports[`TopConvertingTrafficSourceWidget should render the loading state while 
           >
             <span
               class="googlesitekit-info-tooltip"
-              title="Channel (e.g. social, paid, search) that brought in visitors who generated the most conversions"
+              title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
             >
               <svg />
             </span>

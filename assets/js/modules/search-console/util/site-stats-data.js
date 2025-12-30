@@ -37,7 +37,7 @@ import {
 	calculateDifferenceBetweenChartValues,
 	getPreviousDate,
 	stringToDate,
-} from '../../../util';
+} from '@/js/util';
 
 /**
  * Gets data for a Google chart from a Search Console report.
@@ -52,13 +52,13 @@ import {
  * @param {number} dateRangeLength Date range length.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export const getSiteStatsDataForGoogleChart = (
+export function getSiteStatsDataForGoogleChart(
 	current,
 	previous,
 	label,
 	selectedColumn,
 	dateRangeLength
-) => {
+) {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
@@ -140,4 +140,4 @@ export const getSiteStatsDataForGoogleChart = (
 	} );
 
 	return dataMap;
-};
+}

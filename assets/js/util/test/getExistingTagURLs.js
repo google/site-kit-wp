@@ -25,8 +25,8 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { getExistingTagURLs } from '../tag';
-import { AMP_MODE_SECONDARY } from '../../googlesitekit/datastore/site/constants';
+import { getExistingTagURLs } from '@/js/util/tag';
+import { AMP_MODE_SECONDARY } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	beforeAll( () => {

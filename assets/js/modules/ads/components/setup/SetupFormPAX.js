@@ -32,11 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADS } from '../../datastore/constants';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { ConversionIDTextField } from '../common';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import WarningNotice from '../../../../components/WarningNotice';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { ConversionIDTextField } from '@/js/modules/ads/components/common';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Notice from '@/js/components/Notice';
 
 export default function SetupFormPAX( {
 	finishSetup,
@@ -96,12 +96,15 @@ export default function SetupFormPAX( {
 			</div>
 
 			{ isDuplicateAdsIDDetected && (
-				<WarningNotice className="googlesitekit-ads-setup__ads-id-conflict-warning">
-					{ __(
+				<Notice
+					className="googlesitekit-notice--small googlesitekit-ads-setup__ads-id-conflict-warning"
+					type={ Notice.TYPES.WARNING }
+					description={ __(
 						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
 						'google-site-kit'
 					) }
-				</WarningNotice>
+					hideIcon
+				/>
 			) }
 
 			<div className="googlesitekit-setup-module__action">

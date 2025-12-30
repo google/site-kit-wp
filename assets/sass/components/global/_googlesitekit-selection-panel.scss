@@ -164,8 +164,7 @@
 		}
 	}
 
-	.googlesitekit-selection-panel-notice,
-	.googlesitekit-selection-panel-error {
+	.googlesitekit-selection-panel-notice {
 		background-color: $c-utility-warning-container;
 		padding: $grid-gap-phone $grid-gap-desktop;
 
@@ -178,16 +177,9 @@
 	}
 
 	.googlesitekit-selection-panel-error {
-		align-items: center;
-		background-color: $c-utility-error-container;
-		display: flex;
-		gap: 10px;
-		padding: $grid-gap-phone - 2px $grid-gap-desktop;
-
-		svg {
-			color: $c-utility-on-error-container;
-			display: block;
-		}
+		align-items: anchor-center;
+		flex-direction: row;
+		padding: $grid-gap-phone $grid-gap-desktop;
 	}
 
 	.googlesitekit-selection-panel-footer {

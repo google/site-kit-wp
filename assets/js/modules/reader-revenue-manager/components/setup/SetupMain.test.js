@@ -30,11 +30,9 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
 import SetupMain from './SetupMain';
-import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
-	MODULES_READER_REVENUE_MANAGER,
-} from '../../datastore/constants';
-import { publications } from '../../datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 
 describe( 'SetupMain', () => {
 	let registry;
@@ -50,7 +48,7 @@ describe( 'SetupMain', () => {
 		registry = createTestRegistry();
 		const extraData = [
 			{
-				slug: READER_REVENUE_MANAGER_MODULE_SLUG,
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 				active: true,
 				connected: true,
 			},

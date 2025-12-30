@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	act,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import OfflineNotification from './OfflineNotification';
 
 describe( 'OfflineNotification', () => {

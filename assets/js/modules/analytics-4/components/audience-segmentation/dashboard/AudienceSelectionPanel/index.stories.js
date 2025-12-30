@@ -30,27 +30,27 @@ import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '../../../../../../googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../../../util/errors';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
-} from '../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
-import { provideAnalytics4MockReport } from '../../../../utils/data-mock';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import { Provider as ViewContextProvider } from '../../../../../../components/Root/ViewContextContext';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceSelectionPanel from '.';
 
@@ -70,18 +70,14 @@ function Template( { viewContext } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/Default',
-};
+Default.scenario = {};
 
 export const ViewOnlyUser = Template.bind( {} );
 ViewOnlyUser.storyName = 'View-only user';
 ViewOnlyUser.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ViewOnlyUser.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/ViewOnlyUser',
-};
+ViewOnlyUser.scenario = {};
 
 export const WithSavedItems = Template.bind( {} );
 WithSavedItems.storyName = 'With saved items';
@@ -91,18 +87,14 @@ WithSavedItems.args = {
 		'properties/12345/audiences/4',
 	],
 };
-WithSavedItems.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithSavedItems',
-};
+WithSavedItems.scenario = {};
 
 export const WithOneGroup = Template.bind( {} );
 WithOneGroup.storyName = 'With one group selected';
 WithOneGroup.args = {
 	configuredAudiences: [ 'properties/12345/audiences/3' ],
 };
-WithOneGroup.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithOneGroup',
-};
+WithOneGroup.scenario = {};
 
 export const LoadingNoGroups = Template.bind( {} );
 LoadingNoGroups.storyName = 'Loading state no groups selected';
@@ -154,9 +146,7 @@ WithInsufficientPermissionsError.args = {
 		);
 	},
 };
-WithInsufficientPermissionsError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithInsufficientPermissionsError',
-};
+WithInsufficientPermissionsError.scenario = {};
 
 export const AudienceSyncError = Template.bind( {} );
 AudienceSyncError.storyName = 'Audience sync error';
@@ -180,9 +170,7 @@ AudienceSyncError.args = {
 		);
 	},
 };
-AudienceSyncError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceSyncError',
-};
+AudienceSyncError.scenario = {};
 
 export const UserCountError = Template.bind( {} );
 UserCountError.storyName = 'User count retrieval error';
@@ -208,9 +196,7 @@ UserCountError.args = {
 			.receiveError( error, 'getReport', [ reportOptions ] );
 	},
 };
-UserCountError.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/UserCountError',
-};
+UserCountError.scenario = {};
 
 export const AudienceCreationNotice = Template.bind( {} );
 AudienceCreationNotice.storyName = 'Audience creation notice';
@@ -226,9 +212,7 @@ AudienceCreationNotice.args = {
 		( audience ) => audience.audienceType !== 'SITE_KIT_AUDIENCE'
 	),
 };
-AudienceCreationNotice.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNotice',
-};
+AudienceCreationNotice.scenario = {};
 
 export const AudienceCreationNoticeWithMissingScope = Template.bind( {} );
 AudienceCreationNoticeWithMissingScope.storyName =
@@ -273,7 +257,6 @@ AudienceCreationNoticeOneAdded.args = {
 	},
 };
 AudienceCreationNoticeOneAdded.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationNoticeOneAdded',
 	delay: 1500, // Delay here is required to prevent inconsistent rendering of the Create button text.
 };
 
@@ -322,9 +305,7 @@ AudienceCreationSuccessNotice.args = {
 			.setValue( AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG, true );
 	},
 };
-AudienceCreationSuccessNotice.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/AudienceCreationSuccessNotice',
-};
+AudienceCreationSuccessNotice.scenario = {};
 
 export const TemporarilyHiddenBadge = Template.bind( {} );
 TemporarilyHiddenBadge.storyName =
@@ -354,9 +335,7 @@ WithNewBadges.args = {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	},
 };
-WithNewBadges.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel/WithNewBadges',
-};
+WithNewBadges.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSelectionPanel',
@@ -378,14 +357,16 @@ export default {
 						.map( ( { name } ) => name ),
 				},
 				metrics: [ { name: 'totalUsers' } ],
+				reportID:
+					'audience-segmentation_get-audiences-user-count-report-options_store:selector',
 			};
 
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideUserAuthentication( registry, {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-27' );
 
 				// Mock the sync available audiences endpoint since it is required that it's resolution is finished
 				// so items can go out of the loading state.
@@ -423,9 +404,8 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveIsGatheringData( false );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: availableAudiences.reduce(
 							( acc, { audienceSlug, name } ) => {
 								if ( 'purchasers' === audienceSlug ) {
@@ -440,7 +420,8 @@ export default {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				// Prevent displaying "New" badges by default.
 				registry.dispatch( CORE_USER ).receiveGetExpirableItems(
@@ -458,7 +439,7 @@ export default {
 					.setValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY, true );
 
 				args?.setupRegistry?.( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

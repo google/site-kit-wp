@@ -69,18 +69,18 @@ final class Plugin {
 				'network_admin_notices',
 				function () {
 					?>
-					<div class="notice notice-warning">
-						<p>
-							<?php
+<div class="notice notice-warning">
+	<p>
+					<?php
 							echo wp_kses(
 								__( 'The Site Kit by Google plugin does <strong>not yet offer</strong> a network mode, but we&#8217;re actively working on that.', 'google-site-kit' ),
 								array(
 									'strong' => array(),
 								)
 							);
-							?>
-						</p>
-					</div>
+					?>
+	</p>
+</div>
 					<?php
 				}
 			);
@@ -221,14 +221,34 @@ final class Plugin {
 				( new Core\Util\Migration_1_123_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_129_0( $this->context, $options ) )->register();
 				( new Core\Util\Migration_1_150_0( $this->context, $options ) )->register();
-				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context, $user_options ) )->register();
+				( new Core\Util\Migration_1_163_0( $this->context, $options ) )->register();
+				( new Core\Dashboard_Sharing\Dashboard_Sharing( $this->context ) )->register();
 				( new Core\Key_Metrics\Key_Metrics( $this->context, $user_options, $options ) )->register();
 				( new Core\Prompts\Prompts( $this->context, $user_options ) )->register();
 				( new Core\Consent_Mode\Consent_Mode( $this->context, $modules, $options ) )->register();
 				( new Core\Tags\GTag( $options ) )->register();
-				( new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options ) )->register();
-				if ( Feature_Flags::enabled( 'firstPartyMode' ) ) {
-					( new Core\Tags\First_Party_Mode\First_Party_Mode( $this->context, $options ) )->register();
+
+				$conversion_tracking = new Core\Conversion_Tracking\Conversion_Tracking( $this->context, $options );
+				$conversion_tracking->register();
+
+				if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
+					$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
+						$this->context,
+						$modules,
+						$conversion_tracking,
+						$transients,
+						$user_options,
+					);
+
+					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $authentication, $options, $user_options ) )->register();
+				}
+
+				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
+					( new Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway( $this->context, $options ) )->register();
+				}
+				( new Core\Tracking\Feature_Metrics() )->register();
+				if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+					( new Core\Tags\Enhanced_Conversions\Enhanced_Conversions() )->register();
 				}
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.

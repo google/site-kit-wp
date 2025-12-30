@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import GoogleChart from './';
-import { WithTestRegistry } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 function Template( args ) {
 	return <GoogleChart { ...args } />;
@@ -113,11 +113,17 @@ export default {
 	title: 'Components/GoogleChart',
 	component: GoogleChart,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
+
 			return (
-				<WithTestRegistry features={ parameters.features || [] }>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],

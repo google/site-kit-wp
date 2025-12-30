@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { createDurationFormat } from '../i18n';
+import { createDurationFormat } from '@/js/util/i18n';
 
 describe( 'durationFormat', () => {
 	describe( 'formatUnit', () => {

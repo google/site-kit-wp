@@ -37,14 +37,15 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../googlesitekit/constants';
-import { CORE_UI } from '../../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../../../datastore/constants';
-import { withWidgetComponentProps } from '../../../../../../googlesitekit/widgets/util';
-import { availableAudiences } from '../../../../datastore/__fixtures__';
-import * as tracking from '../../../../../../util/tracking';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '../AudienceSelectionPanel/constants';
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import * as tracking from '@/js/util/tracking';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
 
 jest.mock( 'react-use', () => ( {
@@ -79,7 +80,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -238,7 +239,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			await waitForDefaultTimeouts();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
 			);
 		} );
 
@@ -354,7 +355,7 @@ describe( 'NoAudienceBannerWidget', () => {
 			await waitForDefaultTimeouts();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#/admin-settings'
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings&scrollTo=visitor-groups#/admin-settings'
 			);
 		} );
 

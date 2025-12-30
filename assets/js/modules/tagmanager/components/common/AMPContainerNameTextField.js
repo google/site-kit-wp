@@ -35,10 +35,11 @@ import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
 	CONTAINER_CREATE,
-} from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
+import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AMPContainerNameTextField() {
 	const ampContainerID = useSelect( ( select ) =>
@@ -50,10 +51,9 @@ export default function AMPContainerNameTextField() {
 	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialAMPContainerName = useSelect(
-		( select ) =>
-			select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ),
-		[]
+	const initialAMPContainerName = useFormValue(
+		FORM_SETUP,
+		'ampContainerName'
 	);
 
 	let ampContainerName = siteName;

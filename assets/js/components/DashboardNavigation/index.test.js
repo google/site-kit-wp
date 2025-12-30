@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
@@ -27,17 +28,18 @@ import {
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { CONTEXT_MAIN_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-contexts';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { CONTEXT_MAIN_DASHBOARD_SPEED } from '@/js/googlesitekit/widgets/default-contexts';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;
@@ -73,7 +75,7 @@ describe( 'Dashboard Navigation', () => {
 	it( 'has a chip set', async () => {
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
@@ -83,7 +85,7 @@ describe( 'Dashboard Navigation', () => {
 	it( 'has no default selection', async () => {
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
@@ -101,12 +103,12 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				name: 'Search Console',
 				shareable: true,
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},
@@ -139,12 +141,12 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'search-console',
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
 				name: 'Search Console',
 				shareable: true,
 			},
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},
@@ -179,7 +181,7 @@ describe( 'Dashboard Navigation', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [
 			{
-				slug: 'pagespeed-insights',
+				slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 				name: 'PageSpeed Insights',
 				shareable: true,
 			},

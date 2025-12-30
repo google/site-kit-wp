@@ -20,9 +20,10 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -102,6 +103,57 @@ describe( 'modules/analytics-4 accounts', () => {
 								dataStreamName,
 								timezone,
 								regionCode: countryCode,
+								showProgress: false, // `showProgress` defaults to false when not passed as an option.
+							},
+						},
+					}
+				);
+
+				expect( store.getState().accountTicketID ).toEqual(
+					accountTicketID
+				);
+			} );
+
+			it( 'includes the `showProgress` property in the request body when passed as an option', async () => {
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						// eslint-disable-next-line sitekit/acronym-case
+						body: { accountTicketId: accountTicketID },
+						status: 200,
+					}
+				);
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						accountName,
+						propertyName,
+						dataStreamName,
+						timezone,
+						countryCode,
+					} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createAccount( { showProgress: true } );
+
+				// Ensure the proper body parameters were sent, including the `showProgress` property.
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						body: {
+							data: {
+								displayName: accountName,
+								propertyName,
+								dataStreamName,
+								timezone,
+								regionCode: countryCode,
+								showProgress: true,
 							},
 						},
 					}
@@ -197,7 +249,7 @@ describe( 'modules/analytics-4 accounts', () => {
 				provideUserAuthentication( registry );
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -461,7 +513,7 @@ describe( 'modules/analytics-4 accounts', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%26utm_source%3Dsitekit%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com&utm_source=sitekit'
 				);
 			} );
 
@@ -493,7 +545,7 @@ describe( 'modules/analytics-4 accounts', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getAccountTicketTermsOfServiceURL()
 				).toEqual(
-					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com'
+					'https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fanalytics.google.com%2Fanalytics%2Fweb%2F%3FprovisioningSignup%3Dfalse%26utm_source%3Dsitekit%23%2Ftermsofservice%2Ftest-account-ticket-id&Email=test%40gmail.com&utm_source=sitekit'
 				);
 			} );
 		} );

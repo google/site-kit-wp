@@ -31,11 +31,13 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AdsIcon from '../../../../../svg/graphics/ads.svg';
+import AdsIcon from '@/svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
-import SupportLink from '../../../../components/SupportLink';
-import AdBlockerWarning from '../../../../components/notifications/AdBlockerWarning';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import SupportLink from '@/js/components/SupportLink';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 
 export default function SetupMain( { finishSetup } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>
@@ -49,16 +51,21 @@ export default function SetupMain( { finishSetup } ) {
 					<AdsIcon width="40" height="40" />
 				</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
+				<Typography
+					as="h3"
+					className="googlesitekit-setup-module__title"
+					size="small"
+					type="headline"
+				>
 					{ _x( 'Ads', 'Service name', 'google-site-kit' ) }
-				</h2>
+				</Typography>
 			</div>
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning moduleSlug="ads" />
 
 				{ ! isAdBlockerActive && (
 					<Fragment>
-						<p>
+						<P>
 							{ createInterpolateElement(
 								__(
 									'Add your conversion ID below. Site Kit will place it on your site so you can track the performance of your Google Ads campaigns. <a>Learn more</a>',
@@ -78,7 +85,7 @@ export default function SetupMain( { finishSetup } ) {
 								'You can always change this later in Site Kit Settings.',
 								'google-site-kit'
 							) }
-						</p>
+						</P>
 
 						<SetupForm finishSetup={ finishSetup } />
 					</Fragment>

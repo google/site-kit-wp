@@ -21,13 +21,13 @@
  */
 import ConversionTrackingToggle from './ConversionTrackingToggle';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import fetchMock from 'fetch-mock';
 
 function Template() {
 	return (
 		<ConversionTrackingToggle>
-			Example text for enhanced conversion tracking
+			Example text for plugin conversion tracking
 		</ConversionTrackingToggle>
 	);
 }
@@ -35,13 +35,10 @@ function Template() {
 export const Enabled = Template.bind( {} );
 Enabled.storyName = 'Enabled';
 Enabled.title = 'Components/Conversion Tracking/ConversionTrackingToggle';
-Enabled.scenario = {
-	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Enabled',
-	delay: 250,
-};
+Enabled.scenario = {};
 Enabled.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetConversionTrackingSettings( { enabled: true } );
@@ -55,7 +52,7 @@ Enabled.decorators = [
 					status: 200,
 				}
 			);
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />
@@ -66,13 +63,10 @@ Enabled.decorators = [
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default Disabled';
-Default.scenario = {
-	label: 'Components/Conversion Tracking/ConversionTrackingToggle/Default',
-	delay: 250,
-};
+Default.scenario = {};
 Default.decorators = [
 	( Story ) => {
-		const setupRegistry = ( registry ) => {
+		function setupRegistry( registry ) {
 			registry
 				.dispatch( CORE_SITE )
 				.receiveGetConversionTrackingSettings( { enabled: false } );
@@ -86,7 +80,7 @@ Default.decorators = [
 					status: 200,
 				}
 			);
-		};
+		}
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
 				<Story />

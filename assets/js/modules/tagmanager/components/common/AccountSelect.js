@@ -32,9 +32,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import { trackEvent } from '../../../../util/tracking';
-import useViewContext from '../../../../hooks/useViewContext';
+import {
+	MODULES_TAGMANAGER,
+	ACCOUNT_CREATE,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { trackEvent } from '@/js/util/tracking';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AccountSelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();

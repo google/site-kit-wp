@@ -20,24 +20,35 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { _x, __ } from '@wordpress/i18n';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, ACCOUNT_CREATE } from '../../datastore/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
-import { AccountCreate, AccountCreateLegacy } from '../common';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	MODULES_ANALYTICS_4,
+	ACCOUNT_CREATE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
+import {
+	AccountCreate,
+	AccountCreateLegacy,
+} from '@/js/modules/analytics-4/components/common';
+import ToastNotice from '@/js/components/ToastNotice';
+import Typography from '@/js/components/Typography';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
@@ -64,7 +75,7 @@ export default function SetupMain( { finishSetup } ) {
 			return;
 		}
 
-		const fetchMatchedAccount = async () => {
+		async function fetchMatchedAccount() {
 			setIsMatchedAccount( true );
 			const matchedAccount = await findMatchedAccount();
 			setIsMatchedAccount( false );
@@ -72,7 +83,7 @@ export default function SetupMain( { finishSetup } ) {
 				setAccountID( matchedAccount._id );
 				matchAndSelectProperty( matchedAccount._id );
 			}
-		};
+		}
 
 		if ( ! accountID ) {
 			fetchMatchedAccount();
@@ -88,19 +99,29 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const isCreateAccount =
+		ACCOUNT_CREATE === accountID ||
+		( Array.isArray( accounts ) && ! accounts.length );
+
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
+	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
+		useQueryArg( 'searchConsoleSetupSuccess' );
+
+	const showSearchConsoleSetupSuccessToast =
+		!! searchConsoleSetupSuccess && setupFlowRefreshEnabled;
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( ! hasResolvedAccounts || isMatchedAccount ) {
 		viewComponent = <ProgressBar />;
-	} else if (
-		isCreateAccount ||
-		( Array.isArray( accounts ) && ! accounts.length )
-	) {
+	} else if ( isCreateAccount ) {
 		viewComponent = usingProxy ? (
-			<AccountCreate />
+			<AccountCreate className="googlesitekit-analytics-setup__form" />
 		) : (
 			<AccountCreateLegacy />
 		);
@@ -109,20 +130,68 @@ export default function SetupMain( { finishSetup } ) {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<div className="googlesitekit-setup-module__step">
-				<div className="googlesitekit-setup-module__logo">
-					<AnalyticsIcon width="40" height="40" />
-				</div>
+		<Fragment>
+			<div
+				className={ classnames(
+					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
+					{
+						'googlesitekit-feature--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
+				<div className="googlesitekit-setup-module__step">
+					{ isInitialSetupFlow ? (
+						<Typography
+							as="h1"
+							className="googlesitekit-setup__title"
+							size="medium"
+							type="headline"
+						>
+							{ isCreateAccount
+								? __(
+										'Create your Analytics account',
+										'google-site-kit'
+								  )
+								: __( 'Set up Analytics', 'google-site-kit' ) }
+						</Typography>
+					) : (
+						<Fragment>
+							<div className="googlesitekit-setup-module__logo">
+								<AnalyticsIcon width="40" height="40" />
+							</div>
 
-				<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-					{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-				</h2>
+							<Typography
+								as="h3"
+								className="googlesitekit-setup-module__title"
+								size="small"
+								type="headline"
+							>
+								{ _x(
+									'Analytics',
+									'Service name',
+									'google-site-kit'
+								) }
+							</Typography>
+						</Fragment>
+					) }
+				</div>
+				<div className="googlesitekit-setup-module__step">
+					{ viewComponent }
+				</div>
 			</div>
-			<div className="googlesitekit-setup-module__step">
-				{ viewComponent }
-			</div>
-		</div>
+			{ showSearchConsoleSetupSuccessToast && (
+				<ToastNotice
+					title={ __(
+						'Search Console was successfully set up',
+						'google-site-kit'
+					) }
+					onDismiss={ () =>
+						setSearchConsoleSetupSuccess( undefined )
+					}
+				/>
+			) }
+		</Fragment>
 	);
 }
 

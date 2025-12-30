@@ -24,17 +24,19 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import VisitsPerVisitorWidget from './VisitsPerVisitorWidget';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = {
 	compareStartDate: '2020-07-14',
@@ -49,6 +51,7 @@ const reportOptions = {
 			name: 'sessions',
 		},
 	],
+	reportID: 'analytics-4_visits-per-visitor-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -70,10 +73,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/VisitsPerVisitor/Ready',
-	delay: 250,
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -149,14 +149,23 @@ InsufficientPermissions.args = {
 	},
 };
 
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions );
+	},
+};
+NoDataInComparisonDateRange.scenario = {};
+
 export default {
 	title: 'Key Metrics/VisitsPerVisitor',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -180,13 +189,13 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

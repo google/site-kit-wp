@@ -26,12 +26,12 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import WarningNotice from '../WarningNotice';
-import { isURLUsingHTTPS } from '../../util/is-url-using-https';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import Notice from '@/js/components/Notice';
 
-export default function HTTPSWarning( { moduleSlug, className } ) {
+export default function HTTPSWarning( { moduleSlug } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -47,21 +47,22 @@ export default function HTTPSWarning( { moduleSlug, className } ) {
 	const moduleName = module.name;
 
 	return (
-		<WarningNotice className={ className }>
-			{ sprintf(
+		<Notice
+			className="googlesitekit-notice--small"
+			type={ Notice.TYPES.WARNING }
+			description={ sprintf(
 				/* translators: %s: Module name. */
 				__(
 					'The site should use HTTPS to set up %s',
 					'google-site-kit'
 				),
-				moduleName,
-				__( 'Get help', 'google-site-kit' )
+				moduleName
 			) }
-		</WarningNotice>
+			hideIcon
+		/>
 	);
 }
 
 HTTPSWarning.propTypes = {
-	className: PropTypes.string,
 	moduleSlug: PropTypes.string.isRequired,
 };

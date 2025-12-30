@@ -32,22 +32,25 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '../../../googlesitekit/data/utils';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { getPaymentOption, getProductIDs } from '../utils/settings';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import {
+	getPaymentOption,
+	getProductIDs,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
 		get(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'publications',
 			{},
 			{ useCache: false }
@@ -95,7 +98,7 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 	controlCallback: ( { publicationID, publicationOnboardingState } ) =>
 		set(
 			'modules',
-			READER_REVENUE_MANAGER_MODULE_SLUG,
+			MODULE_SLUG_READER_REVENUE_MANAGER,
 			'sync-publication-onboarding-state',
 			{
 				publicationID,
@@ -313,17 +316,16 @@ const baseActions = {
 
 const baseControls = {};
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
 		case 'RESET_PUBLICATIONS':
-			return {
-				...state,
-				publications: baseInitialState.publications,
-			};
+			state.publications = baseInitialState.publications;
+			break;
+
 		default:
-			return state;
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getPublications() {

@@ -19,22 +19,23 @@
 /**
  * Internal dependencies
  */
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
-} from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { provideModules } from '../../../../../../tests/js/utils';
-import { provideCustomDimensionError } from '../../utils/custom-dimensions';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
+} from '@/js/modules/analytics-4/utils/data-mock';
 import PopularAuthorsWidget from './PopularAuthorsWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
@@ -68,6 +69,7 @@ const reportOptions = {
 	],
 	limit: 3,
 	keepEmptyRows: false,
+	reportID: 'analytics-4_popular-authors-widget_widget_reportOptions',
 };
 
 const propertyID = '12345';
@@ -79,10 +81,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -122,10 +121,7 @@ GatheringData.args = {
 // Since the "Gathering Data" state is the same for all KMW tiles that require
 // custom dimensions, this is the sole scenario and should not be added to any
 // other generic `MetricTile___` or KMW component.
-GatheringData.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/GatheringData',
-};
+GatheringData.scenario = {};
 
 export const ErrorMissingCustomDimensions = Template.bind( {} );
 ErrorMissingCustomDimensions.storyName = 'Error - Missing custom dimensions';
@@ -140,11 +136,7 @@ ErrorMissingCustomDimensions.args = {
 // Since the "Error Missing Custom Dimensions" state is the same for all KMW tiles
 // that require custom dimensions, this is the sole scenario and should not be
 // added to any other generic `MetricTile___` or KMW component.
-ErrorMissingCustomDimensions.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorMissingCustomDimensions',
-	delay: 250,
-};
+ErrorMissingCustomDimensions.scenario = {};
 
 export const ErrorCustomDimensionsInsufficientPermissions = Template.bind( {} );
 ErrorCustomDimensionsInsufficientPermissions.storyName =
@@ -170,11 +162,7 @@ ErrorCustomDimensionsInsufficientPermissions.args = {
 // Since the "Error Custom Dimensions Insufficient Permissions" state is the same for
 // all KMW tiles that require custom dimensions,, this is the sole scenario and should
 // not be added to any other generic `MetricTile___` or KMW component.
-ErrorCustomDimensionsInsufficientPermissions.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
-	delay: 250,
-};
+ErrorCustomDimensionsInsufficientPermissions.scenario = {};
 
 export const ErrorCustomDimensionsGeneric = Template.bind( {} );
 ErrorCustomDimensionsGeneric.storyName =
@@ -200,27 +188,23 @@ ErrorCustomDimensionsGeneric.args = {
 // Since the "Error Custom Dimensions Generic" state is the same for all KMW tiles
 // that require custom dimensions, this is the sole scenario and should not be added
 // to any other generic `MetricTile___` or KMW component.
-ErrorCustomDimensionsGeneric.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/PopularAuthorsWidget/ErrorCustomDimensionsGeneric',
-	delay: 250,
-};
+ErrorCustomDimensionsGeneric.scenario = {};
 
 export default {
 	title: 'Key Metrics/PopularAuthorsWidget',
 	component: PopularAuthorsWidget,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
 				] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 					propertyID,
 					availableCustomDimensions:
@@ -246,7 +230,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

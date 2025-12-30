@@ -20,23 +20,24 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
 	freezeFetch,
 	subscribeUntil,
 	muteFetch,
-	waitForTimeouts,
+	createWaitForRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import { DAY_IN_SECONDS } from '../../../util';
-import { isZeroReport } from '../utils';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;
+	let waitForRegistry;
 
 	beforeAll( () => {
 		setUsingCache( false );
@@ -44,6 +45,7 @@ describe( 'modules/analytics-4 report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		waitForRegistry = createWaitForRegistry( registry );
 	} );
 
 	afterAll( () => {
@@ -178,6 +180,8 @@ describe( 'modules/analytics-4 report', () => {
 						},
 					],
 					limit: 15,
+					reportID:
+						'analytics-4_get-page-titles_store:selector_options',
 				};
 
 				registry
@@ -220,7 +224,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( fetchMock ).toHaveFetched( analytics4ReportRegexp );
 			} );
@@ -263,7 +267,7 @@ describe( 'modules/analytics-4 report', () => {
 				expect( isGatheringData() ).toBeUndefined();
 
 				// Wait for resolvers to run.
-				await waitForTimeouts( 30 );
+				await waitForRegistry();
 
 				expect( isGatheringData() ).toBe( true );
 				expect( console ).toHaveErrored();
@@ -336,13 +340,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 
 					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
 					expect( isGatheringData() ).toBeUndefined();
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 				} );
 
 				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
@@ -442,13 +446,13 @@ describe( 'modules/analytics-4 report', () => {
 					expect( hasZeroData() ).toBeUndefined();
 
 					// Wait for resolvers to run.
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 
 					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
 					expect( isGatheringData() ).toBe( true );
 					expect( hasZeroData() ).toBe( true );
 
-					await waitForTimeouts( 30 );
+					await waitForRegistry();
 				} );
 
 				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
@@ -496,9 +500,8 @@ describe( 'modules/analytics-4 report', () => {
 				[
 					'using the default report args',
 					{
+						// Don't include `startDate` and `endDate` here - they'll be calculated dynamically.
 						expectedReportQueryParams: {
-							startDate: '2024-03-06',
-							endDate: '2024-04-30',
 							'dimensions[0][name]': 'date',
 							'metrics[0][name]': 'totalUsers',
 							_locale: 'user',
@@ -531,6 +534,21 @@ describe( 'modules/analytics-4 report', () => {
 						registry
 							.dispatch( CORE_USER )
 							.setReferenceDate( '2024-05-01' );
+
+						// For the default report args case, calculate dates dynamically.
+						if ( ! reportArgs ) {
+							const dates = registry
+								.select( CORE_USER )
+								.getDateRangeDates( {
+									compare: true,
+									offsetDays: DATE_RANGE_OFFSET,
+								} );
+
+							// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+							expectedReportQueryParams.startDate =
+								dates.compareStartDate;
+							expectedReportQueryParams.endDate = dates.endDate;
+						}
 					} );
 
 					it( 'should return `undefined` if getReport has not resolved yet', async () => {
@@ -542,7 +560,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 					} );
 
 					it( 'should make a request for the correct report', async () => {
@@ -556,7 +574,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 
 						expect( fetchMock ).toHaveFetchedTimes( 1 );
 						expect( fetchMock ).toHaveFetched(
@@ -585,7 +603,7 @@ describe( 'modules/analytics-4 report', () => {
 						expect( hasZeroData( reportArgs ) ).toBeUndefined();
 
 						// Wait for resolvers to run.
-						await waitForTimeouts( 30 );
+						await waitForRegistry();
 
 						expect( hasZeroData( reportArgs ) ).toBe( true );
 						expect( console ).toHaveErrored();
@@ -635,12 +653,19 @@ describe( 'modules/analytics-4 report', () => {
 			it( 'should return report arguments relative to the current reference date', () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
 
+				// Calculate expected dates using the same method as `getSampleReportArgs`.
+				const dates = registry.select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
 				const args = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getSampleReportArgs();
 
-				expect( args.startDate ).toBe( '2024-03-06' );
-				expect( args.endDate ).toBe( '2024-04-30' );
+				// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+				expect( args.startDate ).toBe( dates.compareStartDate );
+				expect( args.endDate ).toBe( dates.endDate );
 				expect( args.metrics?.[ 0 ]?.name ).toBe( 'totalUsers' );
 				expect( args.dimensions?.[ 0 ] ).toBe( 'date' );
 				expect( args.url ).toBeUndefined();
@@ -674,9 +699,8 @@ describe( 'modules/analytics-4 report', () => {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( fixtures.availableAudiences );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveResourceDataAvailabilityDates( {
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
 						audience: fixtures.availableAudiences.reduce(
 							( acc, { name } ) => {
 								acc[ name ] = 20201220;
@@ -686,7 +710,8 @@ describe( 'modules/analytics-4 report', () => {
 						),
 						customDimension: {},
 						property: {},
-					} );
+					},
+				} );
 
 				const options = {
 					startDate: '2022-11-02',

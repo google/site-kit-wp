@@ -24,20 +24,22 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
+	waitForDefaultTimeouts,
 } from '../../../tests/js/utils';
 import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '../util/errors';
-import { fireEvent, render } from '../../../tests/js/test-utils';
+} from '@/js/util/errors';
+import { act, fireEvent, render } from '../../../tests/js/test-utils';
 import ReportError from './ReportError';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '../googlesitekit/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'ReportError', () => {
 	let registry;
 	let invalidateResolutionSpy;
-	const moduleName = 'analytics-4';
+	const moduleName = MODULE_SLUG_ANALYTICS_4;
 
 	const newErrors = [
 		{
@@ -93,7 +95,7 @@ describe( 'ReportError', () => {
 		invalidateResolutionSpy.mockReset();
 	} );
 
-	it( 'renders the error message', () => {
+	it( 'renders the error message', async () => {
 		const { container } = render(
 			<ReportError
 				moduleSlug={ moduleName }
@@ -111,6 +113,8 @@ describe( 'ReportError', () => {
 		expect( container.querySelector( 'p' ).textContent ).toEqual(
 			'Test error message'
 		);
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'renders the error message without HTML tags', async () => {
@@ -171,7 +175,7 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideUserInfo( registry, userData );
@@ -276,7 +280,7 @@ describe( 'ReportError', () => {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
 		provideUserInfo( registry, userData );
@@ -565,6 +569,59 @@ describe( 'ReportError', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 		expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 4 );
+	} );
+
+	it( 'should not list error descriptions with the same `reconnectURL`s', async () => {
+		const { container, waitForRegistry } = render(
+			<ReportError
+				moduleSlug={ moduleName }
+				error={ [
+					{
+						code: 'test_error',
+						message: 'Test error message',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page?code=1',
+							status: 401,
+						},
+					},
+					{
+						code: 'test_error',
+						message: 'Test error message',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page?code=2',
+							status: 401,
+						},
+					},
+					{
+						code: 'test_error',
+						message: 'Test error message 2',
+						data: {
+							reason: '',
+							reconnectURL: 'https://example.com/page2?code=1',
+							status: 401,
+						},
+					},
+				] }
+			/>,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		const errorDescriptionElement = container.querySelectorAll(
+			'.googlesitekit-cta__description'
+		);
+
+		// Verify the child element count for the error description element is two.
+		// However, the passed error array has three repetitive error objects.
+		// The second error is not listed because it has the same `message` and `reconnectURL`
+		// as the first one. Note that the `code` query parameter in the `reconnectURL` is
+		// ignored for comparison, as it is expected to be different for each URL.
+		expect( errorDescriptionElement[ 0 ].childElementCount ).toBe( 2 );
 	} );
 
 	it( 'should render `Get help` link without prefix text on non-retryable error', async () => {

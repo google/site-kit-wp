@@ -31,19 +31,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_DIMENSION_COLOR,
-} from '../../../datastore/constants';
-import GoogleChart from '../../../../../components/GoogleChart';
-import parseDimensionStringToDate from '../../../utils/parseDimensionStringToDate';
-import ReportError from '../../../../../components/ReportError';
+} from '@/js/modules/analytics-4/datastore/constants';
+import GoogleChart from '@/js/components/GoogleChart';
+import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
+import ReportError from '@/js/components/ReportError';
 import { createZeroDataRow } from './utils';
-import useViewOnly from '../../../../../hooks/useViewOnly';
-import { getDateString, stringToDate } from '../../../../../util';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { getDateString, stringToDate } from '@/js/util';
 
 export default function UserCountGraph( props ) {
 	const { loaded, error, report, gatheringData } = props;

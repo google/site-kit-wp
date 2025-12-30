@@ -143,7 +143,7 @@ class Tag_GuardTest extends TestCase {
 
 		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
-		$this->assertEquals( $expected, $guard->can_activate() );
+		$this->assertEquals( $expected, $guard->can_activate(), 'Tag_Guard can_activate should return the expected value for singular.' );
 	}
 
 	public function data_configurations__non_singular() {
@@ -189,6 +189,6 @@ class Tag_GuardTest extends TestCase {
 
 		$guard = new Tag_Guard( $this->settings, $this->post_product_id );
 
-		$this->assertEquals( $expected, $guard->can_activate() );
+		$this->assertEquals( $expected, $guard->can_activate(), 'Tag_Guard can_activate should return the expected value for non-singular.' );
 	}
 }

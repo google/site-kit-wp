@@ -21,7 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { MODULES_ADSENSE } from './constants';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	subscribeUntil,

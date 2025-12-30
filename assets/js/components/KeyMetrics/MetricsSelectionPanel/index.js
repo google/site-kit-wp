@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '../constants';
-import InViewProvider from '../../InViewProvider';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import InViewProvider from '@/js/components/InViewProvider';
 import Panel from './Panel';
 
 export default function MetricsSelectionPanel() {

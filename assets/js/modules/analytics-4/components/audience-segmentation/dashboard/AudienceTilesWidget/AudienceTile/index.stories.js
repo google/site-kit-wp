@@ -21,32 +21,32 @@
  */
 import WithRegistrySetup from '../../../../../../../../../tests/js/WithRegistrySetup';
 import { provideUserAuthentication } from '../../../../../../../../../tests/js/utils';
-import { Provider as ViewContextProvider } from '../../../../../../../components/Root/ViewContextContext';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '../../../../../../../googlesitekit/constants';
+} from '@/js/googlesitekit/constants';
 import AudienceTile from '.';
-import { getPreviousDate } from '../../../../../../../util';
-import { withWidgetComponentProps } from '../../../../../../../googlesitekit/widgets/util';
+import { getPreviousDate } from '@/js/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'audienceTile' )( AudienceTile );
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
-	const setupRegistryCallback = ( registry ) => {
+	function setupRegistryCallback( registry ) {
 		provideUserAuthentication( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],
 		} );
 		setupRegistry( registry );
-	};
+	}
 
 	return (
 		<WithRegistrySetup func={ setupRegistryCallback }>
@@ -61,8 +61,6 @@ function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 
 const audienceResourceName = 'properties/12345/audiences/12345';
 
-// TODO: As part of #8484, update these stories to use the data-mock
-// functions to provide report data rather than hardcoding props.
 const readyProps = {
 	audienceResourceName,
 	title: 'New visitors',
@@ -152,9 +150,7 @@ const readyProps = {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = readyProps;
-Ready.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/Ready',
-};
+Ready.scenario = {};
 
 export const ReadyWithToolTip = Template.bind( {} );
 ReadyWithToolTip.storyName = 'ReadyWithToolTip';
@@ -162,9 +158,7 @@ ReadyWithToolTip.args = {
 	...readyProps,
 	infoTooltip: 'This is a tooltip',
 };
-ReadyWithToolTip.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyWithToolTip',
-};
+ReadyWithToolTip.scenario = {};
 
 export const ReadyViewOnly = Template.bind( {} );
 ReadyViewOnly.storyName = 'ReadyViewOnly';
@@ -172,9 +166,7 @@ ReadyViewOnly.args = {
 	...readyProps,
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
-ReadyViewOnly.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyViewOnly',
-};
+ReadyViewOnly.scenario = {};
 
 export const ReadyLongCityNames = Template.bind( {} );
 ReadyLongCityNames.storyName = 'ReadyLongCityNames';
@@ -206,9 +198,7 @@ ReadyLongCityNames.args = {
 		total: 0.608,
 	},
 };
-ReadyLongCityNames.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ReadyLongCityNames',
-};
+ReadyLongCityNames.scenario = {};
 
 export const NoData = Template.bind( {} );
 NoData.storyName = 'NoData';
@@ -217,9 +207,7 @@ NoData.args = {
 	topCities: null,
 	topContent: null,
 };
-NoData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/NoData',
-};
+NoData.scenario = {};
 
 export const MissingCustomDimension = Template.bind( {} );
 MissingCustomDimension.storyName = 'MissingCustomDimension';
@@ -231,9 +219,7 @@ MissingCustomDimension.args = {
 		} );
 	},
 };
-MissingCustomDimension.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/MissingCustomDimension',
-};
+MissingCustomDimension.scenario = {};
 
 export const AudiencePartialData = Template.bind( {} );
 AudiencePartialData.storyName = 'Audience partial data';
@@ -258,9 +244,8 @@ AudiencePartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {
 					[ audienceResourceName ]: dataAvailabilityDate,
 				},
@@ -268,12 +253,11 @@ AudiencePartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
-AudiencePartialData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/AudiencePartialData',
-};
+AudiencePartialData.scenario = {};
 
 export const TopContentPartialData = Template.bind( {} );
 TopContentPartialData.storyName = 'Top content partial data';
@@ -298,9 +282,8 @@ TopContentPartialData.args = {
 			getPreviousDate( startDate, -1 ).replace( /-/g, '' )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveResourceDataAvailabilityDates( {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+			resourceAvailabilityDates: {
 				audience: {},
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
@@ -308,12 +291,11 @@ TopContentPartialData.args = {
 				property: {
 					12345: 20201218,
 				},
-			} );
+			},
+		} );
 	},
 };
-TopContentPartialData.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/TopContentPartialData',
-};
+TopContentPartialData.scenario = {};
 
 export const ViewOnlyNoDimensions = Template.bind( {} );
 ViewOnlyNoDimensions.storyName =
@@ -342,9 +324,7 @@ ZeroDataHideable.args = {
 	isTileHideable: true,
 	onHideTile: () => {},
 };
-ZeroDataHideable.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataHideable',
-};
+ZeroDataHideable.scenario = {};
 
 export const ZeroDataNonHideable = Template.bind( {} );
 ZeroDataNonHideable.storyName = 'ZeroDataNonHideable';
@@ -355,9 +335,7 @@ ZeroDataNonHideable.args = {
 	isZeroData: true,
 	isPartialData: true,
 };
-ZeroDataNonHideable.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile/ZeroDataNonHideable',
-};
+ZeroDataNonHideable.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceTile',

@@ -1,3 +1,5 @@
+/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+
 /**
  * Internal dependencies
  */
@@ -26,6 +28,7 @@ export async function setEditPostFeature( feature, setActivation ) {
 					.dispatch( 'core/edit-post' )
 					.toggleFeature( featureName );
 			}
+			return undefined;
 		},
 		feature,
 		setActivation

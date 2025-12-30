@@ -115,13 +115,10 @@ describe( 'Ads module setup', () => {
 			] )
 		);
 
-		await page.waitForSelector( '.googlesitekit-subtle-notification' );
-		await expect( page ).toMatchElement(
-			'.googlesitekit-subtle-notification',
-			{
-				text: /success! your conversion id was added to your site/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-notice__title' );
+		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
+			text: /success! your conversion id was added to your site/i,
+		} );
 
 		await step(
 			'visit site kit settings',

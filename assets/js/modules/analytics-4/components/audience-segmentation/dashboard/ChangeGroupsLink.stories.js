@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '../../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import ChangeGroupsLink from './ChangeGroupsLink';
 
@@ -29,22 +29,20 @@ function Template() {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ChangeGroupsLink';
-Default.scenario = {
-	label: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ChangeGroupsLink',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/ChangeGroupsLink',
 	component: ChangeGroupsLink,
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setAvailableAudiences( [
 						'properties/12345/audiences/1',
 					] );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

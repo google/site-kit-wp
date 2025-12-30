@@ -22,9 +22,11 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ADS } from '../../modules/ads/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 import { freezeFetch, provideModules } from '../../../../tests/js/utils';
@@ -42,9 +44,7 @@ Default.args = {
 			.receiveGetConsentAPIInfo( { hasConsentAPI: true } );
 	},
 };
-Default.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/Default',
-};
+Default.scenario = {};
 
 export const WithAdsConnected = Template.bind( {} );
 WithAdsConnected.storyName = 'WithAdsConnected';
@@ -54,12 +54,12 @@ WithAdsConnected.args = {
 			{
 				active: true,
 				connected: true,
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 			{
 				active: true,
 				connected: true,
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 			},
 		] );
 
@@ -90,9 +90,7 @@ WithAdsConnected.args = {
 			);
 	},
 };
-WithAdsConnected.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithAdsConnected',
-};
+WithAdsConnected.scenario = {};
 
 export const WithoutConsentAPI = Template.bind( {} );
 WithoutConsentAPI.storyName = 'WithoutConsentAPI';
@@ -110,9 +108,7 @@ WithoutConsentAPI.args = {
 		} );
 	},
 };
-WithoutConsentAPI.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithoutConsentAPI',
-};
+WithoutConsentAPI.scenario = {};
 
 export const WithConsentAPINotActivated = Template.bind( {} );
 WithConsentAPINotActivated.storyName = 'WithConsentAPINotActivated';
@@ -130,9 +126,7 @@ WithConsentAPINotActivated.args = {
 		} );
 	},
 };
-WithConsentAPINotActivated.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/WithConsentAPINotActivated',
-};
+WithConsentAPINotActivated.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -153,25 +147,23 @@ Loading.decorators = [
 		);
 	},
 ];
-Loading.scenario = {
-	label: 'ConsentMode/SettingsCardConsentMode/Loading',
-};
+Loading.scenario = {};
 
 export default {
-	title: 'Consent Mode/SettingsCardConsentMode',
+	title: 'Consent mode/SettingsCardConsentMode',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						active: true,
 						connected: true,
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 					},
 					{
 						active: false,
 						connected: false,
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 					},
 				] );
 
@@ -196,7 +188,7 @@ export default {
 				if ( args.setupRegistry ) {
 					args.setupRegistry( registry );
 				}
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

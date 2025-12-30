@@ -24,7 +24,8 @@ class SanitizeTest extends TestCase {
 	public function test_sanitize_string_list( $data_list, $expected ) {
 		$this->assertEquals(
 			$expected,
-			Sanitize::sanitize_string_list( $data_list )
+			Sanitize::sanitize_string_list( $data_list ),
+			'Sanitized string list should match expected output.'
 		);
 	}
 

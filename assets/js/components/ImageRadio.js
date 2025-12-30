@@ -30,7 +30,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { MDCFormField, MDCRadio } from '../material-components';
+import { MDCFormField, MDCRadio } from '@/js/material-components';
 
 export default function ImageRadio( props ) {
 	const {

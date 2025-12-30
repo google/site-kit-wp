@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
@@ -26,24 +31,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import { DAY_IN_SECONDS } from '../../../../util';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import SubtleNotification from '../../../../googlesitekit/notifications/components/layout/SubtleNotification';
-import Dismiss from '../../../../googlesitekit/notifications/components/common/Dismiss';
-import Link from '../../../../components/Link';
-import useQueryArg from '../../../../hooks/useQueryArg';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { TYPES } from '@/js/components/Notice/constants';
+import Link from '@/js/components/Link';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function AdBlockingRecoverySetupSuccessNotification( {
 	id,
 	Notification,
 } ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
-
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 
 	const adsenseAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
@@ -56,10 +56,8 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 	);
 
 	const handleView = useCallback( () => {
-		if ( usingProxy ) {
-			triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
-		}
-	}, [ triggerSurvey, usingProxy ] );
+		triggerSurvey( 'abr_setup_completed', { ttl: DAY_IN_SECONDS } );
+	}, [ triggerSurvey ] );
 
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
@@ -69,7 +67,9 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 
 	return (
 		<Notification onView={ handleView }>
-			<SubtleNotification
+			<NoticeNotification
+				notificationID={ id }
+				type={ TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled the ad blocking recovery message',
 					'google-site-kit'
@@ -89,8 +89,15 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 						),
 					}
 				) }
-				dismissCTA={ <Dismiss onDismiss={ dismissNotice } id={ id } /> }
+				dismissButton={ {
+					onClick: dismissNotice,
+				} }
 			/>
 		</Notification>
 	);
 }
+
+AdBlockingRecoverySetupSuccessNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

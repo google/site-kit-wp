@@ -31,14 +31,14 @@ import { useMemo, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '../datastore/constants';
-import { CORE_MODULES } from '../../modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import BaseWidget from './Widget';
 import WidgetRecoverableModules from './WidgetRecoverableModules';
-import { getWidgetComponentProps } from '../util';
-import { HIDDEN_CLASS } from '../util/constants';
-import useViewOnly from '../../../hooks/useViewOnly';
-import { useBreakpoint } from '../../../hooks/useBreakpoint';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { HIDDEN_CLASS } from '@/js/googlesitekit/widgets/util/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 function WidgetRenderer( { slug, OverrideComponent } ) {
 	const widget = useSelect( ( select ) =>

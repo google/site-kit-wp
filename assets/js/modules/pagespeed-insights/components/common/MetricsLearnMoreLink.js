@@ -24,17 +24,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '../../../../components/Link';
+import Link from '@/js/components/Link';
 
 export default function MetricsLearnMoreLink() {
 	return (
 		<Link
 			href="https://web.dev/user-centric-performance-metrics/#how-metrics-are-measured"
-			external
 			aria-label={ __(
 				'Learn more how metrics are measured.',
 				'google-site-kit'
 			) }
+			external
 		>
 			{ __( 'Learn more', 'google-site-kit' ) }
 		</Link>

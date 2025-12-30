@@ -25,15 +25,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { ProgressBar, SpinnerButton } from 'googlesitekit-components';
+import { ProgressBar } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import SettingsNotice, {
-	TYPE_WARNING,
-} from '../../../../../components/SettingsNotice';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { Cell, Grid, Row } from '../../../../../material-components/layout';
-import { API_STATE_READY, MODULES_ADSENSE } from '../../../datastore/constants';
-import { ACCOUNT_STATUS_READY, SITE_STATUS_READY } from '../../../util/status';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { Cell, Grid, Row } from '@/js/material-components/layout';
+import {
+	API_STATE_READY,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util/status';
+import Notice from '@/js/components/Notice';
 
 export default function StatusMigration() {
 	const accountID = useSelect( ( select ) =>
@@ -85,12 +89,12 @@ export default function StatusMigration() {
 		}
 	}, [ isReady, saveSettings, setAccountStatus, setSiteStatus ] );
 
-	const handleRedoSetup = async () => {
+	async function handleRedoSetup() {
 		await setAccountSetupComplete( false );
 		await setSiteSetupComplete( false );
 		await saveSettings();
 		navigateTo( adminReauthURL );
-	};
+	}
 
 	if ( isReady === true ) {
 		return null;
@@ -102,22 +106,18 @@ export default function StatusMigration() {
 				<Cell size={ 12 }>
 					{ isReady === undefined && <ProgressBar /> }
 					{ isReady === false && (
-						<SettingsNotice
-							className="googlesitekit-settings-notice-adsense-status-migration"
-							type={ TYPE_WARNING }
-							notice={ __(
+						<Notice
+							type={ Notice.TYPES.WARNING }
+							description={ __(
 								'You need to redo setup to complete AdSense configuration',
 								'google-site-kit'
 							) }
-							CTA={ () => (
-								<SpinnerButton
-									onClick={ handleRedoSetup }
-									disabled={ isNavigating }
-									isSaving={ isNavigating }
-								>
-									{ __( 'Redo setup', 'google-site-kit' ) }
-								</SpinnerButton>
-							) }
+							ctaButton={ {
+								label: __( 'Redo setup', 'google-site-kit' ),
+								onClick: handleRedoSetup,
+								disabled: isNavigating,
+								inProgress: isNavigating,
+							} }
 						/>
 					) }
 				</Cell>

@@ -30,18 +30,19 @@ import {
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
-} from '../../../../googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	CONTEXT_AMP,
-} from '../../datastore/constants';
-import { buildAccountWithContainers } from '../../datastore/__factories__';
+} from '@/js/modules/tagmanager/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { buildAccountWithContainers } from '@/js/modules/tagmanager/datastore/__factories__';
 import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {
@@ -75,7 +76,7 @@ describe( 'SetupMain', () => {
 
 		registry
 			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
+			.receiveGetModules( withActive( MODULE_SLUG_TAGMANAGER ) );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );

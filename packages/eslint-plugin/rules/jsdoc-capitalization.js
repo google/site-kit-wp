@@ -56,19 +56,20 @@ module.exports = iterateJsdoc(
 				// This is required because the deprecated tag returns the first section of
 				// the description text as "name".
 				tag.tag === 'deprecated' &&
-				tag.description &&
-				tag.description.length &&
+				tag.name &&
+				tag.name.length &&
 				// Ignore if the first character is a backtick; this is often used
 				// when marking return values like `true` or `null`.
 				// Also ignore parens and quotes.
-				! tag.source
-					.replace( '@deprecated ', '' )
-					.trim()
-					.match( /^[A-Z`("].*/gm )
+				! tag.name.trim().match( /^[A-Z`("].*/gm )
 			) {
+				const tagSource = tag.source[ 0 ].source.replace(
+					/^\s*\*\s*/, // Remove the leading asterisk and whitespace.
+					''
+				);
 				context.report( {
 					data: { name: jsdocNode.name },
-					message: `The description for \`${ tag.source }\` should start with a capital letter.`,
+					message: `The description for \`${ tagSource }\` should start with a capital letter.`,
 					node: jsdocNode,
 				} );
 

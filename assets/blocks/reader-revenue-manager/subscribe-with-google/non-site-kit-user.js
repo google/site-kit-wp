@@ -27,8 +27,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_EDIT_SITE } from '../common/constants';
-import { EditorButton } from '../common';
+import { CORE_EDIT_SITE } from '@/blocks/reader-revenue-manager/common/constants';
+import { EditorButton } from '@/blocks/reader-revenue-manager/common';
 import metadata from './block.json';
 
 function Edit() {

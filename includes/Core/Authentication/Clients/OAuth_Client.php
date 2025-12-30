@@ -18,8 +18,6 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
-use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Activity_Metrics;
-use Google\Site_Kit\Core\Dashboard_Sharing\Activity_Metrics\Active_Consumers;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -27,7 +25,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
-use WP_User;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -53,22 +50,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	private $owner_id;
 
 	/**
-	 * Activity_Metrics instance.
-	 *
-	 * @since 1.87.0
-	 * @var Activity_Metrics
-	 */
-	private $activity_metrics;
-
-	/**
-	 * Active_Consumers instance.
-	 *
-	 * @since 1.87.0
-	 * @var Active_Consumers
-	 */
-	private $active_consumers;
-
-	/**
 	 * Transients instance.
 	 *
 	 * @since 1.150.0
@@ -92,13 +73,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Credentials $credentials = null,
-		Google_Proxy $google_proxy = null,
-		Profile $profile = null,
-		Token $token = null,
-		Transients $transients = null
+		?Options $options = null,
+		?User_Options $user_options = null,
+		?Credentials $credentials = null,
+		?Google_Proxy $google_proxy = null,
+		?Profile $profile = null,
+		?Token $token = null,
+		?Transients $transients = null
 	) {
 		parent::__construct(
 			$context,
@@ -110,10 +91,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id         = new Owner_ID( $this->options );
-		$this->activity_metrics = new Activity_Metrics( $this->context, $this->user_options );
-		$this->active_consumers = new Active_Consumers( $this->user_options );
-		$this->transients       = $transients ?: new Transients( $this->context );
+		$this->owner_id   = new Owner_ID( $this->options );
+		$this->transients = $transients ?: new Transients( $this->context );
 	}
 
 	/**
@@ -133,10 +112,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
-		$active_consumers = $this->activity_metrics->get_for_refresh_token();
-
 		try {
-			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'], $active_consumers );
+			$token_response = $this->get_client()->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -147,7 +124,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
-		$this->active_consumers->delete();
 		$this->set_token( $token_response );
 	}
 
@@ -222,7 +198,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return string[] Filtered $scopes list, only including scopes that are not satisfied.
 	 */
-	public function get_unsatisfied_scopes( array $scopes = null ) {
+	public function get_unsatisfied_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
@@ -247,7 +223,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *                         Default is the list of required scopes.
 	 * @return bool True if all $scopes are satisfied, false otherwise.
 	 */
-	public function has_sufficient_scopes( array $scopes = null ) {
+	public function has_sufficient_scopes( ?array $scopes = null ) {
 		if ( null === $scopes ) {
 			$scopes = $this->get_required_scopes();
 		}
@@ -439,13 +415,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
@@ -465,13 +441,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 			exit();
 		} catch ( Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
 		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
@@ -530,26 +506,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->owner_id->set( $current_user_id );
 		}
 
-		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
-
-		if ( $redirect_url ) {
-			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
-
-			if ( $url_query ) {
-				parse_str( $url_query, $query_args );
-			}
-
-			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
-
-			if ( false === $reauth && empty( $query_args['notification'] ) ) {
-				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
-			}
-			$this->user_options->delete( self::OPTION_REDIRECT_URL );
-			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
-		} else {
-			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
-		}
+		$redirect_url = $this->get_authorize_user_redirect_url();
 
 		// Store the redirect URL in transients using the authorization code hash as the key.
 		// This prevents duplicate setup attempts if the user clicks the setup CTA button multiple times,
@@ -676,7 +633,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *
 	 * @since 1.77.0
 	 */
-	private function authorize_user_redirect_url() {
+	private function get_authorize_user_redirect_url_for_error() {
 		$error_redirect_url = $this->user_options->get( self::OPTION_ERROR_REDIRECT_URL );
 
 		if ( $error_redirect_url ) {
@@ -690,13 +647,37 @@ final class OAuth_Client extends OAuth_Client_Base {
 	}
 
 	/**
-	 * Adds a user to the active consumers list.
+	 * Return the URL to redirect the user to after authorization, including important query params.
 	 *
-	 * @since 1.87.0
-	 *
-	 * @param WP_User $user User object.
+	 * @since n.e.x.t
 	 */
-	public function add_active_consumer( WP_User $user ) {
-		$this->active_consumers->add( $user->ID, $user->roles );
+	private function get_authorize_user_redirect_url() {
+		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
+
+		if ( $redirect_url ) {
+			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
+
+			if ( $url_query ) {
+				parse_str( $url_query, $query_args );
+			}
+
+			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
+
+			if ( false === $reauth && empty( $query_args['notification'] ) ) {
+				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+			}
+
+			if ( $this->context->input()->filter( INPUT_GET, 'searchConsoleSetupSuccess' ) ) {
+				$redirect_url = add_query_arg( array( 'searchConsoleSetupSuccess' => 'true' ), $redirect_url );
+			}
+
+			$this->user_options->delete( self::OPTION_REDIRECT_URL );
+			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
+		} else {
+			// No redirect_url is set, use default page.
+			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+		}
+
+		return $redirect_url;
 	}
 }

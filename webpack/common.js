@@ -25,7 +25,6 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
-const TerserPlugin = require( 'terser-webpack-plugin' );
 const features = require( '../feature-flags.json' );
 
 const rootDir = path.resolve( __dirname, '..' );
@@ -36,14 +35,15 @@ exports.formattedFeaturesToPHPArray = features
 	.map( ( feature ) => `'${ feature }'` )
 	.join( ',' );
 
-const projectPath = ( relativePath ) => {
+function projectPath( relativePath ) {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
-};
+}
 
 exports.projectPath = projectPath;
 
 exports.resolve = {
 	alias: {
+		'@': path.resolve( rootDir, 'assets' ),
 		'@wordpress/api-fetch__non-shim': require.resolve(
 			'@wordpress/api-fetch'
 		),
@@ -53,6 +53,7 @@ exports.resolve = {
 		),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 	},
+	extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs' ],
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
@@ -89,12 +90,12 @@ exports.manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( rootDir, 'dist/manifest.php' ),
 	seed: manifestSeed,
 	generate( seedObj, files ) {
-		const entry = ( filename, hash ) => {
+		function entry( filename, hash ) {
 			if ( mode === 'production' ) {
 				return [ filename, null ];
 			}
 			return [ filename, hash ];
-		};
+		}
 		files.forEach( ( file ) => {
 			if ( file.name.match( /\.css$/ ) ) {
 				// CSS file paths contain the destination directory which needs to be stripped
@@ -163,19 +164,23 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
-const noAMDParserRule = { parser: { amd: false } };
-
-exports.noAMDParserRule = noAMDParserRule;
-
 const svgRule = {
 	test: /\.svg$/,
-	use: [
+	oneOf: [
 		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+			resourceQuery: /url/,
+			use: 'url-loader',
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// strip width & height to allow manual override using props
+						dimensions: false,
+					},
+				},
+			],
 		},
 	],
 };
@@ -183,10 +188,9 @@ const svgRule = {
 exports.svgRule = svgRule;
 
 exports.createRules = ( mode ) => [
-	noAMDParserRule,
 	svgRule,
 	{
-		test: /\.js$/,
+		test: /\.tsx?$/,
 		exclude: /node_modules/,
 		use: [
 			{
@@ -196,35 +200,31 @@ exports.createRules = ( mode ) => [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@babel/preset-typescript',
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
 				},
 			},
 		],
-		...noAMDParserRule,
 	},
 	{
-		test: /\.mjs$/,
-		include: /node_modules/,
-		type: 'javascript/auto',
-	},
-];
-
-exports.createMinimizerRules = ( mode ) => [
-	new TerserPlugin( {
-		parallel: true,
-		sourceMap: mode !== 'production',
-		cache: true,
-		terserOptions: {
-			// We preserve function names that start with capital letters as
-			// they're _likely_ component names, and these are useful to have
-			// in tracebacks and error messages.
-			keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-			output: {
-				comments: /translators:/i,
+		test: /\.jsx?$/,
+		exclude: /node_modules/,
+		use: [
+			{
+				loader: 'babel-loader',
+				options: {
+					sourceMap: mode !== 'production',
+					babelrc: false,
+					configFile: false,
+					cacheDirectory: true,
+					presets: [ '@wordpress/babel-preset-default' ],
+				},
 			},
-		},
-		extractComments: false,
-	} ),
+		],
+	},
 ];
 
 // Get the app version from the google-site-kit.php file - optional chaining operator not supported here

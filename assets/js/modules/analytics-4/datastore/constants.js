@@ -31,7 +31,7 @@ export const FORM_SETUP = 'analyticsSetup';
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 // Date range offset days for Analytics 4 report requests.
-export const DATE_RANGE_OFFSET = 1;
+export const DATE_RANGE_OFFSET = 0;
 
 export const GTM_SCOPE = 'https://www.googleapis.com/auth/tagmanager.readonly';
 
@@ -236,3 +236,13 @@ export const AUDIENCE_TYPE_SORT_ORDER = {
 
 export const AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX =
 	'audience-selection-panel-expirable-new-badge-';
+
+export const RESOURCE_TYPE_AUDIENCE = 'audience';
+export const RESOURCE_TYPE_CUSTOM_DIMENSION = 'customDimension';
+export const RESOURCE_TYPE_PROPERTY = 'property';
+
+export const RESOURCE_TYPES = [
+	RESOURCE_TYPE_AUDIENCE,
+	RESOURCE_TYPE_CUSTOM_DIMENSION,
+	RESOURCE_TYPE_PROPERTY,
+];

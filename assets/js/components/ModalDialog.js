@@ -40,12 +40,12 @@ import {
 	DialogTitle,
 	SpinnerButton,
 } from 'googlesitekit-components';
-import ExclamationIcon from '../../svg/icons/warning.svg';
+import ExclamationIcon from '@/svg/icons/warning.svg';
 
 function ModalDialog( {
 	className = '',
 	dialogActive = false,
-	handleDialog = null,
+	handleCancel = null,
 	onOpen = null,
 	onClose = null,
 	title = null,
@@ -53,7 +53,7 @@ function ModalDialog( {
 	handleConfirm,
 	subtitle,
 	confirmButton = null,
-	dependentModules,
+	notes = [],
 	danger = false,
 	inProgress = false,
 	small = false,
@@ -101,30 +101,39 @@ function ModalDialog( {
 						</ul>
 					</section>
 				) }
-				{ dependentModules && (
-					<p className="mdc-dialog__dependencies">
-						{ createInterpolateElement(
-							sprintf(
-								/* translators: %s is replaced with the dependent modules. */
-								__(
-									'<strong>Note:</strong> %s',
-									'google-site-kit'
-								),
-								dependentModules
-							),
-							{
-								strong: <strong />,
-							}
-						) }
-					</p>
+				{ notes.length > 0 && (
+					<section className="mdc-dialog__notes">
+						{ notes.map( ( Note, index ) => (
+							<p
+								className="mdc-dialog__note"
+								key={ `note-${ index }` }
+							>
+								{ typeof Note === 'string' &&
+									createInterpolateElement(
+										sprintf(
+											/* translators: %s is replaced with some sub-note text. */
+											__(
+												'<strong>Note:</strong> %s',
+												'google-site-kit'
+											),
+											Note
+										),
+										{
+											strong: <strong />,
+										}
+									) }
+								{ typeof Note === 'function' && <Note /> }
+							</p>
+						) ) }
+					</section>
 				) }
 			</DialogContent>
 			<DialogFooter>
 				<Button
 					className="mdc-dialog__cancel-button"
-					tertiary
-					onClick={ handleDialog }
+					onClick={ handleCancel }
 					disabled={ inProgress }
+					tertiary
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }
 				</Button>
@@ -163,7 +172,11 @@ ModalDialog.propTypes = {
 	onOpen: PropTypes.func,
 	onClose: PropTypes.func,
 	title: PropTypes.string,
+	provides: PropTypes.arrayOf( PropTypes.string ),
 	confirmButton: PropTypes.string,
+	notes: PropTypes.arrayOf(
+		PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] )
+	),
 	danger: PropTypes.bool,
 	small: PropTypes.bool,
 	medium: PropTypes.bool,

@@ -29,13 +29,15 @@ import {
 	commonActions,
 	combineStores,
 	createRegistrySelector,
+	createReducer,
 } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
-import { isValidAccountID } from '../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { determineSiteFromDomain } from '../util/site';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { isValidAccountID } from '@/js/modules/adsense/util';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { determineSiteFromDomain } from '@/js/modules/adsense/util/site';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 // Actions
 const RESET_SITES = 'RESET_SITES';
@@ -45,7 +47,7 @@ const fetchGetSitesStore = createFetchStore( {
 	controlCallback: ( { accountID } ) => {
 		return get(
 			'modules',
-			'adsense',
+			MODULE_SLUG_ADSENSE,
 			'sites',
 			{ accountID },
 			{
@@ -53,19 +55,12 @@ const fetchGetSitesStore = createFetchStore( {
 			}
 		);
 	},
-	reducerCallback: ( state, sites, { accountID } ) => {
-		if ( ! Array.isArray( sites ) ) {
-			return state;
+	reducerCallback: createReducer( ( state, sites, { accountID } ) => {
+		if ( Array.isArray( sites ) ) {
+			state.sites = state.sites || {};
+			state.sites[ accountID ] = sites;
 		}
-
-		return {
-			...state,
-			sites: {
-				...state.sites,
-				[ accountID ]: [ ...sites ],
-			},
-		};
-	},
+	} ),
 	argsToParams: ( accountID ) => {
 		return { accountID };
 	},
@@ -104,8 +99,8 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
-	switch ( type ) {
+const baseReducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RESET_SITES: {
 			const {
 				siteID,
@@ -114,25 +109,24 @@ const baseReducer = ( state, { type } ) => {
 				accountSetupComplete,
 				siteSetupComplete,
 			} = state.savedSettings || {};
-			return {
-				...state,
-				sites: initialState.sites,
-				settings: {
-					...( state.settings || {} ),
-					siteID,
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
+
+			state.sites = initialState.sites;
+
+			state.settings = {
+				...( state.settings || {} ),
+				siteID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
 			};
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getSites( accountID ) {

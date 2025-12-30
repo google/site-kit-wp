@@ -21,9 +21,15 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_TAGMANAGER } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import {
+	submitChanges,
+	validateCanSubmitChanges,
+	rollbackChanges,
+	validateHaveSettingsChanged,
+} from './settings';
 
-let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
+let baseModuleStore = Modules.createModuleStore( MODULE_SLUG_TAGMANAGER, {
 	ownedSettingsSlugs: [
 		'accountID',
 		'ampContainerID',
@@ -42,7 +48,9 @@ let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 		'ownerID',
 	],
 	submitChanges,
+	rollbackChanges,
 	validateCanSubmitChanges,
+	validateHaveSettingsChanged,
 } );
 
 // Rename generated pieces to adhere to our convention.

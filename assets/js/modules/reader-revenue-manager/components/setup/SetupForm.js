@@ -32,20 +32,20 @@ import { __ } from '@wordpress/i18n';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '../../../../components/Link';
-import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import Link from '@/js/components/Link';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
-	READER_REVENUE_MANAGER_MODULE_SLUG,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
-} from '../../datastore/constants';
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	ProductIDSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
-} from '../common';
+} from '@/js/modules/reader-revenue-manager/components/common';
 
 export default function SetupForm( { onCompleteSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -96,14 +96,14 @@ export default function SetupForm( { onCompleteSetup } ) {
 
 	// Automatically pre-select a publication.
 	useEffect( () => {
-		const autoSelectPublication = async () => {
+		async function autoSelectPublication() {
 			const matchedPublication = await findMatchedPublication();
 
 			if ( matchedPublication ) {
 				selectPublication( matchedPublication );
 				autoSelectProductID( matchedPublication );
 			}
-		};
+		}
 
 		if ( ! publicationID ) {
 			autoSelectPublication();
@@ -115,18 +115,14 @@ export default function SetupForm( { onCompleteSetup } ) {
 		selectPublication,
 	] );
 
-	if ( ! publications ) {
-		return null;
-	}
-
 	return (
 		<form onSubmit={ submitForm }>
 			<StoreErrorNotices
-				moduleSlug={ READER_REVENUE_MANAGER_MODULE_SLUG }
+				moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
 			<p className="googlesitekit-margin-bottom-0">
-				{ publications.length === 1
+				{ publications?.length === 1
 					? __(
 							'Site Kit will connect your existing publication',
 							'google-site-kit'
@@ -148,9 +144,9 @@ export default function SetupForm( { onCompleteSetup } ) {
 			</div>
 			<PublicationOnboardingStateNotice />
 			<Link
-				external
 				href={ managePublicationsURL }
 				onClick={ handleLinkClick }
+				external
 			>
 				{ __(
 					'Manage publications in Publisher Center',

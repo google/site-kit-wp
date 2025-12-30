@@ -24,6 +24,6 @@ class Available_ToolsTest extends TestCase {
 
 		$tools->register();
 
-		$this->assertTrue( has_action( 'tool_box' ) );
+		$this->assertTrue( has_action( 'tool_box' ), 'Available_Tools should register the tool_box action.' );
 	}
 }

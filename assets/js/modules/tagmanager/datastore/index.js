@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import { MODULES_TAGMANAGER } from './constants';
 import baseModuleStore from './base';
 import accounts from './accounts';
@@ -50,8 +50,8 @@ export const {
 	selectors,
 } = store;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( MODULES_TAGMANAGER, store );
-};
+}
 
 export default store;

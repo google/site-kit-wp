@@ -18,3 +18,4 @@
 
 export { default as SignInWithGoogleSetupCTABanner } from './SignInWithGoogleSetupCTABanner';
 export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
+export { default as CompatibilityWarningSubtleNotification } from './CompatibilityWarningSubtleNotification';

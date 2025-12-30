@@ -19,30 +19,31 @@
 /**
  * Internal dependencies
  */
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { KEY_METRICS_WIDGETS } from '../../../../components/KeyMetrics/key-metrics-widgets';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import TopRecentTrendingPagesWidget, {
 	getDateRange,
 	getReportOptions,
 } from './TopRecentTrendingPagesWidget';
-import { provideCustomDimensionError } from '../../utils/custom-dimensions';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import {
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 
 const KM_WIDGET_DEF =
 	KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ];
@@ -67,6 +68,7 @@ function selectPageTitlesReportOptions() {
 		metrics: [ { name: 'screenPageViews' } ],
 		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
 		limit: 15,
+		reportID: 'analytics-4_get-page-titles_store:selector_options',
 	};
 }
 
@@ -108,9 +110,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/TopRecentTrendingPagesWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -270,10 +270,10 @@ export default {
 	component: TopRecentTrendingPagesWidget,
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -305,7 +305,7 @@ export default {
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

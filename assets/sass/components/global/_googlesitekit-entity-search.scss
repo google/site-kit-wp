@@ -128,8 +128,10 @@
 		.autocomplete__option--focused,
 		.autocomplete__option:hover,
 		.autocomplete__option[data-highlighted] {
-			background-color: $c-entity-search-autocomplete-bg-hover;
+			background-color: $c-interactive-tertiary-hover;
 			cursor: pointer;
+			opacity: 1;
+			transition: none;
 		}
 
 		// Removes hover effect for `No results found`
@@ -156,7 +158,6 @@
 
 		.mdc-button {
 			color: $c-entity-search-button;
-			font-weight: $fw-normal;
 			letter-spacing: 0.3px;
 			min-width: auto;
 			outline: none;
@@ -165,13 +166,15 @@
 			&:hover,
 			&:active,
 			&:focus {
-				background-color: $c-alabaster;
+				background-color: unset;
 				color: rgba($c-black, 0.87);
 				text-decoration: none;
 
 				&::before,
 				&::after {
-					background-color: rgba($c-black, 0.87);
+					background-color: $c-interactive-tertiary-hover;
+					opacity: 1;
+					transition: none;
 				}
 			}
 		}

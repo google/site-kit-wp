@@ -26,16 +26,17 @@ import invariant from 'invariant';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
-} from '../../../googlesitekit/data/create-settings-store';
-import { createStrictSelect } from '../../../googlesitekit/data/utils';
+} from '@/js/googlesitekit/data/create-settings-store';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import {
 	isValidPublicationID,
 	isValidOnboardingState,
 	isValidSnippetMode,
-} from '../utils/validation';
+} from '@/js/modules/reader-revenue-manager/utils/validation';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
@@ -147,7 +148,7 @@ export async function submitChanges( { dispatch, select } ) {
 		}
 	}
 
-	await invalidateCache( 'modules', 'reader-revenue-manager' );
+	await invalidateCache( 'modules', MODULE_SLUG_READER_REVENUE_MANAGER );
 
 	return {};
 }

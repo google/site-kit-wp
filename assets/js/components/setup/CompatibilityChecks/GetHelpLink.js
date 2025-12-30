@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Link from '../../Link';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
 	ERROR_API_UNAVAILABLE,

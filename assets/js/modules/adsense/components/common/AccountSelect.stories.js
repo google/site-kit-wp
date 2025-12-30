@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '../../datastore/__fixtures__';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import AccountSelect from './AccountSelect';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 

@@ -17,22 +17,24 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
-} from '../../utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '../../../../../../storybook/utils/zeroReports';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '../../../../util/errors';
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const reportOptions = {
 	compareStartDate: '2020-07-14',
@@ -43,6 +45,7 @@ const reportOptions = {
 	metrics: [ { name: 'engagedSessions' } ],
 	orderBy: 'engagedSessions',
 	limit: 1,
+	reportID: 'analytics-4_engaged-traffic-source-widget_widget_reportOptions',
 };
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'test' )(
@@ -64,9 +67,7 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, reportOptions );
 	},
 };
-Ready.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSourceWidget/Ready',
-};
+Ready.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -118,10 +119,7 @@ Error.args = {
 };
 // Since the "Error" state is the same for all KMW tiles, this is the sole scenario
 // and should not be added to any other generic `MetricTile___` or KMW component.
-Error.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/Error',
-	delay: 250,
-};
+Error.scenario = {};
 
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
@@ -150,19 +148,27 @@ InsufficientPermissions.args = {
 // Since the "Insufficient Permissions Error" state is the same for all KMW tiles,
 // this is the sole scenario and should not be added to any other generic
 // `MetricTile___` or KMW component.
-InsufficientPermissions.scenario = {
-	label: 'KeyMetrics/EngagedTrafficSource/InsufficientPermissions',
-	delay: 250,
+InsufficientPermissions.scenario = {};
+
+export const NoDataInComparisonDateRange = Template.bind( {} );
+NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
+NoDataInComparisonDateRange.args = {
+	setupRegistry: ( registry ) => {
+		provideAnalyticsReportWithoutDateRangeData( registry, reportOptions, {
+			emptyRowBehavior: 'remove',
+		} );
+	},
 };
+NoDataInComparisonDateRange.scenario = {};
 
 export default {
 	title: 'Key Metrics/EngagedTrafficSourceWidget',
 	decorators: [
 		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'analytics-4',
+						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
 					},
@@ -186,13 +192,13 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webDataStreamID );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

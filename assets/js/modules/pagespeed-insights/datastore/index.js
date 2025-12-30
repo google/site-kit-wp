@@ -27,8 +27,8 @@ import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const store = combineStores( baseModuleStore, report, service );
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, store );
-};
+}
 
 export default store;

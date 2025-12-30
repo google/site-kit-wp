@@ -30,15 +30,18 @@ import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
 } from './transform-case';
-import { stringifyObject } from '../../util';
+import { stringifyObject } from '@/js/util';
+import { createReducer } from 'googlesitekit-data';
 
-const defaultReducerCallback = ( state ) => state;
+function defaultReducerCallback( state ) {
+	return state;
+}
 
-const defaultArgsToParams = () => {
+function defaultArgsToParams() {
 	return {};
-};
+}
 
-const defaultValidateParams = () => {};
+function defaultValidateParams() {}
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -50,16 +53,16 @@ const { clearError, receiveError } = errorStoreActions;
  * single fetch action.
  *
  * This function returns a partial store object with the following:
- * * action creators to fetch and to receive the data
- * * control to issue the API request
- * * reducer to set API request flag and receive the response
- * * selector to check whether the API request is in progress via a flag
+ * - action creators to fetch and to receive the data
+ * - control to issue the API request
+ * - reducer to set API request flag and receive the response
+ * - selector to check whether the API request is in progress via a flag
  *
  * The names of the pieces are based on the baseName provided.
  * For example, if baseName is 'saveSettings':
- * * The fetch action creator is called 'fetchSaveSettings'.
- * * The receive action creator is called 'receiveSaveSettings'.
- * * The fetching selector is called 'isFetchingSaveSettings'.
+ * - The fetch action creator is called 'fetchSaveSettings'.
+ * - The receive action creator is called 'receiveSaveSettings'.
+ * - The fetching selector is called 'isFetchingSaveSettings'.
  *
  * All parts of the returned store objects should be considered internal. A
  * public action or selector should be implemented to actually call the
@@ -67,13 +70,13 @@ const { clearError, receiveError } = errorStoreActions;
  *
  * For example, if the fetch store is intended for an API-based
  * action 'storeMySetting':
- * * The basename passed should be 'storeMySetting'.
- * * The action 'storeMySetting' should call 'fetchStoreMySetting'.
+ * - The basename passed should be 'storeMySetting'.
+ * - The action 'storeMySetting' should call 'fetchStoreMySetting'.
  *
  * Or, if the fetch store is intended for an API-based selector
  * 'getSomeData':
- * * The baseName passed should be 'getSomeData'.
- * * The resolver for 'getSomeData' should call 'fetchGetSomeData'.
+ * - The baseName passed should be 'getSomeData'.
+ * - The resolver for 'getSomeData' should call 'fetchGetSomeData'.
  *
  * @since 1.10.0
  * @private
@@ -96,13 +99,13 @@ const { clearError, receiveError } = errorStoreActions;
  *                                          Any invalid parameters should cause a respective error to be thrown.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export const createFetchStore = ( {
+export function createFetchStore( {
 	baseName,
 	controlCallback,
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
-} ) => {
+} ) {
 	invariant( baseName, 'baseName is required.' );
 	invariant(
 		'function' === typeof controlCallback,
@@ -219,17 +222,13 @@ export const createFetchStore = ( {
 		},
 	};
 
-	const reducer = ( state, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case START_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: true,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = true;
+				return state;
 			}
 
 			case RECEIVE: {
@@ -239,31 +238,21 @@ export const createFetchStore = ( {
 
 			case FINISH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
+				return state;
 			}
 
 			case CATCH_FETCH: {
 				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
-			}
-
-			default: {
+				state[ isFetching ] = state[ isFetching ] || {};
+				state[ isFetching ][ stringifyObject( params ) ] = false;
 				return state;
 			}
+			default:
+				return state;
 		}
-	};
+	} );
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
@@ -293,4 +282,4 @@ export const createFetchStore = ( {
 		resolvers: {},
 		selectors,
 	};
-};
+}

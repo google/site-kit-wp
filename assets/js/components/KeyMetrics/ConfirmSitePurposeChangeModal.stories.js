@@ -26,37 +26,34 @@ import {
 	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTIONS_PURPOSE,
-} from '../user-input/util/constants';
+} from '@/js/components/user-input/util/constants';
 
 function Template( args ) {
-	const handleDialog = () => {};
+	function handleDialog() {}
 
 	return (
 		<ConfirmSitePurposeChangeModal
-			dialogActive
 			handleDialog={ handleDialog }
 			{ ...args }
+			dialogActive
 		/>
 	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'ConfirmSitePurposeChangeModal';
-Default.scenario = {
-	// eslint-disable-next-line sitekit/no-storybook-scenario-label
-	label: 'KeyMetrics/ConfirmSitePurposeChangeModal',
-};
+Default.scenario = {};
 
 export default {
 	title: 'Key Metrics/Key Metrics Confirm Site Purpose Change Modal',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				registry
 					.dispatch( CORE_FORMS )
 					.setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
@@ -73,7 +70,7 @@ export default {
 					.dispatch( CORE_USER )
 					.setUserInputSetting( 'purpose', [ 'sell_products' ] );
 				provideSiteInfo( registry );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

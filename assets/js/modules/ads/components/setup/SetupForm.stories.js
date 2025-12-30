@@ -19,18 +19,19 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import ModuleSetup from '../../../../components/setup/ModuleSetup';
+import ModuleSetup from '@/js/components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../../../googlesitekit/constants';
-import { Provider as ViewContextProvider } from '../../../../components/Root/ViewContextContext';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (
@@ -44,9 +45,7 @@ function Template( { setupRegistry = () => {} } ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Default',
-};
+Default.scenario = {};
 
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
@@ -54,7 +53,7 @@ AdBlocker.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -62,9 +61,7 @@ AdBlocker.args = {
 		registry.dispatch( CORE_USER ).receiveIsAdBlockerActive( true );
 	},
 };
-AdBlocker.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/AdBlocker',
-};
+AdBlocker.scenario = {};
 
 export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty';
@@ -72,7 +69,7 @@ Empty.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -84,9 +81,7 @@ Empty.args = {
 		registry.dispatch( MODULES_ADS ).setSettings( { conversionID: '' } );
 	},
 };
-Empty.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Empty',
-};
+Empty.scenario = {};
 
 export const Invalid = Template.bind( {} );
 Invalid.storyName = 'Invalid';
@@ -94,7 +89,7 @@ Invalid.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: true,
 				connected: true,
 			},
@@ -111,9 +106,7 @@ Invalid.args = {
 			.setSettings( { conversionID: 'AW-ABCDEFGHIJ' } );
 	},
 };
-Invalid.scenario = {
-	label: 'Modules/Ads/Setup/SetupForm/Invalid',
-};
+Invalid.scenario = {};
 
 export const Initial = Template.bind( {} );
 Initial.storyName = 'Initial';
@@ -121,7 +114,7 @@ Initial.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
 			{
-				slug: 'ads',
+				slug: MODULE_SLUG_ADS,
 				active: false,
 				connected: false,
 			},
@@ -138,10 +131,10 @@ export default {
 	title: 'Modules/Ads/Setup/SetupForm',
 	decorators: [
 		( Story ) => {
-			const setupRegistry = ( registry ) => {
+			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
-						slug: 'ads',
+						slug: MODULE_SLUG_ADS,
 						active: true,
 						connected: true,
 					},
@@ -159,7 +152,7 @@ export default {
 				registry
 					.dispatch( MODULES_ADS )
 					.setSettings( { conversionID: 'AW-123456789' } );
-			};
+			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>

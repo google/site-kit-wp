@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\HTTP\Middleware;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
 use WP_HTTP_Proxy;
 
@@ -148,6 +149,11 @@ final class Client_Factory {
 
 			$config['proxy'] = "{$auth}{$http_proxy->host()}:{$http_proxy->port()}";
 		}
+
+		// Respect WordPress HTTP request blocking settings.
+		$config['handler']->push(
+			Middleware::block_external_request()
+		);
 
 		/**
 		 * Filters the IP version to force hostname resolution with.

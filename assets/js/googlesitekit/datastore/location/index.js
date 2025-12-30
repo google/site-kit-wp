@@ -32,8 +32,8 @@ export const reducer = store.reducer;
 export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
-export const registerStore = ( registry ) => {
+export function registerStore( registry ) {
 	registry.registerStore( CORE_LOCATION, store );
-};
+}
 
 export default store;

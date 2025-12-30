@@ -34,15 +34,15 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamSelection,
-} from '../../utils/validation';
-import { trackEvent } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+} from '@/js/modules/analytics-4/utils/validation';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function WebDataStreamSelect( props ) {
 	const { hasModuleAccess, isDisabled, className, onChange } = props;
@@ -55,7 +55,7 @@ export default function WebDataStreamSelect( props ) {
 	);
 
 	const webDataStreams = useSelect( ( select ) =>
-		isValidPropertyID( propertyID ) && hasModuleAccess !== false
+		isValidPropertyID( propertyID ) && hasModuleAccess
 			? select( MODULES_ANALYTICS_4 ).getWebDataStreams( propertyID )
 			: []
 	);
@@ -111,7 +111,13 @@ export default function WebDataStreamSelect( props ) {
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
 	} else if ( isLoading ) {
-		return <ProgressBar smallHeight={ 80 } desktopHeight={ 88 } small />;
+		return (
+			<ProgressBar
+				mobileVerticalSpacing={ 76 }
+				desktopVerticalSpacing={ 84 }
+				small
+			/>
+		);
 	}
 
 	const isValidSelection =
@@ -126,7 +132,7 @@ export default function WebDataStreamSelect( props ) {
 					'googlesitekit-analytics-4__select-webdatastream',
 					className
 				) }
-				label={ __( 'Web Data Stream', 'google-site-kit' ) }
+				label={ __( 'Web data stream', 'google-site-kit' ) }
 				value={ measurementID }
 				enhanced
 				outlined
@@ -146,7 +152,7 @@ export default function WebDataStreamSelect( props ) {
 					'mdc-select--invalid': ! isValidSelection,
 				}
 			) }
-			label={ __( 'Web Data Stream', 'google-site-kit' ) }
+			label={ __( 'Web data stream', 'google-site-kit' ) }
 			value={ webDataStreamID }
 			onEnhancedChange={ onWebDataStreamChange }
 			disabled={ isDisabled || ! isValidPropertySelection( propertyID ) }

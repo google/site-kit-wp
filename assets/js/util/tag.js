@@ -31,7 +31,7 @@ import { addQueryArgs, isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
+import { AMP_MODE_SECONDARY } from '@/js/googlesitekit/datastore/site/constants';
 
 /**
  * Extracts a tag from the given HTML string matched by given matchers.
@@ -42,7 +42,7 @@ import { AMP_MODE_SECONDARY } from '../googlesitekit/datastore/site/constants';
  * @param {Array}  tagMatchers An array of the matchers to use.
  * @return {(string|boolean)} The tag id if found, otherwise false.
  */
-export const extractExistingTag = ( html, tagMatchers ) => {
+export function extractExistingTag( html, tagMatchers ) {
 	const matchingPattern = tagMatchers.find( ( pattern ) =>
 		pattern.test( html )
 	);
@@ -52,7 +52,7 @@ export const extractExistingTag = ( html, tagMatchers ) => {
 	}
 
 	return false;
-};
+}
 
 /**
  * Gets the existing tag URLs.

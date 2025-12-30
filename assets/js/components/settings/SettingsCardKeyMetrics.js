@@ -26,17 +26,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { WEEK_IN_SECONDS, trackEvent } from '../../util';
-import ConversionReportingSettingsSubtleNotification from '../KeyMetrics/ConversionReportingSettingsSubtleNotification';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
+import ConversionReportingSettingsSubtleNotification from '@/js/components/KeyMetrics/ConversionReportingSettingsSubtleNotification';
 import SettingsKeyMetrics from './SettingsKeyMetrics';
-import UserInputPreview from '../user-input/UserInputPreview';
-import Layout from '../layout/Layout';
-import { Grid, Cell, Row } from '../../material-components';
-import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
-import PreviewBlock from '../PreviewBlock';
-import { useInView } from '../../hooks/useInView';
-import useViewContext from '../../hooks/useViewContext';
+import UserInputPreview from '@/js/components/user-input/UserInputPreview';
+import Layout from '@/js/components/layout/Layout';
+import { Grid, Cell, Row } from '@/js/material-components';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { useInView } from '@/js/hooks/useInView';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
@@ -89,10 +89,10 @@ export default function SettingsCardKeyMetrics() {
 							<Row>
 								<Cell size={ 12 }>
 									<UserInputPreview
-										settingsView
 										loading={
 											isGetUserInputSettingsLoading
 										}
+										settingsView
 									/>
 								</Cell>
 							</Row>

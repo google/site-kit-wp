@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { createRegistryControl } from 'googlesitekit-data';
-import { createValidationSelector } from '../data/utils';
-import { actions as errorStoreActions } from '../data/create-error-store';
+import { createReducer, createRegistryControl } from 'googlesitekit-data';
+import { createValidationSelector } from '@/js/googlesitekit/data/utils';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -105,27 +105,20 @@ export function createSubmitChangesStore( args ) {
 		},
 	};
 
-	const reducer = ( state, { type } ) => {
+	const reducer = createReducer( ( state, { type } ) => {
 		switch ( type ) {
-			case START_SUBMIT_CHANGES: {
-				return {
-					...state,
-					isDoingSubmitChanges: true,
-				};
-			}
+			case START_SUBMIT_CHANGES:
+				state.isDoingSubmitChanges = true;
+				break;
 
-			case FINISH_SUBMIT_CHANGES: {
-				return {
-					...state,
-					isDoingSubmitChanges: false,
-				};
-			}
+			case FINISH_SUBMIT_CHANGES:
+				state.isDoingSubmitChanges = false;
+				break;
 
-			default: {
-				return state;
-			}
+			default:
+				break;
 		}
-	};
+	} );
 
 	const controls = {
 		[ SUBMIT_CHANGES ]: createRegistryControl(

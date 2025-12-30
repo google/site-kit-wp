@@ -28,7 +28,7 @@ import { getQueryArg } from '@wordpress/url';
 import {
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-} from '../../googlesitekit/widgets/default-areas';
+} from '@/js/googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -42,31 +42,52 @@ import {
 	DashboardTopEarningPagesWidgetGA4,
 } from './components/dashboard';
 import { ModuleOverviewWidget } from './components/module';
-import AdSenseIcon from '../../../svg/graphics/adsense.svg';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from './datastore/constants';
+import { MODULE_SLUG_ADSENSE } from './constants';
 import { TopEarningContentWidget } from './components/widgets';
 import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '../analytics-4/datastore/constants';
-import { NOTIFICATION_AREAS } from '../../googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '../../googlesitekit/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
+	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
+} from '@/js/components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
 export { registerStore } from './datastore';
 
-export const registerModule = ( modules ) => {
-	modules.registerModule( 'adsense', {
+export function registerModule( modules ) {
+	modules.registerModule( MODULE_SLUG_ADSENSE, {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 		SetupComponent: SetupMain,
+		DashboardMainEffectComponent,
 		Icon: AdSenseIcon,
 		features: [
 			__(
@@ -102,9 +123,9 @@ export const registerModule = ( modules ) => {
 			};
 		},
 	} );
-};
+}
 
-export const registerWidgets = ( widgets ) => {
+export function registerWidgets( widgets ) {
 	widgets.registerWidget(
 		'adBlockingRecovery',
 		{
@@ -112,7 +133,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -127,7 +148,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.QUARTER,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
 				const isViewOnly = ! select( CORE_USER ).isAuthenticated();
 
@@ -159,7 +180,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -171,7 +192,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -183,7 +204,7 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.FULL ],
 			priority: 2,
 			wrapWidget: false,
-			modules: [ 'adsense' ],
+			modules: [ MODULE_SLUG_ADSENSE ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
@@ -196,17 +217,17 @@ export const registerWidgets = ( widgets ) => {
 			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 3,
 			wrapWidget: false,
-			modules: [ 'adsense', 'analytics-4' ],
+			modules: [ MODULE_SLUG_ADSENSE, MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
-};
+}
 
 export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
 		Component: AdBlockingRecoverySetupSuccessNotification,
 		priority: 10,
-		areaSlug: NOTIFICATION_AREAS.BANNERS_BELOW_NAV,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: async ( { select, resolveSelect } ) => {
 			// Check the query arg first as the simplest condition using global location.
@@ -216,7 +237,7 @@ export const ADSENSE_NOTIFICATIONS = {
 			}
 
 			const { isModuleConnected } = resolveSelect( CORE_MODULES );
-			if ( ! ( await isModuleConnected( 'adsense' ) ) ) {
+			if ( ! ( await isModuleConnected( MODULE_SLUG_ADSENSE ) ) ) {
 				return false;
 			}
 
@@ -234,13 +255,139 @@ export const ADSENSE_NOTIFICATIONS = {
 			return false;
 		},
 	},
+	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
+		Component:
+			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The hasAccessToShareableModule() selector relies on
+				// the resolution of getAuthentication().
+				resolveSelect( CORE_USER ).getAuthentication(),
+				// The isModuleConnected() and hasAccessToShareableModule() selectors
+				// rely on the resolution of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			const canViewSharedAdsense =
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_ADSENSE
+				);
+
+			const canViewSharedAnalytics = select(
+				CORE_USER
+			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+
+			if (
+				! (
+					adSenseModuleConnected &&
+					analyticsModuleConnected &&
+					canViewSharedAdsense &&
+					canViewSharedAnalytics
+				)
+			) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			if ( ! isAdSenseLinked ) {
+				return false;
+			}
+
+			// The getAccountID() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ADSENSE ).getSettings();
+			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
+
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath', 'adSourceName' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				dimensionFilters: {
+					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+				},
+				orderby: [
+					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
+				],
+				limit: 1,
+				reportID:
+					'notifications_analytics-adsense-linked-overlay_reportArgs',
+			};
+
+			const reportData = await resolveSelect(
+				MODULES_ANALYTICS_4
+			).getReport( reportArgs );
+
+			return isZeroReport( reportData ) === false;
+		},
+	},
+	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
+		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			await Promise.all( [
+				// The isModuleConnected() selector relies on the resolution
+				// of the getModules() resolver.
+				resolveSelect( CORE_MODULES ).getModules(),
+			] );
+
+			const adSenseModuleConnected =
+				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+
+			const analyticsModuleConnected = select(
+				CORE_MODULES
+			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+
+			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
+				return false;
+			}
+
+			// The getAdSenseLinked() selector relies on the resolution
+			// of the getSettings() resolver.
+			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+			const isAdSenseLinked =
+				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+
+			return isAdSenseLinked === false;
+		},
+	},
 };
 
-export const registerNotifications = ( notifications ) => {
+export function registerNotifications( notifications ) {
 	for ( const notificationID in ADSENSE_NOTIFICATIONS ) {
 		notifications.registerNotification(
 			notificationID,
 			ADSENSE_NOTIFICATIONS[ notificationID ]
 		);
 	}
-};
+}

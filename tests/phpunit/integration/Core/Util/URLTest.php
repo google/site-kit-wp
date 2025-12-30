@@ -24,7 +24,8 @@ class URLTest extends TestCase {
 	public function test_parse( $url, $component, $expected ) {
 		$this->assertEquals(
 			$expected,
-			URL::parse( $url, $component )
+			URL::parse( $url, $component ),
+			'Parsed URL component should match expected result.'
 		);
 	}
 
@@ -112,7 +113,7 @@ class URLTest extends TestCase {
 	 * @dataProvider data_site_hosts
 	 */
 	public function test_permute_site_hosts( $hostname, $expected ) {
-		$this->assertEqualSets( $expected, URL::permute_site_hosts( $hostname ) );
+		$this->assertEqualSets( $expected, URL::permute_site_hosts( $hostname ), 'Permuted site hosts should match expected set.' );
 	}
 
 	public function data_site_hosts() {
@@ -156,7 +157,7 @@ class URLTest extends TestCase {
 	 * @dataProvider data_site_urls
 	 */
 	public function test_permute_site_url( $site_url, $expected ) {
-		$this->assertEqualSets( $expected, URL::permute_site_url( $site_url ) );
+		$this->assertEqualSets( $expected, URL::permute_site_url( $site_url ), 'Permuted site URLs should match expected set.' );
 	}
 
 	public function data_site_urls() {

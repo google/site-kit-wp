@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
@@ -38,16 +38,16 @@ class TokenTest extends TestCase {
 	public function test_has() {
 		$token = new Token( $this->user_options );
 
-		$this->assertFalse( $token->has() );
+		$this->assertFalse( $token->has(), 'Token should not exist before being set' );
 		$this->encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'a1b2c3d4e5' );
-		$this->assertTrue( $token->has() );
+		$this->assertTrue( $token->has(), 'Token should exist after access token is set' );
 	}
 
 	public function test_get() {
 		$token = new Token( $this->user_options );
 
 		// Test default.
-		$this->assertEquals( array(), $token->get() );
+		$this->assertEquals( array(), $token->get(), 'Token should return empty array when no token exists' );
 
 		// Test only access token set.
 		$this->encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'a1b2c3d4e5' );
@@ -57,7 +57,8 @@ class TokenTest extends TestCase {
 				'expires_in'   => 0,
 				'created'      => 0,
 			),
-			$token->get()
+			$token->get(),
+			'Token should return access token with default values for expires_in and created when only access token is set'
 		);
 
 		// Test full access token data (except refresh token) set.
@@ -70,7 +71,8 @@ class TokenTest extends TestCase {
 				'expires_in'   => 3600,
 				'created'      => 649724400,
 			),
-			$token->get()
+			$token->get(),
+			'Token should return full token data without refresh token when all access token fields are set'
 		);
 
 		// Test full access token data (including refresh token) set.
@@ -85,7 +87,8 @@ class TokenTest extends TestCase {
 				'created'       => 649724400,
 				'refresh_token' => 'h8i9j0',
 			),
-			$token->get()
+			$token->get(),
+			'Token should return complete token data including refresh token when all token fields are set'
 		);
 	}
 
@@ -93,20 +96,20 @@ class TokenTest extends TestCase {
 		$token = new Token( $this->user_options );
 
 		// Cannot set empty token data.
-		$this->assertFalse( $token->set( array() ) );
+		$this->assertFalse( $token->set( array() ), 'Should not be able to set empty token data' );
 
 		// Cannot set token data without access token.
-		$this->assertFalse( $token->set( array( 'refresh_token' => 'h8i9j0' ) ) );
-		$this->assertFalse( $token->set( array( 'expires_in' => 3600 ) ) );
+		$this->assertFalse( $token->set( array( 'refresh_token' => 'h8i9j0' ) ), 'Should not be able to set token with only refresh_token' );
+		$this->assertFalse( $token->set( array( 'expires_in' => 3600 ) ), 'Should not be able to set token with only expires_in' );
 
 		// Setting only access token also sets reasonable defaults for created and expires_in.
 		$created_before = time();
-		$this->assertTrue( $token->set( array( 'access_token' => 'a1b2c3d4e5' ) ) );
+		$this->assertTrue( $token->set( array( 'access_token' => 'a1b2c3d4e5' ) ), 'Should be able to set token with only access_token' );
 		$created_at = $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED );
-		$this->assertGreaterThanOrEqual( $created_before, $created_at );
-		$this->assertLessThanOrEqual( time(), $created_at );
-		$this->assertEquals( 3600, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ) );
-		$this->assertEquals( 'a1b2c3d4e5', $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ) );
+		$this->assertGreaterThanOrEqual( $created_before, $created_at, 'Created timestamp should be after test started' );
+		$this->assertLessThanOrEqual( time(), $created_at, 'Created timestamp should be before or equal to current time' );
+		$this->assertEquals( 3600, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ), 'Default expires_in should be 3600 seconds' );
+		$this->assertEquals( 'a1b2c3d4e5', $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ), 'Access token should be stored correctly' );
 
 		// Set full token data.
 		$this->assertTrue(
@@ -117,19 +120,20 @@ class TokenTest extends TestCase {
 					'created'       => 649724400,
 					'refresh_token' => 'h8i9j0',
 				)
-			)
+			),
+			'Should be able to set full token data'
 		);
-		$this->assertEquals( 'a1b2c3d4e5f6', $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ) );
-		$this->assertEquals( 3600, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ) );
-		$this->assertEquals( 649724400, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED ) );
-		$this->assertEquals( 'h8i9j0', $this->encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$this->assertEquals( 'a1b2c3d4e5f6', $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ), 'Access token should be stored correctly' );
+		$this->assertEquals( 3600, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ), 'Expires in should be stored correctly' );
+		$this->assertEquals( 649724400, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED ), 'Created timestamp should be stored correctly' );
+		$this->assertEquals( 'h8i9j0', $this->encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ), 'Refresh token should be stored correctly' );
 	}
 
 	public function test_delete() {
 		$token = new Token( $this->user_options );
 
 		// Deleting nothing silently succeeds.
-		$this->assertTrue( $token->delete() );
+		$this->assertTrue( $token->delete(), 'Should be able to delete token even when none exists' );
 
 		$token->set(
 			array(
@@ -139,10 +143,10 @@ class TokenTest extends TestCase {
 				'refresh_token' => 'h8i9j0',
 			)
 		);
-		$this->assertTrue( $token->delete() );
-		$this->assertEquals( false, $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ) );
-		$this->assertEquals( false, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ) );
-		$this->assertEquals( false, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED ) );
-		$this->assertEquals( false, $this->encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$this->assertTrue( $token->delete(), 'Should be able to delete existing token' );
+		$this->assertEquals( false, $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ), 'Access token should be removed after deletion' );
+		$this->assertEquals( false, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ), 'Expires in should be removed after deletion' );
+		$this->assertEquals( false, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED ), 'Created timestamp should be removed after deletion' );
+		$this->assertEquals( false, $this->encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ), 'Refresh token should be removed after deletion' );
 	}
 }

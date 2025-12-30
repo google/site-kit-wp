@@ -39,9 +39,9 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { safelySort } from '../../../util';
-import { MODULES_ANALYTICS_4 } from '../../../modules/analytics-4/datastore/constants';
-import PreviewBlock from '../../PreviewBlock';
+import { safelySort } from '@/js/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
@@ -88,15 +88,18 @@ export default function SelectionPanelFooter( {
 			// Close the panel after saving.
 			closePanel();
 
-			// Lock the button label while panel is closing.
-			setFinalButtonText( currentButtonText );
-			setWasSaved( true );
+			if ( ! isFullScreen ) {
+				// Lock the button label while panel is closing.
+				setFinalButtonText( currentButtonText );
+				setWasSaved( true );
+			}
 		}
 	}, [
 		saveSettings,
 		selectedItemSlugs,
 		onSaveSuccess,
 		closePanel,
+		isFullScreen,
 		currentButtonText,
 	] );
 
@@ -154,9 +157,9 @@ export default function SelectionPanelFooter( {
 			<div className="googlesitekit-selection-panel-footer__content">
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
-						tertiary
 						onClick={ onCancelClick }
 						disabled={ isBusy }
+						tertiary
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
@@ -184,7 +187,6 @@ SelectionPanelFooter.propTypes = {
 	selectedItemSlugs: PropTypes.array,
 	saveSettings: PropTypes.func,
 	saveError: PropTypes.object,
-	itemLimitError: PropTypes.string,
 	minSelectedItemCount: PropTypes.number,
 	maxSelectedItemCount: PropTypes.number,
 	isBusy: PropTypes.bool,

@@ -34,11 +34,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import Link from '../../../../components/Link';
-import MetricTileError from '../../../../components/KeyMetrics/MetricTileError';
-import { trackEvent, trackEventOnce } from '../../../../util';
-import useViewContext from '../../../../hooks/useViewContext';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import Link from '@/js/components/Link';
+import MetricTileError from '@/js/components/KeyMetrics/MetricTileError';
+import { trackEvent, trackEventOnce } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AnalyticsUpdateError( props ) {
 	const { onRetry, error, infoTooltip, headerText } = props;

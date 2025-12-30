@@ -27,16 +27,17 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import Logo from '../Logo';
-import { Grid, Row, Cell } from '../../material-components';
-import { trackEvent } from '../../util';
-import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import Logo from '@/js/components/Logo';
+import { Grid, Row, Cell } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_VIEW_DASHBOARD,
-} from '../../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import useViewContext from '../../hooks/useViewContext';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import Typography from '@/js/components/Typography';
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -56,7 +57,7 @@ export function ActivationApp() {
 
 	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
 	const buttonLabel = canViewDashboard
-		? __( 'Go to Dashboard', 'google-site-kit' )
+		? __( 'Go to dashboard', 'google-site-kit' )
 		: __( 'Start setup', 'google-site-kit' );
 
 	useEffect( () => {
@@ -89,12 +90,17 @@ export function ActivationApp() {
 			<Row>
 				<Cell size={ 12 }>
 					<Logo />
-					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
+					<Typography
+						as="h3"
+						size="small"
+						type="headline"
+						className="googlesitekit-activation__title"
+					>
 						{ __(
 							'Congratulations, the Site Kit plugin is now activated',
 							'google-site-kit'
 						) }
-					</h3>
+					</Typography>
 					<Button
 						id="start-setup-link"
 						className="googlesitekit-start-setup"

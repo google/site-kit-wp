@@ -25,15 +25,15 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { setItem } from '../googlesitekit/api/cache';
-import { trackEvent } from '../util/tracking';
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util/tracking';
 import useViewContext from './useViewContext';
 
 /**

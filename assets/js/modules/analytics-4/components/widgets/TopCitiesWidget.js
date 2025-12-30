@@ -28,20 +28,21 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
-import { ZeroDataMessage } from '../common';
-import { numFmt } from '../../../../util';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { numFmt } from '@/js/util';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { reportRowsWithSetValues } from '../../utils/report-rows-with-set-values';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
 
 function TopCitiesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>
@@ -50,7 +51,7 @@ function TopCitiesWidget( { Widget } ) {
 		} )
 	);
 
-	const topcCitiesReportOptions = {
+	const topCitiesReportOptions = {
 		...dates,
 		dimensions: [ 'city' ],
 		metrics: [ { name: 'totalUsers' } ],
@@ -63,17 +64,18 @@ function TopCitiesWidget( { Widget } ) {
 			},
 		],
 		limit: 4,
+		reportID: 'analytics-4_top-cities-widget_widget_topCitiesReportOptions',
 	};
 
 	const topCitiesReport = useInViewSelect(
 		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( topcCitiesReportOptions ),
-		[ topcCitiesReportOptions ]
+			select( MODULES_ANALYTICS_4 ).getReport( topCitiesReportOptions ),
+		[ topCitiesReportOptions ]
 	);
 
 	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			topcCitiesReportOptions,
+			topCitiesReportOptions,
 		] )
 	);
 
@@ -81,7 +83,7 @@ function TopCitiesWidget( { Widget } ) {
 		( select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ topcCitiesReportOptions ]
+				[ topCitiesReportOptions ]
 			)
 	);
 
@@ -131,6 +133,6 @@ TopCitiesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( TopCitiesWidget );

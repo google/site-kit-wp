@@ -37,7 +37,7 @@ export default function setUpAdvancedTracking(
 	const toRemove = [];
 
 	eventConfigurations.forEach( ( eventConfig ) => {
-		const handleDOMEvent = ( domEvent ) => {
+		function handleDOMEvent( domEvent ) {
 			if ( 'DOMContentLoaded' === eventConfig.on ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			} else if (
@@ -46,7 +46,7 @@ export default function setUpAdvancedTracking(
 			) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			}
-		};
+		}
 
 		global.document.addEventListener(
 			eventConfig.on,

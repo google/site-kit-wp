@@ -86,14 +86,14 @@ export function isValidDateRange( { startDate, endDate } ) {
  * @return {boolean} TRUE if order definitions are valid, otherwise FALSE.
  */
 export function isValidOrders( orders ) {
-	const isValidOrder = ( order ) => {
+	function isValidOrder( order ) {
 		const isValidFieldName =
 			order.hasOwnProperty( 'fieldName' ) && !! order.fieldName;
 		const isValidSortOrder =
 			order.hasOwnProperty( 'sortOrder' ) &&
 			/(ASCENDING|DESCENDING)/i.test( order.sortOrder.toString() );
 		return isValidFieldName && isValidSortOrder;
-	};
+	}
 
 	if ( Array.isArray( orders ) ) {
 		return orders.every(

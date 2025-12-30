@@ -25,18 +25,21 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
-import sharedKeyMetrics from '../../../feature-tours/shared-key-metrics';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 
 /**
  * Triggers on demand tour for shared key metrics if all conditions are met.
  *
  * @since 1.113.0
  *
- * @param {boolean} renderChangeMetricLink If metric link meets the conditions to render.
+ * @param {Object}  options                        Options object.
+ * @param {boolean} options.renderChangeMetricLink If metric link meets the conditions to render.
  */
-export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
+export function useChangeMetricsFeatureTourEffect( {
+	renderChangeMetricLink,
+} ) {
 	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
 		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
 	);
@@ -56,4 +59,4 @@ export const useChangeMetricsFeatureTourEffect = ( renderChangeMetricLink ) => {
 			triggerOnDemandTour( sharedKeyMetrics );
 		}
 	}, [ renderChangeMetricLink, isUserEligibleForTour, triggerOnDemandTour ] );
-};
+}

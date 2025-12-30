@@ -28,22 +28,23 @@ import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '../../../../googlesitekit/datastore/user/constants';
+} from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
-} from '../../../../components/KeyMetrics';
-import Link from '../../../../components/Link';
-import { ZeroDataMessage } from '../common';
-import whenActive from '../../../../util/when-active';
+} from '@/js/components/KeyMetrics';
+import Link from '@/js/components/Link';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import useViewOnly from '../../../../hooks/useViewOnly';
-import { numFmt } from '../../../../util';
-import { decodeAmpersand } from '../../utils';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { numFmt } from '@/js/util';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 
 function MostEngagingPagesWidget( props ) {
 	const { Widget } = props;
@@ -61,6 +62,8 @@ function MostEngagingPagesWidget( props ) {
 		dimensions: [ 'pagePath' ],
 		metrics: [ { name: 'screenPageViews' } ],
 		limit: 1,
+		reportID:
+			'analytics-4_most-engaging-pages-widget_widget_pageViewsReportOptions',
 	};
 
 	const pageViewsReport = useInViewSelect(
@@ -97,6 +100,7 @@ function MostEngagingPagesWidget( props ) {
 			},
 		},
 		limit: 3,
+		reportID: 'analytics-4_most-engaging-pages-widget_widget_reportOptions',
 	};
 
 	const pageViewsReportErrors = useSelect( ( select ) =>
@@ -238,6 +242,6 @@ MostEngagingPagesWidget.propTypes = {
 };
 
 export default whenActive( {
-	moduleName: 'analytics-4',
+	moduleName: MODULE_SLUG_ANALYTICS_4,
 	FallbackComponent: ConnectGA4CTATileWidget,
 } )( MostEngagingPagesWidget );

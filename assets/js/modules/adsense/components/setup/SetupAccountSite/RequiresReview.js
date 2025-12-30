@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../util';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import ViewContextContext from '@/js/components/Root/ViewContextContext';
+import { trackEvent } from '@/js/util';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import SetupAccountSiteUI from './SetupAccountSiteUI';
 
 export default function RequiresReview() {

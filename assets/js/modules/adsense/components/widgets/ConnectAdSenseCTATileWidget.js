@@ -24,11 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import ConnectModuleCTATile from '../../../../components/KeyMetrics/ConnectModuleCTATile';
-import useWidgetStateEffect from '../../../../googlesitekit/widgets/hooks/useWidgetStateEffect';
+import ConnectModuleCTATile from '@/js/components/KeyMetrics/ConnectModuleCTATile';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 // Ensure the metadata instance is static when rerendering.
-const metadata = { moduleSlug: 'adsense' };
+const metadata = { moduleSlug: MODULE_SLUG_ADSENSE };
 
 export default function ConnectAdSenseCTATileWidget( { Widget, widgetSlug } ) {
 	useWidgetStateEffect( widgetSlug, ConnectModuleCTATile, metadata );

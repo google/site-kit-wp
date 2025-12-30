@@ -25,7 +25,7 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER } from '../datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
 export default function useExistingTagEffect() {
 	const existingTag = useSelect( ( select ) =>

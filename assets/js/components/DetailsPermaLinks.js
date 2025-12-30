@@ -31,9 +31,9 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from './Link';
-import { getFullURL } from '../util';
+import { getFullURL } from '@/js/util';
 
 export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	const siteURL = useSelect( ( select ) =>

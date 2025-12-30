@@ -6,7 +6,7 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
- */
+ * */
 
 namespace Google\Site_Kit\Tests\Core\Admin;
 
@@ -49,11 +49,11 @@ class DashboardTest extends TestCase {
 		$this->get_widget_markup();
 
 		// Check that the dashboard widget was registered
-		$this->assertArrayHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'] );
+		$this->assertArrayHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'], 'Dashboard widget should be registered in meta boxes.' );
 
 		// Check that expected assets are enqueued
-		$this->assertTrue( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ), 'The expected script assets are not enqueued.' );
+		$this->assertTrue( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued', ), 'The expected style assets are not enqueued.' );
 	}
 
 	/**
@@ -65,14 +65,14 @@ class DashboardTest extends TestCase {
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
 
-		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ) );
+		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ), 'The dashboard should not be empty.' );
 
 		$xpath = new \DOMXPath( $dom );
 		$query = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 
 		$elements = $xpath->query( $query );
 
-		$this->assertEquals( 1, $elements->length );
+		$this->assertEquals( 1, $elements->length, 'Dashboard should have exactly one loading container element.' );
 	}
 
 	/**
@@ -90,18 +90,18 @@ class DashboardTest extends TestCase {
 
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
-		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ) );
+		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ), 'Dashboard container should exist when Search Console is connected.' );
 
 		// Ensure that "googlesitekit-wp-dashboard-search_console_active_and_connected" class exists.
 		$xpath    = new \DOMXPath( $dom );
 		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 1, $elements->length );
+		$this->assertEquals( 1, $elements->length, 'Dashboard should have exactly one loading container when only Search Console is connected.' );
 
 		// Ensure that "googlesitekit-wp-dashboard-analytics_active_and_connected" class does not exist.
 		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-analytics_active_and_connected')]]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 0, $elements->length );
+		$this->assertEquals( 0, $elements->length, 'Analytics active and connected class should not exist when only Search Console is connected.' );
 	}
 
 	/**
@@ -124,23 +124,23 @@ class DashboardTest extends TestCase {
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
 
-		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ) );
+		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ), 'Dashboard container should exist when Analytics 4 is connected.' );
 
 		// Ensure that "googlesitekit-wp-dashboard-analytics_active_and_connected" class exists.
 		$xpath    = new \DOMXPath( $dom );
 		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 1, $elements->length );
+		$this->assertEquals( 1, $elements->length, 'Dashboard should have exactly one loading container when only Analytics 4 is connected.' );
 
 		// Ensure that "googlesitekit-wp-dashboard-search_console_active_and_connected" class does not exist.
 		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-search_console_active_and_connected ')]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 0, $elements->length );
+		$this->assertEquals( 0, $elements->length, 'Search Console active and connected class should not exist when only Analytics 4 is connected.' );
 
 		// Ensure that "googlesitekit-preview-block googlesitekit-wp-dashboard-stats__cta" exists.
 		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-preview-block ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-stats__cta ')]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 0, $elements->length );
+		$this->assertEquals( 0, $elements->length, 'Preview block CTA should not exist when only Analytics 4 is connected.' );
 	}
 
 	/**
@@ -168,18 +168,18 @@ class DashboardTest extends TestCase {
 		$dom = new \DOMDocument();
 		$dom->loadHTML( $output );
 
-		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ) );
+		$this->assertNotEmpty( $dom->getElementById( 'js-googlesitekit-wp-dashboard' ), 'Dashboard container should exist when both Analytics 4 and Search Console are connected.' );
 
 		// Ensure that both "googlesitekit-wp-dashboard-analytics_active_and_connected" and "googlesitekit-wp-dashboard-search_console_active_and_connected" classes exist.
 		$xpath    = new \DOMXPath( $dom );
 		$query    = "//div[@class[contains(., 'googlesitekit-wp-dashboard')] and @class[contains(., 'googlesitekit-wp-dashboard-loading')]]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 1, $elements->length );
+		$this->assertEquals( 1, $elements->length, 'Dashboard should have exactly one loading container when both Analytics 4 and Search Console are connected.' );
 
 		// Ensure that "googlesitekit-preview-block googlesitekit-wp-dashboard-stats__cta" exists.
 		$query    = "//div[contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-preview-block ') and contains(concat(' ', normalize-space(@class), ' '), ' googlesitekit-wp-dashboard-stats__cta ')]";
 		$elements = $xpath->query( $query );
-		$this->assertEquals( 0, $elements->length );
+		$this->assertEquals( 0, $elements->length, 'Preview block CTA should not exist when both Analytics 4 and Search Console are connected.' );
 	}
 
 	public function get_widget_markup( $modules = null ) {

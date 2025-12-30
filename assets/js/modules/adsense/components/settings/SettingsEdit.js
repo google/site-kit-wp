@@ -21,7 +21,7 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {

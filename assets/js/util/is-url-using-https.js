@@ -24,7 +24,7 @@
  * @param {string} url The URL to check.
  * @return {boolean} True if the URL uses HTTPS, false otherwise.
  */
-export const isURLUsingHTTPS = ( url ) => {
+export function isURLUsingHTTPS( url ) {
 	try {
 		if ( typeof url !== 'string' || ! url ) {
 			throw new TypeError( `Invalid URL: ${ url }` );
@@ -36,4 +36,4 @@ export const isURLUsingHTTPS = ( url ) => {
 		global.console.warn( 'Invalid URL:', error );
 		return false;
 	}
-};
+}

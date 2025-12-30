@@ -46,7 +46,7 @@ const AWAIT = 'AWAIT';
  * @param {...Object} items A list of arguments, each one should be an object to combine into one.
  * @return {Object} The combined object.
  */
-export const collect = ( ...items ) => {
+export function collect( ...items ) {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
 	}, {} );
@@ -64,7 +64,7 @@ export const collect = ( ...items ) => {
 	);
 
 	return collectedObject;
-};
+}
 
 /**
  * Collects all actions.
@@ -97,7 +97,7 @@ export const collectControls = collect;
  * @param {...(Object|Function)} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `initialState`.
  * @return {Function} A Redux-style reducer.
  */
-export const collectReducers = ( ...args ) => {
+export function collectReducers( ...args ) {
 	const reducers = [ ...args ];
 	let initialState;
 
@@ -110,7 +110,7 @@ export const collectReducers = ( ...args ) => {
 			return reducer( newState, action );
 		}, state );
 	};
-};
+}
 
 /**
  * Collects all resolvers.
@@ -152,7 +152,7 @@ export const collectState = collect;
  * @param {...string} args A list of store names, all of which must be equal.
  * @return {string} The single store name.
  */
-export const collectName = ( ...args ) => {
+export function collectName( ...args ) {
 	const names = [ ...args ];
 
 	const duplicates = findDuplicates( names );
@@ -162,7 +162,7 @@ export const collectName = ( ...args ) => {
 	);
 
 	return names.shift();
-};
+}
 
 /**
  * Passes through state unmodified; eg. an empty reducer.
@@ -173,7 +173,9 @@ export const collectName = ( ...args ) => {
  * @param {Object} state A store's state.
  * @return {Object} The same state data as passed in `state`.
  */
-const passthroughReducer = ( state ) => state;
+function passthroughReducer( state ) {
+	return state;
+}
 
 /**
  * Combines multiple stores.
@@ -183,7 +185,7 @@ const passthroughReducer = ( state ) => state;
  * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: initialState, actions, controls, reducer, resolvers, selectors.
  * @return {Object} The combined store.
  */
-export const combineStores = ( ...stores ) => {
+export function combineStores( ...stores ) {
 	const combinedInitialState = collectState(
 		...stores.map( ( store ) => store.initialState || {} )
 	);
@@ -207,7 +209,7 @@ export const combineStores = ( ...stores ) => {
 			...stores.map( ( store ) => store.selectors || {} )
 		),
 	};
-};
+}
 
 /**
  * An object of common actions most stores will use.
@@ -293,7 +295,7 @@ export const commonControls = {
  * @param {Array} array Any array.
  * @return {Array} All values in the input array that were duplicated.
  */
-const findDuplicates = ( array ) => {
+function findDuplicates( array ) {
 	const duplicates = [];
 	const counts = {};
 
@@ -306,7 +308,7 @@ const findDuplicates = ( array ) => {
 	}
 
 	return duplicates;
-};
+}
 
 /**
  * A store containing the common actions, controls and reducer that all stores will use.
@@ -342,9 +344,11 @@ export const commonStore = {
  * @param {Function} select The registry.select function.
  * @return {Function} The strict version of registry.select.
  */
-export const createStrictSelect = ( select ) => ( storeName ) => {
-	return getStrictSelectors( select( storeName ) );
-};
+export function createStrictSelect( select ) {
+	return ( storeName ) => {
+		return getStrictSelectors( select( storeName ) );
+	};
+}
 
 // Based on {@link https://github.com/WordPress/gutenberg/blob/b1c8026087dfb026eff0a023a5f7febe28c876de/packages/data/src/registry.js#L91}
 const getStrictSelectors = memize( ( selectors ) =>

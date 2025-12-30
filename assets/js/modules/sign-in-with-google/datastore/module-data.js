@@ -24,8 +24,14 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createRegistrySelector } from 'googlesitekit-data';
+import {
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -42,6 +48,7 @@ export const initialState = {
 	moduleData: {
 		isWooCommerceActive: undefined,
 		isWooCommerceRegistrationEnabled: undefined,
+		existingClientID: undefined,
 	},
 };
 
@@ -49,13 +56,10 @@ export const actions = {
 	/**
 	 * Stores module data in the datastore.
 	 *
-	 * Because this is frequently-accessed data, this is usually sourced
-	 * from a global variable (`_googlesitekitModulesData`), set by PHP.
-	 *
 	 * @since 1.146.0
 	 * @private
 	 *
-	 * @param {Object} moduleData Module data, usually supplied via a global variable from PHP.
+	 * @param {Object} moduleData Module data object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveModuleData( moduleData ) {
@@ -70,33 +74,51 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = ( state, { payload, type } ) => {
-	switch ( type ) {
+export const reducer = createReducer( ( state, action ) => {
+	switch ( action.type ) {
 		case RECEIVE_MODULE_DATA: {
-			const { isWooCommerceActive, isWooCommerceRegistrationEnabled } =
-				payload;
-
-			const moduleData = {
+			const {
 				isWooCommerceActive,
 				isWooCommerceRegistrationEnabled,
-			};
+				existingClientID,
+			} = action.payload;
 
-			return {
-				...state,
-				moduleData,
+			state.moduleData = {
+				isWooCommerceActive,
+				isWooCommerceRegistrationEnabled,
+				existingClientID,
 			};
+			break;
 		}
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
+
+function* waitForModuleData() {
+	const { resolveSelect } = yield commonActions.getRegistry();
+
+	yield commonActions.await(
+		resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE ).getModuleData()
+	);
+}
 
 export const resolvers = {
+	/**
+	 * Resolves module data.
+	 *
+	 * @since 1.146.0
+	 * @since 1.162.0 Updated to use centralized module data access.
+	 */
 	*getModuleData() {
-		const moduleData =
-			global._googlesitekitModulesData?.[ 'sign-in-with-google' ];
+		const registry = yield commonActions.getRegistry();
+
+		const moduleData = yield commonActions.await(
+			registry
+				.resolveSelect( CORE_MODULES )
+				.getModuleInlineData( MODULE_SLUG_SIGN_IN_WITH_GOOGLE )
+		);
 
 		if ( ! moduleData ) {
 			return;
@@ -104,6 +126,7 @@ export const resolvers = {
 
 		yield actions.receiveModuleData( moduleData );
 	},
+	getExistingClientID: waitForModuleData,
 };
 
 export const selectors = {
@@ -144,6 +167,16 @@ export const selectors = {
 	getIsWooCommerceRegistrationEnabled: getModuleDataProperty(
 		'isWooCommerceRegistrationEnabled'
 	),
+
+	/**
+	 * Gets existing client ID from previous module connection.
+	 *
+	 * @since 1.162.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Existing client ID string or undefined.
+	 */
+	getExistingClientID: getModuleDataProperty( 'existingClientID' ),
 };
 
 export default {

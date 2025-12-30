@@ -25,8 +25,8 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '../../datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import SettingsNotice from './SettingsNotice';
 
 describe( 'SettingsNotice', () => {
@@ -42,7 +42,6 @@ describe( 'SettingsNotice', () => {
 
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
 			oneTapEnabled: false,
-			oneTapOnAllPages: false,
 		} );
 
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveModuleData( {
@@ -67,16 +66,13 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
 	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is active but isWooCommerceRegistrationEnabled is true', () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
-			oneTapOnAllPages: true,
 		} );
 
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveModuleData( {
@@ -89,16 +85,13 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
 	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active but isWooCommerceRegistrationEnabled is already true', async () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
-			oneTapOnAllPages: true,
 		} );
 
 		await registry
@@ -113,16 +106,13 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).toHaveClass( 'googlesitekit-anyone-can-register-disabled-notice' );
+			container.querySelector( '.googlesitekit-notice--info' ).textContent
+		).toContain( 'to allow your visitors to create an account' );
 	} );
 
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is not active', () => {
+	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, One Tap is enabled and WooCommerce is not active', () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
-			oneTapOnAllPages: true,
 		} );
 
 		const { container } = render( <SettingsNotice />, {
@@ -130,18 +120,14 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).not.toHaveClass(
-			'googlesitekit-anyone-can-register-disabled-notice'
-		);
+			container.querySelector( '.googlesitekit-notice--warning' )
+				.textContent
+		).toContain( 'Using “One Tap sign in” will cause' );
 	} );
 
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
+	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, One Tap is enabled, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
-			oneTapOnAllPages: true,
 		} );
 
 		await registry
@@ -156,11 +142,8 @@ describe( 'SettingsNotice', () => {
 		} );
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-registration-disabled-notice'
-			)
-		).not.toHaveClass(
-			'googlesitekit-anyone-can-register-disabled-notice'
-		);
+			container.querySelector( '.googlesitekit-notice--warning' )
+				.textContent
+		).toContain( 'Using “One Tap sign in” will cause' );
 	} );
 } );

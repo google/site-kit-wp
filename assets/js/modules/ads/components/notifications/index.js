@@ -20,3 +20,4 @@ export { default as PAXSetupSuccessSubtleNotification } from './PAXSetupSuccessS
 export { default as SetupSuccessSubtleNotification } from './SetupSuccessSubtleNotification';
 export { default as AccountLinkedViaGoogleForWooCommerceSubtleNotification } from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 export { default as AdsModuleSetupCTABanner } from './AdsModuleSetupCTABanner';
+export { default as EnhancedConversionsNotification } from './EnhancedConversionsNotification';

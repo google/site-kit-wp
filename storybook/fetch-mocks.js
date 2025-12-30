@@ -28,6 +28,7 @@ export function bootstrapFetchMocks() {
 	fetchMockSaveDataAvailable();
 	fetchMockGetModules();
 	fetchMockCatchAll();
+	fetchMock.spy( /\.hot-update\.json$/ );
 }
 
 export function fetchMockGetModules() {

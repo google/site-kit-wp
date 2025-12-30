@@ -34,19 +34,19 @@ import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
-} from '../../../../../../../hooks/useBreakpoint';
-import { CORE_USER } from '../../../../../../../googlesitekit/datastore/user/constants';
+} from '@/js/hooks/useBreakpoint';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
-} from '../../../../../datastore/constants';
+} from '@/js/modules/analytics-4/datastore/constants';
 import AudienceTileNoData from './AudienceTileNoData';
-import Link from '../../../../../../../components/Link';
+import Link from '@/js/components/Link';
 import PartialDataNotice from './PartialDataNotice';
-import { numFmt, trackEvent } from '../../../../../../../util';
-import withIntersectionObserver from '../../../../../../../util/withIntersectionObserver';
-import useViewContext from '../../../../../../../hooks/useViewContext';
-import useViewOnly from '../../../../../../../hooks/useViewOnly';
+import { numFmt, trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import CreateCustomDimensionCTA from './CreateCustomDimensionCTA';
 
 const CreateCustomDimensionCTAWithIntersectionObserver =

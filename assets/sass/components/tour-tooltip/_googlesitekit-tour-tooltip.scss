@@ -64,6 +64,8 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
+
+	// The tooltip title overrides the default Typography styles.
 	font-family: $f-secondary;
 	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
@@ -157,4 +159,64 @@
 
 .googlesitekit-tooltip-indicator.active {
 	opacity: 1;
+}
+
+// Style the tooltip to appear in a modal style on mobile and tablet designs.
+// This class is set within the Joyride component based on the breakpoint.
+.googlesitekit-tour-tooltip__modal_step {
+	max-width: 352px;
+	width: calc(100vw - 64px);
+
+	.googlesitekit-tooltip-body {
+		max-width: 100%;
+		padding: 16px 16px 0;
+	}
+
+	.googlesitekit-tooltip-title {
+		margin-bottom: 10px;
+	}
+
+	.googlesitekit-tooltip-close {
+		display: none;
+	}
+
+	.googlesitekit-tooltip-actions {
+		padding: 0 16px;
+	}
+}
+
+// Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 170px !important;
+	position: fixed !important;
+	top: 113px !important;
+	transform: none !important;
+}
+
+// Fix the tooltip so it doesn't go off-screen in user menu.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) > div.__floater {
+	left: -70px !important;
+	max-width: 302px !important;
+}
+
+// Fix the arrow alignment after moving the tooltip to keep it off-screen in user menu.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip--user-menu) .__floater__arrow > span {
+	left: 195px !important;
+}
+
+// !important is required to override Joyride's inline styles.
+.folded #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
+	left: 46px !important;
+	top: 46px !important;
+}
+
+// Fix the arrow alignment to make it consistent to allow fixed positioning
+// to align reliably.
+// !important is required to override Joyride's inline styles.
+#react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) div.__floater__arrow > span {
+	margin-top: 42px !important;
+	top: 0 !important;
 }

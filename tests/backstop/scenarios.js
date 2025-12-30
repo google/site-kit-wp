@@ -35,7 +35,11 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
-const rootURL = 'file:///src/dist/iframe.html?id=';
+
+// Use HTTP server instead of file:// URLs to support ES modules in modern Storybook.
+// See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#dropped-support-for-file-urls.
+const rootURL =
+	process.env.STORYBOOK_SERVER_URL || 'http://localhost:3000/iframe.html?id=';
 
 const storybookDir = path.resolve( __dirname, '../../storybook' );
 const storyFiles = flatten(
@@ -52,7 +56,7 @@ storyFiles.forEach( ( storyFile ) => {
 
 	const ast = parser.parse( code, {
 		sourceType: 'module',
-		plugins: [ 'jsx' ],
+		plugins: [ 'jsx', 'typescript' ],
 	} );
 
 	const stories = {};
@@ -105,7 +109,7 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario.constructor === Object
 		) {
 			const scenario = {
-				label: `${ defaultTitle }/${ value.storyName }`,
+				label: `${ defaultTitle }/${ value.storyName || key }`,
 				...value.scenario,
 				url: `${ rootURL }${ storyID }`,
 			};
@@ -115,6 +119,37 @@ storyFiles.forEach( ( storyFile ) => {
 	}
 } );
 
+// Adding Support for array-based selectors from BackstopJS 6.3.25
+function processSelectors( scenarioObj ) {
+	const processedScenario = { ...scenarioObj };
+
+	if (
+		processedScenario.clickSelector &&
+		! processedScenario.clickSelectors
+	) {
+		processedScenario.clickSelectors = [ processedScenario.clickSelector ];
+		delete processedScenario.clickSelector;
+	}
+
+	if (
+		processedScenario.hoverSelector &&
+		! processedScenario.hoverSelectors
+	) {
+		processedScenario.hoverSelectors = [ processedScenario.hoverSelector ];
+		delete processedScenario.hoverSelector;
+	}
+
+	if (
+		( processedScenario.clickSelectors ||
+			processedScenario.hoverSelectors ) &&
+		! processedScenario.postInteractionWait
+	) {
+		processedScenario.postInteractionWait = 1000;
+	}
+
+	return processedScenario;
+}
+
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';
 
@@ -123,7 +158,7 @@ module.exports = csfScenarios.map( ( scenario ) => {
 		: backstopReadySelector;
 
 	return {
-		...scenario,
+		...processSelectors( scenario ),
 		readySelector,
 	};
 } );
