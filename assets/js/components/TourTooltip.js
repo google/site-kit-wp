@@ -74,7 +74,7 @@ export default function TourTooltip( {
 					<Typography
 						as="h2"
 						className="googlesitekit-tooltip-title"
-						size={ setupFlowRefreshEnabled ? 'large' : 'medium' }
+						size="medium"
 						type="title"
 					>
 						{ step.title }
