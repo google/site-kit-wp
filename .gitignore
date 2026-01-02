@@ -3,6 +3,8 @@
 !.gemini/
 .gemini/*
 !.gemini/settings.json
+!.gemini/commands/
+!.gemini/commands/**
 !.github
 !.vscode
 .vscode/*
