@@ -74,7 +74,7 @@ export default function TourTooltip( {
 					<Typography
 						as="h2"
 						className="googlesitekit-tooltip-title"
-						size="large"
+						size={ setupFlowRefreshEnabled ? 'large' : 'medium' }
 						type="title"
 					>
 						{ step.title }
@@ -82,7 +82,7 @@ export default function TourTooltip( {
 					<Typography
 						as="div"
 						className="googlesitekit-tooltip-content"
-						size="small"
+						size={ setupFlowRefreshEnabled ? 'medium' : 'small' }
 						type="body"
 					>
 						{ step.content }
