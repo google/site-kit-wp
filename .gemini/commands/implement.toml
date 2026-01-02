@@ -115,7 +115,7 @@ Follow these implementation guidelines:
 
 **3. Write Comprehensive Tests**
    - **For JS**: Follow testing conventions from docs/context/js/tests.md
-   - **For PHP**: Follow PHPUnit patterns from existing tests in tests/phpunit/
+   - **For PHP**: Follow PHPUnit patterns from docs/context/php/phpunit.md
    - Write unit tests for ALL new functionality
    - Include tests for edge cases and error scenarios
    - Ensure tests are clear, maintainable, and follow existing patterns

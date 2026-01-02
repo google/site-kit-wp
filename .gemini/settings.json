@@ -21,6 +21,7 @@
 			"docs/context/php/dependency-injection.md",
 			"docs/context/php/module-architecture.md",
 			"docs/context/php/naming-conventions.md",
+			"docs/context/php/phpunit.md",
 			"docs/context/php/prompts-and-dismissals.md",
 			"docs/context/php/rest-api.md",
 			"docs/context/php/settings-management.md",
