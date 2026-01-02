@@ -241,7 +241,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		);
 	}
 
-	public function test_migrate_preserves_db_version() {
+	public function test_migrate_sets_db_version() {
 		$migration = $this->get_new_migration_instance();
 
 		$pre_migration_settings = array(
