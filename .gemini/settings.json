@@ -27,5 +27,14 @@
 			"docs/context/php/storage-patterns.md",
 			"docs/context/php/trait-composition.md"
 		]
+	},
+	"mcpServers": {
+		"github": {
+			"trust": false,
+			"httpUrl": "https://api.githubcopilot.com/mcp/",
+			"headers": {
+				"Authorization": "Bearer ${GITHUB_TOKEN}"
+			}
+		}
 	}
 }
