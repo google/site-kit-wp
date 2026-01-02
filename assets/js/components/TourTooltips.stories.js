@@ -455,11 +455,7 @@ export default {
 				{ overwriteRoutes: true }
 			);
 
-			return (
-				<div className="googlesitekit-plugin">
-					<Story />
-				</div>
-			);
+			return <Story />;
 		},
 	],
 };
