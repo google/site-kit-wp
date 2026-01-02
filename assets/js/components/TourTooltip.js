@@ -105,7 +105,8 @@ export default function TourTooltip( {
 						{ index !== 0 && (
 							<Button
 								className="googlesitekit-tooltip-button"
-								text
+								text={ ! setupFlowRefreshEnabled }
+								tertiary={ setupFlowRefreshEnabled }
 								{ ...backProps }
 							>
 								{ backProps.title }
@@ -121,7 +122,7 @@ export default function TourTooltip( {
 											setupFlowRefreshEnabled,
 									}
 								) }
-								text
+								text={ ! setupFlowRefreshEnabled }
 								{ ...primaryProps }
 							>
 								{ primaryProps.title }
