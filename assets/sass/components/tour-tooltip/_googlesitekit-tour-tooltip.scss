@@ -234,11 +234,9 @@
 	}
 
 	.googlesitekit-tooltip-content {
-		font-family: $f-primary;
-		font-size: $fs-body-md;
-		font-weight: $fw-normal;
-		letter-spacing: $ls-s;
-		line-height: $lh-body-md;
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
 	}
 
 	.googlesitekit-tooltip-body {
