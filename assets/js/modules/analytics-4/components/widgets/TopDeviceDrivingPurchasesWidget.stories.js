@@ -224,7 +224,7 @@ export default {
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setDetectedEvents( [ 'purchase' ] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );
 

@@ -67,89 +67,57 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		update_post_meta( $email_log_id, Email_Log::META_REPORT_REFERENCE_DATES, wp_json_encode( $date_range_meta ) );
 		$email_log = get_post( $email_log_id );
 
-		// Example payload similar to the How Many People Are Finding and Visiting My Site? email report section.
+		// Example payload for the business growth section derived from conversions data.
 		$payloads = array(
 			array(
-				'title'          => 'How many people are finding and visiting my site?',
-				'analytics-4'    => array(
-					'how_many_people_are_finding_and_visiting_my_site' => array(
-						array(
-							'dimensionHeaders' => array(
-								array( 'name' => 'dateRange' ),
-							),
-							'metricHeaders'    => array(
-								array(
-									'name' => 'totalUsers',
-									'type' => 'TYPE_INTEGER',
-								),
-								array(
-									'name' => 'newUsers',
-									'type' => 'TYPE_INTEGER',
-								),
-							),
-							'rows'             => array(
-								array(
-									'dimensionValues' => array(
-										array( 'value' => 'date_range_0' ),
-									),
-									'metricValues'    => array(
-										array( 'value' => '1234' ),
-										array( 'value' => '5678' ),
-									),
-								),
-								array(
-									'dimensionValues' => array(
-										array( 'value' => 'date_range_1' ),
-									),
-									'metricValues'    => array(
-										array( 'value' => '1000' ),
-										array( 'value' => '4800' ),
-									),
-								),
-							),
-							'rowCount'         => 2,
+				'title'                   => 'Is my site helping my business grow?',
+				'total_conversion_events' => array(
+					array(
+						'dimensionHeaders' => array(
+							array( 'name' => 'dateRange' ),
 						),
-					),
-				),
-				'search-console' => array(
-					'how_many_people_are_finding_and_visiting_my_site' => array(
-						array(
-							'clicks'      => 1250,
-							'impressions' => 21370,
+						'metricHeaders'    => array(
+							array(
+								'name' => 'eventCount',
+								'type' => 'TYPE_INTEGER',
+							),
 						),
+						'rows'             => array(
+							array(
+								'dimensionValues' => array(
+									array( 'value' => 'date_range_0' ),
+								),
+								'metricValues'    => array(
+									array( 'value' => '123' ),
+								),
+							),
+							array(
+								'dimensionValues' => array(
+									array( 'value' => 'date_range_1' ),
+								),
+								'metricValues'    => array(
+									array( 'value' => '100' ),
+								),
+							),
+						),
+						'rowCount'         => 2,
 					),
 				),
 			),
 		);
 
-		$result = $builder->build_sections( 'analytics-4', $payloads, 'en_US', $email_log );
+		$ga4_sections = $builder->build_sections( 'analytics-4', $payloads, 'en_US', $email_log );
+		$this->assertIsArray( $ga4_sections, 'GA4 sections should be returned as a flat array.' );
+		$this->assertContainsOnlyInstancesOf( Email_Report_Data_Section_Part::class, $ga4_sections, 'GA4 sections should be Email_Report_Data_Section_Part instances.' );
+		$this->assertCount( 1, $ga4_sections, 'GA4 payload should produce one section.' );
+		$this->assertSame( array( 0 ), array_keys( $ga4_sections ), 'GA4 sections should be numerically indexed.' );
+		$ga4_section = $ga4_sections[0];
 
-		$this->assertIsArray( $result, 'Sections should be returned as a flat array.' );
-		$this->assertContainsOnlyInstancesOf( Email_Report_Data_Section_Part::class, $result, 'Sections should be Email_Report_Data_Section_Part instances.' );
-		$this->assertCount( 2, $result, 'Should have both GA4 and Search Console sections' );
-		$this->assertSame(
-			range( 0, count( $result ) - 1 ),
-			array_keys( $result ),
-			'Sections should be a numerically indexed list without module keys.'
-		);
-		// Check GA4 section
-		$ga4_section = $result[0];
-
-		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $ga4_section->get_section_key(), 'GA4 section key should use section slug.' );
-		$this->assertSame( 'How many people are finding and visiting my site?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
-		$this->assertSame( array( 'Total Visitors', 'New Visitors' ), $ga4_section->get_labels(), 'GA4 labels should be translated from metric names.' );
-		$this->assertSame( array( '1234', '5678' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
-		$this->assertSame( array( '23.40%', '18.29%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
+		$this->assertSame( 'total_conversion_events', $ga4_section->get_section_key(), 'GA4 section key should use section slug from payload.' );
+		$this->assertSame( 'Is my site helping my business grow?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
+		$this->assertSame( array( 'Total conversion events' ), $ga4_section->get_labels(), 'GA4 labels should be translated from metric names.' );
+		$this->assertSame( array( '123' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
+		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
-
-		// Check Search Console section
-		$sc_section = $result[1];
-
-		$this->assertSame( 'how_many_people_are_finding_and_visiting_my_site', $sc_section->get_section_key(), 'Search Console section key should use payload key.' );
-		$this->assertSame( 'How many people are finding and visiting my site?', $sc_section->get_title(), 'Search Console section title should come from payload.' );
-		$this->assertSame( array( 'Total clicks from Search', 'Total impressions in Search' ), $sc_section->get_labels(), 'Search Console labels should be translated.' );
-		$this->assertSame( array( '1250', '21370' ), $sc_section->get_values(), 'Search Console totals should be aggregated as expected.' );
-		$this->assertNull( $sc_section->get_trends(), 'Search Console section should not include trends until implemented in V1.' ); // TODO: Update to visualise trends in PUE V1.
-		$this->assertSame( $expected_date_range, $sc_section->get_date_range(), 'Search Console date range should come from email log meta.' );
 	}
 }

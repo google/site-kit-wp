@@ -35,7 +35,8 @@ class Search_Console_Report_OptionsTest extends TestCase {
 		$this->assertArrayHasKey( 'startDate', $options, 'Top pages request should include startDate.' );
 		$this->assertArrayHasKey( 'endDate', $options, 'Top pages request should include endDate.' );
 		$this->assertSame( 'page', $options['dimensions'], 'Top pages should group by page dimension.' );
-		$this->assertSame( 10, $options['limit'], 'Top pages should limit entries.' );
+		$this->assertArrayHasKey( 'rowLimit', $options, 'Top pages should include a row limit.' );
+		$this->assertSame( 10, $options['rowLimit'], 'Top pages should limit entries.' );
 	}
 
 	public function test_custom_ranges_are_respected() {

@@ -28,6 +28,39 @@ class Sections_Map {
 	protected $context;
 
 	/**
+	 * Gets the mapping of section part keys to their display labels.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array<string, string> Mapping of part keys to localized labels.
+	 */
+	public static function get_part_labels() {
+		return array(
+			'traffic_channels'      => __( 'Traffic channels by visitor count', 'google-site-kit' ),
+			'top_ctr_keywords'      => __( 'Keywords with highest CTR in Search', 'google-site-kit' ),
+			'popular_content'       => __( 'Pages with the most pageviews', 'google-site-kit' ),
+			'top_pages_by_clicks'   => __( 'Pages with the most clicks from Search', 'google-site-kit' ),
+			'top_authors'           => __( 'Top authors by pageviews', 'google-site-kit' ),
+			'top_categories'        => __( 'Top categories by pageviews', 'google-site-kit' ),
+			'keywords_ctr_increase' => __( 'Search keywords with the biggest increase in CTR', 'google-site-kit' ),
+			'pages_clicks_increase' => __( 'Pages with the biggest increase in Search clicks', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets the label for a specific part key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $part_key The part key to get the label for.
+	 * @return string The localized label, or empty string if not found.
+	 */
+	public static function get_part_label( $part_key ) {
+		$labels = self::get_part_labels();
+		return $labels[ $part_key ] ?? '';
+	}
+
+	/**
 	 * Payload data for populating section templates.
 	 *
 	 * @since 1.168.0
@@ -66,6 +99,7 @@ class Sections_Map {
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
+			$this->get_growth_drivers_section(),
 			$this->get_growth_drivers_section()
 		);
 	}
@@ -78,6 +112,12 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_business_growth_section() {
+		// If no conversion data is present in payload it means user do not have conversion tracking set up
+		// or no data is received yet and we can skip this section.
+		if ( empty( $this->payload['total_conversion_events'] ) || ! isset( $this->payload['total_conversion_events'] ) ) {
+			return array();
+		}
+
 		return array(
 			'is_my_site_helping_my_business_grow' => array(
 				'title'            => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
@@ -89,12 +129,10 @@ class Sections_Map {
 						'data' => $this->payload['total_conversion_events'] ?? array(),
 					),
 					'products_added_to_cart'  => array(
-						'data'                => $this->payload['products_added_to_cart'] ?? array(),
-						'top_traffic_channel' => $this->payload['products_added_to_cart_top_traffic_channel'] ?? '',
+						'data' => $this->payload['products_added_to_cart'] ?? array(),
 					),
 					'purchases'               => array(
-						'data'                => $this->payload['purchases'] ?? array(),
-						'top_traffic_channel' => $this->payload['purchases_top_traffic_channel'] ?? '',
+						'data' => $this->payload['purchases'] ?? array(),
 					),
 				),
 			),
@@ -109,32 +147,48 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_visitors_section() {
+		$section_parts = array();
+
+		$section_parts['total_visitors'] = array(
+			'data' => $this->payload['total_visitors'] ?? array(),
+		);
+
+		$section_parts['new_visitors'] = array(
+			'data' => $this->payload['new_visitors'] ?? array(),
+		);
+
+		$section_parts['returning_visitors'] = array(
+			'data' => $this->payload['returning_visitors'] ?? array(),
+		);
+
+		// Insert custom audience parts (if available) immediately after returning_visitors.
+		if ( is_array( $this->payload ) ) {
+			foreach ( $this->payload as $key => $data ) {
+				if ( 0 !== strpos( $key, 'custom_audience_' ) ) {
+					continue;
+				}
+
+				$section_parts[ $key ] = array(
+					'data' => $data,
+				);
+			}
+		}
+
+		$section_parts['total_impressions'] = array(
+			'data' => $this->payload['total_impressions'] ?? array(),
+		);
+
+		$section_parts['total_clicks'] = array(
+			'data' => $this->payload['total_clicks'] ?? array(),
+		);
+
 		return array(
 			'how_many_people_are_finding_and_visiting_my_site' => array(
 				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
 				'icon'             => 'visitors',
 				'section_template' => 'section-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'total_visitors'              => array(
-						'data' => $this->payload['total_visitors'] ?? array(),
-					),
-					'new_visitors'                => array(
-						'data' => $this->payload['new_visitors'] ?? array(),
-					),
-					'returning_visitors'          => array(
-						'data' => $this->payload['returning_visitors'] ?? array(),
-					),
-					'subscribers'                 => array(
-						'data' => $this->payload['subscribers'] ?? array(),
-					),
-					'total_impressions_on_search' => array(
-						'data' => $this->payload['total_impressions_on_search'] ?? array(),
-					),
-					'total_clicks_from_search'    => array(
-						'data' => $this->payload['total_clicks_from_search'] ?? array(),
-					),
-				),
+				'section_parts'    => $section_parts,
 			),
 		);
 	}
@@ -154,11 +208,11 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'traffic_channels_by_visitor_count'   => array(
-						'data' => $this->payload['traffic_channels_by_visitor_count'] ?? array(),
+					'traffic_channels' => array(
+						'data' => $this->payload['traffic_channels'] ?? array(),
 					),
-					'keywords_with_highest_ctr_in_search' => array(
-						'data' => $this->payload['keywords_with_highest_ctr_in_search'] ?? array(),
+					'top_ctr_keywords' => array(
+						'data' => $this->payload['top_ctr_keywords'] ?? array(),
 					),
 				),
 			),
@@ -180,17 +234,17 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'pages_with_the_most_pageviews' => array(
-						'data' => $this->payload['pages_with_the_most_pageviews'] ?? array(),
+					'popular_content'     => array(
+						'data' => $this->payload['popular_content'] ?? array(),
 					),
-					'pages_with_the_most_clicks_from_search' => array(
-						'data' => $this->payload['pages_with_the_most_clicks_from_search'] ?? array(),
+					'top_pages_by_clicks' => array(
+						'data' => $this->payload['top_pages_by_clicks'] ?? array(),
 					),
-					'top_authors_by_pageviews'      => array(
-						'data' => $this->payload['top_authors_by_pageviews'] ?? array(),
+					'top_authors'         => array(
+						'data' => $this->payload['top_authors'] ?? array(),
 					),
-					'top_categories_by_pageviews'   => array(
-						'data' => $this->payload['top_categories_by_pageviews'] ?? array(),
+					'top_categories'      => array(
+						'data' => $this->payload['top_categories'] ?? array(),
 					),
 				),
 			),
@@ -205,6 +259,10 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_growth_drivers_section() {
+		if ( empty( $this->payload['keywords_ctr_increase'] ) && empty( $this->payload['pages_clicks_increase'] ) ) {
+			return array();
+		}
+
 		return array(
 			'what_is_driving_growth_and_bringing_more_visitors' => array(
 				'title'            => esc_html__( 'What is driving growth and bringing more visitors?', 'google-site-kit' ),
@@ -212,11 +270,11 @@ class Sections_Map {
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
 				'section_parts'    => array(
-					'search_keywords_with_the_biggest_increase_in_ctr' => array(
-						'data' => $this->payload['search_keywords_with_the_biggest_increase_in_ctr'] ?? array(),
+					'keywords_ctr_increase' => array(
+						'data' => $this->payload['keywords_ctr_increase'] ?? array(),
 					),
-					'pages_with_the_biggest_increase_in_search_clicks' => array(
-						'data' => $this->payload['pages_with_the_biggest_increase_in_search_clicks'] ?? array(),
+					'pages_clicks_increase' => array(
+						'data' => $this->payload['pages_clicks_increase'] ?? array(),
 					),
 				),
 			),

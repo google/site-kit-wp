@@ -44,10 +44,6 @@ let container;
 /**
  * Abort controller for container logs stream.
  *
- * Note: AbortController is only available via the opt-in experimental flag until Node 15.
- * i.e. `NODE_OPTIONS=--experimental-abortcontroller node ...`
- * See https://nodejs.org/docs/latest-v14.x/api/globals.html#globals_class_abortcontroller.
- *
  * @since 1.147.0
  */
 const logStreamAbortController = new AbortController();

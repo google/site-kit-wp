@@ -22,7 +22,9 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\AdSense\Email_Reporting\Report_Options as AdSense_Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_4_Report_Options;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Request_Assembler as Analytics_4_Report_Request_Assembler;
 use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Options as Search_Console_Report_Options;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Request_Assembler as Search_Console_Report_Request_Assembler;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use WP_Error;
@@ -191,7 +193,11 @@ class Email_Reporting_Data_Requests {
 				return $result;
 			}
 
-			$payload = array_merge( $payload, $result );
+			if ( empty( $result ) ) {
+				continue;
+			}
+
+			$payload[ $slug ] = $result;
 		}
 
 		return $payload;
@@ -208,51 +214,28 @@ class Email_Reporting_Data_Requests {
 	 */
 	private function collect_analytics_payloads( $module, $date_range ) {
 		$report_options = new Analytics_4_Report_Options( $date_range, array(), $this->context );
-		$requests       = array(
-			'total_visitors'   => $report_options->get_total_visitors_options(),
-			'traffic_channels' => $report_options->get_traffic_channels_options(),
-			'popular_content'  => $report_options->get_popular_content_options(),
+		$settings       = $module->get_settings()->get();
+
+		$report_options->set_conversion_events( $settings['detectedEvents'] ?? array() );
+		$report_options->set_audience_segmentation_enabled( $this->is_audience_segmentation_enabled() );
+		$report_options->set_custom_dimension_availability(
+			array(
+				Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR => $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ),
+				Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES => $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ),
+			)
 		);
 
-		$conversion_events = $this->conversion_tracking->get_supported_conversion_events();
-		$has_add_to_cart   = in_array( 'add_to_cart', $conversion_events, true );
-		$has_purchase      = in_array( 'purchase', $conversion_events, true );
+		$request_assembler                = new Analytics_4_Report_Request_Assembler( $report_options );
+		list( $requests, $custom_titles ) = $request_assembler->build_requests();
 
-		if ( $has_add_to_cart || $has_purchase ) {
-			$requests['total_conversion_events'] = $report_options->get_total_conversion_events_options();
+		$payload = $this->collect_batch_reports( $module, $requests );
 
-			if ( $has_add_to_cart ) {
-				$requests['products_added_to_cart'] = $report_options->get_products_added_to_cart_options();
+		if ( isset( $custom_titles ) && is_array( $payload ) ) {
+			foreach ( $custom_titles as $request_key => $display_name ) {
+				if ( isset( $payload[ $request_key ] ) && is_array( $payload[ $request_key ] ) ) {
+					$payload[ $request_key ]['title'] = $display_name;
+				}
 			}
-
-			if ( $has_purchase ) {
-				$requests['purchases'] = $report_options->get_purchases_options();
-			}
-		}
-
-		if ( $this->is_audience_segmentation_enabled() ) {
-			$requests['new_visitors']       = $report_options->get_new_visitors_options();
-			$requests['returning_visitors'] = $report_options->get_returning_visitors_options();
-		}
-
-		if ( $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ) ) {
-			$requests['top_authors'] = $report_options->get_top_authors_options();
-		}
-
-		if ( $this->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ) ) {
-			$requests['top_categories'] = $report_options->get_top_categories_options();
-		}
-
-		$payload = array();
-
-		foreach ( $requests as $key => $options ) {
-			$response = $module->get_data( 'report', $options );
-
-			if ( is_wp_error( $response ) ) {
-				return $response;
-			}
-
-			$payload[ $key ] = $response;
 		}
 
 		return $payload;
@@ -268,28 +251,23 @@ class Email_Reporting_Data_Requests {
 	 * @return array|WP_Error Search Console payloads or WP_Error from module call.
 	 */
 	private function collect_search_console_payloads( $module, $date_range ) {
-		$report_options = new Search_Console_Report_Options( $date_range );
+		$report_options    = new Search_Console_Report_Options( $date_range );
+		$request_assembler = new Search_Console_Report_Request_Assembler( $report_options );
 
-		$requests = array(
-			'total_impressions'   => $report_options->get_total_impressions_options(),
-			'total_clicks'        => $report_options->get_total_clicks_options(),
-			'top_ctr_keywords'    => $report_options->get_top_ctr_keywords_options(),
-			'top_pages_by_clicks' => $report_options->get_top_pages_by_clicks_options(),
+		list( $requests, $request_map ) = $request_assembler->build_requests();
+
+		$response = $module->set_data(
+			'searchanalytics-batch',
+			array(
+				'requests' => $requests,
+			)
 		);
 
-		$payload = array();
-
-		foreach ( $requests as $key => $options ) {
-			$response = $module->get_data( 'searchanalytics', $options );
-
-			if ( is_wp_error( $response ) ) {
-				return $response;
-			}
-
-			$payload[ $key ] = $response;
+		if ( is_wp_error( $response ) ) {
+			return $response;
 		}
 
-		return $payload;
+		return $request_assembler->map_responses( $response, $request_map );
 	}
 
 	/**
@@ -401,5 +379,102 @@ class Email_Reporting_Data_Requests {
 	private function has_custom_dimension_data( $custom_dimension ) {
 		$availability = $this->custom_dimensions_data_available->get_data_availability();
 		return ! empty( $availability[ $custom_dimension ] );
+	}
+
+	/**
+	 * Collects Analytics reports in batches of up to five requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object $module   Analytics module instance.
+	 * @param array  $requests Report request options keyed by payload key.
+	 * @return array|WP_Error  Payload keyed by request key or WP_Error on failure.
+	 */
+	private function collect_batch_reports( $module, array $requests ) {
+		$payload = array();
+
+		$chunks = array_chunk( $requests, 5, true );
+
+		foreach ( $chunks as $chunk ) {
+			$request_keys      = array_keys( $chunk );
+			$chunk_request_set = array_values( $chunk );
+
+			$response = $module->get_data(
+				'batch-report',
+				array(
+					'requests' => $chunk_request_set,
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				return $response;
+			}
+
+			$reports = $this->normalize_batch_reports( $response );
+
+			foreach ( $request_keys as $index => $key ) {
+				if ( isset( $reports[ $index ] ) ) {
+					$payload[ $key ] = $reports[ $index ];
+					continue;
+				}
+
+				if ( isset( $reports[ $key ] ) ) {
+					$payload[ $key ] = $reports[ $key ];
+					continue;
+				}
+
+				return new WP_Error(
+					'email_report_batch_incomplete',
+					sprintf(
+						/* translators: %s: Requested report key. */
+						__( 'Failed to fetch required report: %s.', 'google-site-kit' ),
+						$key
+					)
+				);
+			}
+		}
+
+		return $payload;
+	}
+
+	/**
+	 * Normalizes batch report responses to a numeric-indexed array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $batch_response Batch response from the module.
+	 * @return array Normalized reports array.
+	 */
+	private function normalize_batch_reports( $batch_response ) {
+		if ( is_object( $batch_response ) ) {
+			$decoded = json_decode( wp_json_encode( $batch_response ), true );
+			if ( is_array( $decoded ) ) {
+				$batch_response = $decoded;
+			}
+		}
+
+		if ( isset( $batch_response['reports'] ) && is_array( $batch_response['reports'] ) ) {
+			return $batch_response['reports'];
+		}
+
+		if ( is_array( $batch_response ) && ( isset( $batch_response['dimensionHeaders'] ) || isset( $batch_response['metricHeaders'] ) || isset( $batch_response['rows'] ) ) ) {
+			return array( $batch_response );
+		}
+
+		if ( wp_is_numeric_array( $batch_response ) ) {
+			return $batch_response;
+		}
+
+		$reports = array();
+
+		if ( is_array( $batch_response ) ) {
+			foreach ( $batch_response as $value ) {
+				if ( is_array( $value ) ) {
+					$reports[] = $value;
+				}
+			}
+		}
+
+		return $reports;
 	}
 }

@@ -40,11 +40,15 @@ import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_CARD_NOTICE,
 } from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function SettingsEmailReporting( { loading = false } ) {
+	const viewContext = useViewContext();
+
 	const isEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
@@ -58,9 +62,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
+		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -69,13 +71,34 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handleToggle = useCallback( async () => {
+		if ( isEnabled ) {
+			trackEvent(
+				`${ viewContext }_email_reports_settings`,
+				'deactivate_periodic_email_reports'
+			);
+		} else {
+			trackEvent(
+				`${ viewContext }_email_reports_settings`,
+				'activate_periodic_email_reports'
+			);
+		}
+
 		await setEmailReportingEnabled( ! isEnabled );
 		await saveEmailReportingSettings();
-	}, [ isEnabled, setEmailReportingEnabled, saveEmailReportingSettings ] );
+	}, [
+		isEnabled,
+		setEmailReportingEnabled,
+		saveEmailReportingSettings,
+		viewContext,
+	] );
 
 	const handleManageClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'manage_email_reports_subscription'
+		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	}, [ setValue, viewContext ] );
 
 	if ( loading || settings === undefined ) {
 		return null;

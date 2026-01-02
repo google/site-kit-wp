@@ -42,7 +42,7 @@ import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
 
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
-	'email-reporting-overlay-notification';
+	'email_reports_setup_overlay_notification';
 
 export default function SetUpEmailReportingOverlayNotification( {
 	id,
