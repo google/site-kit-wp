@@ -64,26 +64,19 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
-
-	// The tooltip title overrides the default Typography styles.
-	font-family: $f-secondary;
-	font-size: $fs-body-lg;
-	font-weight: $fw-medium;
-	letter-spacing: $ls-m;
-	line-height: $lh-body-lg;
-	margin-bottom: 4px;
+	letter-spacing: $ls-xxs;
+	margin-bottom: 8px;
 	margin-top: 0;
 }
 
 .googlesitekit-tooltip-body {
 	box-sizing: border-box;
-	font-family: $f-primary;
-	font-size: $fs-body-md;
-	font-weight: $fw-light;
-	letter-spacing: $ls-s;
-	line-height: $lh-body-md;
-	max-width: 352px;
-	padding: 24px 56px 2px 24px;
+	max-width: 332px;
+	padding: 32px $grid-gap-phone 0;
+}
+
+.googlesitekit-tooltip-content {
+	color: $c-content-on-primary;
 }
 
 .googlesitekit-tooltip-buttons {
@@ -185,6 +178,31 @@
 	}
 }
 
+// Old design styles - override Typography when setupFlowRefresh is disabled.
+.googlesitekit-tour-tooltip:not(.googlesitekit-tour-tooltip--setupFlowRefresh) {
+
+	.googlesitekit-tooltip-title {
+		font-family: $f-secondary;
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-m;
+		line-height: $lh-body-lg;
+		margin-bottom: 4px;
+	}
+
+	.googlesitekit-tooltip-body {
+		max-width: 352px;
+		padding: 24px 56px 2px 24px;
+	}
+
+	.googlesitekit-tooltip-content {
+		font-family: $f-primary;
+		font-size: $fs-body-md;
+		font-weight: $fw-light;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+	}
+}
+
 // Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
 // !important is required to override Joyride's inline styles.
 #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
@@ -224,26 +242,6 @@
 // Setup Flow Refresh variant styles.
 .googlesitekit-tour-tooltip--setupFlowRefresh {
 
-	.googlesitekit-tooltip-title {
-		font-family: $f-primary;
-		font-size: $fs-title-lg;
-		font-weight: $fw-medium;
-		letter-spacing: $ls-xxs;
-		line-height: $lh-title-lg;
-		margin-bottom: 8px;
-	}
-
-	.googlesitekit-tooltip-content {
-		font-size: $fs-body-sm;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
-	}
-
-	.googlesitekit-tooltip-body {
-		max-width: 332px;
-		padding: 32px $grid-gap-phone 0;
-	}
-
 	.googlesitekit-tooltip-close {
 		right: $grid-gap-phone;
 		top: $grid-gap-phone;
@@ -269,10 +267,10 @@
 
 	.googlesitekit-tooltip-steps {
 		font-family: $f-primary;
-		font-size: $fs-label-md;
-		font-weight: $fw-medium;
+		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
 		letter-spacing: $ls-xs;
-		line-height: $lh-label-md;
+		line-height: $lh-body-sm;
 		margin: 0;
 	}
 
