@@ -50,6 +50,97 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
               Exit setup
             </span>
           </button>
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -477,7 +568,99 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
         </div>
         <div
           class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
-        />
+        >
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -880,7 +1063,99 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
         </div>
         <div
           class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
-        />
+        >
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -1306,7 +1581,99 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
         </div>
         <div
           class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
-        />
+        >
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Fix common issues (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Fix common issues
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Read help docs (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Read help docs
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get support
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>

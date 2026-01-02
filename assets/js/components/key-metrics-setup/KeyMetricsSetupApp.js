@@ -47,6 +47,7 @@ import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
@@ -220,6 +221,7 @@ export default function KeyMetricsSetupApp() {
 						} }
 					/>
 				) }
+				<HelpMenu />
 			</Header>
 			<div className="googlesitekit-key-metrics-setup">
 				<div className="googlesitekit-module-page">
