@@ -724,6 +724,14 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: async ( { select, resolveSelect } ) => {
+			// Check if email reporting is enabled at site level.
+			await resolveSelect( CORE_SITE ).getEmailReportingSettings();
+
+			if ( select( CORE_SITE ).isEmailReportingEnabled() === false ) {
+				return false;
+			}
+
+			// Check user subscription status.
 			const settings = await resolveSelect(
 				CORE_USER
 			).getEmailReportingSettings();

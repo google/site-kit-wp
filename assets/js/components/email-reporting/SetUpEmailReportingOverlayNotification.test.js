@@ -33,6 +33,7 @@ import {
 	fireEvent,
 	act,
 } from '../../../../tests/js/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -78,6 +79,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	describe( 'checkRequirements', () => {
 		it( 'returns false when proactive user engagement is already subscribed', async () => {
 			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: true,
 			} );
@@ -92,6 +96,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		it( 'returns true when proactive user engagement is not yet subscribed', async () => {
 			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: false,
 			} );
@@ -103,6 +110,23 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			expect( result ).toBe( true );
 		} );
+
+		it( 'returns false when email reporting is disabled at site level', async () => {
+			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: false,
+			} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+			} );
+
+			const result = await notification.checkRequirements( {
+				select: registry.select,
+				resolveSelect: registry.resolveSelect,
+			} );
+
+			expect( result ).toBe( false );
+		} );
 	} );
 
 	describe( 'rendering', () => {
@@ -112,6 +136,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			registry = createTestRegistry();
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: false,
 			} );

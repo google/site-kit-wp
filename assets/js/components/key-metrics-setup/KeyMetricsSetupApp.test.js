@@ -347,6 +347,19 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
+	it( 'should display the help menu in the header', async () => {
+		const { container, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-help-menu__button' )
+		).toBeInTheDocument();
+	} );
+
 	describe( 'initial setup flow', () => {
 		beforeEach( () => {
 			global.location.href =
