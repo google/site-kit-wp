@@ -123,7 +123,7 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		$gtg_settings = $this->options->get( Google_Tag_Gateway_Settings::OPTION );
+		$gtg_settings = $this->gtg_settings->get();
 
 		if ( ! is_array( $gtg_settings ) || empty( $gtg_settings ) ) {
 			// Delete empty settings as they represent default state.
