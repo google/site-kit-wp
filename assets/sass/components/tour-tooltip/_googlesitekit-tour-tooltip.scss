@@ -190,16 +190,26 @@
 	}
 
 	.googlesitekit-tooltip-body {
-		max-width: 352px;
-		padding: 24px 56px 2px 24px;
-	}
-
-	.googlesitekit-tooltip-content {
 		font-family: $f-primary;
 		font-size: $fs-body-md;
 		font-weight: $fw-light;
 		letter-spacing: $ls-s;
 		line-height: $lh-body-md;
+		max-width: 352px;
+		padding: 24px 56px 2px 24px;
+	}
+
+	// Modal step overrides need higher specificity to override old design styles.
+	&.googlesitekit-tour-tooltip__modal_step {
+
+		.googlesitekit-tooltip-body {
+			max-width: 100%;
+			padding: 16px 16px 0;
+		}
+
+		.googlesitekit-tooltip-title {
+			margin-bottom: 10px;
+		}
 	}
 }
 
