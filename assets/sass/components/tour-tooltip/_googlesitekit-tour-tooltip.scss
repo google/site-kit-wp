@@ -178,6 +178,61 @@
 	}
 }
 
+// Setup Flow Refresh variant styles.
+.googlesitekit-tour-tooltip--setupFlowRefresh {
+
+	.googlesitekit-tooltip-title {
+		font-family: $f-primary;
+		font-size: $fs-title-md;
+		letter-spacing: $ls-xxs;
+		line-height: $lh-title-md;
+	}
+
+	.googlesitekit-tooltip-content {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+	}
+
+	.googlesitekit-tooltip-close {
+		right: $grid-gap-phone;
+		top: $grid-gap-phone;
+	}
+
+	.googlesitekit-tooltip-button {
+		border-radius: $br-lg;
+		line-height: 20px;
+		padding: 6px $grid-gap-phone;
+
+		&:not(:first-of-type) {
+			margin-left: 10px;
+		}
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	.googlesitekit-tooltip-button--primary {
+		background-color: $c-site-kit-sk-300;
+	}
+
+	.googlesitekit-tooltip-steps {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+		margin: 0;
+	}
+
+	.googlesitekit-tooltip-actions {
+		padding: $grid-gap-phone;
+	}
+}
+
 // Old design styles - override Typography when setupFlowRefresh is disabled.
 .googlesitekit-tour-tooltip:not(.googlesitekit-tour-tooltip--setupFlowRefresh) {
 
@@ -247,44 +302,4 @@
 #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) div.__floater__arrow > span {
 	margin-top: 42px !important;
 	top: 0 !important;
-}
-
-// Setup Flow Refresh variant styles.
-.googlesitekit-tour-tooltip--setupFlowRefresh {
-
-	.googlesitekit-tooltip-close {
-		right: $grid-gap-phone;
-		top: $grid-gap-phone;
-	}
-
-	.googlesitekit-tooltip-button {
-		border-radius: $br-lg;
-		line-height: 20px;
-		padding: 6px $grid-gap-phone;
-
-		&:not(:first-of-type) {
-			margin-left: 10px;
-		}
-
-		&:focus {
-			outline: none;
-		}
-	}
-
-	.googlesitekit-tooltip-button--primary {
-		background-color: $c-site-kit-sk-300;
-	}
-
-	.googlesitekit-tooltip-steps {
-		font-family: $f-primary;
-		font-size: $fs-body-sm;
-		font-weight: $fw-normal;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
-		margin: 0;
-	}
-
-	.googlesitekit-tooltip-actions {
-		padding: $grid-gap-phone;
-	}
 }
