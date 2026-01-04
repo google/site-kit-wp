@@ -64,6 +64,7 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
+	font-weight: $fw-medium;
 	margin-bottom: 8px;
 	margin-top: 0;
 }
@@ -249,19 +250,19 @@
 	.googlesitekit-tooltip-button {
 		border-radius: $br-lg;
 		line-height: 20px;
+		padding: 6px $grid-gap-phone;
+
+		&:not(:first-of-type) {
+			margin-left: 10px;
+		}
 
 		&:focus {
 			outline: none;
-		}
-
-		&:focus:not(:active) {
-			outline: 2px solid $c-interactive-inverse-focus;
 		}
 	}
 
 	.googlesitekit-tooltip-button--primary {
 		background-color: $c-site-kit-sk-300;
-		padding: 6px $grid-gap-phone;
 	}
 
 	.googlesitekit-tooltip-steps {
