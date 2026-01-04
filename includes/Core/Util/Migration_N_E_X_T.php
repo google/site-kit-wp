@@ -119,13 +119,10 @@ class Migration_N_E_X_T {
 	 * @since n.e.x.t
 	 */
 	protected function migrate_gtg_health_data() {
-		// Check if GTG settings exist using the Options::has() method.
 		if ( ! $this->options->has( Google_Tag_Gateway_Settings::OPTION ) ) {
 			return;
 		}
 
-		// Get the existing GTG settings directly from options to preserve old health properties.
-		// Using $this->gtg_settings->get() would apply sanitization and strip out the old properties.
 		$gtg_settings = $this->options->get( Google_Tag_Gateway_Settings::OPTION );
 
 		if ( ! is_array( $gtg_settings ) || empty( $gtg_settings ) ) {
