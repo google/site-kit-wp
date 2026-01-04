@@ -132,19 +132,10 @@ class Migration_N_E_X_T {
 		}
 
 		// Migrate health data to new health option.
-		// Start with default null values, then override with migrated values if they exist.
 		$health_data = array(
-			'isUpstreamHealthy' => null,
-			'isMpathHealthy'    => null,
+			'isUpstreamHealthy' => $gtg_settings['isGTGHealthy'] ?? null,
+			'isMpathHealthy'    => $gtg_settings['isScriptAccessEnabled'] ?? null,
 		);
-
-		if ( array_key_exists( 'isGTGHealthy', $gtg_settings ) ) {
-			$health_data['isUpstreamHealthy'] = $gtg_settings['isGTGHealthy'];
-		}
-
-		if ( array_key_exists( 'isScriptAccessEnabled', $gtg_settings ) ) {
-			$health_data['isMpathHealthy'] = $gtg_settings['isScriptAccessEnabled'];
-		}
 
 		// Save migrated health data.
 		$this->gtg_health->set( $health_data );
