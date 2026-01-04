@@ -79,14 +79,9 @@ export default function TourTooltip( {
 					>
 						{ step.title }
 					</Typography>
-					<Typography
-						as="div"
-						className="googlesitekit-tooltip-content"
-						size={ setupFlowRefreshEnabled ? 'medium' : 'small' }
-						type="body"
-					>
+					<div className="googlesitekit-tooltip-content">
 						{ step.content }
-					</Typography>
+					</div>
 				</div>
 				<CardActions className="googlesitekit-tooltip-actions">
 					{ ! setupFlowRefreshEnabled && (
