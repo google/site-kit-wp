@@ -137,7 +137,6 @@ class Migration_N_E_X_T {
 			'isMpathHealthy'    => $gtg_settings['isScriptAccessEnabled'] ?? null,
 		);
 
-		// Save migrated health data.
 		$this->gtg_health->set( $health_data );
 
 		// Handle isEnabled setting based on its value.
