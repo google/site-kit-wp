@@ -139,9 +139,7 @@ class Migration_N_E_X_T {
 
 		$this->gtg_health->set( $health_data );
 
-		// Handle isEnabled setting based on its value.
-		// Delete the option first to ensure we remove all deprecated fields.
-		// This avoids issues where sanitization safeguards might preserve old keys during an update.
+		// Delete existing option to remove deprecated health fields, then re-save only isEnabled if true.
 		$this->options->delete( Google_Tag_Gateway_Settings::OPTION );
 
 		if ( ! empty( $gtg_settings['isEnabled'] ) ) {
