@@ -332,12 +332,19 @@ class Worker_TaskTest extends TestCase {
 			->with( 'email-report', $this->arrayHasKey( 'subject' ) )
 			->willReturn( '<html>Email</html>' );
 
+		$this->template_renderer->expects( $this->once() )
+			->method( 'render_text' )
+			->with( 'email-report', $this->arrayHasKey( 'subject' ) )
+			->willReturn( 'Plain text email content' );
+
 		$this->email_sender->expects( $this->once() )
 			->method( 'send' )
 			->with(
 				'report@example.com',
 				'Subject',
-				$this->stringContains( 'Email' )
+				$this->stringContains( 'Email' ),
+				array(),
+				'Plain text email content'
 			)
 			->willReturn( true );
 
@@ -463,6 +470,7 @@ class Worker_TaskTest extends TestCase {
 		);
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
 		$this->template_renderer->method( 'render' )->willReturn( '<html>Email</html>' );
+		$this->template_renderer->method( 'render_text' )->willReturn( 'Plain text email content' );
 		$this->email_sender->method( 'send' )->willReturn( new WP_Error( 'send_failure', 'Send failed' ) );
 
 		$task = $this->create_worker_task( $this->real_batch_query );
@@ -525,13 +533,16 @@ class Worker_TaskTest extends TestCase {
 
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
 		$this->template_renderer->method( 'render' )->willReturn( '<html>Email</html>' );
+		$this->template_renderer->method( 'render_text' )->willReturn( 'Plain text email content' );
 
 		$this->email_sender->expects( $this->once() )
 			->method( 'send' )
 			->with(
 				$this->callback( fn( $to ) => in_array( $to, array( 'one@example.com', 'two@example.com' ), true ) ),
 				'Subject',
-				$this->stringContains( 'Email' )
+				$this->stringContains( 'Email' ),
+				array(),
+				'Plain text email content'
 			)
 			->willReturn( true );
 
