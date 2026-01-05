@@ -1,0 +1,11 @@
+[
+	[ "adsense", "v2" ],
+	[ "analyticsadmin", "v1alpha" ],
+	[ "analyticsadmin", "v1beta" ],
+	[ "analyticsdata", "v1beta" ],
+	[ "pagespeedonline", "v5" ],
+	[ "people", "v1" ],
+	[ "searchconsole", "v1" ],
+	[ "siteverification", "v1" ],
+	[ "tagmanager", "v2" ]
+]
