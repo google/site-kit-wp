@@ -161,14 +161,6 @@ describe( 'ModuleSetup', () => {
 				).toBeInTheDocument();
 			} );
 
-			it( 'should not display the help button', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-help-menu__button'
-					)
-				).not.toBeInTheDocument();
-			} );
-
 			it( 'should not display the "Connect Service" text', () => {
 				expect(
 					queryByText( 'Connect Service' )
@@ -246,14 +238,6 @@ describe( 'ModuleSetup', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should display the help button', () => {
-				expect(
-					container.querySelector(
-						'.googlesitekit-help-menu__button'
-					)
-				).toBeInTheDocument();
-			} );
-
 			it( 'should display the "Connect Service" text', () => {
 				expect( getByText( 'Connect Service' ) ).toBeInTheDocument();
 			} );
@@ -302,6 +286,10 @@ describe( 'ModuleSetup', () => {
 
 		expect(
 			container.querySelector( '.googlesitekit-header' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-help-menu__button' )
 		).toBeInTheDocument();
 
 		expect(

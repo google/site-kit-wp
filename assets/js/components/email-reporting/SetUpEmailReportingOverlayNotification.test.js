@@ -33,6 +33,7 @@ import {
 	fireEvent,
 	act,
 } from '../../../../tests/js/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -82,6 +83,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 	describe( 'checkRequirements', () => {
 		it( 'returns false when user is already subscribed', async () => {
 			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: true,
 			} );
@@ -96,6 +100,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		it( 'returns true when user is not subscribed (authenticated users always have access)', async () => {
 			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: false,
 			} );
@@ -106,6 +113,23 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			} );
 
 			expect( result ).toBe( true );
+		} );
+
+		it( 'returns false when email reporting is disabled at site level', async () => {
+			const registry = createTestRegistry();
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: false,
+			} );
+			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+				subscribed: false,
+			} );
+
+			const result = await notification.checkRequirements( {
+				select: registry.select,
+				resolveSelect: registry.resolveSelect,
+			} );
+
+			expect( result ).toBe( false );
 		} );
 
 		describe( 'view-only users', () => {
@@ -145,6 +169,11 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			it( 'returns true when view-only user can view Analytics', async () => {
 				const registry = createTestRegistry();
 				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {
+						enabled: true,
+					} );
+				registry
 					.dispatch( CORE_USER )
 					.receiveGetEmailReportingSettings( {
 						subscribed: false,
@@ -165,6 +194,11 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			it( 'returns true when view-only user can view Search Console', async () => {
 				const registry = createTestRegistry();
 				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {
+						enabled: true,
+					} );
+				registry
 					.dispatch( CORE_USER )
 					.receiveGetEmailReportingSettings( {
 						subscribed: false,
@@ -184,6 +218,11 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			it( 'returns false when view-only user cannot view Analytics or Search Console', async () => {
 				const registry = createTestRegistry();
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {
+						enabled: true,
+					} );
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetEmailReportingSettings( {
@@ -211,6 +250,9 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			registry = createTestRegistry();
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+				enabled: true,
+			} );
 			registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 				subscribed: false,
 			} );
