@@ -437,30 +437,5 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Banner from './Banner';
 `,
 		},
-
-		// Case sensitivity test with ignoreCase option
-		{
-			code: `
-/**
- * External dependencies
- */
-import zebra from 'zebra';
-import Apple from 'apple';
-`,
-			options: [ { ignoreCase: true } ],
-			errors: [
-				{
-					message:
-						"Import from 'apple' should be sorted alphabetically (before 'zebra').",
-				},
-			],
-			output: `
-/**
- * External dependencies
- */
-import Apple from 'apple';
-import zebra from 'zebra';
-`,
-		},
 	],
 } );
