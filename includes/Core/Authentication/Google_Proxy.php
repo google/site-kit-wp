@@ -344,7 +344,7 @@ class Google_Proxy {
 			'url'                    => $this->context->get_canonical_home_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
-			'return_uri'             => $this->context->admin_url( 'splash' ),
+			'return_uri'             => admin_url( 'plugins.php' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
 	}
