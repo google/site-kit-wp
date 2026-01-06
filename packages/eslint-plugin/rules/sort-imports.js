@@ -214,40 +214,31 @@ module.exports = {
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const sourceB = getImportSource( nodeB );
 
-			// First, sort by member syntax order
-			const syntaxA = getMemberSyntax( nodeA );
-			const syntaxB = getMemberSyntax( nodeB );
-			const orderA = memberSyntaxSortOrder.indexOf( syntaxA );
-			const orderB = memberSyntaxSortOrder.indexOf( syntaxB );
-
-			if ( orderA !== orderB ) {
-				return orderA - orderB;
-			}
-
-			// Then sort alphabetically by source
+			// First, sort alphabetically by source
 			// But normalize the paths for internal dependencies
-			// Priority: ./ < ../ < @/ < googlesitekit-
+			// Priority: googlesitekit-* < @/* < ../* < ./*
+			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
 			let normalizedA = sourceA;
 			let normalizedB = sourceB;
 
-			if ( sourceA.startsWith( './' ) ) {
-				normalizedA = '~4~' + sourceA;
-			} else if ( sourceA.startsWith( '../' ) ) {
-				normalizedA = '~3~' + sourceA;
+			if ( sourceA.startsWith( 'googlesitekit-' ) ) {
+				normalizedA = '~0~' + sourceA;
 			} else if ( sourceA.startsWith( '@/' ) ) {
-				normalizedA = '~2~' + sourceA;
-			} else if ( sourceA.startsWith( 'googlesitekit-' ) ) {
 				normalizedA = '~1~' + sourceA;
+			} else if ( sourceA.startsWith( '../' ) ) {
+				normalizedA = '~2~' + sourceA;
+			} else if ( sourceA.startsWith( './' ) ) {
+				normalizedA = '~3~' + sourceA;
 			}
 
-			if ( sourceB.startsWith( './' ) ) {
-				normalizedB = '~4~' + sourceB;
-			} else if ( sourceB.startsWith( '../' ) ) {
-				normalizedB = '~3~' + sourceB;
+			if ( sourceB.startsWith( 'googlesitekit-' ) ) {
+				normalizedB = '~0~' + sourceB;
 			} else if ( sourceB.startsWith( '@/' ) ) {
-				normalizedB = '~2~' + sourceB;
-			} else if ( sourceB.startsWith( 'googlesitekit-' ) ) {
 				normalizedB = '~1~' + sourceB;
+			} else if ( sourceB.startsWith( '../' ) ) {
+				normalizedB = '~2~' + sourceB;
+			} else if ( sourceB.startsWith( './' ) ) {
+				normalizedB = '~3~' + sourceB;
 			}
 
 			const compareA = ignoreCase
@@ -257,7 +248,20 @@ module.exports = {
 				? normalizedB.toLowerCase()
 				: normalizedB;
 
-			return compareA.localeCompare( compareB );
+			const sourceComparison = compareA.localeCompare( compareB );
+
+			// If sources are different, sort by source
+			if ( sourceComparison !== 0 ) {
+				return sourceComparison;
+			}
+
+			// If sources are the same, sort by member syntax order
+			const syntaxA = getMemberSyntax( nodeA );
+			const syntaxB = getMemberSyntax( nodeB );
+			const orderA = memberSyntaxSortOrder.indexOf( syntaxA );
+			const orderB = memberSyntaxSortOrder.indexOf( syntaxB );
+
+			return orderA - orderB;
 		}
 
 		/**
