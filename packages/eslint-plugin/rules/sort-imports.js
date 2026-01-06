@@ -345,48 +345,69 @@ module.exports = {
 				const prevName = prevSpec.imported.name;
 				const currName = currSpec.imported.name;
 
-				const compareA = ignoreCase ? prevName.toLowerCase() : prevName;
-				const compareB = ignoreCase ? currName.toLowerCase() : currName;
+				// Always use case-insensitive comparison for member sorting
+				const comparison = prevName.localeCompare( currName, 'en', {
+					sensitivity: 'base',
+				} );
 
-				if ( compareA > compareB ) {
+				if ( comparison > 0 ) {
 					context.report( {
 						node: currSpec,
 						message: `Member '${ currName }' of the import declaration should be sorted alphabetically.`,
 						fix( fixer ) {
-							// Sort all import specifiers
+							// Sort only the ImportSpecifier nodes
 							const sorted = [ ...importSpecifiers ].sort(
 								( a, b ) => {
-									const nameA = ignoreCase
-										? a.imported.name.toLowerCase()
-										: a.imported.name;
-									const nameB = ignoreCase
-										? b.imported.name.toLowerCase()
-										: b.imported.name;
-									return nameA.localeCompare( nameB );
+									const nameA = a.imported.name;
+									const nameB = b.imported.name;
+									// Always use case-insensitive comparison for member sorting
+									return nameA.localeCompare( nameB, 'en', {
+										sensitivity: 'base',
+									} );
 								}
 							);
 
-							// Generate the sorted specifiers text
-							const sortedText = sorted
-								.map( ( spec ) => {
-									if (
-										spec.imported.name === spec.local.name
-									) {
-										return spec.imported.name;
-									}
-									return `${ spec.imported.name } as ${ spec.local.name }`;
-								} )
-								.join( ', ' );
-
-							// Find the range of the specifiers
-							const firstSpec = importSpecifiers[ 0 ];
-							const lastSpec =
-								importSpecifiers[ importSpecifiers.length - 1 ];
-
-							return fixer.replaceTextRange(
-								[ firstSpec.range[ 0 ], lastSpec.range[ 1 ] ],
-								sortedText
+							// Build the complete import statement with all specifiers
+							const allSpecifiers = node.specifiers;
+							const defaultSpec = allSpecifiers.find(
+								( s ) => s.type === 'ImportDefaultSpecifier'
 							);
+							const namespaceSpec = allSpecifiers.find(
+								( s ) => s.type === 'ImportNamespaceSpecifier'
+							);
+
+							const parts = [];
+
+							if ( defaultSpec ) {
+								parts.push( sourceCode.getText( defaultSpec ) );
+							}
+
+							if ( namespaceSpec ) {
+								parts.push(
+									sourceCode.getText( namespaceSpec )
+								);
+							}
+
+							if ( sorted.length > 0 ) {
+								const sortedText = sorted
+									.map( ( spec ) => {
+										if (
+											spec.imported.name ===
+											spec.local.name
+										) {
+											return spec.imported.name;
+										}
+										return `${ spec.imported.name } as ${ spec.local.name }`;
+									} )
+									.join( ', ' );
+								parts.push( `{ ${ sortedText } }` );
+							}
+
+							const newSpecifiers = parts.join( ', ' );
+							const source = sourceCode.getText( node.source );
+							const result = `import ${ newSpecifiers } from ${ source };`;
+
+							return fixer.replaceText( node, result );
 						},
 					} );
 					return;
