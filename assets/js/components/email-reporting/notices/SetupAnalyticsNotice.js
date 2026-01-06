@@ -20,7 +20,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,6 +44,8 @@ export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
 	'email-reporting-setup-analytics-notice';
 
 export default function SetupAnalyticsNotice() {
+	const [ inProgress, setInProgress ] = useState( false );
+
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
@@ -65,6 +71,11 @@ export default function SetupAnalyticsNotice() {
 	const activateAnalytics = useActivateModuleCallback(
 		MODULE_SLUG_ANALYTICS_4
 	);
+
+	const handleCTAClick = useCallback( () => {
+		setInProgress( true );
+		activateAnalytics();
+	}, [ activateAnalytics ] );
 
 	const handleDismiss = useCallback( async () => {
 		await dismissItem(
@@ -110,7 +121,9 @@ export default function SetupAnalyticsNotice() {
 			) }
 			ctaButton={ {
 				label: __( 'Connect Analytics', 'google-site-kit' ),
-				onClick: activateAnalytics,
+				inProgress,
+				disabled: inProgress,
+				onClick: handleCTAClick,
 			} }
 			dismissButton={ {
 				label: __( 'Maybe later', 'google-site-kit' ),
