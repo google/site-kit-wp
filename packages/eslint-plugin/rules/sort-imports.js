@@ -633,47 +633,100 @@ module.exports = {
 				EXTERNAL_DEPS,
 				INTERNAL_DEPS,
 			];
-			const fixes = [];
 
-			for ( let i = 0; i < importsInGroup.length; i++ ) {
-				const originalNode = importsInGroup[ i ];
-				const sortedNode = sorted[ i ];
+			// Build the new sorted imports as a single string with no blank lines
+			const newImports = [];
+			for ( const node of sorted ) {
+				const nonDepComments = getNonDependencyComments( node );
 
-				if ( i > 0 ) {
-					const precedingComment =
-						getPrecedingCommentBlock( originalNode );
-
-					if (
-						precedingComment &&
-						validGroups.includes(
-							normalizeCommentText( precedingComment.value )
-						)
-					) {
-						const commentEnd = precedingComment.range[ 1 ];
-						const sourceAfter = sourceCode.text.slice( commentEnd );
-						const newlineMatch = sourceAfter.match( /^\n/ );
-						const endPos = newlineMatch
-							? commentEnd + 1
-							: commentEnd;
-
-						fixes.push(
-							fixer.removeRange( [
-								precedingComment.range[ 0 ],
-								endPos,
-							] )
-						);
+				// Add any non-dependency comments before the import
+				for ( const comment of nonDepComments ) {
+					if ( comment.type === 'Line' ) {
+						newImports.push( `//${ comment.value }` );
+					} else {
+						newImports.push( `/*${ comment.value }*/` );
 					}
 				}
 
-				fixes.push(
-					fixer.replaceText(
-						originalNode,
-						sourceCode.getText( sortedNode )
-					)
-				);
+				newImports.push( sourceCode.getText( node ) );
 			}
 
-			return fixes;
+			// Determine the range to replace: from the first import to the last import in the group
+			const firstImport = importsInGroup[ 0 ];
+			const lastImport = importsInGroup[ importsInGroup.length - 1 ];
+
+			// Find the start position (after any preceding dependency comment of the first import)
+			const startPos = firstImport.range[ 0 ];
+			const firstPrecedingComment =
+				getPrecedingCommentBlock( firstImport );
+			if (
+				firstPrecedingComment &&
+				validGroups.includes(
+					normalizeCommentText( firstPrecedingComment.value )
+				)
+			) {
+				// Don't include the dependency comment, start after it
+			}
+
+			// Find the end position of the last import
+			const endPos = lastImport.range[ 1 ];
+
+			// Replace the entire range with the sorted imports
+			return [
+				fixer.replaceTextRange(
+					[ startPos, endPos ],
+					newImports.join( '\n' )
+				),
+			];
+		}
+
+		/**
+		 * Checks for blank lines between imports in the same group.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object}  node                        Import node.
+		 * @param {Object}  lastNode                    Previous node in the same group.
+		 * @param {string}  source                      Import source.
+		 * @param {string}  group                       Import group.
+		 * @param {Array}   importNodes                 All import nodes.
+		 * @param {Object}  options                     Options object.
+		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
+		 */
+		function checkBlankLinesBetweenImports(
+			node,
+			lastNode,
+			source,
+			group,
+			importNodes,
+			options
+		) {
+			if ( ! lastNode || options.needsReorganization ) {
+				return;
+			}
+
+			// Get any non-dependency comments that precede this import
+			const nonDepComments = getNonDependencyComments( node );
+
+			// Determine the effective start line of this import
+			// (including any non-dependency comments)
+			let effectiveStartLine = node.loc.start.line;
+			if ( nonDepComments.length > 0 ) {
+				effectiveStartLine = nonDepComments[ 0 ].loc.start.line;
+			}
+
+			// Check if there's more than one line between the imports
+			const linesBetween = effectiveStartLine - lastNode.loc.end.line;
+
+			if ( linesBetween > 1 ) {
+				context.report( {
+					node,
+					message: `Import from '${ source }' should not have blank lines before it within the same group.`,
+					fix( fixer ) {
+						return generateSortFixes( fixer, importNodes, group );
+					},
+				} );
+			}
 		}
 
 		/**
@@ -881,6 +934,14 @@ module.exports = {
 					lastSource = null;
 				} else if ( currentGroup ) {
 					checkDuplicateCommentBlock( node );
+					checkBlankLinesBetweenImports(
+						node,
+						lastNode,
+						source,
+						group,
+						importNodes,
+						{ needsReorganization }
+					);
 				}
 
 				checkAlphabeticalOrder(
