@@ -30,18 +30,6 @@ module.exports = {
 			{
 				type: 'object',
 				properties: {
-					ignoreCase: {
-						type: 'boolean',
-						default: false,
-					},
-					ignoreDeclarationSort: {
-						type: 'boolean',
-						default: false,
-					},
-					ignoreMemberSort: {
-						type: 'boolean',
-						default: false,
-					},
 					memberSyntaxSortOrder: {
 						type: 'array',
 						items: {
@@ -60,9 +48,6 @@ module.exports = {
 	create( context ) {
 		const configuration = context.options[ 0 ] || {};
 		const {
-			ignoreCase = false,
-			ignoreDeclarationSort = false,
-			ignoreMemberSort = false,
 			memberSyntaxSortOrder = [ 'none', 'all', 'multiple', 'single' ],
 		} = configuration;
 
@@ -241,14 +226,7 @@ module.exports = {
 				normalizedB = '~3~' + sourceB;
 			}
 
-			const compareA = ignoreCase
-				? normalizedA.toLowerCase()
-				: normalizedA;
-			const compareB = ignoreCase
-				? normalizedB.toLowerCase()
-				: normalizedB;
-
-			const sourceComparison = compareA.localeCompare( compareB );
+			const sourceComparison = normalizedA.localeCompare( normalizedB );
 
 			// If sources are different, sort by source
 			if ( sourceComparison !== 0 ) {
@@ -326,7 +304,7 @@ module.exports = {
 		 * @param {Object} node Import declaration node.
 		 */
 		function checkMemberSortOrder( node ) {
-			if ( ignoreMemberSort || node.type !== 'ImportDeclaration' ) {
+			if ( node.type !== 'ImportDeclaration' ) {
 				return;
 			}
 
@@ -345,10 +323,7 @@ module.exports = {
 				const prevName = prevSpec.imported.name;
 				const currName = currSpec.imported.name;
 
-				const compareA = ignoreCase ? prevName.toLowerCase() : prevName;
-				const compareB = ignoreCase ? currName.toLowerCase() : currName;
-
-				if ( compareA > compareB ) {
+				if ( prevName > currName ) {
 					context.report( {
 						node: currSpec,
 						message: `Member '${ currName }' of the import declaration should be sorted alphabetically.`,
@@ -356,18 +331,9 @@ module.exports = {
 							// Sort only the ImportSpecifier nodes
 							const sorted = [ ...importSpecifiers ].sort(
 								( a, b ) => {
-									const nameA = ignoreCase
-										? a.imported.name.toLowerCase()
-										: a.imported.name;
-									const nameB = ignoreCase
-										? b.imported.name.toLowerCase()
-										: b.imported.name;
+									const nameA = a.imported.name;
+									const nameB = b.imported.name;
 
-									// Use standard comparison for case-sensitive
-									if ( ignoreCase ) {
-										return nameA.localeCompare( nameB );
-									}
-									// For case-sensitive, compare directly
 									if ( nameA < nameB ) {
 										return -1;
 									}
@@ -516,7 +482,7 @@ module.exports = {
 				}
 
 				// Check alphabetical order within the same group
-				if ( lastNode && ! ignoreDeclarationSort ) {
+				if ( lastNode ) {
 					if ( compareImports( lastNode, node ) > 0 ) {
 						context.report( {
 							node,
