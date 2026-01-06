@@ -19,14 +19,20 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+	Fragment,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -34,15 +40,21 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 // @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
+const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
+const GATHERING_DATA_DISMISSED_ITEM_SLUG = 'welcome-modal-gathering-data';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type SelectFunction = ( select: any ) => any;
 
 export default function WelcomeModal() {
+	const [ isOpen, setIsOpen ] = useState( true );
+
 	const analyticsConnected = useSelect( ( select: SelectFunction ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
@@ -62,8 +74,52 @@ export default function WelcomeModal() {
 		? analyticsGatheringData
 		: searchConsoleGatheringData;
 
+	const dismissedItemSlug = showGatheringDataModal
+		? GATHERING_DATA_DISMISSED_ITEM_SLUG
+		: WITH_TOUR_DISMISSED_ITEM_SLUG;
+
+	const isItemDismissed = useSelect( ( select: SelectFunction ) =>
+		select( CORE_USER ).isItemDismissed( dismissedItemSlug )
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const tooltipSettings = {
+		target: '.googlesitekit-help-menu__button',
+		tooltipSlug: 'dashboard-tour',
+		title: __(
+			'You can always take the dashboard tour from the help menu',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+	};
+
+	const showTooltip = useShowTooltip( tooltipSettings );
+
+	const closeModal = useCallback( () => {
+		setIsOpen( false );
+	}, [] );
+
+	const dismissModal = useCallback( async () => {
+		await dismissItem( dismissedItemSlug );
+		if ( ! showGatheringDataModal ) {
+			// If we're in the dashboard tour variant, also dismiss the gathering data variant.
+			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+			showTooltip();
+		}
+	}, [
+		dismissItem,
+		dismissedItemSlug,
+		showGatheringDataModal,
+		showTooltip,
+	] );
+
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
+		return null;
+	}
+
+	if ( isItemDismissed ) {
 		return null;
 	}
 
@@ -84,9 +140,9 @@ export default function WelcomeModal() {
 
 	return (
 		<Dialog
-			onClose={ () => {} }
 			className="googlesitekit-dialog googlesitekit-welcome-modal"
-			open
+			open={ isOpen }
+			onClose={ dismissModal }
 		>
 			<DialogContent className="googlesitekit-welcome-modal__content">
 				<div className="googlesitekit-welcome-modal__graphic">
@@ -96,7 +152,7 @@ export default function WelcomeModal() {
 						// @ts-expect-error - The `Button` component is not typed yet.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
-						onClick={ () => {} }
+						onClick={ closeModal }
 						aria-label={ __( 'Close', 'google-site-kit' ) }
 						hideTooltipTitle
 					/>
@@ -125,17 +181,17 @@ export default function WelcomeModal() {
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ showGatheringDataModal ? (
 					// @ts-expect-error - The `Button` component is not typed yet.
-					<Button onClick={ () => {} }>
+					<Button onClick={ closeModal }>
 						{ __( 'Get started', 'google-site-kit' ) }
 					</Button>
 				) : (
 					<Fragment>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ () => {} } tertiary>
+						<Button onClick={ closeModal } tertiary>
 							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ () => {} }>
+						<Button onClick={ closeModal }>
 							{ __( 'Start tour', 'google-site-kit' ) }
 						</Button>
 					</Fragment>

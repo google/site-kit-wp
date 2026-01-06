@@ -30,13 +30,14 @@ import {
 	useCallback,
 	Fragment,
 	useEffect,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -45,6 +46,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
@@ -68,7 +70,10 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
+	const registry = useRegistry();
 	const viewContext = useViewContext();
+	const [ isResolvingDataAvailability, setIsResolvingDataAvailability ] =
+		useState( true );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -163,6 +168,20 @@ export default function KeyMetricsSetupApp() {
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
+
+	// Ensure data availability state is resolved before the user can proceed to the dashboard.
+	useEffect( () => {
+		async function resolveDataAvailability() {
+			await Promise.all( [
+				registry.resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
+				registry
+					.resolveSelect( MODULES_SEARCH_CONSOLE )
+					.isGatheringData(),
+			] );
+			setIsResolvingDataAvailability( false );
+		}
+		resolveDataAvailability();
+	}, [ registry, setIsResolvingDataAvailability ] );
 
 	useEffect( () => {
 		syncAvailableAudiences();
@@ -303,11 +322,17 @@ export default function KeyMetricsSetupApp() {
 										<div className="googlesitekit-user-input__footer">
 											<SpinnerButton
 												onClick={ onSaveClick }
-												isSaving={ isBusy || isSyncing }
+												isSaving={
+													isBusy ||
+													isSyncing ||
+													isResolvingDataAvailability
+												}
 												disabled={
 													hasErrorForAnswer(
 														values
-													) || isSyncing
+													) ||
+													isSyncing ||
+													isResolvingDataAvailability
 												}
 											>
 												{ __(
