@@ -81,13 +81,13 @@ const {
     triggerTourForView,    // Trigger tour for specific view context
     triggerOnDemandTour,   // Trigger tour on demand (manual)
     triggerTour            // Set current tour
-} = useDispatch(CORE_USER);
+} = useDispatch( CORE_USER );
 
 // Dismiss a tour permanently
-await dismissTour('myTourSlug');
+await dismissTour( 'myTourSlug' );
 
 // Trigger tours for current view
-await triggerTourForView(VIEW_CONTEXT_MAIN_DASHBOARD);
+await triggerTourForView( VIEW_CONTEXT_MAIN_DASHBOARD );
 
 // Trigger specific tour manually
 await triggerOnDemandTour(myTourObject);
@@ -126,13 +126,13 @@ const shownTour = useSelect((select) =>
 
 ### Tour Qualification Logic
 
-Tours must pass several requirements to be shown:
+Tours must fulfil several requirements to be shown:
 
-1. **View Context Match**: Tour contexts must include current view context
-2. **Version Check**: Tour version must be newer than user's initial Site Kit version
+1. **View Context Match**: The current view context should match the feature tour's supplied view context(s)
+2. **Version Check**: Tour version must be newer than user's initial Site Kit version (eg. don't show users tours for features that were introduced before/when they started using Site Kit). The version comparison is done with `semver` standards.
 3. **Dismissal Check**: Tour must not have been previously dismissed
-4. **Custom Requirements**: Optional `checkRequirements` function must return true
-5. **Cooldown Check**: No tours dismissed within last 2 hours
+4. **Custom Requirements**: Optional `checkRequirements` function must return `true`
+5. **Cooldown Check**: Don't show any tours that were dismissed within last 2 hours
 
 ```javascript
 // Example tour qualification checking
@@ -150,7 +150,7 @@ if (tourQualifies) {
 
 ### FeatureTours Component
 
-Main component that manages tour rendering and lifecycle:
+This component manages tour rendering and lifecycle—it operates as a "side-effect component". It needs to be rendered in the component tree for feature tours to appear.
 
 ```javascript
 import FeatureTours from '../components/FeatureTours';
@@ -277,7 +277,7 @@ function MyCustomTooltip(props) {
 
 ### JoyrideTooltip Component
 
-Alternative tooltip component for simple, single-step tours:
+Alternative tooltip component for single-step tours:
 
 ```javascript
 import JoyrideTooltip from '../components/JoyrideTooltip';

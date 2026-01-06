@@ -1,6 +1,6 @@
 # Feature Flags System
 
-Site Kit uses a comprehensive feature flag system to control the availability of experimental features and gradual rollouts.
+Site Kit uses a feature flag system to control the availability of experimental features and gradual rollouts.
 
 ## Core Architecture
 

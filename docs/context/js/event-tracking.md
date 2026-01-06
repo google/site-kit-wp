@@ -102,7 +102,7 @@ Categories follow consistent naming patterns for analytics organization:
 // View context + widget/component type
 `${viewContext}_pagespeed-widget`       // 'main-dashboard_pagespeed-widget'
 `${viewContext}_analytics-widget`       // 'entity-dashboard_analytics-widget'
-`${viewContext}_setup-flow`            // 'module-page-analytics-4_setup-flow'
+`${viewContext}_setup-flow`             // 'module-page-analytics-4_setup-flow'
 
 // Feature-specific categories
 `${viewContext}_shared_key-metrics`     // Feature tours
@@ -119,7 +119,7 @@ Common action names used across the plugin:
 'widget_view'           // Widget enters viewport
 'widget_expand'         // Widget expanded/opened
 'widget_collapse'       // Widget collapsed/closed
-'tab_select'           // Tab selection within widget
+'tab_select'            // Tab selection within widget
 
 // User actions
 'click_link'           // External link clicks
