@@ -31,7 +31,7 @@ export const IGNORE_CONSOLE_MESSAGES = {
 		// TODO: In ticket #11324: Remove each of these as the underlying issues are fixed.
 		/No fallback response defined for GET to \/google-site-kit/,
 		/Fetch API cannot load file/,
-		/You are probably offline/,
+		/Could not get a valid response from the server/, // Formerly "You are probably offline"
 		/TypeError:\s+notifications\.reduce is not a function/,
 		/Error:\s+`initialFocus`\s+as selector refers to no known node/,
 		/TypeError:\s+Cannot read (?:properties|property) of undefined \(reading 'includes'\)/,

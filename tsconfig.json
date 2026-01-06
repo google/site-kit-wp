@@ -35,6 +35,13 @@
     "strictNullChecks": true,
     "target": "es5"
   },
+  "include": [
+    "assets",
+    "storybook",
+    "tests/e2e",
+    "tests/js",
+    "webpack"
+  ],
   "exclude": [
     "coverage",
     "dist",

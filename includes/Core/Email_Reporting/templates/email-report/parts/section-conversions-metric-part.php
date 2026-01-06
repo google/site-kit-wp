@@ -14,11 +14,13 @@
  * @var callable $get_asset_url      Function to get asset URLs.
  */
 
-$value          = $data['value'];
-$label          = $data['label'];
-$event_name     = $data['event_name'];
-$change         = $data['change'];
-$change_context = $data['change_context'];
+$value           = $data['value'];
+$label           = $data['label'];
+$event_name      = $data['event_name'];
+$dimension       = $data['dimension'];
+$dimension_value = $data['dimension_value'];
+$change          = $data['change'];
+$change_context  = $data['change_context'];
 ?>
 <table role="presentation" width="100%" style="margin-bottom:16px;">
 	<tr>
@@ -42,24 +44,22 @@ $change_context = $data['change_context'];
 				<?php // TODO: Add detected in tag in v1. ?>
 			</div>
 
-			<table role="presentation" width="100%" style="padding-bottom: 10px; border-bottom: 1px solid #EBEEF0; margin-bottom: 10px;">
+			<table role="presentation" width="100%"
+				style="padding-bottom: 10px; border-bottom: 1px solid #EBEEF0; margin-bottom: 10px;">
 				<tr>
-					<td>
-						<div style="font-size:12px; font-weight:500; color:#6C726E; line-height:16px; margin-bottom:8px;">
-							<?php
-							printf(
-								/* translators: %s: Event name (e.g., "Purchase") */
-								esc_html__( '"%s" events', 'google-site-kit' ),
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
-								ucfirst( $event_name )
-							);
-							?>
-						</div>
+					<td style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 10px;">
+						<?php
+						printf(
+							/* translators: %s: Event name (e.g., "Purchase") */
+							esc_html__( '"%s" events', 'google-site-kit' ),
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
+							ucfirst( $event_name )
+						);
+						?>
 					</td>
-					<td style="text-align: right;">
-						<div style="font-size:12px; color:#6C726E;">
-							<?php echo esc_html( $change_context ); ?>
-						</div>
+					<td width="110"
+						style="font-size:12px; font-weight:500;  color:#6C726E; text-align: right; width: 110px; padding-bottom: 10px;">
+						<?php echo esc_html( $change_context ); ?>
 					</td>
 				</tr>
 				<tr>
@@ -81,15 +81,14 @@ $change_context = $data['change_context'];
 				</tr>
 			</table>
 
-			<?php if ( ! empty( $top_traffic_channel ) ) : ?>
-				<div style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
-					<?php esc_html_e( 'Top traffic channel driving the most conversions', 'google-site-kit' ); ?>
-				</div>
-				<div style="font-size:14px; line-height:20px; font-weight:500;">
-					<?php echo esc_html( $top_traffic_channel ); ?>
-				</div>
+			<?php if ( ! empty( $dimension ) ) : ?>
+			<div style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
+				<?php esc_html_e( 'Top traffic channel driving the most conversions', 'google-site-kit' ); ?>
+			</div>
+			<div style="font-size:14px; line-height:20px; font-weight:500;">
+				<?php echo esc_html( $dimension_value ); ?>
+			</div>
 			<?php endif; ?>
 		</td>
 	</tr>
 </table>
-

@@ -434,42 +434,8 @@ class OAuth_ClientTest extends TestCase {
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
-		// No other way around this but to mock the Google_Site_Kit_Client
-		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
-			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
 
-		FakeHttp::fake_google_http_handler(
-			$google_client_mock,
-			function ( Request $request ) {
-				$url = parse_url( $request->getUri() );
-				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
-
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'emailAddresses' => array(
-									array( 'value' => 'fresh@foo.com' ),
-								),
-								'photos'         => array(
-									array( 'url' => 'https://example.com/fresh.jpg' ),
-								),
-								'names'          => array(
-									array( 'displayName' => 'Dr Funkenstein' ),
-								),
-							)
-						)
-					)
-				);
-			}
-		);
-
-		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
-		$this->force_set_property( $client, 'google_client', $google_client_mock );
+		$this->mock_google_client( $client );
 
 		$this->assertFalse( $user_options->get( Profile::OPTION ) );
 
@@ -487,6 +453,44 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'Dr Funkenstein', $profile['full_name'] );
 	}
 
+	public function test_authorize_user__with_show_search_console() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+		$this->fake_site_connection();
+
+		// Add a notification query parameter to the redirect URL.
+		$success_redirect = add_query_arg(
+			array(
+				'notification' => 'some_notification_value',
+			),
+			admin_url( 'success-redirect' )
+		);
+
+		$client->get_authentication_url( $success_redirect );
+
+		$this->mock_google_client( $client );
+
+		$_GET['searchConsoleSetupSuccess'] = '1';
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg(
+					array(
+						'searchConsoleSetupSuccess' => 'true',
+					),
+					$success_redirect
+				),
+				$redirect->get_location()
+			);
+		}
+	}
+
 	public function test_authorize_user__with_redirect_url_notification() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
@@ -499,42 +503,8 @@ class OAuth_ClientTest extends TestCase {
 		$success_redirect = add_query_arg( 'notification', 'some_notification_value', admin_url( 'success-redirect' ) );
 
 		$client->get_authentication_url( $success_redirect );
-		// No other way around this but to mock the Google_Site_Kit_Client
-		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
-			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
 
-		FakeHttp::fake_google_http_handler(
-			$google_client_mock,
-			function ( Request $request ) {
-				$url = parse_url( $request->getUri() );
-				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
-
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						json_encode(
-							array(
-								'emailAddresses' => array(
-									array( 'value' => 'fresh@foo.com' ),
-								),
-								'photos'         => array(
-									array( 'url' => 'https://example.com/fresh.jpg' ),
-								),
-								'names'          => array(
-									array( 'displayName' => 'Dr Funkenstein' ),
-								),
-							)
-						)
-					)
-				);
-			}
-		);
-
-		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
-		$this->force_set_property( $client, 'google_client', $google_client_mock );
+		$this->mock_google_client( $client );
 
 		try {
 			$client->authorize_user();
@@ -821,6 +791,45 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertStringContainsString( 'site_id=' . $site_id, $url );
 		$this->assertStringContainsString( 'application_name=', $url );
 		$this->assertStringContainsString( 'hl=', $url );
+	}
+
+	private function mock_google_client( $client ) {
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		FakeHttp::fake_google_http_handler(
+			$google_client_mock,
+			function ( Request $request ) {
+				$url = parse_url( $request->getUri() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						200,
+						array(),
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+								'names'          => array(
+									array( 'displayName' => 'Dr Funkenstein' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
+
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
 	}
 
 	protected function get_user_credential_keys() {

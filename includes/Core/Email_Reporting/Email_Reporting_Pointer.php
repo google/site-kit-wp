@@ -123,6 +123,18 @@ final class Email_Reporting_Pointer {
 						return false;
 					}
 
+					// Check if user has access to at least one email report data module.
+					// Admins can authenticate and have full access; view-only users need
+					// READ_SHARED_MODULE_DATA capability for at least one module.
+					$has_analytics_access      = current_user_can( Permissions::AUTHENTICATE )
+						|| current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'analytics-4' );
+					$has_search_console_access = current_user_can( Permissions::AUTHENTICATE )
+						|| current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'search-console' );
+
+					if ( ! $has_analytics_access && ! $has_search_console_access ) {
+						return false;
+					}
+
 					// Do not show if this pointer was already dismissed via core 'dismiss-wp-pointer'.
 					$user_id               = get_current_user_id();
 					$dismissed_wp_pointers = get_user_meta( $user_id, 'dismissed_wp_pointers', true );
@@ -139,7 +151,7 @@ final class Email_Reporting_Pointer {
 					}
 
 					// If the overlay notification has already been dismissed, bail early.
-					if ( $this->dismissed_items->is_dismissed( 'email-reporting-overlay-notification' ) ) {
+					if ( $this->dismissed_items->is_dismissed( 'email_reports_setup_overlay_notification' ) ) {
 						return false;
 					}
 

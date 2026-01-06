@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivateAnalyticsNotification should render correctly 1`] = `
+<div>
+  <section
+    id="activate-analytics-cta"
+  >
+    <div
+      class="googlesitekit-banner-notification googlesitekit-banner-notification--info"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-page-content"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-banner"
+            >
+              <div
+                class="googlesitekit-banner__content"
+              >
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Understand how visitors interact with your content
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  <span>
+                    Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.
+                  </span>
+                   
+                </div>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Set up Analytics
+                    </span>
+                  </button>
+                  <button
+                    class="mdc-button mdc-button--tertiary"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Maybe later
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;
+
+exports[`ActivateAnalyticsNotification should render with a "Don’t show again" button when the notification has been dismissed twice 1`] = `
+<div>
+  <section
+    id="activate-analytics-cta"
+  >
+    <div
+      class="googlesitekit-banner-notification googlesitekit-banner-notification--info"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-page-content"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-banner"
+            >
+              <div
+                class="googlesitekit-banner__content"
+              >
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Understand how visitors interact with your content
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  <span>
+                    Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.
+                  </span>
+                   
+                </div>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button googlesitekit-banner__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Set up Analytics
+                    </span>
+                  </button>
+                  <button
+                    class="mdc-button mdc-button--tertiary"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Don’t show again
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--center"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

@@ -30,6 +30,7 @@ import {
 	createReducer,
 	commonActions,
 	combineStores,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
@@ -80,7 +81,7 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 const fetchGetWasAnalytics4Connected = createFetchStore( {
 	baseName: 'getWasAnalytics4Connected',
 	controlCallback: () => {
-		return get( 'core', 'site', 'was-analytics-4-connected', undefined );
+		return get( 'core', 'site', 'was-analytics-4-connected' );
 	},
 	reducerCallback: createReducer( ( state, wasAnalytics4Connected ) => {
 		state.emailReporting.wasAnalytics4Connected = wasAnalytics4Connected;
@@ -192,23 +193,25 @@ const baseSelectors = {
 	 * @since 1.165.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE.
+	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE; `undefined` if not loaded.
 	 */
-	isEmailReportingEnabled( state ) {
-		const settings = state.emailReporting?.settings;
-		return !! settings?.enabled;
-	},
+	isEmailReportingEnabled: createRegistrySelector( ( select ) => () => {
+		const { enabled } =
+			select( CORE_SITE ).getEmailReportingSettings() || {};
+
+		return enabled;
+	} ),
 
 	/**
 	 * Gets whether Analytics 4 was ever connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.168.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
 	 */
 	getWasAnalytics4Connected( state ) {
-		return state.emailReporting?.wasAnalytics4Connected;
+		return state.emailReporting?.wasAnalytics4Connected?.wasConnected;
 	},
 };
 

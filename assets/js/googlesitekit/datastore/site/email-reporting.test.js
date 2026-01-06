@@ -243,10 +243,14 @@ describe( 'core/site Email Reporting', () => {
 		} );
 
 		describe( 'isEmailReportingEnabled', () => {
-			it( 'returns false when settings are not loaded', () => {
+			it( 'returns undefined when settings are undefined', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {} );
+
 				expect(
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
-				).toBe( false );
+				).toBe( undefined );
 			} );
 
 			it( 'returns the enabled status when settings are loaded', () => {
@@ -279,7 +283,7 @@ describe( 'core/site Email Reporting', () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
 					{
-						body: true,
+						body: { wasConnected: true },
 						status: 200,
 					}
 				);

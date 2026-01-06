@@ -134,7 +134,7 @@ class Email_Reporting_PointerTest extends TestCase {
 		$this->user_options->switch_user( $user_id );
 
 		// Dismiss the email reporting overlay notification for this user.
-		$this->dismissed_items->add( 'email-reporting-overlay-notification' );
+		$this->dismissed_items->add( 'email_reports_setup_overlay_notification' );
 
 		$pointer = $this->get_registered_pointer();
 

@@ -80,8 +80,35 @@ import ModuleSetupSuccessNotification from '@/js/components/notifications/Module
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
+import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import {
+	requireCanActivateModule,
+	requireModuleActive,
+	requireModuleGatheringData,
+} from '@/js/googlesitekit/data-requirements';
 
 export const DEFAULT_NOTIFICATIONS = {
+	'activate-analytics-cta': {
+		Component: ActivateAnalyticsNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		dismissRetries: 2,
+		checkRequirements: asyncRequireAll(
+			asyncRequire(
+				false,
+				requireModuleActive( MODULE_SLUG_ANALYTICS_4 )
+			),
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+			),
+			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
+		),
+		featureFlag: 'setupFlowRefresh',
+	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
 		priority: PRIORITY.ERROR_HIGH,
@@ -694,13 +721,43 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			// Check if email reporting is enabled at site level.
+			await resolveSelect( CORE_SITE ).getEmailReportingSettings();
+
+			if ( select( CORE_SITE ).isEmailReportingEnabled() === false ) {
+				return false;
+			}
+
+			// Check user subscription status.
 			const settings = await resolveSelect(
 				CORE_USER
 			).getEmailReportingSettings();
 
 			if ( settings === undefined || settings?.subscribed ) {
 				return false;
+			}
+
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
+
+			// For view-only users, check if user has access to at least one
+			// of the required email report data modules.
+			// Admins always have access to the overlay notification.
+			if ( viewOnly ) {
+				await Promise.all( [
+					resolveSelect( CORE_MODULES ).getModules(),
+					resolveSelect( CORE_USER ).getCapabilities(),
+				] );
+				const viewableModules =
+					select( CORE_USER ).getViewableModules();
+
+				if (
+					! viewableModules?.includes( MODULE_SLUG_ANALYTICS_4 ) &&
+					! viewableModules?.includes( MODULE_SLUG_SEARCH_CONSOLE )
+				) {
+					return false;
+				}
 			}
 
 			return ! select( CORE_USER ).isEmailReportingSubscribed();

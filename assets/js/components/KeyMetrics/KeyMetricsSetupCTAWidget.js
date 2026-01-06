@@ -111,14 +111,23 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const openMetricsSelectionPanel = useCallback( async () => {
 		await trackEvent( trackEventCategory, 'confirm_pick_own_metrics' );
 
+		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
+
 		navigateTo( fullScreenSelectionLink );
-	}, [ trackEventCategory, navigateTo, fullScreenSelectionLink ] );
+	}, [
+		trackEventCategory,
+		dismissItem,
+		navigateTo,
+		fullScreenSelectionLink,
+	] );
 
 	const onGetTailoredMetricsClick = useCallback( async () => {
 		await trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
 
+		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
+
 		navigateTo( ctaLink );
-	}, [ trackEventCategory, navigateTo, ctaLink ] );
+	}, [ trackEventCategory, dismissItem, navigateTo, ctaLink ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;

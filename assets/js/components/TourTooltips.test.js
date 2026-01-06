@@ -233,6 +233,33 @@ describe( 'TourTooltips', () => {
 		expect( dismissTourSpy ).toHaveBeenCalledWith( TOUR_ID );
 	} );
 
+	it( 'should not persist tour completion if tour is repeatable', () => {
+		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
+			isRepeatable: true,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+
+		expect( dismissTourSpy ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should flush state on completion when tour is repeatable', () => {
+		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
+			isRepeatable: true,
+		} );
+
+		// Verify initial state.
+		expect( select.getValue( RUN_KEY ) ).toBe( true );
+		expect( select.getValue( STEP_KEY ) ).toBe( undefined );
+		expect( registry.select( CORE_USER ).getCurrentTour() ).toBeUndefined();
+
+		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+
+		expect( select.getValue( RUN_KEY ) ).toBe( false );
+		expect( select.getValue( STEP_KEY ) ).toBe( null );
+		expect( registry.select( CORE_USER ).getCurrentTour() ).toBeNull();
+	} );
+
 	it( 'should start tour if no persisted tour completion exists', () => {
 		renderTourTooltipsWithMockUI( registry );
 

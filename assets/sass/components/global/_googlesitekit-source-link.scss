@@ -22,4 +22,14 @@
 	font-weight: $fw-medium;
 	letter-spacing: $ls-xs;
 	line-height: 1;
+
+	button {
+		color: $c-content-secondary;
+		letter-spacing: inherit;
+		line-height: inherit;
+
+		&:hover {
+			color: $c-content-secondary;
+		}
+	}
 }
