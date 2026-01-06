@@ -717,6 +717,121 @@ module.exports = {
 		}
 
 		/**
+		 * Creates a fix function to remove an orphaned comment.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} comment Comment token to remove.
+		 * @return {Function} Fixer function.
+		 */
+		function createOrphanedCommentFix( comment ) {
+			return function ( fixer ) {
+				// Remove the comment and any trailing newline
+				const commentEnd = comment.range[ 1 ];
+				const sourceAfter = sourceCode.text.slice( commentEnd );
+				const newlineMatch = sourceAfter.match( /^\n/ );
+				const endPos = newlineMatch ? commentEnd + 1 : commentEnd;
+
+				return fixer.removeRange( [ comment.range[ 0 ], endPos ] );
+			};
+		}
+
+		/**
+		 * Checks for orphaned dependency comments before the first import.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array} importNodes Import nodes.
+		 * @param {Array} validGroups Valid dependency group names.
+		 */
+		function checkOrphanedCommentsBeforeFirstImport(
+			importNodes,
+			validGroups
+		) {
+			const firstImport = importNodes[ 0 ];
+			const commentsBefore = sourceCode.getCommentsBefore( firstImport );
+
+			for ( const comment of commentsBefore ) {
+				if ( comment.type !== 'Block' ) {
+					continue;
+				}
+
+				const commentText = normalizeCommentText( comment.value );
+				if ( ! validGroups.includes( commentText ) ) {
+					continue;
+				}
+
+				// Check if this comment directly precedes the first import
+				const precedingComment =
+					getPrecedingCommentBlock( firstImport );
+				if ( precedingComment === comment ) {
+					// This is the legitimate comment for the first import, skip it
+					continue;
+				}
+
+				// This is an orphaned dependency comment
+				context.report( {
+					node: firstImport,
+					message:
+						'Orphaned dependency comment block should be removed.',
+					fix: createOrphanedCommentFix( comment ),
+				} );
+			}
+		}
+
+		/**
+		 * Checks for orphaned dependency comments between imports.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array} importNodes Import nodes.
+		 * @param {Array} validGroups Valid dependency group names.
+		 */
+		function checkOrphanedCommentsBetweenImports(
+			importNodes,
+			validGroups
+		) {
+			for ( let i = 1; i < importNodes.length; i++ ) {
+				const currentImport = importNodes[ i ];
+				const prevImport = importNodes[ i - 1 ];
+				const commentsBetween =
+					sourceCode.getCommentsBefore( currentImport );
+
+				for ( const comment of commentsBetween ) {
+					// Only check comments that are after the previous import
+					if ( comment.range[ 0 ] <= prevImport.range[ 1 ] ) {
+						continue;
+					}
+
+					if ( comment.type !== 'Block' ) {
+						continue;
+					}
+
+					const commentText = normalizeCommentText( comment.value );
+					if ( ! validGroups.includes( commentText ) ) {
+						continue;
+					}
+
+					// Check if this comment directly precedes the current import
+					const precedingComment =
+						getPrecedingCommentBlock( currentImport );
+					if ( precedingComment === comment ) {
+						// This is the legitimate comment for the current import, skip it
+						continue;
+					}
+
+					// This is an orphaned dependency comment
+					context.report( {
+						node: currentImport,
+						message:
+							'Orphaned dependency comment block should be removed.',
+						fix: createOrphanedCommentFix( comment ),
+					} );
+				}
+			}
+		}
+
+		/**
 		 * Checks a group of imports for proper sorting and comments.
 		 *
 		 * @since n.e.x.t
@@ -734,7 +849,20 @@ module.exports = {
 
 			if ( needsReorganization ) {
 				reportReorganizationErrors( importNodes, groupedImports );
+				// Don't check for orphaned comments when reorganization is needed
+				// The reorganization fix will handle everything
+				return;
 			}
+
+			const validGroups = [
+				WORDPRESS_DEPS,
+				EXTERNAL_DEPS,
+				INTERNAL_DEPS,
+			];
+
+			// Check for orphaned dependency comments
+			checkOrphanedCommentsBeforeFirstImport( importNodes, validGroups );
+			checkOrphanedCommentsBetweenImports( importNodes, validGroups );
 
 			let currentGroup = null;
 			let lastNode = null;
@@ -810,6 +938,165 @@ module.exports = {
 		}
 
 		/**
+		 * Determines the start position for import replacement including orphaned comments.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array} importNodes Import nodes.
+		 * @param {Array} validGroups Valid dependency group names.
+		 * @return {number} Start position for replacement.
+		 */
+		function determineReplaceStart( importNodes, validGroups ) {
+			const firstImport = importNodes[ 0 ];
+			let replaceStart = firstImport.range[ 0 ];
+
+			// Check all comments before the first import
+			const commentsBefore = sourceCode.getCommentsBefore( firstImport );
+
+			// Find all consecutive dependency comments before the first import
+			// Working backwards from the import
+			let foundConsecutiveChain = false;
+			for ( let i = commentsBefore.length - 1; i >= 0; i-- ) {
+				const comment = commentsBefore[ i ];
+
+				// Only consider block comments
+				if ( comment.type !== 'Block' ) {
+					// Non-block comment breaks the chain
+					if ( foundConsecutiveChain ) {
+						break;
+					}
+					continue;
+				}
+
+				const commentText = normalizeCommentText( comment.value );
+				if ( ! validGroups.includes( commentText ) ) {
+					// Non-dependency comment breaks the chain
+					if ( foundConsecutiveChain ) {
+						break;
+					}
+					continue;
+				}
+
+				// This is a dependency comment - check how far it is from what follows
+				const nextItem =
+					i < commentsBefore.length - 1
+						? commentsBefore[ i + 1 ]
+						: firstImport;
+				const linesBetween =
+					nextItem.loc.start.line - comment.loc.end.line;
+
+				// If it's reasonably close (within 3 lines), include it
+				if ( linesBetween <= 3 ) {
+					replaceStart = comment.range[ 0 ];
+					foundConsecutiveChain = true;
+				} else if ( foundConsecutiveChain ) {
+					// Gap too large, stop looking
+					break;
+				}
+			}
+
+			return replaceStart;
+		}
+
+		/**
+		 * Processes the first import node for reorganization.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} fixer        ESLint fixer.
+		 * @param {Object} node         Import node.
+		 * @param {number} replaceStart Start position for replacement.
+		 * @param {Array}  validGroups  Valid dependency group names.
+		 * @param {Array}  newImports   New organized import lines.
+		 * @return {Array} Array of fixes.
+		 */
+		function processFirstImport(
+			fixer,
+			node,
+			replaceStart,
+			validGroups,
+			newImports
+		) {
+			const fixes = [];
+
+			// Check for preceding comment
+			const precedingComment = getPrecedingCommentBlock( node );
+			if (
+				precedingComment &&
+				precedingComment.range[ 0 ] >= replaceStart &&
+				validGroups.includes(
+					normalizeCommentText( precedingComment.value )
+				)
+			) {
+				// This comment is already in the replace range, skip it
+			} else if (
+				precedingComment &&
+				validGroups.includes(
+					normalizeCommentText( precedingComment.value )
+				)
+			) {
+				// This comment is before the replace range, remove it
+				fixes.push( fixer.remove( precedingComment ) );
+			}
+
+			// Remove any non-dependency comments that are not in the replace range
+			const nonDepComments = getNonDependencyComments( node );
+			for ( const comment of nonDepComments ) {
+				if ( comment.range[ 0 ] >= replaceStart ) {
+					// Already in replace range
+					continue;
+				}
+				fixes.push( fixer.remove( comment ) );
+			}
+
+			// Replace first import (and preceding standalone comments) with all organized imports
+			fixes.push(
+				fixer.replaceTextRange(
+					[ replaceStart, node.range[ 1 ] ],
+					newImports.join( '\n' )
+				)
+			);
+
+			return fixes;
+		}
+
+		/**
+		 * Processes a non-first import node for reorganization.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} fixer       ESLint fixer.
+		 * @param {Object} node        Import node.
+		 * @param {Array}  validGroups Valid dependency group names.
+		 * @return {Array} Array of fixes.
+		 */
+		function processOtherImport( fixer, node, validGroups ) {
+			const fixes = [];
+
+			// Check for preceding comment
+			const precedingComment = getPrecedingCommentBlock( node );
+			if (
+				precedingComment &&
+				validGroups.includes(
+					normalizeCommentText( precedingComment.value )
+				)
+			) {
+				// Remove the comment
+				fixes.push( fixer.remove( precedingComment ) );
+			}
+
+			// Remove any non-dependency comments
+			const nonDepComments = getNonDependencyComments( node );
+			for ( const comment of nonDepComments ) {
+				fixes.push( fixer.remove( comment ) );
+			}
+
+			fixes.push( fixer.remove( node ) );
+
+			return fixes;
+		}
+
+		/**
 		 * Fixes import organization by grouping all imports properly.
 		 *
 		 * @since n.e.x.t
@@ -878,35 +1165,30 @@ module.exports = {
 				}
 			}
 
+			// Determine the start position for replacement
+			const replaceStart = determineReplaceStart(
+				importNodes,
+				validGroups
+			);
+
 			// Remove all existing imports and their comments
 			for ( let i = 0; i < importNodes.length; i++ ) {
 				const node = importNodes[ i ];
 
-				// Check for preceding comment
-				const precedingComment = getPrecedingCommentBlock( node );
-				if (
-					precedingComment &&
-					validGroups.includes(
-						normalizeCommentText( precedingComment.value )
-					)
-				) {
-					// Remove the comment
-					fixes.push( fixer.remove( precedingComment ) );
-				}
-
-				// Remove any non-dependency comments
-				const nonDepComments = getNonDependencyComments( node );
-				for ( const comment of nonDepComments ) {
-					fixes.push( fixer.remove( comment ) );
-				}
-
-				// Replace first import with all organized imports, remove others
 				if ( i === 0 ) {
 					fixes.push(
-						fixer.replaceText( node, newImports.join( '\n' ) )
+						...processFirstImport(
+							fixer,
+							node,
+							replaceStart,
+							validGroups,
+							newImports
+						)
 					);
 				} else {
-					fixes.push( fixer.remove( node ) );
+					fixes.push(
+						...processOtherImport( fixer, node, validGroups )
+					);
 				}
 			}
 
