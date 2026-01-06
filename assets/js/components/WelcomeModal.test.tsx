@@ -161,8 +161,115 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it.each( [ 'Start tour', 'Maybe later', 'Close' ] )(
-		'should close the dashboard tour variant when the "%s" button is clicked"',
+	describe.each( [ 'Start tour', 'Maybe later', 'Close' ] )(
+		'when the "%s" button is clicked for the dashboard tour variant',
+		( buttonText ) => {
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideGatheringDataState( registry, {
+					[ MODULE_SLUG_ANALYTICS_4 ]: false,
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsDataAvailableOnLoad( true );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveIsDataAvailableOnLoad( true );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				// Model the responses for the two POST requests to `dismiss-item`.
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+					status: 200,
+				} );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: [
+						WITH_TOUR_DISMISSED_ITEM_SLUG,
+						GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					],
+					status: 200,
+				} );
+			} );
+
+			it( 'should close the modal', async () => {
+				const { container, getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+					}
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+				) as any;
+
+				await waitForRegistry();
+
+				const closeButton = getByRole( 'button', { name: buttonText } );
+				fireEvent.click( closeButton );
+
+				await waitFor( () => {
+					// Wait for the dismissal to complete.
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
+				} );
+
+				expect( container ).toBeEmptyDOMElement();
+			} );
+
+			it( 'should dismiss the items for both the dashboard tour and gathering data variants', async () => {
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+					}
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+				) as any;
+
+				await waitForRegistry();
+
+				const closeButton = getByRole( 'button', { name: buttonText } );
+				fireEvent.click( closeButton );
+
+				await waitFor( () => {
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
+				} );
+
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
+							expiration: 0,
+						},
+					},
+				} );
+
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							expiration: 0,
+						},
+					},
+				} );
+			} );
+		}
+	);
+
+	it.each( [ 'Maybe later', 'Close' ] )(
+		'should show a tooltip when the dashboard tour variant is closed by the "%s" button',
 		async ( buttonText ) => {
 			provideModules( registry, [
 				{
@@ -205,7 +312,7 @@ describe( 'WelcomeModal', () => {
 				status: 200,
 			} );
 
-			const { container, getByRole, waitForRegistry } = render(
+			const { getByRole, waitForRegistry } = render(
 				<WelcomeModal />,
 				{
 					registry,
@@ -219,15 +326,23 @@ describe( 'WelcomeModal', () => {
 			fireEvent.click( closeButton );
 
 			await waitFor( () => {
-				// Wait for the dismissal to complete.
 				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
-			expect( container ).toBeEmptyDOMElement();
+			const tooltipState = registry
+				.select( CORE_UI )
+				.getValue( 'admin-screen-tooltip' );
+
+			expect( tooltipState ).toMatchObject( {
+				isTooltipVisible: true,
+				tooltipSlug: 'dashboard-tour',
+				title: 'You can always take the dashboard tour from the help menu',
+				dismissLabel: 'Got it',
+			} );
 		}
 	);
 
-	it( 'should dismiss the both the dashboard tour and gathering data variants when the dashboard tour variant is closed', async () => {
+	it( 'should not show a tooltip when the dashboard tour variant is closed by the "Start tour" button', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -269,89 +384,17 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByLabelText, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
+		const { getByRole, waitForRegistry } = render(
+			<WelcomeModal />,
+			{
+				registry,
+			}
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
+		) as any;
 
 		await waitForRegistry();
 
-		const closeButton = getByLabelText( 'Close' );
-		fireEvent.click( closeButton );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-		} );
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-			body: {
-				data: {
-					slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
-					expiration: 0,
-				},
-			},
-		} );
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-			body: {
-				data: {
-					slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
-					expiration: 0,
-				},
-			},
-		} );
-	} );
-
-	it( 'should show a tooltip the dashboard tour variant is closed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		// Model the responses for the two POST requests to `dismiss-item`.
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
-			status: 200,
-		} );
-
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [
-				WITH_TOUR_DISMISSED_ITEM_SLUG,
-				GATHERING_DATA_DISMISSED_ITEM_SLUG,
-			],
-			status: 200,
-		} );
-
-		const { getByLabelText, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		const closeButton = getByLabelText( 'Close' );
+		const closeButton = getByRole( 'button', { name: 'Start tour' } );
 		fireEvent.click( closeButton );
 
 		await waitFor( () => {
@@ -362,12 +405,7 @@ describe( 'WelcomeModal', () => {
 			.select( CORE_UI )
 			.getValue( 'admin-screen-tooltip' );
 
-		expect( tooltipState ).toMatchObject( {
-			isTooltipVisible: true,
-			tooltipSlug: 'dashboard-tour',
-			title: 'You can always take the dashboard tour from the help menu',
-			dismissLabel: 'Got it',
-		} );
+		expect( tooltipState ).toBeUndefined();
 	} );
 
 	it( 'should not show the dashboard tour variant when it has been dismissed', async () => {
@@ -515,149 +553,114 @@ describe( 'WelcomeModal', () => {
 		).toBeInTheDocument();
 	} );
 
-	it.each( [ 'Get started', 'Close' ] )(
-		'should close the gathering data variant when the "%s" button is clicked"',
-		async ( buttonText ) => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: false,
-					connected: false,
-				},
-				{
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-					active: true,
-					connected: true,
-				},
-			] );
+	describe.each( [ 'Get started', 'Close' ] )(
+		'when the "%s" button is clicked for the gathering data variant',
+		( buttonText ) => {
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: false,
+						connected: false,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+					},
+				] );
 
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+				provideGatheringDataState( registry, {
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+				} );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
+					status: 200,
+				} );
 			} );
 
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			// eslint-disable-next-line jest/no-identical-title -- The nested describe block distinguishes the test titles.
+			it( 'should close the modal', async () => {
+				const { container, getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+					}
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+				) as any;
 
-			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
-				status: 200,
+				await waitForRegistry();
+
+				const closeButton = getByRole( 'button', {
+					name: buttonText,
+				} );
+				fireEvent.click( closeButton );
+
+				await waitFor( () => {
+					// Wait for the dismissal to complete.
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+				} );
+
+				expect( container ).toBeEmptyDOMElement();
 			} );
 
-			const { container, getByRole, waitForRegistry } = render(
-				<WelcomeModal />,
-				{
-					registry,
-				}
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-			) as any;
+			it( 'should dismiss the item for the gathering data variant', async () => {
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+					}
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+				) as any;
 
-			await waitForRegistry();
+				await waitForRegistry();
 
-			const closeButton = getByRole( 'button', { name: buttonText } );
-			fireEvent.click( closeButton );
+				const closeButton = getByRole( 'button', { name: buttonText } );
+				fireEvent.click( closeButton );
 
-			await waitFor( () => {
-				// Wait for the dismissal to complete.
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				await waitFor( () => {
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+				} );
+
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							expiration: 0,
+						},
+					},
+				} );
 			} );
 
-			expect( container ).toBeEmptyDOMElement();
+			it( 'should not show a tooltip', async () => {
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+					}
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+				) as any;
+
+				await waitForRegistry();
+
+				const closeButton = getByRole( 'button', { name: buttonText } );
+				fireEvent.click( closeButton );
+
+				await waitFor( () => {
+					expect( fetchMock ).toHaveFetchedTimes( 1 );
+				} );
+
+				const tooltipState = registry
+					.select( CORE_UI )
+					.getValue( 'admin-screen-tooltip' );
+
+				expect( tooltipState ).toBeUndefined();
+			} );
 		}
 	);
-
-	it( 'should dismiss the gathering data variant when the gathering data variant is closed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: false,
-				connected: false,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
-			status: 200,
-		} );
-
-		const { getByLabelText, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		const closeButton = getByLabelText( 'Close' );
-		fireEvent.click( closeButton );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
-		} );
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-			body: {
-				data: {
-					slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
-					expiration: 0,
-				},
-			},
-		} );
-	} );
-
-	it( 'should not show a tooltip the gathering data variant is closed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: false,
-				connected: false,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
-			status: 200,
-		} );
-
-		const { getByLabelText, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		const closeButton = getByLabelText( 'Close' );
-		fireEvent.click( closeButton );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
-		} );
-
-		const tooltipState = registry
-			.select( CORE_UI )
-			.getValue( 'admin-screen-tooltip' );
-
-		expect( tooltipState ).toBeUndefined();
-	} );
 
 	it( 'should not show the gathering data variant when it has been dismissed', async () => {
 		provideModules( registry, [
