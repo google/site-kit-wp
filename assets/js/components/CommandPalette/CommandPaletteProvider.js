@@ -53,6 +53,10 @@ function shouldIgnoreEvent( event ) {
 /**
  * Provides command palette functionality.
  *
+ * Note: Uses Cmd+M / Ctrl+M to open Site Kit's custom command palette.
+ * WordPress core Command Palette uses Cmd+K / Ctrl+K and includes Site Kit
+ * commands via WPCommandPaletteIntegration.js.
+ *
  * @since n.e.x.t
  *
  * @param {Object}    props          Component props.
@@ -61,7 +65,8 @@ function shouldIgnoreEvent( event ) {
  */
 export default function CommandPaletteProvider( { children } ) {
 	/**
-	 * Handles keyboard events for command palette.
+	 * Handles keyboard events for Site Kit command palette.
+	 * Uses Cmd+M / Ctrl+M to avoid conflict with WordPress core Command Palette (Cmd+K).
 	 */
 	const handleKeyDown = useCallback( ( event ) => {
 		// Ignore events in input fields
@@ -69,8 +74,8 @@ export default function CommandPaletteProvider( { children } ) {
 			return;
 		}
 
-		// Check for Ctrl/Cmd + K to open command palette
-		if ( ( event.ctrlKey || event.metaKey ) && event.key === 'k' ) {
+		// Check for Ctrl/Cmd + M to open Site Kit command palette
+		if ( ( event.ctrlKey || event.metaKey ) && event.key === 'm' ) {
 			event.preventDefault();
 			event.stopPropagation();
 
