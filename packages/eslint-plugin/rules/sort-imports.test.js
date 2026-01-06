@@ -437,5 +437,36 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Banner from './Banner';
 `,
 		},
+
+		// Duplicate comment blocks within same group
+		{
+			code: `
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+`,
+			errors: [
+				{
+					message:
+						'Duplicate or misplaced dependency comment block should be removed.',
+				},
+				{
+					message:
+						"Import from '@wordpress/element' should be sorted alphabetically (before '@wordpress/i18n').",
+				},
+			],
+			output: `
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+`,
+		},
 	],
 } );
