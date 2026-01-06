@@ -1,123 +1,123 @@
 name: Gemini Implement Issue
 
 on:
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'GitHub issue number to implement'
-        required: true
-        type: number
+    workflow_dispatch:
+        inputs:
+            issue_number:
+                description: 'GitHub issue number to implement'
+                required: true
+                type: number
 
 jobs:
-  implement:
-    name: Implement Issue
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    services:
-      mysql:
-        image: mysql:5.7
+    implement:
+        name: Implement Issue
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        permissions:
+            contents: write
+            issues: write
+            pull-requests: write
+        services:
+            mysql:
+                image: mysql:5.7
+                env:
+                    MYSQL_ROOT_PASSWORD: wordpress
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
         env:
-          MYSQL_ROOT_PASSWORD: wordpress
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-    env:
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      MYSQL_USER: root
-      MYSQL_PASSWORD: wordpress
-      MYSQL_DATABASE: wordpress_test
-      WP_VERSION: latest
+            DB_HOST: 127.0.0.1
+            DB_PORT: 3306
+            MYSQL_USER: root
+            MYSQL_PASSWORD: wordpress
+            MYSQL_DATABASE: wordpress_test
+            WP_VERSION: latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
 
-      - name: Install SVN
-        run: sudo apt-get update && sudo apt-get install -y subversion
+            - name: Install SVN
+              run: sudo apt-get update && sudo apt-get install -y subversion
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
-          extensions: mysqli, runkit7, uopz
-          tools: composer:2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  extensions: mysqli, runkit7, uopz
+                  tools: composer:2.1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
 
-      - name: Validate Composer configuration
-        run: composer validate --strict
+            - name: Validate Composer configuration
+              run: composer validate --strict
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --no-progress
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --no-progress
 
-      - name: Install npm dependencies
-        run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+            - name: Install npm dependencies
+              run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
 
-      - name: Set up WordPress test data
-        run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
+            - name: Set up WordPress test data
+              run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
 
-      - name: Install Gemini CLI
-        run: |
-          npm install -g @google/gemini-cli
-          gemini --version
+            - name: Install Gemini CLI
+              run: |
+                  npm install -g @google/gemini-cli
+                  gemini --version
 
-      - name: Run /implement command
-        run: |
-          gemini --yolo --model gemini-3-pro-preview --prompt "/implement ${{ inputs.issue_number }}"
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Run /implement command
+              run: |
+                  gemini --yolo --model gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
+              env:
+                  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Pull Request
-        id: create-pr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: Implement issue #${{ inputs.issue_number }}
-          branch: gemini/issue-${{ inputs.issue_number }}
-          title: "Implement #${{ inputs.issue_number }}"
-          body: |
-            🤖 Automated implementation of issue #${{ inputs.issue_number }}
+            - name: Create Pull Request
+              id: create-pr
+              uses: peter-evans/create-pull-request@v7
+              with:
+                  commit-message: Implement issue #${{ inputs.issue_number }}
+                  branch: gemini/issue-${{ inputs.issue_number }}
+                  title: 'Implement #${{ inputs.issue_number }}'
+                  body: |
+                      🤖 Automated implementation of issue #${{ inputs.issue_number }}
 
-            Generated by Gemini CLI using the `/implement` command.
+                      Generated by Gemini CLI using the `/implement` command.
 
-            **Review checklist:**
-            - [ ] Code follows documented principles
-            - [ ] Tests pass locally
-            - [ ] Linting passes
-            - [ ] Manual testing completed
-            - [ ] Code review score ≥ 0.85
+                      **Review checklist:**
+                      - [ ] Code follows documented principles
+                      - [ ] Tests pass locally
+                      - [ ] Linting passes
+                      - [ ] Manual testing completed
+                      - [ ] Code review score ≥ 0.85
 
-            Closes #${{ inputs.issue_number }}
-          draft: true
+                      Closes #${{ inputs.issue_number }}
+                  draft: true
 
-      - name: Comment on issue
-        if: steps.create-pr.outputs.pull-request-number
-        run: |
-          gh issue comment ${{ inputs.issue_number }} --body "🤖 Automated implementation created in PR #${{ steps.create-pr.outputs.pull-request-number }}
+            - name: Comment on issue
+              if: steps.create-pr.outputs.pull-request-number
+              run: |
+                  gh issue comment ${{ inputs.issue_number }} --body "🤖 Automated implementation created in PR #${{ steps.create-pr.outputs.pull-request-number }}
 
-          This is a draft PR generated by Gemini CLI. Please review the changes, run tests, and verify quality before marking ready for review."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  This is a draft PR generated by Gemini CLI. Please review the changes, run tests, and verify quality before marking ready for review."
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
