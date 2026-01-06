@@ -345,12 +345,10 @@ module.exports = {
 				const prevName = prevSpec.imported.name;
 				const currName = currSpec.imported.name;
 
-				// Always use case-insensitive comparison for member sorting
-				const comparison = prevName.localeCompare( currName, 'en', {
-					sensitivity: 'base',
-				} );
+				const compareA = ignoreCase ? prevName.toLowerCase() : prevName;
+				const compareB = ignoreCase ? currName.toLowerCase() : currName;
 
-				if ( comparison > 0 ) {
+				if ( compareA > compareB ) {
 					context.report( {
 						node: currSpec,
 						message: `Member '${ currName }' of the import declaration should be sorted alphabetically.`,
@@ -358,12 +356,25 @@ module.exports = {
 							// Sort only the ImportSpecifier nodes
 							const sorted = [ ...importSpecifiers ].sort(
 								( a, b ) => {
-									const nameA = a.imported.name;
-									const nameB = b.imported.name;
-									// Always use case-insensitive comparison for member sorting
-									return nameA.localeCompare( nameB, 'en', {
-										sensitivity: 'base',
-									} );
+									const nameA = ignoreCase
+										? a.imported.name.toLowerCase()
+										: a.imported.name;
+									const nameB = ignoreCase
+										? b.imported.name.toLowerCase()
+										: b.imported.name;
+
+									// Use standard comparison for case-sensitive
+									if ( ignoreCase ) {
+										return nameA.localeCompare( nameB );
+									}
+									// For case-sensitive, compare directly
+									if ( nameA < nameB ) {
+										return -1;
+									}
+									if ( nameA > nameB ) {
+										return 1;
+									}
+									return 0;
 								}
 							);
 
