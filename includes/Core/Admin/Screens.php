@@ -19,6 +19,8 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\User\Initial_Setup_Settings;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class managing admin screens.
@@ -65,6 +67,14 @@ final class Screens {
 	private $authentication;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @since 1.167.0
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Associative array of $hook_suffix => $screen pairs.
 	 *
 	 * @since 1.0.0
@@ -81,17 +91,20 @@ final class Screens {
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
 	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param User_Options   $user_options  Optional. User_Options instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		?Assets $assets = null,
 		?Modules $modules = null,
-		?Authentication $authentication = null
+		?Authentication $authentication = null,
+		?User_Options $user_options = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->modules        = $modules ?: new Modules( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
 	/**
@@ -359,16 +372,66 @@ final class Screens {
 			new Screen(
 				self::PREFIX . 'dashboard',
 				array(
-					'title'            => __( 'Dashboard', 'google-site-kit' ),
-					'capability'       => Permissions::VIEW_DASHBOARD,
-					'enqueue_callback' => function ( Assets $assets ) {
+					'title'               => __( 'Dashboard', 'google-site-kit' ),
+					'capability'          => Permissions::VIEW_DASHBOARD,
+					'enqueue_callback'    => function ( Assets $assets ) {
 						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							$assets->enqueue_asset( 'googlesitekit-entity-dashboard' );
 						} else {
 							$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
 						}
 					},
-					'render_callback'  => function ( Context $context ) {
+					'initialize_callback' => function ( Context $context ) {
+						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+							return;
+						}
+
+						$is_view_only = ! $this->authentication->is_authenticated();
+
+						if ( ! $is_view_only ) {
+							$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
+							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'];
+
+							if ( false === $is_analytics_setup_complete ) {
+								$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
+
+								if ( $is_analytics_connected ) {
+									wp_safe_redirect(
+										$context->admin_url(
+											'key-metrics-setup',
+											array(
+												'showProgress' => 'true',
+											)
+										)
+									);
+
+									exit;
+								} else {
+									$slug = $context->input()->filter( INPUT_GET, 'slug' );
+									$show_progress = $context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+									$re_auth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+
+									if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
+										return;
+									}
+
+									wp_safe_redirect(
+										$context->admin_url(
+											'dashboard',
+											array(
+												'slug'   => 'analytics-4',
+												'showProgress' => 'true',
+												'reAuth' => 'true',
+											)
+										)
+									);
+
+									exit;
+								}
+							}
+						}
+					},
+					'render_callback'     => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
 						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
@@ -500,6 +563,15 @@ final class Screens {
 						exit;
 					}
 				},
+			)
+		);
+
+		$screens[] = new Screen(
+			self::PREFIX . 'key-metrics-setup',
+			array(
+				'title'       => __( 'Key Metrics Setup', 'google-site-kit' ),
+				'capability'  => Permissions::MANAGE_OPTIONS,
+				'parent_slug' => self::PARENT_SLUG_NULL,
 			)
 		);
 

@@ -46,19 +46,26 @@ describe( 'module/pagespeed-insights service store', () => {
 				const serviceURL = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getServiceURL();
-				expect( serviceURL ).toBe( baseURI );
+
+				expect( new URL( serviceURL ).origin ).toBe( baseURI );
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = `${ baseURI }/test/path/to/deeplink`;
 				const serviceURLNoSlashes = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect( serviceURLNoSlashes ).toEqual( expectedURL );
+
+				expect( new URL( serviceURLNoSlashes ).pathname ).toMatch(
+					'/test/path/to/deeplink'
+				);
+
 				const serviceURLWithLeadingSlash = registry
 					.select( MODULES_PAGESPEED_INSIGHTS )
 					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
+
+				expect(
+					new URL( serviceURLWithLeadingSlash ).pathname
+				).toMatch( '/test/path/to/deeplink' );
 			} );
 
 			it( 'adds query args', () => {
@@ -74,7 +81,20 @@ describe( 'module/pagespeed-insights service store', () => {
 				expect( serviceURL.split( '?' )[ 0 ].endsWith( path ) ).toBe(
 					true
 				);
-				expect( serviceURL ).toMatchQueryParameters( query );
+				expect( serviceURL ).toMatchQueryParameters( {
+					...query,
+					utm_source: 'sitekit',
+				} );
+			} );
+
+			it( 'includes utm_source parameter', () => {
+				const serviceURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getServiceURL();
+
+				expect( serviceURL ).toMatchQueryParameters( {
+					utm_source: 'sitekit',
+				} );
 			} );
 		} );
 	} );

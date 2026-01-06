@@ -50,7 +50,7 @@ Default.storyName = 'Default';
 Default.scenario = {};
 
 export default {
-	title: 'Consent Mode/ConsentModeSetupCTABanner',
+	title: 'Consent mode/ConsentModeSetupCTABanner',
 	decorators: [
 		( Story ) => {
 			function setupRegistry( registry ) {

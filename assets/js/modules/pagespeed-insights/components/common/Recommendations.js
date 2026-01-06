@@ -34,9 +34,7 @@ import {
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import ZeroRecommendations from '@/svg/graphics/zero-state-yellow.svg';
 import Recommendation from './Recommendation';
-import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function Recommendations( {
 	className,
@@ -44,24 +42,6 @@ export default function Recommendations( {
 	referenceURL,
 	strategy,
 } ) {
-	if ( ! recommendations?.length ) {
-		return (
-			<Grid>
-				<Row>
-					<Cell>
-						{ __(
-							'No recommendations for now',
-							'google-site-kit'
-						) }
-					</Cell>
-					<Cell className="googlesitekit-pagespeed__zero-recommendations">
-						<ZeroRecommendations />
-					</Cell>
-				</Row>
-			</Grid>
-		);
-	}
-
 	return (
 		<div
 			className={ classNames(

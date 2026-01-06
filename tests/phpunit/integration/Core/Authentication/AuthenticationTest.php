@@ -104,7 +104,6 @@ class AuthenticationTest extends TestCase {
 				'initialVersion',
 				'isUserInputCompleted',
 				'verified',
-				'hasMultipleAdmins',
 			),
 			array_keys( $user_data ),
 			'User data should contain all required authentication keys.'
@@ -123,7 +122,6 @@ class AuthenticationTest extends TestCase {
 				'isUserInputCompleted',
 				'verified',
 				'user',
-				'hasMultipleAdmins',
 			),
 			array_keys( $user_data ),
 			'User data should contain all required authentication keys including user profile data.'
@@ -941,6 +939,19 @@ class AuthenticationTest extends TestCase {
 			'common ascii'   => array( 'https://example.com', null ),
 			'punycode ascii' => array( 'https://xn--xmpl-loa2a55a.test', null ),
 			'unicode'        => array( 'https://éxämplę.test', 'https://' . rawurlencode( 'éxämplę.test' ) ),
+		);
+	}
+
+	public function test_get_feature_metrics() {
+		update_site_option( 'auto_update_plugins', array( 'other-plugin.php', GOOGLESITEKIT_PLUGIN_BASENAME ) );
+
+		$authentication  = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$feature_metrics = $authentication->get_feature_metrics();
+
+		$this->assertEquals(
+			array( 'auto_updates_enabled' => true ),
+			$feature_metrics,
+			'Feature metrics should indicate that auto-updates are enabled when Site Kit is in the list of auto-update plugins.'
 		);
 	}
 

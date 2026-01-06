@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useEvent } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
@@ -69,18 +70,16 @@ export default function ConfirmDisconnect( { slug } ) {
 		setValue( dialogActiveKey, false );
 	}, [ dialogActiveKey, setValue ] );
 
-	useEffect( () => {
-		function onKeyPress( event ) {
+	const onKeyPress = useCallback(
+		( event ) => {
 			if ( ESCAPE === event.keyCode && dialogActive ) {
 				onClose();
 			}
-		}
+		},
+		[ dialogActive, onClose ]
+	);
 
-		global.addEventListener( 'keydown', onKeyPress );
-		return () => {
-			global.removeEventListener( 'keydown', onKeyPress );
-		};
-	}, [ dialogActive, onClose ] );
+	useEvent( 'keydown', onKeyPress );
 
 	const { deactivateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -127,17 +126,23 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	let dependentModulesText = null;
+	const notes = [];
 	if ( dependentModules.length > 0 ) {
-		dependentModulesText = sprintf(
-			/* translators: 1: module name, 2: list of dependent modules */
-			__(
-				'these active modules depend on %1$s and will also be disconnected: %2$s',
-				'google-site-kit'
-			),
-			name,
-			listFormat( dependentModules )
+		notes.push(
+			sprintf(
+				/* translators: 1: module name, 2: list of dependent modules */
+				__(
+					'these active modules depend on %1$s and will also be disconnected: %2$s',
+					'google-site-kit'
+				),
+				name,
+				listFormat( dependentModules )
+			)
 		);
+	}
+
+	if ( typeof module?.SettingsDisconnectNoteComponent === 'function' ) {
+		notes.push( module.SettingsDisconnectNoteComponent );
 	}
 
 	return (
@@ -148,7 +153,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			title={ title }
 			provides={ features }
 			handleConfirm={ handleDisconnect }
-			dependentModules={ dependentModulesText }
+			notes={ notes }
 			inProgress={ isDeactivating }
 			dialogActive
 			danger

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Consent_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
- * Class containing Consent Mode Regions.
+ * Class containing consent mode Regions.
  *
  * @since 1.122.0
  * @access private

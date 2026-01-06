@@ -48,11 +48,18 @@ export default function NoticeNotification( {
 	}
 
 	async function handleCTAClickWithTrackEvent( event ) {
-		await ctaButton?.onClick?.( event );
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
+
+		await ctaButton?.onClick?.( event );
+
+		if ( ctaButton?.dismissOnClick ) {
+			dismissNotification( notificationID, {
+				...ctaButton?.dismissOptions,
+			} );
+		}
 	}
 
 	return (

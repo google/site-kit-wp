@@ -40,11 +40,13 @@ import {
 	provideGatheringDataState,
 	provideUserAuthentication,
 	waitFor,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
 
 jest.mock( 'react-use' );
 mockUseIntersection.mockImplementation( () => ( {
@@ -53,6 +55,26 @@ mockUseIntersection.mockImplementation( () => ( {
 
 describe( 'KeyMetricsSetupCTAWidget', () => {
 	let registry;
+	let oldLocation;
+	const locationAssignMock = jest.fn();
+
+	beforeAll( () => {
+		oldLocation = global.location;
+		delete global.location;
+		global.location = Object.defineProperties(
+			{},
+			{
+				assign: {
+					configurable: true,
+					value: locationAssignMock,
+				},
+			}
+		);
+	} );
+
+	afterAll( () => {
+		global.location = oldLocation;
+	} );
 
 	const { Widget, WidgetNull } =
 		getWidgetComponentProps( 'keyMetricsSetupCTA' );
@@ -270,5 +292,173 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 				} )
 			)
 		);
+	} );
+
+	it( 'dismisses the item for this user when "Get tailored metrics" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', { name: /get tailored metrics/i } );
+		fireEvent.click( button );
+
+		// Item should be dismissed when either button is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+	} );
+
+	it( 'dismisses the item for this user when "Maybe later" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', { name: /maybe later/i } );
+		fireEvent.click( button );
+
+		// Item should be dismissed when the "Maybe later" button is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
+	} );
+
+	it( 'dismisses the item for this user when "Select your own metrics" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+		fetchMock.post( dismissItemEndpoint, {
+			body: JSON.stringify( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] ),
+			status: 200,
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+
+		const { getByRole, waitForRegistry } = render(
+			<KeyMetricsSetupCTAWidget
+				Widget={ Widget }
+				WidgetNull={ WidgetNull }
+			/>,
+			{
+				registry,
+			}
+		);
+		await waitForRegistry();
+
+		const button = getByRole( 'button', {
+			name: /select your own metrics/i,
+		} );
+		fireEvent.click( button );
+
+		// Item should be dismissed when the "Select your own metrics" link
+		// is clicked.
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
+		} );
 	} );
 } );

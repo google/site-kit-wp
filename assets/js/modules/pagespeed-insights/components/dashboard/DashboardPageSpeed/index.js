@@ -259,6 +259,7 @@ export default function DashboardPageSpeed() {
 					ref={ trackingRef }
 					isFetching={ isFetching }
 					updateActiveTab={ updateActiveTab }
+					recommendations={ recommendations }
 				/>
 
 				{ isFetching && (

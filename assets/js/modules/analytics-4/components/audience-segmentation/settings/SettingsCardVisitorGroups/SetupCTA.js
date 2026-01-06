@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,6 +49,10 @@ export default function SetupCTA() {
 	const viewContext = useViewContext();
 
 	const [ showErrorModal, setShowErrorModal ] = useState( false );
+
+	const learnMoreLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'visitor-groups' )
+	);
 
 	const onError = useCallback( () => {
 		setShowErrorModal( true );
@@ -98,9 +106,14 @@ export default function SetupCTA() {
 	return (
 		<div className="googlesitekit-settings-visitor-groups__setup">
 			<P>
-				{ __(
-					'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'To set up new visitor groups for your site, Site Kit needs to update your Google Analytics property. <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: <Link href={ learnMoreLink } external />,
+					}
 				) }
 			</P>
 			{ isSaving && (

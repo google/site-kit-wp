@@ -39,6 +39,8 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { trackEvent } from '@/js/util/tracking';
 import useViewContext from '@/js/hooks/useViewContext';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 
 function SettingsApp() {
 	const location = useLocation();
@@ -51,6 +53,8 @@ function SettingsApp() {
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	const viewContext = useViewContext();
+
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
 	const handleTabChange = useCallback( () => {
 		trackEvent( viewContext, 'tab_select', basePath );
@@ -128,6 +132,7 @@ function SettingsApp() {
 					</Row>
 				</Grid>
 			</div>
+			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 		</Fragment>
 	);
 }

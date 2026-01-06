@@ -38,7 +38,7 @@ import {
 /**
  * Computes the key metrics groups and supporting flags for tailoring.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @param {Object}  args                       Arguments.
  * @param {Array}   args.detectedEvents        Detected GA4 events.

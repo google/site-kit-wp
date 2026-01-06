@@ -61,6 +61,9 @@ use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
@@ -68,7 +71,6 @@ use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurement
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -79,9 +81,12 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaAccount;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -93,6 +98,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Cron;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Events_Sync;
@@ -374,10 +380,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$needs_tagmanager_scope = false;
 
+				$refined_scopes = $this->get_refined_scopes( $scopes );
+
 				if ( $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-						'https://www.googleapis.com/auth/tagmanager.readonly',
+					array_merge(
+						$refined_scopes,
+						array(
+							'https://www.googleapis.com/auth/tagmanager.readonly',
+						),
 					)
 				) ) {
 					$needs_tagmanager_scope = true;
@@ -387,18 +397,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					// Unsatisfied Scopes notification to be displayed without the Additional Permissions Required
 					// modal also appearing.
 				} elseif ( ! $oauth_client->has_sufficient_scopes(
-					array(
-						self::READONLY_SCOPE,
-					)
+					$refined_scopes
 				) ) {
 					$needs_tagmanager_scope = true;
 				}
 
 				if ( $needs_tagmanager_scope ) {
-					$scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
+					$refined_scopes[] = 'https://www.googleapis.com/auth/tagmanager.readonly';
 				}
 
-				return $scopes;
+				return $refined_scopes;
 			}
 		);
 
@@ -573,7 +581,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_4_web_data_stream_id'          => array(
-				'label' => __( 'Analytics: Web Data Stream ID', 'google-site-kit' ),
+				'label' => __( 'Analytics: Web data stream ID', 'google-site-kit' ),
 				'value' => $settings['webDataStreamID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['webDataStreamID'] ),
 			),
@@ -650,7 +658,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets an array of internal feature metrics.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.163.0
 	 *
 	 * @return array
 	 */
@@ -693,10 +701,16 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsadmin',
 				'shareable' => true,
 			),
-			'POST:create-account-ticket'                => array(
-				'service'                => 'analyticsprovisioning',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+			'POST:create-account-ticket'                => new Create_Account_Ticket(
+				array(
+					'credentials'               => $this->authentication->credentials()->get(),
+					'provisioning_redirect_uri' => $this->get_provisioning_redirect_uri(),
+					'service'                   => function () {
+						return $this->get_service( 'analyticsprovisioning' );
+					},
+					'scopes'                    => array( self::EDIT_SCOPE ),
+					'request_scopes_message'    => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+				),
 			),
 			'GET:google-tag-settings'                   => array(
 				'service' => 'tagmanager',
@@ -704,24 +718,37 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
-			'POST:create-property'                      => array(
-				'service'                => 'analyticsadmin',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+			'POST:create-property'                      => new Create_Property(
+				array(
+					'reference_site_url'     => $this->context->get_reference_site_url(),
+					'service'                => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+				)
 			),
-			'POST:create-webdatastream'                 => array(
-				'service'                => 'analyticsadmin',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
+			'POST:create-webdatastream'                 => new Create_Webdatastream(
+				array(
+					'reference_site_url'     => $this->context->get_reference_site_url(),
+					'service'                => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
+				)
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
+			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
 			'GET:report'                                => array(
 				'service'   => 'analyticsdata',
 				'shareable' => true,
 			),
-			'GET:non-shareable-report'                  => array( 'service' => 'analyticsdata' ),
-
+			'GET:batch-report'                          => array(
+				'service'   => 'analyticsdata',
+				'shareable' => true,
+			),
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
 			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
@@ -991,6 +1018,20 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
+		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
+
+			wp_safe_redirect(
+				$this->context->admin_url(
+					'key-metrics-setup',
+					array(
+						'showProgress' => $show_progress ? 'true' : null,
+					)
+				)
+			);
+			exit;
+		}
+
 		wp_safe_redirect(
 			$this->context->admin_url(
 				'dashboard',
@@ -1198,67 +1239,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						$property_id,
 						$post_body
 					);
-			case 'POST:create-account-ticket':
-				if ( empty( $data['displayName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'displayName' );
-				}
-				if ( empty( $data['regionCode'] ) ) {
-					throw new Missing_Required_Param_Exception( 'regionCode' );
-				}
-				if ( empty( $data['propertyName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyName' );
-				}
-				if ( empty( $data['dataStreamName'] ) ) {
-					throw new Missing_Required_Param_Exception( 'dataStreamName' );
-				}
-				if ( empty( $data['timezone'] ) ) {
-					throw new Missing_Required_Param_Exception( 'timezone' );
-				}
-
-				$account = new GoogleAnalyticsAdminV1betaAccount();
-				$account->setDisplayName( $data['displayName'] );
-				$account->setRegionCode( $data['regionCode'] );
-
-				$credentials            = $this->authentication->credentials()->get();
-				$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
-				$account_ticket_request->setSiteId( $credentials['oauth2_client_id'] );
-				$account_ticket_request->setSiteSecret( $credentials['oauth2_client_secret'] );
-				$account_ticket_request->setRedirectUri( $this->get_provisioning_redirect_uri() );
-				$account_ticket_request->setAccount( $account );
-
-				return $this->get_service( 'analyticsprovisioning' )
-					->accounts->provisionAccountTicket( $account_ticket_request );
-			case 'POST:create-property':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$options = array(
-					'displayName' => $data['displayName'],
-					'timezone'    => $data['timezone'],
-				);
-
-				return $this->create_property( $data['accountID'], $options );
-			case 'POST:create-webdatastream':
-				if ( ! isset( $data['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$options = array(
-					'displayName' => $data['displayName'],
-				);
-
-				return $this->create_webdatastream( $data['propertyID'], $options );
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -1286,8 +1266,30 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+			case 'GET:has-property-access':
+				if ( ! isset( $data['propertyID'] ) ) {
+					throw new Missing_Required_Param_Exception( 'propertyID' );
+				}
+
+				// A simple way to check for property access is to attempt a minimal report request.
+				// If the user does not have access, this will return a 403 error.
+				$request = new Google_Service_AnalyticsData_RunReportRequest();
+				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
+				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
+				$request->setDateRanges(
+					array(
+						new Google_Service_AnalyticsData_DateRange(
+							array(
+								'start_date' => 'yesterday',
+								'end_date'   => 'today',
+							)
+						),
+					)
+				);
+				$request->setLimit( 0 );
+
+				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				if ( empty( $data['metrics'] ) ) {
 					return new WP_Error(
 						'missing_required_param',
@@ -1316,6 +1318,58 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$request->setProperty( $property_id );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
+
+			case 'GET:batch-report':
+				if ( empty( $data['requests'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'requests' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! is_array( $data['requests'] ) || count( $data['requests'] ) > 5 ) {
+					return new WP_Error(
+						'invalid_batch_size',
+						__( 'Batch report requests must be an array with 1-5 requests.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$settings = $this->get_settings()->get();
+				if ( empty( $settings['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_setting',
+						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+						array( 'status' => 500 )
+					);
+				}
+
+				$batch_requests = array();
+				$report         = new Analytics_4_Report_Request( $this->context );
+
+				foreach ( $data['requests'] as $request_data ) {
+					$data_request = new Data_Request( 'GET', 'modules', $this->slug, 'report', $request_data );
+					$request      = $report->create_request(
+						$data_request,
+						$this->is_shared_data_request( $data_request )
+					);
+					if ( is_wp_error( $request ) ) {
+						return $request;
+					}
+					$batch_requests[] = $request;
+				}
+
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
+
+				$batch_request = new Google_Service_AnalyticsData\BatchRunReportsRequest();
+				$batch_request->setRequests( $batch_requests );
+
+				return $this->get_analyticsdata_service()->properties->batchRunReports(
+					$property_id,
+					$batch_request
+				);
 
 			case 'GET:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -1790,26 +1844,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
-			case 'POST:create-account-ticket':
-				$account_ticket = new Account_Ticket();
-				$account_ticket->set_id( $response->getAccountTicketId() );
-				// Required in create_data_request.
-				$account_ticket->set_property_name( $data['propertyName'] );
-				$account_ticket->set_data_stream_name( $data['dataStreamName'] );
-				$account_ticket->set_timezone( $data['timezone'] );
-				$account_ticket->set_enhanced_measurement_stream_enabled( ! empty( $data['enhancedMeasurementStreamEnabled'] ) );
-				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
-				set_transient(
-					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
-					$account_ticket->to_array(),
-					15 * MINUTE_IN_SECONDS
-				);
-
-				return $response;
-			case 'POST:create-property':
-				return self::filter_property_with_ids( $response );
-			case 'POST:create-webdatastream':
-				return self::filter_webdatastream_with_ids( $response );
 			case 'GET:properties':
 				return Sort::case_insensitive_list_sort(
 					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
@@ -1830,7 +1864,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
-			case 'GET:non-shareable-report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
@@ -2290,18 +2323,29 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return boolean|WP_Error
 	 */
 	public function check_service_entity_access() {
-		// Create a basic report request with minimal parameters to test access.
-		$data = array(
-			'dimensions' => array( 'date' ),
-			'metrics'    => array( 'sessions' ),
-			'startDate'  => 'yesterday',
-			'endDate'    => 'today',
-			'limit'      => 0,
-		);
+		$settings = $this->get_settings()->get();
 
-		// Use the 'non-shareable-report' datapoint to prevent user access assumption
-		// when using dashboard sharing.
-		$request = $this->get_data( 'non-shareable-report', $data );
+		if ( empty( $settings['propertyID'] ) ) {
+			return new WP_Error(
+				'missing_required_setting',
+				__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $this->has_property_access( $settings['propertyID'] );
+	}
+
+	/**
+	 * Checks if the current user has access to the given property ID.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string $property_id Property ID to check access for.
+	 * @return boolean|WP_Error True if the user has access, false if not, or WP_Error on any other error.
+	 */
+	public function has_property_access( $property_id ) {
+		$request = $this->get_data( 'has-property-access', array( 'propertyID' => $property_id ) );
 
 		if ( is_wp_error( $request ) ) {
 			// A 403 error implies that the user does not have access to the service entity.
@@ -2692,6 +2736,39 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'lostEvents'     => is_array( $lost_events ) ? $lost_events : array(),
 			'newBadgeEvents' => is_array( $new_events_badge ) ? $new_events_badge['events'] : array(),
 		);
+	}
+
+	/**
+	 * Refines the requested scopes based on the current authentication and connection state.
+	 *
+	 * Specifically, the `EDIT_SCOPE` is only added if the user is not yet authenticated,
+	 * or if they are authenticated and have already granted the scope, or if the module
+	 * is not yet connected (i.e. during setup).
+	 *
+	 * @since 1.163.0
+	 *
+	 * @param string[] $scopes Array of requested scopes.
+	 * @return string[] Refined array of requested scopes.
+	 */
+	private function get_refined_scopes( $scopes = array() ) {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return $scopes;
+		}
+
+		if ( ! $this->authentication->is_authenticated() ) {
+			$scopes[] = self::EDIT_SCOPE;
+			return $scopes;
+		}
+
+		$oauth_client        = $this->authentication->get_oauth_client();
+		$granted_scopes      = $oauth_client->get_granted_scopes();
+		$is_in_setup_process = ! $this->is_connected();
+
+		if ( in_array( self::EDIT_SCOPE, $granted_scopes, true ) || $is_in_setup_process ) {
+			$scopes[] = self::EDIT_SCOPE;
+		}
+
+		return $scopes;
 	}
 
 	/**

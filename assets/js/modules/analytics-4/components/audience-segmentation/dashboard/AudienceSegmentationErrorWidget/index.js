@@ -49,6 +49,7 @@ function AudienceSegmentationErrorWidget( {
 	errors,
 	onRetry,
 	showRetryButton,
+	failedAudiences,
 } ) {
 	const viewContext = useViewContext();
 
@@ -80,6 +81,7 @@ function AudienceSegmentationErrorWidget( {
 			Widget={ Widget }
 			errors={ errorsArray }
 			onRetry={ handleRetry }
+			failedAudiences={ failedAudiences }
 			onRequestAccess={ () => {
 				trackEvent(
 					`${ viewContext }_audiences-all-tiles`,
@@ -106,6 +108,7 @@ AudienceSegmentationErrorWidget.propTypes = {
 	] ).isRequired,
 	onRetry: PropTypes.func,
 	showRetryButton: PropTypes.bool,
+	failedAudiences: PropTypes.arrayOf( PropTypes.string ),
 };
 
 export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(

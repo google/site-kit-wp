@@ -49,7 +49,6 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -78,14 +77,38 @@ import { MINUTE_IN_SECONDS } from '@/js/util';
 import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
 import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
 import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
-import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
-	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
-} from '@/js/components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
-import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
-	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-} from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
+import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import {
+	requireCanActivateModule,
+	requireModuleActive,
+	requireModuleGatheringData,
+} from '@/js/googlesitekit/data-requirements';
 
 export const DEFAULT_NOTIFICATIONS = {
+	'activate-analytics-cta': {
+		Component: ActivateAnalyticsNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		isDismissible: true,
+		dismissRetries: 2,
+		checkRequirements: asyncRequireAll(
+			asyncRequire(
+				false,
+				requireModuleActive( MODULE_SLUG_ANALYTICS_4 )
+			),
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+			),
+			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
+		),
+		featureFlag: 'setupFlowRefresh',
+	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
 		priority: PRIORITY.ERROR_HIGH,
@@ -687,130 +710,57 @@ export const DEFAULT_NOTIFICATIONS = {
 		isDismissible: true,
 		featureFlag: 'googleTagGateway',
 	},
-	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
-		Component:
-			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
-		priority: PRIORITY.SETUP_CTA_HIGH,
+	[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ]: {
+		Component: SetUpEmailReportingOverlayNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		featureFlag: 'proactiveUserEngagement',
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The hasAccessToShareableModule() selector relies on
-				// the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-				// The isModuleConnected() and hasAccessToShareableModule() selectors
-				// rely on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+			// Check if email reporting is enabled at site level.
+			await resolveSelect( CORE_SITE ).getEmailReportingSettings();
 
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+			if ( select( CORE_SITE ).isEmailReportingEnabled() === false ) {
+				return false;
+			}
 
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			const canViewSharedAdsense =
-				select( CORE_USER ).hasAccessToShareableModule(
-					MODULE_SLUG_ADSENSE
-				);
-
-			const canViewSharedAnalytics = select(
+			// Check user subscription status.
+			const settings = await resolveSelect(
 				CORE_USER
-			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
+			).getEmailReportingSettings();
 
-			if (
-				! (
-					adSenseModuleConnected &&
-					analyticsModuleConnected &&
-					canViewSharedAdsense &&
-					canViewSharedAnalytics
-				)
-			) {
+			if ( settings === undefined || settings?.subscribed ) {
 				return false;
 			}
 
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+			const viewOnly =
+				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
 
-			if ( ! isAdSenseLinked ) {
-				return false;
+			// For view-only users, check if user has access to at least one
+			// of the required email report data modules.
+			// Admins always have access to the overlay notification.
+			if ( viewOnly ) {
+				await Promise.all( [
+					resolveSelect( CORE_MODULES ).getModules(),
+					resolveSelect( CORE_USER ).getCapabilities(),
+				] );
+				const viewableModules =
+					select( CORE_USER ).getViewableModules();
+
+				if (
+					! viewableModules?.includes( MODULE_SLUG_ANALYTICS_4 ) &&
+					! viewableModules?.includes( MODULE_SLUG_SEARCH_CONSOLE )
+				) {
+					return false;
+				}
 			}
 
-			// The getAccountID() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
-
-			const { startDate, endDate } = select(
-				CORE_USER
-			).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
-
-			const reportArgs = {
-				startDate,
-				endDate,
-				dimensions: [ 'pagePath', 'adSourceName' ],
-				metrics: [ { name: 'totalAdRevenue' } ],
-				dimensionFilters: {
-					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-				},
-				orderby: [
-					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
-				],
-				limit: 1,
-				reportID:
-					'notifications_analytics-adsense-linked-overlay_reportArgs',
-			};
-
-			const reportData = await resolveSelect(
-				MODULES_ANALYTICS_4
-			).getReport( reportArgs );
-
-			return isZeroReport( reportData ) === false;
-		},
-	},
-	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
-		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
-				return false;
-			}
-
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			return isAdSenseLinked === false;
+			return ! select( CORE_USER ).isEmailReportingSubscribed();
 		},
 	},
 };

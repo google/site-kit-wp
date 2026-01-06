@@ -96,6 +96,14 @@ export const reducer = createReducer( ( state, action ) => {
 	}
 } );
 
+function* waitForModuleData() {
+	const { resolveSelect } = yield commonActions.getRegistry();
+
+	yield commonActions.await(
+		resolveSelect( MODULES_SIGN_IN_WITH_GOOGLE ).getModuleData()
+	);
+}
+
 export const resolvers = {
 	/**
 	 * Resolves module data.
@@ -118,6 +126,7 @@ export const resolvers = {
 
 		yield actions.receiveModuleData( moduleData );
 	},
+	getExistingClientID: waitForModuleData,
 };
 
 export const selectors = {

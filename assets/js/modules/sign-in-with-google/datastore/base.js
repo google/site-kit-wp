@@ -34,6 +34,6 @@ export default Modules.createModuleStore( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
 		'text',
 		'theme',
 		'oneTapEnabled',
-		'oneTapOnAllPages',
+		'showNextToCommentsEnabled',
 	],
 } );

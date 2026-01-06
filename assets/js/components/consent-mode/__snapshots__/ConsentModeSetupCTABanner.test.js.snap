@@ -26,7 +26,7 @@ exports[`ConsentModeSetupCTABanner should render the banner 1`] = `
                 <p
                   class="googlesitekit-banner__title"
                 >
-                  Enable Consent Mode to preserve tracking for your Ads campaigns
+                  Enable consent mode to preserve tracking for your Ads campaigns
                 </p>
                 <div
                   class="googlesitekit-banner__description"

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { withQuery } from '@storybook/addon-queryparams';
+
+/**
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -51,9 +56,20 @@ export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
 
+export const InitialSetupFlow = Template.bind( null );
+InitialSetupFlow.storyName = 'Initial setup flow';
+InitialSetupFlow.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+	},
+};
+InitialSetupFlow.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Setup/SetupForm',
 	decorators: [
+		withQuery,
 		( Story ) => {
 			function setupRegistry( registry ) {
 				provideModules( registry, [

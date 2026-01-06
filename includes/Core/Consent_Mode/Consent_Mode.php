@@ -14,20 +14,23 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
+use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Plugin_Upgrader;
 use Plugin_Installer_Skin;
 
 /**
- * Class for handling Consent Mode.
+ * Class for handling consent mode.
  *
  * @since 1.122.0
  * @access private
  * @ignore
  */
-class Consent_Mode {
+class Consent_Mode implements Provides_Feature_Metrics {
 	use Method_Proxy_Trait;
+	use Feature_Metrics_Trait;
 
 	/**
 	 * Context instance.
@@ -86,6 +89,7 @@ class Consent_Mode {
 	public function register() {
 		$this->consent_mode_settings->register();
 		$this->rest_controller->register();
+		$this->register_feature_metrics();
 
 		// Declare that the plugin is compatible with the WP Consent API.
 		$plugin = GOOGLESITEKIT_PLUGIN_BASENAME;
@@ -241,9 +245,9 @@ class Consent_Mode {
 			)
 		);
 
-		// The core Consent Mode code is in assets/js/consent-mode/consent-mode.js.
+		// The core consent mode code is in assets/js/consent-mode/consent-mode.js.
 		// Only code that passes data from PHP to JS should be in this file.
-		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+		printf( "<!-- %s -->\n", esc_html__( 'Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_inline_script_tag(
 			join(
 				"\n",
@@ -256,7 +260,7 @@ class Consent_Mode {
 			),
 			array( 'id' => 'google_gtagjs-js-consent-mode-data-layer' )
 		);
-		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit', 'google-site-kit' ) );
+		printf( "<!-- %s -->\n", esc_html__( 'End Google tag (gtag.js) consent mode dataLayer added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
@@ -271,5 +275,27 @@ class Consent_Mode {
 		$data['consentModeRegions'] = Regions::get_regions();
 
 		return $data;
+	}
+
+	/**
+	 * Gets an array of internal feature metrics.
+	 *
+	 * @since 1.163.0
+	 *
+	 * @return array
+	 */
+	public function get_feature_metrics() {
+		$wp_consent_api_status = 'none';
+
+		if ( function_exists( 'wp_consent_api' ) ) {
+			$wp_consent_api_status = 'active';
+		} elseif ( $this->rest_controller->get_consent_api_plugin_file() ) {
+			$wp_consent_api_status = 'installed';
+		}
+
+		return array(
+			'consent_mode_enabled' => $this->consent_mode_settings->is_consent_mode_enabled(),
+			'wp_consent_api'       => $wp_consent_api_status,
+		);
 	}
 }

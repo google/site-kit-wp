@@ -20,16 +20,17 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
@@ -195,7 +196,7 @@ function MockWPDashboard() {
 				<h2 className="step-3 googlesitekit-search-console-widget__title">
 					Top content over the last 28 days
 				</h2>
-				<div className="googlesitekit-table-overflow">
+				<div className="step-4 googlesitekit-table-overflow">
 					<div className="googlesitekit-table-overflow__container">
 						<div className="googlesitekit-table googlesitekit-table--with-list">
 							<table className="googlesitekit-table__wrapper googlesitekit-table__wrapper--2-col">
@@ -273,7 +274,7 @@ function MockWPDashboard() {
 										<td className="googlesitekit-table__body-item">
 											<div className="googlesitekit-table__body-item-content">
 												<a
-													className="step-4 googlesitekit-cta-link googlesitekit-table__body-item-link"
+													className="step-4-anchor googlesitekit-cta-link googlesitekit-table__body-item-link"
 													href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2F"
 												>
 													WordPress Websites –
@@ -374,7 +375,7 @@ function TourControls() {
 	);
 }
 
-function Template() {
+export function Default() {
 	const steps = [
 		{
 			target: '.step-1',
@@ -409,6 +410,9 @@ function Template() {
 					) }
 				</div>
 			),
+			floaterProps: {
+				target: '.step-4-anchor',
+			},
 		},
 	];
 	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
@@ -432,7 +436,69 @@ function Template() {
 	);
 }
 
-export const Default = Template.bind( {} );
+function RepeatableTour() {
+	const tour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
+	);
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+
+	function startTour() {
+		const repeatableTour = {
+			slug: 'repeatableTour',
+			gaEventCategory: 'storybook',
+			isRepeatable: true,
+			steps: [
+				{
+					target: '.step-1',
+					title: 'See where your visitors are coming from',
+					content:
+						'Click on a slice of the chart to see how it changed over time just for that source',
+					placement: 'bottom-start',
+				},
+				{
+					target: '.step-2',
+					title: "It's now easier to see your site's traffic at a glance",
+					content:
+						'Check the trend graph to see how your traffic changed over time',
+					placement: 'top-end',
+				},
+			],
+		};
+
+		triggerOnDemandTour( repeatableTour );
+	}
+
+	useMount( startTour );
+
+	return (
+		<Fragment>
+			<div style={ { textAlign: 'right' } }>
+				<Button onClick={ startTour }>Start Tour</Button>
+			</div>
+			<MockWPDashboard />
+			{ tour && (
+				<TourTooltips
+					steps={ tour.steps }
+					tourID={ tour.slug }
+					gaEventCategory={ tour.gaEventCategory }
+					isRepeatable={ tour.isRepeatable }
+				/>
+			) }
+		</Fragment>
+	);
+}
+
+export function Repeatable() {
+	function setupRegistry( registry ) {
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+	}
+
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<RepeatableTour />
+		</WithRegistrySetup>
+	);
+}
 
 export default {
 	title: 'Components/TourTooltips',

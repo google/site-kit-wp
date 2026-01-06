@@ -61,6 +61,12 @@
 
 	if ( canTrackAddToCart ) {
 		$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
+			// Return early if $button is not a valid jQuery element instance.
+			// This can happen when WooCommerce is customized by themes or third-party integrations.
+			if ( ! $button?.jquery ) {
+				return;
+			}
+
 			const productID = parseInt( $button.data( 'product_id' ), 10 );
 
 			if ( ! productID ) {

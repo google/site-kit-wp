@@ -14,6 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings as Site_Email_Reporting_Settings;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Site_Health;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Module;
@@ -200,6 +202,10 @@ class Debug_Data {
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
 		$fields = array_merge( $fields, $this->get_gtg_fields() );
+
+		if ( Feature_Flags::enabled( 'proactiveUserEngagement' ) ) {
+			$fields = array_merge( $fields, $this->get_email_reports_fields() );
+		}
 
 		$fields = array_filter(
 			array_merge(
@@ -607,7 +613,7 @@ class Debug_Data {
 
 		return array(
 			'consent_mode' => array(
-				'label' => __( 'Consent Mode', 'google-site-kit' ),
+				'label' => __( 'Consent mode', 'google-site-kit' ),
 				'value' => 'enabled' === $consent_mode_status ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
 				'debug' => $consent_mode_status,
 			),
@@ -683,6 +689,22 @@ class Debug_Data {
 				'value' => $key_metrics_source,
 			),
 		);
+	}
+
+	/**
+	 * Gets Email Reports Site Health fields.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return array
+	 */
+	private function get_email_reports_fields() {
+		$site_health = new Email_Reporting_Site_Health(
+			new Site_Email_Reporting_Settings( $this->options ),
+			$this->user_options
+		);
+
+		return $site_health->get_debug_fields();
 	}
 
 	/**

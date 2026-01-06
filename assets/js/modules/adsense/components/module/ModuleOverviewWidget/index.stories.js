@@ -180,7 +180,7 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2021-11-25' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-11-24' );
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

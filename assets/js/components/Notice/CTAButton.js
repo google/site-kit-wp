@@ -18,6 +18,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
@@ -31,8 +32,8 @@ export default function CTAButton( {
 	inProgress,
 	onClick,
 	href,
-	external,
-	hideExternalIndicator,
+	external = false,
+	hideExternalIndicator = false,
 } ) {
 	let trailingIconToUse;
 	if ( external && ! hideExternalIndicator ) {
@@ -40,12 +41,14 @@ export default function CTAButton( {
 	}
 	return (
 		<SpinnerButton
-			className="googlesitekit-notice__cta"
+			className={ classNames( 'googlesitekit-notice__cta', {
+				'googlesitekit-notice__cta--spinner__running': inProgress,
+			} ) }
 			disabled={ disabled }
 			isSaving={ inProgress }
 			onClick={ onClick }
 			href={ href }
-			target={ external ? '_blank' : '_self' }
+			target={ external ? '_blank' : undefined }
 			trailingIcon={ trailingIconToUse }
 		>
 			{ label }

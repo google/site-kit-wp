@@ -32,7 +32,7 @@ import {
  *
  * Mirrors the logic previously in ChipTabGroup for computing `newBadgeEvents`.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @return {Array<string>} List of events for which to show the "New" badge.
  */

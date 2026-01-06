@@ -20,11 +20,14 @@
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
+import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_SITE } from './constants';
 import cache from './cache';
 import connection from './connection';
 import consentMode from './consent-mode';
 import conversionTracking from './conversion-tracking';
+import emailReporting from './email-reporting';
 import errors from './errors';
 import googleTagGateway from './google-tag-gateway';
 import html from './html';
@@ -35,13 +38,13 @@ import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
 import notifications from './notifications';
-import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 const store = combineStores(
 	commonStore,
 	connection,
 	consentMode,
 	conversionTracking,
+	emailReporting,
 	errors,
 	googleTagGateway,
 	html,
@@ -53,7 +56,8 @@ const store = combineStores(
 	urls,
 	notifications,
 	cache,
-	createErrorStore( CORE_SITE )
+	createErrorStore( CORE_SITE ),
+	createSnapshotStore( CORE_SITE, { pick: [ 'conversionTracking' ] } )
 );
 
 export const initialState = store.initialState;

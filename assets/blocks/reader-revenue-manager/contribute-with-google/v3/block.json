@@ -1,0 +1,14 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "google-site-kit/rrm-contribute-with-google",
+	"version": "1.168.0",
+	"title": "Contribute with Google",
+	"category": "widgets",
+	"icon": "google",
+	"description": "Allow users to make voluntary contributions using Reader Revenue Manager.",
+	"textdomain": "google-site-kit",
+	"supports": {
+		"inserter": true
+	}
+}

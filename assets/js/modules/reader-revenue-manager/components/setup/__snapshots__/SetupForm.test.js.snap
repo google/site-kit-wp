@@ -1,5 +1,109 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SetupForm should not silently fail when there is an error 1`] = `
+<div>
+  <form>
+    <div
+      class="googlesitekit-notice googlesitekit-notice--error"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__description"
+        >
+          <span>
+            Error: Test error message (Please try again.)
+          </span>
+        </p>
+      </div>
+    </div>
+    <p
+      class="googlesitekit-margin-bottom-0"
+    >
+      Select your preferred publication to connect with Site Kit
+    </p>
+    <div
+      class="googlesitekit-setup-module__inputs"
+    >
+      <div
+        class="mdc-select mdc-select--outlined"
+      >
+        <i
+          class="mdc-select__dropdown-icon"
+        />
+        <input
+          name="enhanced-select"
+          type="hidden"
+          value=""
+        />
+        <div
+          aria-disabled="false"
+          class="mdc-select__selected-text"
+          tabindex="0"
+        />
+        <div
+          class="mdc-notched-outline mdc-notched-outline--upgraded"
+        >
+          <div
+            class="mdc-notched-outline__leading"
+          />
+          <div
+            class="mdc-notched-outline__notch"
+          >
+            <label
+              class="mdc-floating-label"
+              for="googlesitekit-select-2"
+              style=""
+            >
+              Publication
+            </label>
+          </div>
+          <div
+            class="mdc-notched-outline__trailing"
+          />
+        </div>
+      </div>
+    </div>
+    <button
+      class="googlesitekit-cta-link"
+    >
+      <span
+        class="googlesitekit-cta-link__contents"
+      >
+        Manage publications in Publisher Center
+      </span>
+      <span
+        class="googlesitekit-icon-wrapper"
+        style="margin-left: 5px;"
+      >
+        <svg />
+      </span>
+    </button>
+    <div
+      class="googlesitekit-setup-module__action"
+    >
+      <button
+        class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+        disabled=""
+        target="_self"
+      >
+        <span
+          class="mdc-button__label"
+        >
+          Complete setup
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
 exports[`SetupForm should render the form correctly 1`] = `
 <div>
   <form>

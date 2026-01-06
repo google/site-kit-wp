@@ -1,0 +1,48 @@
+/**
+ * ProgressIndicator styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-progress-indicator {
+	background-color: $c-site-kit-sk-100;
+	display: grid;
+	height: 14px;
+	justify-content: space-between;
+	overflow: hidden;
+
+	.googlesitekit-progress-indicator__segment {
+		background-color: $c-site-kit-sk-400;
+		height: 100%;
+		position: relative;
+		width: 100%;
+
+		&:not(.googlesitekit-progress-indicator__segment--final):last-child {
+			border-radius: 0 7px 7px 0;
+		}
+
+		// Add white dot to active segments when they are not the only child.
+		&:not(:only-child)::after {
+			background-color: $c-site-kit-sk-10;
+			border-radius: 50%;
+			content: "";
+			height: 6px;
+			position: absolute;
+			right: 5px;
+			top: 4px;
+			width: 6px;
+		}
+	}
+}

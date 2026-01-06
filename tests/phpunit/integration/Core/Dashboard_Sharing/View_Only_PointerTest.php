@@ -51,7 +51,7 @@ class View_Only_PointerTest extends TestCase {
 
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
-		$pointer = new View_Only_Pointer();
+		$pointer = new View_Only_Pointer( $this->context );
 		$pointer->register();
 	}
 

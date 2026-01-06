@@ -56,6 +56,10 @@
 		color: $c-surfaces-on-surface;
 		padding: $grid-gap-phone;
 
+		.googlesitekit-overlay-card__badge {
+			margin-bottom: 8px;
+		}
+
 		.googlesitekit-overlay-card__title {
 			margin: 0 0 10px;
 		}

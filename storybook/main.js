@@ -70,7 +70,14 @@ module.exports = {
 	stories: [
 		path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
 		path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
+		path.resolve( rootDir, 'assets/js/**/*.stories.tsx' ),
+		path.resolve( rootDir, 'assets/blocks/**/*.stories.tsx' ),
 	],
+	typescript: {
+		check: false,
+		checkOptions: {},
+		skipCompiler: false,
+	},
 	addons: [
 		getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
 		getModuleAbsolutePath( '@storybook/addon-viewport' ),
@@ -85,6 +92,8 @@ module.exports = {
 	babel( options ) {
 		options.presets = [
 			...( options.presets || [] ),
+			'@babel/preset-typescript',
+			'@wordpress/default',
 			'@babel/preset-react',
 		];
 		return options;

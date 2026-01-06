@@ -49,6 +49,7 @@ export default function OptIn( {
 	name = 'optIn',
 	className,
 	trackEventCategory,
+	trackEventAction = 'tracking_optin',
 	alignLeftCheckbox = false,
 } ) {
 	const [ checked, setChecked ] = useState();
@@ -76,14 +77,20 @@ export default function OptIn( {
 				if ( response.enabled ) {
 					trackEvent(
 						trackEventCategory || viewContext,
-						'tracking_optin'
+						trackEventAction
 					);
 				}
 			} else {
 				setChecked( enabled );
 			}
 		},
-		[ enabled, setTrackingEnabled, trackEventCategory, viewContext ]
+		[
+			enabled,
+			setTrackingEnabled,
+			trackEventCategory,
+			trackEventAction,
+			viewContext,
+		]
 	);
 
 	useEffect( () => {
@@ -116,7 +123,7 @@ export default function OptIn( {
 			>
 				{ createInterpolateElement(
 					__(
-						'<span>Help us improve Site Kit by sharing anonymous usage data.</span> <span>All collected data is treated in accordance with the <a>Google Privacy Policy.</a></span>',
+						'<span>Help us improve Site Kit by sharing anonymous usage data.</span> <span>All collected data is treated in accordance with the <a>Google Privacy Policy</a></span>',
 						'google-site-kit'
 					),
 					{

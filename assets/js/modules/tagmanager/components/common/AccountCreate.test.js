@@ -135,8 +135,10 @@ describe( 'AccountCreate', () => {
 			expect( openSpy ).toHaveBeenCalledWith(
 				expect.stringContaining(
 					`${ encodeURIComponent(
-						'/admin/accounts/create'
-					) }&Email=${ encodeURIComponent( 'user@example.com' ) }`
+						'/admin/accounts/create?utm_source=sitekit'
+					) }&Email=${ encodeURIComponent(
+						'user@example.com'
+					) }&utm_source=sitekit`
 				),
 				'_blank'
 			);

@@ -91,6 +91,10 @@
 					margin-top: $grid-gap-phone / 2;
 				}
 			}
+
+			.mdc-form-field {
+				position: absolute;
+			}
 		}
 
 		&.googlesitekit-ad-blocking-recovery__step-create-message {
@@ -109,7 +113,7 @@
 		p.googlesitekit-ad-blocking-recovery__error-protection-tag-info {
 			font-size: $fs-body-md;
 			line-height: $lh-body-md;
-			margin: 0 0 20px 34px; // Aligns the paragraph with the checkbox.
+			margin: 52px 0 20px 34px; // Aligns the paragraph with the checkbox.
 		}
 	}
 

@@ -32,7 +32,7 @@ import {
 /**
  * Filters and aggregates key metrics for the active group.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @param {Object} args                                 Arguments.
  * @param {Object} args.allMetricItems                  All metric items keyed by slug.

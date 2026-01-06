@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpinnerButton should render a button with a spinner after the text when \`spinnerPosition\` is \`after\` 1`] = `
+<div>
+  <button
+    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__running googlesitekit-button-icon--spinner__after mdc-button--raised"
+    target="_self"
+  >
+    <span
+      class="mdc-button__label"
+    >
+      Button text
+    </span>
+    <div
+      class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+      role="progressbar"
+      style="width: 14px; height: 14px;"
+    >
+      <svg
+        class="MuiCircularProgress-svg"
+        viewBox="22 22 44 44"
+      >
+        <circle
+          class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+          cx="44"
+          cy="44"
+          fill="none"
+          r="20.2"
+          stroke-width="3.6"
+        />
+      </svg>
+    </div>
+  </button>
+</div>
+`;
+
+exports[`SpinnerButton should render a button with a spinner after the text when saving and \`spinnerPosition\` is not provided 1`] = `
+<div>
+  <button
+    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__running googlesitekit-button-icon--spinner__after mdc-button--raised"
+    target="_self"
+  >
+    <span
+      class="mdc-button__label"
+    >
+      Button text
+    </span>
+    <div
+      class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+      role="progressbar"
+      style="width: 14px; height: 14px;"
+    >
+      <svg
+        class="MuiCircularProgress-svg"
+        viewBox="22 22 44 44"
+      >
+        <circle
+          class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+          cx="44"
+          cy="44"
+          fill="none"
+          r="20.2"
+          stroke-width="3.6"
+        />
+      </svg>
+    </div>
+  </button>
+</div>
+`;
+
+exports[`SpinnerButton should render a button with a spinner before the text when \`spinnerPosition\` is \`before\` 1`] = `
+<div>
+  <button
+    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__running googlesitekit-button-icon--spinner__before mdc-button--raised"
+    target="_self"
+  >
+    <div
+      class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+      role="progressbar"
+      style="width: 14px; height: 14px;"
+    >
+      <svg
+        class="MuiCircularProgress-svg"
+        viewBox="22 22 44 44"
+      >
+        <circle
+          class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+          cx="44"
+          cy="44"
+          fill="none"
+          r="20.2"
+          stroke-width="3.6"
+        />
+      </svg>
+    </div>
+    <span
+      class="mdc-button__label"
+    >
+      Button text
+    </span>
+  </button>
+</div>
+`;
+
+exports[`SpinnerButton should render a button without a spinner when not saving 1`] = `
+<div>
+  <button
+    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+    target="_self"
+  >
+    <span
+      class="mdc-button__label"
+    >
+      Button text
+    </span>
+  </button>
+</div>
+`;

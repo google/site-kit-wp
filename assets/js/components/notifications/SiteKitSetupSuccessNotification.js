@@ -59,7 +59,7 @@ export default function SiteKitSetupSuccessNotification( {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Connect more services to see more stats.',
+					'Connect more services or edit connected services from the settings screen.',
 					'google-site-kit'
 				) }
 				learnMoreLink={ {

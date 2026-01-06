@@ -41,7 +41,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	NOTIFICATION_AREAS,
@@ -55,7 +55,7 @@ describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 		)( LinkAnalyticsAndAdSenseAccountsOverlayNotification );
 
 	const notification =
-		DEFAULT_NOTIFICATIONS[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ];
+		ADSENSE_NOTIFICATIONS[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ];
 
 	let registry;
 

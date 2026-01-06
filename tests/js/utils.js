@@ -228,6 +228,7 @@ export function provideUserInfo( registry, extraData = {} ) {
 		name: 'Wapuu WordPress',
 		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
+		wpEmail: 'wapuu.wordpress@gmail.com',
 		picture:
 			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 	};
@@ -541,7 +542,7 @@ export function provideWidgetRegistrations(
  * @private
  *
  * @param {(string|RegExp|Function|URL|Object)} matcher    Criteria for deciding which requests to mock.
- *                                                        (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
+ *                                                         (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  * @param {*}                                   [response] Optional. Response to return.
  */
 export function muteFetch( matcher, response = {} ) {
@@ -678,7 +679,7 @@ export function waitForTimeouts( timeout ) {
 /**
  * Checks if fake timers are currently active.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @return {boolean} Whether fake timers are active.
  */

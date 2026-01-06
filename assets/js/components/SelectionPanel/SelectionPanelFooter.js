@@ -39,18 +39,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import ErrorNotice from '@/js/components/ErrorNotice';
 import { safelySort } from '@/js/util';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import Notice from '@/js/components/Notice';
 
 export default function SelectionPanelFooter( {
 	savedItemSlugs = [],
 	selectedItemSlugs = [],
 	saveSettings = () => {},
-	saveError,
-	itemLimitError,
 	minSelectedItemCount = 0,
 	maxSelectedItemCount = 0,
 	isBusy,
@@ -151,16 +147,8 @@ export default function SelectionPanelFooter( {
 
 	return (
 		<footer className="googlesitekit-selection-panel-footer">
-			{ saveError && <ErrorNotice error={ saveError } /> }
 			<div className="googlesitekit-selection-panel-footer__content">
-				{ haveSettingsChanged && itemLimitError ? (
-					<Notice
-						type={ Notice.TYPES.ERROR }
-						description={ itemLimitError }
-					/>
-				) : (
-					itemCountElement
-				) }
+				{ itemCountElement }
 				<div className="googlesitekit-selection-panel-footer__actions">
 					<Button
 						onClick={ onCancelClick }
@@ -191,8 +179,6 @@ SelectionPanelFooter.propTypes = {
 	savedItemSlugs: PropTypes.array,
 	selectedItemSlugs: PropTypes.array,
 	saveSettings: PropTypes.func,
-	saveError: PropTypes.object,
-	itemLimitError: PropTypes.string,
 	minSelectedItemCount: PropTypes.number,
 	maxSelectedItemCount: PropTypes.number,
 	isBusy: PropTypes.bool,

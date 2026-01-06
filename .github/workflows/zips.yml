@@ -16,6 +16,7 @@ on:
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
       - 'includes/**'
+      - 'gtg/**'
       - 'google-site-kit.php'
       - 'scoper.inc.php'
       - 'uninstall.php'

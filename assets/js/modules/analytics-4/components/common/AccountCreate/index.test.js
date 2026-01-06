@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	cleanup,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -42,8 +43,13 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createCacheKey } from '@/js/googlesitekit/api';
 import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
 import AccountCreate from '.';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const REGEX_REST_CONVERSION_TRACKING_SETTINGS = new RegExp(
 	'^/google-site-kit/v1/core/site/data/conversion-tracking'
@@ -127,12 +133,15 @@ describe( 'AccountCreate', () => {
 	describe( 'when clicking on Create Account', () => {
 		const accountTicketID = 'abc123';
 
-		let getByRole, waitForRegistry;
+		let getByRole, waitForRegistry, rerender;
 
 		beforeEach( () => {
-			( { getByRole, waitForRegistry } = render( <AccountCreate />, {
-				registry,
-			} ) );
+			( { getByRole, waitForRegistry, rerender } = render(
+				<AccountCreate />,
+				{
+					registry,
+				}
+			) );
 
 			fetchMock.post(
 				new RegExp(
@@ -179,6 +188,101 @@ describe( 'AccountCreate', () => {
 			expect( cacheKeys[ 0 ] ).toContain( searchConsoleItemCacheKey );
 		} );
 
+		it( 'should make a request to the `create-account-ticket` endpoint when clicking the Create Account button', async () => {
+			rerender( <AccountCreate /> );
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Create Account' } )
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				),
+				{
+					body: {
+						data: {
+							displayName: 'My Site Name',
+							propertyName: 'example.com',
+							dataStreamName: 'example.com',
+							timezone: 'America/Detroit',
+							regionCode: 'US',
+							enhancedMeasurementStreamEnabled: true,
+							showProgress: false, // `showProgress` defaults to false when not present as a query parameter.
+						},
+					},
+				}
+			);
+		} );
+
+		it( 'should set the `showProgress` property to `true` in the `create-account-ticket` request when the `showProgress` query parameter is "true"', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
+
+			rerender( <AccountCreate /> );
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Create Account' } )
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				),
+				{
+					body: {
+						data: {
+							displayName: 'My Site Name',
+							propertyName: 'example.com',
+							dataStreamName: 'example.com',
+							timezone: 'America/Detroit',
+							regionCode: 'US',
+							enhancedMeasurementStreamEnabled: true,
+							showProgress: true,
+						},
+					},
+				}
+			);
+		} );
+
+		it.each( [ [ 'false' ], [ '0' ] ] )(
+			'should set the `showProgress` property to `false` in the `create-account-ticket` request when the `showProgress` query parameter is "%s"',
+			async ( showProgress ) => {
+				global.location.href = `http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=${ showProgress }`;
+
+				rerender( <AccountCreate /> );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Create Account' } )
+				);
+
+				await waitForRegistry();
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						body: {
+							data: {
+								displayName: 'My Site Name',
+								propertyName: 'example.com',
+								dataStreamName: 'example.com',
+								timezone: 'America/Detroit',
+								regionCode: 'US',
+								enhancedMeasurementStreamEnabled: true,
+								showProgress: false,
+							},
+						},
+					}
+				);
+			}
+		);
+
 		it( 'should navigate to the Google Analytics Terms of Service', async () => {
 			fireEvent.click(
 				getByRole( 'button', { name: 'Create Account' } )
@@ -213,6 +317,65 @@ describe( 'AccountCreate', () => {
 			expect( fetchMock ).toHaveFetched(
 				REGEX_REST_CONVERSION_TRACKING_SETTINGS
 			);
+		} );
+
+		describe( 'event tracking', () => {
+			beforeEach( () => {
+				mockTrackEvent.mockClear();
+				cleanup();
+			} );
+
+			it( 'should track the `setup_flow_v3_create_analytics_account` event when creating an account during the initial setup flow', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
+
+				( { getByRole, waitForRegistry, rerender } = render(
+					<AccountCreate />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+						features: [ 'setupFlowRefresh' ],
+					}
+				) );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Create Account' } )
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'setup_flow_v3_create_analytics_account'
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'should track the `create_account` event when creating an account after the initial setup', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
+				( { getByRole, waitForRegistry, rerender } = render(
+					<AccountCreate />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+					}
+				) );
+
+				fireEvent.click(
+					getByRole( 'button', { name: 'Create Account' } )
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_analytics`,
+					'create_account',
+					'proxy'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			} );
 		} );
 	} );
 } );

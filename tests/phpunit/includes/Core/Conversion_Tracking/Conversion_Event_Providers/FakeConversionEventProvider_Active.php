@@ -28,6 +28,33 @@ class FakeConversionEventProvider_Active extends FakeConversionEventProvider {
 	}
 
 	/**
+	 * Gets the event names.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_event_names() {
+		return array(
+			'fake_event_active_1',
+			'fake_event_active_2',
+		);
+	}
+
+	/**
+	 * Gets the enhanced conversion event names.
+	 *
+	 * @since 1.165.0
+	 *
+	 * @return array List of enhanced conversion event names.
+	 */
+	public function get_enhanced_event_names() {
+		return array(
+			'fake_event_active_2',
+		);
+	}
+
+	/**
 	 * Registers the script for the provider.
 	 *
 	 * @since 1.126.0

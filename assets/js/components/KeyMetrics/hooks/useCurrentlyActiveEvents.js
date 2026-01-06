@@ -27,7 +27,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * Gets the list of currently active conversion events based on user selection
  * or user input settings.
  *
- * @since n.e.x.t
+ * @since 1.163.0
  *
  * @return {Array<string>|undefined} List of currently active conversion events.
  */

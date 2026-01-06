@@ -162,6 +162,11 @@ describe( 'AudienceSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
 		muteFetch( expirableItemEndpoint );
+
+		// jsdom does not support scrollIntoView which is used by the last metric item
+		// to prevent it from hiding underneath the Custom Dimensions warning notice.
+		// See: https://github.com/jsdom/jsdom/issues/1695.
+		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	afterEach( () => {
@@ -1931,9 +1936,8 @@ describe( 'AudienceSelectionPanel', () => {
 			fireEvent.click( returningVisitorsCheckbox );
 
 			expect(
-				document.querySelector(
-					'.googlesitekit-audience-selection-panel .googlesitekit-selection-panel-footer .googlesitekit-notice--error .googlesitekit-notice__content p.googlesitekit-notice__description'
-				).textContent
+				document.querySelector( '.googlesitekit-selection-panel-error' )
+					.textContent
 			).toBe( 'Select at least 1 group (0 selected)' );
 
 			// Select a group.

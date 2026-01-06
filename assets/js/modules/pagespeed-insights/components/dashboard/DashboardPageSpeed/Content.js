@@ -70,17 +70,18 @@ export default function Content( {
 			{ dataSrc === DATA_SRC_FIELD && (
 				<FieldReportMetrics data={ reportData } error={ reportError } />
 			) }
-			{ dataSrc === DATA_SRC_RECOMMENDATIONS && (
-				<Recommendations
-					className={ classnames( {
-						'googlesitekit-pagespeed-widget__refreshing':
-							isFetching,
-					} ) }
-					recommendations={ recommendations }
-					referenceURL={ referenceURL }
-					strategy={ strategy }
-				/>
-			) }
+			{ dataSrc === DATA_SRC_RECOMMENDATIONS &&
+				recommendations.length > 0 && (
+					<Recommendations
+						className={ classnames( {
+							'googlesitekit-pagespeed-widget__refreshing':
+								isFetching,
+						} ) }
+						recommendations={ recommendations }
+						referenceURL={ referenceURL }
+						strategy={ strategy }
+					/>
+				) }
 		</section>
 	);
 }

@@ -21,6 +21,7 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserAuthentication,
+	provideModuleRegistrations,
 } from '../../../../../../tests/js/test-utils';
 import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 import {
@@ -55,6 +56,9 @@ describe( 'GoogleTagIDMismatchNotification', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
+		// Module registrations are needed for storeNames to be selectable
+		// e.g. by hasModuleOwnership(slug)
+		provideModuleRegistrations( registry );
 
 		const currentMeasurementID = 'G-2B7M8YQ1K6';
 
