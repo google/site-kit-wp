@@ -32,20 +32,16 @@ jobs:
             MYSQL_PASSWORD: wordpress
             MYSQL_DATABASE: wordpress_test
             WP_VERSION: latest
-
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version-file: .nvmrc
                   cache: npm
-
             - name: Install SVN
               run: sudo apt-get update && sudo apt-get install -y subversion
-
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -54,11 +50,9 @@ jobs:
                   tools: composer:2.1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
             - name: Get Composer Cache Directory
               id: composer-cache
               run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-
             - name: Cache Composer dependencies
               uses: actions/cache@v4
               with:
@@ -66,31 +60,24 @@ jobs:
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-composer-
-
             - name: Validate Composer configuration
               run: composer validate --strict
-
             - name: Install Composer dependencies
               run: composer install --no-interaction --no-progress
-
             - name: Install npm dependencies
               run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
-
             - name: Set up WordPress test data
               run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
-
             - name: Install Gemini CLI
               run: |
-                  npm install -g @google/gemini-cli
+                  npm install -g @google/gemini-cli@0.22.5
                   gemini --version
-
             - name: Run /implement command
               run: |
                   gemini --yolo --model gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
               env:
                   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
             - name: Create Pull Request
               id: create-pr
               uses: peter-evans/create-pull-request@v7
@@ -112,7 +99,6 @@ jobs:
 
                       Closes #${{ inputs.issue_number }}
                   draft: true
-
             - name: Comment on issue
               if: steps.create-pr.outputs.pull-request-number
               run: |
