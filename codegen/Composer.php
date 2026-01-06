@@ -155,11 +155,6 @@ class Composer {
 			"$packages_root/$project_name/composer.json",
 			json_encode( $composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
 		);
-		// Ensure the generated contents are always excluded from version control.
-		file_put_contents(
-			"$packages_root/$project_name/.gitignore",
-			'**/*'
-		);
 	}
 
 	/**
