@@ -20,16 +20,17 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
@@ -433,6 +434,70 @@ function Template() {
 }
 
 export const Default = Template.bind( {} );
+
+function RepeatableTour() {
+	const tour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
+	);
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+
+	function startTour() {
+		const repeatableTour = {
+			slug: 'repeatableTour',
+			gaEventCategory: 'storybook',
+			isRepeatable: true,
+			steps: [
+				{
+					target: '.step-1',
+					title: 'See where your visitors are coming from',
+					content:
+						'Click on a slice of the chart to see how it changed over time just for that source',
+					placement: 'bottom-start',
+				},
+				{
+					target: '.step-2',
+					title: "It's now easier to see your site's traffic at a glance",
+					content:
+						'Check the trend graph to see how your traffic changed over time',
+					placement: 'top-end',
+				},
+			],
+		};
+
+		triggerOnDemandTour( repeatableTour );
+	}
+
+	useMount( startTour );
+
+	return (
+		<Fragment>
+			<div style={ { textAlign: 'right' } }>
+				<Button onClick={ startTour }>Start Tour</Button>
+			</div>
+			<MockWPDashboard />
+			{ tour && (
+				<TourTooltips
+					steps={ tour.steps }
+					tourID={ tour.slug }
+					gaEventCategory={ tour.gaEventCategory }
+					isRepeatable={ tour.isRepeatable }
+				/>
+			) }
+		</Fragment>
+	);
+}
+
+export function Repeatable() {
+	function setupRegistry( registry ) {
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+	}
+
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<RepeatableTour />
+		</WithRegistrySetup>
+	);
+}
 
 export const SetupFlowRefresh = Template.bind( {} );
 SetupFlowRefresh.storyName = 'Setup Flow Refresh';
