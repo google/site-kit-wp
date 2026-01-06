@@ -298,7 +298,7 @@ import { useSelect } from 'googlesitekit-data';
 `,
 		},
 
-		// Wrong order and missing comments
+		// Wrong order - should reorganize
 		{
 			code: `
 import { useSelect } from 'googlesitekit-data';
@@ -307,22 +307,20 @@ import PropTypes from 'prop-types';
 			errors: [
 				{
 					message:
-						'Import from \'googlesitekit-data\' should be preceded by a "Internal dependencies" comment block.',
-				},
-				{
-					message:
-						'Import from \'prop-types\' should be preceded by a "External dependencies" comment block.',
+						"Import from 'prop-types' should come before Internal dependencies imports.",
 				},
 			],
 			output: `
 /**
- * Internal dependencies
- */
-import { useSelect } from 'googlesitekit-data';
-/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+
 `,
 		},
 
@@ -457,6 +455,10 @@ import { Fragment } from '@wordpress/element';
 				},
 				{
 					message:
+						"Import from '@wordpress/element' should not have blank lines before it within the same group.",
+				},
+				{
+					message:
 						"Import from '@wordpress/element' should be sorted alphabetically (before '@wordpress/i18n').",
 				},
 			],
@@ -466,6 +468,40 @@ import { Fragment } from '@wordpress/element';
  */
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+`,
+		},
+
+		// Orphaned imports after non-import code
+		{
+			code: `
+/**
+ * Internal dependencies
+ */
+import { Button } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+
+const someConstant = 'value';
+
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+`,
+			errors: [
+				{
+					message:
+						"Import from '@/js/googlesitekit/modules/datastore/constants' is separated from other imports. All imports should be grouped together at the top of the file.",
+				},
+			],
+			output: `
+/**
+ * Internal dependencies
+ */
+import { Button } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+
+
+const someConstant = 'value';
+
+
 `,
 		},
 	],

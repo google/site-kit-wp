@@ -452,7 +452,22 @@ module.exports = {
 		 * @param {Array} importNodes Import nodes.
 		 * @return {boolean} True if reorganization is needed.
 		 */
+		/**
+		 * Checks if imports need reorganization.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Array} importNodes Import nodes.
+		 * @return {boolean} True if reorganization is needed.
+		 */
 		function needsImportReorganization( importNodes ) {
+			// Expected order: EXTERNAL_DEPS, WORDPRESS_DEPS, INTERNAL_DEPS
+			const expectedOrder = [
+				EXTERNAL_DEPS,
+				WORDPRESS_DEPS,
+				INTERNAL_DEPS,
+			];
+
 			let currentGroup = null;
 			const groupChanges = [];
 
@@ -471,7 +486,26 @@ module.exports = {
 					( groupCounts[ change.group ] || 0 ) + 1;
 			}
 
-			return Object.values( groupCounts ).some( ( count ) => count > 1 );
+			// Check if any group appears multiple times (interleaved)
+			if ( Object.values( groupCounts ).some( ( count ) => count > 1 ) ) {
+				return true;
+			}
+
+			// Check if groups are in the wrong order
+			// Get the expected index for each group in the actual order
+			const actualOrder = groupChanges.map( ( change ) => change.group );
+			let lastExpectedIndex = -1;
+
+			for ( const group of actualOrder ) {
+				const expectedIndex = expectedOrder.indexOf( group );
+				if ( expectedIndex < lastExpectedIndex ) {
+					// Found a group that should come before a previous group
+					return true;
+				}
+				lastExpectedIndex = expectedIndex;
+			}
+
+			return false;
 		}
 
 		/**
@@ -483,6 +517,13 @@ module.exports = {
 		 * @param {Object} groupedImports Grouped imports.
 		 */
 		function reportReorganizationErrors( importNodes, groupedImports ) {
+			// Expected order
+			const expectedOrder = [
+				EXTERNAL_DEPS,
+				WORDPRESS_DEPS,
+				INTERNAL_DEPS,
+			];
+
 			for ( let i = 1; i < importNodes.length; i++ ) {
 				const prevGroup = getImportGroup(
 					getImportSource( importNodes[ i - 1 ] )
@@ -504,11 +545,22 @@ module.exports = {
 					}
 				}
 
-				if ( seenBefore && prevGroup !== currGroup ) {
+				// Report error if:
+				// 1. Group is interleaved (seen before AND different from previous), OR
+				// 2. Current group comes before previous group in the expected order
+				const prevExpectedIndex = expectedOrder.indexOf( prevGroup );
+				const currExpectedIndex = expectedOrder.indexOf( currGroup );
+				const wrongOrder = currExpectedIndex < prevExpectedIndex;
+
+				if ( ( seenBefore && prevGroup !== currGroup ) || wrongOrder ) {
 					const source = getImportSource( importNodes[ i ] );
+					const message = seenBefore
+						? `Import from '${ source }' should be grouped with other ${ currGroup } imports.`
+						: `Import from '${ source }' should come before ${ prevGroup } imports.`;
+
 					context.report( {
 						node: importNodes[ i ],
-						message: `Import from '${ source }' should be grouped with other ${ currGroup } imports.`,
+						message,
 						fix( fixer ) {
 							return fixImportOrganization(
 								fixer,
@@ -1259,8 +1311,36 @@ module.exports = {
 		return {
 			Program( node ) {
 				const importGroups = groupImports( node.body );
-				for ( const group of importGroups ) {
-					checkImportGroup( group );
+
+				// Check the first import group normally
+				if ( importGroups.length > 0 ) {
+					checkImportGroup( importGroups[ 0 ] );
+				}
+
+				// For any subsequent import groups (orphaned imports), report an error
+				for ( let i = 1; i < importGroups.length; i++ ) {
+					const orphanedGroup = importGroups[ i ];
+					for ( const importNode of orphanedGroup ) {
+						const source = getImportSource( importNode );
+
+						context.report( {
+							node: importNode,
+							message: `Import from '${ source }' is separated from other imports. All imports should be grouped together at the top of the file.`,
+							fix( fixer ) {
+								// Merge all import groups and reorganize them
+								const allImports = importGroups.flat();
+								const groupedImports =
+									groupImportsByType( allImports );
+								return fixImportOrganization(
+									fixer,
+									allImports,
+									groupedImports
+								);
+							},
+						} );
+						// Only report once per orphaned group
+						break;
+					}
 				}
 			},
 		};
