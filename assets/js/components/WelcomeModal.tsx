@@ -96,30 +96,32 @@ export default function WelcomeModal() {
 
 	const showTooltip = useShowTooltip( tooltipSettings );
 
-	const closeModal = useCallback( () => {
+	const closeAndDismissModal = useCallback( async () => {
 		setIsOpen( false );
-	}, [] );
 
-	const dismissModal = useCallback( async () => {
 		await dismissItem( dismissedItemSlug );
+
 		if ( ! showGatheringDataModal ) {
 			// If we're in the dashboard tour variant, also dismiss the gathering data variant.
 			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+		}
+	}, [ dismissItem, dismissedItemSlug, showGatheringDataModal, setIsOpen ] );
+
+	const closeAndDismissModalWithTooltip = useCallback( async () => {
+		await closeAndDismissModal();
+
+		// Don't show the tooltip for the gathering data variant.
+		if ( ! showGatheringDataModal ) {
 			showTooltip();
 		}
-	}, [
-		dismissItem,
-		dismissedItemSlug,
-		showGatheringDataModal,
-		showTooltip,
-	] );
+	}, [ closeAndDismissModal, showGatheringDataModal, showTooltip ] );
 
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
 		return null;
 	}
 
-	if ( isItemDismissed ) {
+	if ( isItemDismissed || ! isOpen ) {
 		return null;
 	}
 
@@ -141,8 +143,8 @@ export default function WelcomeModal() {
 	return (
 		<Dialog
 			className="googlesitekit-dialog googlesitekit-welcome-modal"
-			open={ isOpen }
-			onClose={ dismissModal }
+			onClose={ closeAndDismissModalWithTooltip }
+			open
 		>
 			<DialogContent className="googlesitekit-welcome-modal__content">
 				<div className="googlesitekit-welcome-modal__graphic">
@@ -152,7 +154,7 @@ export default function WelcomeModal() {
 						// @ts-expect-error - The `Button` component is not typed yet.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
-						onClick={ closeModal }
+						onClick={ closeAndDismissModalWithTooltip }
 						aria-label={ __( 'Close', 'google-site-kit' ) }
 						hideTooltipTitle
 					/>
@@ -181,17 +183,20 @@ export default function WelcomeModal() {
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ showGatheringDataModal ? (
 					// @ts-expect-error - The `Button` component is not typed yet.
-					<Button onClick={ closeModal }>
+					<Button onClick={ closeAndDismissModal }>
 						{ __( 'Get started', 'google-site-kit' ) }
 					</Button>
 				) : (
 					<Fragment>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ closeModal } tertiary>
+						<Button
+							onClick={ closeAndDismissModalWithTooltip }
+							tertiary
+						>
 							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ closeModal }>
+						<Button onClick={ closeAndDismissModal }>
 							{ __( 'Start tour', 'google-site-kit' ) }
 						</Button>
 					</Fragment>
