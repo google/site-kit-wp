@@ -142,17 +142,18 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								className="googlesitekit-frequency-selector__badge-cell"
 							>
 								{ index === savedFrequencyIndex && (
-									<Typography
-										className="googlesitekit-frequency-selector__current-subscription"
-										type="body"
-										size="small"
-										as="div"
-									>
-										{ __(
-											'Current subscription',
-											'google-site-kit'
-										) }
-									</Typography>
+									<div className="googlesitekit-frequency-selector__current-subscription">
+										<Typography
+											type="body"
+											size="small"
+											as="p"
+										>
+											{ __(
+												'Current subscription',
+												'google-site-kit'
+											) }
+										</Typography>
+									</div>
 								) }
 							</div>
 						)
@@ -190,33 +191,24 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 							}
 						>
 							<div className="googlesitekit-frequency-selector__label-row">
-								<Typography
-									className="googlesitekit-frequency-selector__label"
-									type="label"
-									size="large"
-									as="div"
-								>
-									{ label }
+								<div className="googlesitekit-frequency-selector__label">
+									<Typography type="label" size="large">
+										{ label }
+									</Typography>
+								</div>
+							</div>
+
+							<div className="googlesitekit-frequency-selector__period">
+								<Typography type="body" size="small">
+									{ period }
 								</Typography>
 							</div>
 
-							<Typography
-								className="googlesitekit-frequency-selector__period"
-								type="body"
-								size="small"
-								as="div"
-							>
-								{ period }
-							</Typography>
-
-							<Typography
-								className="googlesitekit-frequency-selector__description"
-								type="body"
-								size="small"
-								as="div"
-							>
-								{ description }
-							</Typography>
+							<div className="googlesitekit-frequency-selector__description">
+								<Typography type="body" size="small">
+									{ description }
+								</Typography>
+							</div>
 						</div>
 					);
 				} ) }

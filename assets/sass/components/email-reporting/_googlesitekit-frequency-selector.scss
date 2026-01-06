@@ -36,9 +36,13 @@ h3.googlesitekit-frequency-selector-title {
 	background-color: $c-blue-b-50;
 	border-radius: 4px;
 	color: $c-blue-b-500;
-	padding: 4px 8px;
+	padding: 0 8px;
 	text-align: center;
 	width: 100%;
+	p {
+		margin: 0;
+		padding: 4px 0;
+	}
 }
 
 .googlesitekit-frequency-selector {
