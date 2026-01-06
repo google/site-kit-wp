@@ -81,6 +81,7 @@ export default function FeatureTours() {
 			tourID={ tour.slug }
 			steps={ tour.steps }
 			gaEventCategory={ tour.gaEventCategory }
+			isRepeatable={ tour.isRepeatable }
 			callback={ tour.callback }
 		/>
 	);
