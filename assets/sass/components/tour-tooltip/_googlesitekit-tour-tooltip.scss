@@ -203,7 +203,7 @@
 
 	.googlesitekit-tooltip-button {
 		border-radius: $br-lg;
-		line-height: 20px;
+		line-height: $lh-label-md;
 		padding: 6px $grid-gap-phone;
 
 		&:not(:first-of-type) {
@@ -217,6 +217,7 @@
 
 	.googlesitekit-tooltip-button--primary {
 		background-color: $c-site-kit-sk-300;
+		box-shadow: none;
 	}
 
 	.googlesitekit-tooltip-steps {
