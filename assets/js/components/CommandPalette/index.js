@@ -21,3 +21,9 @@ export {
 	useCommandPalette,
 } from './CommandPaletteProvider';
 export { default as CommandPalette } from './CommandPalette';
+export {
+	registerSiteKitWPCommands,
+	unregisterSiteKitWPCommands,
+	initWPCommandPaletteIntegration,
+	SITEKIT_COMMANDS,
+} from './WPCommandPaletteIntegration';
