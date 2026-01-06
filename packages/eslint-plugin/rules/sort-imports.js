@@ -432,7 +432,85 @@ module.exports = {
 				return;
 			}
 
+			// Group imports by their dependency type
+			const groupedImports = {
+				[ EXTERNAL_DEPS ]: [],
+				[ WORDPRESS_DEPS ]: [],
+				[ INTERNAL_DEPS ]: [],
+			};
+
+			for ( const node of importNodes ) {
+				const source = getImportSource( node );
+				const group = getImportGroup( source );
+				groupedImports[ group ].push( node );
+			}
+
+			// Check if imports are properly organized (all groups together, no mixing)
 			let currentGroup = null;
+			const groupChanges = [];
+			for ( const node of importNodes ) {
+				const source = getImportSource( node );
+				const group = getImportGroup( source );
+				if ( group !== currentGroup ) {
+					groupChanges.push( { node, group } );
+					currentGroup = group;
+				}
+			}
+
+			// If we have multiple sections of the same group, we need to reorganize
+			const groupCounts = {};
+			for ( const change of groupChanges ) {
+				groupCounts[ change.group ] =
+					( groupCounts[ change.group ] || 0 ) + 1;
+			}
+
+			const needsReorganization = Object.values( groupCounts ).some(
+				( count ) => count > 1
+			);
+
+			if ( needsReorganization ) {
+				// Report on the first import that breaks the organization
+				for ( let i = 1; i < importNodes.length; i++ ) {
+					const prevGroup = getImportGroup(
+						getImportSource( importNodes[ i - 1 ] )
+					);
+					const currGroup = getImportGroup(
+						getImportSource( importNodes[ i ] )
+					);
+
+					// Check if we've seen this group before
+					let seenBefore = false;
+					for ( let j = 0; j < i - 1; j++ ) {
+						if (
+							getImportGroup(
+								getImportSource( importNodes[ j ] )
+							) === currGroup
+						) {
+							seenBefore = true;
+							break;
+						}
+					}
+
+					if ( seenBefore && prevGroup !== currGroup ) {
+						const source = getImportSource( importNodes[ i ] );
+						context.report( {
+							node: importNodes[ i ],
+							message: `Import from '${ source }' should be grouped with other ${ currGroup } imports.`,
+							fix( fixer ) {
+								return fixImportOrganization(
+									fixer,
+									importNodes,
+									groupedImports
+								);
+							},
+						} );
+						break; // Only report once per group
+					}
+				}
+			}
+
+			// Now check each group individually for proper comments and sorting
+			currentGroup = null;
 			let lastNode = null;
 			let lastSource = null;
 
@@ -447,17 +525,20 @@ module.exports = {
 
 					// Check if the correct comment block exists
 					if ( ! precedingComment ) {
-						context.report( {
-							node,
-							message: `Import from '${ source }' should be preceded by a "${ group }" comment block.`,
-							fix( fixer ) {
-								const nodeText = sourceCode.getText( node );
-								return fixer.replaceText(
-									node,
-									`${ expectedComment }\n${ nodeText }`
-								);
-							},
-						} );
+						// Only report if we're not already reorganizing
+						if ( ! needsReorganization ) {
+							context.report( {
+								node,
+								message: `Import from '${ source }' should be preceded by a "${ group }" comment block.`,
+								fix( fixer ) {
+									const nodeText = sourceCode.getText( node );
+									return fixer.replaceText(
+										node,
+										`${ expectedComment }\n${ nodeText }`
+									);
+								},
+							} );
+						}
 					} else {
 						const commentText = normalizeCommentText(
 							precedingComment.value
@@ -479,45 +560,139 @@ module.exports = {
 					currentGroup = group;
 					lastNode = null; // Reset when group changes
 					lastSource = null;
+				} else if ( currentGroup ) {
+					// Same group - check for erroneous comment blocks
+					const precedingComment = getPrecedingCommentBlock( node );
+					if ( precedingComment ) {
+						const commentText = normalizeCommentText(
+							precedingComment.value
+						);
+						const validGroups = [
+							WORDPRESS_DEPS,
+							EXTERNAL_DEPS,
+							INTERNAL_DEPS,
+						];
+
+						// If this is a dependency comment, it shouldn't be here
+						// since we're in the middle of a group
+						if ( validGroups.includes( commentText ) ) {
+							context.report( {
+								node,
+								message:
+									'Duplicate or misplaced dependency comment block should be removed.',
+								fix( fixer ) {
+									// Remove the comment and its trailing newline
+									const commentEnd =
+										precedingComment.range[ 1 ];
+									const sourceAfter =
+										sourceCode.text.slice( commentEnd );
+									const newlineMatch =
+										sourceAfter.match( /^\n/ );
+									const endPos = newlineMatch
+										? commentEnd + 1
+										: commentEnd;
+
+									return fixer.removeRange( [
+										precedingComment.range[ 0 ],
+										endPos,
+									] );
+								},
+							} );
+						}
+					}
 				}
 
 				// Check alphabetical order within the same group
 				if ( lastNode ) {
 					if ( compareImports( lastNode, node ) > 0 ) {
-						context.report( {
-							node,
-							message: `Import from '${ source }' should be sorted alphabetically (before '${ lastSource }').`,
-							fix( fixer ) {
-								// Find all imports in this group and sort them
-								const importsInGroup = importNodes.filter(
-									( n ) =>
-										getImportGroup(
-											getImportSource( n )
-										) === group
-								);
-
-								const sorted = [ ...importsInGroup ].sort(
-									compareImports
-								);
-
-								// Generate fixes for reordering
-								const fixes = [];
-								for (
-									let i = 0;
-									i < importsInGroup.length;
-									i++
-								) {
-									fixes.push(
-										fixer.replaceText(
-											importsInGroup[ i ],
-											sourceCode.getText( sorted[ i ] )
-										)
+						// Only report if we're not already reorganizing
+						if ( ! needsReorganization ) {
+							context.report( {
+								node,
+								message: `Import from '${ source }' should be sorted alphabetically (before '${ lastSource }').`,
+								fix( fixer ) {
+									// Find all imports in this group and sort them
+									const importsInGroup = importNodes.filter(
+										( n ) =>
+											getImportGroup(
+												getImportSource( n )
+											) === group
 									);
-								}
 
-								return fixes;
-							},
-						} );
+									const sorted = [ ...importsInGroup ].sort(
+										compareImports
+									);
+
+									const validGroups = [
+										WORDPRESS_DEPS,
+										EXTERNAL_DEPS,
+										INTERNAL_DEPS,
+									];
+
+									// Generate fixes for reordering
+									// Remove dependency comment blocks from non-first imports in the group
+									const fixes = [];
+
+									for (
+										let i = 0;
+										i < importsInGroup.length;
+										i++
+									) {
+										const originalNode =
+											importsInGroup[ i ];
+										const sortedNode = sorted[ i ];
+
+										// Check if original node (not the first one) has a preceding comment block
+										if ( i > 0 ) {
+											const precedingComment =
+												getPrecedingCommentBlock(
+													originalNode
+												);
+
+											if (
+												precedingComment &&
+												validGroups.includes(
+													normalizeCommentText(
+														precedingComment.value
+													)
+												)
+											) {
+												// Remove the duplicate comment and its trailing newline
+												const commentEnd =
+													precedingComment.range[ 1 ];
+												const sourceAfter =
+													sourceCode.text.slice(
+														commentEnd
+													);
+												const newlineMatch =
+													sourceAfter.match( /^\n/ );
+												const endPos = newlineMatch
+													? commentEnd + 1
+													: commentEnd;
+
+												fixes.push(
+													fixer.removeRange( [
+														precedingComment
+															.range[ 0 ],
+														endPos,
+													] )
+												);
+											}
+										}
+
+										// Replace the import with the sorted one
+										fixes.push(
+											fixer.replaceText(
+												originalNode,
+												sourceCode.getText( sortedNode )
+											)
+										);
+									}
+
+									return fixes;
+								},
+							} );
+						}
 					}
 				}
 
@@ -527,6 +702,147 @@ module.exports = {
 				lastNode = node;
 				lastSource = source;
 			}
+		}
+
+		/**
+		 * Gets any non-dependency comments that precede an import.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} node Import node.
+		 * @return {Array} Array of comment tokens.
+		 */
+		function getNonDependencyComments( node ) {
+			const validGroups = [
+				WORDPRESS_DEPS,
+				EXTERNAL_DEPS,
+				INTERNAL_DEPS,
+			];
+
+			const comments = sourceCode.getCommentsBefore( node );
+			const nonDepComments = [];
+
+			for ( const comment of comments ) {
+				// Check if it's a dependency comment
+				if ( comment.type === 'Block' ) {
+					const commentText = normalizeCommentText( comment.value );
+					if ( validGroups.includes( commentText ) ) {
+						continue; // Skip dependency comments
+					}
+				}
+
+				// Include this comment if it's close to the import (within 1 line)
+				const linesBetween = node.loc.start.line - comment.loc.end.line;
+				if ( linesBetween <= 1 ) {
+					nonDepComments.push( comment );
+				}
+			}
+
+			return nonDepComments;
+		}
+
+		/**
+		 * Fixes import organization by grouping all imports properly.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} fixer          ESLint fixer.
+		 * @param {Array}  importNodes    All import nodes.
+		 * @param {Object} groupedImports Imports grouped by type.
+		 * @return {Array} Array of fixes.
+		 */
+		function fixImportOrganization( fixer, importNodes, groupedImports ) {
+			const fixes = [];
+			const validGroups = [
+				WORDPRESS_DEPS,
+				EXTERNAL_DEPS,
+				INTERNAL_DEPS,
+			];
+
+			// Sort imports within each group
+			const sortedGroups = {};
+			for ( const group of [
+				EXTERNAL_DEPS,
+				WORDPRESS_DEPS,
+				INTERNAL_DEPS,
+			] ) {
+				sortedGroups[ group ] = [ ...groupedImports[ group ] ].sort(
+					compareImports
+				);
+			}
+
+			// Build the new import section
+			const newImports = [];
+			let firstGroup = true;
+
+			for ( const group of [
+				EXTERNAL_DEPS,
+				WORDPRESS_DEPS,
+				INTERNAL_DEPS,
+			] ) {
+				if ( sortedGroups[ group ].length === 0 ) {
+					continue;
+				}
+
+				// Add blank line before group (except first)
+				if ( ! firstGroup ) {
+					newImports.push( '' );
+				}
+				firstGroup = false;
+
+				// Add comment block
+				newImports.push( getExpectedCommentBlock( group ) );
+
+				// Add imports with their non-dependency comments
+				for ( const node of sortedGroups[ group ] ) {
+					const nonDepComments = getNonDependencyComments( node );
+
+					// Add any non-dependency comments before the import
+					for ( const comment of nonDepComments ) {
+						if ( comment.type === 'Line' ) {
+							newImports.push( `//${ comment.value }` );
+						} else {
+							newImports.push( `/*${ comment.value }*/` );
+						}
+					}
+
+					newImports.push( sourceCode.getText( node ) );
+				}
+			}
+
+			// Remove all existing imports and their comments
+			for ( let i = 0; i < importNodes.length; i++ ) {
+				const node = importNodes[ i ];
+
+				// Check for preceding comment
+				const precedingComment = getPrecedingCommentBlock( node );
+				if (
+					precedingComment &&
+					validGroups.includes(
+						normalizeCommentText( precedingComment.value )
+					)
+				) {
+					// Remove the comment
+					fixes.push( fixer.remove( precedingComment ) );
+				}
+
+				// Remove any non-dependency comments
+				const nonDepComments = getNonDependencyComments( node );
+				for ( const comment of nonDepComments ) {
+					fixes.push( fixer.remove( comment ) );
+				}
+
+				// Replace first import with all organized imports, remove others
+				if ( i === 0 ) {
+					fixes.push(
+						fixer.replaceText( node, newImports.join( '\n' ) )
+					);
+				} else {
+					fixes.push( fixer.remove( node ) );
+				}
+			}
+
+			return fixes;
 		}
 
 		return {
