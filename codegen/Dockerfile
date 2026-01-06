@@ -1,9 +1,5 @@
-FROM python:3.14-alpine
-
-RUN apk add --no-cache git
-
+FROM alpine/git:v2.52.0 AS googleapis-repo
 WORKDIR /tmp
-
 ARG LIBRARY_SHA
 RUN mkdir library \
 	&& cd library \
@@ -12,11 +8,8 @@ RUN mkdir library \
 	&& git fetch --quiet --depth 1 origin ${LIBRARY_SHA} \
 	&& git checkout FETCH_HEAD
 
-RUN mv library/generator /usr/src/app \
-	&& rm -rf library
-
+FROM python:3.14-alpine
 WORKDIR /usr/src/app
-
+COPY --from=googleapis-repo /tmp/library/generator /usr/src/app/
 RUN python3 -m pip install -e ./ --user --use-pep517
-
 ENTRYPOINT ["python3", "-m", "googleapis.codegen"]
