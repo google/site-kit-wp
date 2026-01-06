@@ -32,7 +32,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { StrictMode, useState } from '@wordpress/element';
+import { StrictMode, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,6 +50,7 @@ import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 import {
 	CommandPalette,
 	CommandPaletteProvider,
+	registerSiteKitWPCommands,
 } from '@/js/components/CommandPalette';
 
 export default function Root( { children, registry, viewContext = null } ) {
@@ -62,6 +63,15 @@ export default function Root( { children, registry, viewContext = null } ) {
 		key: 'Root',
 		value: true,
 	} );
+
+	// Register Site Kit commands with WordPress core command palette (WP 6.3+)
+	useEffect( () => {
+		try {
+			registerSiteKitWPCommands();
+		} catch {
+			// Silently fail if WP Command Palette API is not available
+		}
+	}, [] );
 
 	return (
 		<StrictMode>
