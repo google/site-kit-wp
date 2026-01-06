@@ -79,6 +79,9 @@ class Composer {
 			return;
 		}
 
+		// Pull image once before generating.
+		shell_exec( "docker pull ghcr.io/google/site-kit-wp/codegen:$library_lock" );
+
 		// Execute generation commands in parallel.
 		$processes = array_map(
 			fn( $cmd ) => proc_open( $cmd['command'], array(), $pipes ),
