@@ -169,7 +169,7 @@ export default function KeyMetricsSetupApp() {
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	// Ensure data availability state is resolved before the user can proceed to the dashboard.
+	// Ensure data availability state is resolved before the user proceeds to the dashboard.
 	useEffect( () => {
 		async function resolveDataAvailability() {
 			await Promise.all( [
