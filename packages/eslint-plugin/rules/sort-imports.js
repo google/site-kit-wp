@@ -1031,6 +1031,8 @@ module.exports = {
 			const comments = sourceCode.getCommentsBefore( node );
 			const nonDepComments = [];
 
+			// First pass: identify which comments are non-dependency and close to the import
+			const candidates = [];
 			for ( const comment of comments ) {
 				// Check if it's a dependency comment
 				if ( comment.type === 'Block' ) {
@@ -1043,7 +1045,60 @@ module.exports = {
 				// Include this comment if it's close to the import (within 1 line)
 				const linesBetween = node.loc.start.line - comment.loc.end.line;
 				if ( linesBetween <= 1 ) {
-					nonDepComments.push( comment );
+					candidates.push( comment );
+				}
+			}
+
+			// Second pass: if we found comments close to the import,
+			// include any consecutive comments that lead up to them
+			if ( candidates.length > 0 ) {
+				const firstCandidate = candidates[ 0 ];
+
+				// Work backwards from the first candidate to find all consecutive comments
+				for ( let i = comments.length - 1; i >= 0; i-- ) {
+					const comment = comments[ i ];
+
+					// Skip dependency comments
+					if ( comment.type === 'Block' ) {
+						const commentText = normalizeCommentText(
+							comment.value
+						);
+						if ( validGroups.includes( commentText ) ) {
+							continue;
+						}
+					}
+
+					// If this comment is at or before the first candidate
+					if ( comment.range[ 1 ] <= firstCandidate.range[ 0 ] ) {
+						// Check if it's consecutive with what we have
+						if ( nonDepComments.length === 0 ) {
+							// First comment we're adding, check if consecutive with first candidate
+							const linesBetween =
+								firstCandidate.loc.start.line -
+								comment.loc.end.line;
+							if ( linesBetween <= 1 ) {
+								nonDepComments.unshift( comment );
+							}
+						} else {
+							// Check if consecutive with the first comment in our list
+							const linesBetween =
+								nonDepComments[ 0 ].loc.start.line -
+								comment.loc.end.line;
+							if ( linesBetween <= 1 ) {
+								nonDepComments.unshift( comment );
+							} else {
+								// Gap found, stop looking
+								break;
+							}
+						}
+					}
+				}
+
+				// Add the candidates
+				for ( const candidate of candidates ) {
+					if ( ! nonDepComments.includes( candidate ) ) {
+						nonDepComments.push( candidate );
+					}
 				}
 			}
 
