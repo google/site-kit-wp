@@ -470,6 +470,47 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 				$response = new SearchAnalyticsQueryResponse();
 				$response->setRows( array( $row ) );
 
+				$path = $request->getUri()->getPath();
+				if ( false !== strpos( $path, '/batch' ) || false !== strpos( $request->getHeaderLine( 'Content-Type' ), 'multipart/mixed' ) ) {
+					$boundary = 'batch';
+					if ( preg_match( '/boundary=([^;]+)/', $request->getHeaderLine( 'Content-Type' ), $matches ) ) {
+						$boundary = trim( $matches[1] );
+					}
+
+					$body = (string) $request->getBody();
+					$ids  = array();
+
+					if ( preg_match_all( '/Content-ID:\\s*(.+)/i', $body, $matches ) && ! empty( $matches[1] ) ) {
+						$ids = array_map( 'trim', $matches[1] );
+					}
+
+					if ( empty( $ids ) ) {
+						$ids = array( 'response-0' );
+					}
+
+					$response_body = json_encode( $response );
+					$multipart     = '';
+
+					foreach ( $ids as $id ) {
+						$multipart .= "--{$boundary}\r\n";
+						$multipart .= "Content-Type: application/http\r\n";
+						$multipart .= "Content-ID: {$id}\r\n\r\n";
+						$multipart .= "HTTP/1.1 200 OK\r\n";
+						$multipart .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
+						$multipart .= $response_body . "\r\n";
+					}
+
+					$multipart .= "--{$boundary}--";
+
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array( 'Content-Type' => "multipart/mixed; boundary={$boundary}" ),
+							$multipart
+						)
+					);
+				}
+
 				return new FulfilledPromise(
 					new Response(
 						200,

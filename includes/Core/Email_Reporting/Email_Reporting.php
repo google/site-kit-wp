@@ -206,7 +206,7 @@ class Email_Reporting {
 		$report_sender             = new Email_Report_Sender( $template_renderer_factory, $email_sender );
 		$log_processor             = new Email_Log_Processor( $batch_query, $this->data_requests, $template_formatter, $report_sender );
 
-		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected );
+		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected, $this->modules, $this->user_options, $this->user_settings );
 		$this->email_log         = new Email_Log( $this->context );
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $subscribed_users_query );

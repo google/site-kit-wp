@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"pretest": "./bin/local-env/env-check.sh && ./bin/test-docker-connectivity",
-		"test": "cross-env NODE_OPTIONS=--experimental-abortcontroller WP_BASE_URL=http://localhost:9002 ./script.js",
+		"test": "cross-env WP_BASE_URL=http://localhost:9002 ./script.js",
 		"test:interactive": "npm run test -- --puppeteer-interactive",
 		"test:watch": "npm run test -- --watch",
 		"test:watch:interactive": "npm run test -- --watch --puppeteer-interactive",
