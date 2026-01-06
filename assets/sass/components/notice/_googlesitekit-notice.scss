@@ -33,6 +33,7 @@
 
 .googlesitekit-notice-container {
 	container-type: inline-size;
+	width: 100%; // Prevents shrinkage when the parent / wrapping container uses flexbox.
 }
 
 .googlesitekit-notice {
