@@ -374,7 +374,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		);
 	} );
 
-	it( 'should resolve data availability for both Analytics 4 and Search Console on render', async () => {
+	it( 'should resolve data availability for both Analytics and Search Console on render', async () => {
 		expect(
 			registry
 				.select( MODULES_ANALYTICS_4 )
