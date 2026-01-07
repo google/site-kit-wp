@@ -67,7 +67,10 @@ module.exports = {
 		 * @return {string} Import group.
 		 */
 		function getImportGroup( source ) {
-			if ( source.startsWith( '@wordpress/' ) ) {
+			if (
+				source.startsWith( '@wordpress/' ) ||
+				source.startsWith( '@wordpress-core/' )
+			) {
 				return WORDPRESS_DEPS;
 			}
 			if (
