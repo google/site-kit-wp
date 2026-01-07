@@ -17,9 +17,13 @@
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 
+/* Ensures `google` global is undefined before loading `react-google-charts` library */
+import '@/js/util/initialize-google-global';
+
 /**
  * External dependencies
  */
+// eslint-disable-next-line sitekit/sort-import-groups -- prevent the `initialize-google-global` import from being moved to the "Internal dependencies" group.
 import classnames from 'classnames';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
@@ -40,7 +44,6 @@ import {
 /**
  * Internal dependencies
  */
-import '@/js/util/initialize-google-global';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
