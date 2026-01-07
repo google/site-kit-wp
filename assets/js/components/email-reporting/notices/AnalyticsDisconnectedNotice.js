@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +44,8 @@ const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 export default function AnalyticsDisconnectedNotice() {
 	const isViewOnly = useViewOnly();
+
+	const [ inProgress, setInProgress ] = useState( false );
 
 	const trackEvents = useNotificationEvents(
 		EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
@@ -74,6 +76,7 @@ export default function AnalyticsDisconnectedNotice() {
 	);
 
 	const handleCTAClick = useCallback( () => {
+		setInProgress( true );
 		trackEvents.confirm();
 		activateAnalytics();
 	}, [ trackEvents, activateAnalytics ] );
@@ -115,6 +118,8 @@ export default function AnalyticsDisconnectedNotice() {
 					? undefined
 					: {
 							label: __( 'Connect Analytics', 'google-site-kit' ),
+							inProgress,
+							disabled: inProgress,
 							onClick: handleCTAClick,
 					  }
 			}

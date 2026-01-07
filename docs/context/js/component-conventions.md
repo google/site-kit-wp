@@ -212,7 +212,7 @@ TypeScript components use the same import ordering but with additional type impo
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -223,8 +223,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from '@/js/data';
-import type { ComponentProps } from './types';
-```
+import { ComponentProps } from './SomeComponent';
 
 ### Function Component with TypeScript
 
@@ -300,10 +299,10 @@ const Select = <T extends string | number>( {
 
 1. **Define interfaces for all props** - Replace PropTypes with TypeScript interfaces
 2. **Use optional properties** with `?` for non-required props
-3. **Import types separately** using `import type` for type-only imports
+3. **Import types** using standard `import`. Do not use `import type`
 4. **Prefer interfaces over types** for object shapes
 5. **Use FC type** for function components: `const Component: FC<Props> = ...`
-6. **Co-locate type definitions** in a `types.ts` file when shared across components
+6. Colocate types for components/functions in the same file as the component/function; avoid using `types.ts` files that disconnect the types from the function to which they pertain.
 
 ### Migration Notes
 

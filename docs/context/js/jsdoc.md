@@ -1,6 +1,6 @@
 # JSDoc Documentation Standards
 
-Site Kit maintains comprehensive JSDoc documentation for utility functions, hooks, and complex API functionality while relying on PropTypes for React component type documentation.
+Site Kit maintains comprehensive JSDoc documentation for utility functions, hooks, and complex API functionality while relying on TypeScript types (or, for JS files not yet migrated to TypeScript: PropTypes) for React component type documentation.
 
 ## JSDoc Usage Patterns
 
@@ -34,6 +34,8 @@ All utility functions, hooks, and complex API functions should follow this patte
 
 ```javascript
 /**
+ * [Function behaviour (eg. input/output), beginning with a verb]
+ *
  * [Brief description of function purpose]
  *
  * @since n.e.x.t
