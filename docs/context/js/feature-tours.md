@@ -881,5 +881,3 @@ describe( 'TourTooltips', () => {
 
 1. **Use consistent naming** - Follow established patterns for event categories
 2. **Track key interactions** - View, advance, dismiss, and complete events
-3. **Monitor tour performance** - Analyze completion rates and drop-off points
-4. **Custom tracking for important tours** - Add specific metrics for critical features
