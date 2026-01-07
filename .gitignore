@@ -39,6 +39,7 @@ npm-debug.log
 /storybook-static
 google-site-kit*.zip
 .phpunit.result.cache
+/packages/apiclient-services-*.v*
 
 # Editors
 *.esproj
