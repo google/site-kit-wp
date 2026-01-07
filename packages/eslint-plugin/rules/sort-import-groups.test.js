@@ -33,6 +33,14 @@ const ruleTester = new RuleTester( {
 	},
 } );
 
+const ruleTesterTypeScript = new RuleTester( {
+	parser: require.resolve( '@typescript-eslint/parser' ),
+	parserOptions: {
+		sourceType: 'module',
+		ecmaVersion: 2015,
+	},
+} );
+
 ruleTester.run( 'sort-import-groups', rule, {
 	valid: [
 		// Properly sorted with all three groups
@@ -502,6 +510,34 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 const someConstant = 'value';
 
 
+`,
+		},
+	],
+} );
+
+// TypeScript-specific tests
+ruleTesterTypeScript.run( 'sort-import-groups (TypeScript)', rule, {
+	valid: [],
+	invalid: [
+		// Unsorted members with TypeScript 'type' modifier should preserve it
+		{
+			code: `
+/**
+ * WordPress dependencies
+ */
+import type { APIFetchOptions, APIFetchMiddleware } from '@wordpress/api-fetch';
+`,
+			errors: [
+				{
+					message:
+						"Member 'APIFetchMiddleware' of the import declaration should be sorted alphabetically.",
+				},
+			],
+			output: `
+/**
+ * WordPress dependencies
+ */
+import type { APIFetchMiddleware, APIFetchOptions } from '@wordpress/api-fetch';
 `,
 		},
 	],
