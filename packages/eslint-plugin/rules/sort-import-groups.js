@@ -382,7 +382,11 @@ module.exports = {
 
 							const newSpecifiers = parts.join( ', ' );
 							const source = sourceCode.getText( node.source );
-							const result = `import ${ newSpecifiers } from ${ source };`;
+
+							// Preserve the 'type' modifier for TypeScript type-only imports
+							const typeModifier =
+								node.importKind === 'type' ? 'type ' : '';
+							const result = `import ${ typeModifier }${ newSpecifiers } from ${ source };`;
 
 							return fixer.replaceText( node, result );
 						},
