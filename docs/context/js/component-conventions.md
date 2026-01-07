@@ -212,7 +212,7 @@ TypeScript components use the same import ordering but with additional type impo
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -223,8 +223,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from '@/js/data';
-import type { ComponentProps } from './types';
-```
+import { ComponentProps } from './SomeComponent';
 
 ### Function Component with TypeScript
 
