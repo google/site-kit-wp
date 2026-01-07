@@ -1,5 +1,5 @@
 /**
- * ESLint rules: sort-imports tests.
+ * ESLint rules: sort-import-groups tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,7 +24,7 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './sort-imports';
+import rule from './sort-import-groups';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {
@@ -33,7 +33,7 @@ const ruleTester = new RuleTester( {
 	},
 } );
 
-ruleTester.run( 'sort-imports', rule, {
+ruleTester.run( 'sort-import-groups', rule, {
 	valid: [
 		// Properly sorted with all three groups
 		{

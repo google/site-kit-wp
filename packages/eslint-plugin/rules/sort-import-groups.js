@@ -1,5 +1,5 @@
 /**
- * ESLint rules: Sort Imports
+ * ESLint rules: Sort Import Groups
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,7 +21,7 @@ module.exports = {
 		type: 'layout',
 		docs: {
 			description:
-				'Enforce sorted imports with proper grouping and comment blocks',
+				'Enforce sorted import groups with proper comment blocks',
 			category: 'Stylistic Issues',
 			recommended: true,
 		},
