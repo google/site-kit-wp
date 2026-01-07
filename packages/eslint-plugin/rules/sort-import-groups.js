@@ -202,7 +202,22 @@ module.exports = {
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const sourceB = getImportSource( nodeB );
 
-			// First, sort alphabetically by source
+			// Check if imports are side-effect imports (no specifiers)
+			const syntaxA = getMemberSyntax( nodeA );
+			const syntaxB = getMemberSyntax( nodeB );
+			const isSideEffectA = syntaxA === 'none';
+			const isSideEffectB = syntaxB === 'none';
+
+			// Side-effect imports should always come first within their group
+			if ( isSideEffectA && ! isSideEffectB ) {
+				return -1;
+			}
+			if ( ! isSideEffectA && isSideEffectB ) {
+				return 1;
+			}
+
+			// If both are side-effect imports, sort alphabetically by source
+			// If neither are side-effect imports, sort alphabetically by source
 			// But normalize the paths for internal dependencies
 			// Priority: googlesitekit-* < @/* < ../* < ./*
 			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
@@ -237,8 +252,6 @@ module.exports = {
 			}
 
 			// If sources are the same, sort by member syntax order
-			const syntaxA = getMemberSyntax( nodeA );
-			const syntaxB = getMemberSyntax( nodeB );
 			const orderA = memberSyntaxSortOrder.indexOf( syntaxA );
 			const orderB = memberSyntaxSortOrder.indexOf( syntaxB );
 
