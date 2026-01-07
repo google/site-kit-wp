@@ -54,6 +54,18 @@
 				@media (max-width: $bp-tablet) {
 					width: 150%;
 				}
+
+				@media (min-width: $bp-tablet) {
+					flex: 1;
+				}
+			}
+
+			.googlesitekit-notice__action {
+
+				@media (min-width: $bp-tablet) {
+					justify-content: normal;
+					width: auto;
+				}
 			}
 
 			.googlesitekit-report-error-actions {
