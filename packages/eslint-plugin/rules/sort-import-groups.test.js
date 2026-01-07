@@ -133,6 +133,33 @@ const globToRegExp = require( 'glob-to-regexp' );
 const path = require( 'path' );
 `,
 		},
+
+		// Side-effect imports should come first and preserve their order
+		{
+			code: `
+/**
+ * External dependencies
+ */
+import 'setup-polyfills';
+import 'normalize.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+/**
+ * WordPress dependencies
+ */
+import '@wordpress/notices';
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import './styles.scss';
+import './setup.js';
+import { useSelect } from 'googlesitekit-data';
+import Banner from './Banner';
+`,
+		},
 	],
 
 	invalid: [
@@ -510,6 +537,34 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 const someConstant = 'value';
 
 
+`,
+		},
+
+		// Side-effect imports in wrong order should preserve their original order
+		{
+			code: `
+/**
+ * External dependencies
+ */
+import React from 'react';
+import 'setup-polyfills';
+import 'normalize.css';
+import ReactDOM from 'react-dom';
+`,
+			errors: [
+				{
+					message:
+						"Import from 'setup-polyfills' should be sorted alphabetically (before 'react').",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+import 'setup-polyfills';
+import 'normalize.css';
+import React from 'react';
+import ReactDOM from 'react-dom';
 `,
 		},
 	],
