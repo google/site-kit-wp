@@ -149,7 +149,7 @@ class Report_Data_Processor {
 	/**
 	 * Calculates current period length from Search Console rows (half of combined range).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $rows Search Console rows.
 	 * @return int|null Period length in days or null on failure.
@@ -192,7 +192,7 @@ class Report_Data_Processor {
 	/**
 	 * Infers period length from combined Search Console rows (half of unique dates, rounded up).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $rows Search Console rows.
 	 * @return int|null Period length in days or null on failure.
@@ -223,7 +223,7 @@ class Report_Data_Processor {
 	/**
 	 * Normalizes Search Console rows to an indexed array of row arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return array Normalized Search Console rows.
@@ -257,7 +257,7 @@ class Report_Data_Processor {
 	/**
 	 * Returns the preferred metric key for Search Console sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key Section key.
 	 * @return string|null Preferred metric key or null for list sections.
@@ -277,7 +277,7 @@ class Report_Data_Processor {
 	/**
 	 * Collects normalized row data (metrics/dimensions) for Search Console list sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array       $rows          Normalized Search Console rows.
 	 * @param string|null $preferred_key Preferred metric key or null for list sections.
@@ -355,7 +355,7 @@ class Report_Data_Processor {
 	/**
 	 * Limits list-style results to a specific number of rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $values           Metric values.
 	 * @param array $dimension_values Dimension values.
@@ -376,7 +376,7 @@ class Report_Data_Processor {
 	/**
 	 * Formats a dimension value (adds URL metadata when applicable).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $value Dimension value.
 	 * @return string|array
@@ -395,7 +395,7 @@ class Report_Data_Processor {
 	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $data Array to test.
 	 * @return bool Whether the array uses sequential integer keys starting at zero.

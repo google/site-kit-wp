@@ -47,7 +47,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets compare period range values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Compare period range array.
 	 */
@@ -76,7 +76,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for keywords with biggest CTR increase.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -112,7 +112,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for pages with biggest clicks increase.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Report request options array.
 	 */

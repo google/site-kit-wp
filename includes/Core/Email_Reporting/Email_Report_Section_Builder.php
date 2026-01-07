@@ -52,7 +52,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Analytics report data builder.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Analytics_Report_Data_Builder
 	 */
 	protected $analytics_builder;
@@ -60,7 +60,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Search Console report data builder.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Search_Console_Report_Data_Builder
 	 */
 	protected $search_console_builder;
@@ -68,7 +68,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Search Console data processor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Report_Data_Processor
 	 */
 	protected $search_console_processor;
@@ -76,7 +76,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Current period length in days (for SC trend calculations).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var int|null
 	 */
 	protected $current_period_length = null;
@@ -398,7 +398,7 @@ class Email_Report_Section_Builder {
 	/**
 	 * Calculates current period length in days from a date range array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array|null $date_range Date range containing startDate and endDate.
 	 * @return int|null Current-period length in days (inclusive) or null when unavailable.

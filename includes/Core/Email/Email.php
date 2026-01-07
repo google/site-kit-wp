@@ -69,7 +69,7 @@ class Email {
 	 * it will be set as the AltBody for multipart/alternative MIME emails.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added $text_content parameter for plain text alternative.
+	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -103,7 +103,7 @@ class Email {
 	 * uses phpmailer_init hook to set AltBody for multipart MIME emails.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added $text_content parameter for plain text alternative.
+	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.

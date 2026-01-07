@@ -17,7 +17,7 @@ use WP_User;
 /**
  * Processes individual email log records.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Email_Log_Processor {
 	/**
 	 * Email log batch query helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Log_Batch_Query
 	 */
 	private $batch_query;
@@ -34,7 +34,7 @@ class Email_Log_Processor {
 	/**
 	 * Email reporting data requests service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Reporting_Data_Requests
 	 */
 	private $data_requests;
@@ -42,7 +42,7 @@ class Email_Log_Processor {
 	/**
 	 * Email template formatter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Template_Formatter
 	 */
 	private $template_formatter;
@@ -50,7 +50,7 @@ class Email_Log_Processor {
 	/**
 	 * Email report sender.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Report_Sender
 	 */
 	private $report_sender;
@@ -58,7 +58,7 @@ class Email_Log_Processor {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Email_Log_Batch_Query         $batch_query         Batch query helper.
 	 * @param Email_Reporting_Data_Requests $data_requests       Data requests helper.
@@ -80,7 +80,7 @@ class Email_Log_Processor {
 	/**
 	 * Processes a single email log record.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int    $post_id   Email log post ID.
 	 * @param string $frequency Frequency slug.
@@ -138,7 +138,7 @@ class Email_Log_Processor {
 	/**
 	 * Retrieves a valid email log post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return WP_Post|null Email log post or null when invalid.
@@ -160,7 +160,7 @@ class Email_Log_Processor {
 	/**
 	 * Resolves a valid report user from the email log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_Post $email_log Email log post.
 	 * @return WP_User|WP_Error User instance or WP_Error.
@@ -181,7 +181,7 @@ class Email_Log_Processor {
 	/**
 	 * Retrieves a valid date range for an email log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_Post $email_log Email log post.
 	 * @return array|WP_Error Date range or error.
@@ -202,7 +202,7 @@ class Email_Log_Processor {
 	/**
 	 * Builds sections for a log payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_Post $email_log   Email log post.
 	 * @param WP_User $user        User receiving the report.
@@ -229,7 +229,7 @@ class Email_Log_Processor {
 	/**
 	 * Builds template payload for an email log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $sections   Sections data.
 	 * @param string $frequency  Frequency slug.
@@ -243,7 +243,7 @@ class Email_Log_Processor {
 	/**
 	 * Marks a log post as failed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int             $post_id Post ID.
 	 * @param WP_Error|string $error   Error details.
@@ -256,7 +256,7 @@ class Email_Log_Processor {
 	/**
 	 * Marks a log post as sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int $post_id Post ID.
 	 */
