@@ -26,31 +26,10 @@ module.exports = {
 			recommended: true,
 		},
 		fixable: 'code',
-		schema: [
-			{
-				type: 'object',
-				properties: {
-					memberSyntaxSortOrder: {
-						type: 'array',
-						items: {
-							enum: [ 'none', 'all', 'multiple', 'single' ],
-						},
-						uniqueItems: true,
-						minItems: 4,
-						maxItems: 4,
-					},
-				},
-				additionalProperties: false,
-			},
-		],
+		schema: [],
 	},
 
 	create( context ) {
-		const configuration = context.options[ 0 ] || {};
-		const {
-			memberSyntaxSortOrder = [ 'none', 'all', 'multiple', 'single' ],
-		} = configuration;
-
 		const sourceCode = context.getSourceCode();
 
 		// Define import groups
@@ -144,47 +123,18 @@ module.exports = {
 		}
 
 		/**
-		 * Gets the member syntax order value for a node.
+		 * Checks if an import is a side-effect import.
 		 *
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} node Import/require node.
-		 * @return {string} Member syntax type.
+		 * @return {boolean} True if side-effect import.
 		 */
-		function getMemberSyntax( node ) {
+		function isSideEffectImport( node ) {
 			if ( node.type === 'ImportDeclaration' ) {
-				if ( node.specifiers.length === 0 ) {
-					return 'none';
-				}
-				if (
-					node.specifiers.some(
-						( spec ) => spec.type === 'ImportNamespaceSpecifier'
-					)
-				) {
-					return 'all';
-				}
-				if (
-					node.specifiers.some(
-						( spec ) => spec.type === 'ImportDefaultSpecifier'
-					) &&
-					node.specifiers.some(
-						( spec ) => spec.type === 'ImportSpecifier'
-					)
-				) {
-					return 'multiple';
-				}
-				if (
-					node.specifiers.some(
-						( spec ) => spec.type === 'ImportDefaultSpecifier'
-					) ||
-					( node.specifiers.length === 1 &&
-						node.specifiers[ 0 ].type === 'ImportSpecifier' )
-				) {
-					return 'single';
-				}
-				return 'multiple';
+				return node.specifiers.length === 0;
 			}
-			return 'none';
+			return false;
 		}
 
 		/**
@@ -203,10 +153,8 @@ module.exports = {
 			const sourceB = getImportSource( nodeB );
 
 			// Check if imports are side-effect imports (no specifiers)
-			const syntaxA = getMemberSyntax( nodeA );
-			const syntaxB = getMemberSyntax( nodeB );
-			const isSideEffectA = syntaxA === 'none';
-			const isSideEffectB = syntaxB === 'none';
+			const isSideEffectA = isSideEffectImport( nodeA );
+			const isSideEffectB = isSideEffectImport( nodeB );
 
 			// Side-effect imports should always come first within their group
 			if ( isSideEffectA && ! isSideEffectB ) {
@@ -216,9 +164,8 @@ module.exports = {
 				return 1;
 			}
 
-			// If both are side-effect imports, sort alphabetically by source
-			// If neither are side-effect imports, sort alphabetically by source
-			// But normalize the paths for internal dependencies
+			// Sort alphabetically by source
+			// Normalize the paths for internal dependencies
 			// Priority: googlesitekit-* < @/* < ../* < ./*
 			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
 			let normalizedA = sourceA;
@@ -244,18 +191,7 @@ module.exports = {
 				normalizedB = '~3~' + sourceB;
 			}
 
-			const sourceComparison = normalizedA.localeCompare( normalizedB );
-
-			// If sources are different, sort by source
-			if ( sourceComparison !== 0 ) {
-				return sourceComparison;
-			}
-
-			// If sources are the same, sort by member syntax order
-			const orderA = memberSyntaxSortOrder.indexOf( syntaxA );
-			const orderB = memberSyntaxSortOrder.indexOf( syntaxB );
-
-			return orderA - orderB;
+			return normalizedA.localeCompare( normalizedB );
 		}
 
 		/**
