@@ -138,15 +138,43 @@ module.exports = {
 		}
 
 		/**
+		 * Normalizes an import source for sorting.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} source Import source.
+		 * @return {string} Normalized source.
+		 */
+		function normalizeImportSource( source ) {
+			// Normalize the paths for internal dependencies
+			// Priority: googlesitekit-* < @/* < ../* < ./*
+			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
+			if ( source.startsWith( 'googlesitekit-' ) ) {
+				return '~0~' + source;
+			}
+			if ( source.startsWith( '@/' ) ) {
+				return '~1~' + source;
+			}
+			if ( source.startsWith( '../' ) ) {
+				return '~2~' + source;
+			}
+			if ( source.startsWith( './' ) ) {
+				return '~3~' + source;
+			}
+			return source;
+		}
+
+		/**
 		 * Compares two import nodes for sorting.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} nodeA First node.
-		 * @param {Object} nodeB Second node.
+		 * @param {Object} nodeA       First node.
+		 * @param {Object} nodeB       Second node.
+		 * @param {Array}  sortedNodes Optional array of nodes in their original order (for preserving side-effect import order).
 		 * @return {number} Sort order.
 		 */
-		function compareImports( nodeA, nodeB ) {
+		function compareImports( nodeA, nodeB, sortedNodes = null ) {
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const sourceA = getImportSource( nodeA );
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -164,32 +192,18 @@ module.exports = {
 				return 1;
 			}
 
+			// If both are side-effect imports, preserve their original order
+			if ( isSideEffectA && isSideEffectB && sortedNodes ) {
+				const indexA = sortedNodes.indexOf( nodeA );
+				const indexB = sortedNodes.indexOf( nodeB );
+				if ( indexA !== -1 && indexB !== -1 ) {
+					return indexA - indexB;
+				}
+			}
+
 			// Sort alphabetically by source
-			// Normalize the paths for internal dependencies
-			// Priority: googlesitekit-* < @/* < ../* < ./*
-			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
-			let normalizedA = sourceA;
-			let normalizedB = sourceB;
-
-			if ( sourceA.startsWith( 'googlesitekit-' ) ) {
-				normalizedA = '~0~' + sourceA;
-			} else if ( sourceA.startsWith( '@/' ) ) {
-				normalizedA = '~1~' + sourceA;
-			} else if ( sourceA.startsWith( '../' ) ) {
-				normalizedA = '~2~' + sourceA;
-			} else if ( sourceA.startsWith( './' ) ) {
-				normalizedA = '~3~' + sourceA;
-			}
-
-			if ( sourceB.startsWith( 'googlesitekit-' ) ) {
-				normalizedB = '~0~' + sourceB;
-			} else if ( sourceB.startsWith( '@/' ) ) {
-				normalizedB = '~1~' + sourceB;
-			} else if ( sourceB.startsWith( '../' ) ) {
-				normalizedB = '~2~' + sourceB;
-			} else if ( sourceB.startsWith( './' ) ) {
-				normalizedB = '~3~' + sourceB;
-			}
+			const normalizedA = normalizeImportSource( sourceA );
+			const normalizedB = normalizeImportSource( sourceB );
 
 			return normalizedA.localeCompare( normalizedB );
 		}
@@ -635,7 +649,9 @@ module.exports = {
 				( n ) => getImportGroup( getImportSource( n ) ) === group
 			);
 
-			const sorted = [ ...importsInGroup ].sort( compareImports );
+			const sorted = [ ...importsInGroup ].sort( ( a, b ) =>
+				compareImports( a, b, importsInGroup )
+			);
 			const validGroups = [
 				WORDPRESS_DEPS,
 				EXTERNAL_DEPS,
@@ -760,7 +776,15 @@ module.exports = {
 			importNodes,
 			options
 		) {
-			if ( ! lastNode || compareImports( lastNode, node ) <= 0 ) {
+			// Get imports in the current group for comparison
+			const importsInGroup = importNodes.filter(
+				( n ) => getImportGroup( getImportSource( n ) ) === group
+			);
+
+			if (
+				! lastNode ||
+				compareImports( lastNode, node, importsInGroup ) <= 0
+			) {
 				return;
 			}
 
@@ -1245,8 +1269,9 @@ module.exports = {
 				WORDPRESS_DEPS,
 				INTERNAL_DEPS,
 			] ) {
-				sortedGroups[ group ] = [ ...groupedImports[ group ] ].sort(
-					compareImports
+				const importsInGroup = groupedImports[ group ];
+				sortedGroups[ group ] = [ ...importsInGroup ].sort( ( a, b ) =>
+					compareImports( a, b, importsInGroup )
 				);
 			}
 
