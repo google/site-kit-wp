@@ -156,7 +156,7 @@ jobs:
         run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
-        run: composer install --no-interaction --no-progress
+        run: composer install --no-interaction --no-progress -vv
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, runkit, uopz

@@ -64,7 +64,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 		target: '.googlesitekit-user-selector',
 		placement: 'bottom-end',
 		className: 'googlesitekit-tour-tooltip--user-menu',
-		tooltipSlug: 'email-reports-overlay-notification',
+		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 		title: __(
 			'You can always manage your email reports subscription from the user menu',
 			'google-site-kit'
