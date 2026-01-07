@@ -17,7 +17,7 @@ use WP_User;
 /**
  * Renders and sends email reports.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Email_Report_Sender {
 	/**
 	 * Template renderer factory.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Template_Renderer_Factory
 	 */
 	private $template_renderer_factory;
@@ -34,7 +34,7 @@ class Email_Report_Sender {
 	/**
 	 * Email sender instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email
 	 */
 	private $email_sender;
@@ -42,7 +42,7 @@ class Email_Report_Sender {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Email_Template_Renderer_Factory $template_renderer_factory Template renderer factory.
 	 * @param Email                           $email_sender              Email sender instance.
@@ -58,7 +58,7 @@ class Email_Report_Sender {
 	 * Renders both HTML and plain text versions of the email and sends
 	 * them as a multipart/alternative MIME email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_User $user             Recipient user.
 	 * @param array   $sections_payload Sections payload.
@@ -104,7 +104,7 @@ class Email_Report_Sender {
 	/**
 	 * Renders the email HTML.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Email_Template_Renderer $renderer      Template renderer instance.
 	 * @param array                   $template_data Template data.
@@ -127,7 +127,7 @@ class Email_Report_Sender {
 	/**
 	 * Renders the email plain text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Email_Template_Renderer $renderer      Template renderer instance.
 	 * @param array                   $template_data Template data.

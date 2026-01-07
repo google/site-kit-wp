@@ -21,7 +21,7 @@ use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Audience_Config;
 /**
  * Builds Analytics 4 email section payloads.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Report_Data_Builder {
 	/**
 	 * Report processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Email_Report_Payload_Processor
 	 */
 	protected $report_processor;
@@ -38,7 +38,7 @@ class Report_Data_Builder {
 	/**
 	 * Analytics data processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Report_Data_Processor
 	 */
 	protected $data_processor;
@@ -46,7 +46,7 @@ class Report_Data_Builder {
 	/**
 	 * Optional map of audience resource name to display name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array
 	 */
 	protected $audience_display_map;
@@ -54,7 +54,7 @@ class Report_Data_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Email_Report_Payload_Processor|null $report_processor     Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
@@ -78,7 +78,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds section payloads from Analytics module data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
@@ -119,7 +119,7 @@ class Report_Data_Builder {
 	/**
 	 * Normalizes analytics section input into reports and report configs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return array Normalized analytics section input.
@@ -152,7 +152,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a section payload from a processed GA4 report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $processed_report Processed report data.
 	 * @param string $section_key      Section key.
@@ -169,7 +169,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds analytics section payload, extracting dimensions, metrics, and trends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $processed_report Processed report data.
 	 * @param string $section_key      Section key.
@@ -208,7 +208,7 @@ class Report_Data_Builder {
 	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $data Array to test.
 	 * @return bool Whether the array uses sequential integer keys starting at zero.
@@ -224,7 +224,7 @@ class Report_Data_Builder {
 	/**
 	 * Formats audience dimension values and labels using stored display names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $dimensions        Report dimensions.
 	 * @param array $dimension_values  Dimension values.

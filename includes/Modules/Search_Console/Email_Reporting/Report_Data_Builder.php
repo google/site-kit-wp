@@ -16,7 +16,7 @@ use WP_Error;
 /**
  * Builds Search Console email section payloads.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Report_Data_Builder {
 	/**
 	 * Data processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Report_Data_Processor
 	 */
 	protected $processor;
@@ -33,7 +33,7 @@ class Report_Data_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Report_Data_Processor|null $processor Optional. Data processor instance.
 	 */
@@ -44,7 +44,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds section payloads from Search Console module data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $module_payload        Module payload keyed by section slug.
 	 * @param int|null $current_period_length Optional. Current period length in days.
@@ -81,7 +81,7 @@ class Report_Data_Builder {
 	/**
 	 * Extracts any WP_Error from the section data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return WP_Error|null WP_Error instance when present, otherwise null.
@@ -105,7 +105,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a section payload from Search Console report data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $search_console_data Search Console report rows.
 	 * @param string   $section_key         Section key identifier.
@@ -159,7 +159,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a totals-style section payload (impressions/clicks).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $search_console_data Search Console rows.
 	 * @param string   $section_key         Section key.
@@ -208,7 +208,7 @@ class Report_Data_Builder {
 	/**
 	 * Formats numeric values with K/M suffixes for readability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $value Numeric value.
 	 * @return string|mixed Formatted value or original when non-numeric.
@@ -251,7 +251,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a list-style section payload (keywords/pages).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key Section key.
 	 * @param array  $row_data    Collected row data.
@@ -320,7 +320,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds list payload using current/compare Search Console rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key   Section key.
 	 * @param array  $current_rows  Current period rows.
@@ -398,7 +398,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds list payload for biggest increases (CTR or clicks) using current/compare rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key  Section key.
 	 * @param array  $current_rows Current period rows.
