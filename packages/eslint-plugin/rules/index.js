@@ -31,5 +31,5 @@ module.exports = {
 	'no-direct-date': require( './no-direct-date' ),
 	'no-storybook-scenario-label': require( './no-storybook-scenario-label' ),
 	'no-yield-dispatch': require( './no-yield-dispatch' ),
-	'sort-imports': require( './sort-imports' ),
+	'sort-import-groups': require( './sort-import-groups' ),
 };
