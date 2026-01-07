@@ -12,6 +12,7 @@ namespace Google\Site_Kit;
 
 use Google\Site_Kit\Core\Remote_Features\Remote_Features_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Public_Dashboard;
 
 /**
  * Main class for the plugin.
@@ -183,6 +184,11 @@ final class Plugin {
 
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
+
+				if ( Feature_Flags::enabled( 'publicDashboard' ) ) {
+					$public_dashboard = new Public_Dashboard( $assets, $modules );
+					$public_dashboard->register();
+				}
 
 				$nonces = new Core\Nonces\Nonces( $this->context );
 				$nonces->register();
