@@ -62,19 +62,37 @@
 			flex-wrap: wrap;
 			gap: $grid-gap-phone;
 			margin-bottom: $grid-gap-phone;
-			margin-top: $grid-gap-phone;
-			position: relative;
 
 			.googlesitekit-rrm-settings-edit__product-id-info-notice {
 				width: 100%;
 			}
 
+			.googlesitekit-rrm-settings-edit__product-id-warning-notice .googlesitekit-notice-container {
+				// This is a special case where we want the notice layout to depend on the viewport width
+				// and not the parent container width. So container queries are overridden with media queries
+				// within flexbox below.
+				container-type: normal;
+			}
+
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
 				@media (min-width: $bp-wpAdminBarTablet) {
-					left: 220px;
 					max-width: 442px;
-					position: absolute;
-					top: -10px;
+
+					.googlesitekit-notice {
+						align-items: center;
+						flex-direction: row;
+						gap: $grid-gap-phone;
+						padding: 14px $grid-gap-desktop;
+
+						.googlesitekit-notice__content {
+							flex: 1;
+						}
+
+						.googlesitekit-notice__action {
+							justify-content: normal;
+							width: auto;
+						}
+					}
 				}
 			}
 		}
