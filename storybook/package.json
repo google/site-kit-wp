@@ -17,7 +17,7 @@
 		"@babel/preset-react": "^7.26.3",
 		"@storybook/addon-viewport": "^8.6.12",
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
-		"@storybook/react-webpack5": "^8.6.12",
+		"@storybook/react-webpack5": "^10.1.11",
 		"@storybook/test": "^8.6.12",
 		"css-loader": "^7.1.2",
 		"fetch-mock": "^9.11.0",
