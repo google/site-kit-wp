@@ -160,7 +160,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				) }
 				{ ! hasModuleAccess && (
 					<Notice
-						className="googlesitekit-notice--bottom-margin"
+						className="googlesitekit-moduleaccess-warning-notice"
 						type={ Notice.TYPES.WARNING }
 						description={ createInterpolateElement(
 							sprintf(
