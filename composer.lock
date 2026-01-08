@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f7e221250925f8f3a84c19ee004d91d",
+    "content-hash": "fd4cb97276c8b2aca52f99887453ec5e",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -284,18 +284,13 @@
         },
         {
             "name": "google/apiclient-services-subscribewithgoogle",
-            "version": "v0.1",
+            "version": "dev-latest",
             "dist": {
                 "type": "path",
                 "url": "packages/apiclient-services-subscribewithgoogle",
-                "reference": "8a5c316d95600fea61fed271b64e90b4858f88c4"
+                "reference": "9e46db20b51b51d1644410d075e3a35bdb470c0b"
             },
             "type": "library",
-            "autoload": {
-                "classmap": [
-                    "SubscribewithGoogle.php"
-                ]
-            },
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5299,6 +5294,7 @@
         "google/apiclient-services-people.v1": 20,
         "google/apiclient-services-searchconsole.v1": 20,
         "google/apiclient-services-siteverification.v1": 20,
+        "google/apiclient-services-subscribewithgoogle": 20,
         "google/apiclient-services-tagmanager.v2": 20,
         "roave/security-advisories": 20
     },
