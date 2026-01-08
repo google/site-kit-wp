@@ -27,7 +27,7 @@ import type { APIFetchOptions, APIFetchMiddleware } from '@wordpress/api-fetch';
 /**
  * Logs a console warning for the given request options.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  *
  * @param  options API fetch options of the duplicate request.
  * @return {void}
@@ -43,7 +43,7 @@ interface DedupeMiddlewareOptions {
 /**
  * Creates a new request deduplication middleware instance.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  *
  * @param middlewareOptions Options for configuring the behavior of the middleware.
  * @return Middleware handler function.

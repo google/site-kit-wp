@@ -649,7 +649,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Return the URL to redirect the user to after authorization, including important query params.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 */
 	private function get_authorize_user_redirect_url() {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );

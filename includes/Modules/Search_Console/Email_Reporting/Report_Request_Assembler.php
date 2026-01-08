@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Builds Search Console batch requests and maps responses for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Report_Request_Assembler {
 	/**
 	 * Report options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Report_Options
 	 */
 	private $report_options;
@@ -32,7 +32,7 @@ class Report_Request_Assembler {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Report_Options $report_options Report options instance.
 	 */
@@ -43,7 +43,7 @@ class Report_Request_Assembler {
 	/**
 	 * Builds Search Console batch requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Tuple of (requests, request_map).
 	 */
@@ -60,7 +60,7 @@ class Report_Request_Assembler {
 	/**
 	 * Adds current-period Search Console requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $requests    Request list (by reference).
 	 * @param array $request_map Request metadata map (by reference).
@@ -85,7 +85,7 @@ class Report_Request_Assembler {
 	/**
 	 * Adds compare-period Search Console requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $requests    Request list (by reference).
 	 * @param array $request_map Request metadata map (by reference).
@@ -141,7 +141,7 @@ class Report_Request_Assembler {
 	/**
 	 * Adds a single Search Console request to the batch lists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $requests    Request list (by reference).
 	 * @param array  $request_map Request metadata map (by reference).
@@ -167,7 +167,7 @@ class Report_Request_Assembler {
 	/**
 	 * Maps batch responses back to section payloads.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $responses   Batch responses keyed by identifier.
 	 * @param array $request_map Request metadata map.

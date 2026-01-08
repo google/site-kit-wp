@@ -384,7 +384,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Collects Analytics reports in batches of up to five requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param object $module   Analytics module instance.
 	 * @param array  $requests Report request options keyed by payload key.
@@ -440,7 +440,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Normalizes batch report responses to a numeric-indexed array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $batch_response Batch response from the module.
 	 * @return array Normalized reports array.
