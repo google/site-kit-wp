@@ -102,6 +102,10 @@
 			}
 		}
 
+		.googlesitekit-notice-container + .googlesitekit-rrm-settings-edit__product-id-container {
+			margin-top: 0; // Only removes margin when the notice above it has its own margin.
+		}
+
 		.googlesitekit-rrm-settings-edit__post-types {
 			margin-top: $grid-gap-phone;
 
