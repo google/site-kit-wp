@@ -56,7 +56,8 @@ module.exports = {
 				source.startsWith( 'googlesitekit-' ) ||
 				source.startsWith( '@/' ) ||
 				source.startsWith( '../' ) ||
-				source.startsWith( './' )
+				source.startsWith( './' ) ||
+				source === '.'
 			) {
 				return INTERNAL_DEPS;
 			}
@@ -147,7 +148,7 @@ module.exports = {
 		 */
 		function normalizeImportSource( source ) {
 			// Normalize the paths for internal dependencies
-			// Priority: googlesitekit-* < @/* < ../* < ./*
+			// Priority: googlesitekit-* < @/* < ../* < ./* < .
 			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
 			if ( source.startsWith( 'googlesitekit-' ) ) {
 				return '~0~' + source;
@@ -160,6 +161,9 @@ module.exports = {
 			}
 			if ( source.startsWith( './' ) ) {
 				return '~3~' + source;
+			}
+			if ( source === '.' ) {
+				return '~3~.';
 			}
 			return source;
 		}
