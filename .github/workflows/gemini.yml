@@ -82,7 +82,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: Implement issue #${{ inputs.issue_number }}
+          commit-message: 'Implement issue #${{ inputs.issue_number }}'
           branch: gemini/issue-${{ inputs.issue_number }}
           title: 'Implement #${{ inputs.issue_number }}'
           body: |
