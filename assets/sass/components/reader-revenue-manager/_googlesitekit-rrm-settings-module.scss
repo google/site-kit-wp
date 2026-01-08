@@ -63,6 +63,7 @@
 			gap: $grid-gap-phone;
 			margin-bottom: $grid-gap-phone;
 			margin-top: $grid-gap-phone;
+			position: relative;
 
 			.googlesitekit-rrm-settings-edit__product-id-info-notice {
 				width: 100%;
@@ -77,7 +78,10 @@
 
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
 				@media (min-width: $bp-wpAdminBarTablet) {
+					left: 220px;
 					max-width: 442px;
+					position: absolute;
+					top: -10px;
 
 					.googlesitekit-notice {
 						align-items: center;
