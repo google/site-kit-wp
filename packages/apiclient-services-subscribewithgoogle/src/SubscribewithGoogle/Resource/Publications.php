@@ -17,6 +17,7 @@
 
 namespace Google\Service\SubscribewithGoogle\Resource;
 
+use Google\Service\SubscribewithGoogle\CheckFreeAccessResponse;
 use Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 
 /**
@@ -30,6 +31,25 @@ use Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 class Publications extends \Google\Service\Resource
 {
   /**
+   * Determines whether a user should be granted free access.
+   * (publications.checkFreeAccess)
+   *
+   * @param string $name Required. The resource name of the publication. Format:
+   * publications/{publication_id}
+   * @param array $optParams Optional parameters.
+   *
+   * @opt_param string httpReferrer Required. The HTTP referrer.
+   * @opt_param string uri Required. The URI of the content.
+   * @return CheckFreeAccessResponse
+   * @throws \Google\Service\Exception
+   */
+  public function checkFreeAccess($name, $optParams = [])
+  {
+    $params = ['name' => $name];
+    $params = array_merge($params, $optParams);
+    return $this->call('checkFreeAccess', [$params], CheckFreeAccessResponse::class);
+  }
+  /**
    * List all publications based on the filter, only the publications owned by the
    * current user will be returned (publications.listPublications)
    *
@@ -40,8 +60,8 @@ class Publications extends \Google\Service\Resource
    * @opt_param int pageSize LINT.IfChange The maximum number of publications to
    * return, the service may return fewer than this value. if unspecified, at most
    * 100 publications will be returned. The maximum value is 1000; values above
-   * 1000 will be coerced to 1000. LINT.ThenChange(//depot/google3/java/com/google
-   * /subscribewithgoogle/client/opservice/ListPublicationsPromiseGraph.java)
+   * 1000 will be coerced to 1000. LINT.ThenChange( //depot/google3/java/com/googl
+   * e/subscribewithgoogle/client/opservice/ListPublicationsPromiseGraph.java )
    * @opt_param string pageToken A token identifying a page of results the server
    * should return.
    * @return ListPublicationsResponse

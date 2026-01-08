@@ -20,6 +20,8 @@ namespace Google\Service\SubscribewithGoogle;
 class Publication extends \Google\Collection
 {
   protected $collection_key = 'verifiedDomains';
+  protected $contentPolicyStatusType = ContentPolicyStatus::class;
+  protected $contentPolicyStatusDataType = '';
   /**
    * @var string
    */
@@ -36,13 +38,25 @@ class Publication extends \Google\Collection
    * @var string
    */
   public $publicationId;
-  protected $publicationPredicatesType = PublicationPredicates::class;
-  protected $publicationPredicatesDataType = '';
   /**
    * @var string[]
    */
   public $verifiedDomains;
 
+  /**
+   * @param ContentPolicyStatus
+   */
+  public function setContentPolicyStatus(ContentPolicyStatus $contentPolicyStatus)
+  {
+    $this->contentPolicyStatus = $contentPolicyStatus;
+  }
+  /**
+   * @return ContentPolicyStatus
+   */
+  public function getContentPolicyStatus()
+  {
+    return $this->contentPolicyStatus;
+  }
   /**
    * @param string
    */
@@ -112,20 +126,6 @@ class Publication extends \Google\Collection
   public function getPublicationId()
   {
     return $this->publicationId;
-  }
-  /**
-   * @param PublicationPredicates
-   */
-  public function setPublicationPredicates(PublicationPredicates $publicationPredicates)
-  {
-    $this->publicationPredicates = $publicationPredicates;
-  }
-  /**
-   * @return PublicationPredicates
-   */
-  public function getPublicationPredicates()
-  {
-    return $this->publicationPredicates;
   }
   /**
    * @param string[]
