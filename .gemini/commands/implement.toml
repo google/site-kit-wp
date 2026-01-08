@@ -7,7 +7,7 @@ You are tasked with implementing GitHub issue #{{args}} from the google/site-kit
 CRITICAL INSTRUCTIONS
 ═══════════════════════════════════════════════════════════════════════════════
 
-- You MUST ACTUALLY CREATE, MODIFY, and DELETE files in the repository
+- You MUST ACTUALLY CREATE, MODIFY, and DELETE files in the current working directory
 - DO NOT just output proposed changes or describe what should be done
 - Use your developer tools to make ACTUAL file modifications
 - This is a LOCAL implementation - DO NOT create commits, pull requests, or push to remote
@@ -35,16 +35,22 @@ PHASE 1: FETCH GITHUB ISSUE
 
 **Steps**:
 1. Use GitHub MCP tools to fetch issue #{{args}} from repository `google/site-kit-wp`
-   - If MCP tools are not available, use: !{gh issue view {{args}} --repo google/site-kit-wp --json title,body}
+   - If MCP tools are not available, use: !{gh issue view {{args}} --json title,body}
 
-2. Extract the "Implementation Brief" section from the issue body
+2. Extract the "Acceptance criteria" section from the issue body
+   - This section typically appears between "## Acceptance criteria" and "## Implementation Brief"
+   - If the section markers are not present, stop execution and show an error
+
+3. Extract the "Implementation Brief" section from the issue body
    - This section typically appears between "## Implementation Brief" and "## QA Brief"
-   - If the section markers are not present, use the entire issue body as the implementation task
+   - If the section markers are not present, stop execution and show an error
 
 **Error Handling**:
 - If the issue does not exist: STOP and report "ERROR: Issue #{{args}} not found in google/site-kit-wp"
 - If GitHub API is unavailable: STOP and report the error with suggestions
 - If the issue body is empty: STOP and report "ERROR: Issue #{{args}} has no description"
+- If "Acceptance criteria" markers are missing: STOP and report "ERROR: Acceptance criteria section markers not found"
+- If the "Implementation Brief" markers are missing: STOP and report "ERROR: Implementation Brief section markers not found"
 
 **Output**: Store the implementation instructions for use in subsequent phases
 
@@ -217,7 +223,15 @@ PHASE 4: CODE REVIEW
 
 Follow these code review guidelines:
 
-**1. Verify Context Adherence (MANDATORY)**
+**1. Verify Requirements Adherence (MANDATORY)**
+
+   Check compliance with the extracted "Acceptance criteria":
+   - ✓ Implementation fulfills all points in "Acceptance criteria"
+   - ✓ No required functionality is missing
+   - ✓ Behavioral requirements are met
+   - ✓ Edge cases defined in AC are handled
+
+**2. Verify Context Adherence (MANDATORY)**
 
    Check strict compliance with documented principles. Review each relevant context file:
 
@@ -256,7 +270,7 @@ Follow these code review guidelines:
    - What must be fixed to comply
    - Which files are affected
 
-**2. Analyze Code Quality**
+**3. Analyze Code Quality**
 
    Review for general code quality issues:
    - Code structure and organization
@@ -269,11 +283,12 @@ Follow these code review guidelines:
    - Accessibility compliance (WCAG standards)
    - Browser/PHP version compatibility
 
-**3. Score the Implementation (0.0 to 1.0)**
+**4. Score the Implementation (0.0 to 1.0)**
 
    Assign a score based on this rubric:
 
-   **0.0 - 0.5**: Poor quality OR contains principle violations
+   **0.0 - 0.5**: Poor quality OR contains requirements/principle violations
+   - Use this range if ANY "Acceptance criteria" are not met
    - Use this range if ANY documented principles are violated
    - Use this if critical security or functionality issues exist
    - Use this if tests are missing or failing
@@ -285,6 +300,7 @@ Follow these code review guidelines:
    - Documentation is sparse or unclear
 
    **0.85 - 0.94**: Good quality, production-ready
+   - Fulfills ALL requirements from "Acceptance criteria"
    - Follows all documented principles
    - Code is clean and maintainable
    - Comprehensive tests with good coverage
@@ -298,7 +314,7 @@ Follow these code review guidelines:
    - Outstanding documentation
    - Sets a positive example for future development
 
-**4. Provide Review Results**
+**5. Provide Review Results**
 
    Format your review as follows:
 
@@ -308,6 +324,15 @@ Follow these code review guidelines:
    Score: [0.0 - 1.0]
    Status: [approved | needs_improvement]
    Iteration: [current iteration number, 1-3]
+
+   REQUIREMENTS VIOLATIONS: [count]
+   
+   [If violations exist, list each:]
+   
+   Requirement Violation #[n]:
+   - AC Point: [which point from Acceptance criteria was violated]
+   - Details: [why the implementation does not meet this requirement]
+   - Fix Required: [what must be changed to implement the requirement]
 
    CONTEXT VIOLATIONS: [count]
 
@@ -348,17 +373,17 @@ PHASE 5: ITERATION (if score < 0.85)
 **Iteration Rules**:
 - Maximum 3 iteration attempts
 - Track your current iteration number (1, 2, or 3)
-- Each iteration must address ALL context violations
+- Each iteration must address ALL requirements and context violations
 - After each iteration, return to Phase 4 for re-review
 
 **If score < 0.85, follow these steps**:
 
 **Iteration [1, 2, or 3]**:
 
-1. **Address ALL Context Violations** (MANDATORY)
-   - Context violations are non-negotiable and must be fixed
+1. **Address ALL Requirements and Context Violations** (MANDATORY)
+   - Requirements and context violations are non-negotiable and must be fixed
    - Follow the "Fix Required" instructions from the review
-   - Bring code into full compliance with documented principles
+   - Bring code into full compliance with requirements and documented principles
    - Make ACTUAL file modifications to fix each violation
 
 2. **Address Critical and High Priority Recommendations**

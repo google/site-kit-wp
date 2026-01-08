@@ -96,8 +96,6 @@ jobs:
             - [ ] Linting passes
             - [ ] Manual testing completed
             - [ ] Code review score ≥ 0.85
-
-            Closes #${{ inputs.issue_number }}
           draft: true
       - name: Comment on issue
         if: steps.create-pr.outputs.pull-request-number
