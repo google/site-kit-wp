@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
+import { actHook as act, renderHook } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import useWidgetStateEffect from './useWidgetStateEffect';
 

@@ -19,6 +19,32 @@
 /**
  * Internal dependencies
  */
+import Notifications from '@/js/components/notifications/Notifications';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	act,
@@ -28,35 +54,9 @@ import {
 	provideUserAuthentication,
 	render,
 } from '../../../../tests/js/test-utils';
-import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '@/js/modules/analytics-4/utils/data-mock';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import Notifications from '@/js/components/notifications/Notifications';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () => {
 	const AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotificationComponent =

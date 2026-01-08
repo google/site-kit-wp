@@ -19,44 +19,44 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { useHistory, useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useRef } from '@wordpress/element';
-import { ESCAPE, ENTER } from '@wordpress/keycodes';
 import { __, sprintf } from '@wordpress/i18n';
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useSelect } from 'googlesitekit-data';
+import Badge from '@/js/components/Badge';
+import IconWrapper from '@/js/components/IconWrapper';
+import ModuleIcon from '@/js/components/ModuleIcon';
+import NewBadge from '@/js/components/NewBadge';
 import {
-	NEW_MODULES,
 	BETA_MODULES,
 	EXPERIMENTAL_MODULES,
+	NEW_MODULES,
 } from '@/js/components/settings/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { useDispatch } from '@/js/googlesitekit-data';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import ModuleIcon from '@/js/components/ModuleIcon';
-import Badge from '@/js/components/Badge';
-import NewBadge from '@/js/components/NewBadge';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import ConnectedIcon from '@/svg/icons/connected.svg';
 import WarningIcon from '@/svg/icons/warning-v2.svg';
-import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
-import IconWrapper from '@/js/components/IconWrapper';
-import { useDispatch } from '@/js/googlesitekit-data';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();

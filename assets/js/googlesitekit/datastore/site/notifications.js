@@ -26,11 +26,11 @@ import invariant from 'invariant';
  */
 import { set } from 'googlesitekit-api';
 import { combineStores } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
-import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from './constants';
 
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';

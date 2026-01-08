@@ -20,16 +20,16 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_TAGMANAGER } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
 import * as factories from './__factories__';
+import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_TAGMANAGER } from './constants';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;

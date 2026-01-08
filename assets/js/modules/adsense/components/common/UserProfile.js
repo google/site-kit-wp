@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function UserProfile() {

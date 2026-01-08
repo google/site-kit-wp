@@ -18,20 +18,20 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject, isEqual } from 'lodash';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createReducer,
-	commonActions,
 	combineStores,
+	commonActions,
+	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER, EMAIL_REPORT_FREQUENCIES } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER, EMAIL_REPORT_FREQUENCIES } from './constants';
 
 const baseInitialState = {
 	emailReporting: {

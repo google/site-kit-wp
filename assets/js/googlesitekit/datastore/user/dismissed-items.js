@@ -26,14 +26,14 @@ import invariant from 'invariant';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
-	createRegistrySelector,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from './constants';
 
 const { getRegistry } = commonActions;
 

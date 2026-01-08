@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
-import SettingsForm from './SettingsForm';
 import { Cell, Grid, Row } from '@/js/material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SettingsForm from './SettingsForm';
 
 const defaultSettings = {
 	propertyID: '',

@@ -26,15 +26,15 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 
 // Actions
 const CLEAR_PERMISSION_SCOPE_ERROR = 'CLEAR_PERMISSION_SCOPE_ERROR';

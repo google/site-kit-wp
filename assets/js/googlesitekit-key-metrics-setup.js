@@ -25,8 +25,8 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Root from './components/Root';
 import KeyMetricsSetupApp from './components/key-metrics-setup/KeyMetricsSetupApp';
+import Root from './components/Root';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.

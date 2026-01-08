@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -24,9 +29,8 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-
-import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
 import { CORE_USER } from './constants';
+
 jest.mock( 'just-detect-adblock' );
 
 function stubIsAdBlockerDetected( detected ) {

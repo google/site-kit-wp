@@ -30,16 +30,16 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	MODULES_TAGMANAGER,
-	FORM_SETUP,
-	CONTAINER_CREATE,
-} from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import ContainerNameTextField from './ContainerNameTextField';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import {
+	CONTAINER_CREATE,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import ContainerNameTextField from './ContainerNameTextField';
 
 export default function AMPContainerNameTextField() {
 	const ampContainerID = useSelect( ( select ) =>

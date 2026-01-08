@@ -20,19 +20,19 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { __, sprintf, _n } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import { Cell, Grid, Row } from '@/js/material-components';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { decodeHTMLEntity, trackEvent } from '@/js/util';
 import AdminBarWidgets from './AdminBarWidgets';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AdminBarApp() {
 	const viewContext = useViewContext();

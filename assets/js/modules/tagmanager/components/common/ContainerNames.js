@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AMPContainerNameTextField from './AMPContainerNameTextField';
-import WebContainerNameTextField from './WebContainerNameTextField';
 import {
 	CONTAINER_CREATE,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
+import AMPContainerNameTextField from './AMPContainerNameTextField';
+import WebContainerNameTextField from './WebContainerNameTextField';
 
 export default function ContainerNames() {
 	const containerID = useSelect( ( select ) =>

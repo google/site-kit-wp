@@ -24,18 +24,18 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useState, useCallback, useRef, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import Notice from '@/js/components/Notice';
-import { Grid, Cell, Row } from '@/js/material-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 
 export default function ConversionReportingSettingsSubtleNotification() {
 	const viewContext = useViewContext();

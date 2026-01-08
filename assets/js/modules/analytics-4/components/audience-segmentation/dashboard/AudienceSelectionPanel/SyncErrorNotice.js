@@ -29,19 +29,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
-import Link from '@/js/components/Link';
-import ReportErrorActions from '@/js/components/ReportErrorActions';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
-import Notice from '@/js/components/Notice';
 
 export default function SyncErrorNotice() {
 	const viewContext = useViewContext();

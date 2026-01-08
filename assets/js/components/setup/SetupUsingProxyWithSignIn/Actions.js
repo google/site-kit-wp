@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
@@ -29,16 +29,16 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import OptIn from '@/js/components/OptIn';
 import ResetButton from '@/js/components/ResetButton';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
 import StepHint from '@/js/components/setup/StepHint';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';

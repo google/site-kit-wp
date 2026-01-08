@@ -24,32 +24,32 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Banner from '@/js/components/Banner';
+import Link from '@/js/components/Link';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { WEEK_IN_SECONDS } from '@/js/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
+import { useDebounce } from '@/js/hooks/useDebounce';
 import {
 	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
 } from '@/js/modules/analytics-4/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
-import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
-import { useDebounce } from '@/js/hooks/useDebounce';
-import Link from '@/js/components/Link';
-import Banner from '@/js/components/Banner';
-import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
+import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?url';
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 	const trackingRef = useRef();

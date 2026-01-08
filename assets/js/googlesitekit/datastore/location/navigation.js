@@ -24,8 +24,8 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { createReducer } from 'googlesitekit-data';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 
 const DO_NAVIGATE_TO = 'DO_NAVIGATE_TO';
 const SET_NAVIGATING_TO = 'SET_NAVIGATING_TO';

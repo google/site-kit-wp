@@ -24,22 +24,22 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email_reports_setup_overlay_notification';

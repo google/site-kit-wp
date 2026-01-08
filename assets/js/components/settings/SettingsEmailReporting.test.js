@@ -19,21 +19,21 @@
 /**
  * Internal dependencies
  */
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
 import { render, waitFor } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
-	provideUserAuthentication,
 	freezeFetch,
-	provideUserCapabilities,
 	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import * as tracking from '@/js/util/tracking';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SettingsEmailReporting from './SettingsEmailReporting';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

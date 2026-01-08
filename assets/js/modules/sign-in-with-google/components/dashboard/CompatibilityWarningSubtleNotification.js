@@ -24,19 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { useSelect } from 'googlesitekit-data';
 import { TYPES } from '@/js/components/Notice/constants';
 import Typography from '@/js/components/Typography';
-import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { getErrorMessages } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks/utils';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 
 const CONFLICTING_PLUGINS_ERROR_SLUG = 'conflicting_plugins';
 

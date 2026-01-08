@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { get } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { isIPAddressInRange } from '@/js/util/ip-cidr';
@@ -26,8 +29,8 @@ import {
 	ERROR_FETCH_FAIL,
 	ERROR_GOOGLE_API_CONNECTION_FAIL,
 	ERROR_INVALID_HOSTNAME,
-	ERROR_TOKEN_MISMATCH,
 	ERROR_SK_SERVICE_CONNECTION_FAIL,
+	ERROR_TOKEN_MISMATCH,
 } from './constants';
 
 const isIP =

@@ -19,12 +19,6 @@
 /**
  * Internal dependencies
  */
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import {
-	createTestRegistry,
-	provideUserAuthentication,
-	render,
-} from '../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -37,9 +31,15 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CONTEXT_MAIN_DASHBOARD_SPEED } from '@/js/googlesitekit/widgets/default-contexts';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+	render,
+} from '../../../../tests/js/test-utils';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'Dashboard Navigation', () => {
 	let previousSiteKitUserData;

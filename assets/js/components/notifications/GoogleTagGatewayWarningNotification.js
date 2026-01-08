@@ -25,13 +25,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from '@/js/components/Link';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useSelect } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function GoogleTagGatewayWarningNotification( {
 	id,

@@ -17,18 +17,26 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import {
-	createTestRegistry,
-	render,
-	fireEvent,
-} from '../../../tests/js/test-utils';
-import RefocusableModalDialog from './RefocusableModalDialog';
-import { Button } from 'googlesitekit-components';
+import { waitFor } from '@testing-library/react';
+
+/**
+ * WordPress dependencies
+ */
 import { Fragment } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
-import { waitFor } from '@testing-library/react';
+
+/**
+ * Internal dependencies
+ */
+import { Button } from 'googlesitekit-components';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '../../../tests/js/test-utils';
+import RefocusableModalDialog from './RefocusableModalDialog';
 
 describe( 'RefocusableModalDialog', () => {
 	let registry;

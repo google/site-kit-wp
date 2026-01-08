@@ -17,32 +17,28 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import {
-	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDContributionsNotification from './ProductIDContributionsNotification';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'ProductIDContributionsNotification', () => {
 	let registry;

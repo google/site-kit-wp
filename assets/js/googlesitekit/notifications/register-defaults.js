@@ -24,6 +24,27 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
+import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
+import AuthError from '@/js/components/notifications/AuthError';
+import EnableAutoUpdateBannerNotification, {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
+import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
+import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
+import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
+import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
+import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
+import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
+import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
+import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
+import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
 import {
 	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -33,14 +54,11 @@ import {
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_SPLASH,
 } from '@/js/googlesitekit/constants';
-import { CORE_NOTIFICATIONS } from './datastore/constants';
 import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
-	GTG_SETUP_CTA_BANNER_NOTIFICATION,
-	PRIORITY,
-} from './constants';
+	requireCanActivateModule,
+	requireModuleActive,
+	requireModuleGatheringData,
+} from '@/js/googlesitekit/data-requirements';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -49,44 +67,26 @@ import {
 	PERMISSION_UPDATE_PLUGINS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
-import AuthError from '@/js/components/notifications/AuthError';
-import UnsatisfiedScopesAlert from '@/js/components/notifications/UnsatisfiedScopesAlert';
-import UnsatisfiedScopesAlertGTE from '@/js/components/notifications/UnsatisfiedScopesAlertGTE';
-import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
-import ZeroDataNotification from '@/js/components/notifications/ZeroDataNotification';
-import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
-import SetupErrorMessageNotification from '@/js/components/notifications/SetupErrorMessageNotification';
-import GoogleTagGatewayWarningNotification from '@/js/components/notifications/GoogleTagGatewayWarningNotification';
-import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
-import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from '@/js/components/consent-mode/constants';
-import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeSetupCTABanner';
-import EnableAutoUpdateBannerNotification, {
-	ENABLE_AUTO_UPDATES_BANNER_SLUG,
-} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { MINUTE_IN_SECONDS } from '@/js/util';
-import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
-import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
-import ModuleSetupSuccessNotification from '@/js/components/notifications/ModuleSetupSuccessNotification';
-import SetUpEmailReportingOverlayNotification, {
-	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-} from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
-import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import { asyncRequire, asyncRequireAll } from '@/js/util/async';
 import {
-	requireCanActivateModule,
-	requireModuleActive,
-	requireModuleGatheringData,
-} from '@/js/googlesitekit/data-requirements';
+	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
+	GTG_SETUP_CTA_BANNER_NOTIFICATION,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from './constants';
+import { CORE_NOTIFICATIONS } from './datastore/constants';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'activate-analytics-cta': {

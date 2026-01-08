@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { withRouter, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, withRouter } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -31,16 +31,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import Header from '@/js/components/Header';
-import PageHeader from '@/js/components/PageHeader';
-import Layout from '@/js/components/layout/Layout';
-import SettingsModules from './SettingsModules';
-import { Cell, Grid, Row } from '@/js/material-components';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import { trackEvent } from '@/js/util/tracking';
-import useViewContext from '@/js/hooks/useViewContext';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Layout from '@/js/components/layout/Layout';
+import PageHeader from '@/js/components/PageHeader';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util/tracking';
+import SettingsModules from './SettingsModules';
 
 function SettingsApp() {
 	const location = useLocation();

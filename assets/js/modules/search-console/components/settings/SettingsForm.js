@@ -26,13 +26,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import Notice from '@/js/components/Notice';
+import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { PropertySelect } from '@/js/modules/search-console/components/common';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
-import Notice from '@/js/components/Notice';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>

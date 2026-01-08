@@ -23,31 +23,31 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	ERROR_CODE_NON_HTTPS_SITE,
-	MODULES_SIGN_IN_WITH_GOOGLE,
-} from './datastore/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
-import Icon from '@/svg/graphics/sign-in-with-google.svg';
-import SetupMain from './components/setup/SetupMain';
-import SettingsEdit from './components/settings/SettingsEdit';
-import SettingsView from './components/settings/SettingsView';
-import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
-import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import Icon from '@/svg/graphics/sign-in-with-google.svg';
 import CompatibilityWarningSubtleNotification from './components/dashboard/CompatibilityWarningSubtleNotification';
+import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
+import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
+import SettingsEdit from './components/settings/SettingsEdit';
+import SettingsView from './components/settings/SettingsView';
+import SetupMain from './components/setup/SetupMain';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
+import {
+	ERROR_CODE_NON_HTTPS_SITE,
+	MODULES_SIGN_IN_WITH_GOOGLE,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 

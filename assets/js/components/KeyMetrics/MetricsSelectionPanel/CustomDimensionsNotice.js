@@ -19,29 +19,29 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { usePrevious } from '@wordpress/compose';
 import { useEffect, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	EDIT_SCOPE,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 } from '@/js/components/KeyMetrics/constants';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import P from '@/js/components/Typography/P';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { elementsOverlap } from '@/js/util/geometry';
 import whenActive from '@/js/util/when-active';
-import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
 
 function CustomDimensionsNotice() {
 	const selectedMetrics = useFormValue(

@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry } from '../../../tests/js/test-utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { provideGatheringDataState } from '../../../tests/js/gathering-data-utils';
+import { createTestRegistry, render } from '../../../tests/js/test-utils';
 import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../tests/js/utils';
-import { provideGatheringDataState } from '../../../tests/js/gathering-data-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import WelcomeModal from './WelcomeModal';
 
 describe( 'WelcomeModal', () => {

@@ -25,18 +25,18 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '@/js/googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	isValidPublicationID,
 	isValidOnboardingState,
+	isValidPublicationID,
 	isValidSnippetMode,
 } from '@/js/modules/reader-revenue-manager/utils/validation';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =

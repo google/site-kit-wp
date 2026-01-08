@@ -26,8 +26,8 @@ import { Icon, info } from '@wordpress/icons';
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
-import useViewContext from '@/js/hooks/useViewContext';
 import { useDebounce } from '@/js/hooks/useDebounce';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 export default function DateMarker( { id, text } ) {

@@ -30,10 +30,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { listFormat } from '@/js/util';
 import Notice from '@/js/components/Notice';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { listFormat } from '@/js/util';
 
 export default function EntityOwnershipChangeNotice( { slug } ) {
 	const slugs = Array.isArray( slug ) ? slug : [ slug ];

@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,16 +31,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	MODULES_TAGMANAGER,
-	FORM_SETUP,
-} from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
-import { isUniqueContainerName } from '@/js/modules/tagmanager/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import {
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { isUniqueContainerName } from '@/js/modules/tagmanager/util';
 
 export default function ContainerNameTextField( { label, name } ) {
 	const containers = useSelect( ( select ) => {

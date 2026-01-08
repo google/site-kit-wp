@@ -24,28 +24,28 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { ProgressBar } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import { PublicationCreate } from '@/js/modules/reader-revenue-manager/components/common';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	RESET_PUBLICATIONS,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useRefocus } from '@/js/hooks/useRefocus';
-import { ProgressBar } from 'googlesitekit-components';
-import { PublicationCreate } from '@/js/modules/reader-revenue-manager/components/common';
 import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import SetupForm from './SetupForm';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
 	const publications = useSelect( ( select ) =>

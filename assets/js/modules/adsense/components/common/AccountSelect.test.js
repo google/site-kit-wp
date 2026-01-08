@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import AccountSelect from './AccountSelect';
-import {
-	fireEvent,
-	render,
-	freezeFetch,
-	createTestRegistry,
-} from '../../../../../../tests/js/test-utils';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	freezeFetch,
+	render,
+} from '../../../../../../tests/js/test-utils';
+import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {
 	let registry;

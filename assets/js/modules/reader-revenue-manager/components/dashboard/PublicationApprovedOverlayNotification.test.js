@@ -24,23 +24,23 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 
 describe( 'PublicationApprovedOverlayNotification', () => {
 	mockLocation();

@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adSenseConnectCTA'

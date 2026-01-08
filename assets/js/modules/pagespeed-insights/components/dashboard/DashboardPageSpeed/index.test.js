@@ -24,24 +24,24 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import DashboardPageSpeed from '.';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
+} from '@/js/modules/pagespeed-insights/datastore/constants';
+import {
+	act,
 	fireEvent,
 	render,
 	waitFor,
-	act,
 } from '../../../../../../../tests/js/test-utils';
-import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
-} from '@/js/modules/pagespeed-insights/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
 	createTestRegistry,
 	freezeFetch,
 } from '../../../../../../../tests/js/utils';
+import DashboardPageSpeed from '.';
 
 const activeClass = 'mdc-tab--active';
 const url = fixtures.pagespeedMobile.loadingExperience.id;

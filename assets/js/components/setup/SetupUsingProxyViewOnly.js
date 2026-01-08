@@ -19,33 +19,33 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
-	useCallback,
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
+	useCallback,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import OptIn from '@/js/components/OptIn';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
 import Link from '@/js/components/Link';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import SideKickSVG from '@/svg/graphics/view-only-setup-sidekick.svg';
-import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
+import OptIn from '@/js/components/OptIn';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import SideKickSVG from '@/svg/graphics/view-only-setup-sidekick.svg';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();

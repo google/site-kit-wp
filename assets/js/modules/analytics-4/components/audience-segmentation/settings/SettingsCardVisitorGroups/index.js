@@ -25,22 +25,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
 import SetupCTA from './SetupCTA';
 import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from './SetupSuccess';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function SettingsCardVisitorGroups() {
 	const viewContext = useViewContext();

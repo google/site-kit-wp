@@ -24,9 +24,9 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Notice from '.';
-import Link from '@/js/components/Link';
 
 function Template() {
 	return (

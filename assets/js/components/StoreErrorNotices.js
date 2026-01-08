@@ -25,10 +25,10 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import ErrorNotice from './ErrorNotice';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
+import ErrorNotice from './ErrorNotice';
 
 export default function StoreErrorNotices( {
 	hasButton = false,

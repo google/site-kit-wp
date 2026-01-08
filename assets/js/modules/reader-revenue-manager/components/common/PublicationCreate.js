@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -34,8 +34,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import SupportLink from '@/js/components/SupportLink';
+import Typography from '@/js/components/Typography';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -43,8 +45,6 @@ import {
 	RESET_PUBLICATIONS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExternalIcon from '@/svg/icons/external.svg';
-import SupportLink from '@/js/components/SupportLink';
-import Typography from '@/js/components/Typography';
 
 export default function PublicationCreate( { onCompleteSetup } ) {
 	const publications = useSelect( ( select ) =>

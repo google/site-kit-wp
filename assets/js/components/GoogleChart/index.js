@@ -17,9 +17,6 @@
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 
-/* Ensures `google` global is undefined before loading `react-google-charts` library */
-import '@/js/util/initialize-google-global';
-
 /**
  * External dependencies
  */
@@ -43,25 +40,26 @@ import {
 /**
  * Internal dependencies
  */
-import PreviewBlock from '@/js/components/PreviewBlock';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import '@/js/util/initialize-google-global';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '@/js/components/GatheringDataNotice';
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import GoogleChartErrorHandler from '@/js/components/GoogleChartErrorHandler';
-import DateMarker from './DateMarker';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
+import { getDateString, getLocale, stringToDate } from '@/js/util';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
+import DateMarker from './DateMarker';
 import {
+	getChartOptions,
+	getCombinedChartEvents,
 	getFilteredChartData,
 	getLoadingDimensions,
-	getCombinedChartEvents,
-	getChartOptions,
 } from './utils';
-import { stringToDate, getDateString, getLocale } from '@/js/util';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function GoogleChart( props ) {
 	const {

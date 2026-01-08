@@ -20,8 +20,8 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { useCallbackOne } from 'use-memo-one';
 import { useMount } from 'react-use';
+import { useCallbackOne } from 'use-memo-one';
 
 /**
  * WordPress dependencies
@@ -38,32 +38,32 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import AdsIcon from '@/svg/graphics/ads.svg';
-import SetupFormPAX from './SetupFormPAX';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import Typography from '@/js/components/Typography';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Row } from '@/js/material-components';
+import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
+import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	SUPPORT_CONTENT_SCOPE,
 } from '@/js/modules/ads/datastore/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	PAX_PARAM_SETUP_STEP,
 	PAX_SETUP_STEP,
 	PAX_SETUP_SUCCESS_NOTIFICATION,
 } from '@/js/modules/ads/pax/constants';
-import { Cell, Row } from '@/js/material-components';
-import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
-import Link from '@/js/components/Link';
-import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import Typography from '@/js/components/Typography';
+import AdsIcon from '@/svg/graphics/ads.svg';
+import SetupFormPAX from './SetupFormPAX';
 
 export default function SetupMainPAX( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );

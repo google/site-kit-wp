@@ -25,11 +25,11 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import UserInputApp from './UserInputApp';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import UserInputApp from './UserInputApp';
 
 function Template() {
 	return (

@@ -19,31 +19,31 @@
 /**
  * Internal dependencies
  */
-import WPDashboardWidgets from './WPDashboardWidgets';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
-	provideModules,
 	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	provideSiteInfo,
 } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
-	setupAnalytics4ZeroData,
-	setupSearchConsoleZeroData,
 	provideAnalytics4ReportTitles,
-	setupSearchConsoleMockReports,
-	setupAnalytics4MockReports,
-	setupSearchConsoleGatheringData,
 	setupAnalytics4GatheringData,
-	widgetDecorators,
+	setupAnalytics4MockReports,
 	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+	setupAnalytics4ZeroData,
+	setupSearchConsoleGatheringData,
+	setupSearchConsoleMockReports,
+	setupSearchConsoleZeroData,
+	widgetDecorators,
 } from './common-GA4-stories';
-import { VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import WPDashboardWidgets from './WPDashboardWidgets';
 
 function Template( { setupRegistry, viewContext } ) {
 	return (

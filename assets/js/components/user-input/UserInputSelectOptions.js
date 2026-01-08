@@ -25,25 +25,25 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef } from '@wordpress/element';
+import { _n, sprintf } from '@wordpress/i18n';
 import { ENTER } from '@wordpress/keycodes';
-import { sprintf, _n } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox, Radio } from 'googlesitekit-components';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { Cell } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
 	USER_INPUT_QUESTIONS_PURPOSE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
 } from './util/constants';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function UserInputSelectOptions( {
 	slug,

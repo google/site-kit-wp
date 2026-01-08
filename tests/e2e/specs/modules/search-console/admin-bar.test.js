@@ -8,8 +8,8 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
  */
 import {
 	setEditPostFeature,
-	setSiteVerification,
 	setSearchConsoleProperty,
+	setSiteVerification,
 	useRequestInterception,
 } from '../../../utils';
 import * as adminBarMockResponses from './fixtures/admin-bar';

@@ -24,17 +24,17 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import CompatibilityChecks from './index';
 import {
 	render,
 	waitForElementToBeRemoved,
 } from '../../../../../tests/js/test-utils';
 import {
+	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
-	createTestRegistry,
 } from '../../../../../tests/js/utils';
 import { AMP_PROJECT_TEST_URL } from './constants';
+import CompatibilityChecks from './index';
 
 function compatibilityChildren( {
 	complete,

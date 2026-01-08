@@ -30,9 +30,9 @@ import { useInstanceId } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 export default function WPDashboardReportError( { moduleSlug, error } ) {
 	const errorInstanceID = useInstanceId(

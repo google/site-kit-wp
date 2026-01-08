@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { render } from '../../../../tests/js/test-utils';
-import Step from './Step';
 import Stepper from '.';
+import Step from './Step';
 
 describe( 'Stepper', () => {
 	it.each( [

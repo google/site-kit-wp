@@ -26,20 +26,20 @@ import invariant from 'invariant';
  */
 import {
 	commonActions,
+	createReducer,
 	createRegistryControl,
 	createRegistrySelector,
-	createReducer,
 } from 'googlesitekit-data';
-import { getStorage } from '@/js/util/storage';
-import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { racePrioritizedAsyncTasks } from '@/js/util/async';
-import { shouldNotificationBeAddedToQueue } from '@/js/googlesitekit/notifications/util/shouldNotificationBeAddedToQueue';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
+import { shouldNotificationBeAddedToQueue } from '@/js/googlesitekit/notifications/util/shouldNotificationBeAddedToQueue';
+import { racePrioritizedAsyncTasks } from '@/js/util/async';
+import { getStorage } from '@/js/util/storage';
+import { CORE_NOTIFICATIONS, NOTIFICATION_VIEW_CONTEXTS } from './constants';
 
 const INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE =
 	'INSERT_NOTIFICATION_INTO_RESOLVED_QUEUE';

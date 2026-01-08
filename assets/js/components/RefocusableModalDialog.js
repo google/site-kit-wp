@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies

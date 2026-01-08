@@ -30,24 +30,24 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
-import Link from '@/js/components/Link';
-import P from '@/js/components/Typography/P';
 import Badge from '@/js/components/Badge';
-import SplashScreenshotSVG from './SetupFlowSVG';
-import SplashBackground from '@/svg/graphics/splash-graphic.svg';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
+import Link from '@/js/components/Link';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
-import { Cell, Row } from '@/js/material-components';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
+import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { Cell, Row } from '@/js/material-components';
+import SplashBackground from '@/svg/graphics/splash-graphic.svg';
+import SplashScreenshotSVG from './SetupFlowSVG';
 
 export default function SplashContent( {
 	analyticsModuleActive,

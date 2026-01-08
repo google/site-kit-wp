@@ -19,25 +19,25 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { Button } from 'googlesitekit-components';
-import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
-import P from '@/js/components/Typography/P';
-import Typography from '@/js/components/Typography';
-// @ts-expect-error - We need to add types for imported SVGs.
-import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+// @ts-expect-error - We need to add types for imported SVGs.
+import CloseIcon from '@/svg/icons/close.svg';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type SelectFunction = ( select: any ) => any;

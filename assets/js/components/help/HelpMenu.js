@@ -19,35 +19,35 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback } from '@wordpress/element';
-import { ESCAPE, TAB } from '@wordpress/keycodes';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import HelpIcon from '@/svg/icons/help.svg';
-import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import { trackEvent } from '@/js/util';
-import HelpMenuLink from './HelpMenuLink';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useFeature } from '@/js/hooks/useFeature';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import FeedbackIcon from '@/svg/icons/feedback.svg';
+import { trackEvent } from '@/js/util';
 import CompassIcon from '@/svg/icons/compass.svg';
-import SupportIcon from '@/svg/icons/support.svg';
 import DocumentationIcon from '@/svg/icons/documentation.svg';
-import classnames from 'classnames';
+import FeedbackIcon from '@/svg/icons/feedback.svg';
+import HelpIcon from '@/svg/icons/help.svg';
+import SupportIcon from '@/svg/icons/support.svg';
+import HelpMenuLink from './HelpMenuLink';
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );

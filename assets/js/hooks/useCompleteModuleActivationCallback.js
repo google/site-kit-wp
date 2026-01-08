@@ -24,13 +24,13 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 
 /**
  * Returns a callback to navigate users to the module's authentication URL.

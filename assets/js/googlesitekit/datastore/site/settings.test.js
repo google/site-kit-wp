@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { CORE_SITE } from './constants';
 
 describe( 'core/site urls', () => {
 	let registry;

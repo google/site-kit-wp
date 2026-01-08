@@ -24,20 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();

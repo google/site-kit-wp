@@ -24,31 +24,31 @@ import { useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import ProgressSegments from '@/js/components/ProgressSegments';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 import UserInputQuestionWrapper from './UserInputQuestionWrapper';
 import UserInputSelectOptions from './UserInputSelectOptions';
 import {
+	FORM_USER_INPUT_QUESTION_NUMBER,
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_GOALS,
 	USER_INPUT_QUESTIONS_LIST,
 	USER_INPUT_QUESTIONS_PURPOSE,
 	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_QUESTIONS_GOALS,
-	USER_INPUT_MAX_ANSWERS,
 	getUserInputAnswers,
-	FORM_USER_INPUT_QUESTION_NUMBER,
 	getUserInputAnswersDescription,
 } from './util/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import ProgressSegments from '@/js/components/ProgressSegments';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputQuestionnaire() {
 	const viewContext = useViewContext();

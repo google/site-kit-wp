@@ -28,15 +28,18 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import { trackEvent } from './util';
-import Root from './components/Root';
 import AdminBarApp from './components/adminbar/AdminBarApp';
+import Root from './components/Root';
 import {
 	VIEW_CONTEXT_ADMIN_BAR,
 	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 } from './googlesitekit/constants';
+/**
+ * Internal dependencies.
+ */
+import { trackEvent } from './util';
 
 // Initialize the whole adminbar app.
 const init = once( () => {

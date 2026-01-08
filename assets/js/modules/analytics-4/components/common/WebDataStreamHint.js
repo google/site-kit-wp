@@ -19,16 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import StepHint from '@/js/components/setup/StepHint';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function WebDataStreamHint() {
 	const learnMoreLink = useSelect( ( select ) =>

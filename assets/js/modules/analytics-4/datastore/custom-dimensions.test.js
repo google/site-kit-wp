@@ -25,8 +25,13 @@ import { times } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import {
 	createTestRegistry,
 	provideModules,
@@ -34,12 +39,7 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import {
-	CORE_USER,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_TOP_CATEGORIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;

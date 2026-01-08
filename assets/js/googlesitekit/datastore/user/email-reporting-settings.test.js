@@ -18,12 +18,12 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	provideModules,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user email reporting settings', () => {
 	let registry;

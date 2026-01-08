@@ -23,23 +23,23 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',

@@ -23,8 +23,8 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
 import {
-	registerStore,
 	registerModule,
+	registerStore,
 	registerWidgets,
 } from './modules/search-console';
 

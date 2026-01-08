@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import useViewContext from './useViewContext';
 

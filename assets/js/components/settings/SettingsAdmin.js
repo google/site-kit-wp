@@ -25,23 +25,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Layout from '@/js/components/layout/Layout';
-import { Grid, Cell, Row } from '@/js/material-components';
 import OptIn from '@/js/components/OptIn';
-import ResetButton from '@/js/components/ResetButton';
-import SettingsCardConsentMode from './SettingsCardConsentMode';
-import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
-import SettingsCardEmailReporting from './SettingsCardEmailReporting';
-import SettingsPlugin from './SettingsPlugin';
-import ConnectedIcon from '@/svg/icons/connected.svg';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import SettingsCardVisitorGroups from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
+import ResetButton from '@/js/components/ResetButton';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import { Cell, Grid, Row } from '@/js/material-components';
+import SettingsCardVisitorGroups from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import ConnectedIcon from '@/svg/icons/connected.svg';
+import SettingsCardConsentMode from './SettingsCardConsentMode';
+import SettingsCardEmailReporting from './SettingsCardEmailReporting';
+import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
+import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
 	const proactiveUserEngagementEnabled = useFeature(

@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { commonStore, combineStores } from 'googlesitekit-data';
-import settingsPanel from './settings-panel';
-import settings from './settings';
-import modules from './modules';
-import sharingSettings from './sharing-settings';
+import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_MODULES } from './constants';
+import modules from './modules';
+import settings from './settings';
+import settingsPanel from './settings-panel';
+import sharingSettings from './sharing-settings';
 
 const store = combineStores(
 	commonStore,

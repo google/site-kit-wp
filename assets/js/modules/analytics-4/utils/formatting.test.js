@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { decodeAmpersand, splitCategories } from './formatting';
 
 describe( 'formatting', () => {

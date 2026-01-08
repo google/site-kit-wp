@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import SettingsView from './SettingsView';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SettingsView from './SettingsView';
 
 const defaultSettings = {
 	accountID: '',

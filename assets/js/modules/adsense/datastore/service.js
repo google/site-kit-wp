@@ -25,10 +25,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { parseDomain } from '@/js/modules/adsense/util/url';
+import { MODULES_ADSENSE } from './constants';
 
 export const selectors = {
 	/**

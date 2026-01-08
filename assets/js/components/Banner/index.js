@@ -28,20 +28,20 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Notice from '@/js/components/Notice';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import TitleIcon from './TitleIcon';
-import Title from './Title';
-import Description from './Description';
-import HelpText from './HelpText';
-import LearnMoreLink from './LearnMoreLink';
 import CTAButton from './CTAButton';
+import Description from './Description';
 import DismissButton from './DismissButton';
 import Footer from './Footer';
-import Notice from '@/js/components/Notice';
+import HelpText from './HelpText';
+import LearnMoreLink from './LearnMoreLink';
+import Title from './Title';
+import TitleIcon from './TitleIcon';
 
 const Banner = forwardRef(
 	(

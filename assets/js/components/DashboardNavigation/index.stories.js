@@ -19,22 +19,22 @@
 /**
  * Internal dependencies
  */
-import DashboardNavigation from './';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '@/js/googlesitekit/widgets/default-contexts';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import {
-	freezeFetch,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import { setupDefaultChips } from './test-utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '@/js/googlesitekit/widgets/default-contexts';
+import {
+	freezeFetch,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import DashboardNavigation from './';
+import { setupDefaultChips } from './test-utils';
 
 function Template( { setupRegistry, viewContext, ...args } ) {
 	return (

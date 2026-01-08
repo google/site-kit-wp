@@ -17,15 +17,19 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useParams } from 'react-router-dom';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { useParams } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export default function SettingsRenderer( { slug } ) {

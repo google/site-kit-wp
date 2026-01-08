@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import {
 	REPORT_ARGS_DATA_FILTERS_KEY,

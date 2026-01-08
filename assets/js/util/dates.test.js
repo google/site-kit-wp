@@ -18,15 +18,15 @@
  * Internal dependencies
  */
 import {
+	DAY_IN_SECONDS,
 	INVALID_DATE_INSTANCE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	dateSub,
 	getDateString,
 	getPreviousDate,
-	isValidDateString,
 	isValidDateRange,
+	isValidDateString,
 	stringToDate,
-	dateSub,
-	DAY_IN_SECONDS,
 } from './dates';
 
 describe( 'getDateString', () => {

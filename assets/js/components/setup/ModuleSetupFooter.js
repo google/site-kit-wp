@@ -19,24 +19,24 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
-import Link from '@/js/components/Link';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 	const [ isSaving, setIsSaving ] = useState( false );

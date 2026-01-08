@@ -22,9 +22,9 @@ process.on( 'unhandledRejection', ( err ) => {
 /**
  * External dependencies
  */
+const { sync: spawn } = require( 'cross-spawn' );
 /* eslint-disable-next-line jest/no-jest-import */
 const jest = require( 'jest' );
-const { sync: spawn } = require( 'cross-spawn' );
 
 // getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11

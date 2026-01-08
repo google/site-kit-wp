@@ -19,19 +19,19 @@
 /**
  * WordPress dependencies
  */
+import { usePrevious } from '@wordpress/compose';
 import {
 	useCallback,
-	useState,
 	useEffect,
 	useMemo,
 	useRef,
+	useState,
 } from '@wordpress/element';
-import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	EFFECTIVE_SELECTION,
 	KEY_METRICS_GROUP_CURRENT,
@@ -40,21 +40,21 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	UNSTAGED_SELECTION,
 } from '@/js/components/KeyMetrics/constants';
+import useCurrentlyActiveEvents from '@/js/components/KeyMetrics/hooks/useCurrentlyActiveEvents';
+import useFilteredKeyMetrics from '@/js/components/KeyMetrics/hooks/useFilteredKeyMetrics';
+import useKeyMetricsGroups from '@/js/components/KeyMetrics/hooks/useKeyMetricsGroups';
+import useNewBadgeEvents from '@/js/components/KeyMetrics/hooks/useNewBadgeEvents';
+import useOverflowingTabs from '@/js/components/KeyMetrics/hooks/useOverflowingTabs';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useFormValue from '@/js/hooks/useFormValue';
-import useCurrentlyActiveEvents from '@/js/components/KeyMetrics/hooks/useCurrentlyActiveEvents';
-import useKeyMetricsGroups from '@/js/components/KeyMetrics/hooks/useKeyMetricsGroups';
-import useFilteredKeyMetrics from '@/js/components/KeyMetrics/hooks/useFilteredKeyMetrics';
-import useOverflowingTabs from '@/js/components/KeyMetrics/hooks/useOverflowingTabs';
-import useNewBadgeEvents from '@/js/components/KeyMetrics/hooks/useNewBadgeEvents';
-import TabItems from './TabItems';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import TabContent from './TabContent';
+import TabItems from './TabItems';
 
 const emptyArray = Object.freeze( [] );
 

@@ -20,22 +20,25 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+/**
+ * WordPress dependencies
+ */
 import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import whenActive from '@/js/util/when-active';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import AudienceTiles from './AudienceTiles';
-import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
 import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
 import NoAudienceBannerWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/NoAudienceBannerWidget';
-import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
+import whenActive from '@/js/util/when-active';
+import AudienceTileLoading from './AudienceTile/AudienceTileLoading';
+import AudienceTiles from './AudienceTiles';
 
 function AudienceTilesWidget( { Widget } ) {
 	const availableAudiences = useSelect( ( select ) => {

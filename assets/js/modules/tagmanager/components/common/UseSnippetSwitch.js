@@ -30,11 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function UseSnippetSwitch( { description } ) {
 	const useSnippet = useSelect( ( select ) =>

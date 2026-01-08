@@ -21,8 +21,8 @@
  */
 import Data from 'googlesitekit-data';
 import {
-	registerStore,
 	createWidgets,
+	registerStore,
 	registerWidgets,
 } from './googlesitekit/widgets';
 

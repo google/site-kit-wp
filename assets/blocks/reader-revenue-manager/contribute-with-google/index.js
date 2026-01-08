@@ -22,14 +22,14 @@ import { registerBlockType } from '@wordpress-core/blocks';
 /**
  * Internal dependencies
  */
-import { select, resolveSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { resolveSelect, select } from 'googlesitekit-data';
 import { CORE_EDIT_SITE } from '@/blocks/reader-revenue-manager/common/constants';
-import Edit from './Edit';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import metadata from './block.json';
+import Edit from './Edit';
 
 async function registerBlock() {
 	// Since we aren't currently able to use the Site Kit `useSelect()` in the components,

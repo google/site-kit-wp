@@ -21,13 +21,13 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import Widgets from 'googlesitekit-widgets';
 import Notifications from 'googlesitekit-notifications';
+import Widgets from 'googlesitekit-widgets';
 import {
-	registerStore,
 	registerModule,
-	registerWidgets,
 	registerNotifications,
+	registerStore,
+	registerWidgets,
 } from './modules/adsense';
 
 registerStore( Data );

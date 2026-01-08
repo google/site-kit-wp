@@ -26,24 +26,27 @@ jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
 } ) );
 
-import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
-import {
-	act,
-	fireEvent,
-	render,
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../../../tests/js/test-utils';
+/**
+ * Internal dependencies
+ */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ADSENSE,
 } from '@/js/modules/adsense/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+} from '../../../../../../tests/js/test-utils';
+import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 
 describe( 'AdSenseConnectCTA', () => {
 	let registry;

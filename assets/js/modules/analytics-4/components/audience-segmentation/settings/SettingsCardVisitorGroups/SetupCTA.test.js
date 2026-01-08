@@ -19,7 +19,17 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -34,16 +44,6 @@ import {
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
 import SetupCTA from './SetupCTA';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

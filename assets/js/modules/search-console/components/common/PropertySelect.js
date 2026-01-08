@@ -26,10 +26,10 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { trackEvent } from '@/js/util/tracking';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function PropertySelect( { hasModuleAccess } ) {
 	const viewContext = useViewContext();

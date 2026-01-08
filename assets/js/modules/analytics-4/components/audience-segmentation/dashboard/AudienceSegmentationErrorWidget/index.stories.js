@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
-	provideModules,
 	provideModuleRegistrations,
+	provideModules,
 	provideUserInfo,
 } from '../../../../../../../../tests/js/test-utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AudienceSegmentationErrorWidget from '.';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'audienceSegmentationErrorWidget'

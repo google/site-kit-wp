@@ -24,9 +24,9 @@ import { getByText } from '@testing-library/dom';
 /**
  * Internal dependencies
  */
-import WidgetErrorHandler from './';
 import { render } from '../../../../tests/js/test-utils';
 import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import WidgetErrorHandler from './';
 
 describe( 'Widget Error Handler', () => {
 	const slug = 'testWidgetSlug';

@@ -19,38 +19,38 @@
 /**
  * External dependencies
  */
-import { useIntersection } from 'react-use';
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
-	useEffect,
 	useCallback,
+	useEffect,
 	useRef,
 	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { trackEvent } from '@/js/util';
-import ContentAutoUpdate from './ContentAutoUpdate';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import SupportLink from '@/js/components/SupportLink';
 import P from '@/js/components/Typography/P';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
+import ContentAutoUpdate from './ContentAutoUpdate';
 
 export default function AdSenseConnectCTA( { onDismissModule } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );

@@ -21,25 +21,25 @@
  */
 import compareVersions from 'compare-versions';
 import invariant from 'invariant';
-import { isPlainObject, isNull } from 'lodash';
+import { isNull, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	combineStores,
 	commonActions,
 	createReducer,
-	createRegistrySelector,
-	combineStores,
 	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from './constants';
 import featureTours from '@/js/feature-tours';
 import { getItem } from '@/js/googlesitekit/api/cache';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from './constants';
 
 const { getRegistry } = commonActions;
 

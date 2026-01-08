@@ -16,25 +16,28 @@
  * limitations under the License.
  */
 
-import {
-	render,
-	createTestRegistry,
-	provideUserAuthentication,
-	fireEvent,
-	provideSiteInfo,
-	freezeFetch,
-	waitForTimeouts,
-	waitFor,
-} from '../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+/**
+ * Internal dependencies
+ */
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
-import KeyMetricsSetupApp from './KeyMetricsSetupApp';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	fireEvent,
+	freezeFetch,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+	waitForTimeouts,
+} from '../../../../tests/js/test-utils';
+import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

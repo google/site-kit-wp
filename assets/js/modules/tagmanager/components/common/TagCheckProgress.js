@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
 export default function TagCheckProgress( { className } ) {

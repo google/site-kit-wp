@@ -17,14 +17,24 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isEqual } from 'lodash';
+
+/**
  * WordPress dependencies
  */
+import { useMemo } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
 import { useInViewSelect, useSelect } from '@/js/googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { safelySort } from '@/js/util';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG,
@@ -32,12 +42,6 @@ import {
 	MAX_SELECTED_AUDIENCES_COUNT,
 	MIN_SELECTED_AUDIENCES_COUNT,
 } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useFormValue from '@/js/hooks/useFormValue';
-import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
-import { useMemo } from '@wordpress/element';
-import { isEqual } from 'lodash';
-import { safelySort } from '@/js/util';
 
 export default function SaveErrorNotice( { savedItemSlugs } ) {
 	const selectedItems = useFormValue(

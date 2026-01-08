@@ -27,13 +27,13 @@ import { useCallback } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import JoyrideTooltip from '@/js/components/JoyrideTooltip';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export function AdminScreenTooltip() {
 	const viewContext = useViewContext();

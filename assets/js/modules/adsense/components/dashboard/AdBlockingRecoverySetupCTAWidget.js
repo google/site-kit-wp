@@ -30,15 +30,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import Banner from '@/js/components/Banner';
 import Link from '@/js/components/Link';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useInView } from '@/js/hooks/useInView';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
 import {
 	DAY_IN_SECONDS,
 	WEEK_IN_SECONDS,
@@ -46,18 +58,6 @@ import {
 	trackEvent,
 } from '@/js/util';
 import whenActive from '@/js/util/when-active';
-import {
-	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	ACCOUNT_STATUS_READY,
-	SITE_STATUS_READY,
-} from '@/js/modules/adsense/util';
-import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
-import Banner from '@/js/components/Banner';
-import P from '@/js/components/Typography/P';
 import BannerSVGDesktop from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta-mobile.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ad-blocking-recovery-setup-cta.svg?url';
 

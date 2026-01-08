@@ -22,8 +22,8 @@
 import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
-import ui from './ui';
 import { CORE_UI } from './constants';
+import ui from './ui';
 
 const store = combineStores(
 	commonStore,

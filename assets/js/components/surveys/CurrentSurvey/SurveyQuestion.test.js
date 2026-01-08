@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../tests/js/test-utils';
-import SurveyQuestion from './SurveyQuestion';
 import {
+	multiQuestionSurvey,
 	singleQuestionMultiSelect,
 	singleQuestionOpenText,
 	singleQuestionSurveySingleSelect,
-	multiQuestionSurvey,
 } from '@/js/components/surveys/__fixtures__';
+import { render } from '../../../../../tests/js/test-utils';
+import SurveyQuestion from './SurveyQuestion';
 
 describe( 'SurveyQuestion', () => {
 	const defaultProps = {

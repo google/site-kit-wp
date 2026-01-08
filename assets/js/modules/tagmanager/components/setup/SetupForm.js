@@ -24,38 +24,38 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import {
-	MODULES_TAGMANAGER,
-	FORM_SETUP,
-	EDIT_SCOPE,
-	SETUP_MODE_WITH_ANALYTICS,
-} from '@/js/modules/tagmanager/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { isPermissionScopeError } from '@/js/util/errors';
-import { setItem } from '@/js/googlesitekit/api/cache';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	AccountSelect,
 	AMPContainerSelect,
+	AccountSelect,
 	ContainerNames,
 	FormInstructions,
-	WebContainerSelect,
 	TagCheckProgress,
+	WebContainerSelect,
 } from '@/js/modules/tagmanager/components/common';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+	SETUP_MODE_WITH_ANALYTICS,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { isPermissionScopeError } from '@/js/util/errors';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>

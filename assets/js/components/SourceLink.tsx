@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,11 +31,11 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Link from './Link';
-import { trackEvent } from '@/js/util';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import useViewContext from '@/js/hooks/useViewContext';
 import useWidget from '@/js/googlesitekit/widgets/hooks/useWidget';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { trackEvent } from '@/js/util';
+import Link from './Link';
 
 export interface SourceLinkProps {
 	name?: string;

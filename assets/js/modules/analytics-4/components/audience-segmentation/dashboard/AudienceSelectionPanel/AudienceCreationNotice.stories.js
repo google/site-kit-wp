@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
 

@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import {
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -27,14 +33,8 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import {
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectAdSenseCTATile'

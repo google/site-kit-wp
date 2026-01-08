@@ -17,9 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ANALYTICS_4_NOTIFICATIONS } from '..';
+
+/**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -28,13 +42,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
-import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import * as fixtures from './__fixtures__';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -44,16 +52,12 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from './constants';
-import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
 import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,
 	INVARIANT_INVALID_WEBDATASTREAM_ID,
 	INVARIANT_INVALID_WEBDATASTREAM_NAME,
 	INVARIANT_WEBDATASTREAM_ALREADY_EXISTS,
 } from './settings';
-import * as fixtures from './__fixtures__';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '..';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;

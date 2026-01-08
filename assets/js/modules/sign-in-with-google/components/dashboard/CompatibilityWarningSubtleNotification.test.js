@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	render,
-	fireEvent,
-} from '../../../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { SIGN_IN_WITH_GOOGLE_NOTIFICATIONS } from '@/js/modules/sign-in-with-google';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideSiteInfo,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import CompatibilityWarningSubtleNotification from './CompatibilityWarningSubtleNotification';
 
 const NOTIFICATION_ID = 'sign-in-with-google-compatibility-warning';

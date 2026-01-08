@@ -24,18 +24,18 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	freezeFetch,
+	render,
+} from '../../../../../tests/js/test-utils';
 import EmailReportingCardNotice, {
 	EMAIL_REPORTING_CARD_NOTICE,
 } from './EmailReportingCardNotice';
-import {
-	createTestRegistry,
-	render,
-	fireEvent,
-	freezeFetch,
-} from '../../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 
 describe( 'EmailReportingCardNotice', () => {
 	let registry;

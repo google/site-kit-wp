@@ -30,17 +30,17 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { useInViewSelect } from '@/js/hooks/useInViewSelect';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { useInViewSelect } from '@/js/hooks/useInViewSelect';
-import MetricTileText from '@/js/components/KeyMetrics/MetricTileText';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';

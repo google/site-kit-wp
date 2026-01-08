@@ -17,7 +17,7 @@
  */
 
 /**
- * External dependencies.
+ * External dependencies
  */
 import invariant from 'invariant';
 
@@ -25,8 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { commonActions, createReducer } from 'googlesitekit-data';
-import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from './constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
+import { ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY } from './constants';
 
 // Actions.
 const RECEIVE_WOOCOMMERCE_MODAL_CACHE_KEY =

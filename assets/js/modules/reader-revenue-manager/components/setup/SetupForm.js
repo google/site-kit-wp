@@ -36,16 +36,16 @@ import Link from '@/js/components/Link';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	RESET_PUBLICATIONS,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import {
 	ProductIDSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	RESET_PUBLICATIONS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 export default function SetupForm( { onCompleteSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>

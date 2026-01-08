@@ -19,24 +19,21 @@
 /**
  * Internal dependencies
  */
-/**
- * Internal dependencies
- */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
-	render,
-	provideUserAuthentication,
 	provideSiteInfo,
+	provideUserAuthentication,
+	render,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
-import { EDIT_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
-import SetupBanner from './SetupBanner';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import SetupBanner from './SetupBanner';
 
 describe( 'SetupBanner', () => {
 	const SetupBannerComponent = withNotificationComponentProps(

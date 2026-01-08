@@ -25,19 +25,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Logo from '@/js/components/Logo';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { trackEvent } from '@/js/util';
+import Typography from '@/js/components/Typography';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_VIEW_DASHBOARD,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import useViewContext from '@/js/hooks/useViewContext';
-import Typography from '@/js/components/Typography';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );

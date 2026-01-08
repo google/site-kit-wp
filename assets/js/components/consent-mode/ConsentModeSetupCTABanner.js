@@ -22,24 +22,24 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import BannerSVGDesktop from '@/svg/graphics/banner-consent-mode-setup-cta.svg?url';
-import BannerSVGMobile from '@/svg/graphics/banner-consent-mode-setup-cta-mobile.svg?url';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
-import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import useViewContext from '@/js/hooks/useViewContext';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { DAY_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
+import BannerSVGMobile from '@/svg/graphics/banner-consent-mode-setup-cta-mobile.svg?url';
+import BannerSVGDesktop from '@/svg/graphics/banner-consent-mode-setup-cta.svg?url';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );

@@ -25,20 +25,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { PublicationOnboardingStateNotice } from '@/js/modules/reader-revenue-manager/components/common';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	SNIPPET_MODES,
+} from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	getPostTypesString,
 	getProductIDLabel,
 } from '@/js/modules/reader-revenue-manager/utils/settings';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	SNIPPET_MODES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
-import DisplaySetting from '@/js/components/DisplaySetting';
-import { PublicationOnboardingStateNotice } from '@/js/modules/reader-revenue-manager/components/common';
-import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>

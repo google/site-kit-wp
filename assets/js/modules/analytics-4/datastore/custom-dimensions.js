@@ -27,22 +27,22 @@ import { isPlainObject } from 'lodash';
  */
 import { set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 const customDimensionFields = [
 	'parameterName',

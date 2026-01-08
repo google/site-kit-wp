@@ -19,7 +19,41 @@
 /**
  * Internal dependencies
  */
-import MetricsSelectionPanel from '.';
+import {
+	EFFECTIVE_SELECTION,
+	KEY_METRICS_SELECTION_FORM,
+	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
+} from '@/js/components/KeyMetrics/constants';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	EDIT_SCOPE,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	act,
 	fireEvent,
@@ -35,41 +69,7 @@ import {
 	provideUserInfo,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_RETURNING_VISITORS,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_POPULAR_CONTENT,
-	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_POPULAR_PRODUCTS,
-	KM_ANALYTICS_TOP_CITIES,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	EFFECTIVE_SELECTION,
-	KEY_METRICS_SELECTION_FORM,
-	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
-} from '@/js/components/KeyMetrics/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import {
-	EDIT_SCOPE,
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import MetricsSelectionPanel from '.';
 
 describe( 'MetricsSelectionPanel', () => {
 	let registry;

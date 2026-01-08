@@ -20,12 +20,33 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import SelectionPanel from '@/js/components/SelectionPanel';
-import Header from '@/js/components/KeyMetrics/MetricsSelectionPanel/Header';
-import SelectionPanelItems from '@/js/components/KeyMetrics/MetricsSelectionPanel/SelectionPanelItems';
+import {
+	EFFECTIVE_SELECTION,
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import CustomDimensionsNotice from '@/js/components/KeyMetrics/MetricsSelectionPanel/CustomDimensionsNotice';
 import Footer from '@/js/components/KeyMetrics/MetricsSelectionPanel/Footer';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import Header from '@/js/components/KeyMetrics/MetricsSelectionPanel/Header';
+import KeyMetricsError from '@/js/components/KeyMetrics/MetricsSelectionPanel/KeyMetricsError';
+import SelectionPanelItems from '@/js/components/KeyMetrics/MetricsSelectionPanel/SelectionPanelItems';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import SelectionPanel from '@/js/components/SelectionPanel';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	provideKeyMetrics,
 	provideKeyMetricsUserInputSettings,
@@ -33,28 +54,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	EFFECTIVE_SELECTION,
-	KEY_METRICS_SELECTED,
-	KEY_METRICS_SELECTION_FORM,
-} from '@/js/components/KeyMetrics/constants';
-import {
-	CORE_USER,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-	KM_ANALYTICS_VISIT_LENGTH,
-	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import KeyMetricsError from '@/js/components/KeyMetrics/MetricsSelectionPanel/KeyMetricsError';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 
 function Template() {
 	const savedViewableMetrics = useSelect( ( select ) => {

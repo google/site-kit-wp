@@ -19,26 +19,26 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideUserCapabilities,
-	renderHook,
-} from '../../../tests/js/test-utils';
 import { getItem } from '@/js/googlesitekit/api/cache';
-import { mockLocation } from '../../../tests/js/mock-browser-utils';
-import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+	renderHook,
+} from '../../../tests/js/test-utils';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

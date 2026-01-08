@@ -19,6 +19,21 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -28,22 +43,7 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import * as tracking from '@/js/util/tracking';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

@@ -32,10 +32,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import CustomDimensionsNotice from './CustomDimensionsNotice';
-import Header from './Header';
 import Footer from './Footer';
-import MetricItems from './MetricItems';
+import Header from './Header';
 import KeyMetricsError from './KeyMetricsError';
+import MetricItems from './MetricItems';
 
 export default function PanelContent( {
 	isOpen = false,

@@ -24,35 +24,35 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
-import {
-	act,
-	render,
-	createTestRegistry,
-	fireEvent,
-	provideModules,
-	waitFor,
-	provideUserAuthentication,
-	provideSiteInfo,
-} from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
-import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+} from '../../../../../../tests/js/test-utils';
+import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
 

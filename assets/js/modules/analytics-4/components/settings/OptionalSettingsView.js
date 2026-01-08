@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import DisplaySetting from '@/js/components/DisplaySetting';
-import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
 import Typography from '@/js/components/Typography';
+import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export default function OptionalSettingsView() {
 	const useSnippet = useSelect( ( select ) =>

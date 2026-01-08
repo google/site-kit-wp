@@ -25,13 +25,13 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
+import { createReducer } from 'googlesitekit-data';
+import { stringifyObject } from '@/js/util';
 import { actions as errorStoreActions } from './create-error-store';
 import {
-	camelCaseToPascalCase,
 	camelCaseToConstantCase,
+	camelCaseToPascalCase,
 } from './transform-case';
-import { stringifyObject } from '@/js/util';
-import { createReducer } from 'googlesitekit-data';
 
 function defaultReducerCallback( state ) {
 	return state;

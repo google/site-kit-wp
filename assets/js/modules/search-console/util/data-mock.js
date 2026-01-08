@@ -19,10 +19,10 @@
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 import faker from 'faker';
-import md5 from 'md5';
+import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
+import md5 from 'md5';
 import { range } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
 

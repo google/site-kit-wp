@@ -19,33 +19,33 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import ModuleIcon from '@/js/components/ModuleIcon';
-import Spinner from '@/js/components/Spinner';
-import Link from '@/js/components/Link';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
-import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
+import Link from '@/js/components/Link';
+import ModuleIcon from '@/js/components/ModuleIcon';
 import NewBadge from '@/js/components/NewBadge.js';
+import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
+import Spinner from '@/js/components/Spinner';
+import Typography from '@/js/components/Typography';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { NEW_MODULES, BETA_MODULES, EXPERIMENTAL_MODULES } from './constants';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import Typography from '@/js/components/Typography';
+import { trackEvent } from '@/js/util';
+import { BETA_MODULES, EXPERIMENTAL_MODULES, NEW_MODULES } from './constants';
 
 export default function SetupModule( { slug, name, description } ) {
 	const viewContext = useViewContext();

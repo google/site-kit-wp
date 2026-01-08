@@ -24,17 +24,17 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
 import {
-	render,
-	createTestRegistry,
-	muteFetch,
-	freezeFetch,
 	act,
+	createTestRegistry,
+	freezeFetch,
+	muteFetch,
+	render,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import * as tracking from '@/js/util/tracking';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
 jest.mock( 'react-use', () => ( {

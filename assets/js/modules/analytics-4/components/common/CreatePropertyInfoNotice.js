@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import Notice from '@/js/components/Notice/index';
 import { TYPES } from '@/js/components/Notice/constants';
+import Notice from '@/js/components/Notice/index';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function CreatePropertyInfoNotice() {
 	const documentationURL = useSelect( ( select ) => {

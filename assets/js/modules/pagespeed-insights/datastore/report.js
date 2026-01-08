@@ -35,9 +35,9 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_PAGESPEED_INSIGHTS } from './constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

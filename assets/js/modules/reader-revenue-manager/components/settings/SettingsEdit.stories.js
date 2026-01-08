@@ -17,21 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Grid, Row, Cell } from '@/js/material-components';
 import SettingsEdit from './SettingsEdit';
-import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { cloneDeep } from 'lodash';
 
 function Template() {
 	return (

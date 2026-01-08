@@ -19,21 +19,21 @@
 /**
  * Internal dependencies
  */
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
+} from '@/js/modules/pagespeed-insights/datastore/constants';
 import {
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
-} from '@/js/modules/pagespeed-insights/datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardPageSpeedWidget from './DashboardPageSpeedWidget';
-import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 
 const url = fixtures.pagespeedMobile.loadingExperience.id;
 

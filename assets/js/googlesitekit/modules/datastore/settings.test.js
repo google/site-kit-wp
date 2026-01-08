@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import Modules from 'googlesitekit-modules';
 import { combineStores } from 'googlesitekit-data';
-import { CORE_MODULES } from './constants';
+import Modules from 'googlesitekit-modules';
 import {
 	createTestRegistry,
 	provideModules,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
+import { CORE_MODULES } from './constants';
 
 describe( 'core/modules settings', () => {
 	let registry;

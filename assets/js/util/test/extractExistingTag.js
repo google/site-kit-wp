@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { extractExistingTag } from '@/js/util/tag';
 import { default as adsenseTagMatchers } from '@/js/modules/adsense/util/tag-matchers';
 import { default as analyticsTagMatchers } from '@/js/modules/analytics-4/utils/tag-matchers';
 import { tagMatchers as tagmanagerTagMatchers } from '@/js/modules/tagmanager/util';
+import { extractExistingTag } from '@/js/util/tag';
 
 const valuesToTest = [
 	[

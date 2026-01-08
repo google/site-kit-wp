@@ -25,37 +25,37 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import AdsIcon from '@/svg/graphics/ads.svg';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMain, SetupMainPAX } from './components/setup';
-import { MODULES_ADS } from './datastore/constants';
-import { MODULE_SLUG_ADS } from './constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-} from '@/js/googlesitekit/datastore/user/constants';
 import { isFeatureEnabled } from '@/js/features';
-import {
-	PAXSetupSuccessSubtleNotification,
-	SetupSuccessSubtleNotification,
-	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-	AdsModuleSetupCTABanner,
-} from './components/notifications';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
+import {
+	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import AdsIcon from '@/svg/graphics/ads.svg';
+import {
+	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+	AdsModuleSetupCTABanner,
+	PAXSetupSuccessSubtleNotification,
+	SetupSuccessSubtleNotification,
+} from './components/notifications';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from './components/notifications/EnhancedConversionsNotification';
+import { SettingsEdit, SettingsView } from './components/settings';
 import SettingsDisconnectNote from './components/settings/SettingsDisconnectNote';
+import { SetupMain, SetupMainPAX } from './components/setup';
+import { MODULE_SLUG_ADS } from './constants';
+import { MODULES_ADS } from './datastore/constants';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from './pax/constants';
 
 export { registerStore } from './datastore';
 

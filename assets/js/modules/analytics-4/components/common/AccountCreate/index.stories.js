@@ -19,29 +19,29 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { withQuery } from '@storybook/addon-queryparams';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
-import AccountCreate from '.';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	ACCOUNT_CREATE,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
-import {
-	ACCOUNT_CREATE,
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { Cell, Grid, Row } from '@/js/material-components';
+import AccountCreate from '.';
 
 const { accountSummaries } = fixtures;
 

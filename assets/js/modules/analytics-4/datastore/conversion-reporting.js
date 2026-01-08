@@ -27,6 +27,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -39,13 +40,12 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { safelySort } from '@/js/util';
 import {
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
-import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**

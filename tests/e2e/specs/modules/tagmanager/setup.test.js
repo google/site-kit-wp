@@ -21,14 +21,15 @@
  */
 import {
 	activatePlugin,
+	createURL,
 	deactivatePlugin,
 	visitAdminPage,
-	createURL,
 } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
+import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
@@ -36,7 +37,6 @@ import {
 	setupSiteKit,
 	useRequestInterception,
 } from '../../../utils';
-import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
 
 async function proceedToTagManagerSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );

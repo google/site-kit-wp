@@ -20,34 +20,34 @@
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs, getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	ANALYTICS_NOTICE_FORM_NAME,
-	ANALYTICS_NOTICE_CHECKBOX,
-} from '@/js/components/setup/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import useViewContext from '@/js/hooks/useViewContext';
-import Header from './Header';
-import Splash from './Splash';
-import Actions from './Actions';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
+import {
+	ANALYTICS_NOTICE_CHECKBOX,
+	ANALYTICS_NOTICE_FORM_NAME,
+} from '@/js/components/setup/constants';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
+import Actions from './Actions';
+import Header from './Header';
+import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

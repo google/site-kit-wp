@@ -32,22 +32,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import { deleteItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { deleteItem } from '@/js/googlesitekit/api/cache';
-import { trackEvent } from '@/js/util';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
-import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
-import Header from '@/js/components/Header';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
 import ModuleSetupFooter from './ModuleSetupFooter';
-import ExitSetup from '@/js/components/setup/ExitSetup';
-import ProgressIndicator from '@/js/components/ProgressIndicator';
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const viewContext = useViewContext();

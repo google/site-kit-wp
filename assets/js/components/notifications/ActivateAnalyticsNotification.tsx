@@ -30,17 +30,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-// @ts-expect-error - We need to add types for imported SVGs.
-import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
+// @ts-expect-error - We need to add types for imported SVGs.
+import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;

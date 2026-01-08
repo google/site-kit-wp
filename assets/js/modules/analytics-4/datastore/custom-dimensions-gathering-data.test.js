@@ -19,12 +19,9 @@
 /**
  * Internal dependencies
  */
-import { properties } from './__fixtures__';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getPreviousDate, stringToDate } from '@/js/util';
-
 let {
 	createTestRegistry,
 	untilResolved,
@@ -32,6 +29,8 @@ let {
 	muteFetch,
 	provideModules,
 } = require( '../../../../../tests/js/utils' );
+import { properties } from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 	const customDimension = 'googlesitekit_post_author';

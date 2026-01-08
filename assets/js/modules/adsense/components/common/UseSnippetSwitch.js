@@ -25,19 +25,19 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
-import { trackEvent } from '@/js/util';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import useViewContext from '@/js/hooks/useViewContext';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
 import Notice from '@/js/components/Notice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export default function UseSnippetSwitch( props ) {
 	const {

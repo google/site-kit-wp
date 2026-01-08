@@ -25,23 +25,23 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	provideModules,
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
 	provideModuleRegistrations,
+	provideModules,
 	provideSiteConnection,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import {
-	PERMISSION_AUTHENTICATE,
-	PERMISSION_READ_SHARED_MODULE_DATA,
-	CORE_USER,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { Cell, Grid, Row } from '@/js/material-components';
 import ViewOnlyMenu from './';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 function Template() {
 	return (

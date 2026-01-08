@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ADSENSE } from './constants';
+import { getAdSenseMockResponse } from '@/js/modules/adsense/util/data-mock';
 import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { getAdSenseMockResponse } from '@/js/modules/adsense/util/data-mock';
+import { MODULES_ADSENSE } from './constants';
 
 describe( 'modules/adsense report', () => {
 	let registry;

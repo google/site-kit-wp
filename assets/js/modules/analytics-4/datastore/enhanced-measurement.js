@@ -32,18 +32,18 @@ import { createRegistrySelector } from '@wordpress/data';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamID,
 } from '@/js/modules/analytics-4/utils/validation';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const enhancedMeasurementSettingsFields = [
 	'name',

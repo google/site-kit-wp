@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SettingsEmailReporting from './SettingsEmailReporting';
 import Layout from '@/js/components/layout/Layout';
-import { Grid, Cell, Row } from '@/js/material-components';
 import PreviewBlock from '@/js/components/PreviewBlock';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import SettingsEmailReporting from './SettingsEmailReporting';
 
 export default function SettingsCardEmailReporting() {
 	const isLoading = useSelect( ( select ) => {

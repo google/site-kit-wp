@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { isNumeric } from './isnumeric';
 
 describe( 'isNumeric', () => {

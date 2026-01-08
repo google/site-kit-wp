@@ -19,57 +19,56 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
-
 /**
  * WordPress dependencies
  */
-import classnames from 'classnames';
-import { __ } from '@wordpress/i18n';
 import {
-	useCallback,
-	useState,
-	useEffect,
 	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell } from '@/js/material-components';
+import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	FORM_ACCOUNT_CREATE,
 	EDIT_SCOPE,
+	FORM_ACCOUNT_CREATE,
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import { trackEvent } from '@/js/util';
 import { getAccountDefaults as getAccountDefaults } from '@/js/modules/analytics-4/utils/account';
-import { Cell } from '@/js/material-components';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import TimezoneSelect from './TimezoneSelect';
+import { trackEvent } from '@/js/util';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import AccountField from './AccountField';
-import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
+import PropertyField from './PropertyField';
+import TimezoneSelect from './TimezoneSelect';
 import WebDataStreamField from './WebDataStreamField';
-import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
-import useViewContext from '@/js/hooks/useViewContext';
-import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
-import Link from '@/js/components/Link';
-import Null from '@/js/components/Null';
 
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

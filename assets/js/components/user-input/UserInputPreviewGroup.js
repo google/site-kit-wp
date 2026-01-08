@@ -19,39 +19,39 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useCallback, useRef } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import P from '@/js/components/Typography/P';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util';
-import { getErrorMessageForAnswer } from './util/validation';
+import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
+import UserInputEditModeContent from './UserInputEditModeContent';
+import UserInputPreviewAnswers from './UserInputPreviewAnswers';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
-import Link from '@/js/components/Link';
-import LoadingWrapper from '@/js/components/LoadingWrapper';
-import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
-import UserInputPreviewAnswers from './UserInputPreviewAnswers';
-import UserInputEditModeContent from './UserInputEditModeContent';
-import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
+import { getErrorMessageForAnswer } from './util/validation';
 
 export default function UserInputPreviewGroup( {
 	slug,

@@ -24,27 +24,27 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideUserInfo,
-	fireEvent,
-	waitForDefaultTimeouts,
-	act,
-} from '../../../../../../../../tests/js/test-utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import AudienceSegmentationErrorWidget from '.';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+	render,
+	waitForDefaultTimeouts,
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../../tests/js/viewport-width-utils';
+import AudienceSegmentationErrorWidget from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
 import { useHasScrolledEffect } from '@/js/hooks/useHasScrolledEffect';
+import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
 
 export default function CoreDashboardEffects() {
 	useOpenEmailReportingSelectionPanelEffect();

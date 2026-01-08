@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { deleteItem, setItem } from '@/js/googlesitekit/api/cache';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import UnsatisfiedScopesAlert from '.';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'gathering-data-notification'

@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import ReportTable from './ReportTable';
-import Layout from './layout/Layout';
-import Link from './Link';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import Layout from './layout/Layout';
+import Link from './Link';
 import NewBadge from './NewBadge';
-import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import ReportTable from './ReportTable';
 
 function Template( args ) {
 	const modules = useSelect( ( select ) =>

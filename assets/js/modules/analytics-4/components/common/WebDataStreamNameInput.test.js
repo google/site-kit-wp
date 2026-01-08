@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import WebDataStreamNameInput from './WebDataStreamNameInput';
 import {
 	act,
 	createTestRegistry,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import WebDataStreamNameInput from './WebDataStreamNameInput';
 
 describe( 'WebDataStreamNameInput', () => {
 	let registry;

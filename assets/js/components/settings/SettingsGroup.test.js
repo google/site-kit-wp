@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { render } from '../../../../tests/js/test-utils';
 import SettingsGroup from './SettingsGroup';
 

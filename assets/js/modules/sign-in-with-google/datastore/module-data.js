@@ -17,7 +17,7 @@
  */
 
 /**
- * External dependencies.
+ * External dependencies
  */
 import invariant from 'invariant';
 
@@ -29,9 +29,9 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 function getModuleDataProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

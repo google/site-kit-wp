@@ -19,34 +19,34 @@
 /**
  * Internal dependencies
  */
-import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
-	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
-} from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	fireEvent,
-	act,
-} from '../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
-import Notifications from '@/js/components/notifications/Notifications';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	render,
+} from '../../../../tests/js/test-utils';
+import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
+	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
+} from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 
 describe( 'LinkAnalyticsAndAdSenseAccountsOverlayNotification', () => {
 	const LinkAnalyticsAndAdSenseAccountsOverlayNotificationComponent =

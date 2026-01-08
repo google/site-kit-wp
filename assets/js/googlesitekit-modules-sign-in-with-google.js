@@ -22,8 +22,8 @@ import Modules from 'googlesitekit-modules';
 import Notifications from 'googlesitekit-notifications';
 import {
 	registerModule,
-	registerStore,
 	registerNotifications,
+	registerStore,
 } from './modules/sign-in-with-google';
 
 registerModule( Modules );

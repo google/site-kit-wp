@@ -24,10 +24,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
-import MostPopularContent from '@/svg/graphics/cta-most-popular-content.svg';
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import PreviewGraph from '@/js/components/PreviewGraph';
+import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
+import MostPopularContent from '@/svg/graphics/cta-most-popular-content.svg';
 
 export default function WPDashboardActivateAnalyticsCTA() {
 	return (

@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import Widget from './Widget';
-import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import Widget from './Widget';
 
 function BoxesWidgets( { children } ) {
 	return (

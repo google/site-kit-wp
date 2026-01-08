@@ -19,6 +19,22 @@
 /**
  * Internal dependencies
  */
+import {
+	CORE_USER,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import {
+	ERROR_INTERNAL_SERVER_ERROR,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+} from '@/js/util/errors';
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -26,23 +42,7 @@ import {
 	provideKeyMetrics,
 	provideModules,
 } from '../../../../../../tests/js/utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	CORE_USER,
-	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '@/js/googlesitekit/datastore/user/constants';
 import VisitsPerVisitorWidget from './VisitsPerVisitorWidget';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 
 describe( 'VisitsPerVisitorWidget', () => {
 	let registry;

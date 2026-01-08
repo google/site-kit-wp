@@ -20,22 +20,22 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	provideNotifications,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import { render, waitFor } from '../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS } from './constants';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-} from '@/js/googlesitekit/notifications/constants';
-import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { render, waitFor } from '../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideNotifications,
+	untilResolved,
+} from '../../../../../tests/js/utils';
+import { CORE_NOTIFICATIONS } from './constants';
 
 describe( 'core/notifications Notifications', () => {
 	const fetchGetDismissedItems = new RegExp(

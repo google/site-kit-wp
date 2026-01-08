@@ -26,13 +26,13 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import ConnectModuleCTATile from '@/js/components/KeyMetrics/ConnectModuleCTATile';
-import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
+import Null from '@/js/components/Null';
 import {
 	CORE_USER,
 	keyMetricsGA4Widgets,
 } from '@/js/googlesitekit/datastore/user/constants';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import Null from '@/js/components/Null';
 
 const metadata = { moduleSlug: MODULE_SLUG_ANALYTICS_4 };
 

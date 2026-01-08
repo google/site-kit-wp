@@ -26,12 +26,12 @@ import invariant from 'invariant';
  */
 import {
 	commonActions,
+	createReducer,
 	createRegistryControl,
 	createRegistrySelector,
-	createReducer,
 } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { getExistingTagURLs, extractExistingTag } from '@/js/util/tag';
+import { extractExistingTag, getExistingTagURLs } from '@/js/util/tag';
 
 // Actions
 const FETCH_GET_EXISTING_TAG = 'FETCH_GET_EXISTING_TAG';

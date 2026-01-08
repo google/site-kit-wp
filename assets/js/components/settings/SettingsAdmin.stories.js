@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import SettingsAdmin from './SettingsAdmin';
-import { Grid } from './../../../js/material-components';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
 import { provideModules, provideSiteInfo } from './../../../../tests/js/utils';
 import WithRegistrySetup from './../../../../tests/js/WithRegistrySetup';
-import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { Grid } from './../../../js/material-components';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';
+import SettingsAdmin from './SettingsAdmin';
 
 function Template() {
 	global._googlesitekitLegacyData = settingsData;

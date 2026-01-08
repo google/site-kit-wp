@@ -31,26 +31,26 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	MODULES_SEARCH_CONSOLE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
-import Header from './Header';
-import Footer from './Footer';
-import Overview from './Overview';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '@/js/modules/search-console/datastore/constants';
 import Chart from './Chart';
+import Footer from './Footer';
+import Header from './Header';
+import Overview from './Overview';
 
 function SearchFunnelWidgetGA4( { Widget, WidgetReportError } ) {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );

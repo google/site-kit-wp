@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	act,
-} from '../../../../../../tests/js/test-utils';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import {
+	act,
+	createTestRegistry,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import Notification from '.';
 
 function NotificationWrapper() {

@@ -25,7 +25,7 @@ import memize from 'memize';
 /**
  * WordPress dependencies
  */
-import { __, sprintf, _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Converts seconds to a display ready string indicating

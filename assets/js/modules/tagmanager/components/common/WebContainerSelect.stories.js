@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import WebContainerSelect from './WebContainerSelect';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import WebContainerSelect from './WebContainerSelect';
 
 function Template( args ) {
 	return (

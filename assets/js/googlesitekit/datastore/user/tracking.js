@@ -23,13 +23,13 @@
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createReducer,
-	commonActions,
 	combineStores,
+	commonActions,
+	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from './constants';
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, tracking ) => {

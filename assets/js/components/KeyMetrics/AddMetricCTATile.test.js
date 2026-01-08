@@ -16,15 +16,18 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../tests/js/test-utils';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import AddMetricCTATile from './AddMetricCTATile';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 describe( 'AddMetricCTATile', () => {
 	let registry;

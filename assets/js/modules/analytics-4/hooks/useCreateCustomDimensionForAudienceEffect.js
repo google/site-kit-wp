@@ -22,18 +22,18 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	EDIT_SCOPE,
-	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-	MODULES_ANALYTICS_4,
-	CUSTOM_DIMENSION_DEFINITIONS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 export default function useCreateCustomDimensionForAudienceEffect() {
 	const isGA4Connected = useSelect( ( select ) =>

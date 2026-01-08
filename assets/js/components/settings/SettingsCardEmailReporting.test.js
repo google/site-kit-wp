@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { render } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
-	provideUserAuthentication,
 	freezeFetch,
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SettingsCardEmailReporting from './SettingsCardEmailReporting';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'SettingsCardEmailReporting', () => {
 	let registry;

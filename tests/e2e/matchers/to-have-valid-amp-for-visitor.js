@@ -21,7 +21,6 @@
  */
 import ampHTMLValidator from 'amphtml-validator';
 import jsdom from 'jsdom';
-const { JSDOM } = jsdom;
 
 /**
  * WordPress dependencies
@@ -32,6 +31,8 @@ import { createURL } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import { fetchPageContent } from '../utils';
+
+const { JSDOM } = jsdom;
 
 /**
  * Determines if the path has valid AMP for visitors (not logged in).

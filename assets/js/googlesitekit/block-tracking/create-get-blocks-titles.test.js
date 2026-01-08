@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { select, subscribe } from 'googlesitekit-data';
-import { createGetBlockTitle } from './create-get-blocks-titles';
 import {
 	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
+import { createGetBlockTitle } from './create-get-blocks-titles';
 
 jest.mock( 'googlesitekit-data', () => ( {
 	select: jest.fn(),

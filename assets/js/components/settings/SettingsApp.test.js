@@ -24,23 +24,23 @@ import { createHashHistory } from 'history';
 /**
  * Internal dependencies
  */
-import SettingsApp from './SettingsApp';
-import {
-	render,
-	fireEvent,
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	muteFetch,
-} from '../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModules,
+	provideSiteInfo,
+	render,
+} from '../../../../tests/js/test-utils';
+import SettingsApp from './SettingsApp';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 	'^/google-site-kit/v1/core/user/data/tracking'

@@ -21,8 +21,8 @@
  */
 import {
 	CORE_WIDGETS,
-	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
+	WIDGET_WIDTHS,
 } from './datastore/constants';
 
 export { registerStore } from './datastore';

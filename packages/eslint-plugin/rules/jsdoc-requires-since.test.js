@@ -24,8 +24,8 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './jsdoc-requires-since';
 import { NEXT_VERSION } from './constants';
+import rule from './jsdoc-requires-since';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {

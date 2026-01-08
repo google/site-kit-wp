@@ -21,8 +21,8 @@
  */
 import classnames from 'classnames';
 import invariant from 'invariant';
-import PropTypes from 'prop-types';
 import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ import { get } from 'lodash';
 import { useState } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import GatheringDataNotice from './GatheringDataNotice';

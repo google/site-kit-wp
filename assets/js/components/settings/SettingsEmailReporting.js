@@ -31,19 +31,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Cell, Row } from '@/js/material-components';
-import Link from '@/js/components/Link';
-import Typography from '@/js/components/Typography';
+import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import EmailReportingCardNotice, {
 	EMAIL_REPORTING_CARD_NOTICE,
 } from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
-import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
+import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Row } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
 
 export default function SettingsEmailReporting( { loading = false } ) {

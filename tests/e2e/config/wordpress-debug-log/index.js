@@ -17,15 +17,14 @@
  */
 
 /**
- * Node dependencies
- */
-import { PassThrough } from 'stream';
-
-/**
  * External dependencies
  */
 import Docker from 'dockerode';
 import { printReceived } from 'jest-matcher-utils';
+/**
+ * Node dependencies
+ */
+import { PassThrough } from 'stream';
 
 /**
  * Internal dependencies

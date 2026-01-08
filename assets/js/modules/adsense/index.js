@@ -25,59 +25,59 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import {
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-} from '@/js/googlesitekit/widgets/default-areas';
-import { SetupMain } from './components/setup';
-import {
-	SettingsEdit,
-	SettingsSetupIncomplete,
-	SettingsView,
-} from './components/settings';
-import {
-	AdBlockingRecoverySetupCTAWidget,
-	AdBlockerWarningWidget,
-	AdSenseConnectCTAWidget,
-	DashboardTopEarningPagesWidgetGA4,
-} from './components/dashboard';
-import { ModuleOverviewWidget } from './components/module';
-import AdSenseIcon from '@/svg/graphics/adsense.svg';
-import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from './datastore/constants';
-import { MODULE_SLUG_ADSENSE } from './constants';
-import { TopEarningContentWidget } from './components/widgets';
-import {
-	CORE_USER,
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from '@/js/components/OverlayNotification/AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import {
+	CORE_USER,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import {
+	AdBlockerWarningWidget,
+	AdBlockingRecoverySetupCTAWidget,
+	AdSenseConnectCTAWidget,
+	DashboardTopEarningPagesWidgetGA4,
+} from './components/dashboard';
+import AdBlockingRecoverySetupSuccessNotification from './components/dashboard/AdBlockingRecoverySetupSuccessNotification';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { ModuleOverviewWidget } from './components/module';
+import {
+	SettingsEdit,
+	SettingsSetupIncomplete,
+	SettingsView,
+} from './components/settings';
+import { SetupMain } from './components/setup';
+import { TopEarningContentWidget } from './components/widgets';
+import { MODULE_SLUG_ADSENSE } from './constants';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from './datastore/constants';
 export { registerStore } from './datastore';
 
 export function registerModule( modules ) {

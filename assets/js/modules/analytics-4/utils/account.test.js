@@ -22,8 +22,8 @@
 import { ENHANCED_MEASUREMENT_ENABLED } from '@/js/modules/analytics-4/datastore/constants';
 import * as accountUtils from './account';
 import {
-	populatePropertyAndAccountIds,
 	populateAccountSummaries,
+	populatePropertyAndAccountIds,
 } from './account';
 
 describe( 'getAccountDefaults', () => {

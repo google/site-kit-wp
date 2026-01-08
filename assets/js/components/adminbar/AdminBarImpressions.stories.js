@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import AdminBarImpressions from './AdminBarImpressions';
 import {
 	setupSearchConsoleAnalytics4ZeroData,
 	setupSearchConsoleGatheringData,
 	setupSearchConsoleMockReports,
 	widgetDecorators,
 } from './common-GA4-stories';
-import AdminBarImpressions from './AdminBarImpressions';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'widget-slug' )( AdminBarImpressions );

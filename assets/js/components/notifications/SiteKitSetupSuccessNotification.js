@@ -24,16 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import SuccessSetupSVG from '@/svg/graphics/banner-site-kit-setup-success.svg?url';
 
 export default function SiteKitSetupSuccessNotification( {

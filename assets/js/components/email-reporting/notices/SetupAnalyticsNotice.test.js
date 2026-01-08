@@ -24,20 +24,20 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	render,
-	fireEvent,
-	provideModules,
-	provideUserCapabilities,
-	provideUserAuthentication,
-	provideModuleRegistrations,
-	provideSiteInfo,
-} from '../../../../../tests/js/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+} from '../../../../../tests/js/test-utils';
 import SetupAnalyticsNotice, {
 	EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM,
 } from './SetupAnalyticsNotice';

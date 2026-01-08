@@ -21,24 +21,24 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import { Fragment } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	EMAIL_REPORT_FREQUENCIES,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { Fragment } from 'react';
-import Typography from '@/js/components/Typography';
 import Tick from '@/svg/icons/tick.svg';
 
 export default function FrequencySelector( { isUserSubscribed } ) {

@@ -26,8 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import OptIn from '@/js/components/OptIn';
-import useViewContext from '@/js/hooks/useViewContext';
 import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
 
 export default function Tracking() {
 	const viewContext = useViewContext();

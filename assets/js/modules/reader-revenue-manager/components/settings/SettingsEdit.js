@@ -31,16 +31,16 @@ import { useEffect, useState } from '@wordpress/element';
  */
 import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	SNIPPET_MODES,
+} from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { getPostTypesString } from '@/js/modules/reader-revenue-manager/utils/settings';
 import { trackEvent } from '@/js/util';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	SNIPPET_MODES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {

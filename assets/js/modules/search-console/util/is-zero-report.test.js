@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { isZeroReport } from './is-zero-report';
 

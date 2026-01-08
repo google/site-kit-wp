@@ -23,6 +23,8 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -33,8 +35,6 @@ import {
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
-import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'core/site Google tag gateway', () => {
 	let registry;

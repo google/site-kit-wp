@@ -22,21 +22,24 @@
 import fetchMock from 'fetch-mock';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import SecondaryUserSetupWidgetWidget from '.';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+/**
+ * Internal dependencies.
+ */
+import SecondaryUserSetupWidgetWidget from '.';
 
 const userAuthenticationEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/authentication'

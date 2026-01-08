@@ -26,18 +26,18 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
-	createRegistrySelector,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { isValidAccountID } from '@/js/modules/adsense/util';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { determineSiteFromDomain } from '@/js/modules/adsense/util/site';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ADSENSE } from './constants';
 
 // Actions
 const RESET_SITES = 'RESET_SITES';

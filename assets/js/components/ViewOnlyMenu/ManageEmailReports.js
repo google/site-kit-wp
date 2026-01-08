@@ -25,12 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
-import { Button } from 'googlesitekit-components';
 
 export default function ManageEmailReports() {
 	const { setValue } = useDispatch( CORE_UI );

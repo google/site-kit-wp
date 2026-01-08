@@ -26,9 +26,9 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import {
+	Fragment,
 	createInterpolateElement,
 	useCallback,
-	Fragment,
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -36,36 +36,36 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import Layout from '@/js/components/layout/Layout';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import ToastNotice from '@/js/components/ToastNotice';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import {
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswers,
+	getUserInputAnswersDescription,
+} from '@/js/components/user-input/util/constants';
+import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import ExitSetup from '@/js/components/setup/ExitSetup';
-import Header from '@/js/components/Header';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import Layout from '@/js/components/layout/Layout';
-import ErrorNotice from '@/js/components/ErrorNotice';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import ProgressIndicator from '@/js/components/ProgressIndicator';
-import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
-import ToastNotice from '@/js/components/ToastNotice';
-import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
-import {
-	getUserInputAnswers,
-	getUserInputAnswersDescription,
-	USER_INPUT_MAX_ANSWERS,
-	USER_INPUT_QUESTIONS_PURPOSE,
-} from '@/js/components/user-input/util/constants';
-import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
+import WarningSVG from '@/svg/icons/warning.svg';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();

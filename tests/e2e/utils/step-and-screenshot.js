@@ -17,10 +17,13 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mkdir, rm } from 'fs/promises';
+/**
  * Node dependencies
  */
 import path from 'path';
-import { mkdir, rm } from 'fs/promises';
 
 const screenshotsIndex = new Map();
 

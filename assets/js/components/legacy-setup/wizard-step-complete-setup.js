@@ -24,17 +24,17 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '@/js/material-components';
-import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {

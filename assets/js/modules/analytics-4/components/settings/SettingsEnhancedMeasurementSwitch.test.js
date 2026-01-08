@@ -19,13 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	act,
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -33,6 +28,11 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	act,
+	createTestRegistry,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 describe( 'SettingsEnhancedMeasurementSwitch', () => {

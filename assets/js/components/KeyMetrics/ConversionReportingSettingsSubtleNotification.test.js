@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import ConversionReportingSettingsSubtleNotification from './ConversionReportingSettingsSubtleNotification';
 
 describe( 'ConversionReportingSettingsSubtleNotification', () => {

@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import SetupErrorMessageNotification from './SetupErrorMessageNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

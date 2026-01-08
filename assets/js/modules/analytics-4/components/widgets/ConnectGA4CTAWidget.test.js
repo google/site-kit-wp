@@ -19,32 +19,32 @@
 /**
  * Internal dependencies
  */
-import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	CORE_USER,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
-	render,
 	createTestRegistry,
 	provideKeyMetrics,
+	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	provideModules,
+	render,
 } from '../../../../../../tests/js/test-utils';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;

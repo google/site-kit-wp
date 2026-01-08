@@ -19,25 +19,25 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import {
-	provideUserAuthentication,
-	provideSiteInfo,
-	provideUserInfo,
-	provideModules,
-	provideUserCapabilities,
-} from '../../../../../tests/js/utils';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import UserSettingsSelectionPanel from '.';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideUserInfo,
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import UserSettingsSelectionPanel from '.';
 
 function Template( { viewContext } ) {
 	return (

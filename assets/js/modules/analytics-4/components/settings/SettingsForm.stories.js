@@ -24,14 +24,14 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import SettingsForm from './SettingsForm';
-import { Cell, Grid, Row } from '@/js/material-components';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import SettingsForm from './SettingsForm';
 
 const {
 	accountSummaries,

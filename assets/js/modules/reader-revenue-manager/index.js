@@ -25,37 +25,22 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
-	MODULES_READER_REVENUE_MANAGER,
-	ERROR_CODE_NON_HTTPS_SITE,
-	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
-	PUBLICATION_ONBOARDING_STATES,
-} from './datastore/constants';
-import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
-import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
-import {
-	ReaderRevenueManagerSetupCTABanner,
-	RRMSetupSuccessSubtleNotification,
-} from './components/dashboard';
-import {
-	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import {
-	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
-	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
-	RRM_SETUP_NOTIFICATION_ID,
-	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from './constants';
+	RRMSetupSuccessSubtleNotification,
+	ReaderRevenueManagerSetupCTABanner,
+} from './components/dashboard';
+import ProductIDContributionsNotification from './components/dashboard/ProductIDContributionsNotification';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
@@ -63,6 +48,21 @@ import PublicationApprovedOverlayNotification, {
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
+import { SettingsEdit, SettingsView } from './components/settings';
+import { SetupMain } from './components/setup';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
+	RRM_SETUP_NOTIFICATION_ID,
+	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+} from './constants';
+import {
+	ERROR_CODE_NON_HTTPS_SITE,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 

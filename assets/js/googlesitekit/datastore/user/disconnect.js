@@ -21,12 +21,12 @@
  */
 import { set } from 'googlesitekit-api';
 import {
+	combineStores,
 	createReducer,
 	createRegistrySelector,
-	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from './constants';
 
 const fetchDisconnectStore = createFetchStore( {
 	baseName: 'disconnect',

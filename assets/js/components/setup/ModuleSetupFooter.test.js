@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import ModuleSetupFooter from './ModuleSetupFooter';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
-	render,
 	provideModules,
+	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import ModuleSetupFooter from './ModuleSetupFooter';
 
 describe( 'ModuleSetupFooter', () => {
 	let registry;

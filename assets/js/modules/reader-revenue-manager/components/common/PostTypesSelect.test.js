@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import PostTypesSelect from './PostTypesSelect';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
@@ -27,6 +26,7 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
+import PostTypesSelect from './PostTypesSelect';
 
 describe( 'PostTypesSelect', () => {
 	let registry;

@@ -17,7 +17,7 @@
  */
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { normalizePath } from '@wordpress/url';
 

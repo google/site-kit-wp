@@ -31,14 +31,14 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	combineStores,
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 

@@ -25,13 +25,13 @@ import { ENTER } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
-	render,
-	fireEvent,
 	createTestRegistry,
+	fireEvent,
+	render,
 } from '../../../../tests/js/test-utils';
 import UserRoleSelect from './UserRoleSelect';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
 const sharingSettings = {

@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import { SettingsEdit, SettingsView } from './components/settings';
-import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
-import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-} from '@/js/googlesitekit/widgets/default-areas';
-import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
-import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from './constants';
-import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
+import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
+import SearchFunnelWidgetGA4 from './components/dashboard/SearchFunnelWidgetGA4';
+import { SettingsEdit, SettingsView } from './components/settings';
+import PopularKeywordsWidget from './components/widgets/PopularKeywordsWidget';
+import { MODULE_SLUG_SEARCH_CONSOLE } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 
 export { registerStore } from './datastore';
 

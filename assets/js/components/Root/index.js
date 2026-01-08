@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import {
 	ThemeProvider,
 	createMuiTheme,
@@ -28,6 +27,7 @@ import {
 	// See: https://github.com/google/site-kit-wp/issues/5378
 	unstable_createMuiStrictModeTheme, // eslint-disable-line camelcase
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -40,13 +40,13 @@ import { StrictMode, useState } from '@wordpress/element';
 import Data, { RegistryProvider } from 'googlesitekit-data';
 import ErrorHandler from '@/js/components/ErrorHandler';
 import FeaturesProvider from '@/js/components/FeaturesProvider';
-import { enabledFeatures } from '@/js/features';
+import FeatureTours from '@/js/components/FeatureTours';
+import InViewProvider from '@/js/components/InViewProvider';
 import PermissionsModal from '@/js/components/PermissionsModal';
 import RestoreSnapshots from '@/js/components/RestoreSnapshots';
-import FeatureTours from '@/js/components/FeatureTours';
-import { Provider as ViewContextProvider } from './ViewContextContext';
-import InViewProvider from '@/js/components/InViewProvider';
+import { enabledFeatures } from '@/js/features';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
+import { Provider as ViewContextProvider } from './ViewContextContext';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const theme =

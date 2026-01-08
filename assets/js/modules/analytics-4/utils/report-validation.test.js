@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import {
-	isValidDimensions,
 	isValidDimensionFilters,
+	isValidDimensions,
 	isValidMetrics,
 	isValidOrders,
 } from './report-validation';

@@ -18,17 +18,17 @@
  * Internal dependencies
  */
 import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	setupAnalytics4MockReports,
-	setupAnalytics4GatheringData,
-	setupAnalytics4ZeroData,
-	setupAnalytics4Loading,
-	setupAnalytics4Error,
-	widgetDecorators,
-	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4-stories';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import {
+	setupAnalytics4Error,
+	setupAnalytics4GatheringData,
+	setupAnalytics4Loading,
+	setupAnalytics4MockReports,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+	setupAnalytics4ZeroData,
+	widgetDecorators,
+} from './common-GA4-stories';
 import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(

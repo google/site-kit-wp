@@ -26,14 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import useViewContext from './useViewContext';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import NotificationFromServer from '@/js/components/NotificationFromServer';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import AdSenseCircularIcon from '@/svg/graphics/adsense-circular.svg';
+import useViewContext from './useViewContext';
 
 export default function useAdSenseNotifications() {
 	const viewContext = useViewContext();

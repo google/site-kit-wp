@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from './constants';
 import {
-	initialState,
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
+	initialState,
 } from './feature-tours';
 
 describe( 'core/user feature-tours', () => {

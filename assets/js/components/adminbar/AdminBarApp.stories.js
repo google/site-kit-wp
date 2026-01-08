@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import {
-	setupAnalytics4GatheringData,
-	setupBaseRegistry,
-	setupSearchConsoleGatheringData,
-	setupSearchConsoleMockReports,
-	setupAnalytics4MockReports,
-	setupSearchConsoleZeroData,
-	setupAnalytics4ZeroData,
-	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4-stories';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import AdminBarApp from './AdminBarApp';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import AdminBarApp from './AdminBarApp';
+import {
+	setupAnalytics4GatheringData,
+	setupAnalytics4MockReports,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+	setupAnalytics4ZeroData,
+	setupBaseRegistry,
+	setupSearchConsoleGatheringData,
+	setupSearchConsoleMockReports,
+	setupSearchConsoleZeroData,
+} from './common-GA4-stories';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (

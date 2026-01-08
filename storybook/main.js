@@ -17,16 +17,12 @@
  */
 
 /**
- * Node dependencies
- */
-const fs = require( 'fs' );
-const path = require( 'path' );
-
-/**
  * External dependencies
  */
-const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const fs = require( 'fs' );
 const { mapValues } = require( 'lodash' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const path = require( 'path' );
 const { ProvidePlugin } = require( 'webpack' );
 
 /**

@@ -19,13 +19,12 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	Fragment,
 	useCallback,
@@ -33,37 +32,38 @@ import {
 	useRef,
 	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import Portal from '@/js/components/Portal';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	getUserInputAnswers,
-	USER_INPUT_QUESTIONS_GOALS,
-	USER_INPUT_QUESTIONS_PURPOSE,
-	USER_INPUT_QUESTION_POST_FREQUENCY,
-	USER_INPUT_CURRENTLY_EDITING_KEY,
-	USER_INPUT_QUESTIONS_LIST,
-	FORM_USER_INPUT_QUESTION_SNAPSHOT,
-} from './util/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import CancelUserInputButton from './CancelUserInputButton';
+import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import ErrorNotice from '@/js/components/ErrorNotice';
-import LoadingWrapper from '@/js/components/LoadingWrapper';
-import CancelUserInputButton from './CancelUserInputButton';
+import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_QUESTIONS_LIST,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	getUserInputAnswers,
+} from './util/constants';
 import { hasErrorForAnswer } from './util/validation';
-import Portal from '@/js/components/Portal';
-import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputPreview( props ) {
 	const {

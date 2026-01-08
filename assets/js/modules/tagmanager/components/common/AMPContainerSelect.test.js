@@ -19,27 +19,27 @@
 /**
  * Internal dependencies
  */
-import AMPContainerSelect from './AMPContainerSelect';
+import { AMP_MODE_PRIMARY } from '@/js/googlesitekit/datastore/site/constants';
+import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 import {
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import {
+	act,
 	fireEvent,
 	render,
-	act,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
-import {
-	MODULES_TAGMANAGER,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	CONTAINER_CREATE,
-} from '@/js/modules/tagmanager/datastore/constants';
-import { AMP_MODE_PRIMARY } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
 } from '../../../../../../tests/js/utils';
-import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+import AMPContainerSelect from './AMPContainerSelect';
 
 describe( 'AMPContainerSelect', () => {
 	let registry;

@@ -32,8 +32,8 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import Link from './Link';
 import { getFullURL } from '@/js/util';
+import Link from './Link';
 
 export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 	const siteURL = useSelect( ( select ) =>

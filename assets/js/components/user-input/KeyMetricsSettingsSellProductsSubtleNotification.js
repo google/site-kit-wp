@@ -24,18 +24,18 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useViewContext from '@/js/hooks/useViewContext';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY } from './util/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import { USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY } from './util/constants';
 
 export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 	const viewContext = useViewContext();

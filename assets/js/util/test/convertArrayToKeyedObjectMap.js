@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { convertArrayListToKeyedObjectMap } from '@/js/util/convert-array-to-keyed-object-map';
 
 const arrayToConvert = [

@@ -30,13 +30,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import { ConversionIDTextField } from '@/js/modules/ads/components/common';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { ConversionIDTextField } from '@/js/modules/ads/components/common';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 
 export default function SetupFormPAX( {
 	finishSetup,

@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from './EnhancedConversionsNotification';

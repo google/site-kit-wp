@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import SettingsView from './SettingsView';
 import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import SettingsView from './SettingsView';
 
 function Template() {
 	return (

@@ -19,6 +19,18 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+	provideAnalyticsReportWithoutDateRangeData,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { DAY_IN_SECONDS, dateSub } from '@/js/util';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -26,18 +38,6 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-	provideAnalyticsReportWithoutDateRangeData,
-} from '@/js/modules/analytics-4/utils/data-mock';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { dateSub, DAY_IN_SECONDS } from '@/js/util';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as __fixtures__ from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import DashboardAllTrafficWidgetGA4 from '.';
 import {
 	limitResponseToSingleDate,

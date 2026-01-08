@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	render,
 } from '../../../tests/js/test-utils';
-import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>

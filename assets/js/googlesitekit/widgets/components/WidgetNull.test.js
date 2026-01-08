@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import WidgetNull from './WidgetNull';
+import Null from '@/js/components/Null';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
 	provideUserCapabilities,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import Null from '@/js/components/Null';
+import WidgetNull from './WidgetNull';
 
 describe( 'WidgetNull', () => {
 	let registry;

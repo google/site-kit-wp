@@ -25,28 +25,28 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteConnection,
-	provideUserInfo,
-} from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
 } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteConnection,
+	provideUserInfo,
+	render,
+} from '../../../../../tests/js/test-utils';
 import DashboardSharingDialog from '.';
 import {
-	sharingSettings,
 	modules,
 	roles,
+	sharingSettings,
 } from './../DashboardSharingSettings/__fixtures__';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 
 describe( 'DashboardSharingDialog', () => {
 	let registry;
