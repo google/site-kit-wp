@@ -20,11 +20,10 @@
  * External dependencies
  */
 import type { ReactNode } from 'react';
-
+import { renderHook } from 'tests/js/test-utils';
 /**
  * Internal dependencies
  */
-import { renderHook } from 'tests/js/test-utils';
 import {
 	Provider as WidgetContextProvider,
 	type WidgetContextValue,

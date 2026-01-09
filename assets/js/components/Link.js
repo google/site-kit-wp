@@ -32,8 +32,8 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ArrowIcon from '@/svg/icons/arrow.svg';
 import ArrowInverseIcon from '@/svg/icons/arrow-inverse.svg';
+import ArrowIcon from '@/svg/icons/arrow.svg';
 import BackIcon from '@/svg/icons/back.svg';
 import ExternalIcon from '@/svg/icons/external.svg';
 import IconWrapper from './IconWrapper';

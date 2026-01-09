@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { SettingsDisconnectNote } from '@/js/modules/ads/components/settings';
-import ConfirmDisconnect from '.';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import {
-	render,
 	createTestRegistry,
 	provideModules,
+	render,
 } from '../../../../../tests/js/test-utils';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import ConfirmDisconnect from '.';
 
 describe( 'ConfirmDisconnect', () => {
 	let registry;

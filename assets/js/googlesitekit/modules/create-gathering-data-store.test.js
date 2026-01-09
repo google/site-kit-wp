@@ -17,16 +17,19 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
+/**
+ * Internal dependencies
+ */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../tests/js/utils';
 import { createGatheringDataStore } from './create-gathering-data-store';
-import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 
 const MODULE_SLUG = 'test-slug';
 const STORE_NAME = `modules/${ MODULE_SLUG }`;

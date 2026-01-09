@@ -26,8 +26,8 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 	useState,
 } from '@wordpress/element';
@@ -37,24 +37,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS, MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY,
 	MODULES_ADS,
 } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
-import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
-import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
+import { DAY_IN_SECONDS, MINUTE_IN_SECONDS, WEEK_IN_SECONDS } from '@/js/util';
 import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
-import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
-import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
+import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
 
 export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );

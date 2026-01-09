@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import OfflineNotification from './OfflineNotification';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 function Template() {
 	return <OfflineNotification />;

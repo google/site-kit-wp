@@ -25,22 +25,22 @@ import { useEvent } from 'react-use';
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useCallback } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import { clearCache } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { clearCache } from '@/js/googlesitekit/api/cache';
-import { listFormat, trackEvent } from '@/js/util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { listFormat, trackEvent } from '@/js/util';
 
 export default function ConfirmDisconnect( { slug } ) {
 	const viewContext = useViewContext();

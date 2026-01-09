@@ -34,12 +34,12 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import {
 	commonActions,
-	createRegistrySelector,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '@/js/util';
 import { negateDefined } from '@/js/util/negate';
+import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {

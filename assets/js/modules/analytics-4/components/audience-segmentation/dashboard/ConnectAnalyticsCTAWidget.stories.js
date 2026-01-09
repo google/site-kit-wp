@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { provideModuleRegistrations } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import ConnectAnalyticsCTAWidget from './ConnectAnalyticsCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import { combineStores } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 import baseModuleStore from './base';
 import compatibilityChecks from './compatibility-checks';
-import service from './service';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 import moduleData from './module-data';
+import service from './service';
 
 const store = combineStores(
 	baseModuleStore,

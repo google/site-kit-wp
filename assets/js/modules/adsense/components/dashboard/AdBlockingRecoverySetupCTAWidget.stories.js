@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'adBlockingRecovery'

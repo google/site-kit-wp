@@ -27,13 +27,13 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createReducer,
-	commonActions,
 	combineStores,
+	commonActions,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from './constants';
 
 const baseInitialState = {
 	emailReporting: {

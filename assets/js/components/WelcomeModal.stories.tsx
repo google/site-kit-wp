@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import WelcomeModal from './WelcomeModal';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import WelcomeModal from './WelcomeModal';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;

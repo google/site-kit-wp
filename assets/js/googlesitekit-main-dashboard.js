@@ -25,14 +25,14 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearCache } from './googlesitekit/api/cache';
+import DashboardEntryPoint from './components/DashboardEntryPoint';
 import Root from './components/Root';
+import { clearCache } from './googlesitekit/api/cache';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from './googlesitekit/constants';
-import DashboardEntryPoint from './components/DashboardEntryPoint';
 
 // Initialize the app once the DOM is ready.
 domReady( async () => {

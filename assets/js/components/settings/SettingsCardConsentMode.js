@@ -23,23 +23,23 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef, useState, Fragment } from '@wordpress/element';
+import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Grid, Cell, Row } from '@/js/material-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
 import ConsentModeSwitch from '@/js/components/consent-mode/ConsentModeSwitch';
 import WPConsentAPIRequirements from '@/js/components/consent-mode/WPConsentAPIRequirements';
 import Layout from '@/js/components/layout/Layout';
-import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import Notice from '@/js/components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
 
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();

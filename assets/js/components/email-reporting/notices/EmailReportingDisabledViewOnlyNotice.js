@@ -25,10 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function EmailReportingDisabledViewOnlyNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>

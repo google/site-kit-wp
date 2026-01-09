@@ -17,21 +17,24 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
+/**
+ * Internal dependencies
+ */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-rrm'

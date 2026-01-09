@@ -19,42 +19,42 @@
 /**
  * External dependencies
  */
-import { useUpdateEffect } from 'react-use';
 import PropTypes from 'prop-types';
+import { useUpdateEffect } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import AdSenseIcon from '@/svg/graphics/adsense.svg';
-import SetupAccount from './SetupAccount';
-import SetupCreateAccount from './SetupCreateAccount';
-import SetupSelectAccount from './SetupSelectAccount';
-import { trackEvent } from '@/js/util';
-import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import useViewContext from '@/js/hooks/useViewContext';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
 import {
 	BACKGROUND_SUBMIT_SUSPENDED,
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
-	ACCOUNT_STATUS_READY,
-	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
+	ACCOUNT_STATUS_NONE,
+	ACCOUNT_STATUS_READY,
 } from '@/js/modules/adsense/util/status';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useRefocus } from '@/js/hooks/useRefocus';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import Typography from '@/js/components/Typography';
+import { trackEvent } from '@/js/util';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import SetupAccount from './SetupAccount';
+import SetupCreateAccount from './SetupCreateAccount';
+import SetupSelectAccount from './SetupSelectAccount';
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();

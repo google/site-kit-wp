@@ -24,17 +24,17 @@ import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
-	render,
+	act,
 	createTestRegistry,
 	fireEvent,
-	provideUserInfo,
 	provideSiteInfo,
-	act,
+	provideUserInfo,
+	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import UserMenu from '.';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'UserMenu', () => {
 	let registry;

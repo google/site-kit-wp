@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import { dismissedPromptsEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	act,
-} from '../../../../tests/js/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { dismissedPromptsEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
+import {
+	act,
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	render,
+} from '../../../../tests/js/test-utils';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 
 describe( 'CoreSiteBannerNotifications', () => {

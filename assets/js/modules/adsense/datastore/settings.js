@@ -25,18 +25,18 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	commonActions,
-	createRegistryControl,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
 } from 'googlesitekit-data';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '@/js/googlesitekit/data/create-settings-store';
+import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 import { isValidAccountID, isValidClientID } from '@/js/modules/adsense/util';
 import { MODULES_ADSENSE } from './constants';
-import { createStrictSelect } from '@/js/googlesitekit/data/utils';
 
 // Invariant error messages.
 export const INVARIANT_MISSING_ACCOUNT_STATUS =

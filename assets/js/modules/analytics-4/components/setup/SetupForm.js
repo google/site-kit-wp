@@ -35,30 +35,29 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
+import Link from '@/js/components/Link';
+import Null from '@/js/components/Null';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
-	FORM_SETUP,
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
+	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
 import { isPermissionScopeError } from '@/js/util/errors';
 import SetupFormFields from './SetupFormFields';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
-import useFormValue from '@/js/hooks/useFormValue';
-import { useFeature } from '@/js/hooks/useFeature';
-import Link from '@/js/components/Link';
-import Null from '@/js/components/Null';
 
 export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>

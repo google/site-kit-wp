@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '../../../../../tests/js/utils';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import useAllTrafficWidgetReport from './useAllTrafficWidgetReport';
 
 describe( 'useAllTrafficWidgetReport', () => {

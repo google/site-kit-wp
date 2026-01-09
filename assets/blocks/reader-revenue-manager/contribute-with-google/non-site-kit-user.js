@@ -17,18 +17,18 @@
 /**
  * WordPress dependencies
  */
+import { InspectorControls, useBlockProps } from '@wordpress-core/block-editor';
 import { registerBlockType } from '@wordpress-core/blocks';
-import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
 import { Notice } from '@wordpress-core/components';
-import { Fragment } from '@wordpress-core/element';
 import { select } from '@wordpress-core/data';
+import { Fragment } from '@wordpress-core/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { CORE_EDIT_SITE } from '@/blocks/reader-revenue-manager/common/constants';
 import { EditorButton } from '@/blocks/reader-revenue-manager/common';
+import { CORE_EDIT_SITE } from '@/blocks/reader-revenue-manager/common/constants';
 import metadata from './block.json';
 
 function Edit() {

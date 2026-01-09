@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
 import { clearCache, getItem } from '@/js/googlesitekit/api/cache';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site client side cache', () => {

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -26,7 +27,6 @@ import {
 } from '../../../../tests/js/test-utils';
 import { provideSiteInfo } from '../../../../tests/js/utils';
 import FrequencySelector from './FrequencySelector';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 function setupRegistry(
 	registry,

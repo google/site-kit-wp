@@ -36,14 +36,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-google-tag-gateway-setup-cta.svg?url';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import BannerSVGMobile from '@/svg/graphics/banner-google-tag-gateway-setup-cta-mobile.svg?url';
+import BannerSVGDesktop from '@/svg/graphics/banner-google-tag-gateway-setup-cta.svg?url';
 import GoogleTagGatewaySetupSuccessSubtleNotification, {
 	GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION,
 } from './GoogleTagGatewaySetupSuccessSubtleNotification';

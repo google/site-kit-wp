@@ -20,37 +20,17 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { Fragment, useEffect, useState } from '@wordpress/element';
-import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
-	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_SPEED,
-	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-} from '@/js/googlesitekit/widgets/default-contexts';
-import { DAY_IN_SECONDS } from '@/js/util';
-import Header from './Header';
-import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
-import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import EntitySearchInput from './EntitySearchInput';
-import DateRangeSelector from './DateRangeSelector';
-import HelpMenu from './help/HelpMenu';
-import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
-import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
-import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
-import { useFeature } from '@/js/hooks/useFeature';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -58,29 +38,49 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import OfflineNotification from './notifications/OfflineNotification';
-import ModuleDashboardEffects from './ModuleDashboardEffects';
-import CoreDashboardEffects from './CoreDashboardEffects';
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
-import Notifications from './notifications/Notifications';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-} from '@/js/googlesitekit/notifications/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
-import useFormValue from '@/js/hooks/useFormValue';
+import CoreDashboardEffects from './CoreDashboardEffects';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangeSelector from './DateRangeSelector';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import EntitySearchInput from './EntitySearchInput';
+import Header from './Header';
+import HelpMenu from './help/HelpMenu';
+import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
+import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
+import Notifications from './notifications/Notifications';
+import OfflineNotification from './notifications/OfflineNotification';
+import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
+import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );

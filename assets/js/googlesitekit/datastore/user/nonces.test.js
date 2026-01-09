@@ -17,12 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import { waitFor } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
-import fetchMock from 'fetch-mock';
-import { waitFor } from '@testing-library/react';
 
 describe( 'core/user nonces', () => {
 	let registry;

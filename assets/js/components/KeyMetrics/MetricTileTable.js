@@ -17,9 +17,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import { get } from 'lodash';
 import classnames from 'classnames';
+import { get } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies

@@ -25,28 +25,28 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import {
-	useState,
 	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
+	useState,
 } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import Body from './Body';
-import Header from './Header';
 import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import Body from './Body';
+import Header from './Header';
 
 function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(

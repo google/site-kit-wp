@@ -24,15 +24,15 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import ExternalIcon from '@/svg/icons/external-rounded.svg';
 import Notice from '@/js/components/Notice';
+import ExternalIcon from '@/svg/icons/external-rounded.svg';
 
 export default function AdBlockerWarningMessage( {
 	getHelpLink = '',

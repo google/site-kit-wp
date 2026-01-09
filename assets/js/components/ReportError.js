@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { uniqWith } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -34,16 +34,16 @@ import { removeQueryArgs } from '@wordpress/url';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
-	isInsufficientPermissionsError,
 	getReportErrorMessage,
+	isInsufficientPermissionsError,
 } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import { purify } from '@/js/util/purify';
+import ErrorNotice from './ErrorNotice';
 import CTA from './notifications/CTA';
 import ReportErrorActions from './ReportErrorActions';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import ErrorNotice from './ErrorNotice';
 
 export default function ReportError( { moduleSlug, error } ) {
 	const isViewOnly = useViewOnly();

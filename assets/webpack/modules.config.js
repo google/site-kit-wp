@@ -17,16 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+const CreateFileWebpack = require( 'create-file-webpack' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
+/**
  * Node dependencies
  */
 const path = require( 'path' );
-
-/**
- * External dependencies
- */
-const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
-const CreateFileWebpack = require( 'create-file-webpack' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**

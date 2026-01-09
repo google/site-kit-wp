@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-ads'

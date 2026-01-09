@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from './constants';
+import {
+	dismissPromptEndpoint,
+	dismissedPromptsEndpoint,
+} from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import {
-	dismissedPromptsEndpoint,
-	dismissPromptEndpoint,
-} from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { CORE_USER } from './constants';
 
 describe( 'core/user dismissed-prompts', () => {
 	let registry;

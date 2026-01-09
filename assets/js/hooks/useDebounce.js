@@ -21,8 +21,8 @@
 /**
  * External dependencies
  */
-import { useMemoOne } from 'use-memo-one';
 import { debounce } from 'lodash';
+import { useMemoOne } from 'use-memo-one';
 
 /**
  * WordPress dependencies

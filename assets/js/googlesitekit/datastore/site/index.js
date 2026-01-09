@@ -22,22 +22,22 @@
 import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { createSnapshotStore } from '@/js/googlesitekit/data/create-snapshot-store';
-import { CORE_SITE } from './constants';
 import cache from './cache';
 import connection from './connection';
 import consentMode from './consent-mode';
+import { CORE_SITE } from './constants';
 import conversionTracking from './conversion-tracking';
+import developerPlugin from './developer-plugin';
 import emailReporting from './email-reporting';
+import enableAutoUpdate from './enable-auto-update';
 import errors from './errors';
 import googleTagGateway from './google-tag-gateway';
 import html from './html';
 import info from './info';
+import notifications from './notifications';
 import reset from './reset';
-import enableAutoUpdate from './enable-auto-update';
 import settings from './settings';
 import urls from './urls';
-import developerPlugin from './developer-plugin';
-import notifications from './notifications';
 
 const store = combineStores(
 	commonStore,

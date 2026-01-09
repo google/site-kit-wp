@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useIntersection } from 'react-use';
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies

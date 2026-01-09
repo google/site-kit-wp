@@ -20,8 +20,8 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import memize from 'memize';
 import { mapValues } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies

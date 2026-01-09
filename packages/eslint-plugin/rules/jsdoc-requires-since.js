@@ -18,11 +18,17 @@
 
 /* eslint-disable consistent-return */
 
+/**
+ * External dependencies
+ */
 const {
 	default: iterateJsdoc,
 } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 const semverCompare = require( 'semver-compare' );
 const semverRegex = require( 'semver-regex' );
+/**
+ * Internal dependencies
+ */
 const { NEXT_VERSION } = require( './constants' );
 
 const SINCE_VALIDATION_RULES = [

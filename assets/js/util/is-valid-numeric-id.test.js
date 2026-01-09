@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { isValidNumericID } from './is-valid-numeric-id';
 
 describe( 'isValidNumericID', () => {

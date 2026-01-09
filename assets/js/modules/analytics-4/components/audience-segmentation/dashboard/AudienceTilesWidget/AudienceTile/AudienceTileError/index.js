@@ -24,11 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { isInsufficientPermissionsError } from '@/js/util/errors';
-import TileErrorContent from './TileErrorContent';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import TileErrorContent from './TileErrorContent';
 
 const TileErrorContentWithIntersectionObserver =
 	withIntersectionObserver( TileErrorContent );

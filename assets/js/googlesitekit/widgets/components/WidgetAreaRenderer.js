@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,38 +31,38 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import InViewProvider from '@/js/components/InViewProvider';
+import WidgetErrorHandler from '@/js/components/WidgetErrorHandler';
 import {
-	getWidgetLayout,
-	combineWidgets,
-	HIDDEN_CLASS,
-} from '@/js/googlesitekit/widgets/util';
-import { getStickyHeaderHeight } from '@/js/util/scroll';
+	ACTIVE_CONTEXT_ID,
+	CORE_UI,
+} from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	CORE_WIDGETS,
 	WIDGET_AREA_STYLES,
 } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
-	CORE_UI,
-	ACTIVE_CONTEXT_ID,
-} from '@/js/googlesitekit/datastore/ui/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
+	HIDDEN_CLASS,
+	combineWidgets,
+	getWidgetLayout,
+} from '@/js/googlesitekit/widgets/util';
 import {
-	useBreakpoint,
-	BREAKPOINT_XLARGE,
 	BREAKPOINT_DESKTOP,
-	BREAKPOINT_TABLET,
 	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_XLARGE,
+	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import InViewProvider from '@/js/components/InViewProvider';
+import useLatestIntersection from '@/js/hooks/useLatestIntersection';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { useWindowWidth } from '@/js/hooks/useWindowSize';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { getStickyHeaderHeight } from '@/js/util/scroll';
+import WidgetAreaHeader from './WidgetAreaHeader';
+import WidgetCellWrapper from './WidgetCellWrapper';
 import { Provider as WidgetContextProvider } from './WidgetContext';
 import WidgetRenderer from './WidgetRenderer';
-import WidgetCellWrapper from './WidgetCellWrapper';
-import WidgetErrorHandler from '@/js/components/WidgetErrorHandler';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useLatestIntersection from '@/js/hooks/useLatestIntersection';
-import WidgetAreaHeader from './WidgetAreaHeader';
-import { useWindowWidth } from '@/js/hooks/useWindowSize';
 
 /**
  * Gets root margin value for the intersection hook.

@@ -20,20 +20,23 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import Accordion from '@/js/components/Accordion';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import Accordion from '@/js/components/Accordion';
-import { sanitizeHTML, markdownToHTML, trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
+import { markdownToHTML, sanitizeHTML, trackEvent } from '@/js/util';
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;

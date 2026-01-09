@@ -21,11 +21,11 @@
  */
 import { useUpdateEffect } from 'react-use';
 
+// Imported directly from `@wordpress/data` to avoid circular
+// dependency/imports.
 /**
  * WordPress dependencies
  */
-// Imported directly from `@wordpress/data` to avoid circular
-// dependency/imports.
 import { useSelect } from '@wordpress/data';
 import { useContext, useEffect, useState } from '@wordpress/element';
 

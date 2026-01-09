@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from './CreateAccountField';
 import { useDispatch } from 'googlesitekit-data';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import CreateAccountField from './CreateAccountField';
 
 export default function AccountField() {
 	const value = useFormValue( FORM_ACCOUNT_CREATE, 'accountName' );

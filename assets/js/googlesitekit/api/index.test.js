@@ -19,6 +19,11 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { enableTracking } from '@/js/util/tracking';
+import { DATA_LAYER } from '@/js/util/tracking/constants';
 import {
 	freezeFetch,
 	unexpectedSuccess,
@@ -33,11 +38,6 @@ import {
 	siteKitRequest,
 	usingCache,
 } from './index';
-import { DATA_LAYER } from '@/js/util/tracking/constants';
-import { enableTracking } from '@/js/util/tracking';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use

@@ -24,11 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '@/svg/graphics/tagmanager.svg';
-import { MODULES_TAGMANAGER } from './datastore/constants';
+import { SettingsEdit, SettingsView } from './components/settings';
+import { SetupMain } from './components/setup';
 import { MODULE_SLUG_TAGMANAGER } from './constants';
+import { MODULES_TAGMANAGER } from './datastore/constants';
 
 export { registerStore } from './datastore';
 

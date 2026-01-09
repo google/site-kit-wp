@@ -20,18 +20,18 @@
  *
  * Internal dependencies
  */
-import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserInfo,
-} from '../../../../../tests/js/utils';
 import {
 	REPORT_ARGS_DATA_FILTERS_KEY,
 	REPORT_ARGS_NAV_KEY,
 	REPORT_ARGS_SELECTED_DIMENSION_KEY,
 	REPORT_ARGS_SELECTED_METRIC_KEY,
 } from '@/js/modules/analytics-4/constants';
+import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserInfo,
+} from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'module/analytics-4 service store', () => {

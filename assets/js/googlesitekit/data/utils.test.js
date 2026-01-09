@@ -31,8 +31,8 @@ import { createRegistry } from '@wordpress/data';
  */
 import {
 	collect,
-	collectReducers,
 	collectName,
+	collectReducers,
 	combineStores,
 	createStrictSelect,
 	createValidatedAction,

@@ -26,12 +26,14 @@ import invariant from 'invariant';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	isValidAccountID,
@@ -39,9 +41,7 @@ import {
 	isValidContainerName,
 	isValidUsageContext,
 } from '@/js/modules/tagmanager/util/validation';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CONTEXT_AMP, CONTEXT_WEB, MODULES_TAGMANAGER } from './constants';
 
 const fetchGetContainersStore = createFetchStore( {
 	baseName: 'getContainers',

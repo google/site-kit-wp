@@ -25,9 +25,9 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearCache } from './googlesitekit/api/cache';
-import Root from './components/Root';
 import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
+import Root from './components/Root';
+import { clearCache } from './googlesitekit/api/cache';
 import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.

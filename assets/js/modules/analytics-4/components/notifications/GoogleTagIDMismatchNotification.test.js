@@ -1,38 +1,24 @@
 /**
- * GoogleTagIDMismatchNotification component tests.
- *
- * Site Kit by Google, Copyright 2025 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideUserInfo,
-	provideModules,
-	provideUserAuthentication,
-	provideModuleRegistrations,
-} from '../../../../../../tests/js/test-utils';
-import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	GTM_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserAuthentication,
+	provideUserInfo,
+	render,
+} from '../../../../../../tests/js/test-utils';
+import GoogleTagIDMismatchNotification from './GoogleTagIDMismatchNotification';
 
 describe( 'GoogleTagIDMismatchNotification', () => {
 	let registry;

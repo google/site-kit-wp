@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
 

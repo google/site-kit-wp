@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Switch } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import P from '@/js/components/Typography/P';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 

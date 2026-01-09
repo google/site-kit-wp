@@ -19,29 +19,29 @@
 /**
  * WordPress dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
 import { Fragment, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import ErrorNotice from '@/js/components/ErrorNotice';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
 import UserInputSelectOptions from './UserInputSelectOptions';
-import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 import {
-	getUserInputAnswersDescription,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswersDescription,
 } from './util/constants';
+import { getErrorMessageForAnswer, hasErrorForAnswer } from './util/validation';
 
 export default function UserInputEditModeContent( {
 	onChange,

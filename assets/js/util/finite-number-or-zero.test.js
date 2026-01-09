@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { finiteNumberOrZero } from './finite-number-or-zero';
 
 describe( 'finiteNumberOrZero', () => {

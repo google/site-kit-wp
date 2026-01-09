@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { renderHook } from '../../../tests/js/test-utils';
 import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
+import { renderHook } from '../../../tests/js/test-utils';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,

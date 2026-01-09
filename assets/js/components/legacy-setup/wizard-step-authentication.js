@@ -24,20 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Cell, Grid, Row } from '@/js/material-components';
 import OptIn from '@/js/components/OptIn';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
 
 class WizardStepAuthentication extends Component {
 	constructor( props ) {

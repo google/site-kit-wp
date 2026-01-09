@@ -26,19 +26,19 @@ import invariant from 'invariant';
  */
 import { set } from 'googlesitekit-api';
 import {
+	combineStores,
+	commonActions,
+	createReducer,
 	createRegistryControl,
 	createRegistrySelector,
-	commonActions,
-	combineStores,
-	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { isValidAccountID } from '@/js/modules/adsense/util';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { extractExistingTag, getExistingTagURLs } from '@/js/util/tag';
 import adBlockingRecoveryTagMatcher from '@/js/modules/adsense/util/ad-blocking-recovery-tag-matcher';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { extractExistingTag, getExistingTagURLs } from '@/js/util/tag';
+import { MODULES_ADSENSE } from './constants';
 
 // Actions
 const FETCH_GET_EXISTING_AD_BLOCKING_RECOVERY_TAG =

@@ -17,10 +17,38 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import fetchMock from 'fetch-mock';
+/**
+ * Internal dependencies
+ */
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_PENDING,
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_ADDED,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
+import { stringToDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import {
+	dismissPromptEndpoint,
+	dismissedPromptsEndpoint,
+} from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
@@ -36,32 +64,7 @@ import {
 	waitFor,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/test-utils';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { stringToDate } from '@/js/util';
-import * as tracking from '@/js/util/tracking';
-import {
-	AD_BLOCKING_RECOVERY_MAIN_NOTIFICATION_KEY,
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	ACCOUNT_STATUS_PENDING,
-	ACCOUNT_STATUS_READY,
-	SITE_STATUS_ADDED,
-	SITE_STATUS_READY,
-} from '@/js/modules/adsense/util';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
-import {
-	dismissedPromptsEndpoint,
-	dismissPromptEndpoint,
-} from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

@@ -25,14 +25,14 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;
 

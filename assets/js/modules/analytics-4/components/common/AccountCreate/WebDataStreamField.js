@@ -26,14 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useFeature } from '@/js/hooks/useFeature';
-import useFormValue from '@/js/hooks/useFormValue';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import CreateAccountField from './CreateAccountField';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 import { WebDataStreamHint } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import CreateAccountField from './CreateAccountField';
 
 export default function WebDataStreamField() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

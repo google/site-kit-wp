@@ -24,34 +24,34 @@ import { useClickAway, useEvent } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import ModalDialog from '@/js/components/ModalDialog';
-import { trackEvent } from '@/js/util';
-import { clearCache } from '@/js/googlesitekit/api/cache';
 import Portal from '@/js/components/Portal';
-import Details from './Details';
-import Item from './Item';
-import DisconnectIcon from '@/svg/icons/disconnect.svg';
-import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
-import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import { clearCache } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
-import useFormValue from '@/js/hooks/useFormValue';
-import { useFeature } from '@/js/hooks/useFeature';
+import { AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import DisconnectIcon from '@/svg/icons/disconnect.svg';
+import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
+import Details from './Details';
+import Item from './Item';
 
 export default function UserMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );

@@ -16,21 +16,24 @@
  * limitations under the License.
  */
 
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserCapabilities,
-	muteFetch,
-	provideUserAuthentication,
-} from '../../../../tests/js/test-utils';
-import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+/**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
-import AdminBarWidgets from './AdminBarWidgets';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+} from '../../../../tests/js/test-utils';
+import AdminBarWidgets from './AdminBarWidgets';
 
 describe( 'AdminBarWidgets', () => {
 	let registry;

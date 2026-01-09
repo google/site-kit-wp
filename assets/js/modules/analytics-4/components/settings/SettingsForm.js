@@ -24,27 +24,27 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/common';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { TYPES } from '@/js/components/Notice/constants';
-import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
-import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
-import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
 import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
 import Link from '@/js/components/Link';
+import { TYPES } from '@/js/components/Notice/constants';
+import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
 import SettingsGroup from '@/js/components/settings/SettingsGroup';
-import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import SettingsControls from './SettingsControls';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {

@@ -19,27 +19,27 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModuleRegistrations,
-	provideUserAuthentication,
-	provideSiteInfo,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import ModuleSetup from '@/js/components/setup/ModuleSetup';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	AMP_MODE_PRIMARY,
+	AMP_MODE_SECONDARY,
+} from '@/js/googlesitekit/datastore/site/constants';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
-	AMP_MODE_PRIMARY,
-	AMP_MODE_SECONDARY,
-} from '@/js/googlesitekit/datastore/site/constants';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+	freezeFetch,
+	provideModuleRegistrations,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry

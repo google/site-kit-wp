@@ -32,35 +32,35 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	useSelect,
 	useDispatch,
 	useInViewSelect,
 	useRegistry,
+	useSelect,
 } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
-	MIN_SELECTED_METRICS_COUNT,
 	MAX_SELECTED_METRICS_COUNT,
+	MIN_SELECTED_METRICS_COUNT,
 } from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import useViewContext from '@/js/hooks/useViewContext';
-import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { trackEvent } from '@/js/util';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import SelectionPanelFooter from './SelectionPanelFooter';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function Footer( {
 	isOpen,

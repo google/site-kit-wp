@@ -19,23 +19,23 @@
 /**
  * Internal dependencies
  */
-import ModuleOverviewWidget from '.';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import {
+	getAdSenseMockResponse,
+	provideAdSenseMockReports,
+} from '@/js/modules/adsense/util/data-mock';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { replaceValuesInAdSenseReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	getAdSenseMockResponse,
-	provideAdSenseMockReports,
-} from '@/js/modules/adsense/util/data-mock';
+import ModuleOverviewWidget from '.';
 
 const adSenseAccountID = 'pub-1234567890';
 

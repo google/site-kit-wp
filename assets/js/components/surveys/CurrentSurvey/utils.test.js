@@ -20,15 +20,15 @@
  * Internal dependencies
  */
 import {
+	multiQuestionConditionalSurvey,
+	multiQuestionSurvey,
+	singleQuestionSurvey,
+} from '@/js/components/surveys/__fixtures__';
+import {
 	getCurrentQuestionAndOrdinal,
 	getTriggeredCompletion,
 	isLastQuestion,
 } from './utils';
-import {
-	singleQuestionSurvey,
-	multiQuestionSurvey,
-	multiQuestionConditionalSurvey,
-} from '@/js/components/surveys/__fixtures__';
 
 describe( 'CurrentSurvey utils', () => {
 	describe( 'getCurrentQuestionAndOrdinal', () => {

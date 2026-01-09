@@ -19,32 +19,32 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ModuleIcon from '@/js/components/ModuleIcon';
-import useViewContext from '@/js/hooks/useViewContext';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './constants';
-import { trackEvent } from '@/js/util';
 import {
 	CORE_USER,
 	PERMISSION_DELEGATE_MODULE_SHARING_MANAGEMENT,
 	PERMISSION_MANAGE_MODULE_SHARING_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import ModuleViewAccess from './ModuleViewAccess';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { EDITING_USER_ROLE_SELECT_SLUG_KEY } from './constants';
 import ModuleManageAccess from './ModuleManageAccess';
+import ModuleViewAccess from './ModuleViewAccess';
 
 export default function Module( {
 	moduleSlug,

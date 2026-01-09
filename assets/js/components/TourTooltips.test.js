@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	fireEvent,
-} from '../../../tests/js/test-utils';
-import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '../../../tests/js/test-utils';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
+import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 
 const SECOND_STEP = 1;
 const FINAL_STEP = 2;

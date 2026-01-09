@@ -31,15 +31,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import DisplaySetting from '@/js/components/DisplaySetting';
-import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { useFeature } from './../../../../hooks/useFeature';
 import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { useFeature } from './../../../../hooks/useFeature';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 
 export default function SettingsView() {
 	const paxEnabled = useFeature( 'adsPax' );

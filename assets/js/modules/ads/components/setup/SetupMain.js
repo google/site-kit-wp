@@ -24,20 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AdsIcon from '@/svg/graphics/ads.svg';
-import SetupForm from './SetupForm';
-import SupportLink from '@/js/components/SupportLink';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SupportLink from '@/js/components/SupportLink';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import AdsIcon from '@/svg/graphics/ads.svg';
+import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>

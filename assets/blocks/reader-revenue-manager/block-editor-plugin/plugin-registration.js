@@ -25,11 +25,11 @@ import { registerPlugin } from '@wordpress-core/plugins';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_EDIT_SITE } from '@/blocks/reader-revenue-manager/common/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SettingPanel from './SettingPanel';
 import { initializeTracking } from './tracking';
 

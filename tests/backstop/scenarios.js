@@ -20,21 +20,20 @@
  * External dependencies
  */
 const parser = require( '@babel/parser' );
-const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
-const glob = require( 'glob' );
-const { flatten, kebabCase } = require( 'lodash' );
-
 /**
  * Node dependencies
  */
 const fs = require( 'fs' );
+const glob = require( 'glob' );
+const { flatten, kebabCase } = require( 'lodash' );
 const path = require( 'path' );
 
 /**
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
+const traverse = require( '@babel/traverse' ).default;
 
 // Use HTTP server instead of file:// URLs to support ES modules in modern Storybook.
 // See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#dropped-support-for-file-urls.

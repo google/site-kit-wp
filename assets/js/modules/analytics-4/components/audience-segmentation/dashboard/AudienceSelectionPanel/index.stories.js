@@ -24,35 +24,35 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import {
+	provideModuleRegistrations,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import AudienceSelectionPanel from '.';
+import { availableAudiences } from './../../../../datastore/__fixtures__';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import { availableAudiences } from './../../../../datastore/__fixtures__';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../../../../../tests/js/utils';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import AudienceSelectionPanel from '.';
 
 const syncAvailableAudiencesEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'

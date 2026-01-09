@@ -36,13 +36,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { useInView } from '@/js/hooks/useInView';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import Notice from '@/js/components/Notice';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
-import Notice from '@/js/components/Notice';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { useInView } from '@/js/hooks/useInView';
+import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 
 export default function EnhancedConversionsSettingsNotice( {
 	type = Notice.TYPES.INFO,

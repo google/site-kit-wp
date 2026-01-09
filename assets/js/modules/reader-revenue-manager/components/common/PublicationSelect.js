@@ -25,16 +25,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { isValidPublicationID } from '@/js/modules/reader-revenue-manager/utils/validation';
-import { useSelect, useDispatch } from 'googlesitekit-data';
 
 export default function PublicationSelect( props ) {
 	const {

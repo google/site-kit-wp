@@ -26,11 +26,11 @@ import { useMount } from 'react-use';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
 import AudienceTileLoading from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileLoading';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import AudienceSegmentationErrorWidget from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationErrorWidget';
-import { isInsufficientPermissionsError } from '@/js/util/errors';
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
 
 export default function PrimaryUserSetupWidget( { Widget } ) {
 	const { apiErrors, isSaving, failedAudiences, onEnableGroups } =

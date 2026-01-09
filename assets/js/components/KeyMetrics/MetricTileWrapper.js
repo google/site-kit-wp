@@ -32,15 +32,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
 import GetHelpLink from './GetHelpLink';
-import MetricTileLoader from './MetricTileLoader';
+import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import MetricTileError from './MetricTileError';
 import MetricTileHeader from './MetricTileHeader';
-import ReportErrorActions from '@/js/components/ReportErrorActions';
-import { isInsufficientPermissionsError } from '@/js/util/errors';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
+import MetricTileLoader from './MetricTileLoader';
 
 export default function MetricTileWrapper( props ) {
 	const {

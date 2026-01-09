@@ -19,6 +19,15 @@
 /**
  * Internal dependencies
  */
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -27,15 +36,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import ChipTabGroup from './';
 
 function ChipTabGroupWrapped( { savedItemSlugs } ) {

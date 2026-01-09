@@ -17,37 +17,37 @@
 /**
  * WordPress dependencies
  */
-import { addQueryArgs } from '@wordpress/url';
 import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Layout from '@/js/components/layout/Layout';
 import Link from '@/js/components/Link';
 import PageHeader from '@/js/components/PageHeader';
-import P from '@/js/components/Typography/P';
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
-import Layout from '@/js/components/layout/Layout';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
-import { trackEvent } from '@/js/util';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
 	AD_BLOCKING_RECOVERY_SETUP_CREATE_MESSAGE_CTA_CLICKED,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
 import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 export default function SetupMain() {
 	const viewContext = useViewContext();

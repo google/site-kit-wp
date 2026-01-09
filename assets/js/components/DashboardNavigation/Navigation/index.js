@@ -19,15 +19,15 @@
 /**
  * External dependencies
  */
+import { Chip } from '@material/react-chips';
 import classnames from 'classnames';
 import { useEvent, useMount } from 'react-use';
-import { Chip } from '@material/react-chips';
 
 /**
  * WordPress dependencies
  */
 import { useThrottle } from '@wordpress/compose';
-import { useState, useCallback, useRef } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,25 +36,25 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
-	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
 } from '@/js/googlesitekit/constants';
 import {
-	CORE_UI,
 	ACTIVE_CONTEXT_ID,
+	CORE_UI,
 } from '@/js/googlesitekit/datastore/ui/constants';
-import { trackEvent } from '@/js/util';
 import useDashboardType from '@/js/hooks/useDashboardType';
-import useNavChipHelpers from './hooks/useNavChipHelpers';
 import useViewContext from '@/js/hooks/useViewContext';
-import useVisibleSections from './hooks/useVisibleSections';
+import { trackEvent } from '@/js/util';
 import NavContentIcon from '@/svg/icons/nav-content-icon.svg';
 import NavKeyMetricsIcon from '@/svg/icons/nav-key-metrics-icon.svg';
 import NavMonetizationIcon from '@/svg/icons/nav-monetization-icon.svg';
 import NavSpeedIcon from '@/svg/icons/nav-speed-icon.svg';
 import NavTrafficIcon from '@/svg/icons/nav-traffic-icon.svg';
+import useNavChipHelpers from './hooks/useNavChipHelpers';
+import useVisibleSections from './hooks/useVisibleSections';
 
 export default function Navigation() {
 	const dashboardType = useDashboardType();

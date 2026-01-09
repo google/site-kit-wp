@@ -25,8 +25,8 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	setSiteVerification,
 	setSearchConsoleProperty,
+	setSiteVerification,
 	wpApiFetch,
 } from '../../utils';
 

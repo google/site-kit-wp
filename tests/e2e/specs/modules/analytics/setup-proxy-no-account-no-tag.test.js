@@ -31,8 +31,8 @@ import {
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	useRequestInterception,
 	setSearchConsoleProperty,
+	useRequestInterception,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag via proxy', () => {

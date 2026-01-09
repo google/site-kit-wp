@@ -17,24 +17,24 @@
 /**
  * Internal dependencies
  */
-import {
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import PopularKeywordsWidget from './PopularKeywordsWidget';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { provideSearchConsoleMockReport } from '@/js/modules/search-console/util/data-mock';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import {
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import PopularKeywordsWidget from './PopularKeywordsWidget';
 
 const reportOptions = {
 	startDate: '2020-08-11',

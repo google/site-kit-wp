@@ -26,11 +26,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
 import BannerNotification, {
 	TYPES,
 } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 
 export default function ZeroDataNotification( { id, Notification } ) {
 	const notEnoughTrafficURL = useSelect( ( select ) => {

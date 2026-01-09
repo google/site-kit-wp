@@ -24,25 +24,25 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import InfoNotice from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNotice';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import InfoIcon from '@/svg/icons/info-circle.svg';
 import {
 	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import InfoIcon from '@/svg/icons/info-circle.svg';
-import InfoNotice from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNotice';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function AddGroupNotice() {
 	const [ twoOrMoreAudiencesSelected, setTwoOrMoreAudiencesSelected ] =

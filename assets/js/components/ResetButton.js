@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	Fragment,
 	createInterpolateElement,
@@ -27,20 +26,20 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { useDebounce } from '@/js/hooks/useDebounce';
-
+import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import ModalDialog from './ModalDialog';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { clearCache } from '@/js/googlesitekit/api/cache';
-import Portal from './Portal';
-import Link from './Link';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util/tracking';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDebounce } from '@/js/hooks/useDebounce';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util/tracking';
+import Link from './Link';
+import ModalDialog from './ModalDialog';
+import Portal from './Portal';
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) =>

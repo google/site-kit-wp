@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from './constants';
-import { isValidClientID } from '@/js/modules/adsense/util';
 import { createExistingTagStore } from '@/js/googlesitekit/data/create-existing-tag-store';
+import { isValidClientID } from '@/js/modules/adsense/util';
 import tagMatchers from '@/js/modules/adsense/util/tag-matchers';
+import { MODULES_ADSENSE } from './constants';
 
 const store = createExistingTagStore( {
 	storeName: MODULES_ADSENSE,

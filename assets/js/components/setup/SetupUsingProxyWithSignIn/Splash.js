@@ -31,15 +31,15 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { useFeature } from '@/js/hooks/useFeature';
 import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
 import SplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 

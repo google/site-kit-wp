@@ -20,14 +20,6 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideKeyMetricsUserInputSettings,
-	provideModules,
-	provideUserAuthentication,
-	untilResolved,
-} from '../../../../../tests/js/utils';
-import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -35,8 +27,16 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	createTestRegistry,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
+	provideModules,
+	provideUserAuthentication,
+	untilResolved,
+} from '../../../../../tests/js/utils';
+import { ENUM_CONVERSION_EVENTS, MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;

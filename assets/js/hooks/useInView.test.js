@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { actHook as act, renderHook } from '../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { actHook as act, renderHook } from '../../../tests/js/test-utils';
 import { useInView } from './useInView';
 
 describe( 'useInView', () => {

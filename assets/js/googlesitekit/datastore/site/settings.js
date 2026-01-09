@@ -28,13 +28,13 @@ import invariant from 'invariant';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	combineStores,
 	commonActions,
 	createReducer,
 	createRegistrySelector,
-	combineStores,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from './constants';
 
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',

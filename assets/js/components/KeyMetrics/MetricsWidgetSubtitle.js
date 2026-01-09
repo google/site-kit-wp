@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function MetricsWidgetSubtitle() {
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>

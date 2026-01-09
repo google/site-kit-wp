@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { widgetDecorators } from './common-GA4-stories';
 import {
-	provideModules,
 	provideModuleRegistrations,
+	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { widgetDecorators } from './common-GA4-stories';
+import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 
 function Template( { setupRegistry } ) {
 	return (

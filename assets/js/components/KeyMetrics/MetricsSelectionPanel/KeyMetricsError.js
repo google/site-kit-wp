@@ -24,25 +24,25 @@ import { isEqual } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	MAX_SELECTED_METRICS_COUNT,
 	MIN_SELECTED_METRICS_COUNT,
 } from '@/js/components/KeyMetrics/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { safelySort } from '@/js/util';
 import whenActive from '@/js/util/when-active';
-import useFormValue from '@/js/hooks/useFormValue';
 
 function KeyMetricsError( { savedMetrics } ) {
 	const selectedMetrics = useFormValue(

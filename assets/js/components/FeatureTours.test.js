@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { fireEvent, render } from '../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -26,9 +28,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../tests/js/utils';
-import { fireEvent, render } from '../../../tests/js/test-utils';
 import FeatureTours from './FeatureTours';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 describe( 'FeatureTours', () => {
 	let registry;

@@ -35,12 +35,12 @@ import {
 /**
  * Internal dependencies
  */
+import * as customMatchers from '../matchers';
 import {
 	clearSessionStorage,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
-import * as customMatchers from '../matchers';
 
 /**
  * Environment variables.

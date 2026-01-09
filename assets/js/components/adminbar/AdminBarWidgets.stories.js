@@ -19,27 +19,27 @@
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
-	provideModules,
 	provideModuleRegistrations,
+	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
-import {
-	setupSearchConsoleMockReports,
-	setupSearchConsoleAnalytics4GatheringData,
-	setupSearchConsoleAnalytics4ZeroData,
-	widgetDecorators,
-	setupAnalytics4Loading,
-	setupAnalytics4MockReports,
-} from './common-GA4-stories';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	setupAnalytics4Loading,
+	setupAnalytics4MockReports,
+	setupSearchConsoleAnalytics4GatheringData,
+	setupSearchConsoleAnalytics4ZeroData,
+	setupSearchConsoleMockReports,
+	widgetDecorators,
+} from './common-GA4-stories';
 
 function Template( { setupRegistry = () => {}, viewContext, ...args } ) {
 	return (

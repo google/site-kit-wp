@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 
 export const NEW_MODULES = [
 	MODULE_SLUG_ADS,

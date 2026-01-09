@@ -26,7 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { Cell, Grid, Row } from '@/js/material-components/layout';
 import {
@@ -37,7 +38,6 @@ import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util/status';
-import Notice from '@/js/components/Notice';
 
 export default function StatusMigration() {
 	const accountID = useSelect( ( select ) =>

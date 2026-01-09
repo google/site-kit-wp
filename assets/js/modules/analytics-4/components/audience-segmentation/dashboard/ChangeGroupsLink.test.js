@@ -16,17 +16,20 @@
  * limitations under the License.
  */
 
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+/**
+ * Internal dependencies
+ */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import ChangeGroupsLink from './ChangeGroupsLink';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

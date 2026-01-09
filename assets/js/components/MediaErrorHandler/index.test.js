@@ -24,9 +24,9 @@ import { getByText } from '@testing-library/dom';
 /**
  * Internal dependencies
  */
-import MediaErrorHandler from './';
 import { render } from '../../../../tests/js/test-utils';
 import ThrowErrorComponent from '../../../../tests/js/ThrowErrorComponent';
+import MediaErrorHandler from './';
 
 describe( 'Media Error Handler', () => {
 	it( 'should render error message when there is an error', () => {

@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 
 const validSettings = {
 	accountID: 'pub-12345678',

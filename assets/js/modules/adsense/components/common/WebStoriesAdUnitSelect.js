@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 
 export default function WebStoriesAdUnitSelect() {

@@ -24,12 +24,12 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { createPaxServices } from './services';
 
 const getTokenEndpoint = new RegExp(

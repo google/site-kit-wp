@@ -24,23 +24,23 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Row, Cell } from '@/js/material-components';
-import UserInputQuestionInfo from './UserInputQuestionInfo';
+import { useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
-import CancelUserInputButton from './CancelUserInputButton';
-import { hasErrorForAnswer } from './util/validation';
 import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Row } from '@/js/material-components';
 import WarningSVG from '@/svg/icons/warning.svg';
+import CancelUserInputButton from './CancelUserInputButton';
+import UserInputQuestionInfo from './UserInputQuestionInfo';
+import { hasErrorForAnswer } from './util/validation';
 
 export default function UserInputQuestionWrapper( props ) {
 	const { children, slug, questionNumber, next, back, complete, error } =

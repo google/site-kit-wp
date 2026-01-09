@@ -21,13 +21,13 @@
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { MODULES_SEARCH_CONSOLE } from './constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 const fetchGetMatchedPropertiesStore = createFetchStore( {
 	baseName: 'getMatchedProperties',

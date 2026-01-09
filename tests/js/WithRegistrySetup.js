@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import invariant from 'invariant';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies

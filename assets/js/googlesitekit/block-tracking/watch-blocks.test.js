@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import { select, subscribe } from 'googlesitekit-data';
-import { watchBlocks } from './watch-blocks';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
 import {
 	CONTRIBUTE_WITH_GOOGLE_BLOCK,
 	SUBSCRIBE_WITH_GOOGLE_BLOCK,
 } from '@/blocks/reader-revenue-manager/common/constants';
+import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
+import { watchBlocks } from './watch-blocks';
 
 jest.mock( 'googlesitekit-data', () => ( {
 	select: jest.fn(),

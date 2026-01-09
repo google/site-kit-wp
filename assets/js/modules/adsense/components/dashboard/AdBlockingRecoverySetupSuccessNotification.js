@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
-import Link from '@/js/components/Link';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 
 export default function AdBlockingRecoverySetupSuccessNotification( {
 	id,

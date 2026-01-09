@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import parseDimensionStringToDate from './parseDimensionStringToDate';
 import { calculateChange, stringToDate } from '@/js/util';
+import parseDimensionStringToDate from './parseDimensionStringToDate';
 
 /**
  * Parse Analytics 4 report into data suitable for rendering the data blocks in the Overall Page Metrics widget.

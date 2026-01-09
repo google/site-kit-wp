@@ -17,7 +17,7 @@
  */
 
 /**
- * External dependencies.
+ * External dependencies
  */
 import propTypes from 'prop-types';
 

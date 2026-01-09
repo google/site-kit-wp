@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { provideKeyMetrics } from '../../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideKeyMetrics } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'keyMetricsConnectGA4CTA'

@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
+import { render } from '../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../tests/js/utils';
 import whenInViewContext from './whenInViewContext';
 
 describe( 'whenInViewContext', () => {

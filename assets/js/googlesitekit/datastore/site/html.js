@@ -24,21 +24,21 @@ import invariant from 'invariant';
 /**
  * WordPress dependencies
  */
-import { isURL, addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';
-import { set } from 'googlesitekit-api';
-import { CORE_SITE } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '@/js/util/tag';
+import { CORE_SITE } from './constants';
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',

@@ -19,15 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notice from '@/js/components/Notice';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );

@@ -17,8 +17,18 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import FIXTURES from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
@@ -26,12 +36,6 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
-import FIXTURES from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import fetchMock from 'fetch-mock';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'core/user authentication', () => {
 	const capabilities = {

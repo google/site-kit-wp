@@ -19,6 +19,9 @@
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -26,10 +29,7 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
-import * as tracking from '@/js/util/tracking';
-import useViewContext from '@/js/hooks/useViewContext';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

@@ -10,8 +10,8 @@ jest.mock( '../../features/index', () => {
 /**
  * Internal dependencies
  */
-import createTracking from './createTracking';
 import { DATA_LAYER } from './constants';
+import createTracking from './createTracking';
 import { disableTracking, enableTracking, isTrackingEnabled } from './index';
 
 function resetGlobals() {

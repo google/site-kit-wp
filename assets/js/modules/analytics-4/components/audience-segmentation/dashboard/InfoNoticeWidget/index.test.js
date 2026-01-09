@@ -22,9 +22,16 @@
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import InfoNoticeWidget from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -33,14 +40,10 @@ import {
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { WEEK_IN_SECONDS } from '@/js/util';
-import * as tracking from '@/js/util/tracking';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+/**
+ * Internal dependencies.
+ */
+import InfoNoticeWidget from '.';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 
 jest.mock( 'react-use', () => ( {

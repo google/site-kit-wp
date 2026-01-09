@@ -25,22 +25,22 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	activatePlugins,
-	deactivateUtilityPlugins,
-	resetSiteKit,
-	setupSiteKit,
-	useRequestInterception,
-	pageWait,
-	step,
-	setSearchConsoleProperty,
-	setupAnalytics4,
-} from '../utils';
-import {
 	STRATEGY_CARTESIAN,
 	STRATEGY_ZIP,
 	getAnalytics4MockResponse,
 } from '../../../assets/js/modules/analytics-4/utils/data-mock';
 import { getSearchConsoleMockResponse } from '../../../assets/js/modules/search-console/util/data-mock';
+import {
+	activatePlugins,
+	deactivateUtilityPlugins,
+	pageWait,
+	resetSiteKit,
+	setSearchConsoleProperty,
+	setupAnalytics4,
+	setupSiteKit,
+	step,
+	useRequestInterception,
+} from '../utils';
 import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-object-from-params';
 
 describe( 'User Input Settings', () => {

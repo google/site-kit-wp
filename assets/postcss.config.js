@@ -17,10 +17,10 @@
 /**
  * External dependencies
  */
-const presetEnv = require( 'postcss-preset-env' );
-const importURL = require( 'postcss-import-url' );
 const autoprefixer = require( 'autoprefixer' );
 const cssnano = require( 'cssnano' );
+const importURL = require( 'postcss-import-url' );
+const presetEnv = require( 'postcss-preset-env' );
 
 const plugins = [
 	presetEnv(),

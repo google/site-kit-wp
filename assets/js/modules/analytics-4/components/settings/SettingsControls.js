@@ -25,20 +25,20 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamNameInput,
+	WebDataStreamSelect,
+} from '@/js/modules/analytics-4/components/common';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	AccountSelect,
-	PropertySelect,
-	WebDataStreamSelect,
-	WebDataStreamNameInput,
-} from '@/js/modules/analytics-4/components/common';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
 export default function SettingsControls( props ) {
 	const { hasModuleAccess } = props;

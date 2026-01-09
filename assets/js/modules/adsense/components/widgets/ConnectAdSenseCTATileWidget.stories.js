@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../tests/js/utils';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import { KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

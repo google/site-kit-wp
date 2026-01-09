@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
-import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
-import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'account-linked-via-google-for-woocommerce'

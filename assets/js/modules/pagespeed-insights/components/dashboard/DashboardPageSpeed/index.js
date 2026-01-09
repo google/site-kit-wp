@@ -32,25 +32,25 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import { trackEvent } from '@/js/util/tracking';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	DATA_SRC_RECOMMENDATIONS,
-	UI_STRATEGY,
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
+	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import useViewContext from '@/js/hooks/useViewContext';
-import Loading from './Loading';
-import Header from './Header';
-import Footer from './Footer';
+import { trackEvent } from '@/js/util/tracking';
 import Content from './Content';
+import Footer from './Footer';
+import Header from './Header';
+import Loading from './Loading';
 
 const TAB_INDEX_LAB = 0;
 const TAB_INDEX_FIELD = 1;

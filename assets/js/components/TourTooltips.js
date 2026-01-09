@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
-import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
 import PropTypes from 'prop-types';
+import Joyride, { ACTIONS, EVENTS, LIFECYCLE, STATUS } from 'react-joyride';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,12 +31,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
-import useViewContext from '@/js/hooks/useViewContext';
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {

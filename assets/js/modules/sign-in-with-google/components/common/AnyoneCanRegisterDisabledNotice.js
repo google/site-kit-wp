@@ -17,25 +17,25 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	BREAKPOINT_DESKTOP,
 	BREAKPOINT_XLARGE,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';

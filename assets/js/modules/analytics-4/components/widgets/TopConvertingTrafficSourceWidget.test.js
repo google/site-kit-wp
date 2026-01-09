@@ -19,34 +19,34 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModules,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
-import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
+import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
+import { render } from '../../../../../../tests/js/test-utils';
 import {
-	provideAnalytics4MockReport,
-	getAnalytics4MockResponse,
-} from '@/js/modules/analytics-4/utils/data-mock';
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {
 	let registry;

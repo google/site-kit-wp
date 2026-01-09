@@ -19,19 +19,19 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import {
 	Combobox,
 	ComboboxInput,
-	ComboboxPopover,
 	ComboboxList,
 	ComboboxOption,
+	ComboboxPopover,
 } from '@reach/combobox';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
 
@@ -40,8 +40,8 @@ import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
  */
 import { get } from 'googlesitekit-api';
 import { useSelect } from 'googlesitekit-data';
-import { useDebouncedState } from '@/js/hooks/useDebouncedState';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDebouncedState } from '@/js/hooks/useDebouncedState';
 
 function noop() {}
 

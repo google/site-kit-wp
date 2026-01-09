@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
+import { GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '@/js/googlesitekit/notifications/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import GoogleTagGatewayWarningNotification from './GoogleTagGatewayWarningNotification';
-import { GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID } from '@/js/googlesitekit/notifications/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID

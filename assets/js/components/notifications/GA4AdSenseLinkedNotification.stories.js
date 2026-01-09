@@ -20,18 +20,18 @@
  * Internal dependencies
  */
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getDateString } from '@/js/util';
 import {
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { getDateString } from '@/js/util';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 
 // Generate referenced dates.
 const today = new Date();

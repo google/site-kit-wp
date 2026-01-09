@@ -29,15 +29,15 @@ import { isEqual, isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from './constants';
 
 const { receiveError, clearError } = errorStoreActions;

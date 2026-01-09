@@ -23,6 +23,12 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -31,12 +37,6 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import withCustomDimensions from './withCustomDimensions';
 
 describe( 'withCustomDimensions', () => {

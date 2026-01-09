@@ -18,8 +18,8 @@
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -27,17 +27,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Grid, Cell, Row } from '@/js/material-components';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import Link from '@/js/components/Link';
-import WPConsentAPIRequirement from './WPConsentAPIRequirement';
-import Tick from '@/svg/icons/tick.svg';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { trackEvent } from '@/js/util';
+import Tick from '@/svg/icons/tick.svg';
+import WPConsentAPIRequirement from './WPConsentAPIRequirement';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();

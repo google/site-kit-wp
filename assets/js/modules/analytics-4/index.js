@@ -24,122 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	EngagedTrafficSourceWidget,
-	LeastEngagingPagesWidget,
-	MostEngagingPagesWidget,
-	NewVisitorsWidget,
-	PopularContentWidget,
-	PopularProductsWidget,
-	ReturningVisitorsWidget,
-	TopCitiesWidget,
-	TopCitiesDrivingLeadsWidget,
-	TopCitiesDrivingAddToCartWidget,
-	TopCitiesDrivingPurchasesWidget,
-	TopDeviceDrivingPurchasesWidget,
-	TopCountriesWidget,
-	TopTrafficSourceWidget,
-	TopTrafficSourceDrivingAddToCartWidget,
-	TopTrafficSourceDrivingLeadsWidget,
-	TopTrafficSourceDrivingPurchasesWidget,
-	TopConvertingTrafficSourceWidget,
-	PagesPerVisitWidget,
-	VisitLengthWidget,
-	TopReturningVisitorPages,
-	VisitsPerVisitorWidget,
-	TopRecentTrendingPagesWidget,
-	TopCategoriesWidget,
-	PopularAuthorsWidget,
-	TopPagesDrivingLeadsWidget,
-} from './components/widgets';
-import AnalyticsIcon from '@/svg/graphics/analytics.svg';
-import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-} from '@/js/googlesitekit/widgets/default-areas';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_RETURNING_VISITORS,
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_PAGES_PER_VISIT,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_POPULAR_CONTENT,
-	KM_ANALYTICS_POPULAR_PRODUCTS,
-	KM_ANALYTICS_TOP_CATEGORIES,
-	KM_ANALYTICS_TOP_CITIES,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_COUNTRIES,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-	KM_ANALYTICS_VISIT_LENGTH,
-	KM_ANALYTICS_VISITS_PER_VISITOR,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMain } from './components/setup';
-import {
-	DashboardAllTrafficWidgetGA4,
-	DashboardOverallPageMetricsWidgetGA4,
-	EnhancedMeasurementActivationBanner,
-} from './components/dashboard';
-import { ModulePopularPagesWidgetGA4 } from './components/module';
-import {
-	AudienceSegmentationIntroductoryOverlayNotification,
-	AudienceTilesWidget,
-	ConnectAnalyticsCTAWidget,
-	InfoNoticeWidget,
-	SecondaryUserSetupWidget,
-	PrimaryUserSetupWidget,
-} from './components/audience-segmentation/dashboard';
-import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
-import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
-import AudienceSegmentationSetupCTABanner, {
-	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
-import {
-	WebDataStreamNotAvailableNotification,
-	GoogleTagIDMismatchNotification,
-} from './components/notifications';
-import {
-	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
-	MODULE_SLUG_ANALYTICS_4,
-} from './constants';
-import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
-import EnhancedConversionsNotification, {
-	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-} from './components/notifications/EnhancedConversionsNotification';
-import {
-	asyncRequire,
-	asyncRequireAll,
-	asyncRequireAny,
-} from '@/js/util/async';
 import {
 	requireAudienceSegmentationWidgetHidden,
 	requireCanViewSharedModule,
@@ -151,6 +40,50 @@ import {
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
 import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
+	KM_ANALYTICS_POPULAR_CONTENT,
+	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import {
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import {
 	requireAudienceSegmentationSetupCompleted,
 	requireAudienceSegmentationSetupCompletedByUser,
 	requireDataIsAvailableOnLoad,
@@ -158,7 +91,74 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
-import { isFeatureEnabled } from '@/js/features';
+import {
+	asyncRequire,
+	asyncRequireAll,
+	asyncRequireAny,
+} from '@/js/util/async';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import {
+	AudienceSegmentationIntroductoryOverlayNotification,
+	AudienceTilesWidget,
+	ConnectAnalyticsCTAWidget,
+	InfoNoticeWidget,
+	PrimaryUserSetupWidget,
+	SecondaryUserSetupWidget,
+} from './components/audience-segmentation/dashboard';
+import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
+import AudienceSegmentationSetupCTABanner, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from './components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
+import {
+	DashboardAllTrafficWidgetGA4,
+	DashboardOverallPageMetricsWidgetGA4,
+	EnhancedMeasurementActivationBanner,
+} from './components/dashboard';
+import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
+import { ModulePopularPagesWidgetGA4 } from './components/module';
+import {
+	GoogleTagIDMismatchNotification,
+	WebDataStreamNotAvailableNotification,
+} from './components/notifications';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
+} from './components/notifications/EnhancedConversionsNotification';
+import { SettingsEdit, SettingsView } from './components/settings';
+import { SetupMain } from './components/setup';
+import {
+	EngagedTrafficSourceWidget,
+	LeastEngagingPagesWidget,
+	MostEngagingPagesWidget,
+	NewVisitorsWidget,
+	PagesPerVisitWidget,
+	PopularAuthorsWidget,
+	PopularContentWidget,
+	PopularProductsWidget,
+	ReturningVisitorsWidget,
+	TopCategoriesWidget,
+	TopCitiesDrivingAddToCartWidget,
+	TopCitiesDrivingLeadsWidget,
+	TopCitiesDrivingPurchasesWidget,
+	TopCitiesWidget,
+	TopConvertingTrafficSourceWidget,
+	TopCountriesWidget,
+	TopDeviceDrivingPurchasesWidget,
+	TopPagesDrivingLeadsWidget,
+	TopRecentTrendingPagesWidget,
+	TopReturningVisitorPages,
+	TopTrafficSourceDrivingAddToCartWidget,
+	TopTrafficSourceDrivingLeadsWidget,
+	TopTrafficSourceDrivingPurchasesWidget,
+	TopTrafficSourceWidget,
+	VisitLengthWidget,
+	VisitsPerVisitorWidget,
+} from './components/widgets';
+import ConversionReportingNotificationCTAWidget from './components/widgets/ConversionReportingNotificationCTAWidget';
+import {
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from './constants';
+import { GTM_SCOPE, MODULES_ANALYTICS_4 } from './datastore/constants';
 
 export { registerStore } from './datastore';
 

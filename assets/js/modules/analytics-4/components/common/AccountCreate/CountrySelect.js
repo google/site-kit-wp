@@ -27,13 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { Option, Select } from 'googlesitekit-components';
 import { useDispatch } from 'googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	allCountries,
 	countriesByCode,
 } from '@/js/modules/analytics-4/utils/countries-timezones';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function CountrySelect() {
 	const value = useFormValue( FORM_ACCOUNT_CREATE, 'countryCode' );

@@ -31,23 +31,23 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import Notice from '@/js/components/Notice';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
-	AccountSelect,
 	AMPContainerSelect,
+	AccountSelect,
 	ContainerNames,
 	FormInstructions,
 	TagCheckProgress,
 	WebContainerSelect,
 } from '@/js/modules/tagmanager/components/common';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import Notice from '@/js/components/Notice';
-import SettingsGroup from '@/js/components/settings/SettingsGroup';
-import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
-import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );

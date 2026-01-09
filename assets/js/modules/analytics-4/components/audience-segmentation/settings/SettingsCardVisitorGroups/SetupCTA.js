@@ -29,21 +29,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
-import Link from '@/js/components/Link';
-import P from '@/js/components/Typography/P';
-import { AudienceErrorModal } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import { AudienceErrorModal } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
+import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import { trackEvent } from '@/js/util';
+import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 
 export default function SetupCTA() {
 	const viewContext = useViewContext();

@@ -30,25 +30,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	MODULES_ADSENSE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
 import {
 	SITE_STATUS_ADDED,
 	legacyAccountStatuses,
 } from '@/js/modules/adsense/util';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import whenActive from '@/js/util/when-active';
-import Header from './Header';
 import Footer from './Footer';
+import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
 import StatusMigration from './StatusMigration';
-import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 	const viewOnlyDashboard = useViewOnly();

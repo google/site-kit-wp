@@ -19,6 +19,22 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -28,22 +44,6 @@ import {
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
-import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 jest.mock( '../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

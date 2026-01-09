@@ -17,30 +17,29 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import AdSenseConnectCTA from '@/js/modules/adsense/components/common/AdSenseConnectCTA';
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
 	MODULE_SLUG_ADSENSE,
 } from '@/js/modules/adsense/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 
 function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const { dismissItem } = useDispatch( CORE_USER );

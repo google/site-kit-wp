@@ -22,19 +22,25 @@
 import { without } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+/**
  * WordPress dependencies.
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import { Checkbox } from 'googlesitekit-components';
 /**
  * Internal dependencies.
  */
 import { useSelect } from 'googlesitekit-data';
-import { Checkbox } from 'googlesitekit-components';
+import P from '@/js/components/Typography/P';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Errors from './Errors';
-import P from '@/js/components/Typography/P';
 
 export default function AdditionalDescription( {
 	inProgress,

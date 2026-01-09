@@ -26,12 +26,12 @@ import invariant from 'invariant';
  */
 import { createReducer } from 'googlesitekit-data';
 import {
-	getPreviousDate,
-	getDateString,
-	isValidDateRange,
-	isValidDateString,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	getDateString,
+	getPreviousDate,
+	isValidDateRange,
+	isValidDateString,
 } from '@/js/util';
 
 export const initialState = {

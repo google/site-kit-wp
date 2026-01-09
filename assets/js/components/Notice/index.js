@@ -17,8 +17,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -28,12 +28,12 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { TYPES } from './constants';
+import CTAButton from './CTAButton';
+import Description from './Description';
+import DismissButton from './DismissButton';
 import Icon from './Icon';
 import Title from './Title';
-import Description from './Description';
-import CTAButton from './CTAButton';
-import DismissButton from './DismissButton';
-import { TYPES } from './constants';
 
 const Notice = forwardRef(
 	(

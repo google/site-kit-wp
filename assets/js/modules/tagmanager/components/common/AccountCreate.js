@@ -25,14 +25,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import P from '@/js/components/Typography/P';
-import { trackEvent } from '@/js/util/tracking';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import { trackEvent } from '@/js/util/tracking';
 
 export default function AccountCreate() {
 	const viewContext = useViewContext();

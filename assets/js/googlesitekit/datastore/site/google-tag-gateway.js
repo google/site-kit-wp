@@ -21,27 +21,27 @@
 /**
  * External dependencies
  */
-import { isEqual, isPlainObject } from 'lodash';
 import invariant from 'invariant';
+import { isEqual, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
-	createRegistrySelector,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
+import { isFeatureEnabled } from '@/js/features';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { isFeatureEnabled } from '@/js/features';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { CORE_SITE } from './constants';
 
 const SET_GOOGLE_TAG_GATEWAY_ENABLED = 'SET_GOOGLE_TAG_GATEWAY_ENABLED';
 const RESET_GOOGLE_TAG_GATEWAY_SETTINGS = 'RESET_GOOGLE_TAG_GATEWAY_SETTINGS';

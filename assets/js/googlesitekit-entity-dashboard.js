@@ -23,7 +23,7 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';

@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
+import ModuleSetup from './setup/ModuleSetup';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	if ( !! setupModuleSlug ) {

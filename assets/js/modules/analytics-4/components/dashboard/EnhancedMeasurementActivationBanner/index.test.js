@@ -19,41 +19,41 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	render,
-	provideModules,
-	provideModuleRegistrations,
-	provideUserInfo,
-	provideUserAuthentication,
-	fireEvent,
-	waitFor,
-	waitForElementToBeRemoved,
-	freezeFetch,
-} from '../../../../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import {
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
+import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	EDIT_SCOPE,
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import EnhancedMeasurementActivationBanner from './index';
-import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	createTestRegistry,
+	fireEvent,
+	freezeFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserAuthentication,
+	provideUserInfo,
+	render,
+	waitFor,
+	waitForElementToBeRemoved,
+} from '../../../../../../../tests/js/test-utils';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	MODULE_SLUG_ANALYTICS_4,
-	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY,
-} from '@/js/modules/analytics-4/constants';
+import EnhancedMeasurementActivationBanner from './index';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {
 	const EnhancedMeasurementActivationBannerComponent =

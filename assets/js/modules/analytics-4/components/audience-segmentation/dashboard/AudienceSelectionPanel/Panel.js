@@ -24,9 +24,17 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import SelectionPanel from '@/js/components/SelectionPanel';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
+import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
+import AudienceItems from './AudienceItems';
 import {
 	AUDIENCE_CREATION_FORM,
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
@@ -35,19 +43,11 @@ import {
 	AUDIENCE_SELECTION_FORM,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import AudienceItems from './AudienceItems';
-import SyncErrorNotice from './SyncErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
-import SelectionPanel from '@/js/components/SelectionPanel';
-import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
-import useFormValue from '@/js/hooks/useFormValue';
 import SaveErrorNotice from './SaveErrorNotice';
+import SyncErrorNotice from './SyncErrorNotice';
 
 export default function Panel() {
 	const viewContext = useViewContext();

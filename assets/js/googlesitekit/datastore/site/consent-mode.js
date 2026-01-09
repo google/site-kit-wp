@@ -25,15 +25,15 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
-	createRegistrySelector,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { CORE_SITE } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from './constants';
 const { clearError, receiveError } = errorStoreActions;
 
 const { getRegistry } = commonActions;

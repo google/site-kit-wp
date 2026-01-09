@@ -21,9 +21,9 @@
  */
 import Data from 'googlesitekit-data';
 import {
-	registerStore,
 	createNotifications,
 	registerNotifications,
+	registerStore,
 } from './googlesitekit/notifications';
 
 registerStore( Data );

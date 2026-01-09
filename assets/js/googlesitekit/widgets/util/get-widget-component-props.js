@@ -22,19 +22,19 @@
 import memize from 'memize';
 
 /**
- * Internal dependencies
- */
-import Widget from '@/js/googlesitekit/widgets/components/Widget';
-import WidgetReportZero from '@/js/googlesitekit/widgets/components/WidgetReportZero';
-import WidgetReportError from '@/js/googlesitekit/widgets/components/WidgetReportError';
-import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
-import WidgetRecoverableModules from '@/js/googlesitekit/widgets/components/WidgetRecoverableModules';
-import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDashboardReportError';
-
-/**
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Widget from '@/js/googlesitekit/widgets/components/Widget';
+import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
+import WidgetRecoverableModules from '@/js/googlesitekit/widgets/components/WidgetRecoverableModules';
+import WidgetReportError from '@/js/googlesitekit/widgets/components/WidgetReportError';
+import WidgetReportZero from '@/js/googlesitekit/widgets/components/WidgetReportZero';
+import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDashboardReportError';
 
 /**
  * Gets the props to pass to a widget's component.

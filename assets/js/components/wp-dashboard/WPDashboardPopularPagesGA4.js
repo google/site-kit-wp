@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -31,19 +31,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewTable from '@/js/components/PreviewTable';
-import TableOverflowContainer from '@/js/components/TableOverflowContainer';
-import ReportTable from '@/js/components/ReportTable';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
-import { numFmt } from '@/js/util';
+import PreviewTable from '@/js/components/PreviewTable';
+import ReportTable from '@/js/components/ReportTable';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
 import Typography from '@/js/components/Typography';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 
 export default function WPDashboardPopularPagesGA4( {
 	WPDashboardReportError,

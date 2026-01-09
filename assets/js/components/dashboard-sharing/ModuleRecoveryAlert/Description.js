@@ -19,15 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import P from '@/js/components/Typography/P';
 import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function Description( {
 	recoverableModules,

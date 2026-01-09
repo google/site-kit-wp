@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -29,6 +28,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user conversion reporting settings', () => {
 	let registry;

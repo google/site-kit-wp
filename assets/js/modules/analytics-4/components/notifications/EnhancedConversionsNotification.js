@@ -31,12 +31,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { escapeURI } from '@/js/util/escape-uri';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { TYPES } from '@/js/components/Notice/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { escapeURI } from '@/js/util/escape-uri';
 
 export const ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS =
 	'ecee-notification-analytics';

@@ -30,18 +30,18 @@ import { useCallback, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import { TYPES } from '@/js/components/Notice/constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { getUnsatisfiedScopesMessage } from './utils';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { getUnsatisfiedScopesMessage } from './utils';
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );

@@ -24,20 +24,20 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useInViewSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	EFFECTIVE_SELECTION,
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/components/KeyMetrics/constants';
-import PanelContent from './PanelContent';
 import SelectionPanel from '@/js/components/SelectionPanel';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import PanelContent from './PanelContent';
 
 export default function Panel() {
 	const viewContext = useViewContext();

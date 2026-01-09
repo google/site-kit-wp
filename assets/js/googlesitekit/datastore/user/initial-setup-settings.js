@@ -26,14 +26,14 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
+	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
-	commonActions,
-	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from './constants';
 
 // Actions
 const SET_IS_ANALYTICS_SETUP_COMPLETE = 'SET_IS_ANALYTICS_SETUP_COMPLETE';

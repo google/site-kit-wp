@@ -19,15 +19,16 @@
 /**
  * Internal dependencies
  */
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { availableAudiences as audiencesFixture } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -38,7 +39,6 @@ import {
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
 import useEnableAudienceGroup from './useEnableAudienceGroup';
-import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 describe( 'useEnableAudienceGroup', () => {
 	let registry;

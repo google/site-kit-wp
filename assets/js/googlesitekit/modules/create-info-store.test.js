@@ -24,10 +24,10 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../tests/js/utils';
-import { createInfoStore } from './create-info-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '../../../../tests/js/utils';
+import { createInfoStore } from './create-info-store';
 
 const MODULE_SLUG = 'test-slug';
 const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;

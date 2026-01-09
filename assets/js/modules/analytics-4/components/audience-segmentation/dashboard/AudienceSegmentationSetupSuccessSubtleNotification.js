@@ -24,19 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
-import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
 
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-audiences';

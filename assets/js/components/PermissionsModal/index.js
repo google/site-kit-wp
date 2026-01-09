@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 
 function PermissionsModal() {
 	const isAuthenticated = useSelect( ( select ) =>

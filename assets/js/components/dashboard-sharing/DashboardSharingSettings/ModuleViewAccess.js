@@ -17,18 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement, forwardRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import PropTypes from 'prop-types';
 import UserRoleSelect from '@/js/components/dashboard-sharing/UserRoleSelect';
-import Notice from '@/js/components/Notice';
 import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
 
 const ModuleViewAccess = forwardRef(
 	(

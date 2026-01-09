@@ -25,25 +25,25 @@ import { mocked } from 'jest-mock';
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideGatheringDataState,
-	provideUserAuthentication,
-	provideModules,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
-import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { WEEK_IN_SECONDS } from '@/js/util';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideGatheringDataState,
+	provideModules,
+	provideUserAuthentication,
+	render,
+} from '../../../../tests/js/test-utils';
 import ActivateAnalyticsNotification from './ActivateAnalyticsNotification';
 
 jest.mock( '@/js/hooks/useActivateModuleCallback' );

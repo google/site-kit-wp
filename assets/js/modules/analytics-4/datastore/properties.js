@@ -34,30 +34,30 @@ import { createRegistrySelector } from '@wordpress/data';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
-import {
-	MODULES_ANALYTICS_4,
-	PROPERTY_CREATE,
-	MAX_WEBDATASTREAMS_PER_BATCH,
-	WEBDATASTREAM_CREATE,
-} from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { HOUR_IN_SECONDS, normalizeURL } from '@/js/util';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	isValidAccountID,
 	isValidPropertyID,
 	isValidPropertySelection,
 } from '@/js/modules/analytics-4/utils/validation';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { getItem, setItem } from '@/js/googlesitekit/api/cache';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
+import { HOUR_IN_SECONDS, normalizeURL } from '@/js/util';
+import {
+	MAX_WEBDATASTREAMS_PER_BATCH,
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from './constants';
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',

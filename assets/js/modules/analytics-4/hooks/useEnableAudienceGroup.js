@@ -24,8 +24,8 @@ import { useMountedState } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -34,13 +34,13 @@ import { addQueryArgs } from '@wordpress/url';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	AUDIENCE_SEGMENTATION_SETUP_FORM,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import useFormValue from '@/js/hooks/useFormValue';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 export default function useEnableAudienceGroup( {
 	redirectURL,

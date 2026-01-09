@@ -24,16 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Option, Select } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { Option, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/settings';
 
 export default function ProductIDSelect( props ) {

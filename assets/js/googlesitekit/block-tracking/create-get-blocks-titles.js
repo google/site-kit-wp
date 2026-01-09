@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { select, subscribe } from 'googlesitekit-data';
 import { CORE_BLOCK_EDITOR } from '@/blocks/reader-revenue-manager/common/constants';
-import { subscribe, select } from 'googlesitekit-data';
 
 /**
  * Creates a function to retrieve block titles from the WordPress block editor inserter.

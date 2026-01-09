@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import AudienceSegmentationSetupSuccessSubtleNotification from './AudienceSegmentationSetupSuccessSubtleNotification';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import AudienceSegmentationSetupSuccessSubtleNotification from './AudienceSegmentationSetupSuccessSubtleNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-audiences'

@@ -31,29 +31,29 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import ChangeBadge from '@/js/components/ChangeBadge';
+import InfoTooltip from '@/js/components/InfoTooltip';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import AudienceMetricIconVisitors from '@/svg/icons/audience-metric-icon-visitors.svg';
-import AudienceMetricIconVisitsPerVisitor from '@/svg/icons/audience-metric-icon-visits-per-visitor.svg';
+import { numFmt, trackEvent } from '@/js/util';
+import AudienceMetricIconCities from '@/svg/icons/audience-metric-icon-cities.svg';
 import AudienceMetricIconPagesPerVisit from '@/svg/icons/audience-metric-icon-pages-per-visit.svg';
 import AudienceMetricIconPageviews from '@/svg/icons/audience-metric-icon-pageviews.svg';
-import AudienceMetricIconCities from '@/svg/icons/audience-metric-icon-cities.svg';
 import AudienceMetricIconTopContent from '@/svg/icons/audience-metric-icon-top-content.svg';
-import AudienceTileMetric from './AudienceTileMetric';
+import AudienceMetricIconVisitors from '@/svg/icons/audience-metric-icon-visitors.svg';
+import AudienceMetricIconVisitsPerVisitor from '@/svg/icons/audience-metric-icon-visits-per-visitor.svg';
 import AudienceTileCitiesMetric from './AudienceTileCitiesMetric';
+import AudienceTileMetric from './AudienceTileMetric';
 import AudienceTilePagesMetric from './AudienceTilePagesMetric';
-import ChangeBadge from '@/js/components/ChangeBadge';
-import InfoTooltip from '@/js/components/InfoTooltip';
-import PartialDataNotice from './PartialDataNotice';
-import { numFmt, trackEvent } from '@/js/util';
-import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
-import useViewContext from '@/js/hooks/useViewContext';
 import AudienceTileZeroData from './AudienceTileZeroData';
+import PartialDataNotice from './PartialDataNotice';
 export default function AudienceTile( {
 	// TODO: The prop `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
 	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted

@@ -20,18 +20,18 @@
  * Internal dependencies
  */
 import {
+	CORE_WIDGETS,
+	WIDGET_AREA_STYLES,
+	WIDGET_WIDTHS,
+} from '@/js/googlesitekit/widgets/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import WidgetAreaRenderer from './WidgetAreaRenderer';
-import {
-	CORE_WIDGETS,
-	WIDGET_WIDTHS,
-	WIDGET_AREA_STYLES,
-} from '@/js/googlesitekit/widgets/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import WidgetAreaRenderer from './WidgetAreaRenderer';
 const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 
 function getRegularWidget( textContent ) {

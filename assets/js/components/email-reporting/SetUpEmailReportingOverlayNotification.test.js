@@ -24,32 +24,32 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import SetUpEmailReportingOverlayNotification, {
-	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-} from './SetUpEmailReportingOverlayNotification';
-import {
-	createTestRegistry,
-	render,
-	fireEvent,
-	act,
-} from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '../../../../tests/js/test-utils';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import SetUpEmailReportingOverlayNotification, {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+} from './SetUpEmailReportingOverlayNotification';
 
 const fetchDismissItem = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'

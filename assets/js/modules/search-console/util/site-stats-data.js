@@ -30,12 +30,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	getLocale,
-	numFmt,
 	calculateChange,
-	getChartDifferenceArrow,
 	calculateDifferenceBetweenChartValues,
+	getChartDifferenceArrow,
+	getLocale,
 	getPreviousDate,
+	numFmt,
 	stringToDate,
 } from '@/js/util';
 

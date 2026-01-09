@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 const scenarios = require( './scenarios' );
 const viewports = require( './viewports' );
 

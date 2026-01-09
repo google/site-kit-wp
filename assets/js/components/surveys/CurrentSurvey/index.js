@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import { Slide } from '@material-ui/core';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,19 +30,19 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import SurveyCompletion from '@/js/components/surveys/SurveyCompletion';
 import SurveyTerms from '@/js/components/surveys/SurveyTerms';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { SURVEY_QUESTION_TYPE } from './constants';
 import SurveyQuestion from './SurveyQuestion';
 import {
 	getCurrentQuestionAndOrdinal,
 	getTriggeredCompletion,
 	isLastQuestion,
 } from './utils';
-import { SURVEY_QUESTION_TYPE } from './constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 const SURVEY_ANSWER_DELAY_MS = 300;
 const defaultAnswers = Object.freeze( [] );

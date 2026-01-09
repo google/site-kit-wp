@@ -25,9 +25,9 @@ import { useMount } from 'react-use';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function useOpenEmailReportingSelectionPanelEffect() {
 	const [ emailReportingPanelOpen, setEmailReportingPanelOpen ] = useQueryArg(

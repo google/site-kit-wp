@@ -19,22 +19,22 @@
 /**
  * WordPress dependencies
  */
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import Portal from '@/js/components/Portal';
 import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
-import Portal from '@/js/components/Portal';
 
 function AuthenticatedPermissionsModal() {
 	const registry = useRegistry();

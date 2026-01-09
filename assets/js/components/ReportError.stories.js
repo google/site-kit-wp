@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import ReportError from './ReportError';
-import { provideModules } from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { Provider as ViewContextProvider } from './Root/ViewContextContext';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { provideModules } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import ReportError from './ReportError';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 
 function ReportErrorWrapper( { ...args } ) {
 	const error = useSelect( ( select ) =>

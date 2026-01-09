@@ -25,31 +25,31 @@ import { getByText } from '@testing-library/dom';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import WidgetAreaRenderer from './WidgetAreaRenderer';
-import * as tracking from '@/js/util/tracking';
-import {
-	CORE_WIDGETS,
-	WIDGET_WIDTHS,
-	WIDGET_AREA_STYLES,
-} from '@/js/googlesitekit/widgets/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	render,
-	provideModules,
-	provideUserCapabilities,
-	muteFetch,
-} from '../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_VIEW_DASHBOARD,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	CORE_WIDGETS,
+	WIDGET_AREA_STYLES,
+	WIDGET_WIDTHS,
+} from '@/js/googlesitekit/widgets/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModules,
+	provideUserCapabilities,
+	render,
+} from '../../../../../tests/js/test-utils';
+import WidgetAreaRenderer from './WidgetAreaRenderer';
 
 function createTestRegistryWithArea(
 	areaName,

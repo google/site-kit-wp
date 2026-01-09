@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import {
-	camelCaseToPascalCase,
 	camelCaseToConstantCase,
+	camelCaseToPascalCase,
 	hyphenCaseToPascalCase,
 } from './transform-case';
 

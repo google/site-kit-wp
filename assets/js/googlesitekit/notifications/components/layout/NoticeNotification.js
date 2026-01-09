@@ -15,14 +15,18 @@
  */
 
 /**
+ * External dependencies
+ */
+import propTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
-import Notice from '@/js/components/Notice';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { Grid, Cell, Row } from '@/js/material-components';
-import propTypes from 'prop-types';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function NoticeNotification( {
 	notificationID,

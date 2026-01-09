@@ -30,19 +30,19 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
-import WPDashboardImpressions from './WPDashboardImpressions';
-import WPDashboardClicks from './WPDashboardClicks';
-import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
-import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
-import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
-import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
-import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import DataBlockGroup from '@/js/components/DataBlockGroup';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
+import WPDashboardClicks from './WPDashboardClicks';
+import WPDashboardImpressions from './WPDashboardImpressions';
+import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
+import WPDashboardSessionDurationGA4 from './WPDashboardSessionDurationGA4';
+import WPDashboardUniqueVisitorsChartGA4 from './WPDashboardUniqueVisitorsChartGA4';
+import WPDashboardUniqueVisitorsGA4 from './WPDashboardUniqueVisitorsGA4';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';

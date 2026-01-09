@@ -6,15 +6,15 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-	useRequestInterception,
-	setupAnalytics4,
-} from '../../../utils';
-import * as adminBarMockResponses from './fixtures/admin-bar';
 import { getAnalytics4MockResponse } from '../../../../../assets/js/modules/analytics-4/utils/data-mock';
+import {
+	setSearchConsoleProperty,
+	setSiteVerification,
+	setupAnalytics4,
+	useRequestInterception,
+} from '../../../utils';
 import getMultiDimensionalObjectFromParams from '../../../utils/get-multi-dimensional-object-from-params';
+import * as adminBarMockResponses from './fixtures/admin-bar';
 
 let mockBatchResponse;
 

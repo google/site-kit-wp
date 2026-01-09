@@ -26,20 +26,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import NoAudienceBannerGraphic from '@/svg/graphics/no-audience-banner-graphic.svg';
+import LeanCTABanner from '@/js/components/LeanCTABanner';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import LeanCTABanner from '@/js/components/LeanCTABanner';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { trackEvent } from '@/js/util';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
+import NoAudienceBannerGraphic from '@/svg/graphics/no-audience-banner-graphic.svg';
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();

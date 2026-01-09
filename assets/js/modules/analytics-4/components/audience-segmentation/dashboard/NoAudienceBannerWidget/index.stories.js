@@ -17,24 +17,27 @@
  */
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import NoAudienceBannerWidget from '.';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+/**
+ * Internal dependencies.
+ */
+import NoAudienceBannerWidget from '.';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsNoAudienceBanner'

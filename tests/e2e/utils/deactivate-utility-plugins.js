@@ -2,10 +2,10 @@
  * WordPress dependencies
  */
 import {
-	switchUserToAdmin,
-	visitAdminPage,
-	switchUserToTest,
 	isCurrentURL,
+	switchUserToAdmin,
+	switchUserToTest,
+	visitAdminPage,
 } from '@wordpress/e2e-test-utils';
 
 /**

@@ -32,12 +32,12 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { set } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ADS,
 } from '@/js/modules/ads/datastore/constants';
 import { formatPaxDate } from './utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 async function restFetchWpPages() {
 	try {

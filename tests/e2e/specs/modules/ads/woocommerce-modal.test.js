@@ -24,15 +24,15 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
+import surveyResponse from '@/js/components/surveys/__fixtures__/survey-single-question.json';
 import {
 	deactivateUtilityPlugins,
+	enableFeature,
 	resetSiteKit,
 	setupSiteKit,
-	useRequestInterception,
-	enableFeature,
 	step,
+	useRequestInterception,
 } from '../../../utils';
-import surveyResponse from '@/js/components/surveys/__fixtures__/survey-single-question.json';
 
 // Selectors
 const WOO_MODAL_SELECTOR = '.googlesitekit-dialog-woocommerce-redirect';

@@ -19,30 +19,30 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import {
+	createInterpolateElement,
 	useCallback,
 	useEffect,
 	useState,
-	createInterpolateElement,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Checkbox } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDebounce } from '@/js/hooks/useDebounce';
+import useViewContext from '@/js/hooks/useViewContext';
 import { toggleTracking, trackEvent } from '@/js/util/tracking';
 import Link from './Link';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useDebounce } from '@/js/hooks/useDebounce';
 
 export default function OptIn( {
 	id = 'googlesitekit-opt-in',

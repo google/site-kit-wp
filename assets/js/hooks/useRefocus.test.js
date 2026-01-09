@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { renderHook, actHook as act } from '../../../tests/js/test-utils';
+import { actHook as act, renderHook } from '../../../tests/js/test-utils';
 import { useRefocus } from './useRefocus';
 
 describe( 'useRefocus', () => {

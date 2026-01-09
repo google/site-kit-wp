@@ -17,25 +17,25 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * External dependencies
  */
 import invariant from 'invariant';
 import md5 from 'md5';
 
-const RECEIVE_ERROR = 'RECEIVE_ERROR';
-const CLEAR_ERROR = 'CLEAR_ERROR';
-const CLEAR_ERRORS = 'CLEAR_ERRORS';
+/**
+ * WordPress dependencies
+ */
+import { createRegistrySelector } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { stringifyObject } from '@/js/util';
 import { createReducer } from 'googlesitekit-data';
+import { stringifyObject } from '@/js/util';
+
+const RECEIVE_ERROR = 'RECEIVE_ERROR';
+const CLEAR_ERROR = 'CLEAR_ERROR';
+const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {

@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { render } from '../../../tests/js/test-utils';
 import { createTestRegistry, subscribeUntil } from '../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import whenScopesGranted from './whenScopesGranted';
 
 describe( 'whenScopesGranted', () => {

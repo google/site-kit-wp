@@ -26,15 +26,15 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import DataBlock from '@/js/components/DataBlock';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { calculateChange } from '@/js/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { calculateChange } from '@/js/util';
 
 function AdminBarSessionsGA4( { WidgetReportError } ) {
 	const isGatheringData = useSelect( ( select ) =>

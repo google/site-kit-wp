@@ -24,21 +24,21 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import Header from './Header';
-import SelectionPanelFooter from './SelectionPanelFooter';
-import P from '@/js/components/Typography/P';
-import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import Header from './Header';
 import Notices from './Notices';
+import SelectionPanelFooter from './SelectionPanelFooter';
 
 export default function PanelContent( {
 	notice,

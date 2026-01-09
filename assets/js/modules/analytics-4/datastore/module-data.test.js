@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { initialState } from './index';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPE_AUDIENCE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { initialState } from './index';
 
 describe( 'modules/analytics-4 module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';

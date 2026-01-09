@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import PlaceholderTile from './PlaceholderTile';
 
 const WidgetWithComponentProps =

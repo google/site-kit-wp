@@ -24,13 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { getCurrencyPattern } from '@/js/components/GoogleChart/utils';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	getSiteStatsDataForGoogleChart,
 	isZeroReport,
 } from '@/js/modules/adsense/util';
-import { Grid, Row, Cell } from '@/js/material-components';
-import GoogleChart from '@/js/components/GoogleChart';
 
 export default function Stats( props ) {
 	const { metrics, currentRangeData, previousRangeData, selectedStats } =

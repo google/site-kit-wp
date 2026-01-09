@@ -30,14 +30,29 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 import * as coreForms from '../../assets/js/googlesitekit/datastore/forms';
 import * as coreLocation from '../../assets/js/googlesitekit/datastore/location';
-import * as coreModules from '../../assets/js/googlesitekit/modules';
 import * as coreSite from '../../assets/js/googlesitekit/datastore/site';
+import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import * as coreUi from '../../assets/js/googlesitekit/datastore/ui';
 import * as coreUser from '../../assets/js/googlesitekit/datastore/user';
-import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+} from '../../assets/js/googlesitekit/datastore/user/constants';
+import * as coreModules from '../../assets/js/googlesitekit/modules';
+import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import * as coreNotifications from '../../assets/js/googlesitekit/notifications';
+import * as coreWidgets from '../../assets/js/googlesitekit/widgets';
 import * as modulesAds from '../../assets/js/modules/ads';
 import * as modulesAdSense from '../../assets/js/modules/adsense';
 import * as modulesAnalytics4 from '../../assets/js/modules/analytics-4';
@@ -46,21 +61,6 @@ import * as modulesReaderRevenueManager from '../../assets/js/modules/reader-rev
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesSignInWithGoogle from '../../assets/js/modules/sign-in-with-google';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
-import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
-import {
-	PERMISSION_AUTHENTICATE,
-	PERMISSION_SETUP,
-	PERMISSION_VIEW_POSTS_INSIGHTS,
-	PERMISSION_VIEW_DASHBOARD,
-	PERMISSION_VIEW_MODULE_DETAILS,
-	PERMISSION_MANAGE_OPTIONS,
-	CORE_USER,
-	KM_ANALYTICS_RETURNING_VISITORS,
-	KM_ANALYTICS_NEW_VISITORS,
-} from '../../assets/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
-import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import { singleQuestionSurvey } from '../../assets/js/components/surveys/__fixtures__';
 
 const allCoreStores = [
 	coreForms,

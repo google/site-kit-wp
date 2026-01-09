@@ -24,16 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
+import { useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Button, TextField } from 'googlesitekit-components';
-import SurveyHeader from './SurveyHeader';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
+import SurveyHeader from './SurveyHeader';
 
 function SurveyQuestionOpenText( {
 	question,

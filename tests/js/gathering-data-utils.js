@@ -8,12 +8,12 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/utils/data-mock';
-import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
+import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/utils/data-mock';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
+import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
 
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.

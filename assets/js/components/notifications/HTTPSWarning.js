@@ -20,16 +20,19 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { sprintf, __ } from '@wordpress/i18n';
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import Notice from '@/js/components/Notice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 export default function HTTPSWarning( { moduleSlug } ) {
 	const module = useSelect( ( select ) =>

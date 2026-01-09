@@ -16,27 +16,30 @@
  * limitations under the License.
  */
 
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideUserCapabilities,
-	provideUserAuthentication,
-} from '../../../../../../../tests/js/test-utils';
+/**
+ * Internal dependencies
+ */
 import {
 	withActive,
 	withConnected,
 } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import SearchFunnelWidgetGA4 from '.';
-import Chart from './Chart';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+} from '../../../../../../../tests/js/test-utils';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
+import SearchFunnelWidgetGA4 from '.';
+import Chart from './Chart';
 
 jest.mock(
 	'../../../../../components/GoogleChart',

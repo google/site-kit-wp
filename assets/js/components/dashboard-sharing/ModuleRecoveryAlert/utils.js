@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Computes the aria-label for the Recover CTA button.

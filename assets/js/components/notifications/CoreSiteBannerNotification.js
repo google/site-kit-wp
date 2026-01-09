@@ -24,15 +24,15 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import NotificationFromServer from '@/js/components/NotificationFromServer';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 function CoreSiteBannerNotification( { id, ...props } ) {
 	const { dismissNotification, acceptNotification } =

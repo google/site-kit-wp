@@ -20,21 +20,21 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject, isEqual, pick } from 'lodash';
+import { isEqual, isPlainObject, pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	commonActions,
-	createRegistrySelector,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from './constants';
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, inputSettings ) => {

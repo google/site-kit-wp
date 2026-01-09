@@ -23,8 +23,8 @@ import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { initialState } from './index';
 import { MODULES_ADS, PLUGINS } from './constants';
+import { initialState } from './index';
 
 describe( 'modules/ads module data', () => {
 	const baseModulesGlobalName = '_googlesitekitModulesData';

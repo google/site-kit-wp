@@ -28,30 +28,29 @@ import {
  * Internal dependencies
  */
 import {
-	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
-	AUDIENCE_CREATION_FORM,
-	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
-	AUDIENCE_SELECTED,
-	AUDIENCE_SELECTION_CHANGED,
-	AUDIENCE_SELECTION_FORM,
-	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
-} from './constants';
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	DATE_RANGE_OFFSET,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
+import {
+	act,
+	fireEvent,
+	render,
+	waitFor,
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -62,16 +61,17 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
-import { availableAudiences } from './../../../../datastore/__fixtures__';
-import * as tracking from '@/js/util/tracking';
 import AudienceSelectionPanel from '.';
+import { availableAudiences } from './../../../../datastore/__fixtures__';
+import {
+	AUDIENCE_ADD_GROUP_NOTICE_SLUG,
+	AUDIENCE_CREATION_FORM,
+	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
+	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
+	AUDIENCE_SELECTION_FORM,
+	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
+} from './constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

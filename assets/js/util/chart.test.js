@@ -17,9 +17,9 @@
  */
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import { isSingleSlice, calculateDifferenceBetweenChartValues } from './chart';
+import { calculateDifferenceBetweenChartValues, isSingleSlice } from './chart';
 
 describe( 'isSingleSlice', () => {
 	it( 'returns undefined when undefined is passed', () => {

@@ -18,6 +18,14 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -29,42 +37,34 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
 	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
+	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
-	KM_ANALYTICS_POPULAR_AUTHORS,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-	KM_ANALYTICS_TOP_CITIES,
-	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 } from './constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'core/user key metrics', () => {
 	let registry;

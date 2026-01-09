@@ -30,23 +30,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	AUDIENCE_SELECTED,
-	AUDIENCE_SELECTION_CHANGED,
-	AUDIENCE_SELECTION_FORM,
-} from './constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import NewBadge from '@/js/components/NewBadge';
+import { SelectionPanelItem } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
-import NewBadge from '@/js/components/NewBadge';
-import { SelectionPanelItem } from '@/js/components/SelectionPanel';
-import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
-import useFormValue from '@/js/hooks/useFormValue';
+import {
+	AUDIENCE_SELECTED,
+	AUDIENCE_SELECTION_CHANGED,
+	AUDIENCE_SELECTION_FORM,
+} from './constants';
 
 export default function AudienceItem( {
 	slug,

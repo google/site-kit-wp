@@ -27,26 +27,26 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
+import { isValidAccountSelection } from '@/js/modules/analytics-4/utils/validation';
+import { caseInsensitiveListSort } from '@/js/util/case-insensitive-sort';
 import {
 	ACCOUNT_CREATE,
-	PROPERTY_CREATE,
 	ENHANCED_MEASUREMENT_ENABLED,
 	FORM_ACCOUNT_CREATE,
 	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { isValidAccountSelection } from '@/js/modules/analytics-4/utils/validation';
-import { caseInsensitiveListSort } from '@/js/util/case-insensitive-sort';
-import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 

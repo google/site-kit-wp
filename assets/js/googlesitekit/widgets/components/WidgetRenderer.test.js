@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import WidgetRenderer from './WidgetRenderer';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	createTestRegistry,
 	provideModules,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import WidgetRenderer from './WidgetRenderer';
 
 describe( 'WidgetRenderer', () => {
 	let registry;
