@@ -38,8 +38,12 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import {
+	getPaymentOption,
+	getProductIDs,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -52,7 +56,40 @@ const fetchGetPublicationsStore = createFetchStore( {
 			{ useCache: false }
 		),
 	reducerCallback: createReducer( ( state, publications ) => {
-		state.publications = publications;
+		const { publicationID } = state?.savedSettings || {};
+
+		const publication = publications.find(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId } ) => publicationId === publicationID
+		);
+
+		if ( ! publication ) {
+			return {
+				...state,
+				publications,
+			};
+		}
+
+		const { onboardingState, products, paymentOptions } = publication;
+
+		const updatedSettings = {
+			publicationOnboardingState: onboardingState,
+			productIDs: getProductIDs( products ),
+			paymentOption: getPaymentOption( paymentOptions ),
+		};
+
+		return {
+			...state,
+			publications,
+			settings: {
+				...state.settings,
+				...updatedSettings,
+			},
+			savedSettings: {
+				...state.savedSettings,
+				...updatedSettings,
+			},
+		};
 	} ),
 } );
 
@@ -257,9 +294,7 @@ const baseActions = {
 			};
 
 			if ( paymentOptions ) {
-				const paymentOption = Object.keys( paymentOptions ).find(
-					( key ) => !! paymentOptions[ key ]
-				);
+				const paymentOption = getPaymentOption( paymentOptions );
 
 				if ( paymentOption ) {
 					settings.paymentOption = paymentOption;
@@ -267,13 +302,7 @@ const baseActions = {
 			}
 
 			if ( products ) {
-				settings.productIDs = products.reduce( ( ids, { name } ) => {
-					if ( ! name ) {
-						return ids;
-					}
-
-					return [ ...ids, name ];
-				}, [] );
+				settings.productIDs = getProductIDs( products );
 			}
 
 			settings.productID = 'openaccess';
