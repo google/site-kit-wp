@@ -21,6 +21,12 @@
 	.googlesitekit-user-settings-selection-panel {
 		color: $c-surfaces-on-background-variant;
 
+		.googlesitekit-selection-panel-header {
+			p {
+				color: $c-surfaces-on-background-variant;
+			}
+		}
+
 		.googlesitekit-user-settings-selection__panel-content {
 			display: flex;
 			flex-direction: column;
