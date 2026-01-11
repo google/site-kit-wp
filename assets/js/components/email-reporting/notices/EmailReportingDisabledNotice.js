@@ -74,7 +74,7 @@ export default function EmailReportingDisabledNotice() {
 			type={ TYPES.WARNING }
 			title={ __( 'Email reports are disabled', 'google-site-kit' ) }
 			description={ __(
-				'This feature was disabled for all users. You can enable email reports subscriptions in settings',
+				'This feature was disabled for all users. You can enable email report subscriptions in settings',
 				'google-site-kit'
 			) }
 			ctaButton={ {

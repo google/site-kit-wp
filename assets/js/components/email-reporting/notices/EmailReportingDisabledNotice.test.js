@@ -69,7 +69,7 @@ describe( 'EmailReportingDisabledNotice', () => {
 		).toBeInTheDocument();
 		expect(
 			getByText(
-				/This feature was disabled for all users. You can enable email reports subscriptions in settings/i
+				/This feature was disabled for all users. You can enable email report subscriptions in settings/i
 			)
 		).toBeInTheDocument();
 	} );
