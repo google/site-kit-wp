@@ -30,14 +30,13 @@ import {
 	useCallback,
 	Fragment,
 	useEffect,
-	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -70,10 +69,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
-	const registry = useRegistry();
 	const viewContext = useViewContext();
-	const [ isResolvingDataAvailability, setIsResolvingDataAvailability ] =
-		useState( true );
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -110,6 +106,12 @@ export default function KeyMetricsSetupApp() {
 	const { saveUserInputSettings, saveInitialSetupSettings } =
 		useDispatch( CORE_USER );
 
+	// Trigger resolution of data availability state before the user proceeds to the dashboard.
+	useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+	} );
+
 	const isSyncing = useSelect( ( select ) => {
 		const isFetchingSyncAvailableCustomDimensions =
 			select(
@@ -119,7 +121,21 @@ export default function KeyMetricsSetupApp() {
 		const isSyncingAudiences =
 			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
 
-		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+		const hasResolvedAnalytics4DataAvailability =
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isGatheringData'
+			);
+
+		const hasResolvedSearchConsoleDataAvailability = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'isGatheringData' );
+
+		return (
+			isFetchingSyncAvailableCustomDimensions ||
+			isSyncingAudiences ||
+			! hasResolvedAnalytics4DataAvailability ||
+			! hasResolvedSearchConsoleDataAvailability
+		);
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -168,20 +184,6 @@ export default function KeyMetricsSetupApp() {
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
-
-	// Ensure data availability state is resolved before the user proceeds to the dashboard.
-	useEffect( () => {
-		async function resolveDataAvailability() {
-			await Promise.all( [
-				registry.resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
-				registry
-					.resolveSelect( MODULES_SEARCH_CONSOLE )
-					.isGatheringData(),
-			] );
-			setIsResolvingDataAvailability( false );
-		}
-		resolveDataAvailability();
-	}, [ registry, setIsResolvingDataAvailability ] );
 
 	useEffect( () => {
 		syncAvailableAudiences();
@@ -322,17 +324,11 @@ export default function KeyMetricsSetupApp() {
 										<div className="googlesitekit-user-input__footer">
 											<SpinnerButton
 												onClick={ onSaveClick }
-												isSaving={
-													isBusy ||
-													isSyncing ||
-													isResolvingDataAvailability
-												}
+												isSaving={ isBusy || isSyncing }
 												disabled={
 													hasErrorForAnswer(
 														values
-													) ||
-													isSyncing ||
-													isResolvingDataAvailability
+													) || isSyncing
 												}
 											>
 												{ __(
