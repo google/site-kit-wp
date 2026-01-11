@@ -55,9 +55,8 @@ export default function PanelContent( {
 
 	return (
 		<Fragment>
+			<Header closePanel={ closePanel } />
 			<div className="googlesitekit-user-settings-selection__panel-content">
-				<Header closePanel={ closePanel } />
-
 				<Notices />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
