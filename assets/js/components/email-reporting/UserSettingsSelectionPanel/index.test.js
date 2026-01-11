@@ -29,6 +29,7 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -54,6 +55,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry
 			.dispatch( CORE_UI )
 			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
 	} );
 
 	afterEach( () => {
