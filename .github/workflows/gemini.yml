@@ -70,7 +70,7 @@ jobs:
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
       - name: Install Gemini CLI
         run: |
-          npm install -g @google/gemini-cli@0.22.5
+          npm install -g @google/gemini-cli@0.23.0
           gemini --version
       - name: Run /implement command
         run: |
