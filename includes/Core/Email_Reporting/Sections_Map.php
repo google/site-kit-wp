@@ -112,9 +112,20 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_business_growth_section() {
-		// If no conversion data is present in payload it means user do not have conversion tracking set up
-		// or no data is received yet and we can skip this section.
-		if ( empty( $this->payload['total_conversion_events'] ) || ! isset( $this->payload['total_conversion_events'] ) ) {
+		$section_parts = array(
+			'total_conversion_events' => array(
+				'data' => $this->payload['total_conversion_events'] ?? array(),
+			),
+			'products_added_to_cart'  => array(
+				'data' => $this->payload['products_added_to_cart'] ?? array(),
+			),
+			'purchases'               => array(
+				'data' => $this->payload['purchases'] ?? array(),
+			),
+		);
+
+		$section_parts = $this->filter_section_parts( $section_parts );
+		if ( empty( $section_parts ) ) {
 			return array();
 		}
 
@@ -124,17 +135,7 @@ class Sections_Map {
 				'icon'             => 'conversions',
 				'section_template' => 'section-conversions',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'total_conversion_events' => array(
-						'data' => $this->payload['total_conversion_events'] ?? array(),
-					),
-					'products_added_to_cart'  => array(
-						'data' => $this->payload['products_added_to_cart'] ?? array(),
-					),
-					'purchases'               => array(
-						'data' => $this->payload['purchases'] ?? array(),
-					),
-				),
+				'section_parts'    => $section_parts,
 			),
 		);
 	}
@@ -182,6 +183,11 @@ class Sections_Map {
 			'data' => $this->payload['total_clicks'] ?? array(),
 		);
 
+		$section_parts = $this->filter_section_parts( $section_parts );
+		if ( empty( $section_parts ) ) {
+			return array();
+		}
+
 		return array(
 			'how_many_people_are_finding_and_visiting_my_site' => array(
 				'title'            => esc_html__( 'How many people are finding and visiting my site?', 'google-site-kit' ),
@@ -201,20 +207,27 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_traffic_sources_section() {
+		$section_parts = array(
+			'traffic_channels' => array(
+				'data' => $this->payload['traffic_channels'] ?? array(),
+			),
+			'top_ctr_keywords' => array(
+				'data' => $this->payload['top_ctr_keywords'] ?? array(),
+			),
+		);
+
+		$section_parts = $this->filter_section_parts( $section_parts );
+		if ( empty( $section_parts ) ) {
+			return array();
+		}
+
 		return array(
 			'how_are_people_finding_me' => array(
 				'title'            => esc_html__( 'How are people finding me?', 'google-site-kit' ),
 				'icon'             => 'search',
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'traffic_channels' => array(
-						'data' => $this->payload['traffic_channels'] ?? array(),
-					),
-					'top_ctr_keywords' => array(
-						'data' => $this->payload['top_ctr_keywords'] ?? array(),
-					),
-				),
+				'section_parts'    => $section_parts,
 			),
 		);
 	}
@@ -227,26 +240,33 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_attention_section() {
+		$section_parts = array(
+			'popular_content'     => array(
+				'data' => $this->payload['popular_content'] ?? array(),
+			),
+			'top_pages_by_clicks' => array(
+				'data' => $this->payload['top_pages_by_clicks'] ?? array(),
+			),
+			'top_authors'         => array(
+				'data' => $this->payload['top_authors'] ?? array(),
+			),
+			'top_categories'      => array(
+				'data' => $this->payload['top_categories'] ?? array(),
+			),
+		);
+
+		$section_parts = $this->filter_section_parts( $section_parts );
+		if ( empty( $section_parts ) ) {
+			return array();
+		}
+
 		return array(
 			'whats_grabbing_their_attention' => array(
 				'title'            => esc_html__( 'What’s grabbing their attention?', 'google-site-kit' ),
 				'icon'             => 'views',
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'popular_content'     => array(
-						'data' => $this->payload['popular_content'] ?? array(),
-					),
-					'top_pages_by_clicks' => array(
-						'data' => $this->payload['top_pages_by_clicks'] ?? array(),
-					),
-					'top_authors'         => array(
-						'data' => $this->payload['top_authors'] ?? array(),
-					),
-					'top_categories'      => array(
-						'data' => $this->payload['top_categories'] ?? array(),
-					),
-				),
+				'section_parts'    => $section_parts,
 			),
 		);
 	}
@@ -259,7 +279,17 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_growth_drivers_section() {
-		if ( empty( $this->payload['keywords_ctr_increase'] ) && empty( $this->payload['pages_clicks_increase'] ) ) {
+		$section_parts = array(
+			'keywords_ctr_increase' => array(
+				'data' => $this->payload['keywords_ctr_increase'] ?? array(),
+			),
+			'pages_clicks_increase' => array(
+				'data' => $this->payload['pages_clicks_increase'] ?? array(),
+			),
+		);
+
+		$section_parts = $this->filter_section_parts( $section_parts );
+		if ( empty( $section_parts ) ) {
 			return array();
 		}
 
@@ -269,15 +299,97 @@ class Sections_Map {
 				'icon'             => 'growth',
 				'section_template' => 'section-page-metrics',
 				'dashboard_url'    => $this->context->admin_url( 'dashboard' ),
-				'section_parts'    => array(
-					'keywords_ctr_increase' => array(
-						'data' => $this->payload['keywords_ctr_increase'] ?? array(),
-					),
-					'pages_clicks_increase' => array(
-						'data' => $this->payload['pages_clicks_increase'] ?? array(),
-					),
-				),
+				'section_parts'    => $section_parts,
 			),
 		);
+	}
+
+	/**
+	 * Filters section parts to only include meaningful data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $section_parts Section parts to filter.
+	 * @return array Filtered section parts.
+	 */
+	protected function filter_section_parts( array $section_parts ) {
+		$filtered = array();
+
+		foreach ( $section_parts as $part_key => $part_config ) {
+			$data = $part_config['data'] ?? null;
+			if ( ! $this->has_data( $data ) ) {
+				continue;
+			}
+
+			$filtered[ $part_key ] = $part_config;
+		}
+
+		return $filtered;
+	}
+
+	/**
+	 * Determines whether a section part has meaningful data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $data Section part data.
+	 * @return bool Whether the data contains values to render.
+	 */
+	protected function has_data( $data ) {
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			return false;
+		}
+
+		if ( isset( $data['values'] ) && is_array( $data['values'] ) ) {
+			foreach ( $data['values'] as $value ) {
+				if ( $this->has_non_zero_value( $value ) ) {
+					return true;
+				}
+			}
+		}
+
+		if ( array_key_exists( 'value', $data ) ) {
+			return $this->has_non_zero_value( $data['value'] );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines whether a value represents non-zero, meaningful data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value Value to evaluate.
+	 * @return bool Whether the value is non-zero or non-empty.
+	 */
+	protected function has_non_zero_value( $value ) {
+		if ( null === $value ) {
+			return false;
+		}
+
+		if ( is_bool( $value ) ) {
+			return $value;
+		}
+
+		if ( is_numeric( $value ) ) {
+			return 0.0 !== (float) $value;
+		}
+
+		if ( is_string( $value ) ) {
+			$trimmed = trim( $value );
+			if ( '' === $trimmed ) {
+				return false;
+			}
+
+			$normalized = str_replace( '%', '', $trimmed );
+			if ( is_numeric( $normalized ) ) {
+				return 0.0 !== (float) $normalized;
+			}
+
+			return true;
+		}
+
+		return ! empty( $value );
 	}
 }
