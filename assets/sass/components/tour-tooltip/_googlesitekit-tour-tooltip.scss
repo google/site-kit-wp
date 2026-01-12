@@ -210,14 +210,38 @@
 			margin-left: 10px;
 		}
 
+		// Tertiary button (Back) states.
+		&:hover {
+			background-color: $c-site-kit-sk-300;
+		}
+
 		&:focus {
+			background-color: $c-site-kit-sk-400;
+			color: rgba($c-content-on-primary, 0.6);
 			outline: none;
+		}
+
+		&:active {
+			background-color: $c-site-kit-sk-400;
 		}
 	}
 
 	.googlesitekit-tooltip-button--primary {
-		background-color: $c-site-kit-sk-300;
+		background-color: $c-site-kit-sk-50;
 		box-shadow: none;
+		color: $c-content-on-primary-container;
+
+		&:hover {
+			background-color: $c-site-kit-sk-100;
+		}
+
+		&:focus {
+			background-color: $c-site-kit-sk-200;
+		}
+
+		&:active {
+			background-color: $c-site-kit-sk-100;
+		}
 	}
 
 	.googlesitekit-tooltip-steps {
