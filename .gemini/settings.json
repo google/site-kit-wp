@@ -32,10 +32,22 @@
 	"mcpServers": {
 		"github": {
 			"trust": false,
-			"httpUrl": "https://api.githubcopilot.com/mcp/",
+			"httpUrl": "https://api.githubcopilot.com/mcp/?toolsets=issues",
 			"headers": {
 				"Authorization": "Bearer ${GITHUB_TOKEN}"
 			}
 		}
+	},
+	"tools": {
+		"exclude": [
+			"github__add_issue_comment",
+			"github__assign_copilot_to_issue",
+			"github__get_label",
+			"github__issue_write",
+			"github__list_issue_types",
+			"github__list_issues",
+			"github__search_issues",
+			"github__sub_issue_write"
+		]
 	}
 }
