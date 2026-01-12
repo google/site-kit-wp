@@ -71,6 +71,29 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get_default__with_rrm_policy_violations_enabled() {
+		$this->enable_feature( 'rrmPolicyViolations' );
+
+		$this->settings->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'ownerID'                           => 0,
+				'publicationID'                     => '',
+				'publicationOnboardingState'        => '',
+				'publicationOnboardingStateChanged' => false,
+				'snippetMode'                       => 'post_types',
+				'postTypes'                         => array( 'post' ),
+				'productID'                         => 'openaccess',
+				'productIDs'                        => array(),
+				'paymentOption'                     => '',
+				'contentPolicyStatus'               => (object) array(),
+			),
+			get_option( Settings::OPTION ),
+			'RRM Settings should match the default values.'
+		);
+	}
+
 	public function test_view_only_keys() {
 		$this->assertEqualSets(
 			array(
@@ -145,6 +168,64 @@ class SettingsTest extends SettingsTestCase {
 		$options = get_option( $options_key );
 		$this->assertEquals( $expected_value, $options[ $setting ], 'RRM Settings sanitization should match expected value.' );
 	}
+
+	public function data_revenue_manager_settings__with_rrm_policy_violations_enabled() {
+		$settings = array_merge(
+			$this->data_revenue_manager_settings(),
+			array(
+				'contentPolicyStatus with populated object' => array(
+					'contentPolicyStatus',
+					(object) array(
+						'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+					),
+					(object) array(
+						'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+					),
+				),
+				'contentPolicyStatus with empty object' => array(
+					'contentPolicyStatus',
+					(object) array(),
+					(object) array(),
+				),
+				'contentPolicyStatus with empty array'  => array(
+					'contentPolicyStatus',
+					array(),
+					(object) array(),
+				),
+				'contentPolicyStatus with number'       => array(
+					'contentPolicyStatus',
+					123,
+					(object) array(),
+				),
+				'contentPolicyStatus with boolean'      => array(
+					'contentPolicyStatus',
+					true,
+					(object) array(),
+				),
+			)
+		);
+
+		return $settings;
+	}
+
+	/**
+	 * @dataProvider data_revenue_manager_settings__with_rrm_policy_violations_enabled
+	 */
+	public function test_reader_revenue_manager_settings_sanitization__with_rrm_policy_violations_enabled( $setting, $value, $expected_value ) {
+		$this->enable_feature( 'rrmPolicyViolations' );
+
+		$this->settings->register();
+
+		$options_key = $this->get_option_name();
+		delete_option( $options_key );
+
+		$options             = $this->settings->get();
+		$options[ $setting ] = $value;
+		$this->settings->set( $options );
+		$options = get_option( $options_key );
+		$this->assertEquals( $expected_value, $options[ $setting ], 'RRM Settings sanitization should match expected value.' );
+	}
+
 
 	/**
 	 * @inheritDoc
