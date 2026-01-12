@@ -175,10 +175,10 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'contentPolicyStatus with populated object' => array(
 					'contentPolicyStatus',
-					(object) array(
+					array(
 						'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
 					),
-					(object) array(
+					array(
 						'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
 					),
 				),
