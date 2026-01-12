@@ -15,7 +15,7 @@ use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analyt
 /**
  * Builds Analytics 4 batch requests and maps responses for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Report_Request_Assembler {
 	/**
 	 * Report options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Analytics_Report_Options
 	 */
 	private $report_options;
@@ -32,7 +32,7 @@ class Report_Request_Assembler {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Analytics_Report_Options $report_options Report options instance.
 	 */
@@ -43,7 +43,7 @@ class Report_Request_Assembler {
 	/**
 	 * Builds Analytics 4 batch report requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $custom_titles Optional. Custom titles keyed by request key.
 	 * @return array Array of report requests keyed by payload key.
@@ -94,7 +94,7 @@ class Report_Request_Assembler {
 	/**
 	 * Builds custom audience requests and titles from configured audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Tuple of request map and titles map.
 	 */

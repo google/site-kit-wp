@@ -15,7 +15,7 @@ use Google\Site_Kit\Context;
 /**
  * Factory for creating Email_Template_Renderer instances.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Email_Template_Renderer_Factory {
 	/**
 	 * Plugin context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var Context
 	 */
@@ -33,7 +33,7 @@ class Email_Template_Renderer_Factory {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -44,7 +44,7 @@ class Email_Template_Renderer_Factory {
 	/**
 	 * Creates a template renderer for the provided sections payload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $sections_payload Sections payload.
 	 * @return Email_Template_Renderer Template renderer instance.

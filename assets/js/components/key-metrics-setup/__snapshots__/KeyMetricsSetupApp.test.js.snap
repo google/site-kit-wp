@@ -509,21 +509,25 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
     </div>
   </div>
   <div
-    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+    class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice__icon"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
     >
-      <svg />
-    </div>
-    <div
-      class="googlesitekit-notice__content"
-    >
-      <p
-        class="googlesitekit-notice__title"
+      <div
+        class="googlesitekit-notice__icon"
       >
-        Google Analytics was successfully set up
-      </p>
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Google Analytics was successfully set up
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -1004,21 +1008,25 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
     </div>
   </div>
   <div
-    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+    class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice__icon"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
     >
-      <svg />
-    </div>
-    <div
-      class="googlesitekit-notice__content"
-    >
-      <p
-        class="googlesitekit-notice__title"
+      <div
+        class="googlesitekit-notice__icon"
       >
-        Google Analytics was successfully set up
-      </p>
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Google Analytics was successfully set up
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -1480,23 +1488,27 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
                   class="googlesitekit-user-input__error"
                 >
                   <div
-                    class="googlesitekit-notice googlesitekit-notice--error"
+                    class="googlesitekit-notice-container"
                   >
                     <div
-                      class="googlesitekit-notice__icon"
+                      class="googlesitekit-notice googlesitekit-notice--error"
                     >
-                      <svg />
-                    </div>
-                    <div
-                      class="googlesitekit-notice__content"
-                    >
-                      <p
-                        class="googlesitekit-notice__description"
+                      <div
+                        class="googlesitekit-notice__icon"
                       >
-                        <span>
-                          Error: Internal server error (Please try again.)
-                        </span>
-                      </p>
+                        <svg />
+                      </div>
+                      <div
+                        class="googlesitekit-notice__content"
+                      >
+                        <p
+                          class="googlesitekit-notice__description"
+                        >
+                          <span>
+                            Error: Internal server error (Please try again.)
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1522,21 +1534,25 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
     </div>
   </div>
   <div
-    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+    class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice__icon"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
     >
-      <svg />
-    </div>
-    <div
-      class="googlesitekit-notice__content"
-    >
-      <p
-        class="googlesitekit-notice__title"
+      <div
+        class="googlesitekit-notice__icon"
       >
-        Google Analytics was successfully set up
-      </p>
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Google Analytics was successfully set up
+        </p>
+      </div>
     </div>
   </div>
 </div>
@@ -2017,21 +2033,25 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
     </div>
   </div>
   <div
-    class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+    class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice__icon"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
     >
-      <svg />
-    </div>
-    <div
-      class="googlesitekit-notice__content"
-    >
-      <p
-        class="googlesitekit-notice__title"
+      <div
+        class="googlesitekit-notice__icon"
       >
-        Google Analytics was successfully set up
-      </p>
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Google Analytics was successfully set up
+        </p>
+      </div>
     </div>
   </div>
 </div>

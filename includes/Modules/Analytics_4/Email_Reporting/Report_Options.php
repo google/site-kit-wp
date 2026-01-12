@@ -30,7 +30,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Cached custom dimension availability flags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array
 	 */
 	private $custom_dimension_availability = array();
@@ -38,7 +38,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array
 	 */
 	private $conversion_events = array();
@@ -52,7 +52,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * See `is_audience_segmentation_enabled` method for more info.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var bool|null
 	 */
 	private $audience_segmentation_enabled = null;
@@ -101,7 +101,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets custom dimension availability map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $availability Availability map keyed by custom dimension slug.
 	 */
@@ -112,7 +112,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $events Conversion events.
 	 */
@@ -123,7 +123,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets audience segmentation flag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param bool $enabled Whether audience segmentation is enabled.
 	 */
@@ -134,7 +134,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets conversion events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Conversion events.
 	 */
@@ -145,7 +145,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether audience segmentation is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return bool
 	 */
@@ -161,7 +161,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Whether custom dimension data is available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $custom_dimension Custom dimension slug.
 	 * @return bool
@@ -330,7 +330,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets resource names for Site Kit provided audiences (new/returning).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array List of audience resource names.
 	 */

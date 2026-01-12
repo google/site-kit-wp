@@ -18,7 +18,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQue
 /**
  * Datapoint class for Search Console searchanalytics requests.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class SearchAnalytics extends Shareable_Datapoint implements Executable_Datapoin
 	/**
 	 * Callback to prepare request arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var callable
 	 */
 	private $prepare_args;
@@ -39,7 +39,7 @@ class SearchAnalytics extends Shareable_Datapoint implements Executable_Datapoin
 	/**
 	 * Callback to create the Search Console request instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var callable
 	 */
 	private $create_request;
@@ -47,7 +47,7 @@ class SearchAnalytics extends Shareable_Datapoint implements Executable_Datapoin
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $definition Datapoint definition.
 	 */
@@ -61,7 +61,7 @@ class SearchAnalytics extends Shareable_Datapoint implements Executable_Datapoin
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request instance.
@@ -75,7 +75,7 @@ class SearchAnalytics extends Shareable_Datapoint implements Executable_Datapoin
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

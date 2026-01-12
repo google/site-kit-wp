@@ -238,59 +238,63 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
           class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-notice googlesitekit-notice--success"
+            class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice__icon"
+              class="googlesitekit-notice googlesitekit-notice--success"
             >
-              <svg />
-            </div>
-            <div
-              class="googlesitekit-notice__content"
-            >
-              <p
-                class="googlesitekit-notice__title"
+              <div
+                class="googlesitekit-notice__icon"
               >
-                You successfully enabled enhanced measurement for your site
-              </p>
-              <p
-                class="googlesitekit-notice__description"
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-notice__content"
               >
-                Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement. 
-                <a
-                  aria-label="Learn more (opens in a new tab)"
-                  class="googlesitekit-cta-link"
-                  href="https://support.google.com/analytics/answer/9216061?hl=en-US"
-                  rel="noopener noreferrer"
-                  target="_blank"
+                <p
+                  class="googlesitekit-notice__title"
+                >
+                  You successfully enabled enhanced measurement for your site
+                </p>
+                <p
+                  class="googlesitekit-notice__description"
+                >
+                  Your configured Analytics web data stream will now automatically measure interactions on your site in addition to standard page views measurement. 
+                  <a
+                    aria-label="Learn more (opens in a new tab)"
+                    class="googlesitekit-cta-link"
+                    href="https://support.google.com/analytics/answer/9216061?hl=en-US"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Learn more
+                    </span>
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-left: 5px;"
+                    >
+                      <svg />
+                    </span>
+                  </a>
+                </p>
+              </div>
+              <div
+                class="googlesitekit-notice__action"
+              >
+                <button
+                  class="mdc-button mdc-button--tertiary"
+                  target="_self"
                 >
                   <span
-                    class="googlesitekit-cta-link__contents"
+                    class="mdc-button__label"
                   >
-                    Learn more
+                    Got it
                   </span>
-                  <span
-                    class="googlesitekit-icon-wrapper"
-                    style="margin-left: 5px;"
-                  >
-                    <svg />
-                  </span>
-                </a>
-              </p>
-            </div>
-            <div
-              class="googlesitekit-notice__action"
-            >
-              <button
-                class="mdc-button mdc-button--tertiary"
-                target="_self"
-              >
-                <span
-                  class="mdc-button__label"
-                >
-                  Got it
-                </span>
-              </button>
+                </button>
+              </div>
             </div>
           </div>
         </div>

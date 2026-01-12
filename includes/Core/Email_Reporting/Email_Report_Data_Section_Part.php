@@ -64,7 +64,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Optional event_names matching values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array|null
 	 */
 	private $event_names;
@@ -88,7 +88,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Dimension names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var array
 	 */
@@ -97,7 +97,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Dimension values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var array
 	 */
@@ -193,7 +193,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array|null Event names list or null.
 	 */
@@ -226,7 +226,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Dimensions list.
 	 */
@@ -237,7 +237,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets dimension values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Dimension values list.
 	 */
@@ -321,7 +321,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns event names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $event_names Event names.
 	 *
@@ -408,7 +408,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Sets dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array|null $dimensions Dimensions.
 	 *
@@ -430,7 +430,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Sets dimension values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array|null $dimension_values Dimension values.
 	 *

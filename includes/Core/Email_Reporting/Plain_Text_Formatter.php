@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 /**
  * Static helper class for formatting email content as plain text.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  */
 class Plain_Text_Formatter {
 
 	/**
 	 * Formats the email header.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $site_domain The site domain.
 	 * @param string $date_label  The date range label.
@@ -43,7 +43,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a section based on its template type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $section Section configuration including title, section_template, section_parts.
 	 * @return string Formatted section text.
@@ -70,7 +70,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a section heading with underline.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $title The section title.
 	 * @return string Formatted heading text.
@@ -83,7 +83,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a single metric row.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string     $label  The metric label.
 	 * @param string     $value  The metric value.
@@ -101,7 +101,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a page/keyword row with optional URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string     $label  The item label.
 	 * @param string     $value  The metric value.
@@ -127,7 +127,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a link with label and URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $label The link label.
 	 * @param string $url   The URL.
@@ -140,7 +140,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the email footer with CTA and links.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
 	 * @param array $footer Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
@@ -188,7 +188,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a change value with sign prefix.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param float|null $change The percentage change value, or null.
 	 * @return string Formatted change text (e.g., "(+12%)" or "(-5%)"), or empty string if null.
@@ -207,7 +207,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the conversions section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $section Section configuration.
 	 * @return string Formatted section text.
@@ -248,7 +248,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats a conversion metric part (e.g., purchases, products added to cart).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $data Conversion metric data.
 	 * @return string Formatted metric part text.
@@ -292,7 +292,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the metrics section (e.g., visitors).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $section Section configuration.
 	 * @return string Formatted section text.
@@ -327,7 +327,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the page metrics section (e.g., traffic sources, top pages).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $section Section configuration.
 	 * @return string Formatted section text.

@@ -30,7 +30,7 @@ class Sections_Map {
 	/**
 	 * Gets the mapping of section part keys to their display labels.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array<string, string> Mapping of part keys to localized labels.
 	 */
@@ -50,7 +50,7 @@ class Sections_Map {
 	/**
 	 * Gets the label for a specific part key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $part_key The part key to get the label for.
 	 * @return string The localized label, or empty string if not found.

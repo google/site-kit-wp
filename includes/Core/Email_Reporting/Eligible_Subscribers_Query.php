@@ -18,7 +18,7 @@ use WP_User_Query;
 /**
  * Retrieves users eligible for email reporting invitations.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -43,7 +43,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Modules      $modules      Modules instance.
 	 * @param User_Options $user_options User options instance.
@@ -56,7 +56,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Retrieves users eligible for email reporting invitations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int $exclude_user_id User ID to exclude.
 	 * @return \WP_User[] List of eligible users.
@@ -86,7 +86,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Queries Site Kit administrators.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int[] $excluded_user_ids User IDs to exclude.
 	 * @return \WP_User[] List of admin users.
@@ -116,7 +116,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Queries users with shared roles.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param int[] $excluded_user_ids User IDs to exclude.
 	 * @return \WP_User[] List of users with shared roles.
