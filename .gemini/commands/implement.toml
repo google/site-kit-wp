@@ -532,9 +532,9 @@ PHASE 6: DOCUMENTATION (optional - only if score ≥ 0.85)
    How this concept fits into the system...
 
    ## Usage Examples
-   \`\`\`javascript
+   ```javascript
    // Example code
-   \`\`\`
+   ```
 
    ## Best Practices
    - Practice 1

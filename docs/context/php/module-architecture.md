@@ -118,7 +118,7 @@ interface Module_With_Settings {
     /**
      * Get module settings instance.
      *
-     * @return Module_Settings
+     * @&#8203;return Module_Settings
      */
     public function get_settings();
 }
@@ -153,7 +153,7 @@ interface Module_With_Scopes {
     /**
      * Get required OAuth scopes.
      *
-     * @return array List of Google OAuth scopes.
+     * @&#8203;return array List of Google OAuth scopes.
      */
     public function get_scopes();
 }
@@ -187,7 +187,7 @@ interface Module_With_Assets {
     /**
      * Get module assets to enqueue.
      *
-     * @return array Array of Asset objects.
+     * @&#8203;return array Array of Asset objects.
      */
     public function get_assets();
 }
@@ -228,7 +228,7 @@ interface Module_With_Tag {
     /**
      * Get the module tag instance.
      *
-     * @return Module_Tag
+     * @&#8203;return Module_Tag
      */
     public function get_tag();
 }
@@ -259,7 +259,7 @@ interface Module_With_Service_Entity {
     /**
      * Get the service entity access.
      *
-     * @return Service_Entity_Access
+     * @&#8203;return Service_Entity_Access
      */
     public function get_service_entity();
 }
@@ -278,7 +278,7 @@ interface Module_With_Inline_Data {
     /**
      * Get inline data for the module.
      *
-     * @return array Associative array of inline data.
+     * @&#8203;return array Associative array of inline data.
      */
     public function get_inline_data();
 }
@@ -316,7 +316,7 @@ interface Provides_Feature_Metrics {
     /**
      * Get the feature metrics instance.
      *
-     * @return Feature_Metrics
+     * @&#8203;return Feature_Metrics
      */
     public function get_feature_metrics();
 }

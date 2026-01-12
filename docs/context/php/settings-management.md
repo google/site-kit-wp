@@ -51,7 +51,7 @@ abstract class Setting {
     /**
      * Check if setting exists in database.
      *
-     * @return bool True if setting exists.
+     * @&#8203;return bool True if setting exists.
      */
     public function has() {
         $value = $this->get();
@@ -63,7 +63,7 @@ abstract class Setting {
     /**
      * Get setting value.
      *
-     * @return mixed Setting value.
+     * @&#8203;return mixed Setting value.
      */
     public function get() {
         $option = $this->get_option();
@@ -78,8 +78,8 @@ abstract class Setting {
     /**
      * Set setting value.
      *
-     * @param mixed $value New value.
-     * @return bool True on success.
+     * @&#8203;param mixed $value New value.
+     * @&#8203;return bool True on success.
      */
     public function set( $value ) {
         return $this->update_option( $value );
@@ -88,7 +88,7 @@ abstract class Setting {
     /**
      * Delete setting.
      *
-     * @return bool True on success.
+     * @&#8203;return bool True on success.
      */
     public function delete() {
         return $this->delete_option();
@@ -97,8 +97,8 @@ abstract class Setting {
     /**
      * Register callback for setting changes.
      *
-     * @param callable $callback Function to call when setting changes.
-     * @return callable Unsubscribe function.
+     * @&#8203;param callable $callback Function to call when setting changes.
+     * @&#8203;return callable Unsubscribe function.
      */
     public function on_change( callable $callback ) {
         // Observer pattern implementation
@@ -107,7 +107,7 @@ abstract class Setting {
     /**
      * Get setting type.
      *
-     * @return string Setting type (string, number, integer, boolean, array, object).
+     * @&#8203;return string Setting type (string, number, integer, boolean, array, object).
      */
     protected function get_type() {
         return 'array';
@@ -116,7 +116,7 @@ abstract class Setting {
     /**
      * Get default value.
      *
-     * @return mixed Default value.
+     * @&#8203;return mixed Default value.
      */
     protected function get_default() {
         return array();
@@ -125,7 +125,7 @@ abstract class Setting {
     /**
      * Get sanitization callback.
      *
-     * @return callable Sanitization function.
+     * @&#8203;return callable Sanitization function.
      */
     protected function get_sanitize_callback() {
         return null;
@@ -174,8 +174,8 @@ abstract class Module_Settings extends Setting {
     /**
      * Merge partial settings with existing settings.
      *
-     * @param array $partial Partial settings to merge.
-     * @return bool True on success.
+     * @&#8203;param array $partial Partial settings to merge.
+     * @&#8203;return bool True on success.
      */
     public function merge( array $partial ) {
         $settings = $this->get();
@@ -197,7 +197,7 @@ abstract class Module_Settings extends Setting {
     /**
      * Check if any settings have changed from their saved values.
      *
-     * @return bool True if any setting has changed.
+     * @&#8203;return bool True if any setting has changed.
      */
     public function have_changed() {
         $settings = $this->get();
@@ -209,7 +209,7 @@ abstract class Module_Settings extends Setting {
     /**
      * Get saved settings (before any modifications).
      *
-     * @return array Saved settings.
+     * @&#8203;return array Saved settings.
      */
     protected function get_saved() {
         return $this->get();
@@ -253,7 +253,7 @@ final class Settings extends Module_Settings {
     /**
      * Get default settings.
      *
-     * @return array Default settings.
+     * @&#8203;return array Default settings.
      */
     protected function get_default() {
         return array(
@@ -275,7 +275,7 @@ final class Settings extends Module_Settings {
     /**
      * Get setting type.
      *
-     * @return string Setting type.
+     * @&#8203;return string Setting type.
      */
     protected function get_type() {
         return 'array';
@@ -284,7 +284,7 @@ final class Settings extends Module_Settings {
     /**
      * Get sanitization callback.
      *
-     * @return callable Sanitization function.
+     * @&#8203;return callable Sanitization function.
      */
     protected function get_sanitize_callback() {
         return function ( $option ) {
@@ -319,8 +319,8 @@ final class Settings extends Module_Settings {
     /**
      * Sanitize property ID.
      *
-     * @param string $property_id Property ID to sanitize.
-     * @return string Sanitized property ID.
+     * @&#8203;param string $property_id Property ID to sanitize.
+     * @&#8203;return string Sanitized property ID.
      */
     private function sanitize_property_id( $property_id ) {
         // Allow special values
@@ -349,7 +349,7 @@ final class Analytics_4 extends Module implements Module_With_Settings {
     /**
      * Set up module settings.
      *
-     * @return Module_Settings Settings instance.
+     * @&#8203;return Module_Settings Settings instance.
      */
     protected function setup_settings() {
         return new Settings( $this->options );
@@ -386,7 +386,7 @@ trait Setting_With_Owned_Keys_Trait {
     /**
      * Get owned setting keys.
      *
-     * @return array List of owned setting keys.
+     * @&#8203;return array List of owned setting keys.
      */
     protected function get_owned_keys() {
         return array();
@@ -395,7 +395,7 @@ trait Setting_With_Owned_Keys_Trait {
     /**
      * Check if owned settings have changed.
      *
-     * @return bool True if owned settings changed.
+     * @&#8203;return bool True if owned settings changed.
      */
     public function have_owned_settings_changed() {
         $settings = $this->get();
@@ -448,7 +448,7 @@ interface Setting_With_ViewOnly_Keys_Interface {
     /**
      * Get view-only setting keys.
      *
-     * @return array List of view-only keys.
+     * @&#8203;return array List of view-only keys.
      */
     public function get_view_only_keys();
 }

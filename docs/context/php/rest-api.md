@@ -64,7 +64,7 @@ final class REST_Routes {
         /**
          * Filters the list of available REST routes.
          *
-         * @param array $routes List of REST_Route objects.
+         * @&#8203;param array $routes List of REST_Route objects.
          */
         return apply_filters( 'googlesitekit_rest_routes', $routes );
     }
@@ -85,9 +85,9 @@ final class REST_Route {
     /**
      * Constructor.
      *
-     * @param string $uri       Route URI pattern.
-     * @param array  $endpoints Route endpoints configuration.
-     * @param array  $args      Optional route arguments.
+     * @&#8203;param string $uri       Route URI pattern.
+     * @&#8203;param array  $endpoints Route endpoints configuration.
+     * @&#8203;param array  $args      Optional route arguments.
      */
     public function __construct( $uri, array $endpoints, array $args = array() ) {
         $this->uri = trim( $uri, '/' );
@@ -135,8 +135,8 @@ final class REST_Route {
     /**
      * Parse parameter arguments to ensure proper schema.
      *
-     * @param array $args Parameter arguments.
-     * @return array Parsed arguments.
+     * @&#8203;param array $args Parameter arguments.
+     * @&#8203;return array Parsed arguments.
      */
     private function parse_param_args( $args ) {
         $parsed_args = array();
@@ -185,7 +185,7 @@ class REST_Feature_Controller {
     /**
      * Get REST route definitions.
      *
-     * @return array Array of REST_Route objects.
+     * @&#8203;return array Array of REST_Route objects.
      */
     private function get_rest_routes() {
         // Permission callbacks
@@ -241,8 +241,8 @@ class REST_Feature_Controller {
     /**
      * GET callback for list endpoint.
      *
-     * @param WP_REST_Request $request REST request object.
-     * @return WP_REST_Response|WP_Error Response object or error.
+     * @&#8203;param WP_REST_Request $request REST request object.
+     * @&#8203;return WP_REST_Response|WP_Error Response object or error.
      */
     public function get_list( WP_REST_Request $request ) {
         $status = $request->get_param( 'status' );
@@ -256,8 +256,8 @@ class REST_Feature_Controller {
     /**
      * POST callback for save endpoint.
      *
-     * @param WP_REST_Request $request REST request object.
-     * @return WP_REST_Response|WP_Error Response object or error.
+     * @&#8203;param WP_REST_Request $request REST request object.
+     * @&#8203;return WP_REST_Response|WP_Error Response object or error.
      */
     public function save_item( WP_REST_Request $request ) {
         $name  = $request->get_param( 'name' );
@@ -360,7 +360,7 @@ final class REST_Modules_Controller {
     /**
      * Get list of modules.
      *
-     * @return WP_REST_Response Response with modules list.
+     * @&#8203;return WP_REST_Response Response with modules list.
      */
     public function get_modules() {
         $modules = array_values(
@@ -373,8 +373,8 @@ final class REST_Modules_Controller {
     /**
      * Activate a module.
      *
-     * @param WP_REST_Request $request REST request.
-     * @return WP_REST_Response|WP_Error Response or error.
+     * @&#8203;param WP_REST_Request $request REST request.
+     * @&#8203;return WP_REST_Response|WP_Error Response or error.
      */
     public function activate_module( WP_REST_Request $request ) {
         $slug = $request->get_param( 'slug' );

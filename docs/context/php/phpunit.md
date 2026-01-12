@@ -107,7 +107,7 @@ abstract class SettingsTestCase extends TestCase {
     /**
      * Get the option name for the setting.
      *
-     * @return string
+     * @&#8203;return string
      */
     abstract protected function get_option_name();
 

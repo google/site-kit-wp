@@ -514,7 +514,7 @@ function googlesitekit_is_network_mode() { }
 /**
  * Class for managing module settings.
  *
- * @since 1.0.0
+ * @&#8203;since 1.0.0
  * @access private
  * @ignore
  */
@@ -527,11 +527,11 @@ final class Module_Settings extends Setting {
 /**
  * Get module settings.
  *
- * @since 1.0.0
+ * @&#8203;since 1.0.0
  *
- * @param string $key     Optional. Setting key. Default empty string.
- * @param mixed  $default Optional. Default value. Default null.
- * @return mixed Setting value or default.
+ * @&#8203;param string $key     Optional. Setting key. Default empty string.
+ * @&#8203;param mixed  $default Optional. Default value. Default null.
+ * @&#8203;return mixed Setting value or default.
  */
 public function get( $key = '', $default = null ) {
 ```
@@ -542,24 +542,24 @@ public function get( $key = '', $default = null ) {
 /**
  * Plugin context instance.
  *
- * @since 1.0.0
- * @var Context
+ * @&#8203;since 1.0.0
+ * @&#8203;var Context
  */
 private $context;
 ```
 
-### @since Tag Convention
+### @&#8203;since Tag Convention
 
-For all new code (classes, methods, properties, constants), use `@since n.e.x.t` as a placeholder.
+For all new code (classes, methods, properties, constants), use `@&#8203;since n.e.x.t` as a placeholder.
 
 ```php
 /**
  * New method added in development.
  *
- * @since n.e.x.t
+ * @&#8203;since n.e.x.t
  *
- * @param string $param Parameter description.
- * @return bool True on success, false otherwise.
+ * @&#8203;param string $param Parameter description.
+ * @&#8203;return bool True on success, false otherwise.
  */
 public function new_method( $param ) {
 ```
@@ -568,7 +568,7 @@ public function new_method( $param ) {
 /**
  * New class added in development.
  *
- * @since n.e.x.t
+ * @&#8203;since n.e.x.t
  */
 final class New_Feature {
 ```
@@ -577,8 +577,8 @@ final class New_Feature {
 /**
  * New property added in development.
  *
- * @since n.e.x.t
- * @var string
+ * @&#8203;since n.e.x.t
+ * @&#8203;var string
  */
 private $new_property;
 ```
