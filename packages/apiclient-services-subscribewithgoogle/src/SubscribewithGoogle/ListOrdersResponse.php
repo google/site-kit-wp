@@ -17,26 +17,45 @@
 
 namespace Google\Service\SubscribewithGoogle;
 
-class PublicationPredicates extends \Google\Model
+class ListOrdersResponse extends \Google\Collection
 {
-  protected $businessPredicatesType = BusinessPredicates::class;
-  protected $businessPredicatesDataType = '';
+  protected $collection_key = 'orders';
+  /**
+   * @var string
+   */
+  public $nextPageToken;
+  protected $ordersType = Order::class;
+  protected $ordersDataType = 'array';
 
   /**
-   * @param BusinessPredicates
+   * @param string
    */
-  public function setBusinessPredicates(BusinessPredicates $businessPredicates)
+  public function setNextPageToken($nextPageToken)
   {
-    $this->businessPredicates = $businessPredicates;
+    $this->nextPageToken = $nextPageToken;
   }
   /**
-   * @return BusinessPredicates
+   * @return string
    */
-  public function getBusinessPredicates()
+  public function getNextPageToken()
   {
-    return $this->businessPredicates;
+    return $this->nextPageToken;
+  }
+  /**
+   * @param Order[]
+   */
+  public function setOrders($orders)
+  {
+    $this->orders = $orders;
+  }
+  /**
+   * @return Order[]
+   */
+  public function getOrders()
+  {
+    return $this->orders;
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(PublicationPredicates::class, 'Google_Service_SubscribewithGoogle_PublicationPredicates');
+class_alias(ListOrdersResponse::class, 'Google_Service_SubscribewithGoogle_ListOrdersResponse');

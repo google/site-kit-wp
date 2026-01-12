@@ -76,6 +76,13 @@ export default function UserMenu() {
 		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
+	const { isTooltipVisible = false, className } = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
+				isTooltipVisible: false,
+			}
+	);
+
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -107,20 +114,26 @@ export default function UserMenu() {
 
 	useEvent( 'keyup', handleEscapeKeyPress );
 
+	const { setValue } = useDispatch( CORE_UI );
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_usermenu' );
+
+			if (
+				isTooltipVisible &&
+				className?.includes( 'googlesitekit-tour-tooltip--user-menu' )
+			) {
+				setValue( 'admin-screen-tooltip', undefined );
+			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext ] );
+	}, [ menuOpen, viewContext, setValue, isTooltipVisible, className ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
 		setMenuOpen( false );
 	}, [ dialogActive ] );
-
-	const { setValue } = useDispatch( CORE_UI );
 
 	const handleMenuItemSelect = useCallback(
 		async ( _index, event ) => {

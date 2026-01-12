@@ -17,62 +17,46 @@
 
 namespace Google\Service\SubscribewithGoogle;
 
-class StateDetails extends \Google\Model
+class RecurrencePeriod extends \Google\Model
 {
-  protected $amountType = Money::class;
-  protected $amountDataType = '';
+  /**
+   * @var int
+   */
+  public $count;
   /**
    * @var string
    */
-  public $orderState;
-  /**
-   * @var string
-   */
-  public $time;
+  public $unit;
 
   /**
-   * @param Money
+   * @param int
    */
-  public function setAmount(Money $amount)
+  public function setCount($count)
   {
-    $this->amount = $amount;
+    $this->count = $count;
   }
   /**
-   * @return Money
+   * @return int
    */
-  public function getAmount()
+  public function getCount()
   {
-    return $this->amount;
-  }
-  /**
-   * @param string
-   */
-  public function setOrderState($orderState)
-  {
-    $this->orderState = $orderState;
-  }
-  /**
-   * @return string
-   */
-  public function getOrderState()
-  {
-    return $this->orderState;
+    return $this->count;
   }
   /**
    * @param string
    */
-  public function setTime($time)
+  public function setUnit($unit)
   {
-    $this->time = $time;
+    $this->unit = $unit;
   }
   /**
    * @return string
    */
-  public function getTime()
+  public function getUnit()
   {
-    return $this->time;
+    return $this->unit;
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(StateDetails::class, 'Google_Service_SubscribewithGoogle_StateDetails');
+class_alias(RecurrencePeriod::class, 'Google_Service_SubscribewithGoogle_RecurrencePeriod');

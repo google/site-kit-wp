@@ -50,59 +50,60 @@ const Notice = forwardRef(
 		ref
 	) => {
 		return (
-			<div
-				ref={ ref }
-				className={ classnames(
-					'googlesitekit-notice',
-					`googlesitekit-notice--${ type }`,
-					className
-				) }
-			>
-				{ ! hideIcon && (
-					<div className="googlesitekit-notice__icon">
-						<Icon type={ type } />
-					</div>
-				) }
-
-				<div className="googlesitekit-notice__content">
-					{ title && <Title>{ title }</Title> }
-					{ description && (
-						<Description>{ description }</Description>
+			<div className="googlesitekit-notice-container" ref={ ref }>
+				<div
+					className={ classnames(
+						'googlesitekit-notice',
+						`googlesitekit-notice--${ type }`,
+						className
 					) }
-				</div>
+				>
+					{ ! hideIcon && (
+						<div className="googlesitekit-notice__icon">
+							<Icon type={ type } />
+						</div>
+					) }
 
-				{ ( dismissButton?.label ||
-					dismissButton?.onClick ||
-					( ctaButton?.label &&
-						( ctaButton?.onClick || ctaButton?.href ) ) ||
-					children ) && (
-					<div className="googlesitekit-notice__action">
-						{ children }
-
-						{ ( dismissButton?.label ||
-							dismissButton?.onClick ) && (
-							<DismissButton
-								label={ dismissButton.label }
-								onClick={ dismissButton.onClick }
-								disabled={ dismissButton.disabled }
-							/>
+					<div className="googlesitekit-notice__content">
+						{ title && <Title>{ title }</Title> }
+						{ description && (
+							<Description>{ description }</Description>
 						) }
-						{ ctaButton?.label &&
-							( ctaButton?.onClick || ctaButton?.href ) && (
-								<CTAButton
-									label={ ctaButton.label }
-									onClick={ ctaButton.onClick }
-									inProgress={ ctaButton.inProgress }
-									disabled={ ctaButton.disabled }
-									href={ ctaButton.href }
-									external={ ctaButton.external }
-									hideExternalIndicator={
-										ctaButton.hideExternalIndicator
-									}
+					</div>
+
+					{ ( dismissButton?.label ||
+						dismissButton?.onClick ||
+						( ctaButton?.label &&
+							( ctaButton?.onClick || ctaButton?.href ) ) ||
+						children ) && (
+						<div className="googlesitekit-notice__action">
+							{ children }
+
+							{ ( dismissButton?.label ||
+								dismissButton?.onClick ) && (
+								<DismissButton
+									label={ dismissButton.label }
+									onClick={ dismissButton.onClick }
+									disabled={ dismissButton.disabled }
 								/>
 							) }
-					</div>
-				) }
+							{ ctaButton?.label &&
+								( ctaButton?.onClick || ctaButton?.href ) && (
+									<CTAButton
+										label={ ctaButton.label }
+										onClick={ ctaButton.onClick }
+										inProgress={ ctaButton.inProgress }
+										disabled={ ctaButton.disabled }
+										href={ ctaButton.href }
+										external={ ctaButton.external }
+										hideExternalIndicator={
+											ctaButton.hideExternalIndicator
+										}
+									/>
+								) }
+						</div>
+					) }
+				</div>
 			</div>
 		);
 	}

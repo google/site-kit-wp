@@ -30,7 +30,7 @@
     "google/apiclient-services-people.v1": "dev-generated",
     "google/apiclient-services-searchconsole.v1": "dev-generated",
     "google/apiclient-services-siteverification.v1": "dev-generated",
-    "google/apiclient-services-subscribewithgoogle": "^0.1.0",
+    "google/apiclient-services-subscribewithgoogle": "dev-latest",
     "google/apiclient-services-tagmanager.v2": "dev-generated",
     "guzzlehttp/guzzle": "^7.9.2",
     "symfony/polyfill-intl-idn": "^1.29.0"
