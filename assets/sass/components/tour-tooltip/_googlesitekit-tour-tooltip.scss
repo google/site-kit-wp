@@ -91,15 +91,6 @@
 	min-width: initial;
 	padding: 0;
 	text-transform: none;
-
-	&:focus {
-		outline: 1px dotted $c-interactive-inverse-focus;
-		outline-offset: 6px;
-	}
-
-	&:not(:first-of-type) {
-		margin-left: 28px;
-	}
 }
 
 .googlesitekit-tooltip-button:not(:disabled) {
@@ -111,13 +102,6 @@
 	min-width: auto;
 	padding: 0;
 	position: absolute;
-	right: 29px;
-	top: 29px;
-
-	&:focus {
-		outline: 1px dotted $c-interactive-inverse-focus;
-		outline-offset: 6px;
-	}
 
 	.mdc-button__label {
 		display: none;
@@ -212,12 +196,11 @@
 
 		// Tertiary button (Back) states.
 		&:hover {
-			background-color: $c-site-kit-sk-300;
+			background-color: $c-site-kit-sk-400;
 		}
 
 		&:focus {
-			background-color: $c-site-kit-sk-400;
-			color: rgba($c-content-on-primary, 0.6);
+			background-color: $c-site-kit-sk-300;
 			outline: none;
 		}
 
@@ -277,6 +260,28 @@
 		line-height: $lh-body-md;
 		max-width: 352px;
 		padding: 24px 56px 2px 24px;
+	}
+
+	.googlesitekit-tooltip-close {
+		right: 29px;
+		top: 29px;
+
+		&:focus {
+			outline: 1px dotted $c-interactive-inverse-focus;
+			outline-offset: 6px;
+		}
+	}
+
+	.googlesitekit-tooltip-button {
+
+		&:not(:first-of-type) {
+			margin-left: 28px;
+		}
+
+		&:focus {
+			outline: 1px dotted $c-interactive-inverse-focus;
+			outline-offset: 6px;
+		}
 	}
 
 	// Modal step overrides need higher specificity to override old design styles.
