@@ -40,6 +40,7 @@ import {
 import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
 
 export default function FrequencySelector( { isUserSubscribed } ) {
 	const DAY_NAMES = useMemo(
@@ -144,7 +145,7 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 							>
 								{ index === savedFrequencyIndex && (
 									<div className="googlesitekit-frequency-selector__current-subscription">
-										<P>
+										<P size={ SIZE_SMALL }>
 											{ __(
 												'Current subscription',
 												'google-site-kit'
