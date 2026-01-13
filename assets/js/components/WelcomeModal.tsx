@@ -47,16 +47,17 @@ import CloseIcon from '@/svg/icons/close.svg';
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
+import { ReactElement } from 'react';
 
 export const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
 export const GATHERING_DATA_DISMISSED_ITEM_SLUG =
 	'welcome-modal-gathering-data';
 
-const MODAL_VARIANT = {
-	DATA_AVAILABLE: 'data-available',
-	GATHERING_DATA: 'gathering-data',
-	DATA_GATHERING_COMPLETE: 'data-gathering-complete',
-};
+enum MODAL_VARIANT {
+	DATA_AVAILABLE,
+	GATHERING_DATA,
+	DATA_GATHERING_COMPLETE,
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type SelectFunction = ( select: any ) => any;
@@ -94,7 +95,7 @@ export default function WelcomeModal() {
 		? analyticsGatheringData
 		: searchConsoleGatheringData;
 
-	let modalVariant;
+	let modalVariant: MODAL_VARIANT;
 
 	if ( showGatheringDataModal ) {
 		modalVariant = MODAL_VARIANT.GATHERING_DATA;
@@ -166,7 +167,7 @@ export default function WelcomeModal() {
 			? __( 'Data gathering complete!', 'google-site-kit' )
 			: __( 'Welcome to Site Kit', 'google-site-kit' );
 
-	let description;
+	let description: string | ReactElement;
 
 	switch ( modalVariant ) {
 		case MODAL_VARIANT.DATA_AVAILABLE:
