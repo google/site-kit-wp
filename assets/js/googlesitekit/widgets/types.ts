@@ -26,7 +26,7 @@ import type { ComponentType } from 'react';
  *
  * Represents a registered widget with its configuration and settings.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  */
 export interface Widget {
 	slug: string;

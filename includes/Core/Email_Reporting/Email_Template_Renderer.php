@@ -170,12 +170,13 @@ class Email_Template_Renderer {
 	 * structured section data as the HTML renderer, using the
 	 * Plain_Text_Formatter for formatting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
-	 * @param array $data          The data to render (metadata like subject, preheader, etc.).
+	 * @param string $template_name The template name (unused for plain text, kept for API consistency with render()).
+	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered plain text.
 	 */
-	public function render_text( $data ) {
+	public function render_text( $template_name, $data ) {
 		$sections = $this->sections_map->get_sections();
 
 		$output = Plain_Text_Formatter::format_header(

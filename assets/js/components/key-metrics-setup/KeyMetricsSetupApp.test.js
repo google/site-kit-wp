@@ -25,6 +25,7 @@ import {
 	freezeFetch,
 	waitForTimeouts,
 	waitFor,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -33,8 +34,11 @@ import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import * as tracking from '@/js/util/tracking';
+import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import * as searchConsoleFixtures from '@/js/modules/search-console/datastore/__fixtures__';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -59,6 +63,20 @@ describe( 'KeyMetricsSetupApp', () => {
 		'^/google-site-kit/v1/core/user/data/initial-setup-settings'
 	);
 
+	const searchAnalyticsRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
+	const analytics4ReportRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const searchConsoleDataAvailableRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/data-available'
+	);
+	const analytics4DataAvailableRegexp = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+	);
+
 	// The `UserInputSelectOptions` automatically focuses the first radio/checkbox
 	// 50 milliseconds after it renders, which causes inconsistencies in snapshots,
 	// so we advance the timer to make sure it's focused before we capture the snapshot.
@@ -81,6 +99,15 @@ describe( 'KeyMetricsSetupApp', () => {
 			body: [],
 			status: 200,
 		} );
+
+		fetchMock.getOnce( searchAnalyticsRegexp, {
+			body: searchConsoleFixtures.report,
+		} );
+		fetchMock.getOnce( analytics4ReportRegexp, {
+			body: analyticsFixtures.report,
+		} );
+		muteFetch( searchConsoleDataAvailableRegexp );
+		muteFetch( analytics4DataAvailableRegexp );
 
 		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 			configuredAudiences: null,
@@ -345,6 +372,51 @@ describe( 'KeyMetricsSetupApp', () => {
 			1,
 			syncCustomDimensionsEndpoint
 		);
+	} );
+
+	it( 'should resolve data availability for both Analytics and Search Console on render', async () => {
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.hasStartedResolution( 'isGatheringData', [] )
+		).toBe( false );
+
+		expect(
+			registry
+				.select( MODULES_SEARCH_CONSOLE )
+				.hasStartedResolution( 'isGatheringData', [] )
+		).toBe( false );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.hasFinishedResolution( 'isGatheringData', [] )
+		).toBe( true );
+		expect(
+			registry
+				.select( MODULES_SEARCH_CONSOLE )
+				.hasFinishedResolution( 'isGatheringData', [] )
+		).toBe( true );
+	} );
+
+	it( 'should display the help menu in the header', async () => {
+		const { container, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-help-menu__button' )
+		).toBeInTheDocument();
 	} );
 
 	describe( 'initial setup flow', () => {

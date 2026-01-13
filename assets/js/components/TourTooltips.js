@@ -89,12 +89,13 @@ export default function TourTooltips( {
 	steps,
 	tourID,
 	gaEventCategory,
+	isRepeatable,
 	callback,
 } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const { dismissTour } = useDispatch( CORE_USER );
+	const { dismissTour, receiveCurrentTour } = useDispatch( CORE_USER );
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
@@ -129,8 +130,15 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
-		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID );
+
+		if ( isRepeatable ) {
+			setValue( runKey, false );
+			setValue( stepKey, null );
+			receiveCurrentTour( null );
+		} else {
+			// Dismiss tour to avoid unwanted repeat viewing.
+			dismissTour( tourID );
+		}
 	}
 
 	function trackAllTourEvents( {
@@ -267,5 +275,6 @@ TourTooltips.propTypes = {
 	tourID: PropTypes.string.isRequired,
 	gaEventCategory: PropTypes.oneOfType( [ PropTypes.string, PropTypes.func ] )
 		.isRequired,
+	isRepeatable: PropTypes.bool,
 	callback: PropTypes.func,
 };

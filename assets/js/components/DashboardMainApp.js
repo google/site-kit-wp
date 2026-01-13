@@ -50,6 +50,7 @@ import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import WelcomeModal from './WelcomeModal';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
 	ANCHOR_ID_CONTENT,
@@ -229,6 +230,7 @@ export default function DashboardMainApp() {
 	} );
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	useMonitorInternetConnection();
 
@@ -320,7 +322,6 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 					} ) }
 				/>
-				<OfflineNotification />
 			</div>
 
 			<SurveyViewTrigger
@@ -335,6 +336,8 @@ export default function DashboardMainApp() {
 			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
+
+			{ setupFlowRefreshEnabled && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>
