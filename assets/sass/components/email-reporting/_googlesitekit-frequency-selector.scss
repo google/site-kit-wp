@@ -27,22 +27,13 @@ h3.googlesitekit-frequency-selector-title {
 	margin-bottom: 8px;
 }
 
-.googlesitekit-frequency-selector__badge-cell {
-	display: flex;
-	justify-content: center;
-}
-
 .googlesitekit-frequency-selector__current-subscription {
 	background-color: $c-blue-b-50;
 	border-radius: 4px;
 	color: $c-blue-b-500;
-	padding: 0 8px;
+	padding: 4px 8px;
 	text-align: center;
 	width: 100%;
-	p {
-		margin: 0;
-		padding: 4px 0;
-	}
 }
 
 .googlesitekit-frequency-selector {
