@@ -28,45 +28,34 @@ class WP_COM_CheckTest extends TestCase {
 		$this->check = new WP_COM_Check();
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'WPCOMSH_VERSION' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'WPCOMSH_VERSION' );
-		}
-	}
 
 	public function test_get_slug() {
 		$this->assertEquals( 'host_wordpress_dot_com', $this->check->get_slug(), 'Expected correct slug to be returned' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_true_when_is_wpcom_defined_and_truthy() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined, cannot test dynamic definition' );
-		}
-
 		define( 'WPCOMSH_VERSION', true );
 
 		$result = $this->check->run();
 		$this->assertTrue( $result, 'Expected true when WPCOMSH_VERSION constant is defined and truthy' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_false_when_is_wpcom_not_defined() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined in the test environment' );
-		}
-
 		$result = $this->check->run();
 		$this->assertFalse( $result, 'Expected false when WPCOMSH_VERSION constant is not defined' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_true_when_is_wpcom_defined_as_string() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined, cannot test dynamic definition' );
-		}
-
 		define( 'WPCOMSH_VERSION', 'yes' );
 
 		$check  = new WP_COM_Check();
@@ -75,11 +64,10 @@ class WP_COM_CheckTest extends TestCase {
 		$this->assertTrue( $result, 'Expected true when WPCOMSH_VERSION constant is defined as truthy string' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_falsy() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined, cannot test dynamic definition' );
-		}
-
 		define( 'WPCOMSH_VERSION', false );
 
 		$check  = new WP_COM_Check();
@@ -88,11 +76,10 @@ class WP_COM_CheckTest extends TestCase {
 		$this->assertFalse( $result, 'Expected false when WPCOMSH_VERSION constant is defined as falsy value' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_empty_string() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined, cannot test dynamic definition' );
-		}
-
 		define( 'WPCOMSH_VERSION', '' );
 
 		$check  = new WP_COM_Check();
@@ -101,11 +88,10 @@ class WP_COM_CheckTest extends TestCase {
 		$this->assertFalse( $result, 'Expected false when WPCOMSH_VERSION constant is defined as empty string' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_zero() {
-		if ( defined( 'WPCOMSH_VERSION' ) ) {
-			$this->markTestSkipped( 'WPCOMSH_VERSION is already defined, cannot test dynamic definition' );
-		}
-
 		define( 'WPCOMSH_VERSION', 0 );
 
 		$check  = new WP_COM_Check();
