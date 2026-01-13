@@ -188,12 +188,10 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								handleKeyDown( event, reportFrequency )
 							}
 						>
-							<div className="googlesitekit-frequency-selector__label-row">
-								<div className="googlesitekit-frequency-selector__label">
-									<Typography type="label" size="large">
-										{ label }
-									</Typography>
-								</div>
+							<div className="googlesitekit-frequency-selector__label">
+								<Typography type="label" size="large">
+									{ label }
+								</Typography>
 							</div>
 
 							<div className="googlesitekit-frequency-selector__period">
