@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`WelcomeModal should show the dashboard tour variant when Analytics is connected and not gathering data 1`] = `
+exports[`WelcomeModal should show the data available variant when Analytics is connected and not gathering data 1`] = `
 <div>
   <div
     aria-describedby="mdc-dialog-content"
@@ -79,7 +79,7 @@ exports[`WelcomeModal should show the dashboard tour variant when Analytics is c
 </div>
 `;
 
-exports[`WelcomeModal should show the dashboard tour variant when Analytics is not connected and Search Console is not gathering data 1`] = `
+exports[`WelcomeModal should show the data available variant when Analytics is not connected and Search Console is not gathering data 1`] = `
 <div>
   <div
     aria-describedby="mdc-dialog-content"
