@@ -33,6 +33,7 @@ class Contact_Form_7Test extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->contactform->is_active() );

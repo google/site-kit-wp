@@ -33,6 +33,7 @@ class OptinMonsterTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->optinmonster->is_active() );

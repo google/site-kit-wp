@@ -75,6 +75,7 @@ class PAX_ConfigTest extends TestCase {
 	 * @param string $expected
 	 * @dataProvider data_envs
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_get__env( $const_value, $expected ) {
 		$config = new PAX_Config( $this->context, $this->token );

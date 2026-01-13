@@ -33,6 +33,7 @@ class WPFormsTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->wpforms->is_active() );

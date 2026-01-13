@@ -33,6 +33,7 @@ class MailchimpTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->mailchimp->is_active() );
