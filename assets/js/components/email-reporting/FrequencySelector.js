@@ -136,9 +136,12 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 			{ /* Show "Current subscription" badge on larger screens */ }
 			{ isUserSubscribed && savedFrequency && ! isMobileBreakpoint && (
 				<div className="googlesitekit-frequency-selector__badge-row">
-					{ EMAIL_REPORT_FREQUENCIES.map(
-						( reportFrequency ) =>
-							reportFrequency === savedFrequency && (
+					{ EMAIL_REPORT_FREQUENCIES.map( ( reportFrequency ) => (
+						<div
+							key={ reportFrequency }
+							className="googlesitekit-frequency-selector__badge-cell"
+						>
+							{ reportFrequency === savedFrequency && (
 								<div
 									key={ reportFrequency }
 									className="googlesitekit-frequency-selector__current-subscription"
@@ -153,8 +156,9 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 										) }
 									</Typography>
 								</div>
-							)
-					) }
+							) }
+						</div>
+					) ) }
 				</div>
 			) }
 
@@ -188,22 +192,50 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								handleKeyDown( event, reportFrequency )
 							}
 						>
-							<div className="googlesitekit-frequency-selector__label">
-								<Typography type="label" size="large">
-									{ label }
-								</Typography>
-							</div>
+							{ isUserSubscribed &&
+								savedFrequency &&
+								isMobileBreakpoint &&
+								reportFrequency === savedFrequency && (
+									<div
+										className={ classnames(
+											'googlesitekit-frequency-selector__current-subscription',
+											{
+												'googlesitekit-frequency-selector__current-subscription--selected':
+													isSelected,
+											}
+										) }
+									>
+										<Typography
+											type={ TYPE_BODY }
+											size={ SIZE_SMALL }
+										>
+											{ __(
+												'Current subscription',
+												'google-site-kit'
+											) }
+										</Typography>
+									</div>
+								) }
 
-							<div className="googlesitekit-frequency-selector__period">
-								<Typography type="body" size="small">
-									{ period }
-								</Typography>
-							</div>
+							<div className="googlesitekit-frequency-selector__content">
+								<div className="googlesitekit-frequency-selector__label">
+									<Typography type="label" size="large">
+										{ label }
+									</Typography>
+								</div>
+								<div className="googlesitekit-frequency-selector__period-description">
+									<div className="googlesitekit-frequency-selector__period">
+										<Typography type="body" size="small">
+											{ period }
+										</Typography>
+									</div>
 
-							<div className="googlesitekit-frequency-selector__description">
-								<Typography type="body" size="small">
-									{ description }
-								</Typography>
+									<div className="googlesitekit-frequency-selector__description">
+										<Typography type="body" size="small">
+											{ description }
+										</Typography>
+									</div>
+								</div>
 							</div>
 						</div>
 					);
