@@ -153,7 +153,7 @@ class BC_Functions {
 	 * @since n.e.x.t
 	 *
 	 * @param array $value The array to check.
-	 * @return bool True if the array is an associative array, false otherwise.
+	 * @return bool True if the array is a list, false otherwise.
 	 */
 	protected static function array_is_list( array $value ) {
 		if ( array() === $value ) {
