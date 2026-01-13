@@ -122,6 +122,14 @@ class Email_Template_Formatter {
 			);
 		}
 
+		$sections_map = new Sections_Map( $this->context, $sections_payload );
+		if ( empty( $sections_map->get_sections() ) ) {
+			return new WP_Error(
+				'email_report_no_data',
+				__( 'No email report data available.', 'google-site-kit' )
+			);
+		}
+
 		return array(
 			'sections_payload' => $sections_payload,
 			'template_data'    => $this->prepare_template_data( $frequency, $date_range ),
