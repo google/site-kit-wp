@@ -17,10 +17,7 @@
  */
 
 .googlesitekit-showing-feature-tour {
-	&.googlesitekit-showing-feature-tour--welcome-with-analytics-dashboard-sharing-authenticated,
-	&.googlesitekit-showing-feature-tour--welcome-with-analytics-dashboard-sharing-view-only {
-		.react-joyride__spotlight {
-			border-radius: 0 !important; // Override uncustomizable inline style.
-		}
+	&.googlesitekit-showing-feature-tour--welcome-with-analytics-dashboard-sharing .react-joyride__spotlight {
+		border-radius: 0 !important; // Override uncustomizable inline style.
 	}
 }

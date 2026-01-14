@@ -102,7 +102,7 @@ describe( 'getWelcomeTour', () => {
 			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
 			...[
 				{
-					id: 'dashboard-sharing-authenticated',
+					slug: 'dashboard-sharing',
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-sharing-settings__button svg',
@@ -133,7 +133,7 @@ describe( 'getWelcomeTour', () => {
 		expect( tour.steps ).toEqual( [
 			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
 			{
-				id: 'dashboard-sharing-view-only',
+				slug: 'dashboard-sharing',
 				target: '.googlesitekit-header',
 				floaterProps: {
 					target: '.googlesitekit-view-only-menu',
@@ -162,7 +162,7 @@ describe( 'getWelcomeTour', () => {
 		expect( tour.steps ).toEqual( [
 			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
 			{
-				id: 'dashboard-sharing-view-only',
+				slug: 'dashboard-sharing',
 				target: '.googlesitekit-header',
 				floaterProps: {
 					target: '.googlesitekit-view-only-menu',

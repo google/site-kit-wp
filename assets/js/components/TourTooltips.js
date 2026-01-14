@@ -119,7 +119,7 @@ export default function TourTooltips( {
 
 	function getStepClassName( index ) {
 		return `googlesitekit-showing-feature-tour--${ tourID }-${
-			steps[ index ].id || index
+			steps[ index ].slug || index
 		}`;
 	}
 

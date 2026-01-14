@@ -33,7 +33,7 @@ function getDashboardSharingStep(
 ) {
 	if ( isViewOnly ) {
 		return {
-			id: 'dashboard-sharing-view-only',
+			slug: 'dashboard-sharing',
 			target: '.googlesitekit-header',
 			floaterProps: {
 				target: '.googlesitekit-view-only-menu',
@@ -58,7 +58,7 @@ function getDashboardSharingStep(
 	}
 
 	return {
-		id: 'dashboard-sharing-authenticated',
+		slug: 'dashboard-sharing',
 		target: '.googlesitekit-header',
 		floaterProps: {
 			target: '.googlesitekit-sharing-settings__button svg',
