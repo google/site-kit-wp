@@ -77,7 +77,7 @@ jobs:
           gemini --yolo --model gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_READONLY_TOKEN }}
       - name: Create Pull Request
         id: create-pr
         uses: peter-evans/create-pull-request@v7
