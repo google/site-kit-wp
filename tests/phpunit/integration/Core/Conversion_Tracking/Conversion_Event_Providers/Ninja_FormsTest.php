@@ -33,7 +33,6 @@ class Ninja_FormsTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->ninjaform->is_active() );

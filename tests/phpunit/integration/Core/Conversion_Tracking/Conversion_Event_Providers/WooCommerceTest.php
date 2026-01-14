@@ -32,7 +32,6 @@ class WooCommerceTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->woocommerce->is_active() );
@@ -284,7 +283,6 @@ class WooCommerceTest extends TestCase {
 	/**
 	 * @dataProvider phone_normalization_data_provider
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_get_normalized_phone( $phone, $country, $country_calling_code, $expected ) {
 		// Create a test double for WC_Countries using class_alias.

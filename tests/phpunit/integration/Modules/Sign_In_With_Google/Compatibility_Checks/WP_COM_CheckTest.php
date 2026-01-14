@@ -34,7 +34,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_true_when_is_wpcom_defined_and_truthy() {
 		define( 'WPCOMSH_VERSION', true );
@@ -45,7 +44,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_false_when_is_wpcom_not_defined() {
 		$result = $this->check->run();
@@ -54,7 +52,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_true_when_is_wpcom_defined_as_string() {
 		define( 'WPCOMSH_VERSION', 'yes' );
@@ -67,7 +64,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_falsy() {
 		define( 'WPCOMSH_VERSION', false );
@@ -80,7 +76,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_empty_string() {
 		define( 'WPCOMSH_VERSION', '' );
@@ -93,7 +88,6 @@ class WP_COM_CheckTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_run_returns_false_when_is_wpcom_defined_as_zero() {
 		define( 'WPCOMSH_VERSION', 0 );

@@ -33,7 +33,6 @@ class PopupMakerTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->popupmaker->is_active() );

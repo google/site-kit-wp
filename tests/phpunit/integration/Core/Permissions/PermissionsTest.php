@@ -90,7 +90,6 @@ class PermissionsTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_register__without_dynamic_capabilities() {
 		define( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES', true );

@@ -165,7 +165,6 @@ class Google_ProxyTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_url_handles_staging() {
 		$url = $this->google_proxy->url();
@@ -179,7 +178,6 @@ class Google_ProxyTest extends TestCase {
 
 	/**
 	 * @runInSeparateProcess
-	 * @preserveGlobalState disabled
 	 */
 	public function test_url_ignores_invalid_values() {
 		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
