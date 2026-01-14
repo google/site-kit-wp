@@ -598,14 +598,14 @@ interface Module_With_Assets {
     /**
      * Get assets to register for the module.
      *
-     * @&#8203;return Asset[] Array of Asset instances.
+     * \@return Asset[] Array of Asset instances.
      */
     public function get_assets();
 
     /**
      * Enqueue all assets for the module.
      *
-     * @&#8203;param string $asset_context Context constant (Asset::CONTEXT_*).
+     * \@param string $asset_context Context constant (Asset::CONTEXT_*).
      */
     public function enqueue_assets( $asset_context = Asset::CONTEXT_ADMIN_SITEKIT );
 }
@@ -651,7 +651,7 @@ trait Module_With_Assets_Trait {
     /**
      * Set up module assets.
      *
-     * @&#8203;return Asset[] Array of Asset instances.
+     * \@return Asset[] Array of Asset instances.
      */
     abstract protected function setup_assets();
 }
@@ -688,8 +688,8 @@ interface Module_With_Inline_Data {
     /**
      * Get inline data for the module.
      *
-     * @&#8203;param array $modules_data Existing modules data.
-     * @&#8203;return array Updated modules data with module's data added.
+     * \@param array $modules_data Existing modules data.
+     * \@return array Updated modules data with module's data added.
      */
     public function get_inline_data( $modules_data );
 }
@@ -901,8 +901,8 @@ final class Manifest {
     /**
      * Get manifest entry for asset handle.
      *
-     * @&#8203;param string $handle Asset handle.
-     * @&#8203;return array [ $filename, $hash ] or [ null, null ] if not found.
+     * \@param string $handle Asset handle.
+     * \@return array [ $filename, $hash ] or [ null, null ] if not found.
      */
     public static function get( $handle ) {
         if ( null === self::$data ) {

@@ -28,8 +28,8 @@ The Context object provides five main categories of functionality:
 /**
  * Get absolute path to plugin directory or file.
  *
- * @&#8203;param string $relative_path Optional. Relative path within plugin. Default '/'.
- * @&#8203;return string Absolute path.
+ * \@param string $relative_path Optional. Relative path within plugin. Default '/'.
+ * \@return string Absolute path.
  */
 public function path( $relative_path = '/' )
 ```
@@ -58,8 +58,8 @@ $assets_dir = $context->path( 'dist/assets/' );
 /**
  * Get URL to plugin directory or file.
  *
- * @&#8203;param string $relative_path Optional. Relative path within plugin. Default '/'.
- * @&#8203;return string URL.
+ * \@param string $relative_path Optional. Relative path within plugin. Default '/'.
+ * \@return string URL.
  */
 public function url( $relative_path = '/' )
 ```
@@ -84,9 +84,9 @@ $script_url = $context->url( 'dist/assets/js/googlesitekit-dashboard.js' );
 /**
  * Get admin URL for a specific Site Kit page.
  *
- * @&#8203;param string $slug       Page slug (e.g., 'dashboard', 'settings').
- * @&#8203;param array  $query_args Optional query parameters.
- * @&#8203;return string Admin URL.
+ * \@param string $slug       Page slug (e.g., 'dashboard', 'settings').
+ * \@param array  $query_args Optional query parameters.
+ * \@return string Admin URL.
  */
 public function admin_url( $slug = 'dashboard', array $query_args = array() )
 ```
@@ -116,14 +116,14 @@ $settings_url = $context->admin_url( 'settings', array(
 /**
  * Check if current request is an AMP request.
  *
- * @&#8203;return bool True if AMP request.
+ * \@return bool True if AMP request.
  */
 public function is_amp()
 
 /**
  * Get the AMP mode for the site.
  *
- * @&#8203;return string 'primary', 'secondary', or empty string if not AMP.
+ * \@return string 'primary', 'secondary', or empty string if not AMP.
  */
 public function get_amp_mode()
 ```
@@ -152,14 +152,14 @@ if ( 'primary' === $amp_mode ) {
 /**
  * Check if plugin is in network mode (multisite).
  *
- * @&#8203;return bool True if network mode.
+ * \@return bool True if network mode.
  */
 public function is_network_mode()
 
 /**
  * Check if plugin is network active.
  *
- * @&#8203;return bool True if network active.
+ * \@return bool True if network active.
  */
 public function is_network_active()
 ```
@@ -190,7 +190,7 @@ if ( $context->is_network_active() ) {
 /**
  * Get the reference site URL for the current request context.
  *
- * @&#8203;return string Reference site URL.
+ * \@return string Reference site URL.
  */
 public function get_reference_site_url()
 ```
@@ -235,7 +235,7 @@ private function filter_reference_url( $url = '' ) {
 /**
  * Get the canonical home URL.
  *
- * @&#8203;return string Canonical home URL.
+ * \@return string Canonical home URL.
  */
 public function get_canonical_home_url()
 ```
@@ -255,7 +255,7 @@ $home_url = $context->get_canonical_home_url();
 /**
  * Get the reference entity for the current context.
  *
- * @&#8203;return array Entity information array.
+ * \@return array Entity information array.
  */
 public function get_reference_entity()
 ```
@@ -279,9 +279,9 @@ $entity = $context->get_reference_entity();
 /**
  * Get locale for a specific context.
  *
- * @&#8203;param string $context 'site' or 'user'. Default 'site'.
- * @&#8203;param string $format  'language-code' or 'default'. Default 'default'.
- * @&#8203;return string Locale string.
+ * \@param string $context 'site' or 'user'. Default 'site'.
+ * \@param string $format  'language-code' or 'default'. Default 'default'.
+ * \@return string Locale string.
  */
 public function get_locale( $context = 'site', $format = 'default' )
 ```
@@ -314,11 +314,11 @@ The Context provides a safe abstraction for accessing superglobals (GET, POST, e
 /**
  * Gets a specific external variable by name and optionally filters it.
  *
- * @&#8203;param int    $type               One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
- * @&#8203;param string $variable_name      Name of a variable to get.
- * @&#8203;param int    $filter [optional]  The ID of the filter to apply. Default FILTER_DEFAULT.
- * @&#8203;param mixed  $options [optional] Associative array of options or bitwise disjunction of flags.
- * @&#8203;return mixed                     Value of the requested variable on success.
+ * \@param int    $type               One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
+ * \@param string $variable_name      Name of a variable to get.
+ * \@param int    $filter [optional]  The ID of the filter to apply. Default FILTER_DEFAULT.
+ * \@param mixed  $options [optional] Associative array of options or bitwise disjunction of flags.
+ * \@return mixed                     Value of the requested variable on success.
  */
 public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = 0 )
 ```

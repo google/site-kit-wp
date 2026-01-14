@@ -419,12 +419,12 @@ class MyClass {
 /**
  * Constructor.
  *
- * @&#8203;since 1.0.0
+ * \@since 1.0.0
  *
- * @&#8203;param Context          $context        Plugin context instance.
- * @&#8203;param Options          $options        Optional. Options instance. Default is a new instance.
- * @&#8203;param User_Options     $user_options   Optional. User options instance. Default is a new instance.
- * @&#8203;param Authentication   $authentication Optional. Authentication instance. Default is a new instance.
+ * \@param Context          $context        Plugin context instance.
+ * \@param Options          $options        Optional. Options instance. Default is a new instance.
+ * \@param User_Options     $user_options   Optional. User options instance. Default is a new instance.
+ * \@param Authentication   $authentication Optional. Authentication instance. Default is a new instance.
  */
 public function __construct(
     Context $context,
@@ -459,8 +459,8 @@ public function __construct(
 
     ```php
     /**
-     * @&#8203;param Context $context Plugin context.
-     * @&#8203;param Options $options Settings storage.
+     * \@param Context $context Plugin context.
+     * \@param Options $options Settings storage.
      */
     ```
 

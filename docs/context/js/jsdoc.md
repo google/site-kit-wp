@@ -38,11 +38,11 @@ All utility functions, hooks, and complex API functions should follow this patte
  *
  * [Brief description of function purpose]
  *
- * @&#8203;since n.e.x.t
+ * \@since n.e.x.t
  *
- * @&#8203;param {type} paramName Description of parameter.
- * @&#8203;param {type} [optionalParam] Description of optional parameter.
- * @&#8203;return {type} Description of return value.
+ * \@param {type} paramName Description of parameter.
+ * \@param {type} [optionalParam] Description of optional parameter.
+ * \@return {type} Description of return value.
  */
 function myFunction( paramName, optionalParam = defaultValue ) {
     // implementation
@@ -51,66 +51,66 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 
 ### Required JSDoc Tags
 
-#### @&#8203;since Tag
+#### \@since Tag
 **Always required** - Documents when the feature was introduced, always use `n.e.x.t` value which will be replaced with the actual version later on.
 
 ```javascript
 /**
  * Returns a callback to activate a module.
  *
- * @&#8203;since n.e.x.t
+ * \@since n.e.x.t
  *
- * @&#8203;param {string} moduleSlug Module slug.
- * @&#8203;return {Function|null} Callback to activate module.
+ * \@param {string} moduleSlug Module slug.
+ * \@return {Function|null} Callback to activate module.
  */
 ```
 
-#### @&#8203;param Tag
+#### \@param Tag
 **Required for all parameters** - Documents parameter types and descriptions:
 
 ```javascript
 // Basic parameter
-@&#8203;param {string} dateRange The date range slug.
+\@param {string} dateRange The date range slug.
 
 // Optional parameter with default
-@&#8203;param {boolean} [invertColor=false] Whether to reverse the +/- colors.
+\@param {boolean} [invertColor=false] Whether to reverse the +/- colors.
 
 // Complex object parameter
-@&#8203;param {Object} options Configuration options.
-@&#8203;param {string} options.baseName The base name to use.
-@&#8203;param {Function} options.controlCallback Callback function to issue the API request.
-@&#8203;param {Function} [options.validateParams] Optional validation function.
+\@param {Object} options Configuration options.
+\@param {string} options.baseName The base name to use.
+\@param {Function} options.controlCallback Callback function to issue the API request.
+\@param {Function} [options.validateParams] Optional validation function.
 ```
 
-#### @&#8203;return Tag
+#### \@return Tag
 **Required for functions that return values** - Documents return type and description:
 
 ```javascript
-@&#8203;return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
-@&#8203;return {Function|null} Callback function or null if module doesn't exist.
-@&#8203;return {Array.<Object>} Array of widget objects.
+\@return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
+\@return {Function|null} Callback function or null if module doesn't exist.
+\@return {Array.<Object>} Array of widget objects.
 ```
 
 ### Complex Type Documentation
 
-#### @&#8203;typedef for Complex Data Structures
+#### \@typedef for Complex Data Structures
 
-Use `@&#8203;typedef` to define complex object structures:
+Use `\@typedef` to define complex object structures:
 
 ```javascript
 /**
  * Parse Analytics 4 report into data suitable for rendering.
  *
- * @&#8203;typedef {Object} OverallPageMetricsData
- * @&#8203;property {string}         metric          Google Analytics metric identifier.
- * @&#8203;property {string}         title           Translated metric title.
- * @&#8203;property {Array.<Object>} sparkLineData   Data for rendering the sparkline.
- * @&#8203;property {string}         [datapointUnit] Optional datapoint unit, e.g. '%', 's'.
- * @&#8203;property {number}         total           Total count for the metric.
- * @&#8203;property {number}         change          Monthly change for the metric.
+ * \@typedef {Object} OverallPageMetricsData
+ * \@property {string}         metric          Google Analytics metric identifier.
+ * \@property {string}         title           Translated metric title.
+ * \@property {Array.<Object>} sparkLineData   Data for rendering the sparkline.
+ * \@property {string}         [datapointUnit] Optional datapoint unit, e.g. '%', 's'.
+ * \@property {number}         total           Total count for the metric.
+ * \@property {number}         change          Monthly change for the metric.
  *
- * @&#8203;param {Object} report Raw Analytics report data.
- * @&#8203;return {OverallPageMetricsData} Processed metrics data.
+ * \@param {Object} report Raw Analytics report data.
+ * \@return {OverallPageMetricsData} Processed metrics data.
  */
 function parseReportData( report ) {
     // implementation
@@ -126,10 +126,10 @@ Custom hooks require comprehensive JSDoc documentation:
  * Returns a callback to activate a module. If the call to activate the module
  * fails, an error will be returned to the returned callback.
  *
- * @&#8203;since n.e.x.t
+ * \@since n.e.x.t
  *
- * @&#8203;param {string} moduleSlug Module slug.
- * @&#8203;return {Function|null} Callback to activate module, null if the module doesn't exist.
+ * \@param {string} moduleSlug Module slug.
+ * \@return {Function|null} Callback to activate module, null if the module doesn't exist.
  */
 export default function useActivateModuleCallback( moduleSlug ) {
     // hook implementation
@@ -145,15 +145,15 @@ Utility functions require detailed documentation with examples for complex cases
  * Creates a store object implementing the necessary infrastructure for making
  * asynchronous API requests and storing their data.
  *
- * @&#8203;since n.e.x.t
+ * \@since n.e.x.t
  *
- * @&#8203;param {Object}   args                   Arguments for creating the fetch store.
- * @&#8203;param {string}   args.baseName          The base name to use for all actions.
- * @&#8203;param {Function} args.controlCallback   Callback function to issue the API request.
- * @&#8203;param {Function} [args.reducerCallback] Optional reducer to modify state.
- * @&#8203;param {Function} [args.argsToParams]    Function that reduces argument list to params.
- * @&#8203;param {Function} [args.validateParams]  Function that validates params before request.
- * @&#8203;return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
+ * \@param {Object}   args                   Arguments for creating the fetch store.
+ * \@param {string}   args.baseName          The base name to use for all actions.
+ * \@param {Function} args.controlCallback   Callback function to issue the API request.
+ * \@param {Function} [args.reducerCallback] Optional reducer to modify state.
+ * \@param {Function} [args.argsToParams]    Function that reduces argument list to params.
+ * \@param {Function} [args.validateParams]  Function that validates params before request.
+ * \@return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
  */
 export default function createFetchStore( {
     baseName,
@@ -199,7 +199,7 @@ export default function createFetchStore( {
 4. **Create typedefs** for complex recurring data structures
 
 ### Version Tracking
-1. **Always include @&#8203;since** for new functions and significant changes using `n.e.x.t` value
+1. **Always include \@since** for new functions and significant changes using `n.e.x.t` value
 3. **Document breaking changes** in function descriptions
 
 ### Consistency Rules

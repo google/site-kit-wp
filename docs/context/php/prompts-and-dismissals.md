@@ -68,9 +68,9 @@ final class Dismissed_Prompts extends User_Setting {
     /**
      * Add or update a dismissed prompt.
      *
-     * @&#8203;param string $prompt              Prompt slug.
-     * @&#8203;param int    $expires_in_seconds  Expiration in seconds (0 = permanent).
-     * @&#8203;return bool True on success.
+     * \@param string $prompt              Prompt slug.
+     * \@param int    $expires_in_seconds  Expiration in seconds (0 = permanent).
+     * \@return bool True on success.
      */
     public function add( $prompt, $expires_in_seconds = self::DISMISS_PROMPT_PERMANENTLY ) {
         $prompts = $this->get();
@@ -98,8 +98,8 @@ final class Dismissed_Prompts extends User_Setting {
     /**
      * Remove a dismissed prompt.
      *
-     * @&#8203;param string $prompt Prompt slug.
-     * @&#8203;return bool True on success.
+     * \@param string $prompt Prompt slug.
+     * \@return bool True on success.
      */
     public function remove( $prompt ) {
         $prompts = $this->get();
@@ -115,7 +115,7 @@ final class Dismissed_Prompts extends User_Setting {
     /**
      * Get all dismissed prompts.
      *
-     * @&#8203;return array Dismissed prompts with metadata.
+     * \@return array Dismissed prompts with metadata.
      */
     public function get() {
         return parent::get() ?: array();
@@ -124,7 +124,7 @@ final class Dismissed_Prompts extends User_Setting {
     /**
      * Get default value.
      *
-     * @&#8203;return array Empty array.
+     * \@return array Empty array.
      */
     protected function get_default() {
         return array();
@@ -133,8 +133,8 @@ final class Dismissed_Prompts extends User_Setting {
     /**
      * Sanitize prompts data.
      *
-     * @&#8203;param array $prompts Prompts data.
-     * @&#8203;return array Sanitized prompts.
+     * \@param array $prompts Prompts data.
+     * \@return array Sanitized prompts.
      */
     protected function sanitize_callback( $prompts ) {
         if ( ! is_array( $prompts ) ) {
@@ -313,9 +313,9 @@ function AdBlockingRecoveryWidget() {
 /**
  * Dismiss a prompt.
  *
- * @&#8203;param {string} slug    Prompt slug.
- * @&#8203;param {Object} options Options object.
- * @&#8203;param {number} options.expiresInSeconds Expiration in seconds (0 = permanent).
+ * \@param {string} slug    Prompt slug.
+ * \@param {Object} options Options object.
+ * \@param {number} options.expiresInSeconds Expiration in seconds (0 = permanent).
  */
 *dismissPrompt( slug, { expiresInSeconds = 0 } = {} )
 ```
@@ -341,31 +341,31 @@ dismissPrompt( 'my-prompt', { expiresInSeconds: 86400 } );
 /**
  * Get all active dismissed prompts (filters expired).
  *
- * @&#8203;return {Array} Array of prompt slugs.
+ * \@return {Array} Array of prompt slugs.
  */
 getDismissedPrompts();
 
 /**
  * Get dismiss count for a prompt.
  *
- * @&#8203;param {string} slug Prompt slug.
- * @&#8203;return {number} Number of times dismissed.
+ * \@param {string} slug Prompt slug.
+ * \@return {number} Number of times dismissed.
  */
 getPromptDismissCount( slug );
 
 /**
  * Check if prompt is dismissed.
  *
- * @&#8203;param {string} slug Prompt slug.
- * @&#8203;return {boolean} True if dismissed and not expired.
+ * \@param {string} slug Prompt slug.
+ * \@return {boolean} True if dismissed and not expired.
  */
 isPromptDismissed( slug );
 
 /**
  * Check if currently dismissing a prompt.
  *
- * @&#8203;param {string} slug Prompt slug.
- * @&#8203;return {boolean} True if dismissing.
+ * \@param {string} slug Prompt slug.
+ * \@return {boolean} True if dismissing.
  */
 isDismissingPrompt( slug );
 ```
@@ -464,9 +464,9 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Add or update a dismissed item.
      *
-     * @&#8203;param string $item               Item slug.
-     * @&#8203;param int    $expires_in_seconds Expiration in seconds (0 = permanent).
-     * @&#8203;return bool True on success.
+     * \@param string $item               Item slug.
+     * \@param int    $expires_in_seconds Expiration in seconds (0 = permanent).
+     * \@return bool True on success.
      */
     public function add( $item, $expires_in_seconds = self::DISMISS_ITEM_PERMANENTLY ) {
         $items = $this->get();
@@ -483,8 +483,8 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Remove a dismissed item.
      *
-     * @&#8203;param string $item Item slug.
-     * @&#8203;return bool True on success.
+     * \@param string $item Item slug.
+     * \@return bool True on success.
      */
     public function remove( $item ) {
         $items = $this->get();
@@ -500,7 +500,7 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Get all dismissed items (including expired).
      *
-     * @&#8203;return array Dismissed items with expiration values.
+     * \@return array Dismissed items with expiration values.
      */
     public function get() {
         return parent::get() ?: array();
@@ -509,8 +509,8 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Check if item is dismissed and not expired.
      *
-     * @&#8203;param string $item Item slug.
-     * @&#8203;return bool True if dismissed and not expired.
+     * \@param string $item Item slug.
+     * \@return bool True if dismissed and not expired.
      */
     public function is_dismissed( $item ) {
         $items = $this->get();
@@ -528,7 +528,7 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Get only active dismissed items (filters expired).
      *
-     * @&#8203;return array Array of item slugs.
+     * \@return array Array of item slugs.
      */
     public function get_dismissed_items() {
         $items = $this->get();
@@ -538,8 +538,8 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Filter out expired items.
      *
-     * @&#8203;param array $items Items with expiration values.
-     * @&#8203;return array Filtered items.
+     * \@param array $items Items with expiration values.
+     * \@return array Filtered items.
      */
     private function filter_dismissed_items( $items ) {
         return array_filter(
@@ -553,7 +553,7 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Get default value.
      *
-     * @&#8203;return array Empty array.
+     * \@return array Empty array.
      */
     protected function get_default() {
         return array();
@@ -562,8 +562,8 @@ final class Dismissed_Items extends User_Setting {
     /**
      * Sanitize items data.
      *
-     * @&#8203;param array $items Items data.
-     * @&#8203;return array Sanitized items.
+     * \@param array $items Items data.
+     * \@return array Sanitized items.
      */
     protected function sanitize_callback( $items ) {
         if ( ! is_array( $items ) ) {
@@ -805,16 +805,16 @@ function MyNotice() {
 /**
  * Dismiss an item.
  *
- * @&#8203;param {string} slug    Item slug.
- * @&#8203;param {Object} options Options object.
- * @&#8203;param {number} options.expiresInSeconds Expiration in seconds (0 = permanent).
+ * \@param {string} slug    Item slug.
+ * \@param {Object} options Options object.
+ * \@param {number} options.expiresInSeconds Expiration in seconds (0 = permanent).
  */
 *dismissItem( slug, { expiresInSeconds = 0 } = {} )
 
 /**
  * Remove dismissed items.
  *
- * @&#8203;param {...string} slugs Item slugs to remove.
+ * \@param {...string} slugs Item slugs to remove.
  */
 *removeDismissedItems( ...slugs )
 ```
@@ -843,23 +843,23 @@ removeDismissedItems( 'item-1', 'item-2' );
 /**
  * Get all active dismissed items (filters expired).
  *
- * @&#8203;return {Array} Array of item slugs.
+ * \@return {Array} Array of item slugs.
  */
 getDismissedItems();
 
 /**
  * Check if item is dismissed.
  *
- * @&#8203;param {string} slug Item slug.
- * @&#8203;return {boolean} True if dismissed and not expired.
+ * \@param {string} slug Item slug.
+ * \@return {boolean} True if dismissed and not expired.
  */
 isItemDismissed( slug );
 
 /**
  * Check if currently dismissing an item.
  *
- * @&#8203;param {string} slug Item slug.
- * @&#8203;return {boolean} True if dismissing.
+ * \@param {string} slug Item slug.
+ * \@return {boolean} True if dismissing.
  */
 isDismissingItem( slug );
 ```
