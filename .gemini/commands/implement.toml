@@ -172,14 +172,16 @@ Follow these implementation guidelines:
       - Fix any linting errors immediately before proceeding
       - Do not proceed with failing lints
 
-   b. **Tests**: Run tests for changed files
-      - **For JS changes**: Identify and run related Jest tests
-      - **For PHP changes**: Run related PHPUnit tests
-      - Ensure all tests pass
-      - Fix any failing tests before proceeding
+   b. **Tests**: Run tests to verify changes (MANDATORY - DO NOT SKIP)
+      - **For JS changes**: Run !{npm run test:js} to execute Jest tests
+      - **For PHP changes**: Run !{composer run test} to execute PHPUnit tests
+      - **CRITICAL**: You MUST actually execute these test commands and verify output
+      - **CRITICAL**: ALL tests must pass before proceeding - a passing test run is REQUIRED
+      - If tests fail, fix the issues and re-run tests until they pass
+      - Do NOT proceed to the next phase if tests are failing
 
    c. **Build**: If you made significant changes, verify the build works
-      - Run !{npm run build} if appropriate
+      - Run !{npm run build:dev} if appropriate
       - Fix any build errors
 
 **8. Provide Implementation Summary**
@@ -209,10 +211,13 @@ Follow these implementation guidelines:
    - [list of context conventions followed]
    - [reference specific docs used]
 
-   Verification Results:
+   Verification Results (MUST INCLUDE ACTUAL TEST OUTPUT):
    - Linting: [pass/fail with details]
-   - Tests: [pass/fail with details]
+   - JS Tests: [pass/fail - include output from: npm run test:js]
+   - PHP Tests: [pass/fail - include output from: composer run test]
    - Build: [if applicable]
+
+   NOTE: Tests MUST have been executed. If tests were not run, go back and run them.
    ```
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -292,6 +297,7 @@ Follow these code review guidelines:
    - Use this range if ANY documented principles are violated
    - Use this if critical security or functionality issues exist
    - Use this if tests are missing or failing
+   - Use this if tests were NOT actually executed (npm run test:js / composer run test)
 
    **0.5 - 0.84**: Below acceptable quality
    - Code works but doesn't meet quality standards
@@ -304,6 +310,7 @@ Follow these code review guidelines:
    - Follows all documented principles
    - Code is clean and maintainable
    - Comprehensive tests with good coverage
+   - Tests were ACTUALLY EXECUTED and ALL passed (npm run test:js / composer run test)
    - Well documented
    - Minor improvements possible but not required
 
@@ -392,9 +399,15 @@ PHASE 5: ITERATION (if score < 0.85)
    - Improve code structure and maintainability
    - Add missing tests or documentation
 
-3. **Re-run Verification**
-   - Run linting: !{npm run lint:js}
-   - Run tests for affected files
+3. **Re-run Verification** (MANDATORY - DO NOT SKIP)
+   - **Linting**:
+     - For JS: !{npm run lint:js}
+     - For PHP: !{composer run lint}
+   - **Tests** (MUST EXECUTE AND PASS):
+     - For JS: !{npm run test:js}
+     - For PHP: !{composer run test}
+   - **CRITICAL**: You MUST actually run these test commands and verify they pass
+   - **CRITICAL**: Do NOT proceed to Phase 4 re-review until ALL tests pass
    - Ensure fixes don't break existing functionality
 
 4. **Return to Phase 4**
@@ -627,6 +640,10 @@ IMPORTANT REMINDERS
 ✓ DO fix ALL violations of documented principles
 ✓ DO exit gracefully after 3 iterations if unable to reach 0.85
 ✓ DO preserve all changes for human review
+✓ MUST RUN TESTS before completing implementation:
+  - JS: !{npm run test:js}
+  - PHP: !{composer run test}
+✓ DO NOT consider implementation complete until ALL tests pass
 
 Begin with Phase 1: Fetch GitHub Issue #{{args}}
 """
