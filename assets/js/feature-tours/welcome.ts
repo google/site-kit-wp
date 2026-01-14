@@ -95,7 +95,9 @@ export function getWelcomeTour(
 					"These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what's working and what's not.",
 					'google-site-kit'
 				),
-				placement: 'top',
+				offset: -3,
+				spotlightPadding: 4,
+				placement: 'top-end',
 			},
 			{
 				target: '.googlesitekit-widget--analyticsAllTrafficGA4',
@@ -110,6 +112,8 @@ export function getWelcomeTour(
 					"Know what's normal for your site. This is how you spot trends and measure real growth.",
 					'google-site-kit'
 				),
+				offset: 35,
+				spotlightPadding: 0,
 				placement: 'top',
 			},
 			{
@@ -125,12 +129,14 @@ export function getWelcomeTour(
 					'Not all visitors are the same, tailor your strategy based on who you want to attract',
 					'google-site-kit'
 				),
+				offset: 14,
+				spotlightPadding: 4,
 				placement: 'top',
 			},
 			{
 				target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
 				floaterProps: {
-					target: '.googlesitekit-table__head-item--pageviews',
+					target: '.googlesitekit-table__head-item--pageviews .googlesitekit-table__head-item-title',
 				},
 				title: __(
 					'Discover your most popular and engaging content',
@@ -140,6 +146,8 @@ export function getWelcomeTour(
 					'Find out what your audience loves and double down on what resonates most',
 					'google-site-kit'
 				),
+				offset: 25,
+				spotlightPadding: 0,
 				placement: 'top',
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate ),

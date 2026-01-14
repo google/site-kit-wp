@@ -161,7 +161,9 @@ export default function ReportTable( props ) {
 											data-tooltip={ description }
 											key={ `googlesitekit-table__head-row-${ colIndex }` }
 										>
-											{ title }
+											<span className="googlesitekit-table__head-item-title">
+												{ title }
+											</span>
 										</th>
 									)
 								) }

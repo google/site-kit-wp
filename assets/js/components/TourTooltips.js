@@ -38,18 +38,23 @@ import { trackEvent } from '@/js/util/tracking';
 import { useFeature } from '@/js/hooks/useFeature';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
+import { isFeatureEnabled } from '@/js/features';
+
+const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
 	options: {
 		arrowColor: '#3c7251', // $c-content-primary
 		backgroundColor: '#3c7251', // $c-content-primary
-		overlayColor: 'rgba(0, 0, 0, 0.6)',
+		overlayColor: setupFlowRefreshEnabled
+			? 'rgba(0, 0, 0, 0.25)'
+			: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000,
 	},
 	spotlight: {
-		border: '2px solid #3c7251', // $c-content-primary
+		border: setupFlowRefreshEnabled ? 'none' : '2px solid #3c7251', // $c-content-primary
 		backgroundColor: '#fff',
 	},
 };
