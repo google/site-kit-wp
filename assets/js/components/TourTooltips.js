@@ -35,6 +35,7 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { trackEvent } from '@/js/util/tracking';
+import { useFeature } from '@/js/hooks/useFeature';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
 
@@ -99,6 +100,7 @@ export default function TourTooltips( {
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const stepIndex = useSelect(
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
@@ -241,7 +243,7 @@ export default function TourTooltips( {
 		}
 	}
 
-	// Start tour on initial render
+	// Start tour on initial render.
 	useMount( startTour );
 
 	const parsedSteps = steps.map( ( step ) => ( {
@@ -251,20 +253,33 @@ export default function TourTooltips( {
 		...step,
 	} ) );
 
+	// Customize floater props based on feature flag.
+	const customFloaterProps = setupFlowRefreshEnabled
+		? {
+				...floaterProps,
+				styles: {
+					...floaterProps.styles,
+					floater: {
+						filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
+					},
+				},
+		  }
+		: floaterProps;
+
 	return (
 		<Joyride
 			callback={ handleJoyrideCallback }
-			floaterProps={ floaterProps }
+			floaterProps={ customFloaterProps }
 			locale={ joyrideLocale }
 			run={ run }
 			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
+			showProgress={ ! setupFlowRefreshEnabled }
 			continuous
 			disableOverlayClose
 			disableScrolling
-			showProgress
 		/>
 	);
 }
