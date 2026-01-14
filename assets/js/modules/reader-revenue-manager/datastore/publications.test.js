@@ -40,7 +40,6 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;
@@ -610,7 +609,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should return products for the current publication', () => {
-				const publications = cloneDeep( fixtures.publications );
+				const publications = structuredClone( fixtures.publications );
 				publications[ 0 ].products = [
 					{ name: 'ABC:product-1' },
 					{ name: 'DEF:product-2' },

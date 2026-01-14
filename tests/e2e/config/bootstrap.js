@@ -16,6 +16,54 @@
  * limitations under the License.
  */
 
+/* eslint-disable no-undef */
+
+// Polyfill structuredClone for the Node test runner itself.
+if ( typeof globalThis.structuredClone === 'undefined' ) {
+	globalThis.structuredClone = ( value ) => {
+		const seen = new WeakMap();
+
+		function clone( input ) {
+			if ( typeof input !== 'object' || input === null ) {
+				return input;
+			}
+			if ( seen.has( input ) ) {
+				return seen.get( input );
+			}
+
+			let output;
+			if ( Array.isArray( input ) ) {
+				output = [];
+				seen.set( input, output );
+				input.forEach( ( v, i ) => ( output[ i ] = clone( v ) ) );
+			} else if ( input instanceof Date ) {
+				// eslint-disable-next-line sitekit/no-direct-date
+				output = new Date( input.getTime() );
+			} else if ( input instanceof Map ) {
+				output = new Map();
+				seen.set( input, output );
+				input.forEach( ( v, k ) =>
+					output.set( clone( k ), clone( v ) )
+				);
+			} else if ( input instanceof Set ) {
+				output = new Set();
+				seen.set( input, output );
+				input.forEach( ( v ) => output.add( clone( v ) ) );
+			} else {
+				output = {};
+				seen.set( input, output );
+				Object.keys( input ).forEach(
+					( k ) => ( output[ k ] = clone( input[ k ] ) )
+				);
+			}
+
+			return output;
+		}
+
+		return clone( value );
+	};
+}
+
 /**
  * External dependencies
  */
@@ -422,6 +470,51 @@ async function observeRestResponse( res ) {
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
 beforeAll( async () => {
+	await page.evaluateOnNewDocument( () => {
+		if ( typeof window.structuredClone === 'undefined' ) {
+			const seen = new WeakMap();
+
+			function clone( input ) {
+				if ( typeof input !== 'object' || input === null ) {
+					return input;
+				}
+				if ( seen.has( input ) ) {
+					return seen.get( input );
+				}
+
+				let output;
+				if ( Array.isArray( input ) ) {
+					output = [];
+					seen.set( input, output );
+					input.forEach( ( v, i ) => ( output[ i ] = clone( v ) ) );
+				} else if ( input instanceof Date ) {
+					// eslint-disable-next-line sitekit/no-direct-date
+					output = new Date( input.getTime() );
+				} else if ( input instanceof Map ) {
+					output = new Map();
+					seen.set( input, output );
+					input.forEach( ( v, k ) =>
+						output.set( clone( k ), clone( v ) )
+					);
+				} else if ( input instanceof Set ) {
+					output = new Set();
+					seen.set( input, output );
+					input.forEach( ( v ) => output.add( clone( v ) ) );
+				} else {
+					output = {};
+					seen.set( input, output );
+					Object.keys( input ).forEach(
+						( k ) => ( output[ k ] = clone( input[ k ] ) )
+					);
+				}
+
+				return output;
+			}
+
+			window.structuredClone = ( value ) => clone( value );
+		}
+	} );
+
 	capturePageEventsForTearDown();
 	optOutOfEventTracking();
 	enablePageDialogAccept();

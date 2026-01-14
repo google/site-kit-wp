@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { cloneDeep, findLast, merge, set } from 'lodash';
+import { findLast, merge, set } from 'lodash';
 
 /**
  * Internal dependencies
@@ -145,7 +145,7 @@ export function getChartOptions(
 	options,
 	{ gatheringData, chartType, startDate, endDate, breakpoint }
 ) {
-	const chartOptions = cloneDeep( options );
+	const chartOptions = structuredClone( options );
 	if ( gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );

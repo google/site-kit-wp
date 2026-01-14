@@ -22,7 +22,7 @@
 import md5 from 'md5';
 import faker from 'faker';
 import invariant from 'invariant';
-import { castArray, cloneDeep, isPlainObject, zip } from 'lodash';
+import { castArray, isPlainObject, zip } from 'lodash';
 import { Observable, merge, from } from 'rxjs';
 import { map, reduce, take, toArray, mergeMap } from 'rxjs/operators';
 
@@ -389,7 +389,7 @@ export function getAnalytics4MockResponse(
 	);
 
 	// Ensure we don't mutate the passed options to avoid unexpected side effects for the caller.
-	const args = cloneDeep( options );
+	const args = structuredClone( options );
 
 	const originalSeedValue = faker.seedValue;
 	const argsURL = args.url || 'http://example.com';
@@ -574,7 +574,9 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MIN',
 						};
 					} ),
-					metricValues: cloneDeep( rows[ 0 ]?.metricValues || [] ),
+					metricValues: structuredClone(
+						rows[ 0 ]?.metricValues || []
+					),
 				},
 			].concat(
 				hasDateRange
@@ -593,7 +595,7 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: cloneDeep(
+								metricValues: structuredClone(
 									rows[ 1 ]?.metricValues || []
 								),
 							},
@@ -616,7 +618,7 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_MAX',
 						};
 					} ),
-					metricValues: cloneDeep(
+					metricValues: structuredClone(
 						rows[ firstItemIndex ]?.metricValues || []
 					),
 				},
@@ -637,7 +639,7 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: cloneDeep(
+								metricValues: structuredClone(
 									rows[ rows.length - 1 ]?.metricValues || []
 								),
 							},
@@ -657,7 +659,7 @@ export function getAnalytics4MockResponse(
 							value: 'RESERVED_TOTAL',
 						};
 					} ),
-					metricValues: cloneDeep(
+					metricValues: structuredClone(
 						rows[ firstItemIndex ]?.metricValues || []
 					),
 				},
@@ -678,7 +680,7 @@ export function getAnalytics4MockResponse(
 										};
 									}
 								),
-								metricValues: cloneDeep(
+								metricValues: structuredClone(
 									rows[ rows.length - 1 ]?.metricValues || []
 								),
 							},

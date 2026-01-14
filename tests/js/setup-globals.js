@@ -3,6 +3,7 @@
  */
 import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
+import { cloneDeep } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -86,3 +87,8 @@ global.scrollTo = () => {};
 // Provide the desktop viewport as default because SK is not mobile-first app. Global dimensions are used in the useWindowSize hook.
 global.innerWidth = 1024;
 global.innerHeight = 768;
+
+// Polyfill for `structuredClone` in Node.js environments that do not support it yet.
+if ( typeof global.structuredClone !== 'function' ) {
+	global.structuredClone = cloneDeep;
+}
