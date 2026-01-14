@@ -211,10 +211,10 @@ export default function WelcomeModal() {
 							onClick={ () => {
 								closeAndDismissModal();
 								triggerOnDemandTour(
-									getWelcomeTour(
+									getWelcomeTour( {
 										isViewOnly,
-										canAuthenticate
-									)
+										canAuthenticate,
+									} )
 								);
 							} }
 						>

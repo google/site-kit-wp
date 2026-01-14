@@ -74,10 +74,13 @@ function getDashboardSharingStep(
 	};
 }
 
-export function getWelcomeTour(
-	isViewOnly: boolean,
-	canAuthenticate: boolean
-) {
+export function getWelcomeTour( {
+	isViewOnly,
+	canAuthenticate,
+}: {
+	isViewOnly: boolean;
+	canAuthenticate: boolean;
+} ) {
 	return {
 		slug: 'welcome-with-analytics',
 		isRepeatable: true,
