@@ -33,6 +33,7 @@ function getDashboardSharingStep(
 ) {
 	if ( isViewOnly ) {
 		return {
+			id: 'dashboard-sharing-view-only',
 			target: '.googlesitekit-header',
 			floaterProps: {
 				target: '.googlesitekit-view-only-menu',
@@ -50,20 +51,25 @@ function getDashboardSharingStep(
 						'Site admins have shared the dashboard with you, so you can keep track of how your site is doing. See what’s been shared with you here.',
 						'google-site-kit'
 				  ),
+			offset: 0,
+			spotlightPadding: 0,
 			placement: 'bottom',
 		};
 	}
 
 	return {
+		id: 'dashboard-sharing-authenticated',
 		target: '.googlesitekit-header',
 		floaterProps: {
-			target: '.googlesitekit-sharing-settings__button',
+			target: '.googlesitekit-sharing-settings__button svg',
 		},
 		title: __( 'Share insights with your team', 'google-site-kit' ),
 		content: __(
 			'Give access to your teammates or clients to view the dashboard instantly, no setup required. You control who sees what.',
 			'google-site-kit'
 		),
+		offset: 0,
+		spotlightPadding: 0,
 		placement: 'bottom',
 	};
 }
