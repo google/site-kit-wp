@@ -33,14 +33,23 @@ import {
 import {
 	provideModules,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '../../../tests/js/utils';
 import { provideGatheringDataState } from '../../../tests/js/gathering-data-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import WelcomeModal from './WelcomeModal';
 
 const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
@@ -55,6 +64,12 @@ describe( 'WelcomeModal', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 	} );
 
 	it( 'should show the dashboard tour variant when Analytics is connected and not gathering data', async () => {
@@ -447,6 +462,94 @@ describe( 'WelcomeModal', () => {
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
+
+	it.each( [
+		[ false, true ],
+		[ true, false ],
+		[ true, true ],
+	] )(
+		'should trigger the tour when the "Start tour" button is clicked for the dashboard tour variant with isViewOnly: %s and canAuthenticate: %s',
+		async ( isViewOnly, canAuthenticate ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+				{
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Model the responses for the two POST requests to `dismiss-item`.
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				status: 200,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [
+					WITH_TOUR_DISMISSED_ITEM_SLUG,
+					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				],
+				status: 200,
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<WelcomeModal />,
+				{
+					registry,
+					viewContext: isViewOnly
+						? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+			) as any;
+
+			await waitForRegistry();
+
+			const closeButton = getByRole( 'button', { name: 'Start tour' } );
+			fireEvent.click( closeButton );
+
+			await waitFor( () => {
+				// Wait for the dismissal to complete.
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			expect(
+				// Use JSON.stringify to compare the tours, `toEqual` won't work because
+				// the tours are objects that contain functions.
+				JSON.stringify( registry.select( CORE_USER ).getCurrentTour() )
+			).toEqual(
+				JSON.stringify(
+					getWelcomeTour( {
+						isViewOnly,
+						canAuthenticate,
+					} )
+				)
+			);
+		}
+	);
 
 	it( 'should show the gathering data variant when Analytics is connected and gathering data', async () => {
 		provideModules( registry, [
