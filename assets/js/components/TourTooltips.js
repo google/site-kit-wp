@@ -117,17 +117,31 @@ export default function TourTooltips( {
 		);
 	} );
 
+	function getStepClassName( index ) {
+		return `googlesitekit-showing-feature-tour--${ tourID }-${
+			steps[ index ].id || index
+		}`;
+	}
+
 	function changeStep( index, action ) {
-		return setValue(
-			stepKey,
-			index + ( action === ACTIONS.PREV ? -1 : 1 )
-		);
+		const newStepIndex = index + ( action === ACTIONS.PREV ? -1 : 1 );
+
+		global.document.body.classList.remove( getStepClassName( index ) );
+
+		if ( steps[ newStepIndex ] ) {
+			global.document.body.classList.add(
+				getStepClassName( newStepIndex )
+			);
+		}
+
+		return setValue( stepKey, newStepIndex );
 	}
 
 	function startTour() {
 		global.document.body.classList.add(
 			'googlesitekit-showing-feature-tour',
-			`googlesitekit-showing-feature-tour--${ tourID }`
+			`googlesitekit-showing-feature-tour--${ tourID }`,
+			getStepClassName( stepIndex )
 		);
 		setValue( runKey, true );
 	}
@@ -137,6 +151,12 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
+
+		if ( steps[ stepIndex ] ) {
+			global.document.body.classList.remove(
+				getStepClassName( stepIndex )
+			);
+		}
 
 		if ( isRepeatable ) {
 			setValue( runKey, false );
