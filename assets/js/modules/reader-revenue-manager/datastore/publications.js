@@ -34,6 +34,7 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -245,6 +246,7 @@ const baseActions = {
 			onboardingState,
 			paymentOptions,
 			products,
+			contentPolicyStatus,
 		} ) {
 			const registry = yield commonActions.getRegistry();
 
@@ -277,6 +279,10 @@ const baseActions = {
 			}
 
 			settings.productID = 'openaccess';
+
+			if ( contentPolicyStatus ) {
+				settings.contentPolicyStatus = contentPolicyStatus;
+			}
 
 			return registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -359,6 +365,56 @@ const baseSelectors = {
 		}
 
 		return selectedPublication.products.map( ( product ) => product.name );
+	} ),
+
+	/**
+	 * Gets the content policy state from the content policy status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The content policy state; `undefined` if not available.
+	 */
+	getContentPolicyState: createRegistrySelector( ( select ) => () => {
+		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		if ( ! settings ) {
+			return undefined;
+		}
+
+		const { contentPolicyStatus } = settings;
+
+		if ( ! contentPolicyStatus ) {
+			return undefined;
+		}
+
+		return contentPolicyStatus.contentPolicyState;
+	} ),
+
+	/**
+	 * Gets the policy info URL wrapped with the account chooser URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The policy info URL wrapped with the account chooser URL; `undefined` if not available.
+	 */
+	getPolicyInfoURL: createRegistrySelector( ( select ) => () => {
+		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		if ( ! settings ) {
+			return undefined;
+		}
+
+		const { contentPolicyStatus } = settings;
+
+		if ( ! contentPolicyStatus || ! contentPolicyStatus.policyInfoLink ) {
+			return undefined;
+		}
+
+		return select( CORE_USER ).getAccountChooserURL(
+			contentPolicyStatus.policyInfoLink
+		);
 	} ),
 };
 
