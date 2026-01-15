@@ -104,13 +104,14 @@ PHASE 3: IMPLEMENTATION
 
 Follow these implementation guidelines:
 
-**1. Understand the Task**
-   - Carefully read the Implementation Brief from Phase 1
+1. **Understand the Task**
+   - Carefully read the Implementation Brief and Acceptance Criteria (AC) from Phase 1
+   - Note that the AC are the actual requirements that MUST be met
    - Break down complex requirements into discrete steps
    - Plan your implementation approach before writing code
    - Identify all files that need to be created, modified, or deleted
 
-**2. Implement Following Strict Principles**
+2. **Implement Following Strict Principles**
    - Strictly follow ALL conventions from context documentation
    - Study existing code patterns in similar features before implementing
    - Use appropriate naming conventions from context docs
@@ -119,7 +120,7 @@ Follow these implementation guidelines:
    - Follow security best practices (avoid XSS, SQL injection, etc.)
    - Use existing utilities and patterns rather than reinventing
 
-**3. Write Comprehensive Tests**
+3. **Write Comprehensive Tests**
    - **For JS**: Follow testing conventions from docs/context/js/tests.md
    - **For PHP**: Follow PHPUnit patterns from docs/context/php/phpunit.md
    - Write unit tests for ALL new functionality
@@ -128,7 +129,7 @@ Follow these implementation guidelines:
    - Mock external dependencies appropriately
    - Aim for thorough test coverage of business logic
 
-**4. Document Your Code**
+4. **Document Your Code**
    - **For JS**: Follow JSDoc conventions from docs/context/js/jsdoc.md
    - **For PHP**: Follow PHPDoc conventions and WordPress documentation standards
    - Document all exported functions, components, classes, and complex logic
@@ -136,7 +137,7 @@ Follow these implementation guidelines:
    - Add inline comments for non-obvious logic
    - Update README files if introducing new features
 
-**5. Consider Integration Points**
+5. **Consider Integration Points**
 
    **For JavaScript/React**:
    - **Event Tracking**: Use patterns from docs/context/js/event-tracking.md if user actions need tracking
@@ -157,13 +158,13 @@ Follow these implementation guidelines:
    - **Admin Features**: Use docs/context/php/admin-features.md for admin UI
    - **Prompts**: Follow docs/context/php/prompts-and-dismissals.md for user prompts
 
-**6. Create Supporting Files**
+6. **Create Supporting Files**
    - **For JS**: Add Storybook stories for UI components (docs/context/js/storybook.md)
    - **For PHP**: Create appropriate test fixtures and mock data
    - Create fixture data for tests if needed
    - Update or create example usage if helpful
 
-**7. Verify Your Implementation**
+7. **Verify Your Implementation**
    Run these verification steps:
 
    a. **Linting**:
@@ -184,7 +185,7 @@ Follow these implementation guidelines:
       - Run !{npm run build:dev} if appropriate
       - Fix any build errors
 
-**8. Provide Implementation Summary**
+8. **Provide Implementation Summary**
    After completing implementation, provide a structured summary:
 
    ```
@@ -228,7 +229,7 @@ PHASE 4: CODE REVIEW
 
 Follow these code review guidelines:
 
-**1. Verify Requirements Adherence (MANDATORY)**
+1. **Verify Requirements Adherence (MANDATORY)**
 
    Check compliance with the extracted "Acceptance criteria":
    - ✓ Implementation fulfills all points in "Acceptance criteria"
@@ -236,7 +237,7 @@ Follow these code review guidelines:
    - ✓ Behavioral requirements are met
    - ✓ Edge cases defined in AC are handled
 
-**2. Verify Context Adherence (MANDATORY)**
+2. **Verify Context Adherence (MANDATORY)**
 
    Check strict compliance with documented principles. Review each relevant context file:
 
@@ -275,7 +276,7 @@ Follow these code review guidelines:
    - What must be fixed to comply
    - Which files are affected
 
-**3. Analyze Code Quality**
+3. **Analyze Code Quality**
 
    Review for general code quality issues:
    - Code structure and organization
@@ -288,7 +289,7 @@ Follow these code review guidelines:
    - Accessibility compliance (WCAG standards)
    - Browser/PHP version compatibility
 
-**4. Score the Implementation (0.0 to 1.0)**
+4. **Score the Implementation (0.0 to 1.0)**
 
    Assign a score based on this rubric:
 
@@ -321,7 +322,7 @@ Follow these code review guidelines:
    - Outstanding documentation
    - Sets a positive example for future development
 
-**5. Provide Review Results**
+5. **Provide Review Results**
 
    Format your review as follows:
 
@@ -387,7 +388,7 @@ PHASE 5: ITERATION (if score < 0.85)
 
 **Iteration [1, 2, or 3]**:
 
-1. **Address ALL Requirements and Context Violations** (MANDATORY)
+1. **Address ALL Requirements and Context Violations (MANDATORY)**
    - Requirements and context violations are non-negotiable and must be fixed
    - Follow the "Fix Required" instructions from the review
    - Bring code into full compliance with requirements and documented principles
@@ -399,7 +400,7 @@ PHASE 5: ITERATION (if score < 0.85)
    - Improve code structure and maintainability
    - Add missing tests or documentation
 
-3. **Re-run Verification** (MANDATORY - DO NOT SKIP)
+3. **Re-run Verification (MANDATORY - DO NOT SKIP)**
    - **Linting**:
      - For JS: !{npm run lint:js}
      - For PHP: !{composer run lint}
@@ -503,17 +504,17 @@ PHASE 6: DOCUMENTATION (optional - only if score ≥ 0.85)
 
 **If documentation is needed**, follow these documentation guidelines:
 
-**1. Identify Documentation Needs**
+1. **Identify Documentation Needs**
    - What new concepts were introduced?
    - What architectural decisions were made?
    - What complex patterns or workflows were created?
 
-**2. Create Developer Documentation**
+2. **Create Developer Documentation**
    - Location: docs/concepts/ directory
    - Format: Markdown (.md files)
    - Naming: Use descriptive kebab-case names (e.g., widget-lifecycle-management.md)
 
-**3. Documentation Structure**
+3. **Documentation Structure**
    Include these sections:
    - **Overview**: What is this concept and why does it exist?
    - **Core Principles**: Key architectural principles
@@ -523,14 +524,14 @@ PHASE 6: DOCUMENTATION (optional - only if score ≥ 0.85)
    - **Common Pitfalls**: What to avoid
    - **Related Concepts**: Links to related documentation
 
-**4. Documentation Style**
+4. **Documentation Style**
    - Write for human developers, not AI agents
    - Use clear, conversational language
    - Include practical code examples
    - Focus on WHY and HOW, not just WHAT
    - Add diagrams if they help understanding (Mermaid or ASCII)
 
-**5. Example Documentation File**:
+5. **Example Documentation File:**
    ```markdown
    # [Concept Name]
 
@@ -560,7 +561,7 @@ PHASE 6: DOCUMENTATION (optional - only if score ≥ 0.85)
    - [Link to related doc]
    ```
 
-**6. Update Existing Documentation** (if needed)
+6. **Update Existing Documentation (if needed)**
    - If changes affect existing docs/concepts/ files, update them
    - Mark deprecated information clearly
    - Add new sections rather than replacing content
