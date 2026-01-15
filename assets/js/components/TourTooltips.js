@@ -35,7 +35,6 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { trackEvent } from '@/js/util/tracking';
-import { useFeature } from '@/js/hooks/useFeature';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
 import { isFeatureEnabled } from '@/js/features';
@@ -105,7 +104,6 @@ export default function TourTooltips( {
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const stepIndex = useSelect(
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
