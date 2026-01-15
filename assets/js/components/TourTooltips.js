@@ -150,6 +150,7 @@ export default function TourTooltips( {
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
 
+		// `stepIndex` may be out of bounds if the user has advanced beyond the last step.
 		if ( steps[ stepIndex ] ) {
 			global.document.body.classList.remove(
 				getStepClassName( stepIndex )
