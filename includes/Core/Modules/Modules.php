@@ -141,6 +141,14 @@ final class Modules implements Provides_Feature_Metrics {
 	private $dashboard_sharing_controller;
 
 	/**
+	 * DisconnectedModules setting instance.
+	 *
+	 * @since n.e.x.t
+	 * @var DisconnectedModules
+	 */
+	private $disconnected_modules;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -176,12 +184,13 @@ final class Modules implements Provides_Feature_Metrics {
 		?Authentication $authentication = null,
 		?Assets $assets = null
 	) {
-		$this->context          = $context;
-		$this->options          = $options ?: new Options( $this->context );
-		$this->sharing_settings = new Module_Sharing_Settings( $this->options );
-		$this->user_options     = $user_options ?: new User_Options( $this->context );
-		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->assets           = $assets ?: new Assets( $this->context );
+		$this->context              = $context;
+		$this->options              = $options ?: new Options( $this->context );
+		$this->sharing_settings     = new Module_Sharing_Settings( $this->options );
+		$this->user_options         = $user_options ?: new User_Options( $this->context );
+		$this->authentication       = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets               = $assets ?: new Assets( $this->context );
+		$this->disconnected_modules = new DisconnectedModules( $this->options );
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
