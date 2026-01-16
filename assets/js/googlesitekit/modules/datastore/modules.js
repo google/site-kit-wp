@@ -861,6 +861,8 @@ const baseResolvers = {
 	isModuleActive: waitForModules,
 
 	isModuleConnected: waitForModules,
+
+	isModuleDisconnected: waitForModules,
 };
 
 const baseSelectors = {
@@ -1171,6 +1173,39 @@ const baseSelectors = {
 			}
 
 			return module.active && module.connected;
+		}
+	),
+
+	/**
+	 * Checks whether a module is disconnected or not.
+	 *
+	 * Returns the timestamp of when the module was disconnected.
+	 * Returns `undefined` if state is still loading or if no module with that slug exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(string|null|undefined)} Timestamp of when the module was disconnected.
+	 * 									  `undefined` if state is still loading.
+	 * 									  `null` if said module doesn't exist.
+	 */
+	isModuleDisconnected: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `null` to signify the
+			// "not found" state.
+			if ( module === null ) {
+				return null;
+			}
+
+			return module.disconnectedAt;
 		}
 	),
 
