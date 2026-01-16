@@ -731,6 +731,8 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->sharing_settings->unset_module( $slug );
 
+		$this->disconnected_modules->disconnect( $slug );
+
 		/**
 		 * Fires when a module is deactivated.
 		 *
