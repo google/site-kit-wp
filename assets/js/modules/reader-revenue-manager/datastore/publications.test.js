@@ -785,6 +785,25 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( policyInfoURL ).toBeUndefined();
 			} );
 
+			it( 'should return `null` if `policyInfoLink` is `null`', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+						contentPolicyStatus: {
+							contentPolicyState: 'CONTENT_POLICY_STATE_OK',
+							policyInfoLink: null,
+						},
+					} );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				expect( policyInfoURL ).toBeNull();
+			} );
+
 			it( 'should return the `policyInfoLink` property from `contentPolicyStatus`, wrapped with account chooser URL', () => {
 				const testEmail = 'test@example.com';
 				const testPolicyInfoLink = 'https://example.com/policy-info';

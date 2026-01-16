@@ -401,7 +401,7 @@ const baseSelectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} The policy info URL wrapped with the account chooser URL; `undefined` if not available.
+	 * @return {(string|null|undefined)} The policy info URL wrapped with the account chooser URL; `null` if `policyInfoLink` is `null`; `undefined` if not available.
 	 */
 	getPolicyInfoURL: createRegistrySelector( ( select ) => () => {
 		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
@@ -412,8 +412,13 @@ const baseSelectors = {
 
 		const { contentPolicyStatus } = settings;
 
-		if ( ! contentPolicyStatus || ! contentPolicyStatus.policyInfoLink ) {
+		if ( contentPolicyStatus?.policyInfoLink === undefined ) {
 			return undefined;
+		}
+
+		if ( contentPolicyStatus.policyInfoLink === null ) {
+			// `policyInfoLink` is `null` when `contentPolicyState` is `CONTENT_POLICY_STATE_OK`.
+			return null;
 		}
 
 		return select( CORE_USER ).getAccountChooserURL(
