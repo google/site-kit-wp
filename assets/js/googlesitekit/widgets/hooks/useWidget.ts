@@ -31,7 +31,7 @@ import WidgetContext, {
 /**
  * Returns the current widget context.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  *
  * @return {WidgetContextValue} The current widget context.
  */

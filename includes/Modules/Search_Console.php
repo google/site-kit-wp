@@ -348,7 +348,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	/**
 	 * Prepares Search Console analytics request arguments from request data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $data_request Request data parameters.
 	 * @return array Parsed request arguments.

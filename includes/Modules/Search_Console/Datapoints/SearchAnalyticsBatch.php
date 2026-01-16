@@ -22,7 +22,7 @@ use WP_Error;
 /**
  * Datapoint class for Search Console search analytics batch requests.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Callback to obtain the Search Console service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var callable|Closure
 	 */
 	private $get_service;
@@ -43,7 +43,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Callback to prepare single search analytics request arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var callable|Closure
 	 */
 	private $prepare_args;
@@ -51,7 +51,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Callback to build a search analytics request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var callable|Closure
 	 */
 	private $create_request;
@@ -59,7 +59,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Identifiers for the requested payloads.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array
 	 */
 	private $request_identifiers = array();
@@ -67,7 +67,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Captured errors for individual requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var array
 	 */
 	private $request_errors = array();
@@ -75,7 +75,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $definition Datapoint definition.
 	 */
@@ -90,7 +90,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Callable to execute the batch request, or WP_Error.
@@ -158,7 +158,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed        $response      Request response.
 	 * @param Data_Request $data_request  Data request object.
@@ -206,7 +206,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a single batch response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $response Single response.
 	 * @return array|WP_Error Parsed rows or WP_Error.
@@ -234,7 +234,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Builds a single request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $args Prepared request arguments.
 	 * @return mixed Request instance or WP_Error.
@@ -253,7 +253,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Prepares request arguments for a single search analytics request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $request_data Raw request data.
 	 * @return array|WP_Error Prepared arguments or WP_Error.
@@ -272,7 +272,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Gets the Search Console service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return Google_Service_SearchConsole Search Console service instance.
 	 * @throws Missing_Required_Param_Exception When the service callback is missing.
@@ -288,7 +288,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Normalizes a request identifier to a string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $request_data Request data.
 	 * @return string Normalized identifier.
@@ -319,7 +319,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Normalizes a response identifier to align with requested keys.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string|int $identifier Raw response identifier.
 	 * @return string|int Normalized identifier.
@@ -335,7 +335,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Converts an exception to a WP_Error instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Exception $exception Exception instance.
 	 * @return WP_Error WP_Error instance.
