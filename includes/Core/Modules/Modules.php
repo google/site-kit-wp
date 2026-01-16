@@ -757,15 +757,6 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->disconnected_modules->disconnect( $slug );
 
-		/**
-		 * Fires when a module is deactivated.
-		 *
-		 * @since 1.168.0
-		 *
-		 * @param string $slug The slug of the deactivated module.
-		 */
-		do_action( 'googlesitekit_deactivate_module', $slug );
-
 		return true;
 	}
 

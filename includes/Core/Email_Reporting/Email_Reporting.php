@@ -235,15 +235,6 @@ class Email_Reporting {
 		$this->email_log->register();
 		$this->scheduler->register();
 
-		add_action(
-			'googlesitekit_deactivate_module',
-			function ( $slug ) {
-				if ( Analytics_4::MODULE_SLUG === $slug ) {
-					$this->was_analytics_4_connected->set( true );
-				}
-			}
-		);
-
 		// Schedule events only if authentication is completed and email reporting is enabled.
 		// Otherwise events are being scheduled as soon as the plugin is activated.
 		if ( $this->authentication->is_setup_completed() && $this->settings->is_email_reporting_enabled() ) {
