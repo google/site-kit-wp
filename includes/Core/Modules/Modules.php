@@ -646,6 +646,20 @@ final class Modules implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Checks whether the module identified by the given slug is disconnected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool|int False if module is not disconnected, timestamp of disconnection otherwise.
+	 */
+	public function is_module_disconnected( $slug ) {
+		$disconnected_modules = $this->get_disconnected_modules();
+
+		return isset( $disconnected_modules[ $slug ] ) ? $disconnected_modules[ $slug ] : false;
+	}
+
+	/**
 	 * Checks whether the module identified by the given slug is shareable.
 	 *
 	 * @since 1.105.0
