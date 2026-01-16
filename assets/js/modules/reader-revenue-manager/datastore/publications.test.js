@@ -34,6 +34,7 @@ import {
 	provideModuleRegistrations,
 	muteFetch,
 } from '../../../../../tests/js/utils';
+import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -492,6 +493,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should set `contentPolicyStatus` in state when provided', () => {
+				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
+
 				const contentPolicyStatus = {
 					contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
 					policyInfoLink: 'https://example.com/policy-info',
@@ -515,6 +518,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should not set `contentPolicyStatus` when not provided', () => {
+				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
+
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.selectPublication( {
