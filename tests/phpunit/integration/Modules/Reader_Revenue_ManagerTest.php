@@ -707,6 +707,112 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		);
 	}
 
+	public function test_get_debug_fields__content_policy_state() {
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Test that the content policy state field is not included when feature flag is disabled.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'       => 'test-publication-id',
+				'contentPolicyStatus' => array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				),
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayNotHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state field should not be included when feature flag is disabled'
+		);
+
+		// Test that the content policy state field is included when feature flag is enabled, even if contentPolicyStatus is just the default value.
+		$this->enable_feature( 'rrmPolicyViolations' );
+
+		// Reset settings - contentPolicyStatus will be default value when feature flag is enabled.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'test-publication-id',
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state field should be included when feature flag is enabled, even with default contentPolicyStatus'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state field should have empty value when contentPolicyStatus is default'
+		);
+
+		// Test that the content policy state field is added with correct values when feature flag is enabled and contentPolicyStatus contains contentPolicyState.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'       => 'test-publication-id',
+				'contentPolicyStatus' => array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				),
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state field should be included when feature flag is enabled and contentPolicyStatus is present'
+		);
+
+		$this->assertEquals(
+			'Reader Revenue Manager: Content policy state',
+			$debug_fields['reader_revenue_manager_content_policy_state']['label'],
+			'Content policy state field should have correct label'
+		);
+
+		$this->assertEquals(
+			'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state field should have correct value'
+		);
+
+		$this->assertEquals(
+			'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
+			'Content policy state field should have correct debug value'
+		);
+
+		// Test that the content policy state field handles missing contentPolicyState property gracefully.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'       => 'test-publication-id',
+				'contentPolicyStatus' => array(),
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state field should be included even when contentPolicyState is missing'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state field should have empty string when contentPolicyState is missing'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
+			'Content policy state field debug should have empty string when contentPolicyState is missing'
+		);
+	}
+
 	public function test_check_service_entity_access_no_access_unavailable_publication() {
 		$module = $this->get_module_with_service_entity();
 
