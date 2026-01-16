@@ -46,17 +46,17 @@ class DisconnectedModules extends Setting {
 	}
 
 	/**
-	 * Merges a partial array of `module_slug => disconnected_timestamp`
-	 * to existing disconnected modules.
+	 * Adds a module to the list of disconnected modules
+	 * alongwith the timestamp of disconnection.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $partial Partial settings array to save.
+	 * @param string $module_slug Module slug to disconnect.
 	 * @return bool True on success, false on failure.
 	 */
-	public function merge( array $partial ) {
+	public function disconnect( $module_slug ) {
 		$settings = $this->get();
 
-		return $this->set( array_merge( $settings, $partial ) );
+		return $this->set( array_merge( $settings, array( $module_slug => time() ) ) );
 	}
 }
