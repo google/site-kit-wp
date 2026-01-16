@@ -75,6 +75,7 @@ const moduleDefaults = {
 	internal: false,
 	active: false,
 	connected: false,
+	disconnectedAt: false,
 	dependencies: [],
 	dependants: [],
 	order: 10,
