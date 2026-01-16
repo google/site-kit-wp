@@ -805,8 +805,9 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 		}
 
-		if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) && isset( $settings['contentPolicyStatus'] ) && is_array( $settings['contentPolicyStatus'] ) ) {
-			$content_policy_state = $settings['contentPolicyStatus']['contentPolicyState'] ?? '';
+		if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) && isset( $settings['contentPolicyStatus'] ) ) {
+			$content_policy_status = (array) $settings['contentPolicyStatus'];
+			$content_policy_state  = $content_policy_status['contentPolicyState'] ?? '';
 
 			$debug_fields['reader_revenue_manager_content_policy_state'] = array(
 				'label' => __( 'Reader Revenue Manager: Content policy state', 'google-site-kit' ),
