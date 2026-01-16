@@ -524,6 +524,16 @@ final class Modules implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Gets the disconnected modules.
+	 *
+	 * @since n.e.x.t
+	 * @return array Disconnected modules as $slug => timestamp pairs.
+	 */
+	public function get_disconnected_modules() {
+		return $this->disconnected_modules->get();
+	}
+
+	/**
 	 * Gets the module identified by the given slug.
 	 *
 	 * @since 1.0.0
