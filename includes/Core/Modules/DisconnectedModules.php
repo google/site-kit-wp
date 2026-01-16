@@ -57,6 +57,10 @@ class DisconnectedModules extends Setting {
 	public function disconnect( $module_slug ) {
 		$settings = $this->get();
 
+		if ( ! is_array( $settings ) ) {
+			$settings = array();
+		}
+
 		return $this->set( array_merge( $settings, array( $module_slug => time() ) ) );
 	}
 }
