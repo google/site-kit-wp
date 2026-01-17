@@ -47,14 +47,6 @@ class REST_Email_Reporting_Controller {
 	private $modules;
 
 	/**
-	 * Was_Analytics_4_Connected instance.
-	 *
-	 * @since 1.168.0
-	 * @var Was_Analytics_4_Connected
-	 */
-	private $was_analytics_4_connected;
-
-	/**
 	 * User_Email_Reporting_Settings instance.
 	 *
 	 * @since 1.170.0
@@ -77,21 +69,18 @@ class REST_Email_Reporting_Controller {
 	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
-	 * @param Was_Analytics_4_Connected     $was_analytics_4_connected      Was_Analytics_4_Connected instance.
 	 * @param Modules                       $modules                        Modules instance.
 	 * @param User_Options                  $user_options                   User options instance.
 	 * @param User_Email_Reporting_Settings $user_email_reporting_settings  User email reporting settings instance.
 	 */
 	public function __construct(
 		Email_Reporting_Settings $settings,
-		Was_Analytics_4_Connected $was_analytics_4_connected,
 		Modules $modules,
 		User_Options $user_options,
 		User_Email_Reporting_Settings $user_email_reporting_settings
 	) {
 		$this->settings                      = $settings;
 		$this->modules                       = $modules;
-		$this->was_analytics_4_connected     = $was_analytics_4_connected;
 		$this->user_email_reporting_settings = $user_email_reporting_settings;
 		$this->eligible_subscribers_query    = new Eligible_Subscribers_Query( $this->modules, $user_options );
 	}
@@ -200,18 +189,6 @@ class REST_Email_Reporting_Controller {
 							return new WP_REST_Response( array_values( $data ) );
 						},
 						'permission_callback' => $can_manage,
-					),
-				)
-			),
-			new REST_Route(
-				'core/site/data/was-analytics-4-connected',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function () {
-							return new WP_REST_Response( array( 'wasConnected' => $this->was_analytics_4_connected->get() ) );
-						},
-						'permission_callback' => $can_access,
 					),
 				)
 			),
