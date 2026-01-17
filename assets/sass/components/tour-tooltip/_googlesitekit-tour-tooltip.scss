@@ -64,26 +64,19 @@
 
 .googlesitekit-tooltip-title {
 	color: $c-content-on-primary;
-
-	// The tooltip title overrides the default Typography styles.
-	font-family: $f-secondary;
-	font-size: $fs-body-lg;
 	font-weight: $fw-medium;
-	letter-spacing: $ls-m;
-	line-height: $lh-body-lg;
-	margin-bottom: 4px;
+	margin-bottom: 8px;
 	margin-top: 0;
 }
 
 .googlesitekit-tooltip-body {
 	box-sizing: border-box;
-	font-family: $f-primary;
-	font-size: $fs-body-md;
-	font-weight: $fw-light;
-	letter-spacing: $ls-s;
-	line-height: $lh-body-md;
-	max-width: 352px;
-	padding: 24px 56px 2px 24px;
+	max-width: 332px;
+	padding: 32px $grid-gap-phone 0;
+}
+
+.googlesitekit-tooltip-content {
+	color: $c-content-on-primary;
 }
 
 .googlesitekit-tooltip-buttons {
@@ -98,15 +91,6 @@
 	min-width: initial;
 	padding: 0;
 	text-transform: none;
-
-	&:focus {
-		outline: 1px dotted $c-interactive-inverse-focus;
-		outline-offset: 6px;
-	}
-
-	&:not(:first-of-type) {
-		margin-left: 28px;
-	}
 }
 
 .googlesitekit-tooltip-button:not(:disabled) {
@@ -182,6 +166,132 @@
 
 	.googlesitekit-tooltip-actions {
 		padding: 0 16px;
+	}
+}
+
+// Setup Flow Refresh variant styles.
+.googlesitekit-tour-tooltip--setupFlowRefresh {
+
+	.googlesitekit-tooltip-title {
+		font-family: $f-primary;
+		font-size: $fs-title-md;
+		letter-spacing: $ls-xxs;
+		line-height: $lh-title-md;
+	}
+
+	.googlesitekit-tooltip-content {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+	}
+
+	.googlesitekit-tooltip-close {
+		right: $grid-gap-phone;
+		top: $grid-gap-phone;
+	}
+
+	.googlesitekit-tooltip-button {
+		border-radius: $br-lg;
+		line-height: $lh-label-md;
+		padding: 6px $grid-gap-phone;
+
+		&:not(:first-of-type) {
+			margin-left: 10px;
+		}
+
+		// Tertiary button (Back) states.
+		&:hover {
+			background-color: $c-site-kit-sk-400;
+		}
+
+		&:focus {
+			background-color: $c-site-kit-sk-300;
+			outline: none;
+		}
+
+		&:active {
+			background-color: $c-site-kit-sk-400;
+		}
+	}
+
+	.googlesitekit-tooltip-button--primary {
+		background-color: $c-site-kit-sk-50;
+		box-shadow: none;
+		color: $c-content-on-primary-container;
+
+		&:hover {
+			background-color: $c-site-kit-sk-100;
+		}
+
+		&:focus {
+			background-color: $c-site-kit-sk-200;
+		}
+
+		&:active {
+			background-color: $c-site-kit-sk-100;
+		}
+	}
+
+	.googlesitekit-tooltip-steps {
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+		margin: 0;
+	}
+
+	.googlesitekit-tooltip-actions {
+		padding: $grid-gap-phone;
+	}
+}
+
+// Old design styles - override Typography when setupFlowRefresh is disabled.
+.googlesitekit-tour-tooltip:not(.googlesitekit-tour-tooltip--setupFlowRefresh) {
+
+	.googlesitekit-tooltip-title {
+		font-family: $f-secondary;
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-m;
+		line-height: $lh-body-lg;
+		margin-bottom: 4px;
+	}
+
+	.googlesitekit-tooltip-body {
+		font-family: $f-primary;
+		font-size: $fs-body-md;
+		font-weight: $fw-light;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+		max-width: 352px;
+		padding: 24px 56px 2px 24px;
+	}
+
+	.googlesitekit-tooltip-button {
+
+		&:not(:first-of-type) {
+			margin-left: 28px;
+		}
+
+		&:focus {
+			outline: 1px dotted $c-interactive-inverse-focus;
+			outline-offset: 6px;
+		}
+	}
+
+	// Modal step overrides need higher specificity to override old design styles.
+	&.googlesitekit-tour-tooltip__modal_step {
+
+		.googlesitekit-tooltip-body {
+			max-width: 100%;
+			padding: 16px 16px 0;
+		}
+
+		.googlesitekit-tooltip-title {
+			margin-bottom: 10px;
+		}
 	}
 }
 
