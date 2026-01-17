@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
-use Google\Site_Kit\Core\Email_Reporting\Was_Analytics_4_Connected;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
@@ -51,13 +50,6 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 	 * @var Modules
 	 */
 	private $modules;
-
-	/**
-	 * Was_Analytics_4_Connected instance.
-	 *
-	 * @var Was_Analytics_4_Connected
-	 */
-	private $was_analytics_4_connected;
 
 	/**
 	 * User_Options instance.
@@ -102,14 +94,13 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context                   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options                         = new Options( $this->context );
-		$this->user_options              = new User_Options( $this->context );
-		$this->settings                  = new Email_Reporting_Settings( $options );
-		$this->authentication            = new Authentication( $this->context, $options, $this->user_options );
-		$this->modules                   = new Modules( $this->context, $options, $this->user_options, $this->authentication );
-		$this->user_settings             = new User_Email_Reporting_Settings( $this->user_options );
-		$this->was_analytics_4_connected = new Was_Analytics_4_Connected( $options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options              = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context );
+		$this->settings       = new Email_Reporting_Settings( $options );
+		$this->authentication = new Authentication( $this->context, $options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $options, $this->user_options, $this->authentication );
+		$this->user_settings  = new User_Email_Reporting_Settings( $this->user_options );
 		$this->authentication->credentials()->set(
 			array(
 				'oauth2_client_id'     => 'test-client-id',
@@ -124,7 +115,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->set_user_access_token( $this->primary_admin_id );
 		wp_set_current_user( $this->primary_admin_id );
 
-		$this->controller              = new REST_Email_Reporting_Controller( $this->settings, $this->was_analytics_4_connected, $this->modules, $this->user_options, $this->user_settings );
+		$this->controller              = new REST_Email_Reporting_Controller( $this->settings, $this->modules, $this->user_options, $this->user_settings );
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}
 
