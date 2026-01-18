@@ -85,7 +85,7 @@ AnalyticsWasConnected.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
-				disconnectedAt: '2024-01-01T00:00:00Z',
+				disconnectedAt: 1735660800,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
@@ -107,7 +107,7 @@ AnalyticsWasConnectedViewOnly.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
-				disconnectedAt: '2024-01-01T00:00:00Z',
+				disconnectedAt: 1735660800,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {

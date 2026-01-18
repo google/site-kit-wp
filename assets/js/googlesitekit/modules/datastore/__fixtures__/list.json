@@ -79,7 +79,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
-		"disconnectedAt": "2024-01-01T00:00:00Z",
+		"disconnectedAt": 1735660800,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
