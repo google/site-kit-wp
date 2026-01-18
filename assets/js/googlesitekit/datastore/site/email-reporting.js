@@ -180,18 +180,6 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
-
-	/**
-	 * Gets whether Analytics 4 was ever connected.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
-	 */
-	getWasAnalytics4Connected( state ) {
-		return state.emailReporting?.wasAnalytics4Connected?.wasConnected;
-	},
 };
 
 const store = combineStores(
