@@ -11,6 +11,7 @@
 		"shareable": false,
 		"active": true,
 		"connected": true,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -27,6 +28,7 @@
 		"shareable": true,
 		"active": true,
 		"connected": true,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -43,6 +45,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -59,6 +62,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -75,6 +79,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": "2024-01-01T00:00:00Z",
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -91,6 +96,7 @@
 		"shareable": true,
 		"active": true,
 		"connected": true,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -107,6 +113,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -123,6 +130,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
@@ -139,6 +147,7 @@
 		"shareable": false,
 		"active": false,
 		"connected": false,
+		"disconnectedAt": false,
 		"dependencies": [],
 		"dependants": [],
 		"owner": null
