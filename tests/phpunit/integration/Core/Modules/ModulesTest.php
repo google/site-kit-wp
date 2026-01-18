@@ -14,6 +14,7 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
@@ -367,6 +368,25 @@ class ModulesTest extends TestCase {
 		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $deactivation_invocations );
+	}
+
+	public function test_deactivate_module__disconnect() {
+		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules     = new Modules( $context );
+		$fake_module = new FakeModule( $context );
+
+		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
+
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'The active modules option should contain the fake module initially.' );
+		$this->assertFalse( get_option( Disconnected_Modules::OPTION ), 'The disconnected modules option should be empty initially.' );
+
+		$this->assertTrue( $modules->deactivate_module( 'fake-module', true ) );
+
+		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ), 'The active modules option should not contain the fake module after deactivation.' );
+		$disconnected_modules = get_option( Disconnected_Modules::OPTION );
+		$this->assertArrayHasKey( 'fake-module', $disconnected_modules, 'The disconnected modules setting should contain the disconnected module.' );
+		$this->assertIsInt( $disconnected_modules['fake-module'] );
 	}
 
 	/**
