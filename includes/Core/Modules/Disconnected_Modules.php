@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Modules\DisconnectedModules
+ * Class Google\Site_Kit\Core\Modules\Disconnected_Modules
  *
  * @package   Google\Site_Kit\Core\Modules
  * @copyright 2026 Google LLC
@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\Setting;
  * @access private
  * @ignore
  */
-class DisconnectedModules extends Setting {
+class Disconnected_Modules extends Setting {
 
 	const OPTION = 'googlesitekit_disconnected_modules';
 

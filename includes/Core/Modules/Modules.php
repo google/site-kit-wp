@@ -141,10 +141,10 @@ final class Modules implements Provides_Feature_Metrics {
 	private $dashboard_sharing_controller;
 
 	/**
-	 * DisconnectedModules setting instance.
+	 * Disconnected_Modules setting instance.
 	 *
 	 * @since n.e.x.t
-	 * @var DisconnectedModules
+	 * @var Disconnected_Modules
 	 */
 	private $disconnected_modules;
 
@@ -190,7 +190,7 @@ final class Modules implements Provides_Feature_Metrics {
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->authentication       = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets               = $assets ?: new Assets( $this->context );
-		$this->disconnected_modules = new DisconnectedModules( $this->options );
+		$this->disconnected_modules = new Disconnected_Modules( $this->options );
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
