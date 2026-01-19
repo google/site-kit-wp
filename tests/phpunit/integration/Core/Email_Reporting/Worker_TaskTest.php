@@ -256,7 +256,8 @@ class Worker_TaskTest extends TestCase {
 				$this->data_requests,
 				$this->template_formatter,
 				new Email_Report_Sender( $this->template_renderer_factory, $this->email_sender )
-			)
+			),
+			$this->data_requests
 		);
 
 		$batch_id       = 'batch-real';
@@ -580,7 +581,8 @@ class Worker_TaskTest extends TestCase {
 			$this->limiter,
 			$batch_query,
 			$this->scheduler,
-			$log_processor
+			$log_processor,
+			$this->data_requests
 		);
 	}
 
