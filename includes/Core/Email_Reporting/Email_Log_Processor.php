@@ -81,11 +81,13 @@ class Email_Log_Processor {
 	 * Processes a single email log record.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
 	 *
-	 * @param int    $post_id   Email log post ID.
-	 * @param string $frequency Frequency slug.
+	 * @param int    $post_id         Email log post ID.
+	 * @param string $frequency       Frequency slug.
+	 * @param array  $shared_payloads Optional. Pre-fetched module payloads keyed by module slug. Default empty.
 	 */
-	public function process( $post_id, $frequency ) {
+	public function process( $post_id, $frequency, array $shared_payloads = array() ) {
 		$this->batch_query->increment_attempt( $post_id );
 
 		$email_log = $this->get_email_log( $post_id );
@@ -105,7 +107,11 @@ class Email_Log_Processor {
 			return;
 		}
 
-		$raw_payload = $this->data_requests->get_user_payload( $user->ID, $date_range );
+		if ( empty( $shared_payloads ) ) {
+			$raw_payload = $this->data_requests->get_user_payload( $user->ID, $date_range );
+		} else {
+			$raw_payload = $this->data_requests->get_user_payload( $user->ID, $date_range, $shared_payloads );
+		}
 		if ( is_wp_error( $raw_payload ) ) {
 			$this->mark_failed( $post_id, $raw_payload );
 			return;
