@@ -727,10 +727,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Content policy state field should not be included when feature flag is disabled'
 		);
 
-		// Test that the content policy state field is included when feature flag is enabled, even if contentPolicyStatus is just the default value.
+		// Test that the content policy state field is included when feature flag is enabled, even if `contentPolicyStatus` is just the default value.
 		$this->enable_feature( 'rrmPolicyViolations' );
 
-		// Reset settings - contentPolicyStatus will be default value when feature flag is enabled.
+		// Reset settings - `contentPolicyStatus` will be default value when feature flag is enabled.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID' => 'test-publication-id',
@@ -750,7 +750,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Content policy state field should have empty value when contentPolicyStatus is default'
 		);
 
-		// Test that the content policy state field is added with correct values when feature flag is enabled and contentPolicyStatus contains contentPolicyState.
+		// Test that the content policy state field is added with correct values when feature flag is enabled and `contentPolicyStatus` contains `contentPolicyState`.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID'       => 'test-publication-id',
@@ -785,7 +785,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Content policy state field should have correct debug value'
 		);
 
-		// Test that the content policy state field handles missing contentPolicyState property gracefully.
+		// Test that the content policy state field handles missing `contentPolicyState` property gracefully.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID'       => 'test-publication-id',
