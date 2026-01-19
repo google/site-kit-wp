@@ -356,7 +356,7 @@ class Report_Data_Builder {
 			}
 
 			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
-			$compare_value = isset( $compare_by_key[ $key ] ) ? (float) $compare_by_key[ $key ] : null;
+			$compare_value = isset( $compare_by_key[ $key ] ) ? (float) $compare_by_key[ $key ] : 0.0;
 
 			$labels[] = $key;
 
@@ -366,12 +366,8 @@ class Report_Data_Builder {
 				$values[] = $current_value;
 			}
 
-			// If compare value is null or zero, treat as new (100% increase).
-			if ( null === $compare_value || 0.0 === $compare_value ) {
-				$trends[] = 100;
-			} else {
-				$trends[] = ( ( $current_value - $compare_value ) / $compare_value ) * 100;
-			}
+			$trend    = $compare_value > 0 ? ( ( $current_value - $compare_value ) / $compare_value ) * 100 : 0;
+			$trends[] = $trend;
 
 			$dimension_values[] = $this->processor->format_dimension_value( $key );
 		}
@@ -411,6 +407,8 @@ class Report_Data_Builder {
 		$current_rows = $this->processor->normalize_rows( $current_rows );
 		$compare_rows = $this->processor->normalize_rows( $compare_rows );
 
+		$entries = array();
+
 		$compare_by_key = array();
 		foreach ( $compare_rows as $row ) {
 			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
@@ -420,8 +418,6 @@ class Report_Data_Builder {
 			$compare_by_key[ $key ] = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
 		}
 
-		$entries = array();
-
 		foreach ( $current_rows as $row ) {
 			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
 			if ( '' === $key ) {
@@ -429,8 +425,8 @@ class Report_Data_Builder {
 			}
 
 			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
-			$compare_value = $compare_by_key[ $key ] ?? null;
-			$delta         = ( null === $compare_value ) ? $current_value : $current_value - (float) $compare_value;
+			$compare_value = $compare_by_key[ $key ] ?? 0.0;
+			$delta         = $current_value - (float) $compare_value;
 
 			// Only keep increases.
 			if ( $delta <= 0 ) {
@@ -441,6 +437,7 @@ class Report_Data_Builder {
 				'label'           => $key,
 				'value'           => $current_value,
 				'delta'           => $delta,
+				'percent_change'  => $compare_value > 0 ? ( $delta / $compare_value ) * 100 : 0,
 				'dimension_value' => $this->processor->format_dimension_value( $key ),
 			);
 		}
@@ -469,8 +466,8 @@ class Report_Data_Builder {
 				$values[] = round( $entry['value'] * 100, 1 ) . '%';
 				$trends[] = round( $entry['delta'] * 100, 1 );
 			} else {
-				$values[] = $entry['value'];
-				$trends[] = $entry['delta'];
+				$values[] = $entry['delta'];
+				$trends[] = round( $entry['percent_change'], 1 );
 			}
 			$dimension_values[] = $entry['dimension_value'];
 		}

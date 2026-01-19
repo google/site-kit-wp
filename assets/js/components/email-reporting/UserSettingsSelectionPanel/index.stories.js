@@ -70,6 +70,7 @@ Subscribed.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: true,
+			frequency: 'weekly',
 		} );
 	},
 };

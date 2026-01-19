@@ -29,16 +29,11 @@ class WPFormsTest extends TestCase {
 		$this->wpforms = new WPForms( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'WPFORMS_VERSION' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'WPFORMS_VERSION' );
-		}
-	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->wpforms->is_active() );
 		define( 'WPFORMS_VERSION', 1 );

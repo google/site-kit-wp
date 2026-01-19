@@ -34,7 +34,7 @@
 			}
 		}
 
-		.googlesitekit-publication-onboarding-state-notice + .googlesitekit-settings-module__meta-items {
+		.googlesitekit-notice-container + .googlesitekit-settings-module__meta-items {
 			margin-top: $grid-gap-phone;
 
 			@media (min-width: $bp-desktop) {
@@ -56,6 +56,10 @@
 			}
 		}
 
+		.googlesitekit-notice-container .googlesitekit-moduleaccess-warning-notice {
+			margin-bottom: 8px; // Override 24px bottom margin to match spacing before the below `id-warning-notice` refactoring.
+		}
+
 		.googlesitekit-rrm-settings-edit__product-id-container {
 			align-items: center;
 			display: flex;
@@ -69,12 +73,35 @@
 				width: 100%;
 			}
 
+			.googlesitekit-rrm-settings-edit__product-id-warning-notice .googlesitekit-notice-container {
+				// This is a special case where we want the notice layout to depend on the viewport width
+				// and not the parent container width. So container queries are overridden with media queries
+				// within flexbox below.
+				container-type: normal;
+			}
+
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
 				@media (min-width: $bp-wpAdminBarTablet) {
 					left: 220px;
 					max-width: 442px;
 					position: absolute;
 					top: -10px;
+
+					.googlesitekit-notice {
+						align-items: center;
+						flex-direction: row;
+						gap: $grid-gap-phone;
+						padding: 14px $grid-gap-desktop;
+
+						.googlesitekit-notice__content {
+							flex: 1;
+						}
+
+						.googlesitekit-notice__action {
+							justify-content: normal;
+							width: auto;
+						}
+					}
 				}
 			}
 		}

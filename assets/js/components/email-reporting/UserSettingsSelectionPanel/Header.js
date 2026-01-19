@@ -39,6 +39,10 @@ export default function Header( { closePanel } ) {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
+
 	const adminSettingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
@@ -56,7 +60,7 @@ export default function Header( { closePanel } ) {
 			title={ __( 'Email reports subscription', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
 		>
-			{ ! isViewOnly && (
+			{ ! isViewOnly && isEmailReportingEnabled && (
 				<P type="body" size="small">
 					{ createInterpolateElement(
 						__(

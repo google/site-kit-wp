@@ -15,40 +15,44 @@ exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 
           class="mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-notice googlesitekit-notice--success"
+            class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice__icon"
+              class="googlesitekit-notice googlesitekit-notice--success"
             >
-              <svg />
-            </div>
-            <div
-              class="googlesitekit-notice__content"
-            >
-              <p
-                class="googlesitekit-notice__title"
+              <div
+                class="googlesitekit-notice__icon"
               >
-                You successfully enabled Google tag gateway for advertisers!
-              </p>
-              <p
-                class="googlesitekit-notice__description"
+                <svg />
+              </div>
+              <div
+                class="googlesitekit-notice__content"
               >
-                You can always disable it in Analytics or Ads settings
-              </p>
-            </div>
-            <div
-              class="googlesitekit-notice__action"
-            >
-              <button
-                class="mdc-button mdc-button--tertiary"
-                target="_self"
-              >
-                <span
-                  class="mdc-button__label"
+                <p
+                  class="googlesitekit-notice__title"
                 >
-                  Got it
-                </span>
-              </button>
+                  You successfully enabled Google tag gateway for advertisers!
+                </p>
+                <p
+                  class="googlesitekit-notice__description"
+                >
+                  You can always disable it in Analytics or Ads settings
+                </p>
+              </div>
+              <div
+                class="googlesitekit-notice__action"
+              >
+                <button
+                  class="mdc-button mdc-button--tertiary"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Got it
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
