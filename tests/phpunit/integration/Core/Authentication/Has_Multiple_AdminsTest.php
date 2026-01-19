@@ -154,9 +154,9 @@ class Has_Multiple_AdminsTest extends TestCase {
 		}
 
 		// Create a super admin user.
-		$super_admin = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
-		grant_super_admin( $super_admin->ID );
-		$regular_admin = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$super_admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		grant_super_admin( $super_admin_id );
+		$regular_admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 		$has_multiple_admins->register();
@@ -170,8 +170,8 @@ class Has_Multiple_AdminsTest extends TestCase {
 
 		// Create a second super-admin; this causes a different code path to
 		// be taken in `Has_Multiple_Admins::get()`.
-		$second_super_admin = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		grant_super_admin( $second_super_admin->ID );
+		$second_super_admin_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		grant_super_admin( $second_super_admin_id );
 
 		// Check that we still have multiple admins.
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are two super-admin users' );
