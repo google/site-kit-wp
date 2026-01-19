@@ -191,6 +191,7 @@ class Has_Multiple_AdminsTest extends TestCase {
 
 		// Verify the transient is updated and reflects the admin count,
 		// including super admins.
-		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to three admins' );
+		// (One regular admin + two super admins = three admins.)
+		$this->assertEquals( 3, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to three admins' );
 	}
 }
