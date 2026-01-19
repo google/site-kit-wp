@@ -29,7 +29,7 @@ class Has_Multiple_Admins {
 	/**
 	 * The option_name for this transient.
 	 */
-	const OPTION = 'googlesitekit_has_multiple_administrators';
+	const OPTION = 'googlesitekit_number_of_administrators';
 
 	/**
 	 * Transients instance.
@@ -70,10 +70,12 @@ class Has_Multiple_Admins {
 	 * @return boolean TRUE if the site kit has multiple admins, otherwise FALSE.
 	 */
 	public function get() {
-		$has_multiple_admins = $this->transients->get( self::OPTION );
+		$number_of_admins = $this->transients->get( self::OPTION );
 
-		if ( false !== $has_multiple_admins ) {
-			return 1 === $has_multiple_admins;
+		// If we have a cached number of admins, use it rather than doing
+		// database queries to check on the number of admins.
+		if ( ! empty( $number_of_admins ) ) {
+			return $number_of_admins > 1;
 		}
 
 		if ( is_multisite() ) {
@@ -98,7 +100,7 @@ class Has_Multiple_Admins {
 					'number'      => 1,
 					'role__in'    => array( 'Administrator' ),
 					'count_total' => true,
-					'exclude'     => $exclude_users,
+					'exclude'     => $exclude_users, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- We're excluding existing super admins from the result and caching the results of this slow query. This is a legitimate use case of the 'exclude' param.
 				);
 
 				$user_query = new WP_User_Query( $user_query_args );
@@ -116,11 +118,11 @@ class Has_Multiple_Admins {
 			$admins_count = $user_query->get_total();
 		}
 
-		$has_multiple_admins = $admins_count > 1 ? 1 : 0;
+		// Set the number of admins transient for 1 week.
+		$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
 
-		$this->transients->set( self::OPTION, $has_multiple_admins, WEEK_IN_SECONDS );
-
-		return $has_multiple_admins;
+		// Return whether we have multiple admins.
+		return $admins_count > 1;
 	}
 
 	/**
