@@ -26,8 +26,8 @@ import {
 	provideModules,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+} from '../../../../../../../tests/js/test-utils';
+import RRMSetupSuccessSubtleNotification from '.';
 import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
@@ -45,7 +45,7 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
-jest.mock( '../../../../hooks/useQueryArg' );
+jest.mock( '../../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 

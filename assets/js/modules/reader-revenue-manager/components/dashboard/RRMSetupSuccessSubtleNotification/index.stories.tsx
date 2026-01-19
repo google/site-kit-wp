@@ -23,9 +23,9 @@ import { withQuery } from '@storybook/addon-queryparams';
 import {
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+} from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import RRMSetupSuccessSubtleNotification from '.';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
