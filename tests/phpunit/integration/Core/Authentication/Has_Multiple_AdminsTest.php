@@ -161,12 +161,12 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$has_multiple_admins = new Has_Multiple_Admins( $this->transients );
 		$has_multiple_admins->register();
 
+		// Should return TRUE since we have a super-admin and regular admin.
+		$this->assertFalse( $has_multiple_admins->get(), 'Should return true when there is one admin and one super-admin' );
+
 		// Verify we have two admin users; one normal admin and another super
 		// admin.
 		$this->assertEquals( 2, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should reflect two admins' );
-
-		// Should return TRUE since we have a super-admin and regular admin.
-		$this->assertFalse( $has_multiple_admins->get(), 'Should return true when there is one admin and one super-admin' );
 
 		// Create a second super-admin; this causes a different code path to
 		// be taken in `Has_Multiple_Admins::get()`.
@@ -175,6 +175,9 @@ class Has_Multiple_AdminsTest extends TestCase {
 
 		// Check that we still have multiple admins.
 		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there are two super-admin users' );
+
+		// Verify the transient is updated and reflects the admin count,
+		// including super admins.
 		$this->assertEquals( 3, $this->transients->get( Has_Multiple_Admins::OPTION ), 'Transient should be updated to three admins' );
 	}
 }
