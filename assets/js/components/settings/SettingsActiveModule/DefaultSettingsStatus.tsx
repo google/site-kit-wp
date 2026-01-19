@@ -94,7 +94,7 @@ export default function DefaultSettingsStatus( { slug }: { slug: string } ) {
 				<Button
 					onClick={ onActionClick }
 					disabled={
-						requirementsError || isNavigatingToAdminReAuthURL
+						!! requirementsError || isNavigatingToAdminReAuthURL
 					}
 					inverse
 				>
