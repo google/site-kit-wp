@@ -133,22 +133,16 @@ export default function WelcomeModal() {
 	const closeAndDismissModal = useCallback( async () => {
 		setIsOpen( false );
 
-		const itemsToDismiss = [];
+		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
+			await dismissItem( WITH_TOUR_DISMISSED_ITEM_SLUG );
+		}
 
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
 			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
 		) {
-			itemsToDismiss.push( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
 		}
-
-		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
-			itemsToDismiss.push( WITH_TOUR_DISMISSED_ITEM_SLUG );
-		}
-
-		await Promise.all(
-			itemsToDismiss.map( ( item ) => dismissItem( item ) )
-		);
 
 		// Ensure the setup success notification won't be shown on page reload.
 		setNotification( undefined );
