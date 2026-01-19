@@ -162,7 +162,7 @@ class Has_Multiple_AdminsTest extends TestCase {
 		$has_multiple_admins->register();
 
 		// Should return TRUE since we have a super-admin and regular admin.
-		$this->assertFalse( $has_multiple_admins->get(), 'Should return true when there is one admin and one super-admin' );
+		$this->assertTrue( $has_multiple_admins->get(), 'Should return true when there is one admin and one super-admin' );
 
 		// Verify we have two admin users; one normal admin and another super
 		// admin.
