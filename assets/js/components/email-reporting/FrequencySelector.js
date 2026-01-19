@@ -39,9 +39,13 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function FrequencySelector( { isUserSubscribed } ) {
+	const breakpoint = useBreakpoint();
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
 	const DAY_NAMES = useMemo(
 		() => [
 			_x( 'Sunday', 'day name', 'google-site-kit' ),
@@ -118,12 +122,6 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 		}
 	}
 
-	// Determine which column the saved frequency is in (0, 1, or 2).
-	const savedFrequencyIndex =
-		EMAIL_REPORT_FREQUENCIES.indexOf( savedFrequency );
-	const showCurrentSubscription =
-		isUserSubscribed && savedFrequencyIndex !== -1;
-
 	return (
 		<Fragment>
 			<Typography
@@ -134,29 +132,36 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 			>
 				{ __( 'Frequency', 'google-site-kit' ) }
 			</Typography>
-			{ showCurrentSubscription && (
+
+			{ /* Show "Current subscription" badge on larger screens */ }
+			{ isUserSubscribed && savedFrequency && ! isMobileBreakpoint && (
 				<div className="googlesitekit-frequency-selector__badge-row">
-					{ EMAIL_REPORT_FREQUENCIES.map(
-						( reportFrequency, index ) => (
-							<div
-								key={ reportFrequency }
-								className="googlesitekit-frequency-selector__badge-cell"
-							>
-								{ index === savedFrequencyIndex && (
-									<div className="googlesitekit-frequency-selector__current-subscription">
-										<P>
-											{ __(
-												'Current subscription',
-												'google-site-kit'
-											) }
-										</P>
-									</div>
-								) }
-							</div>
-						)
-					) }
+					{ EMAIL_REPORT_FREQUENCIES.map( ( reportFrequency ) => (
+						<div
+							key={ reportFrequency }
+							className="googlesitekit-frequency-selector__badge-cell"
+						>
+							{ reportFrequency === savedFrequency && (
+								<div
+									key={ reportFrequency }
+									className="googlesitekit-frequency-selector__current-subscription"
+								>
+									<Typography
+										type={ TYPE_BODY }
+										size={ SIZE_SMALL }
+									>
+										{ __(
+											'Current subscription',
+											'google-site-kit'
+										) }
+									</Typography>
+								</div>
+							) }
+						</div>
+					) ) }
 				</div>
 			) }
+
 			<div
 				className="googlesitekit-frequency-selector"
 				role="radiogroup"
@@ -187,24 +192,50 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								handleKeyDown( event, reportFrequency )
 							}
 						>
-							<div className="googlesitekit-frequency-selector__label-row">
+							{ isUserSubscribed &&
+								savedFrequency &&
+								isMobileBreakpoint &&
+								reportFrequency === savedFrequency && (
+									<div
+										className={ classnames(
+											'googlesitekit-frequency-selector__current-subscription',
+											{
+												'googlesitekit-frequency-selector__current-subscription--selected':
+													isSelected,
+											}
+										) }
+									>
+										<Typography
+											type={ TYPE_BODY }
+											size={ SIZE_SMALL }
+										>
+											{ __(
+												'Current subscription',
+												'google-site-kit'
+											) }
+										</Typography>
+									</div>
+								) }
+
+							<div className="googlesitekit-frequency-selector__content">
 								<div className="googlesitekit-frequency-selector__label">
 									<Typography type="label" size="large">
 										{ label }
 									</Typography>
 								</div>
-							</div>
+								<div className="googlesitekit-frequency-selector__period-description">
+									<div className="googlesitekit-frequency-selector__period">
+										<Typography type="body" size="small">
+											{ period }
+										</Typography>
+									</div>
 
-							<div className="googlesitekit-frequency-selector__period">
-								<Typography type="body" size="small">
-									{ period }
-								</Typography>
-							</div>
-
-							<div className="googlesitekit-frequency-selector__description">
-								<Typography type="body" size="small">
-									{ description }
-								</Typography>
+									<div className="googlesitekit-frequency-selector__description">
+										<Typography type="body" size="small">
+											{ description }
+										</Typography>
+									</div>
+								</div>
 							</div>
 						</div>
 					);

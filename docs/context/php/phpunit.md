@@ -6,11 +6,11 @@ Site Kit uses PHPUnit with the WordPress test framework to provide comprehensive
 
 The PHPUnit testing system provides:
 
-- **Integration testing**: All tests interact with WordPress and database
-- **WordPress test framework**: Uses `wp-phpunit` for WordPress-specific testing
-- **Comprehensive test utilities**: Traits, fakes, and custom assertions
-- **Contract testing**: Interface compliance validation through traits
-- **Mock HTTP handlers**: Simulated Google API responses
+-   **Integration testing**: All tests interact with WordPress and database
+-   **WordPress test framework**: Uses `wp-phpunit` for WordPress-specific testing
+-   **Comprehensive test utilities**: Traits, fakes, and custom assertions
+-   **Contract testing**: Interface compliance validation through traits
+-   **Mock HTTP handlers**: Simulated Google API responses
 
 ## Directory Structure
 
@@ -85,10 +85,11 @@ class TestCase extends WP_UnitTestCase {
 ```
 
 **Key Features**:
-- Extends WordPress `WP_UnitTestCase` for full WordPress integration
-- Sets `$preserveGlobalState = false` to handle closures in global state
-- Manages feature flags from `feature-flags.json`
-- Provides custom assertions (see Assertions section)
+
+-   Extends WordPress `WP_UnitTestCase` for full WordPress integration
+-   Sets `$preserveGlobalState = false` to handle closures in global state
+-   Manages feature flags from `feature-flags.json`
+-   Provides custom assertions (see Assertions section)
 
 ### Settings Test Base Class
 
@@ -256,10 +257,11 @@ public function tear_down() {
 ```
 
 **Note**: The WordPress test framework automatically:
-- Resets database between tests
-- Clears transients and caches
-- Removes registered hooks
-- Deletes created posts, users, terms
+
+-   Resets database between tests
+-   Clears transients and caches
+-   Removes registered hooks
+-   Deletes created posts, users, terms
 
 ## Test Doubles and Fakes
 
@@ -477,11 +479,12 @@ class Analytics_4Test extends TestCase {
 ```
 
 **Available Contract Traits**:
-- `Module_With_Settings_ContractTests`
-- `Module_With_Owner_ContractTests`
-- `Module_With_Scopes_ContractTests`
-- `Module_With_Service_Entity_ContractTests`
-- `Module_With_Data_Available_State_ContractTests`
+
+-   `Module_With_Settings_ContractTests`
+-   `Module_With_Owner_ContractTests`
+-   `Module_With_Scopes_ContractTests`
+-   `Module_With_Service_Entity_ContractTests`
+-   `Module_With_Data_Available_State_ContractTests`
 
 ## Custom Assertions
 
@@ -719,6 +722,50 @@ public function test_feature_flag_enabled() {
 }
 ```
 
+### Testing with Constants
+
+When testing functionality that relies on PHP constants (using `defined()` or `constant()`), tests must run in separate processes. This is because PHP constants cannot be undefined or changed once defined within a single process.
+
+Use the `@runInSeparateProcess` annotation:
+
+```php
+/**
+ * @runInSeparateProcess
+ */
+public function test_behavior_when_constant_defined() {
+    define( 'MY_CUSTOM_CONSTANT', 'test_value' );
+
+    $result = $this->object->get_value_based_on_constant();
+
+    $this->assertEquals( 'test_value', $result );
+}
+
+/**
+ * @runInSeparateProcess
+ */
+public function test_behavior_when_constant_not_defined() {
+    // MY_CUSTOM_CONSTANT is not defined in this process
+
+    $result = $this->object->get_value_based_on_constant();
+
+    $this->assertEquals( 'default_value', $result );
+}
+```
+
+**When to use `@runInSeparateProcess`**:
+
+-   Testing code that checks `defined( 'CONSTANT_NAME' )`
+-   Testing different behaviors based on constant values
+-   Testing code that defines constants conditionally
+-   Testing WordPress environment constants like `WPCOMSH_VERSION`, `IS_ATOMIC`, etc.
+
+**Important notes**:
+
+-   Each test with this annotation runs in its own PHP process
+-   The base `TestCase` sets `$preserveGlobalState = false` which is required for separate processes to work with closures
+-   Separate process tests are slower, so only use this annotation when necessary
+-   Group related constant tests together in the same test file for better organization
+
 ## PHPUnit Groups
 
 Organize tests with `@group` annotations:
@@ -734,15 +781,17 @@ class Analytics_4Test extends TestCase {
 ```
 
 **Common Groups**:
-- `@group Modules` - Module tests
-- `@group Storage` - Storage-related tests
-- `@group Authentication` - Authentication tests
-- `@group Assets` - Asset management tests
-- `@group Util` - Utility function tests
-- `@group ms-required` - Requires multisite
-- `@group ms-excluded` - Excluded from multisite
+
+-   `@group Modules` - Module tests
+-   `@group Storage` - Storage-related tests
+-   `@group Authentication` - Authentication tests
+-   `@group Assets` - Asset management tests
+-   `@group Util` - Utility function tests
+-   `@group ms-required` - Requires multisite
+-   `@group ms-excluded` - Excluded from multisite
 
 **Running Specific Groups**:
+
 ```bash
 # Run only module tests
 composer test:php -- --group=Modules
@@ -778,6 +827,7 @@ define( 'WP_DEBUG', true );
 **Location**: `tests/phpunit/bootstrap.php`
 
 The bootstrap file:
+
 1. Loads WordPress test framework
 2. Loads Site Kit plugin
 3. Initializes test environment
@@ -788,122 +838,133 @@ The bootstrap file:
 ### DO
 
 1. **Always extend TestCase**
-   ```php
-   use Google\Site_Kit\Tests\TestCase;
 
-   class MyTest extends TestCase {
-   ```
+    ```php
+    use Google\Site_Kit\Tests\TestCase;
+
+    class MyTest extends TestCase {
+    ```
 
 2. **Use snake_case for setup/teardown**
-   ```php
-   public function set_up() {
-       parent::set_up();
-   }
 
-   public function tear_down() {
-       parent::tear_down();
-   }
-   ```
+    ```php
+    public function set_up() {
+        parent::set_up();
+    }
+
+    public function tear_down() {
+        parent::tear_down();
+    }
+    ```
 
 3. **Call parent methods first**
-   ```php
-   public function set_up() {
-       parent::set_up(); // Always first
 
-       // Your setup code
-   }
-   ```
+    ```php
+    public function set_up() {
+        parent::set_up(); // Always first
+
+        // Your setup code
+    }
+    ```
 
 4. **Use helper traits**
-   ```php
-   use ModulesHelperTrait;
-   use Fake_Site_Connection_Trait;
 
-   $this->activate_modules( 'analytics-4' );
-   $this->fake_site_connection();
-   ```
+    ```php
+    use ModulesHelperTrait;
+    use Fake_Site_Connection_Trait;
+
+    $this->activate_modules( 'analytics-4' );
+    $this->fake_site_connection();
+    ```
 
 5. **Mock Google API calls**
-   ```php
-   FakeHttp::fake_google_http_handler( $google_client, $handler );
-   ```
+
+    ```php
+    FakeHttp::fake_google_http_handler( $google_client, $handler );
+    ```
 
 6. **Use custom assertions**
-   ```php
-   $this->assertOptionExists( 'option_name' );
-   $this->assertWPError( $result );
-   ```
+
+    ```php
+    $this->assertOptionExists( 'option_name' );
+    $this->assertWPError( $result );
+    ```
 
 7. **Test both success and failure cases**
-   ```php
-   public function test_valid_input() { /* ... */ }
-   public function test_invalid_input() { /* ... */ }
-   ```
+
+    ```php
+    public function test_valid_input() { /* ... */ }
+    public function test_invalid_input() { /* ... */ }
+    ```
 
 8. **Use descriptive test names**
-   ```php
-   public function test_get_accounts__without_authentication__returns_wp_error()
-   ```
+    ```php
+    public function test_get_accounts__without_authentication__returns_wp_error()
+    ```
 
 ### DON'T
 
 1. **Don't test WordPress core functionality**
-   ```php
-   // Bad - testing WordPress core
-   public function test_add_option_creates_option() {
-       add_option( 'test', 'value' );
-       $this->assertEquals( 'value', get_option( 'test' ) );
-   }
-   ```
+
+    ```php
+    // Bad - testing WordPress core
+    public function test_add_option_creates_option() {
+        add_option( 'test', 'value' );
+        $this->assertEquals( 'value', get_option( 'test' ) );
+    }
+    ```
 
 2. **Don't make real API requests**
-   ```php
-   // Bad - makes real HTTP request
-   public function test_api_request() {
-       $response = wp_remote_get( 'https://www.googleapis.com/...' );
-   }
 
-   // Good - mock HTTP requests
-   public function test_api_request() {
-       FakeHttp::fake_google_http_handler( $client, $handler );
-   }
-   ```
+    ```php
+    // Bad - makes real HTTP request
+    public function test_api_request() {
+        $response = wp_remote_get( 'https://www.googleapis.com/...' );
+    }
+
+    // Good - mock HTTP requests
+    public function test_api_request() {
+        FakeHttp::fake_google_http_handler( $client, $handler );
+    }
+    ```
 
 3. **Don't skip setup/teardown**
-   ```php
-   // Bad - missing parent call
-   public function set_up() {
-       $this->object = new MyClass();
-   }
 
-   // Good
-   public function set_up() {
-       parent::set_up();
-       $this->object = new MyClass();
-   }
-   ```
+    ```php
+    // Bad - missing parent call
+    public function set_up() {
+        $this->object = new MyClass();
+    }
+
+    // Good
+    public function set_up() {
+        parent::set_up();
+        $this->object = new MyClass();
+    }
+    ```
 
 4. **Don't test implementation details**
-   ```php
-   // Bad - testing private method implementation
-   public function test_private_method_logic() {
-       $value = $this->force_get_property( $object, 'private_prop' );
-       // Testing internal state
-   }
 
-   // Good - test public API behavior
-   public function test_public_method_returns_expected_result() {
-       $result = $object->public_method();
-       $this->assertEquals( 'expected', $result );
-   }
-   ```
+    ```php
+    // Bad - testing private method implementation
+    public function test_private_method_logic() {
+        $value = $this->force_get_property( $object, 'private_prop' );
+        // Testing internal state
+    }
+
+    // Good - test public API behavior
+    public function test_public_method_returns_expected_result() {
+        $result = $object->public_method();
+        $this->assertEquals( 'expected', $result );
+    }
+    ```
 
 5. **Don't leave dangling filters/actions**
-   ```php
-   // WordPress test framework automatically cleans up hooks
-   // But if you need manual cleanup:
-   remove_filter( 'filter_name', array( $this, 'callback' ) );
-   ```
+    ```php
+    // WordPress test framework automatically cleans up hooks
+    // But if you need manual cleanup:
+    remove_filter( 'filter_name', array( $this, 'callback' ) );
+    ```
 
 ## Running Tests
 

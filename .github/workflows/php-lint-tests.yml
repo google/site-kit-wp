@@ -127,7 +127,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: mysqli, runkit7, uopz
+          extensions: mysqli, uopz
           tools: composer:2.1
           php-version: ${{ matrix.php_version }}
         env:
@@ -159,7 +159,7 @@ jobs:
         run: composer install --no-interaction --no-progress -vv
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: mysqli, runkit, uopz
+          extensions: mysqli, uopz
           tools: composer:2.1
           php-version: ${{ matrix.php_version }}
         if: ${{ matrix.composer_php_version }}
