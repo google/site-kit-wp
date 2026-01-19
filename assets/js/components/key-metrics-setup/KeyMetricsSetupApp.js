@@ -45,6 +45,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
@@ -105,6 +106,12 @@ export default function KeyMetricsSetupApp() {
 	const { saveUserInputSettings, saveInitialSetupSettings } =
 		useDispatch( CORE_USER );
 
+	// Trigger resolution of data availability state before the user proceeds to the dashboard.
+	useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).isGatheringData();
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
+	} );
+
 	const isSyncing = useSelect( ( select ) => {
 		const isFetchingSyncAvailableCustomDimensions =
 			select(
@@ -114,7 +121,21 @@ export default function KeyMetricsSetupApp() {
 		const isSyncingAudiences =
 			select( MODULES_ANALYTICS_4 ).isSyncingAudiences();
 
-		return isFetchingSyncAvailableCustomDimensions || isSyncingAudiences;
+		const hasResolvedAnalytics4DataAvailability =
+			select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isGatheringData'
+			);
+
+		const hasResolvedSearchConsoleDataAvailability = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'isGatheringData' );
+
+		return (
+			isFetchingSyncAvailableCustomDimensions ||
+			isSyncingAudiences ||
+			! hasResolvedAnalytics4DataAvailability ||
+			! hasResolvedSearchConsoleDataAvailability
+		);
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );

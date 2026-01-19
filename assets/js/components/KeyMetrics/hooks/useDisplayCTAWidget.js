@@ -17,10 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -36,7 +42,15 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
  * @return {boolean} Whether the CTA widget should be displayed.
  */
 export default function useDisplayCTAWidget() {
-	return useSelect( ( select ) => {
+	const { setValue } = useDispatch( CORE_UI );
+
+	const hasKeyMetricsSetupCTAWidgetAppeared = useSelect( ( select ) => {
+		return select( CORE_UI ).getValue(
+			'hasKeyMetricsSetupCTAWidgetAppeared'
+		);
+	} );
+
+	const shouldDisplayCTAWidget = useSelect( ( select ) => {
 		const isDismissed = select( CORE_USER ).isItemDismissed(
 			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 		);
@@ -45,11 +59,12 @@ export default function useDisplayCTAWidget() {
 			KEY_METRICS_SETUP_CTA_WIDGET_SLUG
 		);
 
-		// We call isGatheringData() within this hook for completeness as we do not want to rely
-		// on it being called in other components. This selector makes report requests which, if they return
-		// data, then the `data-available` transients are set. These transients are prefetched as a global on
-		// the next page load.
-
+		// We call isGatheringData() within this hook for completeness as we do
+		// not want to rely on it being called in other components. This selector
+		// makes report requests—if they return data, the `data-available`
+		// transients are set.
+		//
+		// These transients are prefetched as a global on the next page load.
 		const searchConsoleDataAvailableOnLoad = isModuleDataAvailableOnLoad(
 			select,
 			MODULE_SLUG_SEARCH_CONSOLE,
@@ -68,6 +83,30 @@ export default function useDisplayCTAWidget() {
 			analyticsDataAvailableOnLoad
 		);
 	}, [] );
+
+	// If the CTA widget is displayed, we should keep it visible until the page
+	// is reloaded, even if the user dismisses it.
+	//
+	// This prevents the widget from disappearing while the user is redirected
+	// to a new page after clicking on the CTA. (The widget displays a loading
+	// indicator after the user clicks the CTA and "dismisses" it.)
+	useEffect( () => {
+		if (
+			! hasKeyMetricsSetupCTAWidgetAppeared &&
+			shouldDisplayCTAWidget === true
+		) {
+			setValue( 'hasKeyMetricsSetupCTAWidgetAppeared', true );
+		}
+	}, [
+		hasKeyMetricsSetupCTAWidgetAppeared,
+		setValue,
+		shouldDisplayCTAWidget,
+	] );
+
+	return (
+		hasKeyMetricsSetupCTAWidgetAppeared ||
+		( ! hasKeyMetricsSetupCTAWidgetAppeared && shouldDisplayCTAWidget )
+	);
 }
 
 function isModuleDataAvailableOnLoad( select, slug, storeName ) {

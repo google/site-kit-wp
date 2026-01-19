@@ -125,7 +125,7 @@ final class Audience_Config {
 	/**
 	 * Builds a map of audience resource name to display name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return array Associative map of resource name => display name.
 	 */

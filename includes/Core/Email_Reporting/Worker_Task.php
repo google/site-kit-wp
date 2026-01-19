@@ -40,7 +40,7 @@ class Worker_Task {
 	/**
 	 * Email log processor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var Email_Log_Processor
 	 */
@@ -122,7 +122,7 @@ class Worker_Task {
 	/**
 	 * Processes a list of pending email log IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $pending_ids         Pending post IDs.
 	 * @param string $frequency           Frequency slug.
