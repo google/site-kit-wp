@@ -1749,7 +1749,7 @@ describe( 'core/modules modules', () => {
 				);
 			} );
 
-			it( 'returns timestamp if a module is disconnected', async () => {
+			it( 'returns true if a module is disconnected', async () => {
 				// Analytics is disconnected in our fixtures.
 				const slug = MODULE_SLUG_ANALYTICS_4;
 				const disconnectedAt = registry
@@ -1764,7 +1764,7 @@ describe( 'core/modules modules', () => {
 					.select( CORE_MODULES )
 					.isModuleDisconnected( slug );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( disconnectedAtLoaded ).toEqual( 1735660800 );
+				expect( disconnectedAtLoaded ).toEqual( true );
 			} );
 
 			it( 'returns false if a module is not disconnected previously', async () => {
