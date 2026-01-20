@@ -33,8 +33,17 @@ import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 import GoalsGraph from '@/svg/graphics/cta-graph-goals.svg';
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import PreviewGraph from '@/js/components/PreviewGraph';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function ActivateAnalyticsCTA( { title } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	if ( setupFlowRefreshEnabled ) {
+		return (
+			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-search-funnel" />
+		);
+	}
+
 	return (
 		<AnalyticsCTA>
 			<PreviewGraph
