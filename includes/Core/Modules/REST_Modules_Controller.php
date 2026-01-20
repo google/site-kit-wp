@@ -755,7 +755,7 @@ class REST_Modules_Controller {
 			'shareable'      => $this->modules->is_module_shareable( $module->slug ),
 			'active'         => $this->modules->is_module_active( $module->slug ),
 			'connected'      => $this->modules->is_module_connected( $module->slug ),
-			'disconnectedAt' => $this->modules->is_module_disconnected( $module->slug ),
+			'disconnectedAt' => $this->modules->get_module_disconnected_at( $module->slug ),
 			'dependencies'   => $this->modules->get_module_dependencies( $module->slug ),
 			'dependants'     => $this->modules->get_module_dependants( $module->slug ),
 			'owner'          => null,

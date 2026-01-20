@@ -643,7 +643,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * @param string $slug Unique module slug.
 	 * @return bool|int False if module is not disconnected, timestamp of disconnection otherwise.
 	 */
-	public function is_module_disconnected( $slug ) {
+	public function get_module_disconnected_at( $slug ) {
 		$disconnected_modules = $this->disconnected_modules->get();
 
 		return isset( $disconnected_modules[ $slug ] ) ? $disconnected_modules[ $slug ] : false;
