@@ -20,87 +20,57 @@
  * Internal dependencies
  */
 import {
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 
-function Template( { setupRegistry = () => {}, ...args } ) {
-	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<ActivateAnalyticsCTA { ...args } />
-		</WithRegistrySetup>
-	);
+function Template( args ) {
+	return <ActivateAnalyticsCTA { ...args } />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'Default (SFR Enabled)';
-Default.args = {
+Default.storyName = 'Default';
+
+export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
+WithSetupFlowRefreshSetUpAnalytics.storyName =
+	'With Setup Flow Refresh - Set up Analytics';
+WithSetupFlowRefreshSetUpAnalytics.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 };
-Default.parameters = {
+WithSetupFlowRefreshSetUpAnalytics.parameters = {
 	features: [ 'setupFlowRefresh' ],
 };
-Default.scenario = {};
+WithSetupFlowRefreshSetUpAnalytics.scenario = {};
 
-export const WithoutDismissedSlug = Template.bind( {} );
-WithoutDismissedSlug.storyName = 'Without Dismissed Slug (SFR Enabled)';
-WithoutDismissedSlug.args = {};
-WithoutDismissedSlug.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-
-export const AnalyticsActiveNotConnected = Template.bind( {} );
-AnalyticsActiveNotConnected.storyName =
-	'Analytics Active Not Connected (SFR Enabled)';
-AnalyticsActiveNotConnected.args = {
+export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
+WithSetupFlowRefreshCompleteSetup.storyName =
+	'With Setup Flow Refresh - Complete Setup';
+WithSetupFlowRefreshCompleteSetup.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: false,
-			},
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-		] );
-	},
+	_analyticsActive: true,
 };
-AnalyticsActiveNotConnected.parameters = {
+WithSetupFlowRefreshCompleteSetup.parameters = {
 	features: [ 'setupFlowRefresh' ],
-};
-
-export const LegacyView = Template.bind( {} );
-LegacyView.storyName = 'Legacy View (SFR Disabled)';
-LegacyView.args = {
-	children: <p>Preview graph content here</p>,
-};
-LegacyView.parameters = {
-	features: [],
 };
 
 export default {
 	title: 'Components/ActivateAnalyticsCTA',
 	component: ActivateAnalyticsCTA,
 	decorators: [
-		( Story ) => (
-			<div style={ { maxWidth: '600px' } }>
-				<Story />
-			</div>
-		),
 		( Story, { args } ) => {
+			const analyticsActive = args?._analyticsActive || false;
+
 			function setupRegistry( registry ) {
 				provideModules( registry, [
 					{
 						slug: 'analytics-4',
-						active: false,
+						active: analyticsActive,
 						connected: false,
 					},
 					{
@@ -109,18 +79,18 @@ export default {
 						connected: true,
 					},
 				] );
+				provideModuleRegistrations( registry );
 				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
 				provideUserCapabilities( registry );
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-				if ( args?.setupRegistry ) {
-					args.setupRegistry( registry );
-				}
 			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
+					<div style={ { maxWidth: '600px' } }>
+						<Story />
+					</div>
 				</WithRegistrySetup>
 			);
 		},
