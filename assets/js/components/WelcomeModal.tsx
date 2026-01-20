@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -59,35 +59,31 @@ enum MODAL_VARIANT {
 	DATA_GATHERING_COMPLETE,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type SelectFunction = ( select: any ) => any;
-
 export default function WelcomeModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
 
-	const analyticsConnected = useSelect( ( select: SelectFunction ) =>
+	const analyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const analyticsGatheringData = useSelect( ( select: SelectFunction ) => {
+	const analyticsGatheringData = useSelect( ( select: Select ) => {
 		if ( ! analyticsConnected ) {
 			return false;
 		}
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	const searchConsoleGatheringData = useSelect( ( select: SelectFunction ) =>
+	const searchConsoleGatheringData = useSelect( ( select: Select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const isGatheringDataVariantDismissed = useSelect(
-		( select: SelectFunction ) =>
-			select( CORE_USER ).isItemDismissed(
-				GATHERING_DATA_DISMISSED_ITEM_SLUG
-			)
+	const isGatheringDataVariantDismissed = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isItemDismissed(
+			GATHERING_DATA_DISMISSED_ITEM_SLUG
+		)
 	);
 
-	const isWithTourVariantDismissed = useSelect( ( select: SelectFunction ) =>
+	const isWithTourVariantDismissed = useSelect( ( select: Select ) =>
 		select( CORE_USER ).isItemDismissed( WITH_TOUR_DISMISSED_ITEM_SLUG )
 	);
 

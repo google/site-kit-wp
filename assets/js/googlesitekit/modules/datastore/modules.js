@@ -51,9 +51,10 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { listFormat } from '@/js/util';
 import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -84,6 +85,7 @@ const moduleDefaults = {
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
+	SettingsStatusComponent: DefaultSettingsStatus,
 	SetupComponent: null,
 	onCompleteSetup: undefined,
 	checkRequirements: () => true,
@@ -336,6 +338,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
+	 * @param {WPComponent}    [settings.SettingsStatusComponent]          Optional. React component to render the module status. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
@@ -361,6 +364,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SettingsSetupIncompleteComponent,
+				SettingsStatusComponent,
 				SetupComponent,
 				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
@@ -381,6 +385,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SettingsSetupIncompleteComponent,
+				SettingsStatusComponent,
 				SetupComponent,
 				overrideSetupSuccessNotification,
 				onCompleteSetup,
