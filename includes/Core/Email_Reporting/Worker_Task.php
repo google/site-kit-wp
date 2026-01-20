@@ -76,7 +76,7 @@ class Worker_Task {
 	 * @param Email_Log_Batch_Query         $batch_query           Batch query helper.
 	 * @param Email_Reporting_Scheduler     $scheduler             Scheduler instance.
 	 * @param Email_Log_Processor           $log_processor         Log processor instance.
-	 * @param Email_Reporting_Data_Requests $data_requests     Data requests helper.
+	 * @param Email_Reporting_Data_Requests $data_requests         Data requests helper.
 	 */
 	public function __construct(
 		Max_Execution_Limiter $max_execution_limiter,
