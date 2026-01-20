@@ -27,8 +27,7 @@ describe( 'SpinnerButton', () => {
 		const { container, getByRole } = render(
 			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton isSaving={ false }>Button text</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).toMatchSnapshot();
 
@@ -42,8 +41,7 @@ describe( 'SpinnerButton', () => {
 		const { container, getByRole } = render(
 			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton isSaving>Button text</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).toMatchSnapshot();
 
@@ -62,8 +60,7 @@ describe( 'SpinnerButton', () => {
 			<SpinnerButton spinnerPosition={ SPINNER_POSITION.BEFORE } isSaving>
 				Button text
 			</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).toMatchSnapshot();
 
@@ -82,8 +79,7 @@ describe( 'SpinnerButton', () => {
 			<SpinnerButton spinnerPosition={ SPINNER_POSITION.AFTER } isSaving>
 				Button text
 			</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).toMatchSnapshot();
 
@@ -102,8 +98,7 @@ describe( 'SpinnerButton', () => {
 		const { getByRole } = render(
 			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton onClick={ onClick }>Button text</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		const button = getByRole( 'button', { name: 'Button text' } );
 
@@ -116,8 +111,7 @@ describe( 'SpinnerButton', () => {
 		const { getByRole } = render(
 			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton data-test="test-value">Button text</SpinnerButton>
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect(
 			getByRole( 'button', { name: 'Button text' } )
