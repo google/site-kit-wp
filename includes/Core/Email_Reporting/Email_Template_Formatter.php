@@ -86,7 +86,7 @@ class Email_Template_Formatter {
 					$user_locale,
 					$email_log
 				);
-			} catch ( \Exception $exception ) {
+			} catch ( \Throwable $exception ) {
 				return new WP_Error( 'email_report_section_build_failed', $exception->getMessage() );
 			}
 
@@ -296,20 +296,20 @@ class Email_Template_Formatter {
 				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit.', 'google-site-kit' ),
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
 				'unsubscribe_url' => admin_url( 'admin.php?page=googlesitekit-settings#/admin-settings' ),
 				'links'           => array(
 					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/support/',
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel=1' ),
 					),
 					array(
 						'label' => __( 'Privacy Policy', 'google-site-kit' ),
 						'url'   => 'https://policies.google.com/privacy',
 					),
 					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel-opened=1' ),
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
 					),
 				),
 			),
