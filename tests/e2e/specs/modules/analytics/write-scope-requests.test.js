@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint complexity: [ "error", 20 ] */
-
 /**
  * WordPress dependencies
  */
@@ -40,22 +38,14 @@ import {
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'Analytics write scope requests', () => {
-	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
-	// won't be intercepted to reach the server and to trigger the insufficient scopes error on the server. The following requests will
-	// be intercepted and mocked to immediately return fake data to emulate property/profile creation.
+	// Flags determine conditional interception of create endpoints.
 	let interceptCreatePropertyRequest;
 	let interceptCreateWebDataStreamRequest;
 
-	beforeAll( async () => {
-		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if (
-				request
-					.url()
-					.startsWith(
-						'https://sitekit.withgoogle.com/o/oauth2/auth'
-					)
-			) {
+	function getRequestResponseMappings() {
+		return {
+			// OAuth authorization redirect.
+			'https://sitekit.withgoogle.com/o/oauth2/auth': ( request ) => {
 				const requestURL = new URL( request.url() );
 				const scope = requestURL.searchParams.get( 'scope' );
 				request.respond( {
@@ -69,38 +59,24 @@ describe( 'Analytics write scope requests', () => {
 						),
 					},
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/create-account-ticket' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						// eslint-disable-next-line sitekit/acronym-case
-						accountTicketId: 'testAccountTicketID',
-					} ),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
-					)
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request.url().match( 'analytics-4/data/create-property' )
-			) {
+			},
+			'analytics-4/data/create-account-ticket': {
+				status: 200,
+				body: JSON.stringify( {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountTicketId: 'testAccountTicketID',
+				} ),
+			},
+			'analytics-4/data/report': {
+				status: 200,
+				body: JSON.stringify( {} ),
+			},
+			'pagespeed-insights/data/pagespeed': {
+				status: 200,
+				body: JSON.stringify( {} ),
+			},
+			// Conditional create property interception.
+			'analytics-4/data/create-property': ( request ) => {
 				if ( interceptCreatePropertyRequest ) {
 					interceptCreatePropertyRequest = false;
 					request.respond( {
@@ -113,9 +89,9 @@ describe( 'Analytics write scope requests', () => {
 				} else {
 					request.continue();
 				}
-			} else if (
-				request.url().match( 'analytics-4/data/create-webdatastream' )
-			) {
+			},
+			// Conditional create web data stream interception.
+			'analytics-4/data/create-webdatastream': ( request ) => {
 				if ( interceptCreateWebDataStreamRequest ) {
 					interceptCreateWebDataStreamRequest = false;
 					request.respond( {
@@ -125,45 +101,35 @@ describe( 'Analytics write scope requests', () => {
 				} else {
 					request.continue();
 				}
-			} else if (
-				request.url().match( 'analytics-4/data/key-events' ) ||
-				request.url().match( 'search-console/data/searchanalytics' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
-				} );
-			} else if (
-				request
-					.url()
-					.match( 'analytics-4/data/enhanced-measurement-settings' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						fixtures.defaultEnhancedMeasurementSettings
-					),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/google-tag-settings' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( fixtures.googleTagSettings ),
-				} );
-			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						configuredAudiences: [
-							fixtures.availableAudiences[ 2 ].name,
-						],
-						isAudienceSegmentationWidgetHidden: false,
-					} ),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/container-lookup' )
-			) {
+			},
+			'analytics-4/data/key-events': {
+				status: 200,
+				body: JSON.stringify( [] ),
+			},
+			'search-console/data/searchanalytics': {
+				status: 200,
+				body: JSON.stringify( [] ),
+			},
+			'analytics-4/data/enhanced-measurement-settings': {
+				status: 200,
+				body: JSON.stringify(
+					fixtures.defaultEnhancedMeasurementSettings
+				),
+			},
+			'analytics-4/data/google-tag-settings': {
+				status: 200,
+				body: JSON.stringify( fixtures.googleTagSettings ),
+			},
+			'user/data/audience-settings': {
+				status: 200,
+				body: JSON.stringify( {
+					configuredAudiences: [
+						fixtures.availableAudiences[ 2 ].name,
+					],
+					isAudienceSegmentationWidgetHidden: false,
+				} ),
+			},
+			'analytics-4/data/container-lookup': ( request ) => {
 				const requestURL = new URL( request.url() );
 				const destinationID =
 					requestURL.searchParams.get( 'destinationID' );
@@ -172,12 +138,11 @@ describe( 'Analytics write scope requests', () => {
 					tagIds: [ destinationID ],
 				};
 				request.respond( {
-					body: JSON.stringify( container ),
 					status: 200,
+					body: JSON.stringify( container ),
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/container-destinations' )
-			) {
+			},
+			'analytics-4/data/container-destinations': ( request ) => {
 				const googleTagID = global.googlesitekit.data
 					.select( 'modules/analytics-4' )
 					.googleTagID();
@@ -187,43 +152,43 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( [ destination ] ),
 				} );
-			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
+			},
+			'analytics-4/data/property': ( request ) => {
 				const requestURL = new URL( request.url() );
 				const propertyID = requestURL.searchParams.get( 'propertyID' );
 				const property = fixtures.properties.find(
 					( { _id } ) => _id === propertyID
 				);
 				request.respond( {
+					status: 200,
 					body: JSON.stringify( property ),
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
-			) {
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
-			} else if (
-				// Intercept request to GA TOS URL and redirect to gatoscallback.
+			},
+			'analytics-4/data/sync-custom-dimensions': {
+				status: 200,
+				body: '[]',
+			},
+			// Intercept request to GA TOS URL and redirect to gatoscallback.
+			'//accounts.google.com/accountchooser.*provisioningSignup': (
 				request
-					.url()
-					.includes( '//accounts.google.com/accountchooser' ) &&
-				request.url().includes( 'provisioningSignup' )
-			) {
+			) => {
+				// Pattern combines accountchooser and provisioningSignup.
 				request.respond( {
 					status: 302,
 					headers: {
 						location: createURL(
-							// Here we intentionally leave out the accountId to cut the process short and avoid API requests.
 							'/wp-admin/index.php',
 							'gatoscallback=1&accountTicketId=testAccountTicketID'
 						),
 					},
 				} );
-			} else {
-				request.continue();
-			}
-		} );
+			},
+		};
+	}
+
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( getRequestResponseMappings() );
 	} );
 
 	beforeEach( async () => {
