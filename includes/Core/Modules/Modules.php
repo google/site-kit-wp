@@ -636,7 +636,8 @@ final class Modules implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Checks whether the module identified by the given slug is disconnected.
+	 * Checks whether the module identified by the given slug is disconnected
+	 * and returns the timestamp of disconnection.
 	 *
 	 * @since n.e.x.t
 	 *
