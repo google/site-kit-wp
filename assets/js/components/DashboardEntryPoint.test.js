@@ -33,6 +33,9 @@ jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>
 	mockCreateComponent( 'DashboardMainApp' )
 );
+jest.mock( './email-reporting/UserSettingsSelectionPanel', () =>
+	mockCreateComponent( 'UserSettingsSelectionPanel' )
+);
 
 describe( 'DashboardEntryPoint', () => {
 	let registry;
@@ -57,5 +60,18 @@ describe( 'DashboardEntryPoint', () => {
 			{ registry }
 		);
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the user settings panel when the module setup is shown and proactive user engagement is enabled', () => {
+		const { getByText } = render(
+			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
+			{
+				registry,
+				features: [ 'proactiveUserEngagement' ],
+			}
+		);
+
+		expect( getByText( /ModuleSetup/ ) ).toBeInTheDocument();
+		expect( getByText( /UserSettingsSelectionPanel/ ) ).toBeInTheDocument();
 	} );
 } );
