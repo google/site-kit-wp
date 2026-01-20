@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+import { mocked } from 'jest-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -63,7 +69,7 @@ const NotificationWithComponentProps = withNotificationComponentProps( id )(
 );
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	const invalidPublicationOnboardingStates = [ UNSPECIFIED ];
 
@@ -109,7 +115,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			},
 		] );
 
-		useQueryArg.mockImplementation( ( arg ) => {
+		mocked( useQueryArg ).mockImplementation( ( arg ) => {
 			switch ( arg ) {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
@@ -126,8 +132,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 	afterEach( () => {
 		setValueMock.mockClear();
-		useQueryArg.mockClear();
-		global.open.mockClear();
+		mocked( useQueryArg ).mockClear();
+		mocked( global.open ).mockClear();
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
@@ -228,7 +234,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		jest.useFakeTimers( 'modern' );
+		jest.useFakeTimers();
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -326,7 +332,21 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	const notificationContent = [
+	type NotificationContentTestCase = [
+		string,
+		{
+			paymentOption: string;
+			productID?: string;
+			productIDs?: string[];
+		},
+		{
+			title: string;
+			description: string;
+			ctaText: string;
+		}
+	];
+
+	const notificationContent: NotificationContentTestCase[] = [
 		[
 			'subscription model with product ID set',
 			{
