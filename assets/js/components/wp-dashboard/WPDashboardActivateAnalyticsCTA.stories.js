@@ -83,6 +83,56 @@ CompleteActivation.args = {
 	},
 };
 
+export const SetupFlowRefresh = Template.bind( {} );
+SetupFlowRefresh.storyName = 'Setup Flow Refresh';
+SetupFlowRefresh.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
+		provideModules( registry, [
+			{
+				active: false,
+				connected: false,
+				slug: MODULE_SLUG_ANALYTICS_4,
+			},
+		] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
+	},
+};
+SetupFlowRefresh.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const SetupFlowRefreshCompleteActivation = Template.bind( {} );
+SetupFlowRefreshCompleteActivation.storyName =
+	'Setup Flow Refresh - Complete Activation';
+SetupFlowRefreshCompleteActivation.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: MODULE_SLUG_ANALYTICS_4,
+			},
+		] );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
+		} );
+		provideModuleRegistrations( registry );
+	},
+};
+SetupFlowRefreshCompleteActivation.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardActivateAnalyticsCTA',
 	decorators: widgetDecorators,
