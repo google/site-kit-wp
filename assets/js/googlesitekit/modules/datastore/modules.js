@@ -1184,14 +1184,13 @@ const baseSelectors = {
 	/**
 	 * Checks whether a module is disconnected or not.
 	 *
-	 * Returns the timestamp of when the module was disconnected.
 	 * Returns `undefined` if state is still loading or if no module with that slug exists.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {(string|null|undefined)} Timestamp of when the module was disconnected.
+	 * @return {(boolean|null|undefined)} True if the module was disconnected.
 	 * 									  `undefined` if state is still loading.
 	 * 									  `null` if said module doesn't exist.
 	 */
@@ -1210,7 +1209,10 @@ const baseSelectors = {
 				return null;
 			}
 
-			return module.disconnectedAt;
+			return (
+				select( CORE_MODULES ).isModuleConnected( slug ) === false &&
+				module.disconnectedAt > 0
+			);
 		}
 	),
 
