@@ -35,7 +35,9 @@ import { useRefocus } from '@/js/hooks/useRefocus';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
+	CONTENT_POLICY_STATES,
 	MODULES_READER_REVENUE_MANAGER,
+	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
@@ -45,6 +47,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import PendingVerification from './PendingVerification';
 import OnboardingActionRequired from './OnboardingActionRequired';
 import OnboardingComplete from './OnboardingComplete';
+import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type SelectFunction = ( select: any ) => any;
@@ -88,6 +91,10 @@ const RRMSetupSuccessSubtleNotification: FC<
 		} )
 	);
 
+	const policyInfoURL = useSelect( ( select: SelectFunction ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
+	);
+
 	const shouldSyncPublicationValue = useFormValue(
 		READER_REVENUE_MANAGER_NOTICES_FORM,
 		SYNC_PUBLICATION
@@ -105,6 +112,10 @@ const RRMSetupSuccessSubtleNotification: FC<
 		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
 	);
 
+	const contentPolicyState = useSelect( ( select: SelectFunction ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	);
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 	const { syncPublicationOnboardingState } = useDispatch(
@@ -116,7 +127,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 		setSlug( undefined );
 	}, [ setNotification, setSlug ] );
 
-	function onCTAClick() {
+	function onCTAClick( url: string ) {
 		// Set publication data to be reset when user re-focuses window.
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
@@ -126,7 +137,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 			} );
 		}
 
-		global.open( serviceURL, '_blank' );
+		global.open( url, '_blank' );
 	}
 
 	const syncPublication = useCallback( async () => {
@@ -171,6 +182,28 @@ const RRMSetupSuccessSubtleNotification: FC<
 		}`,
 	};
 
+	if (
+		contentPolicyState &&
+		contentPolicyState !== CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK
+	) {
+		const policyViolationType = PENDING_POLICY_VIOLATION_STATES.includes(
+			contentPolicyState
+		)
+			? 'PENDING_POLICY_VIOLATION'
+			: 'ACTIVE_POLICY_VIOLATION';
+
+		return (
+			<PolicyViolation
+				id={ id }
+				Notification={ Notification }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissNotice={ dismissNotice }
+				onCTAClick={ () => onCTAClick( policyInfoURL ) }
+				policyViolationType={ policyViolationType }
+			/>
+		);
+	}
+
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
 			<PendingVerification
@@ -178,7 +211,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 				Notification={ Notification }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				dismissNotice={ dismissNotice }
-				onCTAClick={ onCTAClick }
+				onCTAClick={ () => onCTAClick( serviceURL ) }
 			/>
 		);
 	}
@@ -190,7 +223,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 				Notification={ Notification }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				dismissNotice={ dismissNotice }
-				onCTAClick={ onCTAClick }
+				onCTAClick={ () => onCTAClick( serviceURL ) }
 			/>
 		);
 	}
