@@ -24,23 +24,45 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
-import { useSelect } from 'googlesitekit-data';
+import { SpinnerButton, Button } from 'googlesitekit-components';
+import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
+import { useFeature } from '@/js/hooks/useFeature';
+import Link from '@/js/components/Link';
+import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
-export default function ActivateAnalyticsCTA( { children } ) {
+export default function ActivateAnalyticsCTA( {
+	children,
+	dismissedItemSlug,
+} ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const isDismissed = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled || ! dismissedItemSlug ) {
+			return false;
+		}
+		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
+	} );
+
 	const activateModuleCallback = useActivateModuleCallback(
 		MODULE_SLUG_ANALYTICS_4
 	);
@@ -57,6 +79,16 @@ export default function ActivateAnalyticsCTA( { children } ) {
 			!! select( MODULES_ANALYTICS_4 )
 		);
 	} );
+
+	const documentationURL = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return null;
+		}
+		return select( CORE_SITE ).getDocumentationLinkURL(
+			'supported-services/analytics'
+		);
+	} );
+
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const isNavigatingToReauthURL = useSelect( ( select ) => {
@@ -100,6 +132,12 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		}
 	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
 
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const dismiss = useCallback( async () => {
+		await dismissItem( dismissedItemSlug );
+	}, [ dismissItem, dismissedItemSlug ] );
+
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
 		: activateModuleCallback;
@@ -108,26 +146,81 @@ export default function ActivateAnalyticsCTA( { children } ) {
 		return null;
 	}
 
-	return (
-		<div className="googlesitekit-analytics-cta">
-			<div className="googlesitekit-analytics-cta__preview-graphs">
-				{ children }
+	if ( setupFlowRefreshEnabled && isDismissed ) {
+		return null;
+	}
+
+	if ( ! setupFlowRefreshEnabled ) {
+		return (
+			<div className="googlesitekit-analytics-cta">
+				<div className="googlesitekit-analytics-cta__preview-graphs">
+					{ children }
+				</div>
+				<div className="googlesitekit-analytics-cta__details">
+					<p className="googlesitekit-analytics-cta--description">
+						{ __(
+							"See how many people visit your site from Search and track how you're achieving your goals",
+							'google-site-kit'
+						) }
+					</p>
+					<SpinnerButton
+						onClick={ onClickCallback }
+						isSaving={ inProgress }
+						disabled={ inProgress }
+					>
+						{ analyticsModuleActive
+							? __( 'Complete setup', 'google-site-kit' )
+							: __(
+									'Set up Google Analytics',
+									'google-site-kit'
+							  ) }
+					</SpinnerButton>
+				</div>
 			</div>
-			<div className="googlesitekit-analytics-cta__details">
-				<p className="googlesitekit-analytics-cta--description">
-					{ __(
-						'See how many people visit your site from Search and track how you’re achieving your goals',
-						'google-site-kit'
+		);
+	}
+
+	return (
+		<div className="googlesitekit-activate-analytics-cta">
+			<div className="googlesitekit-activate-analytics-cta__top">
+				<div className="googlesitekit-activate-analytics-cta__icon">
+					<AnalyticsIcon width={ 28 } height={ 31 } />
+				</div>
+				<p className="googlesitekit-activate-analytics-cta__description">
+					{ createInterpolateElement(
+						__(
+							"See how many people visit your site from Search and track how you're achieving your goals. <a>Learn more</a>",
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ documentationURL }
+									external
+									hideExternalIndicator
+								/>
+							),
+						}
 					) }
 				</p>
+			</div>
+			<div className="googlesitekit-activate-analytics-cta__actions">
+				<Button
+					className="googlesitekit-activate-analytics-cta__button--secondary"
+					onClick={ dismiss }
+					tertiary
+				>
+					{ __( 'Maybe later', 'google-site-kit' ) }
+				</Button>
 				<SpinnerButton
+					className="googlesitekit-activate-analytics-cta__button--primary"
 					onClick={ onClickCallback }
 					isSaving={ inProgress }
 					disabled={ inProgress }
 				>
 					{ analyticsModuleActive
 						? __( 'Complete setup', 'google-site-kit' )
-						: __( 'Set up Google Analytics', 'google-site-kit' ) }
+						: __( 'Set up Analytics', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
 		</div>
@@ -135,5 +228,6 @@ export default function ActivateAnalyticsCTA( { children } ) {
 }
 
 ActivateAnalyticsCTA.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
+	dismissedItemSlug: PropTypes.string,
 };
