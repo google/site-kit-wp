@@ -39,9 +39,13 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
-import Tick from '@/svg/icons/tick.svg';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function FrequencySelector( { isUserSubscribed } ) {
+	const breakpoint = useBreakpoint();
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
 	const DAY_NAMES = useMemo(
 		() => [
 			_x( 'Sunday', 'day name', 'google-site-kit' ),
@@ -128,6 +132,36 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 			>
 				{ __( 'Frequency', 'google-site-kit' ) }
 			</Typography>
+
+			{ /* Show "Current subscription" badge on larger screens */ }
+			{ isUserSubscribed && savedFrequency && ! isMobileBreakpoint && (
+				<div className="googlesitekit-frequency-selector__badge-row">
+					{ EMAIL_REPORT_FREQUENCIES.map( ( reportFrequency ) => (
+						<div
+							key={ reportFrequency }
+							className="googlesitekit-frequency-selector__badge-cell"
+						>
+							{ reportFrequency === savedFrequency && (
+								<div
+									key={ reportFrequency }
+									className="googlesitekit-frequency-selector__current-subscription"
+								>
+									<Typography
+										type={ TYPE_BODY }
+										size={ SIZE_SMALL }
+									>
+										{ __(
+											'Current subscription',
+											'google-site-kit'
+										) }
+									</Typography>
+								</div>
+							) }
+						</div>
+					) ) }
+				</div>
+			) }
+
 			<div
 				className="googlesitekit-frequency-selector"
 				role="radiogroup"
@@ -158,43 +192,51 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 								handleKeyDown( event, reportFrequency )
 							}
 						>
-							<div className="googlesitekit-frequency-selector__label-row">
-								<Typography
-									className="googlesitekit-frequency-selector__label"
-									type="label"
-									size="large"
-									as="div"
-								>
-									{ label }
-								</Typography>
-								{ savedFrequency === reportFrequency &&
-									isUserSubscribed && (
-										<div className="googlesitekit-frequency-selector__saved-indicator">
-											<Tick
-												className="googlesitekit-frequency-selector__label-tick"
-												aria-hidden="true"
-											/>
-										</div>
-									) }
+							{ isUserSubscribed &&
+								savedFrequency &&
+								isMobileBreakpoint &&
+								reportFrequency === savedFrequency && (
+									<div
+										className={ classnames(
+											'googlesitekit-frequency-selector__current-subscription',
+											{
+												'googlesitekit-frequency-selector__current-subscription--selected':
+													isSelected,
+											}
+										) }
+									>
+										<Typography
+											type={ TYPE_BODY }
+											size={ SIZE_SMALL }
+										>
+											{ __(
+												'Current subscription',
+												'google-site-kit'
+											) }
+										</Typography>
+									</div>
+								) }
+
+							<div className="googlesitekit-frequency-selector__content">
+								<div className="googlesitekit-frequency-selector__label">
+									<Typography type="label" size="large">
+										{ label }
+									</Typography>
+								</div>
+								<div className="googlesitekit-frequency-selector__period-description">
+									<div className="googlesitekit-frequency-selector__period">
+										<Typography type="body" size="small">
+											{ period }
+										</Typography>
+									</div>
+
+									<div className="googlesitekit-frequency-selector__description">
+										<Typography type="body" size="small">
+											{ description }
+										</Typography>
+									</div>
+								</div>
 							</div>
-
-							<Typography
-								className="googlesitekit-frequency-selector__period"
-								type="body"
-								size="small"
-								as="div"
-							>
-								{ period }
-							</Typography>
-
-							<Typography
-								className="googlesitekit-frequency-selector__description"
-								type="body"
-								size="small"
-								as="div"
-							>
-								{ description }
-							</Typography>
 						</div>
 					);
 				} ) }

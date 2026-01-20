@@ -19,7 +19,7 @@ use WP_User;
 /**
  * Formats email report data for template rendering.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Email_Template_Formatter {
 	/**
 	 * Plugin context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var Context
 	 */
@@ -37,7 +37,7 @@ class Email_Template_Formatter {
 	/**
 	 * Email report section builder.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @var Email_Report_Section_Builder
 	 */
@@ -46,7 +46,7 @@ class Email_Template_Formatter {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Context                      $context         Plugin context.
 	 * @param Email_Report_Section_Builder $section_builder Section builder instance.
@@ -59,7 +59,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds sections from raw payload grouped by module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array   $raw_payload Raw payload.
 	 * @param WP_Post $email_log   Email log post.
@@ -86,7 +86,7 @@ class Email_Template_Formatter {
 					$user_locale,
 					$email_log
 				);
-			} catch ( \Exception $exception ) {
+			} catch ( \Throwable $exception ) {
 				return new WP_Error( 'email_report_section_build_failed', $exception->getMessage() );
 			}
 
@@ -105,7 +105,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds template payload for rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array  $sections   Sections.
 	 * @param string $frequency  Frequency slug.
@@ -122,6 +122,14 @@ class Email_Template_Formatter {
 			);
 		}
 
+		$sections_map = new Sections_Map( $this->context, $sections_payload );
+		if ( empty( $sections_map->get_sections() ) ) {
+			return new WP_Error(
+				'email_report_no_data',
+				__( 'No email report data available.', 'google-site-kit' )
+			);
+		}
+
 		return array(
 			'sections_payload' => $sections_payload,
 			'template_data'    => $this->prepare_template_data( $frequency, $date_range ),
@@ -131,7 +139,7 @@ class Email_Template_Formatter {
 	/**
 	 * Prepares section payload for the template renderer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $sections   Section instances.
 	 * @param array $date_range Date range used for the report.
@@ -182,7 +190,7 @@ class Email_Template_Formatter {
 	/**
 	 * Parses a change value into float.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $change Change value.
 	 * @return float|null Parsed change.
@@ -206,7 +214,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds a change context label based on the date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $date_range Date range.
 	 * @return string Change context label.
@@ -238,7 +246,7 @@ class Email_Template_Formatter {
 	/**
 	 * Calculates inclusive day length from a date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $date_range Date range with startDate/endDate.
 	 * @return int|null Number of days or null on failure.
@@ -266,7 +274,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds template data for rendering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $frequency  Frequency slug.
 	 * @param array  $date_range Date range.
@@ -288,20 +296,20 @@ class Email_Template_Formatter {
 				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
 			),
 			'footer'                 => array(
-				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit.', 'google-site-kit' ),
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
 				'unsubscribe_url' => admin_url( 'admin.php?page=googlesitekit-settings#/admin-settings' ),
 				'links'           => array(
 					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/support/',
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel=1' ),
 					),
 					array(
 						'label' => __( 'Privacy Policy', 'google-site-kit' ),
 						'url'   => 'https://policies.google.com/privacy',
 					),
 					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel-opened=1' ),
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
 					),
 				),
 			),
@@ -311,7 +319,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds a human readable date label.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $date_range Date range.
 	 * @return string Date label.
@@ -345,7 +353,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds an email subject for the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return string Email subject.
@@ -365,7 +373,7 @@ class Email_Template_Formatter {
 	/**
 	 * Gets a friendly frequency label.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return string Frequency label.
@@ -385,7 +393,7 @@ class Email_Template_Formatter {
 	/**
 	 * Gets the site domain including subdirectory context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @return string Site domain string.
 	 */

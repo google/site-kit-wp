@@ -65,20 +65,23 @@ class Email {
 	 * Sends an email using wp_mail with error tracking.
 	 *
 	 * Wraps wp_mail with a scoped listener for wp_mail_failed hook
-	 * to capture any errors during sending.
+	 * to capture any errors during sending. When text_content is provided,
+	 * it will be set as the AltBody for multipart/alternative MIME emails.
 	 *
 	 * @since 1.168.0
+	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
 	 *
-	 * @param string|array $to      Array or comma-separated list of email addresses to send message.
-	 * @param string       $subject Email subject.
-	 * @param string       $content Message contents.
-	 * @param array        $headers Optional. Additional headers. Default empty array.
+	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
+	 * @param string       $subject      Email subject.
+	 * @param string       $content      Message contents (HTML).
+	 * @param array        $headers      Optional. Additional headers. Default empty array.
+	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool|WP_Error True if the email was sent successfully, WP_Error on failure.
 	 */
-	public function send( $to, $subject, $content, $headers = array() ) {
+	public function send( $to, $subject, $content, $headers = array(), $text_content = '' ) {
 		$this->last_error = null;
 
-		$result = $this->send_email_and_catch_errors( $to, $subject, $content, $headers );
+		$result = $this->send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content );
 
 		if ( false === $result || $this->last_error instanceof WP_Error ) {
 			if ( $this->last_error instanceof WP_Error ) {
@@ -96,22 +99,39 @@ class Email {
 	 * Sends an email via wp_mail while capturing any errors.
 	 *
 	 * Attaches a temporary listener to the wp_mail_failed hook to capture
-	 * any errors that occur during sending.
+	 * any errors that occur during sending. When text_content is provided,
+	 * uses phpmailer_init hook to set AltBody for multipart MIME emails.
 	 *
 	 * @since 1.168.0
+	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
 	 *
-	 * @param string|array $to      Array or comma-separated list of email addresses to send message.
-	 * @param string       $subject Email subject.
-	 * @param string       $content Message contents.
-	 * @param array        $headers Additional headers.
+	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
+	 * @param string       $subject      Email subject.
+	 * @param string       $content      Message contents (HTML).
+	 * @param array        $headers      Additional headers.
+	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool Whether the email was sent successfully.
 	 */
-	protected function send_email_and_catch_errors( $to, $subject, $content, $headers ) {
+	protected function send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content = '' ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
+
+		// Set up AltBody for multipart MIME email if text content is provided.
+		$alt_body_callback = null;
+		if ( ! empty( $text_content ) ) {
+			$alt_body_callback = function ( $phpmailer ) use ( $text_content ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
+				$phpmailer->AltBody = $text_content;
+			};
+			add_action( 'phpmailer_init', $alt_body_callback );
+		}
 
 		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
 
+		// Clean up hooks.
 		remove_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
+		if ( null !== $alt_body_callback ) {
+			remove_action( 'phpmailer_init', $alt_body_callback );
+		}
 
 		return $result;
 	}

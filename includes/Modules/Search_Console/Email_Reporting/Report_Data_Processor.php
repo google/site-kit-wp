@@ -149,7 +149,7 @@ class Report_Data_Processor {
 	/**
 	 * Calculates current period length from Search Console rows (half of combined range).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $rows Search Console rows.
 	 * @return int|null Period length in days or null on failure.
@@ -192,7 +192,7 @@ class Report_Data_Processor {
 	/**
 	 * Infers period length from combined Search Console rows (half of unique dates, rounded up).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $rows Search Console rows.
 	 * @return int|null Period length in days or null on failure.
@@ -223,7 +223,7 @@ class Report_Data_Processor {
 	/**
 	 * Normalizes Search Console rows to an indexed array of row arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return array Normalized Search Console rows.
@@ -257,7 +257,7 @@ class Report_Data_Processor {
 	/**
 	 * Returns the preferred metric key for Search Console sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key Section key.
 	 * @return string|null Preferred metric key or null for list sections.
@@ -277,7 +277,7 @@ class Report_Data_Processor {
 	/**
 	 * Collects normalized row data (metrics/dimensions) for Search Console list sections.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array       $rows          Normalized Search Console rows.
 	 * @param string|null $preferred_key Preferred metric key or null for list sections.
@@ -355,7 +355,7 @@ class Report_Data_Processor {
 	/**
 	 * Limits list-style results to a specific number of rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $values           Metric values.
 	 * @param array $dimension_values Dimension values.
@@ -376,15 +376,17 @@ class Report_Data_Processor {
 	/**
 	 * Formats a dimension value (adds URL metadata when applicable).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $value Dimension value.
 	 * @return string|array
 	 */
 	public function format_dimension_value( $value ) {
 		if ( filter_var( $value, FILTER_VALIDATE_URL ) ) {
+			$label = $this->get_page_title_from_url( $value );
+
 			return array(
-				'label' => $value,
+				'label' => $label,
 				'url'   => $value,
 			);
 		}
@@ -393,9 +395,32 @@ class Report_Data_Processor {
 	}
 
 	/**
+	 * Gets the page title from a URL by looking up the WordPress post.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param string $url URL to look up.
+	 * @return string Page title or URL if no post found.
+	 */
+	protected function get_page_title_from_url( $url ) {
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid -- We fallback to the URL if no post is found.
+		$post_id = url_to_postid( $url );
+
+		if ( $post_id > 0 ) {
+			$title = get_the_title( $post_id );
+
+			if ( ! empty( $title ) ) {
+				return $title;
+			}
+		}
+
+		return $url;
+	}
+
+	/**
 	 * Determines whether an array uses sequential integer keys starting at zero.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $data Array to test.
 	 * @return bool Whether the array uses sequential integer keys starting at zero.

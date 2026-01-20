@@ -41,7 +41,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -57,7 +57,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * User_Email_Reporting_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var User_Email_Reporting_Settings
 	 */
 	private $user_email_reporting_settings;
@@ -65,7 +65,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Eligible_Subscribers_Query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Eligible_Subscribers_Query
 	 */
 	private $eligible_subscribers_query;
@@ -74,7 +74,7 @@ class REST_Email_Reporting_Controller {
 	 * Constructor.
 	 *
 	 * @since 1.162.0
-	 * @since n.e.x.t Added modules and user email reporting settings dependencies.
+	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Was_Analytics_4_Connected     $was_analytics_4_connected      Was_Analytics_4_Connected instance.
@@ -221,7 +221,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Maps a user to the REST response shape.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_User $user     User object.
 	 * @param string  $meta_key User meta key for email reporting settings.
@@ -242,7 +242,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the primary role of the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return string

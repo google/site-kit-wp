@@ -108,79 +108,73 @@ describe( 'FrequencySelector', () => {
 			expect( containerElement ).toMatchSnapshot();
 		} );
 
-		it( 'Previously saved frequency (saved monthly, current weekly) indicates saved on monthly only and matches snapshot', () => {
+		it( 'Previously saved frequency (saved monthly, current weekly) shows current subscription pill above monthly card and matches snapshot', () => {
 			setupRegistry( registry, {
 				startOfWeek: 1,
 				frequency: 'weekly',
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerElement, getByText } = renderSelector( registry, {
-				isUserSubscribed: true,
-			} );
-
-			const indicators = containerElement.querySelectorAll(
-				'.googlesitekit-frequency-selector__saved-indicator'
+			const { container, containerElement, getByText } = renderSelector(
+				registry,
+				{
+					isUserSubscribed: true,
+				}
 			);
-			expect( indicators.length ).toBe( 1 );
 
-			const monthlyLabel = getByText( 'Monthly' );
-			const monthlyCard = monthlyLabel.closest(
-				'.googlesitekit-frequency-selector__card'
+			// Check that there's exactly one current subscription pill.
+			const pills = container.querySelectorAll(
+				'.googlesitekit-frequency-selector__current-subscription'
 			);
-			expect( monthlyCard ).toBeTruthy();
+			expect( pills.length ).toBe( 1 );
+
+			// Check that the badge row exists and contains the pill.
+			const badgeRow = container.querySelector(
+				'.googlesitekit-frequency-selector__badge-row'
+			);
+			expect( badgeRow ).toBeInTheDocument();
 			expect(
-				monthlyCard.querySelector(
-					'.googlesitekit-frequency-selector__saved-indicator'
+				badgeRow.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
 				)
 			).toBeInTheDocument();
 
-			const weeklyLabel = getByText( 'Weekly' );
-			const weeklyCard = weeklyLabel.closest(
-				'.googlesitekit-frequency-selector__card'
-			);
-			expect(
-				weeklyCard.querySelector(
-					'.googlesitekit-frequency-selector__saved-indicator'
-				)
-			).not.toBeInTheDocument();
-
-			const quarterlyLabel = getByText( 'Quarterly' );
-			const quarterlyCard = quarterlyLabel.closest(
-				'.googlesitekit-frequency-selector__card'
-			);
-			expect(
-				quarterlyCard.querySelector(
-					'.googlesitekit-frequency-selector__saved-indicator'
-				)
-			).not.toBeInTheDocument();
+			// Check that the pill text is correct.
+			expect( getByText( 'Current subscription' ) ).toBeInTheDocument();
 
 			expect( containerElement ).toMatchSnapshot();
 		} );
 
-		it( 'Previously saved frequency (same as the current frequency) shows saved indicator on selected card and matches snapshot', () => {
+		it( 'Previously saved frequency (same as the current frequency) shows current subscription pill above selected card and matches snapshot', () => {
 			setupRegistry( registry, {
 				startOfWeek: 1,
 				frequency: 'monthly',
 				savedFrequency: 'monthly',
 			} );
 
-			const { containerElement, getByText } = renderSelector( registry, {
-				isUserSubscribed: true,
-			} );
+			const { container, containerElement, getByText } = renderSelector(
+				registry,
+				{
+					isUserSubscribed: true,
+				}
+			);
 
+			// Check that there's exactly one current subscription pill in the badge row.
+			const badgeRow = container.querySelector(
+				'.googlesitekit-frequency-selector__badge-row'
+			);
+			expect( badgeRow ).toBeInTheDocument();
+			expect(
+				badgeRow.querySelector(
+					'.googlesitekit-frequency-selector__current-subscription'
+				)
+			).toBeInTheDocument();
+
+			// Check that the monthly card is selected.
 			const monthlyLabel = getByText( 'Monthly' );
 			const monthlyCard = monthlyLabel.closest(
 				'.googlesitekit-frequency-selector__card'
 			);
-			expect( monthlyCard ).toBeTruthy();
-
-			expect(
-				monthlyCard.querySelector(
-					'.googlesitekit-frequency-selector__saved-indicator'
-				)
-			).toBeInTheDocument();
-
 			expect(
 				monthlyCard.classList.contains(
 					'googlesitekit-frequency-selector__card--selected'

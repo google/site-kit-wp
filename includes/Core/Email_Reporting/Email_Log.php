@@ -457,7 +457,7 @@ final class Email_Log {
 	/**
 	 * Normalizes reference date values into timestamps for storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $raw_dates Raw reference date values keyed by meta field.
 	 * @return array Normalized timestamps keyed by meta field.
@@ -493,7 +493,7 @@ final class Email_Log {
 	/**
 	 * Normalizes a single reference date value into a timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $raw_value Date value.
 	 * @return int|null Normalized timestamp or null when invalid.

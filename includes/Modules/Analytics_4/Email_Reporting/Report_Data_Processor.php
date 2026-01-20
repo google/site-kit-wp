@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 /**
  * Processes Analytics 4 report data for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Report_Data_Processor {
 	/**
 	 * Returns analytics dimensions excluding helper values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $processed_report Processed report data.
 	 * @return array Dimensions.
@@ -43,7 +43,7 @@ class Report_Data_Processor {
 	/**
 	 * Builds metric labels, types, and names from metric metadata.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $metrics Metric metadata.
 	 * @return array Array with labels, value types, and metric names.
@@ -66,7 +66,7 @@ class Report_Data_Processor {
 	/**
 	 * Aggregates metric values per primary dimension and date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $dimensions      Dimensions list.
 	 * @param array $rows            Report rows.
@@ -125,7 +125,7 @@ class Report_Data_Processor {
 	/**
 	 * Applies per-dimension aggregates to values and trends when available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array $values            Base values.
 	 * @param array $trends            Base trends.
@@ -151,7 +151,7 @@ class Report_Data_Processor {
 
 			$values[] = null === $current ? null : $current;
 
-			if ( null === $comparison || 0 === $comparison ) {
+			if ( null === $comparison || 0.0 === (float) $comparison ) {
 				$trends[] = null;
 			} else {
 				$trends[] = ( (float) $current - (float) $comparison ) / (float) $comparison * 100;

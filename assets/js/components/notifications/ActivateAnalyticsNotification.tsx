@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, type Select } from 'googlesitekit-data';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 // @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
@@ -47,9 +47,6 @@ interface ActivateAnalyticsNotificationProps {
 	Notification: React.ElementType;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type SelectFunction = ( select: any ) => any;
-
 const ActivateAnalyticsNotification: FC<
 	ActivateAnalyticsNotificationProps
 > = ( { id, Notification } ) => {
@@ -64,11 +61,11 @@ const ActivateAnalyticsNotification: FC<
 
 	const showTooltip = useShowTooltip( tooltipSettings );
 
-	const isDismissalFinal = useSelect( ( select: SelectFunction ) =>
+	const isDismissalFinal = useSelect( ( select: Select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
 
-	const isNavigatingToReauthURL = useSelect( ( select: SelectFunction ) => {
+	const isNavigatingToReauthURL = useSelect( ( select: Select ) => {
 		const adminReauthURL =
 			select( MODULES_ANALYTICS_4 ).getAdminReauthURL();
 
@@ -79,7 +76,7 @@ const ActivateAnalyticsNotification: FC<
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
 	} );
 
-	const isActivatingAnalytics = useSelect( ( select: SelectFunction ) =>
+	const isActivatingAnalytics = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isFetchingSetModuleActivation(
 			MODULE_SLUG_ANALYTICS_4,
 			true

@@ -64,7 +64,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 		target: '.googlesitekit-user-selector',
 		placement: 'bottom-end',
 		className: 'googlesitekit-tour-tooltip--user-menu',
-		tooltipSlug: 'email-reports-overlay-notification',
+		tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 		title: __(
 			'You can always manage your email reports subscription from the user menu',
 			'google-site-kit'
@@ -106,7 +106,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 			<OverlayNotification
 				notificationID={ id }
 				title={ __(
-					'Get Site Insights in Your Inbox',
+					'Get site insights in your inbox',
 					'google-site-kit'
 				) }
 				description={ __(
@@ -116,7 +116,7 @@ export default function SetUpEmailReportingOverlayNotification( {
 				GraphicDesktop={ EmailReportingOverlayGraphicDesktop }
 				GraphicMobile={ EmailReportingOverlayGraphicMobile }
 				ctaButton={ {
-					label: __( 'Setup', 'google-site-kit' ),
+					label: __( 'Set up', 'google-site-kit' ),
 					onClick: onSetupCallback,
 					dismissOnClick: true,
 				} }

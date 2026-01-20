@@ -16,7 +16,7 @@ use WP_Error;
 /**
  * Builds Search Console email section payloads.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Report_Data_Builder {
 	/**
 	 * Data processor instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 * @var Report_Data_Processor
 	 */
 	protected $processor;
@@ -33,7 +33,7 @@ class Report_Data_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param Report_Data_Processor|null $processor Optional. Data processor instance.
 	 */
@@ -44,7 +44,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds section payloads from Search Console module data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $module_payload        Module payload keyed by section slug.
 	 * @param int|null $current_period_length Optional. Current period length in days.
@@ -81,7 +81,7 @@ class Report_Data_Builder {
 	/**
 	 * Extracts any WP_Error from the section data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $section_data Section payload.
 	 * @return WP_Error|null WP_Error instance when present, otherwise null.
@@ -105,7 +105,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a section payload from Search Console report data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $search_console_data Search Console report rows.
 	 * @param string   $section_key         Section key identifier.
@@ -159,7 +159,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a totals-style section payload (impressions/clicks).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param array    $search_console_data Search Console rows.
 	 * @param string   $section_key         Section key.
@@ -208,7 +208,7 @@ class Report_Data_Builder {
 	/**
 	 * Formats numeric values with K/M suffixes for readability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param mixed $value Numeric value.
 	 * @return string|mixed Formatted value or original when non-numeric.
@@ -251,7 +251,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds a list-style section payload (keywords/pages).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key Section key.
 	 * @param array  $row_data    Collected row data.
@@ -320,7 +320,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds list payload using current/compare Search Console rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key   Section key.
 	 * @param array  $current_rows  Current period rows.
@@ -356,7 +356,7 @@ class Report_Data_Builder {
 			}
 
 			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
-			$compare_value = isset( $compare_by_key[ $key ] ) ? (float) $compare_by_key[ $key ] : null;
+			$compare_value = isset( $compare_by_key[ $key ] ) ? (float) $compare_by_key[ $key ] : 0.0;
 
 			$labels[] = $key;
 
@@ -366,12 +366,8 @@ class Report_Data_Builder {
 				$values[] = $current_value;
 			}
 
-			// If compare value is null or zero, treat as new (100% increase).
-			if ( null === $compare_value || 0.0 === $compare_value ) {
-				$trends[] = 100;
-			} else {
-				$trends[] = ( ( $current_value - $compare_value ) / $compare_value ) * 100;
-			}
+			$trend    = $compare_value > 0 ? ( ( $current_value - $compare_value ) / $compare_value ) * 100 : 0;
+			$trends[] = $trend;
 
 			$dimension_values[] = $this->processor->format_dimension_value( $key );
 		}
@@ -398,7 +394,7 @@ class Report_Data_Builder {
 	/**
 	 * Builds list payload for biggest increases (CTR or clicks) using current/compare rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.170.0
 	 *
 	 * @param string $section_key  Section key.
 	 * @param array  $current_rows Current period rows.
@@ -411,6 +407,8 @@ class Report_Data_Builder {
 		$current_rows = $this->processor->normalize_rows( $current_rows );
 		$compare_rows = $this->processor->normalize_rows( $compare_rows );
 
+		$entries = array();
+
 		$compare_by_key = array();
 		foreach ( $compare_rows as $row ) {
 			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
@@ -420,8 +418,6 @@ class Report_Data_Builder {
 			$compare_by_key[ $key ] = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
 		}
 
-		$entries = array();
-
 		foreach ( $current_rows as $row ) {
 			$key = isset( $row['keys'][0] ) ? $row['keys'][0] : '';
 			if ( '' === $key ) {
@@ -429,8 +425,8 @@ class Report_Data_Builder {
 			}
 
 			$current_value = isset( $row[ $metric_field ] ) ? (float) $row[ $metric_field ] : 0.0;
-			$compare_value = $compare_by_key[ $key ] ?? null;
-			$delta         = ( null === $compare_value ) ? $current_value : $current_value - (float) $compare_value;
+			$compare_value = $compare_by_key[ $key ] ?? 0.0;
+			$delta         = $current_value - (float) $compare_value;
 
 			// Only keep increases.
 			if ( $delta <= 0 ) {
@@ -441,6 +437,7 @@ class Report_Data_Builder {
 				'label'           => $key,
 				'value'           => $current_value,
 				'delta'           => $delta,
+				'percent_change'  => $compare_value > 0 ? ( $delta / $compare_value ) * 100 : 0,
 				'dimension_value' => $this->processor->format_dimension_value( $key ),
 			);
 		}
@@ -469,8 +466,8 @@ class Report_Data_Builder {
 				$values[] = round( $entry['value'] * 100, 1 ) . '%';
 				$trends[] = round( $entry['delta'] * 100, 1 );
 			} else {
-				$values[] = $entry['value'];
-				$trends[] = $entry['delta'];
+				$values[] = $entry['delta'];
+				$trends[] = round( $entry['percent_change'], 1 );
 			}
 			$dimension_values[] = $entry['dimension_value'];
 		}
