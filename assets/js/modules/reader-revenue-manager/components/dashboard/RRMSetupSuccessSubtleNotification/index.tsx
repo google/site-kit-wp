@@ -19,12 +19,12 @@
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	useEffect,
-} from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useCallback, useEffect } from '@wordpress/element';
+
+/**
+ * External dependencies
+ */
+import { FC, ElementType } from 'react';
 
 /**
  * Internal dependencies
@@ -33,7 +33,6 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useRefocus } from '@/js/hooks/useRefocus';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -42,10 +41,13 @@ import {
 	SYNC_PUBLICATION,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import PendingVerification from './PendingVerification';
+import OnboardingActionRequired from './OnboardingActionRequired';
+import OnboardingComplete from './OnboardingComplete';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type SelectFunction = ( select: any ) => any;
 
 const {
 	ONBOARDING_COMPLETE,
@@ -53,10 +55,14 @@ const {
 	ONBOARDING_ACTION_REQUIRED,
 } = PUBLICATION_ONBOARDING_STATES;
 
-export default function RRMSetupSuccessSubtleNotification( {
-	id,
-	Notification,
-} ) {
+interface RRMSetupSuccessSubtleNotificationProps {
+	id: string;
+	Notification: ElementType;
+}
+
+const RRMSetupSuccessSubtleNotification: FC<
+	RRMSetupSuccessSubtleNotificationProps
+> = ( { id, Notification } ) => {
 	const [ notification, setNotification ] = useQueryArg( 'notification' );
 	const [ slug, setSlug ] = useQueryArg( 'slug' );
 
@@ -65,15 +71,15 @@ export default function RRMSetupSuccessSubtleNotification( {
 		ONBOARDING_ACTION_REQUIRED,
 	];
 
-	const publicationOnboardingState = useSelect( ( select ) =>
+	const publicationOnboardingState = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
 
-	const publicationID = useSelect( ( select ) =>
+	const publicationID = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
-	const serviceURL = useSelect( ( select ) =>
+	const serviceURL = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: 'reader-revenue-manager',
 			query: {
@@ -91,22 +97,12 @@ export default function RRMSetupSuccessSubtleNotification( {
 		shouldSyncPublicationValue &&
 		actionableOnboardingStates.includes( publicationOnboardingState );
 
-	const paymentOption = useSelect( ( select ) =>
+	const paymentOption = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
 	);
 
-	const productID = useSelect( ( select ) =>
+	const productID = useSelect( ( select: SelectFunction ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
-	);
-
-	const productIDs = useSelect( ( select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
-	);
-
-	const rrmSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getModuleSettingsEditURL(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		)
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -171,170 +167,49 @@ export default function RRMSetupSuccessSubtleNotification( {
 
 	const gaTrackingEventArgs = {
 		label: `${ publicationOnboardingState }:${ paymentOption }:${
-			hasCustomProductID ? 'yes' : 'no'
+			hasCustomProductID ? 'yes' : 'noElementType'
 		}`,
 	};
 
 	if ( publicationOnboardingState === PENDING_VERIFICATION ) {
 		return (
-			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-				<NoticeNotification
-					notificationID={ id }
-					type={ TYPES.SUCCESS }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up!',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Your publication is still awaiting review, you can check its status in Reader Revenue Manager.',
-						'google-site-kit'
-					) }
-					dismissButton={ {
-						onClick: dismissNotice,
-					} }
-					ctaButton={ {
-						label: __(
-							'Check publication status',
-							'google-site-kit'
-						),
-						onClick: onCTAClick,
-						external: true,
-					} }
-				/>
-			</Notification>
+			<PendingVerification
+				id={ id }
+				Notification={ Notification }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissNotice={ dismissNotice }
+				onCTAClick={ onCTAClick }
+			/>
 		);
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_ACTION_REQUIRED ) {
 		return (
-			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-				<NoticeNotification
-					type={ TYPES.WARNING }
-					notificationID={ id }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-					title={ __(
-						'Your Reader Revenue Manager account was successfully set up, but your publication still requires further setup in Reader Revenue Manager.',
-						'google-site-kit'
-					) }
-					dismissButton={ {
-						onClick: dismissNotice,
-					} }
-					ctaButton={ {
-						label: __(
-							'Complete publication setup',
-							'google-site-kit'
-						),
-						onClick: onCTAClick,
-						external: true,
-					} }
-				/>
-			</Notification>
+			<OnboardingActionRequired
+				id={ id }
+				Notification={ Notification }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissNotice={ dismissNotice }
+				onCTAClick={ onCTAClick }
+			/>
 		);
 	}
 
 	if ( publicationOnboardingState === ONBOARDING_COMPLETE ) {
-		// Do not show the notification if the payment option is not set.
-		if ( '' === paymentOption ) {
-			return null;
-		}
-
-		const notificationContent = {
-			title: __(
-				'Success! Your Reader Revenue Manager account is set up',
-				'google-site-kit'
-			),
-			description: '',
-			primaryButton: {
-				text: __( 'Manage CTAs', 'google-site-kit' ),
-				ctaLink: rrmSettingsURL,
-				isCTALinkExternal: false,
-			},
-			secondaryButton: {
-				text: __( 'Got it', 'google-site-kit' ),
-				onClick: dismissNotice,
-			},
-		};
-
-		switch ( paymentOption ) {
-			case 'subscriptions':
-				if ( productID === 'openaccess' ) {
-					notificationContent.description = __(
-						'You can edit your settings to manage product IDs and select which of your site’s pages will include a subscription CTA.',
-						'google-site-kit'
-					);
-				} else {
-					notificationContent.description = __(
-						'You can edit your settings and select which of your site’s pages will include a subscription CTA.',
-						'google-site-kit'
-					);
-				}
-				break;
-			case 'contributions':
-				if ( productIDs.length > 0 && productID === 'openaccess' ) {
-					notificationContent.description = __(
-						'You can edit your settings to manage product IDs and select which of your site’s pages will include a contribution CTA.',
-						'google-site-kit'
-					);
-				} else {
-					notificationContent.description = __(
-						'You can edit your settings and select which of your site’s pages will include a contribution CTA.',
-						'google-site-kit'
-					);
-				}
-				break;
-			case 'noPayment':
-				notificationContent.description = createInterpolateElement(
-					__(
-						'Explore Reader Revenue Manager’s additional features, such as paywalls, subscriptions and contributions. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<LearnMoreLink
-								id={ id }
-								ariaLabel={ __(
-									'Learn more about Reader Revenue Manager features',
-									'google-site-kit'
-								) }
-								label={ __( 'Learn more', 'google-site-kit' ) }
-								url="https://support.google.com/news/publisher-center/answer/12813936"
-								gaTrackingEventArgs={ gaTrackingEventArgs }
-								hideExternalIndicator
-							/>
-						),
-					}
-				);
-				notificationContent.primaryButton = {
-					text: __( 'Get started', 'google-site-kit' ),
-					ctaLink: serviceURL,
-					isCTALinkExternal: true,
-				};
-				break;
-		}
-
 		return (
-			<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-				<NoticeNotification
-					notificationID={ id }
-					type={ TYPES.SUCCESS }
-					gaTrackingEventArgs={ gaTrackingEventArgs }
-					title={ notificationContent.title }
-					description={ notificationContent.description }
-					dismissButton={ {
-						label: notificationContent.secondaryButton.text,
-						onClick: notificationContent.secondaryButton.onClick,
-					} }
-					ctaButton={ {
-						label: notificationContent.primaryButton.text,
-						href: notificationContent.primaryButton.ctaLink,
-						external:
-							notificationContent.primaryButton.isCTALinkExternal,
-					} }
-				/>
-			</Notification>
+			<OnboardingComplete
+				id={ id }
+				Notification={ Notification }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
+				dismissNotice={ dismissNotice }
+				paymentOption={ paymentOption }
+				productID={ productID }
+				serviceURL={ serviceURL }
+			/>
 		);
 	}
 
 	return null;
-}
+};
+
+export default RRMSetupSuccessSubtleNotification;
