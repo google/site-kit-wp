@@ -83,9 +83,10 @@ CompleteActivation.args = {
 	},
 };
 
-export const SetupFlowRefresh = Template.bind( {} );
-SetupFlowRefresh.storyName = 'Setup Flow Refresh';
-SetupFlowRefresh.args = {
+export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
+WithSetupFlowRefreshSetUpAnalytics.storyName =
+	'Setup Flow Refresh - Set up Analytics CTA';
+WithSetupFlowRefreshSetUpAnalytics.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry, {
@@ -103,14 +104,14 @@ SetupFlowRefresh.args = {
 		} );
 	},
 };
-SetupFlowRefresh.parameters = {
+WithSetupFlowRefreshSetUpAnalytics.parameters = {
 	features: [ 'setupFlowRefresh' ],
 };
 
-export const SetupFlowRefreshCompleteActivation = Template.bind( {} );
-SetupFlowRefreshCompleteActivation.storyName =
-	'Setup Flow Refresh - Complete Activation';
-SetupFlowRefreshCompleteActivation.args = {
+export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
+WithSetupFlowRefreshCompleteSetup.storyName =
+	'Setup Flow Refresh - Complete Setup CTA';
+WithSetupFlowRefreshCompleteSetup.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry, {
@@ -129,7 +130,7 @@ SetupFlowRefreshCompleteActivation.args = {
 		provideModuleRegistrations( registry );
 	},
 };
-SetupFlowRefreshCompleteActivation.parameters = {
+WithSetupFlowRefreshCompleteSetup.parameters = {
 	features: [ 'setupFlowRefresh' ],
 };
 
