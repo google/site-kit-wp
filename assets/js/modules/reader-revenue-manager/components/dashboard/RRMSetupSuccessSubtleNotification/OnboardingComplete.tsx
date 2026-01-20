@@ -30,16 +30,13 @@ import { FC, ElementType, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, type Select } from 'googlesitekit-data';
 import { TYPES } from '@/js/components/Notice/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type SelectFunction = ( select: any ) => any;
 
 type NotificationContent = {
 	title: string;
@@ -74,11 +71,11 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 	productID,
 	serviceURL,
 } ) => {
-	const productIDs = useSelect( ( select: SelectFunction ) =>
+	const productIDs = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
 	);
 
-	const rrmSettingsURL = useSelect( ( select: SelectFunction ) =>
+	const rrmSettingsURL = useSelect( ( select: Select ) =>
 		select( CORE_SITE ).getModuleSettingsEditURL(
 			MODULE_SLUG_READER_REVENUE_MANAGER
 		)

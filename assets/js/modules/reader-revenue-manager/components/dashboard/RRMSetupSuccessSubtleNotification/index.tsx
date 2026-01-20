@@ -29,7 +29,7 @@ import { FC, ElementType } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useRefocus } from '@/js/hooks/useRefocus';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
@@ -48,9 +48,6 @@ import PendingVerification from './PendingVerification';
 import OnboardingActionRequired from './OnboardingActionRequired';
 import OnboardingComplete from './OnboardingComplete';
 import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type SelectFunction = ( select: any ) => any;
 
 const {
 	ONBOARDING_COMPLETE,
@@ -74,15 +71,15 @@ const RRMSetupSuccessSubtleNotification: FC<
 		ONBOARDING_ACTION_REQUIRED,
 	];
 
-	const publicationOnboardingState = useSelect( ( select: SelectFunction ) =>
+	const publicationOnboardingState = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
 	);
 
-	const publicationID = useSelect( ( select: SelectFunction ) =>
+	const publicationID = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
-	const serviceURL = useSelect( ( select: SelectFunction ) =>
+	const serviceURL = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
 			path: 'reader-revenue-manager',
 			query: {
@@ -91,7 +88,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 		} )
 	);
 
-	const policyInfoURL = useSelect( ( select: SelectFunction ) =>
+	const policyInfoURL = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
 	);
 
@@ -104,15 +101,15 @@ const RRMSetupSuccessSubtleNotification: FC<
 		shouldSyncPublicationValue &&
 		actionableOnboardingStates.includes( publicationOnboardingState );
 
-	const paymentOption = useSelect( ( select: SelectFunction ) =>
+	const paymentOption = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
 	);
 
-	const productID = useSelect( ( select: SelectFunction ) =>
+	const productID = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
 	);
 
-	const contentPolicyState = useSelect( ( select: SelectFunction ) =>
+	const contentPolicyState = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
 	);
 
