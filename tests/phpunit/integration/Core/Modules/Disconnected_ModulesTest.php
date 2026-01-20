@@ -33,14 +33,14 @@ class Disconnected_ModulesTest extends SettingsTestCase {
 		$this->disconnected_modules = new Disconnected_Modules( $options );
 	}
 
-	public function test_disconnect() {
+	public function test_add() {
 		$module_slug = 'test-module';
 
 		// Initially, the module should not be in the disconnected list.
 		$this->assertFalse( $this->get_option(), 'Disconnected modules option should be empty initially.' );
 
 		// Disconnect the module.
-		$result = $this->disconnected_modules->disconnect( $module_slug );
+		$result = $this->disconnected_modules->add( $module_slug );
 		$this->assertTrue( $result, 'Disconnect should return true on success.' );
 
 		// Now, the module should be in the disconnected list with a timestamp.
@@ -50,7 +50,7 @@ class Disconnected_ModulesTest extends SettingsTestCase {
 
 		// Disconnecting the same module again should update the timestamp.
 		sleep( 1 ); // Ensure the timestamp will be different.
-		$result = $this->disconnected_modules->disconnect( $module_slug );
+		$result = $this->disconnected_modules->add( $module_slug );
 		$this->assertTrue( $result, 'Disconnect should return true on success.' );
 		$disconnected_modules_updated = $this->get_option();
 		$this->assertGreaterThan(
@@ -61,7 +61,7 @@ class Disconnected_ModulesTest extends SettingsTestCase {
 
 		// Disconnecting another module adds it to the list.
 		$another_module_slug = 'another-module';
-		$result              = $this->disconnected_modules->disconnect( $another_module_slug );
+		$result              = $this->disconnected_modules->add( $another_module_slug );
 		$this->assertTrue( $result, 'Disconnect should return true on success.' );
 		$disconnected_modules_final = $this->get_option();
 		$this->assertArrayHasKey( $another_module_slug, $disconnected_modules_final, 'The disconnected modules setting should contain the newly disconnected module.' );

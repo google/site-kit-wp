@@ -746,7 +746,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->sharing_settings->unset_module( $slug );
 
-		$this->disconnected_modules->disconnect( $slug );
+		$this->disconnected_modules->add( $slug );
 
 		return true;
 	}

@@ -54,7 +54,7 @@ class Disconnected_Modules extends Setting {
 	 * @param string $module_slug Module slug to disconnect.
 	 * @return bool True on success, false on failure.
 	 */
-	public function disconnect( $module_slug ) {
+	public function add( $module_slug ) {
 		$settings = $this->get();
 
 		if ( ! is_array( $settings ) ) {
