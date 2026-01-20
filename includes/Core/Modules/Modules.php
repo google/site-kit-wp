@@ -689,6 +689,8 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->set_active_modules_option( $option );
 
+		$this->disconnected_modules->remove( $slug );
+
 		if ( $module instanceof Module_With_Activation ) {
 			$module->on_activation();
 		}
