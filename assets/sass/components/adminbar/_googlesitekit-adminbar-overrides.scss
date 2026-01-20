@@ -268,5 +268,53 @@
 				letter-spacing: 1.25px;
 			}
 		}
+
+		// Setup Flow Refresh Analytics CTA styles.
+		.googlesitekit-activate-analytics-cta {
+
+			@extend .googlesitekit-activate-analytics-cta;
+
+			.googlesitekit-activate-analytics-cta__top {
+
+				@extend .googlesitekit-activate-analytics-cta__top;
+			}
+
+			.googlesitekit-activate-analytics-cta__icon {
+
+				@extend .googlesitekit-activate-analytics-cta__icon;
+			}
+
+			.googlesitekit-activate-analytics-cta__description {
+
+				@extend .googlesitekit-activate-analytics-cta__description;
+			}
+
+			.googlesitekit-activate-analytics-cta__actions {
+
+				@extend .googlesitekit-activate-analytics-cta__actions;
+
+				// Keep buttons stacked between 961px and 1086px to prevent text wrapping.
+				@media (min-width: $bp-nonTablet) and (max-width: 1086px) {
+					flex-direction: column-reverse !important;
+					width: 100% !important;
+
+					.mdc-button {
+						width: 100% !important;
+					}
+				}
+			}
+
+			.googlesitekit-activate-analytics-cta__button--secondary {
+
+				@extend .googlesitekit-activate-analytics-cta__button--secondary;
+			}
+
+			.googlesitekit-activate-analytics-cta__button--primary {
+				// Remove MDC button box-shadow which doesn't fit the admin bar context.
+				box-shadow: none;
+
+				@extend .googlesitekit-activate-analytics-cta__button--primary;
+			}
+		}
 	}
 }
