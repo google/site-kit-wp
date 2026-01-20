@@ -67,6 +67,27 @@ class Disconnected_ModulesTest extends SettingsTestCase {
 		$this->assertArrayHasKey( $another_module_slug, $disconnected_modules_final, 'The disconnected modules setting should contain the newly disconnected module.' );
 	}
 
+	public function test_remove() {
+		$module_slug = 'test-module';
+
+		// Add a module to the disconnected list first.
+		$this->update_option( array( $module_slug => time() ) );
+		$disconnected_modules = $this->get_option();
+		$this->assertArrayHasKey( $module_slug, $disconnected_modules, 'The disconnected modules setting should contain a test module.' );
+
+		// Now remove it.
+		$result = $this->disconnected_modules->remove( $module_slug );
+		$this->assertTrue( $result, 'Remove should return true on success.' );
+
+		// The module should no longer be in the disconnected list.
+		$disconnected_modules = $this->get_option();
+		$this->assertArrayNotHasKey( $module_slug, $disconnected_modules, 'The disconnected modules setting should not contain the removed module.' );
+
+		// Trying to remove a non-existent module should return false.
+		$result = $this->disconnected_modules->remove( 'non-existent-module' );
+		$this->assertFalse( $result, 'Remove should return false when trying to remove a non-existent module.' );
+	}
+
 	/**
 	 * @inheritDoc
 	 */
