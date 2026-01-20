@@ -39,7 +39,7 @@ Default.storyName = 'Default';
 
 export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
 WithSetupFlowRefreshSetUpAnalytics.storyName =
-	'With Setup Flow Refresh - Set up Analytics';
+	'Setup Flow Refresh - Set up Analytics';
 WithSetupFlowRefreshSetUpAnalytics.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 };
@@ -50,7 +50,7 @@ WithSetupFlowRefreshSetUpAnalytics.scenario = {};
 
 export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
 WithSetupFlowRefreshCompleteSetup.storyName =
-	'With Setup Flow Refresh - Complete Setup';
+	'Setup Flow Refresh - Complete Setup';
 WithSetupFlowRefreshCompleteSetup.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 	_analyticsActive: true,
