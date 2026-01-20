@@ -45,12 +45,14 @@ describe( 'SpinnerButton', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			getByRole( 'button', {
-				name: 'Button text',
-				class: 'googlesitekit-button-icon--spinner__after',
-			} )
-		).toBeInTheDocument();
+		const button = getByRole( 'button', {
+			name: 'Button text',
+		} );
+
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveClass(
+			'googlesitekit-button-icon--spinner__after'
+		);
 		expect( container.querySelector( 'svg' ) ).toBeInTheDocument();
 	} );
 
@@ -64,12 +66,14 @@ describe( 'SpinnerButton', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			getByRole( 'button', {
-				name: 'Button text',
-				class: 'googlesitekit-button-icon--spinner__before',
-			} )
-		).toBeInTheDocument();
+		const button = getByRole( 'button', {
+			name: 'Button text',
+		} );
+
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveClass(
+			'googlesitekit-button-icon--spinner__before'
+		);
 		expect( container.querySelector( 'svg' ) ).toBeInTheDocument();
 	} );
 
@@ -83,12 +87,14 @@ describe( 'SpinnerButton', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			getByRole( 'button', {
-				name: 'Button text',
-				class: 'googlesitekit-button-icon--spinner__after',
-			} )
-		).toBeInTheDocument();
+		const button = getByRole( 'button', {
+			name: 'Button text',
+		} );
+
+		expect( button ).toBeInTheDocument();
+		expect( button ).toHaveClass(
+			'googlesitekit-button-icon--spinner__after'
+		);
 		expect( container.querySelector( 'svg' ) ).toBeInTheDocument();
 	} );
 
@@ -147,12 +153,12 @@ describe( 'SpinnerButton', () => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
 			) as any;
 
-			expect(
-				getByRole( 'button', {
-					name: 'Button text',
-					class: expectedClass,
-				} )
-			).toBeInTheDocument();
+			const button = getByRole( 'button', {
+				name: 'Button text',
+			} );
+
+			expect( button ).toBeInTheDocument();
+			expect( button ).toHaveClass( expectedClass );
 			expect( container.querySelector( 'svg' ) ).toBeInTheDocument();
 		}
 	);
