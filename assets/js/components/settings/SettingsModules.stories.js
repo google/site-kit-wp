@@ -32,6 +32,8 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -52,21 +54,53 @@ function Template( { setupRegistry, route = '/connected-services' } ) {
 export const ConnectedServices = Template.bind( {} );
 ConnectedServices.args = {
 	setupRegistry: ( registry ) => {
-		provideModules(
-			registry,
-			[
-				MODULE_SLUG_ADS,
-				MODULE_SLUG_ADSENSE,
-				MODULE_SLUG_ANALYTICS_4,
-				MODULE_SLUG_PAGESPEED_INSIGHTS,
-				MODULE_SLUG_SEARCH_CONSOLE,
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-			].map( ( slug ) => ( {
-				slug,
-				active: true,
-				connected: true,
-			} ) )
-		);
+		function CustomStatusComponent( { slug } ) {
+			return (
+				<div
+					style={ {
+						padding: '8px 12px',
+						backgroundColor: '#f0f0f1',
+						borderRadius: '4px',
+						fontSize: '14px',
+						fontWeight: '500',
+					} }
+				>
+					Custom Status: { slug }
+				</div>
+			);
+		}
+
+		const defaultConnectedModules = [
+			MODULE_SLUG_ADS,
+			MODULE_SLUG_ADSENSE,
+			MODULE_SLUG_ANALYTICS_4,
+			MODULE_SLUG_PAGESPEED_INSIGHTS,
+			MODULE_SLUG_SEARCH_CONSOLE,
+			MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
+		].map( ( slug ) => ( {
+			slug,
+			active: true,
+			connected: true,
+		} ) );
+
+		const activeButNotConnectedModule = {
+			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+			active: true,
+			connected: false,
+		};
+
+		const moduleWithCustomStatusComponent = {
+			slug: MODULE_SLUG_TAGMANAGER,
+			active: true,
+			connected: false,
+			SettingsStatusComponent: CustomStatusComponent,
+		};
+
+		provideModules( registry, [
+			...defaultConnectedModules,
+			activeButNotConnectedModule,
+			moduleWithCustomStatusComponent,
+		] );
 		provideModuleRegistrations( registry );
 	},
 };

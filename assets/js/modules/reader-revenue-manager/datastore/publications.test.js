@@ -34,12 +34,14 @@ import {
 	provideModuleRegistrations,
 	muteFetch,
 } from '../../../../../tests/js/utils';
+import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
@@ -55,6 +57,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 	const syncOnboardingStateEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/sync-publication-onboarding-state'
+	);
+
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 	);
 
 	beforeAll( () => {
@@ -81,7 +87,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'syncPublicationOnboardingState', () => {
-			it( 'should return undefined when no publication ID is present', async () => {
+			it( 'should return `undefined` when no publication ID is present', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( fixtures.publications );
@@ -145,7 +151,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'findMatchedPublication', () => {
-			it( 'should return null if there are no publications', async () => {
+			it( 'should return `null` if there are no publications', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetPublications( [] );
@@ -485,6 +491,48 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.getProductID()
 				).toEqual( 'openaccess' );
 			} );
+
+			it( 'should set `contentPolicyStatus` in state when provided', () => {
+				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
+
+				const contentPolicyStatus = {
+					contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
+					policyInfoLink: 'https://example.com/policy-info',
+				};
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+						contentPolicyStatus,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getSettings()
+				).toMatchObject( {
+					contentPolicyStatus,
+				} );
+			} );
+
+			it( 'should not set `contentPolicyStatus` when not provided', () => {
+				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.selectPublication( {
+						publicationId: 'publication-id',
+						onboardingState: 'onboarding-state',
+					} );
+
+				const settings = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getSettings();
+
+				expect( settings ).not.toHaveProperty( 'contentPolicyStatus' );
+			} );
 		} );
 	} );
 
@@ -577,7 +625,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		describe( 'getCurrentProductIDs', () => {
-			it( 'should return undefined if publications are not loaded', async () => {
+			it( 'should return `undefined` if publications are not loaded', async () => {
 				muteFetch( publicationsEndpoint );
 
 				const productIDs = registry
@@ -640,6 +688,160 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					'DEF:product-2',
 					'GHI:product-3',
 				] );
+			} );
+		} );
+
+		describe( 'getContentPolicyState', () => {
+			it( 'should return `undefined` if settings are not loaded', () => {
+				muteFetch( settingsEndpoint );
+
+				const contentPolicyState = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getContentPolicyState();
+
+				expect( contentPolicyState ).toBeUndefined();
+			} );
+
+			it( 'should return `undefined` if `contentPolicyStatus` is not available', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+					} );
+
+				const contentPolicyState = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getContentPolicyState();
+
+				expect( contentPolicyState ).toBeUndefined();
+			} );
+
+			it( 'should return the `contentPolicyState` property from `contentPolicyStatus`', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+						contentPolicyStatus: {
+							contentPolicyState:
+								'CONTENT_POLICY_VIOLATION_ACTIVE',
+							policyInfoLink: 'https://example.com/policy-info',
+						},
+					} );
+
+				const contentPolicyState = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getContentPolicyState();
+
+				expect( contentPolicyState ).toBe(
+					'CONTENT_POLICY_VIOLATION_ACTIVE'
+				);
+			} );
+		} );
+
+		describe( 'getPolicyInfoURL', () => {
+			it( 'should return `undefined` if settings are not loaded', () => {
+				muteFetch( settingsEndpoint );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				expect( policyInfoURL ).toBeUndefined();
+			} );
+
+			it( 'should return `undefined` if `contentPolicyStatus` is not available', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+					} );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				expect( policyInfoURL ).toBeUndefined();
+			} );
+
+			it( 'should return `undefined` if `policyInfoLink` is not available', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+						contentPolicyStatus: {
+							contentPolicyState:
+								'CONTENT_POLICY_VIOLATION_ACTIVE',
+						},
+					} );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				expect( policyInfoURL ).toBeUndefined();
+			} );
+
+			it( 'should return `null` if `policyInfoLink` is `null`', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+						contentPolicyStatus: {
+							contentPolicyState: 'CONTENT_POLICY_STATE_OK',
+							policyInfoLink: null,
+						},
+					} );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				expect( policyInfoURL ).toBeNull();
+			} );
+
+			it( 'should return the `policyInfoLink` property from `contentPolicyStatus`, wrapped with account chooser URL', () => {
+				const testEmail = 'test@example.com';
+				const testPolicyInfoLink = 'https://example.com/policy-info';
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( {
+					email: testEmail,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationID: 'publication-id',
+						publicationOnboardingState: 'onboarding-state',
+						contentPolicyStatus: {
+							contentPolicyState:
+								'CONTENT_POLICY_VIOLATION_ACTIVE',
+							policyInfoLink: testPolicyInfoLink,
+						},
+					} );
+
+				const policyInfoURL = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPolicyInfoURL();
+
+				// Verify the URL is wrapped with the account chooser.
+				expect( policyInfoURL ).toContain( 'accountchooser' );
+				expect( policyInfoURL ).toContain(
+					encodeURIComponent( testPolicyInfoLink )
+				);
+				expect( policyInfoURL ).toContain(
+					encodeURIComponent( testEmail )
+				);
+
+				expect( policyInfoURL ).toBe(
+					registry
+						.select( CORE_USER )
+						.getAccountChooserURL( testPolicyInfoLink )
+				);
 			} );
 		} );
 	} );

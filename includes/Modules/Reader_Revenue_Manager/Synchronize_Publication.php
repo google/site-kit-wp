@@ -127,6 +127,14 @@ class Synchronize_Publication {
 				'paymentOption'              => $this->get_payment_option( $publication ),
 			);
 
+			if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) ) {
+				$content_policy_status = $publication->getContentPolicyStatus();
+
+				if ( $content_policy_status ) {
+					$new_settings['contentPolicyStatus'] = (array) $content_policy_status->toSimpleObject();
+				}
+			}
+
 			// Let the client know if the onboarding state has changed.
 			if ( $new_onboarding_state !== $onboarding_state ) {
 				$new_settings['publicationOnboardingStateChanged'] = true;

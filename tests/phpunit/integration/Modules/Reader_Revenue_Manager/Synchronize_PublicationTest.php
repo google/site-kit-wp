@@ -20,6 +20,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ContentPolicyStatus;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Product;
@@ -128,6 +129,11 @@ class Synchronize_PublicationTest extends TestCase {
 						)
 					);
 					$publication->setPaymentOptions( $payment_options );
+
+					$content_policy_status = new ContentPolicyStatus();
+					$content_policy_status->setContentPolicyState( 'CONTENT_POLICY_VIOLATION_ACTIVE' );
+					$content_policy_status->setPolicyInfoLink( 'https://example.com/policy-info' );
+					$publication->setContentPolicyStatus( $content_policy_status );
 
 					$response = new ListPublicationsResponse();
 					$response->setPublications( array( $publication ) );
@@ -287,6 +293,31 @@ class Synchronize_PublicationTest extends TestCase {
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEmpty( $settings['paymentOption'], 'Payment option should remain empty after sync for non-existent publication.' );
+	}
+
+	public function test_synchronize_content_policy_status() {
+		$this->enable_feature( 'rrmPolicyViolations' );
+
+		$this->fake_sync_publication();
+
+		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->synchronize_publication->register();
+
+		$this->assertEquals( (object) array(), $settings['contentPolicyStatus'], 'Content policy status should be empty before sync.' );
+
+		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+
+		$settings = $this->reader_revenue_manager->get_settings()->get();
+		$this->assertEquals(
+			array(
+				'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_ACTIVE',
+				'policyInfoLink'     => 'https://example.com/policy-info',
+			),
+			$settings['contentPolicyStatus'],
+			'Content policy status should be updated after sync.'
+		);
 	}
 
 	public function test_maybe_schedule_synchronize_publication() {
