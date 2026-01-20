@@ -63,4 +63,24 @@ class Disconnected_Modules extends Setting {
 
 		return $this->set( array_merge( $settings, array( $module_slug => time() ) ) );
 	}
+
+	/**
+	 * Removes a module from the list of disconnected modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $module_slug Module slug to remove.
+	 * @return bool True on success, false on failure.
+	 */
+	public function remove( $module_slug ) {
+		$settings = $this->get();
+
+		if ( ! is_array( $settings ) || ! array_key_exists( $module_slug, $settings ) ) {
+			return false;
+		}
+
+		unset( $settings[ $module_slug ] );
+
+		return $this->set( $settings );
+	}
 }
