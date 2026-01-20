@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, ReactNode } from 'react';
+
+/**
  * Internal dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
@@ -32,6 +37,17 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type Registry = any;
+
+type Decorator = {
+	(
+		Story: ElementType,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@storybook/react` is not typed yet.
+		{ args, parameters }: { args: any; parameters: any }
+	): ReactNode;
+};
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-rrm'
@@ -79,7 +95,7 @@ OnboardingCompleteWithSubscriptionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'subscriptions' );
@@ -104,7 +120,7 @@ OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndNoProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'subscriptions' );
@@ -129,7 +145,7 @@ OnboardingCompleteWithContributionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'contributions' );
@@ -154,7 +170,7 @@ OnboardingCompleteWithContributionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndNoProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'contributions' );
@@ -177,7 +193,7 @@ OnboardingCompleteWithNoMonetization.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithNoMonetization.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'noPayment' );
@@ -190,8 +206,8 @@ export default {
 	component: RRMSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
-		( Story, { args, parameters } ) => {
-			function setupRegistry( registry ) {
+		( ( Story, { args, parameters } ) => {
+			function setupRegistry( registry: Registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -219,6 +235,6 @@ export default {
 					<Story />
 				</WithRegistrySetup>
 			);
-		},
+		} ) as Decorator,
 	],
 };
