@@ -34,6 +34,7 @@ import RRMSetupSuccessSubtleNotification from '.';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	CONTENT_POLICY_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
@@ -201,6 +202,33 @@ OnboardingCompleteWithNoMonetization.args = {
 };
 OnboardingCompleteWithNoMonetization.scenario = {};
 
+export const PolicyViolationPending = Template.bind( {} );
+PolicyViolationPending.storyName = 'Policy Violation - Pending';
+PolicyViolationPending.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+};
+PolicyViolationPending.scenario = {};
+
+export const PolicyViolationActive = Template.bind( {} );
+PolicyViolationActive.storyName = 'Policy Violation - Active';
+PolicyViolationActive.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+};
+PolicyViolationActive.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,
@@ -225,6 +253,14 @@ export default {
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
 						productIDs: [ 'product-a', 'product-b' ],
+						contentPolicyStatus: parameters.contentPolicyState
+							? {
+									contentPolicyState:
+										parameters.contentPolicyState,
+									policyInfoLink:
+										'https://example.com/policy-info',
+							  }
+							: undefined,
 					} );
 
 				args?.setupRegistry?.( registry );
