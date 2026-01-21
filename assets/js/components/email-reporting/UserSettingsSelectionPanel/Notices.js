@@ -24,6 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotice';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import EmailReportingDisabledNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
 import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledViewOnlyNotice';
@@ -32,6 +33,7 @@ import SetupAnalyticsNotice from '@/js/components/email-reporting/notices/SetupA
 export default function Notices() {
 	return (
 		<Fragment>
+			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
 			<SetupAnalyticsNotice />
 			<EmailReportingDisabledNotice />
