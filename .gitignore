@@ -42,6 +42,7 @@ npm-debug.log
 google-site-kit*.zip
 .phpunit.result.cache
 /packages/apiclient-services-*.v*
+/*.patch
 
 # Editors
 *.esproj
