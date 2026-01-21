@@ -106,8 +106,8 @@ class Email_Reporting_Site_Health {
 			return $fields;
 		}
 
-		$fields['email_reports_deliverability'] = $this->build_deliverability_field( $batch_post_ids );
-		$fields['email_reports_last_sent']      = $this->build_last_sent_field( $batch_post_ids );
+		$fields['email_reports_deliverability'] = array_merge( $fields['email_reports_deliverability'], $this->build_deliverability_field( $batch_post_ids ) );
+		$fields['email_reports_last_sent']      = array_merge( $fields['email_reports_last_sent'], $this->build_last_sent_field( $batch_post_ids ) );
 
 		return $fields;
 	}
