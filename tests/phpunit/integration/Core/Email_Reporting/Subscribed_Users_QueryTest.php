@@ -40,6 +40,7 @@ class Subscribed_Users_QueryTest extends TestCase {
 	private $original_sharing_option;
 
 	private $created_user_ids = array();
+	private $super_admin_ids  = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -57,6 +58,12 @@ class Subscribed_Users_QueryTest extends TestCase {
 
 		foreach ( $this->created_user_ids as $user_id ) {
 			delete_user_meta( $user_id, $meta_key );
+		}
+
+		foreach ( $this->super_admin_ids as $user_id ) {
+			if ( function_exists( 'revoke_super_admin' ) ) {
+				revoke_super_admin( $user_id );
+			}
 		}
 
 		if ( false === $this->original_sharing_option ) {
@@ -111,6 +118,27 @@ class Subscribed_Users_QueryTest extends TestCase {
 		$results = $this->query->for_frequency( 'weekly' );
 
 		$this->assertSame( array( $user_id ), $results, 'User ID should appear only once even if multiple roles match.' );
+	}
+
+	public function test_for_frequency_includes_super_admins() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'Multisite required to verify super admin inclusion.' );
+		}
+
+		if ( ! function_exists( 'grant_super_admin' ) ) {
+			$this->markTestSkipped( 'Super admin helpers unavailable.' );
+		}
+
+		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		grant_super_admin( $user_id );
+
+		$this->super_admin_ids[] = $user_id;
+
+		$this->set_user_subscription( $user_id, true, 'weekly' );
+
+		$results = $this->query->for_frequency( 'weekly' );
+
+		$this->assertContains( $user_id, $results, 'Super admins should be included when subscribed.' );
 	}
 
 	private function set_user_subscription( $user_id, $subscribed, $frequency ) {
