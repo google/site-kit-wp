@@ -79,6 +79,7 @@ class Initiator_Task {
 						Email_Log::META_REPORT_FREQUENCY => $frequency,
 						Email_Log::META_REPORT_REFERENCE_DATES => $reference_dates,
 						Email_Log::META_SEND_ATTEMPTS    => 0,
+						Email_Log::META_SITE_ID          => get_current_blog_id(),
 					),
 				)
 			);
