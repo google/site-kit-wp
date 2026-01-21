@@ -131,6 +131,7 @@ class Worker_TaskTest extends TestCase {
 				Email_Log::META_SEND_ATTEMPTS,
 				Email_Log::META_ERROR_DETAILS,
 				Email_Log::META_REPORT_REFERENCE_DATES,
+				Email_Log::META_SITE_ID,
 			) as $meta_key
 		) {
 			if ( function_exists( 'unregister_meta_key' ) ) {
@@ -235,6 +236,63 @@ class Worker_TaskTest extends TestCase {
 		$task->handle_callback_action( 'batch-follow-up', Email_Reporting_Settings::FREQUENCY_WEEKLY, $initiator_stamp );
 
 		$this->assertNotNull( $captured_delay, 'Follow-up delay should be captured for assertion.' );
+	}
+
+	public function test_switches_to_log_site_id_on_multisite() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$this->register_email_log_dependencies();
+
+		$site_id            = self::factory()->blog->create();
+		$batch_id           = 'batch-site-switch';
+		$post_id            = $this->create_log_post( $batch_id, Email_Log::STATUS_SCHEDULED, 0, null, null, $site_id );
+		$observed_blog_id   = null;
+		$original_blog_id   = get_current_blog_id();
+		$log_processor_mock = $this->createMock( Email_Log_Processor::class );
+
+		$this->limiter->method( 'should_abort' )->willReturn( false );
+
+		$this->batch_query->expects( $this->once() )
+			->method( 'is_complete' )
+			->with( $batch_id )
+			->willReturn( false );
+
+		$this->batch_query->expects( $this->once() )
+			->method( 'get_pending_ids' )
+			->with( $batch_id )
+			->willReturn( array( $post_id ) );
+
+		$this->scheduler->expects( $this->once() )
+			->method( 'schedule_worker' )
+			->with(
+				$batch_id,
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$this->isType( 'int' ),
+				$this->greaterThanOrEqual( 11 * MINUTE_IN_SECONDS )
+			);
+
+		$log_processor_mock->expects( $this->once() )
+			->method( 'process' )
+			->with( $post_id, Email_Reporting_Settings::FREQUENCY_WEEKLY )
+			->willReturnCallback(
+				function () use ( &$observed_blog_id ) {
+					$observed_blog_id = get_current_blog_id();
+				}
+			);
+
+		$task = new Worker_Task(
+			$this->limiter,
+			$this->batch_query,
+			$this->scheduler,
+			$log_processor_mock
+		);
+
+		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
+
+		$this->assertSame( $site_id, $observed_blog_id, 'Worker should switch to the log site before processing.' );
+		$this->assertSame( $original_blog_id, get_current_blog_id(), 'Worker should restore the original blog after processing.' );
 	}
 
 	public function test_increments_attempts_for_pending_posts() {
@@ -584,8 +642,9 @@ class Worker_TaskTest extends TestCase {
 		);
 	}
 
-	private function create_log_post( $batch_id, $status, $attempts, $user_id = null, $date_range_meta = null ) {
+	private function create_log_post( $batch_id, $status, $attempts, $user_id = null, $date_range_meta = null, $site_id = null ) {
 		$user_id = $user_id ?: self::factory()->user->create();
+		$site_id = null !== $site_id ? (int) $site_id : get_current_blog_id();
 
 		$post_id = wp_insert_post(
 			array(
@@ -600,6 +659,7 @@ class Worker_TaskTest extends TestCase {
 					Email_Log::META_REPORT_FREQUENCY       => Email_Reporting_Settings::FREQUENCY_WEEKLY,
 					Email_Log::META_SEND_ATTEMPTS          => $attempts,
 					Email_Log::META_REPORT_REFERENCE_DATES => $date_range_meta ?: $this->get_reference_dates_meta(),
+					Email_Log::META_SITE_ID                => $site_id,
 				),
 			)
 		);

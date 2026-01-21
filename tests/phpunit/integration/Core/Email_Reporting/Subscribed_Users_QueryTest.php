@@ -122,7 +122,7 @@ class Subscribed_Users_QueryTest extends TestCase {
 
 	public function test_for_frequency_includes_super_admins() {
 		if ( ! is_multisite() ) {
-			$this->markTestSkipped( 'Multisite required to verify super admin inclusion.' );
+			$this->markTestSkipped( 'This test only runs on multisite.' );
 		}
 
 		if ( ! function_exists( 'grant_super_admin' ) ) {
