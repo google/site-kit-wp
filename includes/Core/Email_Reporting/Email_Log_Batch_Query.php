@@ -216,4 +216,32 @@ class Email_Log_Batch_Query {
 
 		return array_map( 'intval', $batch_query->posts );
 	}
+
+	/**
+	 * Gets the error details of the first email log
+	 * if ALL emails in the latest batch failed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|null Error details or null if no error.
+	 */
+	public function get_latest_batch_error() {
+		$batch_post_ids = $this->get_latest_batch_post_ids();
+
+		if ( empty( $batch_post_ids ) ) {
+			return null;
+		}
+
+		foreach ( $batch_post_ids as $post_id ) {
+			$status = get_post_status( $post_id );
+
+			$attempts = (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true );
+
+			if ( Email_Log::STATUS_FAILED !== $status || $attempts < self::MAX_ATTEMPTS ) {
+				return null;
+			}
+		}
+
+		return get_post_meta( $batch_post_ids[0], Email_Log::META_ERROR_DETAILS, true );
+	}
 }
