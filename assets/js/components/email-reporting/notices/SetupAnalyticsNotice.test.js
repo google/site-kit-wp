@@ -63,6 +63,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: false,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -71,9 +72,6 @@ describe( 'SetupAnalyticsNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	} );
 
 	it( 'renders the notice when email reporting is enabled, analytics is disconnected and was never connected before and notice is not dismissed', () => {
@@ -147,6 +145,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
+				disconnectedAt: false,
 			},
 		] );
 		const { container } = render( <SetupAnalyticsNotice />, {
@@ -156,10 +155,15 @@ describe( 'SetupAnalyticsNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'does not render when analytics is disconnect but was connected before', () => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+	it( 'does not render when analytics is disconnected but was connected before', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+				disconnectedAt: 1735660800,
+			},
+		] );
 
 		const { container } = render( <SetupAnalyticsNotice />, {
 			registry,
