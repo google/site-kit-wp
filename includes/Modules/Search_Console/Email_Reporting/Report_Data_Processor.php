@@ -383,13 +383,38 @@ class Report_Data_Processor {
 	 */
 	public function format_dimension_value( $value ) {
 		if ( filter_var( $value, FILTER_VALIDATE_URL ) ) {
+			$label = $this->get_page_title_from_url( $value );
+
 			return array(
-				'label' => $value,
+				'label' => $label,
 				'url'   => $value,
 			);
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Gets the page title from a URL by looking up the WordPress post.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param string $url URL to look up.
+	 * @return string Page title or URL if no post found.
+	 */
+	protected function get_page_title_from_url( $url ) {
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid -- We fallback to the URL if no post is found.
+		$post_id = url_to_postid( $url );
+
+		if ( $post_id > 0 ) {
+			$title = get_the_title( $post_id );
+
+			if ( ! empty( $title ) ) {
+				return $title;
+			}
+		}
+
+		return $url;
 	}
 
 	/**
