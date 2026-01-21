@@ -39,6 +39,7 @@ const baseInitialState = {
 	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
+		errors: undefined,
 	},
 };
 
@@ -75,6 +76,17 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 			typeof settings.enabled === 'boolean',
 			'enabled should be a boolean.'
 		);
+	},
+} );
+
+const fetchGetEmailReportingErrorsStore = createFetchStore( {
+	baseName: 'getEmailReportingErrors',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-errors', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: ( state, errors ) => {
+		state.emailReporting.errors = errors || {};
 	},
 } );
 
@@ -151,6 +163,15 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
+	*getEmailReportingErrors() {
+		const registry = yield commonActions.getRegistry();
+
+		const errors = registry.select( CORE_SITE ).getEmailReportingErrors();
+
+		if ( errors === undefined ) {
+			yield fetchGetEmailReportingErrorsStore.actions.fetchGetEmailReportingErrors();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -180,11 +201,24 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
+
+	/**
+	 * Gets the email reporting errors.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
+	 */
+	getEmailReportingErrors( state ) {
+		return state.emailReporting?.errors;
+	},
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
+	fetchGetEmailReportingErrorsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
