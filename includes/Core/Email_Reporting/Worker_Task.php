@@ -92,6 +92,8 @@ class Worker_Task {
 			return;
 		}
 
+		$switched = false;
+
 		try {
 			if ( $this->should_abort( $initiator_timestamp ) ) {
 				return;
@@ -107,6 +109,13 @@ class Worker_Task {
 				return;
 			}
 
+			$site_id = (int) get_post_meta( $pending_ids[0], Email_Log::META_SITE_ID, true );
+			if ( 0 !== $site_id && get_current_blog_id() !== $site_id ) {
+				// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.switch_to_blog_switch_to_blog -- Needed to process the log in its site context.
+				switch_to_blog( $site_id );
+				$switched = true;
+			}
+
 			$this->schedule_follow_up( $batch_id, $frequency, $initiator_timestamp );
 
 			if ( $this->should_abort( $initiator_timestamp ) ) {
@@ -115,6 +124,9 @@ class Worker_Task {
 
 			$this->process_pending_logs( $pending_ids, $frequency, $initiator_timestamp );
 		} finally {
+			if ( $switched ) {
+				restore_current_blog();
+			}
 			delete_transient( $lock_handle );
 		}
 	}
