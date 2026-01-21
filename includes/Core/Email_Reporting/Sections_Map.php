@@ -307,7 +307,7 @@ class Sections_Map {
 	/**
 	 * Filters section parts to only include meaningful data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param array $section_parts Section parts to filter.
 	 * @return array Filtered section parts.
@@ -330,7 +330,7 @@ class Sections_Map {
 	/**
 	 * Determines whether a section part has meaningful data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param mixed $data Section part data.
 	 * @return bool Whether the data contains values to render.
@@ -358,7 +358,7 @@ class Sections_Map {
 	/**
 	 * Determines whether a value represents non-zero, meaningful data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param mixed $value Value to evaluate.
 	 * @return bool Whether the value is non-zero or non-empty.

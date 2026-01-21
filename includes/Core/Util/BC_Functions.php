@@ -150,7 +150,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the array_is_list function introduced in PHP 8.1.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param array $value The array to check.
 	 * @return bool True if the array is a list, false otherwise.
