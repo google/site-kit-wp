@@ -34,17 +34,19 @@ class Composer {
 		$repo_root     = dirname( $event->getComposer()->getConfig()->get( 'vendor-dir' ) );
 		$packages_root = $repo_root . '/packages';
 		$library_lock  = trim( file_get_contents( "$repo_root/codegen/library.lock" ) );
-		$apis          = json_decode( file_get_contents( "$repo_root/codegen/apis.json" ) );
+		$apis          = array(
+			array( 'subscribewithgoogle' ),
+		);
 
 		$start_time      = time();
 		$command_map     = array();
 		$generated_count = 0;
 
-		foreach ( $apis as list( $name, $version ) ) {
-			$api_id = "$name:$version";
+		foreach ( $apis as list( $name ) ) {
+			$api_id = $name;
 			$io->debug( "Processing $api_id..." );
 
-			$discovery_doc_path = "$repo_root/codegen/apis/$name.$version.json";
+			$discovery_doc_path = "$repo_root/codegen/apis/$name.json";
 
 			// This file should always exist, but apis could be out of sync with discovery docs on disk.
 			if ( ! file_exists( $discovery_doc_path ) ) {
@@ -55,7 +57,7 @@ class Composer {
 			$discovery_doc_hash = md5_file( $discovery_doc_path );
 			$package_identifier = "$discovery_doc_hash:$library_lock";
 			// See https://getcomposer.org/doc/04-schema.md#name.
-			$project_name = "apiclient-services-$name.$version";
+			$project_name = "apiclient-services-$name";
 			$package_root = "$packages_root/$project_name";
 
 			// Skip this package if it already exists and has the same identifier.
@@ -144,7 +146,7 @@ class Composer {
 	protected static function write_package_files( string $project_name, string $identifier, string $packages_root ): void {
 		$composer_json = array(
 			'name'        => "google/$project_name",
-			'version'     => 'dev-generated', // Use a fixed version as it's managed in place.
+			'version'     => 'dev-latest', // Use a fixed version as it's managed in place.
 			'description' => 'This package is @generated automatically',
 			'extra'       => array(
 				'identifier' => $identifier,
