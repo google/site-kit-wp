@@ -24,6 +24,21 @@ class Email_Log_Batch_Query {
 	const MAX_ATTEMPTS = 3;
 
 	/**
+	 * Gets the list of email log statuses.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return string[]
+	 */
+	private function get_email_log_statuses() {
+		return array(
+			Email_Log::STATUS_SENT,
+			Email_Log::STATUS_FAILED,
+			Email_Log::STATUS_SCHEDULED,
+		);
+	}
+
+	/**
 	 * Retrieves IDs for pending logs within a batch.
 	 *
 	 * @since 1.167.0
@@ -73,11 +88,7 @@ class Email_Log_Batch_Query {
 		return new WP_Query(
 			array(
 				'post_type'              => Email_Log::POST_TYPE,
-				'post_status'            => array(
-					Email_Log::STATUS_SCHEDULED,
-					Email_Log::STATUS_SENT,
-					Email_Log::STATUS_FAILED,
-				),
+				'post_status'            => $this->get_email_log_statuses(),
 				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'posts_per_page'         => 10000,
 				'fields'                 => 'ids',
@@ -150,5 +161,59 @@ class Email_Log_Batch_Query {
 				'post_status' => $status,
 			)
 		);
+	}
+
+	/**
+	 * Gets the post IDs for the latest email log batch.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return array<int>
+	 */
+	public function get_latest_batch_post_ids() {
+		$latest_post = new \WP_Query(
+			array(
+				'post_type'      => Email_Log::POST_TYPE,
+				'post_status'    => $this->get_email_log_statuses(),
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'no_found_rows'  => true,
+			)
+		);
+
+		if ( empty( $latest_post->posts ) ) {
+			return array();
+		}
+
+		$latest_post_id = (int) $latest_post->posts[0];
+		$batch_id       = get_post_meta( $latest_post_id, Email_Log::META_BATCH_ID, true );
+
+		if ( empty( $batch_id ) ) {
+			return array();
+		}
+
+		$batch_query = new \WP_Query(
+			array(
+				'post_type'      => Email_Log::POST_TYPE,
+				'post_status'    => $this->get_email_log_statuses(),
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => 10000,
+				'fields'         => 'ids',
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'no_found_rows'  => true,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query'     => array(
+					array(
+						'key'   => Email_Log::META_BATCH_ID,
+						'value' => $batch_id,
+					),
+				),
+			)
+		);
+
+		return array_map( 'intval', $batch_query->posts );
 	}
 }
