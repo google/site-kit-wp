@@ -39,6 +39,14 @@ class Email_Reporting_Site_Health {
 	private $user_options;
 
 	/**
+	 * Email log batch query instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Log_Batch_Query
+	 */
+	private $email_log_batch_query;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.166.0
@@ -47,8 +55,9 @@ class Email_Reporting_Site_Health {
 	 * @param User_Options             $user_options User options instance.
 	 */
 	public function __construct( Email_Reporting_Settings $settings, User_Options $user_options ) {
-		$this->settings     = $settings;
-		$this->user_options = $user_options;
+		$this->settings              = $settings;
+		$this->user_options          = $user_options;
+		$this->email_log_batch_query = new Email_Log_Batch_Query();
 	}
 
 	/**
@@ -100,7 +109,7 @@ class Email_Reporting_Site_Health {
 			return $fields;
 		}
 
-		$batch_post_ids = $this->get_latest_batch_post_ids();
+		$batch_post_ids = $this->email_log_batch_query->get_latest_batch_post_ids();
 
 		if ( empty( $batch_post_ids ) ) {
 			return $fields;
@@ -141,60 +150,6 @@ class Email_Reporting_Site_Health {
 		}
 
 		return $subscribers;
-	}
-
-	/**
-	 * Gets the post IDs for the latest email log batch.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return array<int>
-	 */
-	private function get_latest_batch_post_ids() {
-		$latest_post = new \WP_Query(
-			array(
-				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_relevant_log_statuses(),
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-				'no_found_rows'  => true,
-			)
-		);
-
-		if ( empty( $latest_post->posts ) ) {
-			return array();
-		}
-
-		$latest_post_id = (int) $latest_post->posts[0];
-		$batch_id       = get_post_meta( $latest_post_id, Email_Log::META_BATCH_ID, true );
-
-		if ( empty( $batch_id ) ) {
-			return array();
-		}
-
-		$batch_query = new \WP_Query(
-			array(
-				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_relevant_log_statuses(),
-				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-				'posts_per_page' => 10000,
-				'fields'         => 'ids',
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-				'no_found_rows'  => true,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				'meta_query'     => array(
-					array(
-						'key'   => Email_Log::META_BATCH_ID,
-						'value' => $batch_id,
-					),
-				),
-			)
-		);
-
-		return array_map( 'intval', $batch_query->posts );
 	}
 
 	/**
@@ -291,21 +246,6 @@ class Email_Reporting_Site_Health {
 		return array(
 			'value' => $iso,
 			'debug' => $iso,
-		);
-	}
-
-	/**
-	 * Gets the list of email log statuses considered for Site Health summaries.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return string[]
-	 */
-	private function get_relevant_log_statuses() {
-		return array(
-			Email_Log::STATUS_SENT,
-			Email_Log::STATUS_FAILED,
-			Email_Log::STATUS_SCHEDULED,
 		);
 	}
 }
