@@ -164,9 +164,14 @@ export default function KeyMetricsSetupApp() {
 				isAnalyticsSetupComplete: true,
 			} );
 
-			url.searchParams.set( 'notification', 'authentication_success' );
-
-			if ( ! isInitialSetupFlow ) {
+			// HERE (write notification)
+			if ( isInitialSetupFlow ) {
+				url.searchParams.set( 'notification', 'welcome_modal' );
+			} else {
+				url.searchParams.set(
+					'notification',
+					'authentication_success'
+				);
 				url.searchParams.set( 'slug', 'analytics-4' );
 			}
 

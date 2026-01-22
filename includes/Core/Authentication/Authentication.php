@@ -369,6 +369,7 @@ final class Authentication implements Provides_Feature_Metrics {
 
 		// If no initial version set for the current user, set it when getting a new access token.
 		if ( ! $this->initial_version->get() ) {
+			// HERE (set initial version)
 			$set_initial_version = function () {
 				$this->initial_version->set( GOOGLESITEKIT_VERSION );
 			};

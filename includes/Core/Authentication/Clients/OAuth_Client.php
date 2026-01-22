@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -364,6 +365,9 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 
 		if ( empty( $query_args['notification'] ) ) {
+			// HERE (write notification) ...
+			// $notification = $this->get_notification_for_redirect_url();
+			// $redirect_url = add_query_arg( array( 'notification' => $notification ), $redirect_url );
 			$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 		}
 		// Ensure we remove error query string.
@@ -664,6 +668,9 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
 
 			if ( false === $reauth && empty( $query_args['notification'] ) ) {
+				// HERE (write notification)
+				// $notification = $this->get_notification_for_redirect_url();
+				// $redirect_url = add_query_arg( array( 'notification' => $notification ), $redirect_url );
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 
@@ -675,9 +682,27 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+			// HERE (write notification)
+			$notification = $this->get_notification_for_redirect_url();
+			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => $notification ) );
 		}
 
 		return $redirect_url;
+	}
+
+	/**
+	 * Returns the notification to use for the redirect URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Notification slug.
+	 */
+	private function get_notification_for_redirect_url() {
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+		// Only need to check the gathering data modal's dismissal status as it's dismissed when the with-tour variant is dismissed.
+		if ( $dismissed_items->is_dismissed( 'welcome-modal-gathering-data' ) ) {
+			return 'authentication_success';
+		}
+		return 'welcome_modal';
 	}
 }
