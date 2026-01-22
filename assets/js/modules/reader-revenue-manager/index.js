@@ -33,7 +33,11 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
+import {
+	SettingsEdit,
+	SettingsStatus,
+	SettingsView,
+} from './components/settings';
 import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import {
@@ -71,6 +75,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
+		SettingsStatusComponent: SettingsStatus,
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
