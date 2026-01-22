@@ -136,6 +136,15 @@ describe( 'Analytics write scope requests', () => {
 			} else if (
 				request
 					.url()
+					.match( 'analytics-4/data/set-google-tag-id-mismatch' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( { success: true } ),
+				} );
+			} else if (
+				request
+					.url()
 					.match( 'analytics-4/data/enhanced-measurement-settings' )
 			) {
 				request.respond( {
@@ -441,6 +450,10 @@ describe( 'Analytics write scope requests', () => {
 
 		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
 			text: /Congrats on completing the setup for Analytics!/i,
+		} );
+	} );
+} );
+cs!/i,
 		} );
 	} );
 } );
