@@ -36,18 +36,14 @@ $change_context  = $data['change_context'];
 			?>
 		</td>
 		<td>
-			<div style="font-size:16px; line-height:24px; font-weight:500; margin-bottom:6px;">
+			<div style="font-size:16px; line-height:24px; font-weight:500; margin-bottom:5px;">
 				<?php echo esc_html( $label ); ?>
-			</div>
-			<div style="height: 22px; margin-bottom: 16px;">
-				&nbsp;
-				<?php // TODO: Add detected in tag in v1. ?>
 			</div>
 
 			<table role="presentation" width="100%"
 				style="padding-bottom: 10px; border-bottom: 1px solid #EBEEF0; margin-bottom: 10px;">
 				<tr>
-					<td style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 10px;">
+					<td style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 8px;">
 						<?php
 						printf(
 							/* translators: %s: Event name (e.g., "Purchase") */

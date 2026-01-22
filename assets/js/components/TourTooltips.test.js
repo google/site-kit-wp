@@ -38,18 +38,21 @@ const STEP_KEY = `${ TOUR_ID }-step`;
 const RUN_KEY = `${ TOUR_ID }-run`;
 const MOCK_STEPS = [
 	{
+		slug: 'step-1',
 		target: '.step-1',
 		title: 'Title for step 1',
 		content: <em>This is the first step</em>,
 		placement: 'center',
 	},
 	{
+		slug: 'step-2',
 		target: '.step-2',
 		title: 'Title for step 2',
 		content: 'This is the second step',
 		placement: 'center',
 	},
 	{
+		slug: 'step-3',
 		target: '.step-3',
 		title: 'Title for step 3',
 		content: 'This is the third step',
@@ -174,33 +177,54 @@ describe( 'TourTooltips', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should add `googlesitekit-showing-feature-tour` class to `body`', () => {
+	it( 'should add classes to `body` when the tour starts', () => {
 		const { baseElement } = renderTourTooltipsWithMockUI( registry );
 
-		expect(
-			baseElement.classList.contains(
-				'googlesitekit-showing-feature-tour'
-			)
-		).toBe( true );
+		expect( baseElement.classList ).toContain(
+			'googlesitekit-showing-feature-tour'
+		);
+
+		expect( baseElement.classList ).toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }`
+		);
+
+		expect( baseElement.classList ).toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }-step-1`
+		);
 	} );
 
-	it( 'should remove `googlesitekit-showing-feature-tour` class from `body` when tour ends', () => {
+	it( 'should remove classes from `body` when the tour ends', () => {
 		const { baseElement, getByRole } =
 			renderTourTooltipsWithMockUI( registry );
 
-		expect(
-			baseElement.classList.contains(
-				'googlesitekit-showing-feature-tour'
-			)
-		).toBe( true );
-
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
-		expect(
-			baseElement.classList.contains(
-				'googlesitekit-showing-feature-tour'
-			)
-		).toBe( false );
+		expect( baseElement.classList ).not.toContain(
+			'googlesitekit-showing-feature-tour'
+		);
+
+		expect( baseElement.classList ).not.toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }`
+		);
+
+		expect( baseElement.classList ).not.toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }-step-1`
+		);
+	} );
+
+	it( 'should update the step class when the step is changed', () => {
+		const { baseElement, getByRole } =
+			renderTourTooltipsWithMockUI( registry );
+
+		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+
+		expect( baseElement.classList ).toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }-step-2`
+		);
+
+		expect( baseElement.classList ).not.toContain(
+			`googlesitekit-showing-feature-tour--${ TOUR_ID }-step-1`
+		);
 	} );
 
 	it( 'should end tour when close icon is clicked', () => {
