@@ -422,10 +422,10 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 /**
  * Custom hook description.
  *
- * @since 1.25.0
+ * \@since 1.25.0
  *
- * @param {string} parameter Description of parameter.
- * @return {*} Description of return value.
+ * \@param {string} parameter Description of parameter.
+ * \@return {*} Description of return value.
  */
 export default function useCustomHook(parameter) {
     // Hook implementation

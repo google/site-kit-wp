@@ -42,8 +42,8 @@ final class Options implements Options_Interface {
     /**
      * Get option value.
      *
-     * @param string $option Option name.
-     * @return mixed Option value or false if not found.
+     * \@param string $option Option name.
+     * \@return mixed Option value or false if not found.
      */
     public function get( $option ) {
         if ( $this->context->is_network_mode() ) {
@@ -55,9 +55,9 @@ final class Options implements Options_Interface {
     /**
      * Set option value.
      *
-     * @param string $option Option name.
-     * @param mixed  $value  Option value.
-     * @return bool True on success.
+     * \@param string $option Option name.
+     * \@param mixed  $value  Option value.
+     * \@return bool True on success.
      */
     public function set( $option, $value ) {
         if ( $this->context->is_network_mode() ) {
@@ -69,8 +69,8 @@ final class Options implements Options_Interface {
     /**
      * Delete option.
      *
-     * @param string $option Option name.
-     * @return bool True on success.
+     * \@param string $option Option name.
+     * \@return bool True on success.
      */
     public function delete( $option ) {
         if ( $this->context->is_network_mode() ) {
@@ -82,8 +82,8 @@ final class Options implements Options_Interface {
     /**
      * Check if option exists.
      *
-     * @param string $option Option name.
-     * @return bool True if option exists.
+     * \@param string $option Option name.
+     * \@return bool True if option exists.
      */
     public function has( $option ) {
         $value = $this->get( $option );
@@ -176,8 +176,8 @@ final class User_Options implements User_Options_Interface {
     /**
      * Get option for the current user.
      *
-     * @param string $option Option name.
-     * @return mixed Option value or false.
+     * \@param string $option Option name.
+     * \@return mixed Option value or false.
      */
     public function get( $option ) {
         $user_id = $this->get_user_id();
@@ -196,9 +196,9 @@ final class User_Options implements User_Options_Interface {
     /**
      * Set option for the current user.
      *
-     * @param string $option Option name.
-     * @param mixed  $value  Option value.
-     * @return bool True on success.
+     * \@param string $option Option name.
+     * \@param mixed  $value  Option value.
+     * \@return bool True on success.
      */
     public function set( $option, $value ) {
         $user_id = $this->get_user_id();
@@ -212,8 +212,8 @@ final class User_Options implements User_Options_Interface {
     /**
      * Delete user option.
      *
-     * @param string $option Option name.
-     * @return bool True on success.
+     * \@param string $option Option name.
+     * \@return bool True on success.
      */
     public function delete( $option ) {
         $user_id = $this->get_user_id();
@@ -227,8 +227,8 @@ final class User_Options implements User_Options_Interface {
     /**
      * Check if user has option.
      *
-     * @param string $option Option name.
-     * @return bool True if option exists.
+     * \@param string $option Option name.
+     * \@return bool True if option exists.
      */
     public function has( $option ) {
         return false !== $this->get( $option );
@@ -237,7 +237,7 @@ final class User_Options implements User_Options_Interface {
     /**
      * Get current user ID.
      *
-     * @return int User ID.
+     * \@return int User ID.
      */
     public function get_user_id() {
         return $this->user_id;
@@ -246,8 +246,8 @@ final class User_Options implements User_Options_Interface {
     /**
      * Switch to a different user context.
      *
-     * @param int $user_id User ID to switch to.
-     * @return bool True on success.
+     * \@param int $user_id User ID to switch to.
+     * \@return bool True on success.
      */
     public function switch_user( $user_id ) {
         $user_id = (int) $user_id;
@@ -375,8 +375,8 @@ final class Transients {
     /**
      * Get transient value.
      *
-     * @param string $transient Transient name.
-     * @return mixed Transient value or false if not found/expired.
+     * \@param string $transient Transient name.
+     * \@return mixed Transient value or false if not found/expired.
      */
     public function get( $transient ) {
         if ( $this->context->is_network_mode() ) {
@@ -388,10 +388,10 @@ final class Transients {
     /**
      * Set transient value.
      *
-     * @param string $transient  Transient name.
-     * @param mixed  $value      Transient value.
-     * @param int    $expiration Expiration in seconds.
-     * @return bool True on success.
+     * \@param string $transient  Transient name.
+     * \@param mixed  $value      Transient value.
+     * \@param int    $expiration Expiration in seconds.
+     * \@return bool True on success.
      */
     public function set( $transient, $value, $expiration = 0 ) {
         if ( $this->context->is_network_mode() ) {
@@ -403,8 +403,8 @@ final class Transients {
     /**
      * Delete transient.
      *
-     * @param string $transient Transient name.
-     * @return bool True on success.
+     * \@param string $transient Transient name.
+     * \@return bool True on success.
      */
     public function delete( $transient ) {
         if ( $this->context->is_network_mode() ) {
