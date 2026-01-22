@@ -81,17 +81,19 @@ export default function SetupAnalyticsNotice() {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
-	const handleCTAClick = useCallback( () => {
-		setInProgress( true );
+	// If Analytics is already active but not connected, skip activation
+	// and go directly to the setup flow.
+	const onClickCallback = isAnalyticsActive
+		? completeModuleActivation
+		: activateAnalytics;
 
-		// If Analytics is already active but not connected, skip activation
-		// and go directly to the setup flow.
-		if ( isAnalyticsActive ) {
-			completeModuleActivation();
-		} else {
-			activateAnalytics();
+	const handleCTAClick = useCallback( () => {
+		if ( ! onClickCallback ) {
+			return;
 		}
-	}, [ activateAnalytics, completeModuleActivation, isAnalyticsActive ] );
+		setInProgress( true );
+		onClickCallback();
+	}, [ onClickCallback ] );
 
 	const handleDismiss = useCallback( async () => {
 		await dismissItem(
