@@ -35,21 +35,25 @@ import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { trackEvent } from '@/js/util/tracking';
-import { useFeature } from '@/js/hooks/useFeature';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
+import { isFeatureEnabled } from '@/js/features';
+
+const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
 	options: {
 		arrowColor: '#3c7251', // $c-content-primary
 		backgroundColor: '#3c7251', // $c-content-primary
-		overlayColor: 'rgba(0, 0, 0, 0.6)',
+		overlayColor: setupFlowRefreshEnabled
+			? 'rgba(0, 0, 0, 0.25)'
+			: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000,
 	},
 	spotlight: {
-		border: '2px solid #3c7251', // $c-content-primary
+		border: setupFlowRefreshEnabled ? 'none' : '2px solid #3c7251', // $c-content-primary
 		backgroundColor: '#fff',
 	},
 };
@@ -100,7 +104,6 @@ export default function TourTooltips( {
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const stepIndex = useSelect(
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
@@ -112,17 +115,31 @@ export default function TourTooltips( {
 		);
 	} );
 
+	function getStepClassName( index ) {
+		return `googlesitekit-showing-feature-tour--${ tourID }-${
+			steps[ index ].slug || index
+		}`;
+	}
+
 	function changeStep( index, action ) {
-		return setValue(
-			stepKey,
-			index + ( action === ACTIONS.PREV ? -1 : 1 )
-		);
+		const newStepIndex = index + ( action === ACTIONS.PREV ? -1 : 1 );
+
+		global.document.body.classList.remove( getStepClassName( index ) );
+
+		if ( steps[ newStepIndex ] ) {
+			global.document.body.classList.add(
+				getStepClassName( newStepIndex )
+			);
+		}
+
+		return setValue( stepKey, newStepIndex );
 	}
 
 	function startTour() {
 		global.document.body.classList.add(
 			'googlesitekit-showing-feature-tour',
-			`googlesitekit-showing-feature-tour--${ tourID }`
+			`googlesitekit-showing-feature-tour--${ tourID }`,
+			getStepClassName( stepIndex )
 		);
 		setValue( runKey, true );
 	}
@@ -132,6 +149,13 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
+
+		// `stepIndex` may be out of bounds if the user has advanced beyond the last step.
+		if ( steps[ stepIndex ] ) {
+			global.document.body.classList.remove(
+				getStepClassName( stepIndex )
+			);
+		}
 
 		if ( isRepeatable ) {
 			setValue( runKey, false );
