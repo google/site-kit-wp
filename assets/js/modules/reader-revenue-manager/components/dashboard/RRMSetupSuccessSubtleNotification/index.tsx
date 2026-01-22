@@ -175,7 +175,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 
 	const gaTrackingEventArgs = {
 		label: `${ publicationOnboardingState }:${ paymentOption }:${
-			hasCustomProductID ? 'yes' : 'noElementType'
+			hasCustomProductID ? 'yes' : 'no'
 		}`,
 	};
 
