@@ -26,6 +26,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { FC, ElementType } from 'react';
 
+/**
+ * Internal dependencies
+ */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '@/js/components/Notice/constants';
 
