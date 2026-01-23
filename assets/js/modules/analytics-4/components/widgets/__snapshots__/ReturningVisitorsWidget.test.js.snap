@@ -21,6 +21,8 @@ exports[`ReturningVisitorsWidget should render correctly with the expected metri
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Portion of your site’s visitors that returned at least once in this timeframe"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`ReturningVisitorsWidget should render the generic error variant when th
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Portion of your site’s visitors that returned at least once in this timeframe"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`ReturningVisitorsWidget should render the insufficient permissions erro
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Portion of your site’s visitors that returned at least once in this timeframe"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`ReturningVisitorsWidget should render the loading state while resolving
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Portion of your site’s visitors that returned at least once in this timeframe"
             >
               <svg />
