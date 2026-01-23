@@ -74,6 +74,13 @@ final class Email_Log {
 	const META_REPORT_REFERENCE_DATES = '_report_reference_dates';
 
 	/**
+	 * Site ID meta key.
+	 *
+	 * @since n.e.x.t
+	 */
+	const META_SITE_ID = '_site_id';
+
+	/**
 	 * Email log post statuses.
 	 *
 	 * Slugs must stay within the posts table varchar(20) limit.
@@ -334,6 +341,17 @@ final class Email_Log {
 				'sanitize_callback' => array( __CLASS__, 'sanitize_reference_dates' ),
 			)
 		);
+
+		register_post_meta(
+			self::POST_TYPE,
+			self::META_SITE_ID,
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'auth_callback'     => $auth_callback,
+				'sanitize_callback' => array( __CLASS__, 'sanitize_site_id' ),
+			)
+		);
 	}
 
 	/**
@@ -452,6 +470,18 @@ final class Email_Log {
 		$encoded    = wp_json_encode( $normalized, JSON_UNESCAPED_UNICODE );
 
 		return is_string( $encoded ) ? $encoded : '';
+	}
+
+	/**
+	 * Sanitizes the site ID meta value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value Meta value.
+	 * @return int Sanitized site ID.
+	 */
+	public static function sanitize_site_id( $value ) {
+		return absint( $value );
 	}
 
 	/**

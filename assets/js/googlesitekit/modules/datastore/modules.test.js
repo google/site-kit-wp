@@ -864,11 +864,15 @@ describe( 'core/modules modules', () => {
 				function SettingsDisconnectNoteComponent() {
 					return 'disconnect note';
 				}
+				function SettingsStatusComponent() {
+					return 'status';
+				}
 
 				registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
 					SettingsViewComponent,
 					SettingsEditComponent,
 					SettingsDisconnectNoteComponent,
+					SettingsStatusComponent,
 				} );
 
 				expect(
@@ -883,6 +887,10 @@ describe( 'core/modules modules', () => {
 					store.getState().clientDefinitions[ moduleSlug ]
 						.SettingsDisconnectNoteComponent
 				).toEqual( SettingsDisconnectNoteComponent );
+				expect(
+					store.getState().clientDefinitions[ moduleSlug ]
+						.SettingsStatusComponent
+				).toEqual( SettingsStatusComponent );
 			} );
 
 			it( 'accepts DashboardMainEffectComponent and DashboardEntityEffectComponent components for the module', () => {
@@ -1729,6 +1737,86 @@ describe( 'core/modules modules', () => {
 
 				expect( isConnected ).toBeUndefined();
 
+				await untilResolved( registry, CORE_MODULES ).getModules();
+			} );
+		} );
+
+		describe( 'isModuleDisconnected', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					{ body: FIXTURES, status: 200 }
+				);
+			} );
+
+			it( 'returns true if a module is disconnected', async () => {
+				// Analytics is disconnected in our fixtures.
+				const slug = MODULE_SLUG_ANALYTICS_4;
+				const disconnectedAt = registry
+					.select( CORE_MODULES )
+					.isModuleDisconnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( disconnectedAt ).toBeUndefined();
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const disconnectedAtLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleDisconnected( slug );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( disconnectedAtLoaded ).toEqual( true );
+			} );
+
+			it( 'returns false if a module is not disconnected previously', async () => {
+				// Search console in our fixtures is not disconnected.
+				const slug = MODULE_SLUG_SEARCH_CONSOLE;
+				const isDisconnected = registry
+					.select( CORE_MODULES )
+					.isModuleDisconnected( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( isDisconnected ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const isDisconnectedLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleDisconnected( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( isDisconnectedLoaded ).toEqual( false );
+			} );
+
+			it( 'returns null if a module does not exist', async () => {
+				const slug = 'not-a-real-module';
+				const disconnectedAt = registry
+					.select( CORE_MODULES )
+					.isModuleActive( slug );
+				// The modules will be undefined whilst loading, so this will return `undefined`.
+				expect( disconnectedAt ).toBeUndefined();
+
+				// Wait for loading to complete.
+				await untilResolved( registry, CORE_MODULES ).getModules();
+
+				const disconnectedAtLoaded = registry
+					.select( CORE_MODULES )
+					.isModuleActive( slug );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( disconnectedAtLoaded ).toEqual( null );
+			} );
+
+			it( 'returns undefined if modules is not yet available', async () => {
+				muteFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+					[]
+				);
+
+				const disconnectedAt = registry
+					.select( CORE_MODULES )
+					.isModuleDisconnected( MODULE_SLUG_ANALYTICS_4 );
+
+				expect( disconnectedAt ).toBeUndefined();
 				await untilResolved( registry, CORE_MODULES ).getModules();
 			} );
 		} );

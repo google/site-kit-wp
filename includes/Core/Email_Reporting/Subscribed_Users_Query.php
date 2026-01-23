@@ -66,6 +66,10 @@ class Subscribed_Users_Query {
 			$this->query_shared_roles( $meta_key )
 		);
 
+		if ( is_multisite() ) {
+			$user_ids = array_merge( $user_ids, $this->query_super_admins() );
+		}
+
 		$user_ids = array_unique( array_map( 'intval', $user_ids ) );
 
 		return $this->filter_subscribed_user_ids( $user_ids, $frequency, $meta_key );
@@ -115,6 +119,31 @@ class Subscribed_Users_Query {
 		);
 
 		return $query->get_results();
+	}
+
+	/**
+	 * Queries super admins for multisite networks.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int[] User IDs.
+	 */
+	private function query_super_admins() {
+		if ( ! function_exists( 'get_super_admins' ) ) {
+			return array();
+		}
+
+		$user_ids = array();
+
+		foreach ( get_super_admins() as $user_login ) {
+			$user = get_user_by( 'login', $user_login );
+
+			if ( $user instanceof \WP_User ) {
+				$user_ids[] = (int) $user->ID;
+			}
+		}
+
+		return $user_ids;
 	}
 
 	/**

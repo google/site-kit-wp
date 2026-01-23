@@ -269,4 +269,44 @@ describe( 'SettingsModule', () => {
 			queryByRole( 'button', { name: /close/i } )
 		).toBeInTheDocument();
 	} );
+
+	it( 'should display custom SettingsStatusComponent when provided during module registration', () => {
+		function CustomStatusComponent( { slug } ) {
+			return (
+				<div data-testid="custom-status-component">
+					Custom status for { slug }
+				</div>
+			);
+		}
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				storeName: MODULES_ANALYTICS_4,
+				SettingsStatusComponent: CustomStatusComponent,
+				SettingsEditComponent() {
+					return <div data-testid="edit-component">edit</div>;
+				},
+				SettingsViewComponent() {
+					return <div data-testid="view-component">view</div>;
+				},
+			},
+		] );
+
+		history.push( '/connected-services/analytics-4' );
+
+		const { queryByTestID } = render( <SettingsModuleWithWrapper />, {
+			history,
+			registry,
+		} );
+
+		expect(
+			queryByTestID( 'custom-status-component' )
+		).toBeInTheDocument();
+		expect( queryByTestID( 'custom-status-component' ) ).toHaveTextContent(
+			'Custom status for analytics-4'
+		);
+	} );
 } );

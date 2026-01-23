@@ -19,5 +19,5 @@ $alt_text    = $is_positive
 	? __( 'Positive trend indicator', 'google-site-kit' )
 	: __( 'Negative trend indicator', 'google-site-kit' );
 ?>
-<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $alt_text ); ?>" width="9" height="192" style="margin-right: 10px;" />
+<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $alt_text ); ?>" width="9" height="164" style="margin-right: 10px; height: 164px; width: 9px;" />
 

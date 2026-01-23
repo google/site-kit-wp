@@ -22,14 +22,32 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
+	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+
 	if ( !! setupModuleSlug ) {
-		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
+		if ( ! emailReportingEnabled ) {
+			return <ModuleSetup moduleSlug={ setupModuleSlug } />;
+		}
+
+		return (
+			<Fragment>
+				<ModuleSetup moduleSlug={ setupModuleSlug } />
+				<UserSettingsSelectionPanel />
+			</Fragment>
+		);
 	}
 
 	return <DashboardMainApp />;

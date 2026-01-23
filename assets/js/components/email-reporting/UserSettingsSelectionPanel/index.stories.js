@@ -85,6 +85,7 @@ AnalyticsWasConnected.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: 1735660800,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
@@ -106,6 +107,7 @@ AnalyticsWasConnectedViewOnly.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: 1735660800,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
@@ -128,6 +130,7 @@ AnalyticsWasNeverConnected.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: false,
 			},
 		] );
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
@@ -136,9 +139,6 @@ AnalyticsWasNeverConnected.args = {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 };
 
@@ -149,9 +149,6 @@ EmailReportingDisabled.args = {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 };
 
@@ -163,9 +160,6 @@ EmailReportingDisabledViewOnly.args = {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
@@ -181,6 +175,7 @@ export default {
 						slug: MODULE_SLUG_ANALYTICS_4,
 						active: true,
 						connected: true,
+						disconnectedAt: false,
 					},
 				] );
 				provideUserAuthentication( registry );
@@ -190,9 +185,6 @@ export default {
 					wpEmail: 'someone@anybusiness.com',
 				} );
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 				registry
 					.dispatch( CORE_SITE )
 					.receiveGetEmailReportingSettings( {
