@@ -106,17 +106,23 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Update status should persist new post status.' );
 	}
 
-	private function create_log_post( $batch_id, $status, $attempts ) {
+	private function create_log_post( $batch_id, $status, $attempts, $errors = '' ) {
+		$meta_input = array(
+			Email_Log::META_BATCH_ID         => $batch_id,
+			Email_Log::META_REPORT_FREQUENCY => Email_Reporting_Settings::FREQUENCY_WEEKLY,
+			Email_Log::META_SEND_ATTEMPTS    => $attempts,
+		);
+
+		if ( ! empty( $errors ) ) {
+			$meta_input[ Email_Log::META_ERROR_DETAILS ] = $errors;
+		}
+
 		$post_id = wp_insert_post(
 			array(
 				'post_type'   => Email_Log::POST_TYPE,
 				'post_status' => $status,
 				'post_title'  => 'Log ' . uniqid(),
-				'meta_input'  => array(
-					Email_Log::META_BATCH_ID         => $batch_id,
-					Email_Log::META_REPORT_FREQUENCY => Email_Reporting_Settings::FREQUENCY_WEEKLY,
-					Email_Log::META_SEND_ATTEMPTS    => $attempts,
-				),
+				'meta_input'  => $meta_input,
 			)
 		);
 
