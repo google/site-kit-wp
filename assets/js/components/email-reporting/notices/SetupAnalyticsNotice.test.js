@@ -139,9 +139,9 @@ describe( 'SetupAnalyticsNotice', () => {
 				connected: false,
 			},
 		] );
-		// Note: Intentionally not calling provideModuleRegistrations here
-		// to prevent the Analytics 4 store resolver from running.
 
+		// Note: Intentionally not calling `provideModuleRegistrations` here
+		// to prevent the Analytics 4 store resolver from running.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
