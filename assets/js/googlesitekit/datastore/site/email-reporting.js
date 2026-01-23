@@ -78,16 +78,6 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchGetWasAnalytics4Connected = createFetchStore( {
-	baseName: 'getWasAnalytics4Connected',
-	controlCallback: () => {
-		return get( 'core', 'site', 'was-analytics-4-connected' );
-	},
-	reducerCallback: createReducer( ( state, wasAnalytics4Connected ) => {
-		state.emailReporting.wasAnalytics4Connected = wasAnalytics4Connected;
-	} ),
-} );
-
 // Actions
 const SET_EMAIL_REPORTING_SETTINGS = 'SET_EMAIL_REPORTING_SETTINGS';
 
@@ -161,17 +151,6 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
-	*getWasAnalytics4Connected() {
-		const registry = yield commonActions.getRegistry();
-
-		const wasAnalytics4Connected = registry
-			.select( CORE_SITE )
-			.getWasAnalytics4Connected();
-
-		if ( wasAnalytics4Connected === undefined ) {
-			yield fetchGetWasAnalytics4Connected.actions.fetchGetWasAnalytics4Connected();
-		}
-	},
 };
 
 const baseSelectors = {
@@ -201,24 +180,11 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
-
-	/**
-	 * Gets whether Analytics 4 was ever connected.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
-	 */
-	getWasAnalytics4Connected( state ) {
-		return state.emailReporting?.wasAnalytics4Connected?.wasConnected;
-	},
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
-	fetchGetWasAnalytics4Connected,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

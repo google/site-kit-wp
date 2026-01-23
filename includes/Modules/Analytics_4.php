@@ -1937,7 +1937,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	/**
 	 * Gets the configured Analytics Admin v1alpha service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @return GoogleAnalyticsAdminV1alpha
 	 */

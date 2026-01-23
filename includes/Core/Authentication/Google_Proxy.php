@@ -12,10 +12,10 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Exception;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\URL;
+use Exception;
 use WP_Error;
 
 /**
@@ -339,12 +339,16 @@ class Google_Proxy {
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
 	public function get_site_fields() {
+		$return_uri = Feature_Flags::enabled( 'setupFlowRefresh' )
+			? admin_url( 'plugins.php' )
+			: $this->context->admin_url( 'splash' );
+
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'url'                    => $this->context->get_canonical_home_url(),
 			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 			'action_uri'             => admin_url( 'index.php' ),
-			'return_uri'             => admin_url( 'plugins.php' ),
+			'return_uri'             => $return_uri,
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
 	}

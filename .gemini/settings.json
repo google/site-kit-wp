@@ -1,3 +1,46 @@
 {
-	"contextFileName": "AGENTS.md"
+	"context": {
+		"fileName": [
+			"AGENTS.md",
+			"docs/context/js/component-conventions.md",
+			"docs/context/js/module-architecture.md",
+			"docs/context/js/widgets.md",
+			"docs/context/js/feature-tours.md",
+			"docs/context/js/jsdoc.md",
+			"docs/context/js/notifications.md",
+			"docs/context/js/tests.md",
+			"docs/context/js/utils.md",
+			"docs/context/js/state-management.md",
+			"docs/context/js/hooks.md",
+			"docs/context/js/storybook.md",
+			"docs/context/js/event-tracking.md",
+			"docs/context/js/feature-flags.md",
+			"docs/context/php/admin-features.md",
+			"docs/context/php/asset-management.md",
+			"docs/context/php/context-pattern.md",
+			"docs/context/php/dependency-injection.md",
+			"docs/context/php/module-architecture.md",
+			"docs/context/php/naming-conventions.md",
+			"docs/context/php/phpunit.md",
+			"docs/context/php/prompts-and-dismissals.md",
+			"docs/context/php/rest-api.md",
+			"docs/context/php/settings-management.md",
+			"docs/context/php/storage-patterns.md",
+			"docs/context/php/trait-composition.md"
+		]
+	},
+	"mcpServers": {
+		"github": {
+			"trust": false,
+			"httpUrl": "https://api.githubcopilot.com/mcp/?toolsets=issues",
+			"headers": {
+				"Authorization": "Bearer ${GITHUB_TOKEN}"
+			},
+			"includeTools": [
+				"issue_read",
+				"list_issues",
+				"search_issues"
+			]
+		}
+	}
 }
