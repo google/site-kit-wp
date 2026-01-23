@@ -325,6 +325,8 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
           </p>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
           >
             <svg />
           </span>
@@ -379,6 +381,8 @@ exports[`SetupForm renders the form correctly with setupFlowRefresh enabled 1`] 
           </p>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
           >
             <svg />
           </span>
