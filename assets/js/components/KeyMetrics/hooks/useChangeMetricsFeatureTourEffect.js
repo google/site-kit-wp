@@ -29,6 +29,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
+import { useFeature } from '@/js/hooks/useFeature';
 
 /**
  * Triggers on demand tour for shared key metrics if all conditions are met.
@@ -41,6 +42,8 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 export function useChangeMetricsFeatureTourEffect( {
 	renderChangeMetricLink,
 } ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const keyMetricsSetupCompletedBy = useSelect( ( select ) =>
 		select( CORE_SITE ).getKeyMetricsSetupCompletedBy()
 	);
@@ -59,7 +62,7 @@ export function useChangeMetricsFeatureTourEffect( {
 		currentUserID !== keyMetricsSetupCompletedBy;
 
 	useEffect( () => {
-		if ( isInitialWelcomeModalActive() ) {
+		if ( setupFlowRefreshEnabled && isInitialWelcomeModalActive() ) {
 			if ( ! isTourDismissed ) {
 				dismissTour( sharedKeyMetrics.slug );
 			}
@@ -75,5 +78,6 @@ export function useChangeMetricsFeatureTourEffect( {
 		triggerOnDemandTour,
 		isTourDismissed,
 		dismissTour,
+		setupFlowRefreshEnabled,
 	] );
 }
