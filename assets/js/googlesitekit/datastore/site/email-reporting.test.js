@@ -34,6 +34,10 @@ describe( 'core/site Email Reporting', () => {
 		'^/google-site-kit/v1/core/site/data/email-reporting'
 	);
 
+	const emailReportingErrorsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-errors'
+	);
+
 	beforeAll( () => {
 		setUsingCache( false );
 	} );
@@ -275,6 +279,45 @@ describe( 'core/site Email Reporting', () => {
 				expect(
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getEmailReportingErrors', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const emailReportingErrors = {
+					errors: {
+						email_report_section_build_failed: [
+							'title must be a non-empty string',
+						],
+					},
+					error_data: [],
+				};
+
+				fetchMock.getOnce( emailReportingErrorsEndpointRegExp, {
+					body: emailReportingErrors,
+					status: 200,
+				} );
+
+				const initialErrors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( initialErrors ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEmailReportingErrors();
+
+				const errors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( errors ).toEqual( emailReportingErrors );
+
+				expect( fetchMock ).toHaveFetched(
+					emailReportingErrorsEndpointRegExp
+				);
 			} );
 		} );
 	} );
