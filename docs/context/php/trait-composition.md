@@ -26,8 +26,8 @@ trait Method_Proxy_Trait {
     /**
      * Get a proxy closure for a class method.
      *
-     * @param string $method Method name.
-     * @return callable Proxy closure.
+     * \@param string $method Method name.
+     * \@return callable Proxy closure.
      */
     private function get_method_proxy( $method ) {
         return function ( ...$args ) use ( $method ) {
@@ -38,8 +38,8 @@ trait Method_Proxy_Trait {
     /**
      * Get a proxy closure that only executes once.
      *
-     * @param string $method Method name.
-     * @return callable Proxy closure.
+     * \@param string $method Method name.
+     * \@return callable Proxy closure.
      */
     private function get_method_proxy_once( $method ) {
         return function ( ...$args ) use ( $method ) {
@@ -91,7 +91,7 @@ trait User_Aware_Trait {
     /**
      * Get current user ID.
      *
-     * @return int User ID.
+     * \@return int User ID.
      */
     public function get_user_id() {
         return $this->user_id;
@@ -100,8 +100,8 @@ trait User_Aware_Trait {
     /**
      * Switch to a different user context.
      *
-     * @param int $user_id User ID to switch to.
-     * @return bool True on success.
+     * \@param int $user_id User ID to switch to.
+     * \@return bool True on success.
      */
     public function switch_user( $user_id ) {
         $this->user_id = (int) $user_id;
@@ -146,14 +146,14 @@ trait Module_With_Settings_Trait {
     /**
      * Set up module settings.
      *
-     * @return Module_Settings Settings instance.
+     * \@return Module_Settings Settings instance.
      */
     abstract protected function setup_settings();
 
     /**
      * Get module settings instance.
      *
-     * @return Module_Settings Settings instance.
+     * \@return Module_Settings Settings instance.
      */
     public function get_settings() {
         if ( ! $this->settings instanceof Module_Settings ) {
@@ -194,14 +194,14 @@ trait Module_With_Scopes_Trait {
     /**
      * Set up required OAuth scopes.
      *
-     * @return array List of OAuth scopes.
+     * \@return array List of OAuth scopes.
      */
     abstract protected function setup_scopes();
 
     /**
      * Get required OAuth scopes.
      *
-     * @return array OAuth scopes.
+     * \@return array OAuth scopes.
      */
     public function get_scopes() {
         if ( empty( $this->scopes ) ) {
@@ -240,7 +240,7 @@ trait Module_With_Owner_Trait {
     /**
      * Get the module owner's user ID.
      *
-     * @return int Owner user ID.
+     * \@return int Owner user ID.
      */
     public function get_owner_id() {
         if ( ! $this instanceof Module_With_Settings ) {
@@ -254,7 +254,7 @@ trait Module_With_Owner_Trait {
     /**
      * Get OAuth client for the module owner.
      *
-     * @return OAuth_Client Owner's OAuth client.
+     * \@return OAuth_Client Owner's OAuth client.
      */
     public function get_owner_oauth_client() {
         if ( $this->owner_oauth_client instanceof OAuth_Client ) {
@@ -283,8 +283,8 @@ trait Module_With_Owner_Trait {
     /**
      * Set the module owner.
      *
-     * @param int $owner_id Owner user ID.
-     * @return bool True on success.
+     * \@param int $owner_id Owner user ID.
+     * \@return bool True on success.
      */
     public function set_owner_id( $owner_id ) {
         if ( ! $this instanceof Module_With_Settings ) {
@@ -327,14 +327,14 @@ trait Module_With_Assets_Trait {
     /**
      * Set up module assets.
      *
-     * @return array List of Asset objects.
+     * \@return array List of Asset objects.
      */
     abstract protected function setup_assets();
 
     /**
      * Get module assets.
      *
-     * @return array Asset objects.
+     * \@return array Asset objects.
      */
     public function get_assets() {
         if ( null === $this->module_assets ) {
@@ -380,14 +380,14 @@ trait Module_With_Tag_Trait {
     /**
      * Set up module tag.
      *
-     * @return Module_Tag Tag instance.
+     * \@return Module_Tag Tag instance.
      */
     abstract protected function setup_tag();
 
     /**
      * Get module tag instance.
      *
-     * @return Module_Tag Tag instance.
+     * \@return Module_Tag Tag instance.
      */
     public function get_tag() {
         if ( ! $this->tag instanceof Module_Tag ) {
@@ -429,14 +429,14 @@ trait Module_With_Data_Available_State_Trait {
     /**
      * Set up data available state.
      *
-     * @return Data_Available_State State instance.
+     * \@return Data_Available_State State instance.
      */
     abstract protected function setup_data_available_state();
 
     /**
      * Get data available state instance.
      *
-     * @return Data_Available_State State instance.
+     * \@return Data_Available_State State instance.
      */
     public function get_data_available_state() {
         if ( ! $this->data_available_state instanceof Data_Available_State ) {
@@ -460,7 +460,7 @@ trait Setting_With_Owned_Keys_Trait {
     /**
      * Get owned setting keys.
      *
-     * @return array List of owned keys.
+     * \@return array List of owned keys.
      */
     protected function get_owned_keys() {
         return array();
@@ -469,7 +469,7 @@ trait Setting_With_Owned_Keys_Trait {
     /**
      * Check if owned settings have changed.
      *
-     * @return bool True if owned settings changed.
+     * \@return bool True if owned settings changed.
      */
     public function have_owned_settings_changed() {
         $settings   = $this->get();
@@ -490,7 +490,7 @@ trait Setting_With_Owned_Keys_Trait {
     /**
      * Get owned settings slugs.
      *
-     * @return array Owned setting keys.
+     * \@return array Owned setting keys.
      */
     public function get_owned_settings_slugs() {
         return $this->get_owned_keys();

@@ -151,7 +151,7 @@ class Report_Data_Processor {
 
 			$values[] = null === $current ? null : $current;
 
-			if ( null === $comparison || 0 === $comparison ) {
+			if ( null === $comparison || 0.0 === (float) $comparison ) {
 				$trends[] = null;
 			} else {
 				$trends[] = ( (float) $current - (float) $comparison ) / (float) $comparison * 100;
