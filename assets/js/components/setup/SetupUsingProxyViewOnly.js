@@ -70,7 +70,7 @@ export default function SetupUsingProxyViewOnly() {
 			trackEvent( viewContext, 'confirm_viewonly' ),
 		] ).finally( () => {
 			const url = addQueryArgs( dashboardURL, {
-				notification: 'welcome_modal',
+				notification: 'initial_setup_success',
 			} );
 			navigateTo( url );
 		} );

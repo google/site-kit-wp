@@ -166,7 +166,7 @@ export default function KeyMetricsSetupApp() {
 
 			// HERE (write notification)
 			if ( isInitialSetupFlow ) {
-				url.searchParams.set( 'notification', 'welcome_modal' );
+				url.searchParams.set( 'notification', 'initial_setup_success' );
 			} else {
 				url.searchParams.set(
 					'notification',

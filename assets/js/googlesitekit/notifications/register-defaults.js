@@ -74,7 +74,6 @@ import ConsentModeSetupCTABanner from '@/js/components/consent-mode/ConsentModeS
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
-import { GATHERING_DATA_DISMISSED_ITEM_SLUG } from '@/js/components/WelcomeModal';
 import { MINUTE_IN_SECONDS } from '@/js/util';
 import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecoveryAlert';
 import SiteKitSetupSuccessNotification from '@/js/components/notifications/SiteKitSetupSuccessNotification';
@@ -89,7 +88,6 @@ import {
 	requireModuleActive,
 	requireModuleGatheringData,
 } from '@/js/googlesitekit/data-requirements';
-import { isFeatureEnabled } from '@/js/features';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'activate-analytics-cta': {
@@ -328,23 +326,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: SiteKitSetupSuccessNotification,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { resolveSelect } ) => {
-			const setupFlowRefreshEnabled =
-				isFeatureEnabled( 'setupFlowRefresh' );
-
-			if ( setupFlowRefreshEnabled ) {
-				// Dismissing the Welcome modal's dashboard tour variant also dismisses
-				// the gathering data modal variant, so we only need to check the
-				// gathering data modal's dismissal status.
-				const isWelcomeModalDismissed = await resolveSelect(
-					CORE_USER
-				).isItemDismissed( GATHERING_DATA_DISMISSED_ITEM_SLUG );
-
-				if ( ! isWelcomeModalDismissed ) {
-					return false;
-				}
-			}
-
+		checkRequirements: () => {
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 

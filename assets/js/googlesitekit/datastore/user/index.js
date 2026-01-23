@@ -42,6 +42,7 @@ import userInputSettings from './user-input-settings';
 import conversionReportingSettings from './conversion-reporting-settings';
 import emailReportingSettings from './email-reporting-settings';
 import initialSetupSettings from './initial-setup-settings';
+import welcomeModal from './welcome-modal';
 
 const store = combineStores(
 	commonStore,
@@ -65,7 +66,8 @@ const store = combineStores(
 	userInputSettings,
 	conversionReportingSettings,
 	emailReportingSettings,
-	initialSetupSettings
+	initialSetupSettings,
+	welcomeModal
 );
 
 export const {

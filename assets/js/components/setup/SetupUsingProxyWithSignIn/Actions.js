@@ -84,7 +84,7 @@ export default function Actions( {
 			),
 		] ).finally( () => {
 			const url = addQueryArgs( dashboardURL, {
-				notification: 'welcome_modal',
+				notification: 'initial_setup_success',
 			} );
 			navigateTo( url );
 		} );
