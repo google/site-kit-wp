@@ -52,7 +52,7 @@ export default function EmailReportingErrorNotice() {
 	if (
 		! isEmailReportingEnabled ||
 		isViewOnly ||
-		emailReportingErrors?.errors?.length === 0
+		emailReportingErrors?.length === 0
 	) {
 		return null;
 	}
