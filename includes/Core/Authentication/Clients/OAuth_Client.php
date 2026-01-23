@@ -365,9 +365,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		}
 
 		if ( empty( $query_args['notification'] ) ) {
-			// HERE (write notification) ...
-			// $notification = $this->get_notification_for_redirect_url();
-			// $redirect_url = add_query_arg( array( 'notification' => $notification ), $redirect_url );
 			$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 		}
 		// Ensure we remove error query string.
@@ -668,9 +665,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
 
 			if ( false === $reauth && empty( $query_args['notification'] ) ) {
-				// HERE (write notification)
-				// $notification = $this->get_notification_for_redirect_url();
-				// $redirect_url = add_query_arg( array( 'notification' => $notification ), $redirect_url );
 				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 			}
 
@@ -682,7 +676,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
-			// HERE (write notification)
 			$notification = $this->get_notification_for_default_redirect_url();
 			$redirect_url = $this->context->admin_url( 'dashboard', array( 'notification' => $notification ) );
 		}

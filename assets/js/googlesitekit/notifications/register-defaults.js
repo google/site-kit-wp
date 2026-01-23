@@ -330,7 +330,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
-			// HERE (read notification)
 			if ( 'authentication_success' === notification && ! slug ) {
 				return true;
 			}
@@ -395,7 +394,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			 * for the first time, we want to hide (dismiss) this notification for 10
 			 * minutes so they aren't immediately bothered by this CTA.
 			 */
-			// HERE (read notification)
 			if ( notification === 'authentication_success' && ! slug ) {
 				await dismissNotification( 'auto-update-cta', {
 					expiresInSeconds: MINUTE_IN_SECONDS * 10,

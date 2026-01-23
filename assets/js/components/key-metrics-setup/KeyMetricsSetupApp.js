@@ -164,7 +164,6 @@ export default function KeyMetricsSetupApp() {
 				isAnalyticsSetupComplete: true,
 			} );
 
-			// HERE (write notification)
 			if ( isInitialSetupFlow ) {
 				url.searchParams.set( 'notification', 'initial_setup_success' );
 			} else {
