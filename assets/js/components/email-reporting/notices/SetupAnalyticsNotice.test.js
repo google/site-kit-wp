@@ -135,6 +135,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: false,
 			},
 		] );
 
@@ -144,9 +145,6 @@ describe( 'SetupAnalyticsNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
@@ -245,6 +243,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: false,
+				disconnectedAt: false,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -253,9 +252,6 @@ describe( 'SetupAnalyticsNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 
 		const moduleActivationEndpoint = RegExp(
 			'google-site-kit/v1/core/modules/data/activation'
