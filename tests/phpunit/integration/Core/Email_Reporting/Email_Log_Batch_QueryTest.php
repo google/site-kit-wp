@@ -106,6 +106,37 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Update status should persist new post status.' );
 	}
 
+	public function test_get_latest_batch_error__all_logs_failed() {
+		$batch_id   = 'batch-error';
+		$test_error = '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $test_error );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertSame( $test_error, $latest_error, 'Latest batch error should return the most recent error details.' );
+	}
+
+	public function test_get_latest_batch_error__not_all_logs_failed() {
+		$batch_id = 'batch-no-error';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_SENT, 1 );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have failed.' );
+	}
+
+	public function test_get_latest_batch_error__number_of_attempts_not_exceeded() {
+		$batch_id = 'batch-attempts-not-exceeded';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 1, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have exceeded max attempts.' );
+	}
+
 	private function create_log_post( $batch_id, $status, $attempts, $errors = '' ) {
 		$meta_input = array(
 			Email_Log::META_BATCH_ID         => $batch_id,
