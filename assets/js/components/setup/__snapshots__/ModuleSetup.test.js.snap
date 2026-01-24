@@ -351,6 +351,8 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
                               >
                                 <svg />
                               </span>
@@ -405,6 +407,8 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
                               >
                                 <svg />
                               </span>

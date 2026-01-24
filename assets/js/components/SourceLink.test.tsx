@@ -49,8 +49,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).not.toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).toBeNull();
@@ -66,8 +65,7 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		expect( container ).toHaveTextContent( 'Analytics' );
 		expect( container.firstChild ).not.toBeNull();
@@ -90,13 +88,12 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		const link = container.querySelector( 'a' );
 		expect( link ).not.toBeNull();
 
-		fireEvent.click( link );
+		fireEvent.click( link! );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_widget`,
@@ -115,13 +112,12 @@ describe( 'SourceLink', () => {
 			{
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		const link = container.querySelector( 'a' );
 		expect( link ).not.toBeNull();
 
-		fireEvent.click( link );
+		fireEvent.click( link! );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 	} );

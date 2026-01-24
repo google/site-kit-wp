@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ElementType } from 'react';
 
 /**
  * WordPress dependencies
@@ -44,7 +44,7 @@ import { WEEK_IN_SECONDS } from '@/js/util';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
-	Notification: React.ElementType;
+	Notification: ElementType;
 }
 
 const ActivateAnalyticsNotification: FC<

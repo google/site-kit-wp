@@ -105,8 +105,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -155,8 +154,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -228,8 +226,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -250,8 +247,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -399,13 +395,9 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
-			{
-				registry,
-			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		const { getByRole, waitForRegistry } = render( <WelcomeModal />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 
@@ -595,8 +587,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -638,8 +629,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -692,8 +682,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -716,8 +705,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -744,8 +732,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -832,8 +819,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -884,8 +870,7 @@ describe( 'WelcomeModal', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -953,8 +938,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -975,8 +959,7 @@ describe( 'WelcomeModal', () => {
 					{
 						registry,
 					}
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-				) as any;
+				);
 
 				await waitForRegistry();
 
@@ -1103,13 +1086,9 @@ describe( 'WelcomeModal', () => {
 			status: 200,
 		} );
 
-		const { getByRole, waitForRegistry } = render(
-			<WelcomeModal />,
-			{
-				registry,
-			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		const { getByRole, waitForRegistry } = render( <WelcomeModal />, {
+			registry,
+		} );
 
 		await waitForRegistry();
 

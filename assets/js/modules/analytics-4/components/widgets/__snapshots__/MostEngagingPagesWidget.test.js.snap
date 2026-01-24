@@ -21,6 +21,8 @@ exports[`MostEngagingPagesWidget should render correctly with the expected metri
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages with the highest engagement rate"
           >
             <svg />
@@ -145,6 +147,8 @@ exports[`MostEngagingPagesWidget should render the generic error variant when th
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the highest engagement rate"
         >
           <svg />
@@ -207,6 +211,8 @@ exports[`MostEngagingPagesWidget should render the insufficient permissions erro
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the highest engagement rate"
         >
           <svg />
@@ -276,6 +282,8 @@ exports[`MostEngagingPagesWidget should render the loading state while resolving
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Pages with the highest engagement rate"
             >
               <svg />

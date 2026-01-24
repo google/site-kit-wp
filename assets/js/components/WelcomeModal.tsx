@@ -28,6 +28,11 @@ import {
 import { __ } from '@wordpress/i18n';
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+
+/**
  * Internal dependencies
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
@@ -52,7 +57,7 @@ import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
-import { ReactElement } from 'react';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
 export const GATHERING_DATA_DISMISSED_ITEM_SLUG =
@@ -118,6 +123,7 @@ export default function WelcomeModal() {
 			: isWithTourVariantDismissed;
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const [ , setNotification ] = useQueryArg( 'notification' );
 
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',
@@ -134,23 +140,20 @@ export default function WelcomeModal() {
 	const closeAndDismissModal = useCallback( async () => {
 		setIsOpen( false );
 
-		const itemsToDismiss = [];
+		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
+			await dismissItem( WITH_TOUR_DISMISSED_ITEM_SLUG );
+		}
 
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
 			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
 		) {
-			itemsToDismiss.push( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
 		}
 
-		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
-			itemsToDismiss.push( WITH_TOUR_DISMISSED_ITEM_SLUG );
-		}
-
-		await Promise.all(
-			itemsToDismiss.map( ( item ) => dismissItem( item ) )
-		);
-	}, [ modalVariant, dismissItem ] );
+		// Ensure the setup success notification won't be shown on page reload.
+		setNotification( undefined );
+	}, [ modalVariant, setNotification, dismissItem ] );
 
 	const closeAndDismissModalWithTooltip = useCallback( async () => {
 		await closeAndDismissModal();
