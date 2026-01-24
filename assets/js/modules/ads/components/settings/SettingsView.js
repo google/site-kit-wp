@@ -61,7 +61,7 @@ export default function SettingsView() {
 		select( CORE_USER ).isAdBlockerActive()
 	);
 
-	const conversionIDValue = paxConversionID ? paxConversionID : conversionID;
+	const conversionIDValue = paxConversionID || conversionID;
 	const isPaxView = paxConversionID || extCustomerID;
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>

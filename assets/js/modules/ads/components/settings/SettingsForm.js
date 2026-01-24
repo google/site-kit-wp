@@ -62,7 +62,7 @@ export default function SettingsForm() {
 		)
 	);
 
-	const conversionIDValue = paxConversionID ? paxConversionID : conversionID;
+	const conversionIDValue = paxConversionID || conversionID;
 	const isPaxView = paxConversionID || extCustomerID;
 
 	return (
