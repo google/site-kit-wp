@@ -213,18 +213,17 @@ const baseSelectors = {
 	 */
 	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
 		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
+		const currentUserID = select( CORE_USER ).getID();
 
-		if ( eligibleSubscribers === undefined ) {
+		if (
+			eligibleSubscribers === undefined ||
+			currentUserID === undefined
+		) {
 			return undefined;
 		}
 
 		if ( ! Array.isArray( eligibleSubscribers ) ) {
 			return [];
-		}
-
-		const currentUserID = select( CORE_USER ).getID();
-		if ( currentUserID === undefined ) {
-			return undefined;
 		}
 
 		return eligibleSubscribers
