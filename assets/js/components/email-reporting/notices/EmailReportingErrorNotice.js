@@ -59,7 +59,7 @@ export default function EmailReportingErrorNotice() {
 
 	return (
 		<NoticeWithIntersectionObserver
-			className="googlesitekit-email-reporting__admin_settings_notice"
+			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.ERROR }
 			title={ __( 'Email reports are paused', 'google-site-kit' ) }
 			description={ __(
