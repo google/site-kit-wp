@@ -24,19 +24,17 @@ class Email_Log_Batch_Query {
 	const MAX_ATTEMPTS = 3;
 
 	/**
-	 * Gets the list of email log statuses.
+	 * Email log statuses.
 	 *
-	 * @since 1.166.0
+	 * @since n.e.x.t
 	 *
-	 * @return string[]
+	 * @var string[]
 	 */
-	private function get_email_log_statuses() {
-		return array(
-			Email_Log::STATUS_SENT,
-			Email_Log::STATUS_FAILED,
-			Email_Log::STATUS_SCHEDULED,
-		);
-	}
+	const EMAIL_LOG_STATUSES = array(
+		Email_Log::STATUS_SENT,
+		Email_Log::STATUS_FAILED,
+		Email_Log::STATUS_SCHEDULED,
+	);
 
 	/**
 	 * Retrieves IDs for pending logs within a batch.
@@ -88,7 +86,7 @@ class Email_Log_Batch_Query {
 		return new WP_Query(
 			array(
 				'post_type'              => Email_Log::POST_TYPE,
-				'post_status'            => $this->get_email_log_statuses(),
+				'post_status'            => self::EMAIL_LOG_STATUSES,
 				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'posts_per_page'         => 10000,
 				'fields'                 => 'ids',
@@ -174,7 +172,7 @@ class Email_Log_Batch_Query {
 		$latest_post = new \WP_Query(
 			array(
 				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_email_log_statuses(),
+				'post_status'    => self::EMAIL_LOG_STATUSES,
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
 				'orderby'        => 'date',
@@ -197,7 +195,7 @@ class Email_Log_Batch_Query {
 		$batch_query = new \WP_Query(
 			array(
 				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_email_log_statuses(),
+				'post_status'    => self::EMAIL_LOG_STATUSES,
 				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'posts_per_page' => 10000,
 				'fields'         => 'ids',
