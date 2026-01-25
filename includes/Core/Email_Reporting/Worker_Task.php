@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
+use WP_Post;
+
 /**
  * Handles worker cron callbacks for email reporting.
  *
@@ -47,6 +50,15 @@ class Worker_Task {
 	private $log_processor;
 
 	/**
+	 * Email reporting data requests service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Email_Reporting_Data_Requests
+	 */
+	private $data_requests;
+
+	/**
 	 * Max execution limiter.
 	 *
 	 * @since 1.167.0
@@ -60,21 +72,24 @@ class Worker_Task {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param Max_Execution_Limiter     $max_execution_limiter Execution limiter instance.
-	 * @param Email_Log_Batch_Query     $batch_query           Batch query helper.
-	 * @param Email_Reporting_Scheduler $scheduler             Scheduler instance.
-	 * @param Email_Log_Processor       $log_processor         Log processor instance.
+	 * @param Max_Execution_Limiter         $max_execution_limiter Execution limiter instance.
+	 * @param Email_Log_Batch_Query         $batch_query           Batch query helper.
+	 * @param Email_Reporting_Scheduler     $scheduler             Scheduler instance.
+	 * @param Email_Log_Processor           $log_processor         Log processor instance.
+	 * @param Email_Reporting_Data_Requests $data_requests         Data requests helper.
 	 */
 	public function __construct(
 		Max_Execution_Limiter $max_execution_limiter,
 		Email_Log_Batch_Query $batch_query,
 		Email_Reporting_Scheduler $scheduler,
-		Email_Log_Processor $log_processor
+		Email_Log_Processor $log_processor,
+		Email_Reporting_Data_Requests $data_requests
 	) {
 		$this->max_execution_limiter = $max_execution_limiter;
 		$this->batch_query           = $batch_query;
 		$this->scheduler             = $scheduler;
 		$this->log_processor         = $log_processor;
+		$this->data_requests         = $data_requests;
 	}
 
 	/**
@@ -141,12 +156,35 @@ class Worker_Task {
 	 * @param int    $initiator_timestamp Initiator timestamp.
 	 */
 	private function process_pending_logs( array $pending_ids, $frequency, $initiator_timestamp ) {
+		$shared_payloads = $this->get_shared_payloads_for_pending_ids( $pending_ids );
+
 		foreach ( $pending_ids as $post_id ) {
 			if ( $this->should_abort( $initiator_timestamp ) ) {
 				return;
 			}
 
-			$this->log_processor->process( $post_id, $frequency );
+			$email_log = get_post( $post_id );
+			$user      = null;
+
+			if ( $email_log instanceof WP_Post ) {
+				$user = get_user_by( 'id', (int) $email_log->post_author );
+			}
+
+			$shared_payloads_for_user = array();
+
+			if ( ! empty( $shared_payloads ) && $user instanceof \WP_User ) {
+				foreach ( $shared_payloads as $slug => $module_payload ) {
+					if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+						$shared_payloads_for_user[ $slug ] = $module_payload;
+					}
+				}
+			}
+
+			if ( empty( $shared_payloads_for_user ) ) {
+				$this->log_processor->process( $post_id, $frequency );
+			} else {
+				$this->log_processor->process( $post_id, $frequency, $shared_payloads_for_user );
+			}
 		}
 
 		$this->should_abort( $initiator_timestamp );
@@ -198,5 +236,109 @@ class Worker_Task {
 		$delay       = max( 0, $target_time - (int) $initiator_timestamp );
 
 		$this->scheduler->schedule_worker( $batch_id, $frequency, $initiator_timestamp, $delay );
+	}
+
+	/**
+	 * Builds shared payloads per module for view-only recipients.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $pending_ids Pending post IDs.
+	 * @return array Shared payloads keyed by module slug.
+	 */
+	private function get_shared_payloads_for_pending_ids( array $pending_ids ) {
+		$module_slugs = $this->data_requests->get_active_module_slugs();
+		if ( empty( $module_slugs ) ) {
+			return array();
+		}
+
+		list( $date_range, $module_recipients ) = $this->collect_date_range_and_recipients( $pending_ids, $module_slugs );
+
+		if ( empty( $date_range ) ) {
+			return array();
+		}
+
+		return $this->build_shared_payloads( $module_recipients, $date_range );
+	}
+
+	/**
+	 * Collects the date range and module recipients from pending logs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array    $pending_ids  Pending post IDs.
+	 * @param string[] $module_slugs Active module slugs.
+	 * @return array{0: array, 1: array} Date range and module recipients.
+	 */
+	private function collect_date_range_and_recipients( array $pending_ids, array $module_slugs ) {
+		$module_recipients = array();
+		$date_range        = array();
+
+		foreach ( $pending_ids as $post_id ) {
+			$email_log = get_post( $post_id );
+
+			if ( ! $email_log instanceof WP_Post || Email_Log::POST_TYPE !== $email_log->post_type ) {
+				continue;
+			}
+
+			if ( empty( $date_range ) ) {
+				$date_range = Email_Log::get_date_range_from_log( $email_log );
+			}
+
+			$user_id = (int) $email_log->post_author;
+			if ( $user_id <= 0 ) {
+				continue;
+			}
+
+			$user = get_user_by( 'id', $user_id );
+			if ( ! $user instanceof \WP_User ) {
+				continue;
+			}
+
+			foreach ( $module_slugs as $slug ) {
+				if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+					$module_recipients[ $slug ][ $user_id ] = true;
+				}
+			}
+		}
+
+		return array( $date_range, $module_recipients );
+	}
+
+	/**
+	 * Builds shared module payloads based on a recipient map.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $module_recipients Module recipients keyed by slug.
+	 * @param array $date_range        Date range for the report.
+	 * @return array Shared payloads keyed by module slug.
+	 */
+	private function build_shared_payloads( array $module_recipients, array $date_range ) {
+		$shared_payloads = array();
+
+		foreach ( $module_recipients as $slug => $user_ids ) {
+			if ( empty( $user_ids ) ) {
+				continue;
+			}
+
+			reset( $user_ids );
+			$shared_user_id = (int) key( $user_ids );
+			if ( $shared_user_id <= 0 ) {
+				continue;
+			}
+
+			$payload = $this->data_requests->get_user_payload( $shared_user_id, $date_range, array(), array( $slug ) );
+
+			if ( is_wp_error( $payload ) || empty( $payload ) ) {
+				continue;
+			}
+
+			if ( ! empty( $payload[ $slug ] ) ) {
+				$shared_payloads[ $slug ] = $payload[ $slug ];
+			}
+		}
+
+		return $shared_payloads;
 	}
 }

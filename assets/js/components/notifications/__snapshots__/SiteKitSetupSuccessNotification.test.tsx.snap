@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SiteKitSetupSuccessNotification should render the banner 1`] = `
+<div>
+  <section
+    id="setup-success-notification-site-kit"
+  >
+    <div
+      class="googlesitekit-banner-notification googlesitekit-banner-notification--info"
+    >
+      <div
+        class="mdc-layout-grid googlesitekit-page-content"
+      >
+        <div
+          class="mdc-layout-grid__inner"
+        >
+          <div
+            class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          >
+            <div
+              class="googlesitekit-banner"
+            >
+              <div
+                class="googlesitekit-banner__content"
+              >
+                <p
+                  class="googlesitekit-banner__title"
+                >
+                  Congrats on completing the setup for Site Kit!
+                </p>
+                <div
+                  class="googlesitekit-banner__description"
+                >
+                  <span>
+                    Connect more services or edit connected services from the settings screen.
+                  </span>
+                   
+                  <a
+                    class="googlesitekit-cta-link"
+                    href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services"
+                  >
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Go to Settings
+                    </span>
+                  </a>
+                </div>
+                <div
+                  class="googlesitekit-notice__action"
+                >
+                  <button
+                    class="mdc-button mdc-button--raised"
+                    target="_self"
+                  >
+                    <span
+                      class="mdc-button__label"
+                    >
+                      Got it!
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-banner__svg-wrapper googlesitekit-banner__svg-wrapper--bottom"
+                style="background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+);"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+`;

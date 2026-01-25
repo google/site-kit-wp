@@ -21,6 +21,8 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="The top search queries for your site by highest clickthrough rate"
           >
             <svg />
@@ -142,6 +144,8 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
@@ -204,6 +208,8 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
@@ -273,6 +279,8 @@ exports[`PopularKeywordsWidget should render the loading state while resolving t
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="The top search queries for your site by highest clickthrough rate"
             >
               <svg />

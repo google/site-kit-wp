@@ -205,7 +205,8 @@ class Email_Reporting {
 			$max_execution_limiter,
 			$batch_query,
 			$this->scheduler,
-			$log_processor
+			$log_processor,
+			$this->data_requests
 		);
 		$this->fallback_task     = new Fallback_Task( $batch_query, $this->scheduler, $this->worker_task );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );

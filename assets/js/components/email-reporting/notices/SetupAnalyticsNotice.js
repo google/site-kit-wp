@@ -37,6 +37,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import Link from '@/js/components/Link';
 import useViewOnly from '@/js/hooks/useViewOnly';
 
@@ -51,6 +52,10 @@ export default function SetupAnalyticsNotice() {
 	);
 
 	const isViewOnly = useViewOnly();
+
+	const isAnalyticsActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
+	);
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -72,10 +77,23 @@ export default function SetupAnalyticsNotice() {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
+	const completeModuleActivation = useCompleteModuleActivationCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
+
+	// If Analytics is already active but not connected, skip activation
+	// and go directly to the setup flow.
+	const onClickCallback = isAnalyticsActive
+		? completeModuleActivation
+		: activateAnalytics;
+
 	const handleCTAClick = useCallback( () => {
+		if ( ! onClickCallback ) {
+			return;
+		}
 		setInProgress( true );
-		activateAnalytics();
-	}, [ activateAnalytics ] );
+		onClickCallback();
+	}, [ onClickCallback ] );
 
 	const handleDismiss = useCallback( async () => {
 		await dismissItem(
@@ -97,6 +115,10 @@ export default function SetupAnalyticsNotice() {
 		return null;
 	}
 
+	const ctaLabel = isAnalyticsActive
+		? __( 'Complete setup', 'google-site-kit' )
+		: __( 'Connect Analytics', 'google-site-kit' );
+
 	return (
 		<Notice
 			type={ TYPES.NEW }
@@ -110,17 +132,11 @@ export default function SetupAnalyticsNotice() {
 					'google-site-kit'
 				),
 				{
-					a: (
-						<Link
-							href={ learnMoreLink }
-							external
-							hideExternalIndicator
-						/>
-					),
+					a: <Link href={ learnMoreLink } external />,
 				}
 			) }
 			ctaButton={ {
-				label: __( 'Connect Analytics', 'google-site-kit' ),
+				label: ctaLabel,
 				inProgress,
 				disabled: inProgress,
 				onClick: handleCTAClick,
