@@ -17,27 +17,27 @@ attempt=0
 MAX_ATTEMPTS=15
 HOST_PORT=""
 while [[ -z "$HOST_PORT" ]]; do
-    attempt=$((attempt + 1))
-    if [[ $attempt -gt $MAX_ATTEMPTS ]]; then
-        error_message "Failed to get host port for $CONTAINER after $MAX_ATTEMPTS attempts."
-        error_message "Last attempt output for 'dc port $CONTAINER 80': $(dc port $CONTAINER 80 2>&1)"
-        dc ps
-        exit 1
-    fi
+	attempt=$((attempt + 1))
+	if [[ $attempt -gt $MAX_ATTEMPTS ]]; then
+		error_message "Failed to get host port for $CONTAINER after $MAX_ATTEMPTS attempts."
+		error_message "Last attempt output for 'dc port $CONTAINER 80': $(dc port $CONTAINER 80 2>&1)"
+		dc ps
+		exit 1
+	fi
 
-    # Capture the output and extract the trailing number.
-    port_output_raw=$(dc port $CONTAINER 80 2>&1)
-    port_output=$(echo "$port_output_raw" | grep -oE '[0-9]+$' | tail -n 1)
+	# Capture the output and extract the trailing number.
+	port_output_raw=$(dc port $CONTAINER 80 2>&1)
+	port_output=$(echo "$port_output_raw" | grep -oE '[0-9]+$' | tail -n 1)
 
-    # Check if the output is a valid port number.
-    if [[ "$port_output" =~ ^[0-9]+$ ]]; then
-        HOST_PORT=$port_output
-    else
-        if [[ $attempt -eq 1 ]]; then # Print warning only on first few failures.
-             warning_message "Attempt $attempt: 'dc port $CONTAINER 80' returned: '$port_output'. Waiting..."
-        fi
-        sleep 2
-    fi
+	# Check if the output is a valid port number.
+	if [[ "$port_output" =~ ^[0-9]+$ ]]; then
+		HOST_PORT=$port_output
+	else
+		if [[ $attempt -eq 1 ]]; then # Print warning only on first few failures.
+			 warning_message "Attempt $attempt: 'dc port $CONTAINER 80' returned: '$port_output'. Waiting..."
+		fi
+		sleep 2
+	fi
 done
 status_message "Successfully fetched HOST_PORT: $HOST_PORT"
 
@@ -120,9 +120,9 @@ if [ "$WP_VERSION" == "latest" ]; then
 fi
 
 if [ -n "$CA_CERT_REFRESH" ]; then
-  status_message "Updating WordPress certificate bundle..."
-  container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
-  container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
+	status_message "Updating WordPress certificate bundle..."
+	container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
+	container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
 fi
 
 # Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).
