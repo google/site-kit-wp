@@ -116,9 +116,6 @@ WithSetupFlowRefreshSetUpAnalytics.args = {
 			},
 		] );
 		provideModuleRegistrations( registry );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			adminURL: 'http://example.com/wp-admin/',
-		} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		setupSearchConsoleMockReports( registry );
 	},
