@@ -40,7 +40,7 @@ export default function AdminBarActivateAnalyticsCTA() {
 	}
 
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-admin-bar">
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }
