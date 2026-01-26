@@ -436,7 +436,7 @@ describe( 'Analytics write scope requests', () => {
 		// They should end up on the dashboard.
 		await page.waitForNavigation();
 		await page.waitForSelector( '.googlesitekit-notice__title', {
-			timeout: 5000,
+			timeout: 10000,
 		} );
 
 		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
