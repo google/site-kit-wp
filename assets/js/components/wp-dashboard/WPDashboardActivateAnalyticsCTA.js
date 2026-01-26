@@ -40,7 +40,7 @@ export default function WPDashboardActivateAnalyticsCTA() {
 	}
 
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-wp-dashboard">
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }
