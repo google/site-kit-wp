@@ -29,7 +29,7 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
-		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
+		<td class="dm-card" style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
 			<?php
 			// Render section header.
 			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) . '.png' );
@@ -56,12 +56,12 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 				?>
 			<table role="presentation" width="100%" style="margin-bottom:16px;">
 				<tr>
-					<td style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; padding-bottom:8px;">
+					<td class="dm-text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; padding-bottom:8px;">
 						<div style="width: 160px;">
 							<?php echo esc_html( $part_label ); ?>
 						</div>
 					</td>
-					<td
+					<td class="dm-text-secondary"
 						style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align:right; padding-bottom:8px; text-align:right; width: 110px;">
 						<?php echo esc_html( $change_context ); ?>
 					</td>
@@ -79,15 +79,15 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 					}
 					?>
 				<tr>
-					<td colspan="2"
+					<td class="dm-border" colspan="2"
 						style="border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 5px 0; <?php echo $is_last && ! $is_last_section_part ? 'padding-bottom: 16px;' : ''; ?>">
 						<?php // Nested table required to ensure truncation works correctly for longer labels. ?>
 						<table role="presentation" width="100%">
 							<tr>
-								<td
+								<td class="dm-text-primary"
 									style="font-size:14px; line-height:20px; font-weight:500; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
 									<?php if ( $has_url ) : ?>
-									<a href="<?php echo esc_url( $entity_url ); ?>"
+									<a class="dm-text-primary" href="<?php echo esc_url( $entity_url ); ?>"
 										style="color:#161B18; text-decoration:underline;">
 										<?php echo esc_html( $item['label'] ); ?>
 									</a>
@@ -95,7 +95,7 @@ $subtitle        = $first_data_item['change_context'] ?? '';
 										<?php echo esc_html( $item ); ?>
 									<?php endif; ?>
 								</td>
-								<td
+								<td class="dm-text-primary"
 									style="font-size:14px; line-height:20px; font-weight:500; text-align:right; width:80px;">
 									<?php echo esc_html( $data['values'][ $index ] ?? 0 ); ?>
 								</td>

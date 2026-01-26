@@ -36,14 +36,14 @@ $change_context  = $data['change_context'];
 			?>
 		</td>
 		<td>
-			<div style="font-size:16px; line-height:24px; font-weight:500; margin-bottom:5px;">
+			<div class="dm-text-primary" style="font-size:16px; line-height:24px; font-weight:500; margin-bottom:5px;">
 				<?php echo esc_html( $label ); ?>
 			</div>
 
-			<table role="presentation" width="100%"
+			<table role="presentation" width="100%" class="dm-border"
 				style="padding-bottom: 10px; border-bottom: 1px solid #EBEEF0; margin-bottom: 10px;">
 				<tr>
-					<td style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 8px;">
+					<td class="dm-text-secondary" style="font-size:12px; font-weight:500; color:#6C726E; text-align: left; padding-bottom: 8px;">
 						<?php
 						printf(
 							/* translators: %s: Event name (e.g., "Purchase") */
@@ -53,14 +53,14 @@ $change_context  = $data['change_context'];
 						);
 						?>
 					</td>
-					<td width="110"
+					<td class="dm-text-secondary" width="110"
 						style="font-size:12px; font-weight:500;  color:#6C726E; text-align: right; width: 110px; padding-bottom: 10px;">
 						<?php echo esc_html( $change_context ); ?>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<div style="font-size:14px; line-height:20px; font-weight:500;">
+						<div class="dm-text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
 							<?php echo esc_html( $value ); ?>
 						</div>
 					</td>
@@ -78,10 +78,10 @@ $change_context  = $data['change_context'];
 			</table>
 
 			<?php if ( ! empty( $dimension ) ) : ?>
-			<div style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
+			<div class="dm-text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
 				<?php esc_html_e( 'Top traffic channel driving the most conversions', 'google-site-kit' ); ?>
 			</div>
-			<div style="font-size:14px; line-height:20px; font-weight:500;">
+			<div class="dm-text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
 				<?php echo esc_html( $dimension_value ); ?>
 			</div>
 			<?php endif; ?>

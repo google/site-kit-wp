@@ -32,6 +32,9 @@ $render_shared_part = $data['render_shared_part'];
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -44,7 +47,7 @@ $render_shared_part = $data['render_shared_part'];
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
 		:root {
-			color-scheme: light;
+			color-scheme: light dark;
 		}
 
 		body {
@@ -107,6 +110,119 @@ $render_shared_part = $data['render_shared_part'];
 			max-width: 0;
 			opacity: 0;
 			overflow: hidden;
+		}
+
+		/* Dark mode logo handling - hide dark logo by default */
+		.dark-logo {
+			display: none !important;
+		}
+
+		/* Dark mode styles for email clients that support prefers-color-scheme */
+		@media (prefers-color-scheme: dark) {
+			/* Body and container backgrounds */
+			body,
+			.body {
+				background-color: #232824 !important;
+			}
+
+			/* Content card/section backgrounds */
+			.dm-card {
+				background-color: #161B18 !important;
+			}
+
+			/* Text colors */
+			.dm-text-primary {
+				color: #EBEEF0 !important;
+			}
+
+			.dm-text-secondary {
+				color: #999F9B !important;
+			}
+
+			/* Logo swap */
+			.light-logo {
+				display: none !important;
+			}
+
+			.dark-logo {
+				display: block !important;
+			}
+
+			/* Link colors */
+			.dm-link {
+				color: #93C9A8 !important;
+			}
+
+			/* Button colors */
+			.dm-button {
+				background-color: #93C9A8 !important;
+				color: #161B18 !important;
+			}
+
+			/* Badge adjustments for dark mode - inverted colors for contrast */
+			.dm-badge-positive {
+				background-color: #1F4C04 !important;
+				color: #D8FFC0 !important;
+			}
+
+			.dm-badge-negative {
+				background-color: #7A1E00 !important;
+				color: #FFDED3 !important;
+			}
+
+			/* Border color */
+			.dm-border {
+				border-color: #2D332F !important;
+			}
+		}
+
+		/* Outlook app dark mode targeting via data-ogsc attribute */
+		[data-ogsc] body,
+		[data-ogsc] .body {
+			background-color: #232824 !important;
+		}
+
+		[data-ogsc] .dm-card {
+			background-color: #161B18 !important;
+		}
+
+		[data-ogsc] .dm-text-primary {
+			color: #EBEEF0 !important;
+		}
+
+		[data-ogsc] .dm-text-secondary {
+			color: #999F9B !important;
+		}
+
+		[data-ogsc] .light-logo {
+			display: none !important;
+		}
+
+		[data-ogsc] .dark-logo {
+			display: block !important;
+		}
+
+		[data-ogsc] .dm-link {
+			color: #93C9A8 !important;
+		}
+
+		[data-ogsc] .dm-button {
+			background-color: #93C9A8 !important;
+			color: #161B18 !important;
+		}
+
+		[data-ogsc] .dm-badge-positive {
+			background-color: #1F4C04 !important;
+			color: #D8FFC0 !important;
+		}
+
+		[data-ogsc] .dm-badge-negative {
+			background-color: #7A1E00 !important;
+			color: #FFDED3 !important;
+		}
+
+		[data-ogsc] .dm-border {
+			border-color: #2D332F !important;
 		}
 	</style>
 </head>

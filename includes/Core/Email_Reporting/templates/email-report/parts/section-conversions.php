@@ -22,7 +22,7 @@ $section_parts = $section['section_parts'];
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
-		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
+		<td class="dm-card" style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
 			<?php
 			// Render section header.
 			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) . '.png' );
@@ -39,15 +39,15 @@ $section_parts = $section['section_parts'];
 			?>
 			<table role="presentation" width="100%" style="margin-bottom:16px;">
 				<tr>
-					<td style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
+					<td class="dm-text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
 						<?php echo esc_html( $section_parts['total_conversion_events']['data']['label'] ); ?>
 					</td>
-					<td width="110" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right; width: 110px;">
+					<td class="dm-text-secondary" width="110" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right; width: 110px;">
 						<?php echo esc_html( $section_parts['total_conversion_events']['data']['change_context'] ); ?>
 					</td>
 				</tr>
 				<tr>
-					<td style="font-size:14px; line-height:20px; font-weight:500;">
+					<td class="dm-text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
 						<?php echo esc_html( $section_parts['total_conversion_events']['data']['value'] ); ?>
 					</td>
 					<td style="text-align: right; padding: 6px 0;">
