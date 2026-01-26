@@ -21,6 +21,8 @@ exports[`PopularContentWidget should render correctly with the expected metrics 
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages your visitors read the most"
           >
             <svg />
@@ -145,6 +147,8 @@ exports[`PopularContentWidget should render the generic error variant when the r
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages your visitors read the most"
         >
           <svg />
@@ -207,6 +211,8 @@ exports[`PopularContentWidget should render the insufficient permissions error v
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages your visitors read the most"
         >
           <svg />
@@ -276,6 +282,8 @@ exports[`PopularContentWidget should render the loading state while resolving th
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Pages your visitors read the most"
             >
               <svg />

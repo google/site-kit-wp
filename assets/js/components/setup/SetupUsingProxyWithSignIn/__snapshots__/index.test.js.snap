@@ -1059,6 +1059,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>
@@ -1435,6 +1437,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>
@@ -1811,6 +1815,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>

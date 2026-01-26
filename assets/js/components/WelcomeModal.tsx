@@ -28,11 +28,19 @@ import {
 import { __ } from '@wordpress/i18n';
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+
+/**
  * Internal dependencies
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -45,9 +53,11 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
-import { ReactElement } from 'react';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
 export const GATHERING_DATA_DISMISSED_ITEM_SLUG =
@@ -61,6 +71,12 @@ enum MODAL_VARIANT {
 
 export default function WelcomeModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
+
+	const isViewOnly = useViewOnly();
+
+	const canAuthenticate = useSelect( ( select: Select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
 
 	const analyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -106,7 +122,8 @@ export default function WelcomeModal() {
 			? isGatheringDataVariantDismissed
 			: isWithTourVariantDismissed;
 
-	const { dismissItem } = useDispatch( CORE_USER );
+	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const [ , setNotification ] = useQueryArg( 'notification' );
 
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',
@@ -123,23 +140,20 @@ export default function WelcomeModal() {
 	const closeAndDismissModal = useCallback( async () => {
 		setIsOpen( false );
 
-		const itemsToDismiss = [];
+		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
+			await dismissItem( WITH_TOUR_DISMISSED_ITEM_SLUG );
+		}
 
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
 			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
 		) {
-			itemsToDismiss.push( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
 		}
 
-		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
-			itemsToDismiss.push( WITH_TOUR_DISMISSED_ITEM_SLUG );
-		}
-
-		await Promise.all(
-			itemsToDismiss.map( ( item ) => dismissItem( item ) )
-		);
-	}, [ modalVariant, dismissItem ] );
+		// Ensure the setup success notification won't be shown on page reload.
+		setNotification( undefined );
+	}, [ modalVariant, setNotification, dismissItem ] );
 
 	const closeAndDismissModalWithTooltip = useCallback( async () => {
 		await closeAndDismissModal();
@@ -251,7 +265,17 @@ export default function WelcomeModal() {
 							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ closeAndDismissModal }>
+						<Button
+							onClick={ () => {
+								closeAndDismissModal();
+								triggerOnDemandTour(
+									getWelcomeTour( {
+										isViewOnly,
+										canAuthenticate,
+									} )
+								);
+							} }
+						>
 							{ __( 'Start tour', 'google-site-kit' ) }
 						</Button>
 					</Fragment>

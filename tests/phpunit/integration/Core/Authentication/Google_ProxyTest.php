@@ -154,6 +154,23 @@ class Google_ProxyTest extends TestCase {
 				'url'                    => home_url(),
 				'action_uri'             => admin_url( 'index.php' ),
 				'name'                   => get_bloginfo( 'name' ),
+				'return_uri'             => $this->context->admin_url( 'splash' ),
+				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
+				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+			),
+			$this->google_proxy->get_site_fields(),
+			'Site fields should contain all required site information.'
+		);
+	}
+
+	public function test_get_site_fields__with_setup_flow_refresh_feature_flag_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'url'                    => home_url(),
+				'action_uri'             => admin_url( 'index.php' ),
+				'name'                   => get_bloginfo( 'name' ),
 				'return_uri'             => admin_url( 'plugins.php' ),
 				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),

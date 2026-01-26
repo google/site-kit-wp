@@ -21,6 +21,8 @@ exports[`TopTrafficSourceDrivingPurchasesWidget should render correctly with the
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most purchases to your site"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`TopTrafficSourceDrivingPurchasesWidget should render the generic error 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most purchases to your site"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`TopTrafficSourceDrivingPurchasesWidget should render the insufficient p
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most purchases to your site"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`TopTrafficSourceDrivingPurchasesWidget should render the loading state 
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Channel (e.g. social, paid, search) that brought in the most purchases to your site"
             >
               <svg />

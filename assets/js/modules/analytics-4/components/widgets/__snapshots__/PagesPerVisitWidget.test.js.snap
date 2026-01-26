@@ -21,6 +21,8 @@ exports[`PagesPerVisitWidget should render correctly with the expected metrics 1
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Number of pages visitors viewed per session on average"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`PagesPerVisitWidget should render the generic error variant when the re
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Number of pages visitors viewed per session on average"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`PagesPerVisitWidget should render the insufficient permissions error va
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Number of pages visitors viewed per session on average"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`PagesPerVisitWidget should render the loading state while resolving the
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Number of pages visitors viewed per session on average"
             >
               <svg />

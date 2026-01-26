@@ -21,6 +21,8 @@ exports[`TopTrafficSourceWidget renders correctly with no data in comparison dat
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
@@ -80,6 +82,8 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
@@ -136,6 +140,8 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
@@ -198,6 +204,8 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
@@ -261,6 +269,8 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
@@ -337,6 +347,8 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />

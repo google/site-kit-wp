@@ -17,21 +17,38 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, ReactNode } from 'react';
+
+/**
  * Internal dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
 import {
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+} from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import RRMSetupSuccessSubtleNotification from '.';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
+	CONTENT_POLICY_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type Registry = any;
+
+type Decorator = {
+	(
+		Story: ElementType,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@storybook/react` is not typed yet.
+		{ args, parameters }: { args: any; parameters: any }
+	): ReactNode;
+};
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-rrm'
@@ -79,7 +96,7 @@ OnboardingCompleteWithSubscriptionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'subscriptions' );
@@ -104,7 +121,7 @@ OnboardingCompleteWithSubscriptionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithSubscriptionAndNoProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'subscriptions' );
@@ -129,7 +146,7 @@ OnboardingCompleteWithContributionAndProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'contributions' );
@@ -154,7 +171,7 @@ OnboardingCompleteWithContributionAndNoProductID.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithContributionAndNoProductID.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'contributions' );
@@ -177,7 +194,7 @@ OnboardingCompleteWithNoMonetization.parameters = {
 		PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 OnboardingCompleteWithNoMonetization.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPaymentOption( 'noPayment' );
@@ -185,13 +202,40 @@ OnboardingCompleteWithNoMonetization.args = {
 };
 OnboardingCompleteWithNoMonetization.scenario = {};
 
+export const PolicyViolationPending = Template.bind( {} );
+PolicyViolationPending.storyName = 'Policy Violation - Pending';
+PolicyViolationPending.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+};
+PolicyViolationPending.scenario = {};
+
+export const PolicyViolationActive = Template.bind( {} );
+PolicyViolationActive.storyName = 'Policy Violation - Active';
+PolicyViolationActive.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+};
+PolicyViolationActive.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,
 	decorators: [
 		withQuery,
-		( Story, { args, parameters } ) => {
-			function setupRegistry( registry ) {
+		( ( Story, { args, parameters } ) => {
+			function setupRegistry( registry: Registry ) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -209,6 +253,14 @@ export default {
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
 						productIDs: [ 'product-a', 'product-b' ],
+						contentPolicyStatus: parameters.contentPolicyState
+							? {
+									contentPolicyState:
+										parameters.contentPolicyState,
+									policyInfoLink:
+										'https://example.com/policy-info',
+							  }
+							: undefined,
 					} );
 
 				args?.setupRegistry?.( registry );
@@ -219,6 +271,6 @@ export default {
 					<Story />
 				</WithRegistrySetup>
 			);
-		},
+		} ) as Decorator,
 	],
 };

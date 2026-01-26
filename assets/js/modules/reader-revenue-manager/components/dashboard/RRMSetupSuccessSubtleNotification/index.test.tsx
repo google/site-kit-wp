@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+import { mocked } from 'jest-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -24,10 +30,11 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import RRMSetupSuccessSubtleNotification from './RRMSetupSuccessSubtleNotification';
+} from '../../../../../../../tests/js/test-utils';
+import RRMSetupSuccessSubtleNotification from '.';
 import * as fixtures from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
@@ -35,6 +42,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
 import {
+	CONTENT_POLICY_STATES,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -44,8 +52,9 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
-jest.mock( '../../../../hooks/useQueryArg' );
+jest.mock( '../../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
@@ -63,7 +72,7 @@ const NotificationWithComponentProps = withNotificationComponentProps( id )(
 );
 
 describe( 'RRMSetupSuccessSubtleNotification', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	const invalidPublicationOnboardingStates = [ UNSPECIFIED ];
 
@@ -101,6 +110,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideUserInfo( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -109,7 +119,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			},
 		] );
 
-		useQueryArg.mockImplementation( ( arg ) => {
+		mocked( useQueryArg ).mockImplementation( ( arg ) => {
 			switch ( arg ) {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
@@ -126,8 +136,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 	afterEach( () => {
 		setValueMock.mockClear();
-		useQueryArg.mockClear();
-		global.open.mockClear();
+		mocked( useQueryArg ).mockClear();
+		mocked( global.open ).mockClear();
 	} );
 
 	it.each( invalidPublicationOnboardingStates )(
@@ -228,7 +238,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	);
 
 	it( 'should sync onboarding state when the window is refocused 15 seconds after clicking the CTA', async () => {
-		jest.useFakeTimers( 'modern' );
+		jest.useFakeTimers();
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -326,7 +336,21 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	const notificationContent = [
+	type NotificationContentTestCase = [
+		string,
+		{
+			paymentOption: string;
+			productID?: string;
+			productIDs?: string[];
+		},
+		{
+			title: string;
+			description: string;
+			ctaText: string;
+		}
+	];
+
+	const notificationContent: NotificationContentTestCase[] = [
 		[
 			'subscription model with product ID set',
 			{
@@ -431,6 +455,191 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			expect( getByText( ctaText ) ).toBeInTheDocument();
 		}
 	);
+
+	const policyViolationStatesData = [
+		[
+			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
+		],
+		[
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
+			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
+		],
+		[
+			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
+		],
+		[
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
+			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
+		],
+		[
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
+		],
+	];
+
+	describe.each( policyViolationStatesData )(
+		'for a publication with content policy state %s',
+		( contentPolicyState, expectedMessage ) => {
+			it( 'should render the correct notification', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus: {
+							contentPolicyState,
+							policyInfoLink: 'https://example.com/policy',
+						},
+					} );
+
+				const { getByRole, getByText } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				expect(
+					getByText(
+						'Reader Revenue Manager is connected, but action is required'
+					)
+				).toBeInTheDocument();
+
+				expect( getByText( expectedMessage ) ).toBeInTheDocument();
+
+				expect(
+					getByRole( 'button', { name: /View violations/ } )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should dismiss the notification when dismiss button is clicked', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus: {
+							contentPolicyState,
+							policyInfoLink: 'https://example.com/policy',
+						},
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( id, {
+						Component: NotificationWithComponentProps,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications(
+						[ { id } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
+
+				const { getByRole } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: 'Got it',
+					} )
+				);
+
+				expect( setValueMock ).toHaveBeenCalledTimes( 2 );
+				expect( setValueMock ).toHaveBeenCalledWith( undefined );
+			} );
+
+			it( 'should open the policy info URL when the "View violations" CTA is clicked', () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus: {
+							contentPolicyState,
+							policyInfoLink: 'https://example.com/policy',
+						},
+					} );
+
+				const { getByRole } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /View violations/,
+					} )
+				);
+
+				// Verify window.open was called
+				expect( global.open ).toHaveBeenCalledTimes( 1 );
+				expect( global.open ).toHaveBeenCalledWith(
+					registry
+						.select( CORE_USER )
+						.getAccountChooserURL( 'https://example.com/policy' ),
+					'_blank'
+				);
+			} );
+		}
+	);
+
+	it( 'should not render a policy violation notification variant when the content policy state is OK', () => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {
+				publicationOnboardingState: ONBOARDING_COMPLETE,
+				paymentOption: 'subscriptions',
+				productID: 'basic',
+				contentPolicyStatus: {
+					contentPolicyState:
+						CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
+					policyInfoLink: null,
+				},
+			} );
+
+		const { getByText, queryByRole, queryByText } = render(
+			<NotificationWithComponentProps />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect(
+			getByText(
+				'Success! Your Reader Revenue Manager account is set up'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText(
+				'Reader Revenue Manager is connected, but action is required'
+			)
+		).not.toBeInTheDocument();
+
+		expect(
+			queryByRole( 'button', { name: /View violations/ } )
+		).not.toBeInTheDocument();
+	} );
 
 	describe( 'GA event tracking', () => {
 		beforeEach( async () => {

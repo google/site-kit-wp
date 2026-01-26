@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { waitFor } from '@testing-library/react';
+import { waitFor, act } from '@testing-library/react';
 
 /**
  * Internal dependencies
@@ -33,6 +33,7 @@ import {
 	provideUserAuthentication,
 	provideModuleRegistrations,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -63,6 +64,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: false,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -71,9 +73,6 @@ describe( 'SetupAnalyticsNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
 	} );
 
 	it( 'renders the notice when email reporting is enabled, analytics is disconnected and was never connected before and notice is not dismissed', () => {
@@ -124,7 +123,29 @@ describe( 'SetupAnalyticsNotice', () => {
 		);
 	} );
 
-	it( 'dismisses the notice when "Got it" is clicked', async () => {
+	it( 'dismisses the notice when "Maybe later" is clicked', async () => {
+		// Create a fresh registry without module registrations to avoid
+		// async resolver state updates that cause act() warnings.
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+				disconnectedAt: false,
+			},
+		] );
+
+		// Note: Intentionally not calling `provideModuleRegistrations` here
+		// to prevent the Analytics 4 store resolver from running.
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
 			body: [ EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM ],
@@ -147,6 +168,7 @@ describe( 'SetupAnalyticsNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
+				disconnectedAt: false,
 			},
 		] );
 		const { container } = render( <SetupAnalyticsNotice />, {
@@ -156,15 +178,114 @@ describe( 'SetupAnalyticsNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'does not render when analytics is disconnect but was connected before', () => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+	it( 'does not render when analytics is disconnected but was connected before', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+				disconnectedAt: 1735660800,
+			},
+		] );
 
 		const { container } = render( <SetupAnalyticsNotice />, {
 			registry,
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'shows spinner and disabled state while the activation is in progress', async () => {
+		const moduleActivationEndpoint = RegExp(
+			'google-site-kit/v1/core/modules/data/activation'
+		);
+
+		const userAuthenticationEndpoint = RegExp(
+			'^/google-site-kit/v1/core/user/data/authentication'
+		);
+
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: { needsReauthentication: false },
+		} );
+
+		// Use a never-resolving promise to keep the activation in progress.
+		fetchMock.postOnce( moduleActivationEndpoint, new Promise( () => {} ) );
+
+		const { getByRole } = render( <SetupAnalyticsNotice />, {
+			registry,
+		} );
+
+		const ctaButton = getByRole( 'button', {
+			name: /connect analytics/i,
+		} );
+
+		fireEvent.click( ctaButton );
+
+		// Wait for the spinner to appear.
+		await waitFor( () => {
+			expect( ctaButton ).toHaveAttribute( 'disabled' );
+		} );
+
+		// Verify the button contains the spinner (via the CSS class).
+		expect( ctaButton ).toHaveClass(
+			'googlesitekit-notice__cta--spinner__running'
+		);
+	} );
+
+	it( 'shows "Complete setup" CTA and skips activation when Analytics is active but not connected', async () => {
+		// Create a fresh registry with Analytics active but not connected.
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+				disconnectedAt: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+
+		const moduleActivationEndpoint = RegExp(
+			'google-site-kit/v1/core/modules/data/activation'
+		);
+
+		const { getByRole } = render( <SetupAnalyticsNotice />, {
+			registry,
+		} );
+
+		// Verify the CTA label is "Complete setup".
+		const ctaButton = getByRole( 'button', {
+			name: /complete setup/i,
+		} );
+
+		expect( ctaButton ).toBeInTheDocument();
+
+		await act( async () => {
+			fireEvent.click( ctaButton );
+			await waitForDefaultTimeouts();
+		} );
+
+		// Verify that the activation endpoint was NOT called.
+		expect( fetchMock ).not.toHaveFetched( moduleActivationEndpoint );
+	} );
+
+	it( 'shows external link indicator on the "Learn more" link', () => {
+		const { container } = render( <SetupAnalyticsNotice />, {
+			registry,
+		} );
+
+		// Find the link by looking for the external icon SVG.
+		const externalIcon = container.querySelector(
+			'.googlesitekit-cta-link svg'
+		);
+		expect( externalIcon ).toBeInTheDocument();
 	} );
 } );

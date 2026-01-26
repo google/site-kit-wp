@@ -59,8 +59,8 @@ export default function AnalyticsDisconnectedNotice() {
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const wasAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).getWasAnalytics4Connected()
+	const isAnalyticsDisconnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleDisconnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
 	const isDismissed = useSelect( ( select ) =>
@@ -90,7 +90,7 @@ export default function AnalyticsDisconnectedNotice() {
 		! isEmailReportingEnabled ||
 		isDismissed !== false ||
 		isAnalyticsConnected ||
-		! wasAnalyticsConnected
+		! isAnalyticsDisconnected
 	) {
 		return null;
 	}

@@ -512,7 +512,7 @@ describe( 'KeyMetricsSetupApp', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		it( 'should navigate to the dashboard without notification and slug params when saving is successful', async () => {
+		it( 'should navigate to the dashboard without the slug param when saving is successful', async () => {
 			fetchMock.postOnce( initialSetupSettingsEndpoint, {
 				body: { settings: { isAnalyticsSetupComplete: true } },
 			} );
@@ -544,7 +544,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitFor( () => {
 				expect( global.location.assign ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success'
 				);
 			} );
 		} );
