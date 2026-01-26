@@ -45,7 +45,7 @@ export default function ActivateAnalyticsCTA( { title } ) {
 	}
 
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-search-funnel">
 			<PreviewGraph
 				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
 				GraphSVG={ VisitorsGraph }
