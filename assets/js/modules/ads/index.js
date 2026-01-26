@@ -27,7 +27,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import AdsIcon from '@/svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMain, SetupMainPAX } from './components/setup';
+import { SetupMainPAX } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import { MODULE_SLUG_ADS } from './constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -35,7 +35,6 @@ import {
 	CORE_USER,
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	PAXSetupSuccessSubtleNotification,
 	SetupSuccessSubtleNotification,
@@ -64,7 +63,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		SetupComponent: isFeatureEnabled( 'adsPax' ) ? SetupMainPAX : SetupMain,
+		SetupComponent: SetupMainPAX,
 		Icon: AdsIcon,
 		features: [
 			__(
@@ -76,9 +75,7 @@ export function registerModule( modules ) {
 				'google-site-kit'
 			),
 		],
-		SettingsDisconnectNoteComponent: isFeatureEnabled( 'adsPax' )
-			? SettingsDisconnectNote
-			: undefined,
+		SettingsDisconnectNoteComponent: SettingsDisconnectNote,
 		overrideSetupSuccessNotification: true,
 		checkRequirements: async ( registry ) => {
 			const adBlockerActive = await registry
@@ -170,7 +167,6 @@ export const ADS_NOTIFICATIONS = {
 				hasGoogleForWooCommerceAdsAccount()
 			);
 		},
-		featureFlag: 'adsPax',
 		isDismissible: true,
 	},
 	'ads-setup-cta': {
@@ -206,7 +202,6 @@ export const ADS_NOTIFICATIONS = {
 		},
 		isDismissible: true,
 		dismissRetries: 1,
-		featureFlag: 'adsPax',
 	},
 	[ ENHANCED_CONVERSIONS_NOTIFICATION_ADS ]: {
 		Component: EnhancedConversionsNotification,

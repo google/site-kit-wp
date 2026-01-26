@@ -39,6 +39,27 @@ import {
 } from '../../../utils';
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
+const interceptions = {
+	'analytics-4/data/create-account-ticket': {
+		// eslint-disable-next-line sitekit/acronym-case
+		accountTicketId: 'testAccountTicketID',
+	},
+	'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?': {},
+	'/wp-json/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed': {},
+	'analytics-4/data/create-property': {},
+	'analytics-4/data/key-events': [],
+	'search-console/data/searchanalytics': [],
+	'analytics-4/data/set-google-tag-id-mismatch': { success: true },
+	'analytics-4/data/enhanced-measurement-settings':
+		fixtures.defaultEnhancedMeasurementSettings,
+	'analytics-4/data/google-tag-settings': fixtures.googleTagSettings,
+	'user/data/audience-settings': {
+		configuredAudiences: [ fixtures.availableAudiences[ 2 ].name ],
+		isAudienceSegmentationWidgetHidden: false,
+	},
+	'analytics-4/data/sync-custom-dimensions': [],
+};
+
 describe( 'Analytics write scope requests', () => {
 	// These variables are used to determine whether or not we need to intercept requests to the server. By default the first request
 	// won't be intercepted to reach the server and to trigger the insufficient scopes error on the server. The following requests will
@@ -49,14 +70,12 @@ describe( 'Analytics write scope requests', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
+
 			if (
-				request
-					.url()
-					.startsWith(
-						'https://sitekit.withgoogle.com/o/oauth2/auth'
-					)
+				url.startsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth' )
 			) {
-				const requestURL = new URL( request.url() );
+				const requestURL = new URL( url );
 				const scope = requestURL.searchParams.get( 'scope' );
 				request.respond( {
 					status: 302,
@@ -69,38 +88,7 @@ describe( 'Analytics write scope requests', () => {
 						),
 					},
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/create-account-ticket' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						// eslint-disable-next-line sitekit/acronym-case
-						accountTicketId: 'testAccountTicketID',
-					} ),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics-4/data/report?'
-					)
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request.url().match( 'analytics-4/data/create-property' )
-			) {
+			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
 				if ( interceptCreatePropertyRequest ) {
 					interceptCreatePropertyRequest = false;
 					request.respond( {
@@ -113,9 +101,7 @@ describe( 'Analytics write scope requests', () => {
 				} else {
 					request.continue();
 				}
-			} else if (
-				request.url().match( 'analytics-4/data/create-webdatastream' )
-			) {
+			} else if ( url.match( 'analytics-4/data/create-webdatastream' ) ) {
 				if ( interceptCreateWebDataStreamRequest ) {
 					interceptCreateWebDataStreamRequest = false;
 					request.respond( {
@@ -125,46 +111,8 @@ describe( 'Analytics write scope requests', () => {
 				} else {
 					request.continue();
 				}
-			} else if (
-				request.url().match( 'analytics-4/data/key-events' ) ||
-				request.url().match( 'search-console/data/searchanalytics' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
-				} );
-			} else if (
-				request
-					.url()
-					.match( 'analytics-4/data/enhanced-measurement-settings' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						fixtures.defaultEnhancedMeasurementSettings
-					),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/google-tag-settings' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( fixtures.googleTagSettings ),
-				} );
-			} else if ( request.url().match( 'user/data/audience-settings' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						configuredAudiences: [
-							fixtures.availableAudiences[ 2 ].name,
-						],
-						isAudienceSegmentationWidgetHidden: false,
-					} ),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/container-lookup' )
-			) {
-				const requestURL = new URL( request.url() );
+			} else if ( url.match( 'analytics-4/data/container-lookup' ) ) {
+				const requestURL = new URL( url );
 				const destinationID =
 					requestURL.searchParams.get( 'destinationID' );
 				const container = {
@@ -176,7 +124,7 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 				} );
 			} else if (
-				request.url().match( 'analytics-4/data/container-destinations' )
+				url.match( 'analytics-4/data/container-destinations' )
 			) {
 				const googleTagID = global.googlesitekit.data
 					.select( 'modules/analytics-4' )
@@ -187,8 +135,8 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 					body: JSON.stringify( [ destination ] ),
 				} );
-			} else if ( request.url().match( 'analytics-4/data/property' ) ) {
-				const requestURL = new URL( request.url() );
+			} else if ( url.match( 'analytics-4/data/property' ) ) {
+				const requestURL = new URL( url );
 				const propertyID = requestURL.searchParams.get( 'propertyID' );
 				const property = fixtures.properties.find(
 					( { _id } ) => _id === propertyID
@@ -197,18 +145,9 @@ describe( 'Analytics write scope requests', () => {
 					body: JSON.stringify( property ),
 				} );
 			} else if (
-				request.url().match( 'analytics-4/data/sync-custom-dimensions' )
-			) {
-				request.respond( {
-					status: 200,
-					body: '[]',
-				} );
-			} else if (
 				// Intercept request to GA TOS URL and redirect to gatoscallback.
-				request
-					.url()
-					.includes( '//accounts.google.com/accountchooser' ) &&
-				request.url().includes( 'provisioningSignup' )
+				url.includes( '//accounts.google.com/accountchooser' ) &&
+				url.includes( 'provisioningSignup' )
 			) {
 				request.respond( {
 					status: 302,
@@ -221,6 +160,18 @@ describe( 'Analytics write scope requests', () => {
 					},
 				} );
 			} else {
+				for ( const [ pattern, response ] of Object.entries(
+					interceptions
+				) ) {
+					if ( url.match( pattern ) ) {
+						request.respond( {
+							status: 200,
+							body: JSON.stringify( response ),
+						} );
+						return;
+					}
+				}
+
 				request.continue();
 			}
 		} );

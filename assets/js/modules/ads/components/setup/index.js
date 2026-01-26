@@ -16,7 +16,5 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
 export { default as SetupFormPAX } from './SetupFormPAX';
-export { default as SetupMain } from './SetupMain';
 export { default as SetupMainPAX } from './SetupMainPAX';
