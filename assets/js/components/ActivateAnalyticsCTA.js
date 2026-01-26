@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
  */
 import {
 	createInterpolateElement,
-	useCallback,
 	useEffect,
 	useState,
 } from '@wordpress/element';
@@ -57,7 +56,7 @@ export default function ActivateAnalyticsCTA( {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! dismissedItemSlug ) {
+		if ( ! setupFlowRefreshEnabled ) {
 			return false;
 		}
 		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
@@ -84,9 +83,7 @@ export default function ActivateAnalyticsCTA( {
 		if ( ! setupFlowRefreshEnabled ) {
 			return null;
 		}
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'supported-services/analytics'
-		);
+		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
 	const [ inProgress, setInProgress ] = useState( false );
@@ -133,10 +130,6 @@ export default function ActivateAnalyticsCTA( {
 	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
-
-	const dismiss = useCallback( async () => {
-		await dismissItem( dismissedItemSlug );
-	}, [ dismissItem, dismissedItemSlug ] );
 
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
@@ -189,17 +182,11 @@ export default function ActivateAnalyticsCTA( {
 				<p className="googlesitekit-activate-analytics-cta__description">
 					{ createInterpolateElement(
 						__(
-							"See how many people visit your site from Search and track how you're achieving your goals. <a>Learn more</a>",
+							'See how many people visit your site from Search and track how you’re achieving your goals. <a>Learn more</a>',
 							'google-site-kit'
 						),
 						{
-							a: (
-								<Link
-									href={ documentationURL }
-									external
-									hideExternalIndicator
-								/>
-							),
+							a: <Link href={ documentationURL } external />,
 						}
 					) }
 				</p>
@@ -207,7 +194,7 @@ export default function ActivateAnalyticsCTA( {
 			<div className="googlesitekit-activate-analytics-cta__actions">
 				<Button
 					className="googlesitekit-activate-analytics-cta__button--secondary"
-					onClick={ dismiss }
+					onClick={ () => dismissItem( dismissedItemSlug ) }
 					tertiary
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
@@ -229,5 +216,5 @@ export default function ActivateAnalyticsCTA( {
 
 ActivateAnalyticsCTA.propTypes = {
 	children: PropTypes.node,
-	dismissedItemSlug: PropTypes.string,
+	dismissedItemSlug: PropTypes.string.isRequired,
 };
