@@ -53,7 +53,7 @@ WithSetupFlowRefreshCompleteSetup.storyName =
 	'Setup Flow Refresh - Complete Setup';
 WithSetupFlowRefreshCompleteSetup.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
-	_analyticsActive: true,
+	isAnalyticsActive: true,
 };
 WithSetupFlowRefreshCompleteSetup.parameters = {
 	features: [ 'setupFlowRefresh' ],
@@ -64,7 +64,7 @@ export default {
 	component: ActivateAnalyticsCTA,
 	decorators: [
 		( Story, { args } ) => {
-			const analyticsActive = args?._analyticsActive || false;
+			const analyticsActive = args?.isAnalyticsActive || false;
 
 			function setupRegistry( registry ) {
 				provideModules( registry, [
