@@ -41,7 +41,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '@/svg/graphics/ads.svg';
-import SetupFormPAX from './SetupFormPAX';
+import SetupForm from './SetupForm';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -393,7 +393,7 @@ export default function SetupMain( { finishSetup } ) {
 										}
 									) }
 								</p>
-								<SetupFormPAX
+								<SetupForm
 									finishSetup={ finishSetup }
 									isNavigatingToOAuthURL={
 										isNavigatingToOAuthURL
