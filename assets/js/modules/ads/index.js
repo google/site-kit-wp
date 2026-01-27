@@ -27,7 +27,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import AdsIcon from '@/svg/graphics/ads.svg';
 import { SettingsEdit, SettingsView } from './components/settings';
-import { SetupMainPAX } from './components/setup';
+import { SetupMain } from './components/setup';
 import { MODULES_ADS } from './datastore/constants';
 import { MODULE_SLUG_ADS } from './constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -63,7 +63,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_ADS,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		SetupComponent: SetupMainPAX,
+		SetupComponent: SetupMain,
 		Icon: AdsIcon,
 		features: [
 			__(

@@ -17,4 +17,4 @@
  */
 
 export { default as SetupFormPAX } from './SetupFormPAX';
-export { default as SetupMainPAX } from './SetupMainPAX';
+export { default as SetupMain } from './SetupMain';
