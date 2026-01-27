@@ -286,7 +286,8 @@ class Worker_TaskTest extends TestCase {
 			$this->limiter,
 			$this->batch_query,
 			$this->scheduler,
-			$log_processor_mock
+			$log_processor_mock,
+			$this->data_requests
 		);
 
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );

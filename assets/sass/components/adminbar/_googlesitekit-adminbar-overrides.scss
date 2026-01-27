@@ -268,5 +268,43 @@
 				letter-spacing: 1.25px;
 			}
 		}
+
+		// Setup Flow Refresh Analytics CTA styles.
+		.googlesitekit-activate-analytics-cta {
+
+			@extend .googlesitekit-activate-analytics-cta;
+
+			.googlesitekit-activate-analytics-cta__top {
+
+				@extend .googlesitekit-activate-analytics-cta__top;
+			}
+
+			.googlesitekit-activate-analytics-cta__icon {
+
+				@extend .googlesitekit-activate-analytics-cta__icon;
+			}
+
+			.googlesitekit-activate-analytics-cta__description {
+
+				@extend .googlesitekit-activate-analytics-cta__description;
+			}
+
+			.googlesitekit-activate-analytics-cta__actions {
+
+				@extend .googlesitekit-activate-analytics-cta__actions;
+			}
+
+			.googlesitekit-activate-analytics-cta__button--secondary {
+
+				@extend .googlesitekit-activate-analytics-cta__button--secondary;
+			}
+
+			.googlesitekit-activate-analytics-cta__button--primary {
+				// Remove MDC button box-shadow for consistency with the buttons on the dashboard.
+				box-shadow: none;
+
+				@extend .googlesitekit-activate-analytics-cta__button--primary;
+			}
+		}
 	}
 }
