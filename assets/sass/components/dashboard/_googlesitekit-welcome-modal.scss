@@ -52,10 +52,18 @@
 			@include mdc-button-filled-accessible( $c-site-kit-sk-200 );
 			@include mdc-button-ink-color( $c-surfaces-surface );
 
-			&:hover,
-			&:active,
+			&:hover {
+				@include mdc-button-filled-accessible( $c-site-kit-sk-300 );
+				@include mdc-button-ink-color( $c-surfaces-surface );
+			}
+
+			&:active {
+				@include mdc-button-filled-accessible( $c-site-kit-sk-400 );
+				@include mdc-button-ink-color( $c-surfaces-surface );
+			}
+
 			&:focus {
-				@include mdc-button-filled-accessible( $c-site-kit-sk-100 );
+				@include mdc-button-filled-accessible( $c-site-kit-sk-500 );
 				@include mdc-button-ink-color( $c-surfaces-surface );
 			}
 		}
