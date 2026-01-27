@@ -315,6 +315,7 @@ describe( 'core/site Email Reporting', () => {
 				expect(
 					registry.select( CORE_SITE ).getEligibleSubscribers()
 				).toBeUndefined();
+
 				await untilResolved(
 					registry,
 					CORE_SITE
