@@ -65,6 +65,12 @@
 			&:focus {
 				@include mdc-button-filled-accessible( $c-site-kit-sk-500 );
 				@include mdc-button-ink-color( $c-surfaces-surface );
+
+				// Disable ripple effect on focus to prevent background color flicker.
+				&::before,
+				&::after {
+					display: none;
+				}
 			}
 		}
 
