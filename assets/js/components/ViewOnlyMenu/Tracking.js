@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +33,7 @@ export default function Tracking() {
 	const viewContext = useViewContext();
 
 	return (
-		<li className="googlesitekit-view-only-menu__list-item">
+		<Fragment>
 			<P>
 				{ createInterpolateElement(
 					__(
@@ -49,6 +49,6 @@ export default function Tracking() {
 				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
 				alignCheckboxLeft
 			/>
-		</li>
+		</Fragment>
 	);
 }
