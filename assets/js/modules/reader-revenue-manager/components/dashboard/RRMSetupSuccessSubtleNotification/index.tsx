@@ -35,7 +35,7 @@ import { useRefocus } from '@/js/hooks/useRefocus';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
-	CONTENT_POLICY_STATES,
+	ACTIVE_POLICY_VIOLATION_STATES,
 	MODULES_READER_REVENUE_MANAGER,
 	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
@@ -181,7 +181,8 @@ const RRMSetupSuccessSubtleNotification: FC<
 
 	if (
 		contentPolicyState &&
-		contentPolicyState !== CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK
+		( PENDING_POLICY_VIOLATION_STATES.includes( contentPolicyState ) ||
+			ACTIVE_POLICY_VIOLATION_STATES.includes( contentPolicyState ) )
 	) {
 		const policyViolationType = PENDING_POLICY_VIOLATION_STATES.includes(
 			contentPolicyState
