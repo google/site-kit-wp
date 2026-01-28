@@ -36,7 +36,7 @@ exports[`PolicyViolationNotification Extreme severity notification should render
                 <p
                   class="googlesitekit-notice__description"
                 >
-                  Your account is terminated because your site content doesn't follow the rules. Visit Publisher Center for more information.
+                  Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.
                 </p>
               </div>
               <div

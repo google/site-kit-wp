@@ -67,7 +67,7 @@ function getNotificationCopy( contentPolicyState: string ) {
 				'google-site-kit'
 			),
 			description: __(
-				"Your account is terminated because your site content doesn't follow the rules. Visit Publisher Center for more information.",
+				'Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.',
 				'google-site-kit'
 			),
 			ctaLabel: __( 'Learn more', 'google-site-kit' ),
@@ -83,7 +83,7 @@ function getNotificationCopy( contentPolicyState: string ) {
 				'google-site-kit'
 			),
 			description: __(
-				"Your site has content that doesn't follow the rules. To see more details and resolve the violation, please visit Publisher Center.",
+				'Your site has content that doesn’t follow the rules. To see more details and resolve the violation, please visit Publisher Center.',
 				'google-site-kit'
 			),
 			ctaLabel: __( 'View violations', 'google-site-kit' ),

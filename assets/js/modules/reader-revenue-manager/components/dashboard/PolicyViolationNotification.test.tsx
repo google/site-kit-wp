@@ -188,7 +188,7 @@ describe( 'PolicyViolationNotification', () => {
 
 			expect(
 				getByText(
-					"Your site has content that doesn't follow the rules. To see more details and resolve the violation, please visit Publisher Center."
+					'Your site has content that doesn’t follow the rules. To see more details and resolve the violation, please visit Publisher Center.'
 				)
 			).toBeInTheDocument();
 
@@ -236,7 +236,7 @@ describe( 'PolicyViolationNotification', () => {
 
 			expect(
 				getByText(
-					"Your account is terminated because your site content doesn't follow the rules. Visit Publisher Center for more information."
+					'Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.'
 				)
 			).toBeInTheDocument();
 
