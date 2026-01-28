@@ -31,6 +31,7 @@ import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	PUBLICATION_ONBOARDING_STATES,
+	CONTENT_POLICY_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -39,12 +40,15 @@ import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import {
 	ReaderRevenueManagerSetupCTABanner,
 	RRMSetupSuccessSubtleNotification,
+	PolicyViolationNotification,
 } from './components/dashboard';
 import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
+import { asyncRequireAll } from '@/js/util/async';
+import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -54,6 +58,8 @@ import {
 	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from './constants';
 import ProductIDSubscriptionsNotification from './components/dashboard/ProductIDSubscriptionsNotification';
@@ -346,6 +352,61 @@ export const NOTIFICATIONS = {
 
 			return false;
 		},
+	},
+	[ RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID ]: {
+		Component: PolicyViolationNotification,
+		priority: PRIORITY.ERROR_LOW,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		featureFlag: 'rrmPolicyViolations',
+		isDismissible: true,
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			async ( { select, resolveSelect } ) => {
+				await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings();
+
+				const contentPolicyState = select(
+					MODULES_READER_REVENUE_MANAGER
+				).getContentPolicyState();
+
+				// Show for any violation state except OK and EXTREME (which has its own notification).
+				return (
+					contentPolicyState &&
+					contentPolicyState !==
+						CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK &&
+					contentPolicyState !==
+						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+				);
+			}
+		),
+	},
+	[ RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID ]: {
+		Component: PolicyViolationNotification,
+		priority: PRIORITY.ERROR_HIGH,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		featureFlag: 'rrmPolicyViolations',
+		isDismissible: true,
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			async ( { select, resolveSelect } ) => {
+				await resolveSelect(
+					MODULES_READER_REVENUE_MANAGER
+				).getSettings();
+
+				const contentPolicyState = select(
+					MODULES_READER_REVENUE_MANAGER
+				).getContentPolicyState();
+
+				// Show only for EXTREME severity.
+				return (
+					contentPolicyState ===
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+				);
+			}
+		),
 	},
 };
 
