@@ -33,12 +33,14 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const baseInitialState = {
 	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
+		eligibleSubscribers: undefined,
 	},
 };
 
@@ -76,6 +78,15 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 			'enabled should be a boolean.'
 		);
 	},
+} );
+
+const fetchGetEligibleSubscribersStore = createFetchStore( {
+	baseName: 'getEligibleSubscribers',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
+		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
+	} ),
 } );
 
 // Actions
@@ -151,6 +162,17 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
+	*getEligibleSubscribers() {
+		const registry = yield commonActions.getRegistry();
+
+		const eligibleSubscribers = registry
+			.select( CORE_SITE )
+			.getEligibleSubscribers();
+
+		if ( eligibleSubscribers === undefined ) {
+			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -180,11 +202,46 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
+
+	/**
+	 * Gets eligible subscribers for email report invitations.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
+	 */
+	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
+		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
+		const currentUserID = select( CORE_USER ).getID();
+
+		if (
+			eligibleSubscribers === undefined ||
+			currentUserID === undefined
+		) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( eligibleSubscribers ) ) {
+			return [];
+		}
+
+		return eligibleSubscribers
+			.filter( ( user ) => user.id !== currentUserID )
+			.map( ( user ) => ( {
+				id: user.id,
+				name: user.displayName || user.name,
+				email: user.email,
+				role: user.role,
+				subscribed: user.subscribed,
+			} ) );
+	} ),
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
+	fetchGetEligibleSubscribersStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,
