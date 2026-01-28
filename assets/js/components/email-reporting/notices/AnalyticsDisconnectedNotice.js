@@ -109,7 +109,7 @@ export default function AnalyticsDisconnectedNotice() {
 
 	return (
 		<NoticeWithIntersectionObserver
-			className="googlesitekit-email-reporting__analytics-disconnected-notice"
+			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.WARNING }
 			title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
 			description={ description }
