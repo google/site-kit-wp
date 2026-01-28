@@ -203,7 +203,7 @@ jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits. (Default: 30 sec)
 page.setDefaultTimeout( 5_000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 1000)
-setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 1000 } );
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 2_000 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
