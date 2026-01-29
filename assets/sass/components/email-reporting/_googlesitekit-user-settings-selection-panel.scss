@@ -61,6 +61,16 @@
 					}
 				}
 			}
+
+			.mdc-button--raised {
+				&.googlesitekit-button-icon--spinner__running {
+					svg {
+						circle {
+							stroke: $c-interactive-on-disable-container;
+						}
+					}
+				}
+			}
 		}
 
 		.googlesitekit-selection-panel-footer {
