@@ -116,15 +116,11 @@ describe( 'PolicyViolationNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
-	afterEach( () => {
-		jest.clearAllMocks();
-	} );
-
 	describe( 'Moderate/High severity notification', () => {
 		it( 'should render warning notification for pending grace period violation', () => {
 			setupRegistry( CONTENT_POLICY_VIOLATION_GRACE_PERIOD );
 
-			const { container, getByText } = render(
+			const { container, getByText, getByRole } = render(
 				<ModerateHighNotificationWithComponentProps />,
 				{
 					registry,
@@ -144,7 +140,9 @@ describe( 'PolicyViolationNotification', () => {
 				)
 			).toBeInTheDocument();
 
-			expect( getByText( 'View violations' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /View violations/ } )
+			).toBeInTheDocument();
 
 			expect( container ).toMatchSnapshot();
 		} );
@@ -152,7 +150,7 @@ describe( 'PolicyViolationNotification', () => {
 		it( 'should render warning notification for organization pending grace period violation', () => {
 			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD );
 
-			const { getByText } = render(
+			const { getByText, getByRole } = render(
 				<ModerateHighNotificationWithComponentProps />,
 				{
 					registry,
@@ -166,13 +164,15 @@ describe( 'PolicyViolationNotification', () => {
 				)
 			).toBeInTheDocument();
 
-			expect( getByText( 'View violations' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /View violations/ } )
+			).toBeInTheDocument();
 		} );
 
 		it( 'should render warning notification for active violation', () => {
 			setupRegistry( CONTENT_POLICY_VIOLATION_ACTIVE );
 
-			const { getByText } = render(
+			const { getByText, getByRole } = render(
 				<ModerateHighNotificationWithComponentProps />,
 				{
 					registry,
@@ -192,13 +192,15 @@ describe( 'PolicyViolationNotification', () => {
 				)
 			).toBeInTheDocument();
 
-			expect( getByText( 'View violations' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /View violations/ } )
+			).toBeInTheDocument();
 		} );
 
 		it( 'should render warning notification for organization active violation', () => {
 			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE );
 
-			const { getByText } = render(
+			const { getByText, getByRole } = render(
 				<ModerateHighNotificationWithComponentProps />,
 				{
 					registry,
@@ -212,7 +214,9 @@ describe( 'PolicyViolationNotification', () => {
 				)
 			).toBeInTheDocument();
 
-			expect( getByText( 'View violations' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /View violations/ } )
+			).toBeInTheDocument();
 		} );
 	} );
 
@@ -220,7 +224,7 @@ describe( 'PolicyViolationNotification', () => {
 		it( 'should render error notification for immediate organization violation', () => {
 			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE );
 
-			const { container, getByText } = render(
+			const { container, getByText, getByRole } = render(
 				<ExtremeNotificationWithComponentProps />,
 				{
 					registry,
@@ -241,72 +245,62 @@ describe( 'PolicyViolationNotification', () => {
 			).toBeInTheDocument();
 
 			// Extreme severity should show "Learn more" instead of "View violations".
-			expect( getByText( 'Learn more' ) ).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: /Learn more/ } )
+			).toBeInTheDocument();
 
 			expect( container ).toMatchSnapshot();
 		} );
 	} );
 
 	describe( 'Moderate/High notification checkRequirements', () => {
-		it( 'should return true for pending grace period violation', async () => {
-			setupRegistry( CONTENT_POLICY_VIOLATION_GRACE_PERIOD );
+		it.each( [
+			[
+				'pending grace period violation',
+				CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+			],
+			[
+				'organization pending grace period violation',
+				CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
+			],
+			[ 'active violation', CONTENT_POLICY_VIOLATION_ACTIVE ],
+			[
+				'organization active violation',
+				CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
+			],
+		] )(
+			'should return true for %s',
+			async ( _name, contentPolicyState ) => {
+				setupRegistry( contentPolicyState );
 
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
+				const isActive =
+					await moderateHighNotification.checkRequirements(
+						registry
+					);
 
-			expect( isActive ).toBe( true );
-		} );
+				expect( isActive ).toBe( true );
+			}
+		);
 
-		it( 'should return true for organization pending grace period violation', async () => {
-			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD );
+		it.each( [
+			[ '`CONTENT_POLICY_STATE_OK`', CONTENT_POLICY_STATE_OK ],
+			[
+				'`CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE`',
+				CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+			],
+		] )(
+			'should return false for %s',
+			async ( _name, contentPolicyState ) => {
+				setupRegistry( contentPolicyState );
 
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
+				const isActive =
+					await moderateHighNotification.checkRequirements(
+						registry
+					);
 
-			expect( isActive ).toBe( true );
-		} );
-
-		it( 'should return true for active violation', async () => {
-			setupRegistry( CONTENT_POLICY_VIOLATION_ACTIVE );
-
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
-
-			expect( isActive ).toBe( true );
-		} );
-
-		it( 'should return true for organization active violation', async () => {
-			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE );
-
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
-
-			expect( isActive ).toBe( true );
-		} );
-
-		it( 'should return false for `CONTENT_POLICY_STATE_OK`', async () => {
-			setupRegistry( CONTENT_POLICY_STATE_OK );
-
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
-
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'should return false for `CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE`', async () => {
-			setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE );
-
-			const isActive = await moderateHighNotification.checkRequirements(
-				registry
-			);
-
-			expect( isActive ).toBe( false );
-		} );
+				expect( isActive ).toBe( false );
+			}
+		);
 
 		it( 'should return false when RRM is not connected', async () => {
 			provideModules( registry, [
@@ -336,25 +330,24 @@ describe( 'PolicyViolationNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'should return false for `CONTENT_POLICY_STATE_OK`', async () => {
-			setupRegistry( CONTENT_POLICY_STATE_OK );
+		it.each( [
+			[ '`CONTENT_POLICY_STATE_OK`', CONTENT_POLICY_STATE_OK ],
+			[
+				'`CONTENT_POLICY_VIOLATION_ACTIVE`',
+				CONTENT_POLICY_VIOLATION_ACTIVE,
+			],
+		] )(
+			'should return false for %s',
+			async ( _name, contentPolicyState ) => {
+				setupRegistry( contentPolicyState );
 
-			const isActive = await extremeNotification.checkRequirements(
-				registry
-			);
+				const isActive = await extremeNotification.checkRequirements(
+					registry
+				);
 
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'should return false for other violation states', async () => {
-			setupRegistry( CONTENT_POLICY_VIOLATION_ACTIVE );
-
-			const isActive = await extremeNotification.checkRequirements(
-				registry
-			);
-
-			expect( isActive ).toBe( false );
-		} );
+				expect( isActive ).toBe( false );
+			}
+		);
 
 		it( 'should return false when RRM is not connected', async () => {
 			provideModules( registry, [
