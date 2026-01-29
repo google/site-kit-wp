@@ -171,12 +171,21 @@ const RRMSetupSuccessSubtleNotification: FC<
 		showingSuccessNotification,
 	] );
 
-	const hasCustomProductID = !! productID && productID !== 'openaccess';
+	const hasCustomProductID =
+		!! productID && productID !== 'openaccess' ? 'yes' : 'no';
+
+	const labelParts = [
+		publicationOnboardingState,
+		paymentOption,
+		hasCustomProductID,
+	];
+
+	if ( contentPolicyState ) {
+		labelParts.push( contentPolicyState );
+	}
 
 	const gaTrackingEventArgs = {
-		label: `${ publicationOnboardingState }:${ paymentOption }:${
-			hasCustomProductID ? 'yes' : 'no'
-		}`,
+		label: labelParts.join( ':' ),
 	};
 
 	if (
