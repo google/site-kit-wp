@@ -20,7 +20,8 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -40,6 +41,7 @@ export default function UserSettingsSelectionPanel() {
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
+	const previousIsOpen = usePrevious( isOpen );
 
 	const onSideSheetOpen = useCallback( () => {
 		trackEvent(
@@ -172,6 +174,12 @@ export default function UserSettingsSelectionPanel() {
 	}, [ saveEmailReportingSettings, viewContext ] );
 
 	const onNoticeDismiss = useCallback( () => setNotice( null ), [] );
+
+	useEffect( () => {
+		if ( ! previousIsOpen && isOpen ) {
+			setValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
+		}
+	}, [ isOpen, previousIsOpen, setValue ] );
 
 	return (
 		<SelectionPanel
