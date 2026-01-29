@@ -672,6 +672,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
 				':CONTENT_POLICY_STATE_OK',
 			],
+			[
+				CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_UNSPECIFIED,
+				':CONTENT_POLICY_STATE_UNSPECIFIED',
+			],
 		] )(
 			'with contentPolicyState %s',
 			( contentPolicyState, expectedLabelSuffix ) => {
