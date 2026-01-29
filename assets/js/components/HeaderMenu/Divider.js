@@ -1,7 +1,7 @@
 /**
- * ViewOnlyMenu > SharedServices component.
+ * HeaderMenu Divider component.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,18 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-/**
- * Internal dependencies
- */
-import Service from './Service';
-
-export default function SharedServices( { viewableModules } ) {
-	if ( ! Array.isArray( viewableModules ) ) {
-		return null;
-	}
-
+export default function Divider( { className } ) {
 	return (
-		<ul>
-			{ viewableModules.map( ( moduleSlug ) => (
-				<Service key={ moduleSlug } module={ moduleSlug } />
-			) ) }
-		</ul>
+		<li
+			className={ classnames( 'mdc-list-divider', className ) }
+			role="separator"
+		/>
 	);
 }
 
-SharedServices.propTypes = {
-	viewableModules: PropTypes.arrayOf( PropTypes.string ),
+Divider.propTypes = {
+	className: PropTypes.string,
 };

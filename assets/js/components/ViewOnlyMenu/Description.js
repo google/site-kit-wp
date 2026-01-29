@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -116,7 +120,7 @@ export default function Description() {
 		  );
 
 	return (
-		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
+		<Fragment>
 			<P>{ description }</P>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
@@ -127,6 +131,6 @@ export default function Description() {
 					) }
 				</Button>
 			) }
-		</li>
+		</Fragment>
 	);
 }

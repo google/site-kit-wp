@@ -33,6 +33,11 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button, Menu } from 'googlesitekit-components';
+import {
+	Divider,
+	MenuSection,
+	MenuWithHeading,
+} from '@/js/components/HeaderMenu';
 import useViewContext from '@/js/hooks/useViewContext';
 import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
@@ -47,6 +52,7 @@ import {
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
+import Typography from '@/js/components/Typography';
 
 export default function ViewOnlyMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
@@ -70,6 +76,9 @@ export default function ViewOnlyMenu() {
 
 	const canAuthenticate = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
+	const viewableModules = useSelect( ( select ) =>
+		select( CORE_USER ).getViewableModules()
 	);
 
 	return (
@@ -110,11 +119,26 @@ export default function ViewOnlyMenu() {
 				id="view-only-menu"
 				nonInteractive
 			>
-				<Description />
-				<SharedServices />
+				<MenuSection className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
+					<Description />
+				</MenuSection>
+				{ Array.isArray( viewableModules ) && (
+					<MenuWithHeading
+						className="googlesitekit-view-only-menu__list-item"
+						heading={
+							<Typography as="h4" size="large" type="title">
+								{ __( 'Shared services', 'google-site-kit' ) }
+							</Typography>
+						}
+					>
+						<SharedServices viewableModules={ viewableModules } />
+					</MenuWithHeading>
+				) }
 				{ emailReportingEnabled && <ManageEmailReports /> }
-				<li className="mdc-list-divider" role="separator"></li>
-				<Tracking />
+				<Divider />
+				<MenuSection className="googlesitekit-view-only-menu__list-item">
+					<Tracking />
+				</MenuSection>
 			</Menu>
 		</div>
 	);
