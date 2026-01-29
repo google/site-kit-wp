@@ -17,9 +17,7 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-view-only-menu {
-
 		h4 {
 			font-size: $fs-body-lg;
 			letter-spacing: $ls-m;
@@ -33,9 +31,7 @@
 		}
 
 		.mdc-button--dropdown {
-
 			.mdc-button__icon {
-
 				margin-right: 0;
 
 				@media (min-width: $bp-tablet) {
@@ -52,7 +48,6 @@
 		}
 
 		.mdc-menu {
-
 			width: 320px;
 		}
 
@@ -61,7 +56,6 @@
 		}
 
 		.googlesitekit-view-only-menu__list-item {
-
 			@extend .mdc-list-item;
 
 			display: block;
@@ -75,7 +69,6 @@
 		}
 
 		.googlesitekit-view-only-menu__description {
-
 			p {
 				margin-bottom: 8px;
 			}
@@ -110,28 +103,25 @@
 		}
 
 		.googlesitekit-view-only-menu__email-reporting-item {
+			color: $c-surfaces-on-surface;
 			display: flex;
 			gap: 8px;
+			justify-content: flex-start;
 			margin-bottom: 0;
+			padding: 0 32px;
+			width: 100%;
 
-			.mdc-button {
-				color: $c-surfaces-on-surface;
-				justify-content: flex-start;
-				padding: 0 32px;
-				width: 100%;
+			&:hover {
+				background: transparent;
+			}
 
-				&:hover {
-					background: transparent;
-				}
+			&::after,
+			&::before {
+				background-color: transparent;
+			}
 
-				&::after,
-				&::before {
-					background-color: transparent;
-				}
-
-				&.mdc-ripple-upgraded--background-focused {
-					background-color: transparent;
-				}
+			&.mdc-ripple-upgraded--background-focused {
+				background-color: transparent;
 			}
 
 			svg {
@@ -174,7 +164,6 @@
 	}
 
 	.googlesitekit-view-only-menu--user-can-authenticate {
-
 		.googlesitekit-view-only-menu__service--name {
 			flex: 0 0 100px;
 			margin-right: 8px;

@@ -1,7 +1,7 @@
 /**
- * UserMenu Item component.
+ * HeaderMenu MenuSection component.
  *
- * Site Kit by Google, Copyright 2023 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,17 @@
  */
 import PropTypes from 'prop-types';
 
-export default function Item( { icon, label } ) {
+export default function MenuSection( { id, className, role, children } ) {
 	return (
-		<div className="googlesitekit-user-menu__item">
-			<div className="googlesitekit-user-menu__item-icon">{ icon }</div>
-			<span className="googlesitekit-user-menu__item-label">
-				{ label }
-			</span>
-		</div>
+		<li id={ id } className={ className } role={ role }>
+			{ children }
+		</li>
 	);
 }
 
-Item.propTypes = {
-	icon: PropTypes.node,
-	label: PropTypes.string,
+MenuSection.propTypes = {
+	id: PropTypes.string,
+	className: PropTypes.string,
+	role: PropTypes.string,
+	children: PropTypes.node,
 };
