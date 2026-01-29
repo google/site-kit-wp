@@ -45,6 +45,7 @@ import EmailReportingCardNotice, {
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const viewContext = useViewContext();
@@ -169,6 +170,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
+			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
 		</Fragment>
 	);

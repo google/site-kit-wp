@@ -63,6 +63,14 @@ class REST_Email_Reporting_Controller {
 	private $eligible_subscribers_query;
 
 	/**
+	 * Email_Log_Batch_Query instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Log_Batch_Query
+	 */
+	private $email_log_batch_query;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
@@ -83,6 +91,7 @@ class REST_Email_Reporting_Controller {
 		$this->modules                       = $modules;
 		$this->user_email_reporting_settings = $user_email_reporting_settings;
 		$this->eligible_subscribers_query    = new Eligible_Subscribers_Query( $this->modules, $user_options );
+		$this->email_log_batch_query         = new Email_Log_Batch_Query();
 	}
 
 	/**
@@ -186,6 +195,20 @@ class REST_Email_Reporting_Controller {
 							);
 
 							return new WP_REST_Response( array_values( $data ) );
+						},
+						'permission_callback' => $can_manage,
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/email-reporting-errors',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$errors = $this->email_log_batch_query->get_latest_batch_error();
+
+							return new WP_REST_Response( is_string( $errors ) ? json_decode( $errors, true ) : array() );
 						},
 						'permission_callback' => $can_manage,
 					),

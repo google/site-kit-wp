@@ -50,6 +50,8 @@ describe( 'SettingsEmailReporting', () => {
 		// Prevent network request/resolver from running to avoid console errors.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
+
 		mockTrackEvent.mockClear();
 	} );
 

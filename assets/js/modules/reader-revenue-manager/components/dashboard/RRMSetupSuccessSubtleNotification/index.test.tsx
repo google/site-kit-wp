@@ -602,44 +602,49 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		}
 	);
 
-	it( 'should not render a policy violation notification variant when the content policy state is OK', () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {
-				publicationOnboardingState: ONBOARDING_COMPLETE,
-				paymentOption: 'subscriptions',
-				productID: 'basic',
-				contentPolicyStatus: {
-					contentPolicyState:
-						CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
-					policyInfoLink: null,
-				},
-			} );
+	it.each( [
+		CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
+		CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_UNSPECIFIED,
+	] )(
+		'should not render a policy violation notification variant when the content policy state is %s',
+		( contentPolicyState ) => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationOnboardingState: ONBOARDING_COMPLETE,
+					paymentOption: 'subscriptions',
+					productID: 'basic',
+					contentPolicyStatus: {
+						contentPolicyState,
+						policyInfoLink: null,
+					},
+				} );
 
-		const { getByText, queryByRole, queryByText } = render(
-			<NotificationWithComponentProps />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			}
-		);
+			const { getByText, queryByRole, queryByText } = render(
+				<NotificationWithComponentProps />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
 
-		expect(
-			getByText(
-				'Success! Your Reader Revenue Manager account is set up'
-			)
-		).toBeInTheDocument();
+			expect(
+				getByText(
+					'Success! Your Reader Revenue Manager account is set up'
+				)
+			).toBeInTheDocument();
 
-		expect(
-			queryByText(
-				'Reader Revenue Manager is connected, but action is required'
-			)
-		).not.toBeInTheDocument();
+			expect(
+				queryByText(
+					'Reader Revenue Manager is connected, but action is required'
+				)
+			).not.toBeInTheDocument();
 
-		expect(
-			queryByRole( 'button', { name: /View violations/ } )
-		).not.toBeInTheDocument();
-	} );
+			expect(
+				queryByRole( 'button', { name: /View violations/ } )
+			).not.toBeInTheDocument();
+		}
+	);
 
 	describe( 'GA event tracking', () => {
 		beforeEach( async () => {
