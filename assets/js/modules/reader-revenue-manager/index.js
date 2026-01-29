@@ -32,6 +32,8 @@ import {
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	PUBLICATION_ONBOARDING_STATES,
 	CONTENT_POLICY_STATES,
+	PENDING_POLICY_VIOLATION_STATES,
+	ACTIVE_POLICY_VIOLATION_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -71,6 +73,22 @@ import RRMIntroductoryOverlayNotification, {
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
 
 export { registerStore } from './datastore';
+
+/**
+ * Checks if the setup success notification is currently being shown.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} True if the setup success notification is being shown, false otherwise.
+ */
+function isShowingSuccessNotification() {
+	const notification = getQueryArg( location.href, 'notification' );
+	const slug = getQueryArg( location.href, 'slug' );
+	return (
+		notification === 'authentication_success' &&
+		slug === MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+}
 
 export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {
@@ -206,17 +224,13 @@ export const NOTIFICATIONS = {
 				return false;
 			}
 
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
 			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
 			const publicationOnboardingState = await select(
 				MODULES_READER_REVENUE_MANAGER
 			).getPublicationOnboardingState();
 
 			if (
-				notification === 'authentication_success' &&
-				slug === MODULE_SLUG_READER_REVENUE_MANAGER &&
+				isShowingSuccessNotification() &&
 				publicationOnboardingState !== undefined
 			) {
 				return true;
@@ -281,19 +295,13 @@ export const NOTIFICATIONS = {
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings() ) || {};
 
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-			const showingSuccessNotification =
-				notification === 'authentication_success' &&
-				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
-
 			// Show the overlay if the publication onboarding state is complete, and if either
 			// setup has just been completed but there is no paymentOption selected, or if the
 			// publication onboarding state has just changed.
 			if (
 				publicationOnboardingState ===
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				( ( showingSuccessNotification && paymentOption === '' ) ||
+				( ( isShowingSuccessNotification() && paymentOption === '' ) ||
 					publicationOnboardingStateChanged === true )
 			) {
 				// If the publication onboarding state has changed, reset it to false and save the settings.
@@ -335,17 +343,11 @@ export const NOTIFICATIONS = {
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings() ) || {};
 
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-			const showingSuccessNotification =
-				notification === 'authentication_success' &&
-				slug === MODULE_SLUG_READER_REVENUE_MANAGER;
-
 			if (
 				publicationOnboardingState ===
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
 				[ 'noPayment', '' ].includes( paymentOption ) &&
-				! showingSuccessNotification
+				! isShowingSuccessNotification()
 			) {
 				return true;
 			}
@@ -363,6 +365,10 @@ export const NOTIFICATIONS = {
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			async ( { select, resolveSelect } ) => {
+				if ( isShowingSuccessNotification() ) {
+					return false;
+				}
+
 				await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings();
@@ -371,13 +377,16 @@ export const NOTIFICATIONS = {
 					MODULES_READER_REVENUE_MANAGER
 				).getContentPolicyState();
 
-				// Show for any violation state except OK and EXTREME (which has its own notification).
+				// Show for pending or active violation states (not extreme).
 				return (
-					contentPolicyState &&
 					contentPolicyState !==
-						CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK &&
-					contentPolicyState !==
-						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE &&
+					( PENDING_POLICY_VIOLATION_STATES.includes(
+						contentPolicyState
+					) ||
+						ACTIVE_POLICY_VIOLATION_STATES.includes(
+							contentPolicyState
+						) )
 				);
 			}
 		),
@@ -392,6 +401,10 @@ export const NOTIFICATIONS = {
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			async ( { select, resolveSelect } ) => {
+				if ( isShowingSuccessNotification() ) {
+					return false;
+				}
+
 				await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings();
