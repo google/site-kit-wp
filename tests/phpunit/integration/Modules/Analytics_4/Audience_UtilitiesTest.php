@@ -31,8 +31,8 @@ class Audience_UtilitiesTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
-		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->audience_settings = new Audience_Settings( $options );
+		$options                  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->audience_settings  = new Audience_Settings( $options );
 		$this->audience_utilities = new Audience_Utilities( $this->audience_settings );
 		$this->audience_settings->register();
 	}
@@ -142,9 +142,9 @@ class Audience_UtilitiesTest extends TestCase {
 		$available_audience_user_test                   = $available_audiences[4];
 
 		return array(
-			'Site Kit audiences in correct order' => array(
+			'Site Kit audiences in correct order'   => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_site_kit_new_visitors,
 						$raw_audience_site_kit_returning_visitors,
 					),
@@ -156,7 +156,7 @@ class Audience_UtilitiesTest extends TestCase {
 			),
 			'Site Kit audiences in incorrect order' => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_site_kit_returning_visitors,
 						$raw_audience_site_kit_new_visitors,
 					),
@@ -166,9 +166,9 @@ class Audience_UtilitiesTest extends TestCase {
 					),
 				),
 			),
-			'default audiences, case 1' => array(
+			'default audiences, case 1'             => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_default_all_users,
 						$raw_audience_default_purchasers,
 					),
@@ -178,9 +178,9 @@ class Audience_UtilitiesTest extends TestCase {
 					),
 				),
 			),
-			'default audiences, case 2' => array(
+			'default audiences, case 2'             => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_default_purchasers,
 						$raw_audience_default_all_users,
 					),
@@ -190,9 +190,9 @@ class Audience_UtilitiesTest extends TestCase {
 					),
 				),
 			),
-			'all audiences, case 1' => array(
+			'all audiences, case 1'                 => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_user_test,
 						$raw_audience_site_kit_new_visitors,
 						$raw_audience_site_kit_returning_visitors,
@@ -208,9 +208,9 @@ class Audience_UtilitiesTest extends TestCase {
 					),
 				),
 			),
-			'all audiences, case 2' => array(
+			'all audiences, case 2'                 => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_site_kit_returning_visitors,
 						$raw_audience_user_test,
 						$raw_audience_default_purchasers,
@@ -226,9 +226,9 @@ class Audience_UtilitiesTest extends TestCase {
 					),
 				),
 			),
-			'all audiences, case 3' => array(
+			'all audiences, case 3'                 => array(
 				array(
-					'raw_audiences' => array(
+					'raw_audiences'                => array(
 						$raw_audience_default_purchasers,
 						$raw_audience_default_all_users,
 						$raw_audience_site_kit_returning_visitors,
