@@ -46,12 +46,15 @@ export default function useCompleteModuleActivationCallback( moduleSlug ) {
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
-	const moduleStoreName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
-	);
-	const adminReauthURL = useSelect( ( select ) =>
-		select( moduleStoreName )?.getAdminReauthURL()
-	);
+	const adminReauthURL = useSelect( ( select ) => {
+		const moduleStoreName =
+			select( CORE_MODULES ).getModuleStoreName( moduleSlug );
+
+		if ( ! moduleStoreName ) {
+			return undefined;
+		}
+		return select( moduleStoreName )?.getAdminReauthURL();
+	} );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const completeModuleActivationCallback = useCallback(

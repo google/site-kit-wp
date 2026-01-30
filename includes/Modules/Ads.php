@@ -42,7 +42,6 @@ use Google\Site_Kit\Modules\Ads\Tag_Matchers;
 use Google\Site_Kit\Modules\Ads\Web_Tag;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
@@ -171,15 +170,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 					),
 				)
 			),
-		);
-
-		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			$input                      = $this->context->input();
-			$is_googlesitekit_dashboard = 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' );
-			$is_ads_slug                = 'ads' === $input->filter( INPUT_GET, 'slug' );
-			$is_re_auth                 = $input->filter( INPUT_GET, 'reAuth' );
-
-			$assets[] = new Script_Data(
+			new Script_Data(
 				'googlesitekit-ads-pax-config',
 				array(
 					'global'        => '_googlesitekitPAXConfig',
@@ -193,33 +184,39 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 						return $config->get();
 					},
 				)
-			);
-			// Integrator should be included if either Ads module is connected already,
-			// or we are on the Ads module setup screen.
-			if (
-				current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
-				(
-					// Integrator should be included if either:
-					// The Ads module is already connected.
-					$this->is_connected() ||
-					// Or the user is on the Ads module setup screen.
-					( ( ( is_admin() && $is_googlesitekit_dashboard ) && $is_ads_slug ) && $is_re_auth )
+			),
+		);
+
+		$input                      = $this->context->input();
+		$is_googlesitekit_dashboard = 'googlesitekit-dashboard' === $input->filter( INPUT_GET, 'page' );
+		$is_ads_slug                = 'ads' === $input->filter( INPUT_GET, 'slug' );
+		$is_re_auth                 = $input->filter( INPUT_GET, 'reAuth' );
+
+		// Integrator should be included if either Ads module is connected already,
+		// or we are on the Ads module setup screen.
+		if (
+			current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) &&
+			(
+				// Integrator should be included if either:
+				// The Ads module is already connected.
+				$this->is_connected() ||
+				// Or the user is on the Ads module setup screen.
+				( ( ( is_admin() && $is_googlesitekit_dashboard ) && $is_ads_slug ) && $is_re_auth )
+			)
+		) {
+			$assets[] = new Script(
+				'googlesitekit-ads-pax-integrator',
+				array(
+					// When updating, mirror the fixed version for google-pax-sdk in package.json.
+					'src'          => 'https://www.gstatic.com/pax/1.1.10/pax_integrator.js',
+					'execution'    => 'async',
+					'dependencies' => array(
+						'googlesitekit-ads-pax-config',
+						'googlesitekit-modules-data',
+					),
+					'version'      => null,
 				)
-			) {
-				$assets[] = new Script(
-					'googlesitekit-ads-pax-integrator',
-					array(
-						// When updating, mirror the fixed version for google-pax-sdk in package.json.
-						'src'          => 'https://www.gstatic.com/pax/1.1.10/pax_integrator.js',
-						'execution'    => 'async',
-						'dependencies' => array(
-							'googlesitekit-ads-pax-config',
-							'googlesitekit-modules-data',
-						),
-						'version'      => null,
-					)
-				);
-			}
+			);
 		}
 
 		return $assets;
@@ -234,10 +231,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @return array Inline modules data.
 	 */
 	protected function persistent_inline_modules_data( $modules_data ) {
-		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return $modules_data;
-		}
-
 		if ( empty( $modules_data['ads'] ) ) {
 			$modules_data['ads'] = array();
 		}
@@ -272,13 +265,11 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
-		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			$granted_scopes = $this->authentication->get_oauth_client()->get_granted_scopes();
-			$options        = $this->get_settings()->get();
+		$granted_scopes = $this->authentication->get_oauth_client()->get_granted_scopes();
+		$options        = $this->get_settings()->get();
 
-			if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
-				return array( self::SCOPE, self::SUPPORT_CONTENT_SCOPE );
-			}
+		if ( in_array( self::SCOPE, $granted_scopes, true ) || ! empty( $options['extCustomerID'] ) ) {
+			return array( self::SCOPE, self::SUPPORT_CONTENT_SCOPE );
 		}
 
 		return array();
@@ -295,7 +286,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 		return array(
 			'slug'        => 'ads',
 			'name'        => _x( 'Ads', 'Service name', 'google-site-kit' ),
-			'description' => Feature_Flags::enabled( 'adsPax' ) ? __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ) : __( 'Track conversions for your existing Google Ads campaigns', 'google-site-kit' ),
+			'description' => __( 'Grow sales, leads or awareness for your business by advertising with Google Ads', 'google-site-kit' ),
 			'homepage'    => __( 'https://google.com/ads', 'google-site-kit' ),
 		);
 	}
@@ -323,16 +314,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 */
 	public function is_connected() {
 		$options = $this->get_settings()->get();
-
-		if ( Feature_Flags::enabled( 'adsPax' ) ) {
-			if ( empty( $options['conversionID'] ) && empty( $options['paxConversionID'] ) && empty( $options['extCustomerID'] ) ) {
-				return false;
-			}
-
-			return parent::is_connected();
-		}
-
-		if ( empty( $options['conversionID'] ) ) {
+		if ( empty( $options['conversionID'] ) && empty( $options['paxConversionID'] ) && empty( $options['extCustomerID'] ) ) {
 			return false;
 		}
 
@@ -359,7 +341,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 
 		// The PAX-supplied Conversion ID should take precedence over the
 		// user-supplied one, if both exist.
-		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $pax_conversion_id ) ) {
+		if ( ! empty( $pax_conversion_id ) ) {
 			$ads_conversion_id = $pax_conversion_id;
 		}
 
@@ -425,10 +407,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * @return array An array of the module's inline data.
 	 */
 	public function get_inline_data( $modules_data ) {
-		if ( ! Feature_Flags::enabled( 'adsPax' ) ) {
-			return $modules_data;
-		}
-
 		if ( empty( $modules_data['ads'] ) ) {
 			$modules_data['ads'] = array();
 		}
@@ -456,7 +434,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 
 		$settings = $this->get_settings()->get();
 
-		if ( Feature_Flags::enabled( 'adsPax' ) && ! empty( $settings['paxConversionID'] ) ) {
+		if ( ! empty( $settings['paxConversionID'] ) ) {
 			return array(
 				'ads_connection' => 'pax',
 			);

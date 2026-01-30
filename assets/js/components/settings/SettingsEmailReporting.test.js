@@ -26,6 +26,7 @@ import {
 	freezeFetch,
 	provideUserCapabilities,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
 import * as tracking from '@/js/util/tracking';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -43,15 +44,15 @@ describe( 'SettingsEmailReporting', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry );
 
 		// Prevent network request/resolver from running to avoid console errors.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
 
 		mockTrackEvent.mockClear();
 	} );
@@ -69,6 +70,26 @@ describe( 'SettingsEmailReporting', () => {
 		} );
 
 		expect( getByText( 'Enable email reports' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the learn more link with the documentation URL', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		const { getByRole } = render( <SettingsEmailReporting />, {
+			registry,
+		} );
+
+		const link = getByRole( 'link', { name: /learn more/i } );
+
+		expect( link ).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=email-reporiting'
+		);
 	} );
 
 	it( 'should return null when loading prop is true', () => {

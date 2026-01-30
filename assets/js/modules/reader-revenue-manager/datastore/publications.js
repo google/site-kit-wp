@@ -374,7 +374,7 @@ const baseSelectors = {
 	/**
 	 * Gets the content policy state from the content policy status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The content policy state; `undefined` if not available.
@@ -398,7 +398,7 @@ const baseSelectors = {
 	/**
 	 * Gets the policy info URL wrapped with the account chooser URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.171.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} The policy info URL wrapped with the account chooser URL; `null` if `policyInfoLink` is `null`; `undefined` if not available.

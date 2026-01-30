@@ -158,10 +158,16 @@ describe( 'SettingsCardVisitorGroups', () => {
 					audienceSegmentationSetupCompletedBy: null,
 				} );
 
+			// Set available audiences directly to ensure the selector returns
+			// the data without triggering a network request during save.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+
 			fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
 				const { data } = JSON.parse( opts.body );
-				// Return the same settings passed to the API.
-				return { body: data, status: 200 };
+				// Return the settings object directly (not wrapped in data).
+				return { body: data.settings, status: 200 };
 			} );
 		} );
 

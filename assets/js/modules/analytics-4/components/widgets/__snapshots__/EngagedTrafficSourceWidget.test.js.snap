@@ -21,6 +21,8 @@ exports[`EngagedTrafficSourceWidget should render correctly with the expected me
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`EngagedTrafficSourceWidget should render the generic error variant when
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`EngagedTrafficSourceWidget should render the insufficient permissions e
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`EngagedTrafficSourceWidget should render the loading state while resolv
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Channel (e.g. social, paid, search) that brought in the most visitors who had a meaningful engagement with your site"
             >
               <svg />

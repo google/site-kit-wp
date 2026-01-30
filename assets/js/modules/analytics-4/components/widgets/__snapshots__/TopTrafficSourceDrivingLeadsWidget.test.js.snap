@@ -21,6 +21,8 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render correctly with the exp
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in the most leads to your site"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the generic error vari
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most leads to your site"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the insufficient permi
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in the most leads to your site"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`TopTrafficSourceDrivingLeadsWidget should render the loading state whil
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Channel (e.g. social, paid, search) that brought in the most leads to your site"
             >
               <svg />

@@ -21,6 +21,8 @@ exports[`PopularAuthorsWidget should render correctly with the expected metrics 
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Authors whose posts got the most visits"
           >
             <svg />
@@ -118,6 +120,8 @@ exports[`PopularAuthorsWidget should render the custom dimension error when ther
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Authors whose posts got the most visits"
         >
           <svg />
@@ -195,6 +199,8 @@ exports[`PopularAuthorsWidget should render the generic error variant when the r
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Authors whose posts got the most visits"
         >
           <svg />
@@ -257,6 +263,8 @@ exports[`PopularAuthorsWidget should render the insufficient permissions error v
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Authors whose posts got the most visits"
         >
           <svg />
@@ -326,6 +334,8 @@ exports[`PopularAuthorsWidget should render the loading state while resolving th
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Authors whose posts got the most visits"
             >
               <svg />
@@ -380,6 +390,8 @@ exports[`PopularAuthorsWidget should render the missing custom dimension error w
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Authors whose posts got the most visits"
         >
           <svg />
