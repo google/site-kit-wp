@@ -133,6 +133,31 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
 	} );
 
+	it( 'hides admin screen tooltip when the panel opens', async () => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+		} );
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+
+		await waitFor( () =>
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: false } )
+		);
+	} );
+
 	it( 'calls saveEmailReportingSettings with subscribed true when subscribing', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		const saveSpy = jest

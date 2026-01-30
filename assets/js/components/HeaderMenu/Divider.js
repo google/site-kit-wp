@@ -1,7 +1,7 @@
 /**
- * Ads Setup components.
+ * HeaderMenu Divider component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,21 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+
+export default function Divider( { className } ) {
+	return (
+		<li
+			className={ classnames( 'mdc-list-divider', className ) }
+			role="separator"
+		/>
+	);
+}
+
+Divider.propTypes = {
+	className: PropTypes.string,
+};

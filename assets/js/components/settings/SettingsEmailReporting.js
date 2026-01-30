@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,6 +49,7 @@ import EmailReportingCardNotice, {
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const viewContext = useViewContext();
@@ -63,6 +68,10 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
+	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporiting' )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -128,9 +137,21 @@ export default function SettingsEmailReporting( { loading = false } ) {
 										size="medium"
 										className="googlesitekit-settings-email-reporting__label-description"
 									>
-										{ __(
-											'This allows you and any dashboard sharing user to subscribe to email reports',
-											'google-site-kit'
+										{ createInterpolateElement(
+											__(
+												'This allows you and any dashboard sharing user to subscribe to email reports. <a>Learn more</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
 										) }
 									</Typography>
 								</Fragment>
@@ -169,6 +190,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
+			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
 		</Fragment>
 	);

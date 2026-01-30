@@ -1,7 +1,7 @@
 /**
- * Ads Setup components.
+ * HeaderMenu MenuWithHeading component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,27 @@
  * limitations under the License.
  */
 
-export { default as SetupForm } from './SetupForm';
-export { default as SetupMain } from './SetupMain';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import MenuSection from './MenuSection';
+
+export default function MenuWithHeading( { heading, className, children } ) {
+	return (
+		<MenuSection className={ className }>
+			{ heading }
+			{ children }
+		</MenuSection>
+	);
+}
+
+MenuWithHeading.propTypes = {
+	heading: PropTypes.node,
+	className: PropTypes.string,
+	children: PropTypes.node,
+};

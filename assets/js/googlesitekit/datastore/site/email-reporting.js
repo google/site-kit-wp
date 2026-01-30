@@ -41,6 +41,7 @@ const baseInitialState = {
 		settings: undefined,
 		savedSettings: undefined,
 		eligibleSubscribers: undefined,
+		errors: undefined,
 	},
 };
 
@@ -87,6 +88,17 @@ const fetchGetEligibleSubscribersStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
 		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
 	} ),
+} );
+
+const fetchGetEmailReportingErrorsStore = createFetchStore( {
+	baseName: 'getEmailReportingErrors',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-errors', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: ( state, errors ) => {
+		state.emailReporting.errors = errors || {};
+	},
 } );
 
 // Actions
@@ -173,6 +185,15 @@ const baseResolvers = {
 			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
 		}
 	},
+	*getEmailReportingErrors() {
+		const registry = yield commonActions.getRegistry();
+
+		const errors = registry.select( CORE_SITE ).getEmailReportingErrors();
+
+		if ( errors === undefined ) {
+			yield fetchGetEmailReportingErrorsStore.actions.fetchGetEmailReportingErrors();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -236,12 +257,25 @@ const baseSelectors = {
 				subscribed: user.subscribed,
 			} ) );
 	} ),
+
+	/**
+	 * Gets the email reporting errors.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
+	 */
+	getEmailReportingErrors( state ) {
+		return state.emailReporting?.errors;
+	},
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
 	fetchGetEligibleSubscribersStore,
+	fetchGetEmailReportingErrorsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

@@ -1,5 +1,5 @@
 /**
- * Ads PAX Setup form.
+ * Ads Setup form.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -38,10 +38,7 @@ import { ConversionIDTextField } from '@/js/modules/ads/components/common';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
 
-export default function SetupFormPAX( {
-	finishSetup,
-	isNavigatingToOAuthURL,
-} ) {
+export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).canSubmitChanges()
 	);
@@ -124,7 +121,7 @@ export default function SetupFormPAX( {
 	);
 }
 
-SetupFormPAX.propTypes = {
+SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
 	isNavigatingToOAuthURL: PropTypes.bool,
 };

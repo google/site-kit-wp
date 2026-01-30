@@ -1,5 +1,5 @@
 /**
- * SetupMainPAX component stories.
+ * SetupMain component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -29,7 +29,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import SetupMainPAX from './SetupMainPAX';
+import SetupMain from './SetupMain';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Cell, Grid, Row } from '@/js/material-components';
 
@@ -40,7 +40,7 @@ function Template() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<SetupMainPAX />
+							<SetupMain />
 						</Cell>
 					</Row>
 				</Grid>
@@ -103,7 +103,7 @@ WithGoogleForWooCommerceConflict.args = {
 WithGoogleForWooCommerceConflict.scenario = {};
 
 export default {
-	title: 'Modules/Ads/Setup/SetupMainPAX',
+	title: 'Modules/Ads/Setup/SetupMain',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {

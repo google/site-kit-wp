@@ -1,5 +1,5 @@
 /**
- * Ads Main PAX setup component.
+ * Ads Main setup component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -41,7 +41,7 @@ import { addQueryArgs } from '@wordpress/url';
 import { useSelect, useDispatch, useRegistry } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
 import AdsIcon from '@/svg/graphics/ads.svg';
-import SetupFormPAX from './SetupFormPAX';
+import SetupForm from './SetupForm';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -65,7 +65,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 
-export default function SetupMainPAX( { finishSetup } ) {
+export default function SetupMain( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
@@ -393,7 +393,7 @@ export default function SetupMainPAX( { finishSetup } ) {
 										}
 									) }
 								</p>
-								<SetupFormPAX
+								<SetupForm
 									finishSetup={ finishSetup }
 									isNavigatingToOAuthURL={
 										isNavigatingToOAuthURL
@@ -418,6 +418,6 @@ export default function SetupMainPAX( { finishSetup } ) {
 	);
 }
 
-SetupMainPAX.defaultProps = {
+SetupMain.defaultProps = {
 	finishSetup: () => {},
 };
