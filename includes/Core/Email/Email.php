@@ -144,10 +144,17 @@ class Email {
 	 *
 	 * @since 1.168.0
 	 *
-	 * @param WP_Error $error The error from wp_mail_failed hook.
+	 * @param WP_Error|object $error The error from wp_mail_failed hook. We don't assume this to be
+	 *                        WP_Error. Some plugins that implement `wp_mail()` might not
+	 *                        always pass a `WP_Error` when doing the `wp_mail_failed` action.
 	 */
-	public function set_last_error( WP_Error $error ) {
-		$this->last_error = $error;
+	public function set_last_error( $error ) {
+		if ( $error instanceof WP_Error ) {
+			$this->last_error = $error;
+			return;
+		}
+
+		$this->last_error = new WP_Error( 'wp_mail_failed', __( 'Failed to send email.', 'google-site-kit' ) );
 	}
 
 	/**
