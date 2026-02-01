@@ -59,7 +59,9 @@ describe( 'EmailReportingErrorNotice', () => {
 		);
 
 		expect( container ).not.toBeEmptyDOMElement();
-		expect( getByText( 'Email reports are paused' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Email reports are failing to send' )
+		).toBeInTheDocument();
 		expect(
 			getByText(
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.'

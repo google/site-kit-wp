@@ -61,7 +61,10 @@ export default function EmailReportingErrorNotice() {
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.ERROR }
-			title={ __( 'Email reports are paused', 'google-site-kit' ) }
+			title={ __(
+				'Email reports are failing to send',
+				'google-site-kit'
+			) }
 			description={ __(
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.',
 				'google-site-kit'
