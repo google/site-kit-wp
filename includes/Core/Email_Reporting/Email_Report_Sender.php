@@ -93,10 +93,11 @@ class Email_Report_Sender {
 		);
 
 		if ( is_wp_error( $send_result ) ) {
+			$error_data  = $send_result->get_error_data() ?: array();
 			$send_result = new WP_Error(
 				$send_result->get_error_code(),
 				$send_result->get_error_message(),
-				array_merge( $send_result->get_error_data(), array( 'category_id' => 'sending_error' ) )
+				array_merge( $error_data, array( 'category_id' => 'sending_error' ) )
 			);
 			return $send_result;
 		}
