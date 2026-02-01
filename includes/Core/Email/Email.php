@@ -83,12 +83,12 @@ class Email {
 
 		$result = $this->send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content );
 
-		if ( false === $result || $this->last_error instanceof WP_Error ) {
-			if ( $this->last_error instanceof WP_Error ) {
-				return $this->last_error;
-			}
+		if ( null !== $this->last_error ) {
+			return $this->last_error;
+		}
 
-			$this->set_last_error( new WP_Error( 'wp_mail_failed', __( 'Failed to send email.', 'google-site-kit' ) ) );
+		if ( false === $result ) {
+			$this->set_last_error();
 			return $this->last_error;
 		}
 
