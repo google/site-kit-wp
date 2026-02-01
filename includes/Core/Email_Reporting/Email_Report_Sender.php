@@ -92,10 +92,8 @@ class Email_Report_Sender {
 			$text_content
 		);
 
-		if ( is_wp_error( $send_result ) || false === $send_result ) {
-			return is_wp_error( $send_result )
-				? $send_result
-				: new WP_Error( 'email_report_send_failed', __( 'Failed to send email report.', 'google-site-kit' ) );
+		if ( is_wp_error( $send_result ) ) {
+			return is_wp_error( $send_result );
 		}
 
 		return true;
