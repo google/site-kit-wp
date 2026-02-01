@@ -47,8 +47,12 @@ describe( 'EmailReportingErrorNotices', () => {
 			enabled: true,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: {
+				email_report_section_build_failed: [
+					'title must be a non-empty string',
+				],
+			},
+			error_data: [],
 		} );
 
 		const { container, getByText } = render(
@@ -116,8 +120,8 @@ describe( 'EmailReportingErrorNotices', () => {
 			enabled: false,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: { test_error: [ 'This is a test error.' ] },
+			error_data: [],
 		} );
 
 		const { container } = render( <EmailReportingErrorNotices />, {
@@ -132,8 +136,8 @@ describe( 'EmailReportingErrorNotices', () => {
 			enabled: true,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: { test_error: [ 'This is a test error.' ] },
+			error_data: [],
 		} );
 
 		const { container } = render( <EmailReportingErrorNotices />, {
