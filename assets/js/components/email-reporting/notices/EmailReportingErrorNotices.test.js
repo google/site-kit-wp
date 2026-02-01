@@ -42,7 +42,7 @@ describe( 'EmailReportingErrorNotices', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	it( 'should render the error notice when email reporting is enabled, user is not view-only, and there are errors', () => {
+	it( 'should render the default server error notice when email reporting is enabled, user is not view-only, and there is no category ID', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
@@ -65,6 +65,48 @@ describe( 'EmailReportingErrorNotices', () => {
 		expect(
 			getByText(
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the sending error notice when email reporting is enabled, user is not view-only, and there is a sending_error category ID', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				wp_mail_failed: [
+					'You must provide at least one recipient email address.',
+				],
+			},
+			error_data: {
+				wp_mail_failed: {
+					to: [ 'incorrect.email' ],
+					subject: 'Your weekly Site Kit report for oi.ie',
+					message:
+						'<p>Here is your weekly Site Kit report for oi.ie</p>',
+					headers: [],
+					attachments: [],
+					phpmailer_exception_code: 2,
+					category_id: 'sending_error',
+				},
+			},
+		} );
+
+		const { container, getByText } = render(
+			<EmailReportingErrorNotices />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).not.toBeEmptyDOMElement();
+		expect(
+			getByText( 'Email reports are failing to send' )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				'We were unable to deliver your report, likely due to your WordPress email configuration. To fix this, go to your WordPress site’s system settings or contact your host. Report delivery will automatically resume once the issue is resolved.'
 			)
 		).toBeInTheDocument();
 	} );
