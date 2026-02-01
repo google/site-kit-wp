@@ -38,6 +38,10 @@ export default function EmailReportingErrorNotices() {
 		select( CORE_SITE ).getEmailReportingErrors()
 	);
 
+	const latestEmailReportingErrorCategoryID = useSelect( ( select ) =>
+		select( CORE_SITE ).getLatestEmailReportingErrorCategoryID()
+	);
+
 	if (
 		! isEmailReportingEnabled ||
 		isViewOnly ||
@@ -46,7 +50,7 @@ export default function EmailReportingErrorNotices() {
 		return null;
 	}
 
-	switch ( emailReportingErrors?.errors[ 0 ]?.category_id ) {
+	switch ( latestEmailReportingErrorCategoryID ) {
 		case 'sending_error':
 			return <SendingErrorNotice />;
 		default:
