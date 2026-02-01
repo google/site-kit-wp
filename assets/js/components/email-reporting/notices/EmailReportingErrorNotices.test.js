@@ -1,5 +1,5 @@
 /**
- * EmailReportingErrorNotice component tests.
+ * EmailReportingErrorNotices component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 
-import EmailReportingErrorNotice from './EmailReportingErrorNotice';
+import EmailReportingErrorNotices from './EmailReportingErrorNotices';
 import {
 	render,
 	createTestRegistry,
@@ -33,7 +33,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/consta
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'EmailReportingErrorNotice', () => {
+describe( 'EmailReportingErrorNotices', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -52,7 +52,7 @@ describe( 'EmailReportingErrorNotice', () => {
 		} );
 
 		const { container, getByText } = render(
-			<EmailReportingErrorNotice />,
+			<EmailReportingErrorNotices />,
 			{
 				registry,
 			}
@@ -78,7 +78,7 @@ describe( 'EmailReportingErrorNotice', () => {
 			errorData: [],
 		} );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 		} );
 
@@ -94,7 +94,7 @@ describe( 'EmailReportingErrorNotice', () => {
 			errorData: [],
 		} );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
@@ -107,7 +107,7 @@ describe( 'EmailReportingErrorNotice', () => {
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 		} );
 
