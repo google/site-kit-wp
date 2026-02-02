@@ -288,9 +288,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/apiclient-services-subscribewithgoogle",
-                "reference": "9e46db20b51b51d1644410d075e3a35bdb470c0b"
+                "reference": "a1bbbf7a4b616b290a7274cf7d6e1478017b1007"
             },
             "type": "library",
+            "extra": {
+                "identifier": "244b76bfed631b8b48c10a9255965a88:4152583d88e5adcc6454220f6063f82b2ae650b6"
+            },
+            "description": "This package is @generated automatically",
             "transport-options": {
                 "symlink": false,
                 "relative": true
@@ -5361,9 +5365,9 @@
         "ext-json": "*",
         "ext-openssl": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "7.4.33"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

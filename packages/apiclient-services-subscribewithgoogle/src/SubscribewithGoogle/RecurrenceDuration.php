@@ -20,16 +20,50 @@ namespace Google\Service\SubscribewithGoogle;
 class RecurrenceDuration extends \Google\Model
 {
   /**
+   * Unspecified.
+   */
+  public const UNIT_UNIT_UNSPECIFIED = 'UNIT_UNSPECIFIED';
+  /**
+   * Unit is a minute.
+   */
+  public const UNIT_MINUTELY = 'MINUTELY';
+  /**
+   * Unit is an hour.
+   */
+  public const UNIT_HOURLY = 'HOURLY';
+  /**
+   * Unit is a day.
+   */
+  public const UNIT_DAILY = 'DAILY';
+  /**
+   * Unit is a week.
+   */
+  public const UNIT_WEEKLY = 'WEEKLY';
+  /**
+   * Unit is a month.
+   */
+  public const UNIT_MONTHLY = 'MONTHLY';
+  /**
+   * Unit is a year.
+   */
+  public const UNIT_YEARLY = 'YEARLY';
+  /**
+   * Represents the count of the corresponding unit.
+   *
    * @var int
    */
   public $count;
   /**
+   * Represents the unit in which this duration is specified.
+   *
    * @var string
    */
   public $unit;
 
   /**
-   * @param int
+   * Represents the count of the corresponding unit.
+   *
+   * @param int $count
    */
   public function setCount($count)
   {
@@ -43,14 +77,19 @@ class RecurrenceDuration extends \Google\Model
     return $this->count;
   }
   /**
-   * @param string
+   * Represents the unit in which this duration is specified.
+   *
+   * Accepted values: UNIT_UNSPECIFIED, MINUTELY, HOURLY, DAILY, WEEKLY,
+   * MONTHLY, YEARLY
+   *
+   * @param self::UNIT_* $unit
    */
   public function setUnit($unit)
   {
     $this->unit = $unit;
   }
   /**
-   * @return string
+   * @return self::UNIT_*
    */
   public function getUnit()
   {

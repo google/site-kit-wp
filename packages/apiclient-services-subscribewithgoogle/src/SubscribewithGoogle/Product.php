@@ -20,12 +20,16 @@ namespace Google\Service\SubscribewithGoogle;
 class Product extends \Google\Model
 {
   /**
+   * Identifier for a product recognized by SwG. Ex: "basic" or "premium"
+   *
    * @var string
    */
   public $name;
 
   /**
-   * @param string
+   * Identifier for a product recognized by SwG. Ex: "basic" or "premium"
+   *
+   * @param string $name
    */
   public function setName($name)
   {

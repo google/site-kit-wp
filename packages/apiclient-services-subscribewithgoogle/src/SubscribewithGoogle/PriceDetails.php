@@ -30,7 +30,9 @@ class PriceDetails extends \Google\Collection
   protected $totalAmountDataType = '';
 
   /**
-   * @param Money
+   * The tax-exclusive amount.
+   *
+   * @param Money $pretaxAmount
    */
   public function setPretaxAmount(Money $pretaxAmount)
   {
@@ -44,7 +46,9 @@ class PriceDetails extends \Google\Collection
     return $this->pretaxAmount;
   }
   /**
-   * @param Money
+   * The amount of tax to collect.
+   *
+   * @param Money $taxAmount
    */
   public function setTaxAmount(Money $taxAmount)
   {
@@ -58,7 +62,9 @@ class PriceDetails extends \Google\Collection
     return $this->taxAmount;
   }
   /**
-   * @param TaxDetails[]
+   * The tax details of the state.
+   *
+   * @param TaxDetails[] $taxDetails
    */
   public function setTaxDetails($taxDetails)
   {
@@ -72,7 +78,9 @@ class PriceDetails extends \Google\Collection
     return $this->taxDetails;
   }
   /**
-   * @param Money
+   * The total cost, including tax.
+   *
+   * @param Money $totalAmount
    */
   public function setTotalAmount(Money $totalAmount)
   {

@@ -20,19 +20,64 @@ namespace Google\Service\SubscribewithGoogle;
 class CanceledDetails extends \Google\Model
 {
   /**
+   * Unspecified.
+   */
+  public const CANCEL_REASON_CANCEL_REASON_UNSPECIFIED = 'CANCEL_REASON_UNSPECIFIED';
+  /**
+   * Plan was canceled due to fraud.
+   */
+  public const CANCEL_REASON_FRAUD = 'FRAUD';
+  /**
+   * Plan was canceled due to buyer's remorse.
+   */
+  public const CANCEL_REASON_REMORSE = 'REMORSE';
+  /**
+   * Plan was canceled due to an accidental purchase.
+   */
+  public const CANCEL_REASON_ACCIDENTAL_PURCHASE = 'ACCIDENTAL_PURCHASE';
+  /**
+   * Plan was canceled due to non-payment.
+   */
+  public const CANCEL_REASON_PAST_DUE = 'PAST_DUE';
+  /**
+   * Plan was canceled due to account closure.
+   */
+  public const CANCEL_REASON_ACCOUNT_CLOSED = 'ACCOUNT_CLOSED';
+  /**
+   * Plan was canceled for other reasons.
+   */
+  public const CANCEL_REASON_OTHER = 'OTHER';
+  /**
+   * Plan was canceled due to friendly fraud, such as a family member making a
+   * purchase without the account owner's knowledge.
+   */
+  public const CANCEL_REASON_FRIENDLY_FRAUD = 'FRIENDLY_FRAUD';
+  /**
+   * Plan was canceled due to an upgrade or downgrade.
+   */
+  public const CANCEL_REASON_UPGRADE_DOWNGRADE = 'UPGRADE_DOWNGRADE';
+  /**
+   * Specifies the cancelation for this plan.
+   *
    * @var string
    */
   public $cancelReason;
 
   /**
-   * @param string
+   * Specifies the cancelation for this plan.
+   *
+   * Accepted values: CANCEL_REASON_UNSPECIFIED, FRAUD, REMORSE,
+   * ACCIDENTAL_PURCHASE, PAST_DUE, ACCOUNT_CLOSED, OTHER, FRIENDLY_FRAUD,
+   * UPGRADE_DOWNGRADE
+   *
+   * @param self::CANCEL_REASON_* $cancelReason
    */
   public function setCancelReason($cancelReason)
   {
     $this->cancelReason = $cancelReason;
   }
   /**
-   * @return string
+   * @return self::CANCEL_REASON_*
    */
   public function getCancelReason()
   {
