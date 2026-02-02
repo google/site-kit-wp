@@ -1,5 +1,5 @@
 /**
- * EmailReportingErrorNotice component.
+ * ServerErrorNotice component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,44 +24,29 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const EMAIL_REPORTING_ERROR_NOTICE = 'email_reporting_error_notice';
+export const EMAIL_REPORTING_SERVER_ERROR_NOTICE =
+	'email_reporting_server_error_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
-export default function EmailReportingErrorNotice() {
-	const isViewOnly = useViewOnly();
-
-	const trackEvents = useNotificationEvents( EMAIL_REPORTING_ERROR_NOTICE );
-
-	const isEmailReportingEnabled = useSelect( ( select ) =>
-		select( CORE_SITE ).isEmailReportingEnabled()
+export default function ServerErrorNotice() {
+	const trackEvents = useNotificationEvents(
+		EMAIL_REPORTING_SERVER_ERROR_NOTICE
 	);
-
-	const emailReportingErrors = useSelect( ( select ) =>
-		select( CORE_SITE ).getEmailReportingErrors()
-	);
-
-	if (
-		! isEmailReportingEnabled ||
-		isViewOnly ||
-		emailReportingErrors?.length === 0
-	) {
-		return null;
-	}
 
 	return (
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.ERROR }
-			title={ __( 'Email reports are paused', 'google-site-kit' ) }
+			title={ __(
+				'Email reports are failing to send',
+				'google-site-kit'
+			) }
 			description={ __(
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.',
 				'google-site-kit'

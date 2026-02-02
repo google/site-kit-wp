@@ -1,5 +1,5 @@
 /**
- * EmailReportingErrorNotice component tests.
+ * EmailReportingErrorNotices component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 
-import EmailReportingErrorNotice from './EmailReportingErrorNotice';
+import EmailReportingErrorNotices from './EmailReportingErrorNotices';
 import {
 	render,
 	createTestRegistry,
@@ -33,7 +33,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/consta
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'EmailReportingErrorNotice', () => {
+describe( 'EmailReportingErrorNotices', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -42,27 +42,75 @@ describe( 'EmailReportingErrorNotice', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	it( 'should render the error notice when email reporting is enabled, user is not view-only, and there are errors', () => {
+	it( 'should render the default server error notice when email reporting is enabled, user is not view-only, and there is no category ID', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: {
+				email_report_section_build_failed: [
+					'title must be a non-empty string',
+				],
+			},
+			error_data: [],
 		} );
 
 		const { container, getByText } = render(
-			<EmailReportingErrorNotice />,
+			<EmailReportingErrorNotices />,
 			{
 				registry,
 			}
 		);
 
 		expect( container ).not.toBeEmptyDOMElement();
-		expect( getByText( 'Email reports are paused' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Email reports are failing to send' )
+		).toBeInTheDocument();
 		expect(
 			getByText(
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the sending error notice when email reporting is enabled, user is not view-only, and there is a sending_error category ID', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				wp_mail_failed: [
+					'You must provide at least one recipient email address.',
+				],
+			},
+			error_data: {
+				wp_mail_failed: {
+					to: [ 'incorrect.email' ],
+					subject: 'Your weekly Site Kit report for oi.ie',
+					message:
+						'<p>Here is your weekly Site Kit report for oi.ie</p>',
+					headers: [],
+					attachments: [],
+					phpmailer_exception_code: 2,
+					category_id: 'sending_error',
+				},
+			},
+		} );
+
+		const { container, getByText } = render(
+			<EmailReportingErrorNotices />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).not.toBeEmptyDOMElement();
+		expect(
+			getByText( 'Email reports are failing to send' )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				'We were unable to deliver your report, likely due to your WordPress email configuration. To fix this, go to your WordPress site’s system settings or contact your host. Report delivery will automatically resume once the issue is resolved.'
 			)
 		).toBeInTheDocument();
 	} );
@@ -72,11 +120,11 @@ describe( 'EmailReportingErrorNotice', () => {
 			enabled: false,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: { test_error: [ 'This is a test error.' ] },
+			error_data: [],
 		} );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 		} );
 
@@ -88,11 +136,11 @@ describe( 'EmailReportingErrorNotice', () => {
 			enabled: true,
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
-			errors: [ { code: 'test_error' } ],
-			errorData: [],
+			errors: { test_error: [ 'This is a test error.' ] },
+			error_data: [],
 		} );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
@@ -105,7 +153,7 @@ describe( 'EmailReportingErrorNotice', () => {
 		} );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
 
-		const { container } = render( <EmailReportingErrorNotice />, {
+		const { container } = render( <EmailReportingErrorNotices />, {
 			registry,
 		} );
 

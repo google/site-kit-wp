@@ -27,13 +27,13 @@ import { Fragment } from '@wordpress/element';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import EmailReportingDisabledNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
 import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledViewOnlyNotice';
-import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotice';
+import EmailReportingErrorNotices from '@/js/components/email-reporting/notices/EmailReportingErrorNotices';
 import SetupAnalyticsNotice from '@/js/components/email-reporting/notices/SetupAnalyticsNotice';
 
 export default function Notices() {
 	return (
 		<Fragment>
-			<EmailReportingErrorNotice />
+			<EmailReportingErrorNotices />
 			<AnalyticsDisconnectedNotice />
 			<SetupAnalyticsNotice />
 			<EmailReportingDisabledNotice />
