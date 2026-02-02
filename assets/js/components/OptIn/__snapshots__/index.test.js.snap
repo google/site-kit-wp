@@ -9,7 +9,7 @@ exports[`OptIn should render correctly 1`] = `
       class="mdc-form-field"
     >
       <div
-        class="mdc-checkbox mdc-checkbox--align-left"
+        class="mdc-checkbox"
       >
         <input
           class="mdc-checkbox__native-control"

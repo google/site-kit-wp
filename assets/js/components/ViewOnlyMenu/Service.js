@@ -22,12 +22,6 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
@@ -60,19 +54,7 @@ export default function Service( { module } ) {
 			</span>
 			{ canAuthenticate && owner?.login && (
 				<span className="googlesitekit-view-only-menu__service--owner">
-					{ createInterpolateElement(
-						sprintf(
-							/* translators: %s: module owner Google Account email address */
-							__(
-								'Shared by <strong>%s</strong>',
-								'google-site-kit'
-							),
-							owner.login
-						),
-						{
-							strong: <strong title={ owner.login } />,
-						}
-					) }
+					{ owner.login }
 				</span>
 			) }
 		</li>

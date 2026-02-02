@@ -126,7 +126,7 @@ export default function ViewOnlyMenu() {
 					<MenuWithHeading
 						className="googlesitekit-view-only-menu__list-item"
 						heading={
-							<Typography as="h4" size="large" type="title">
+							<Typography as="h4" size="medium" type="label">
 								{ __( 'Shared services', 'google-site-kit' ) }
 							</Typography>
 						}

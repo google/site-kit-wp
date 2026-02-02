@@ -90,14 +90,9 @@ export default function Description() {
 	}, [ viewContext ] );
 
 	const description = canAuthenticate
-		? createInterpolateElement(
-				__(
-					"You can see stats from all shared Google services, but you can't make any changes. <strong>Sign in to connect more services and control sharing access.</strong>",
-					'google-site-kit'
-				),
-				{
-					strong: <strong />,
-				}
+		? __(
+				"You can see stats from all shared Google services, but you can't make any changes. Sign in to connect more services and control sharing access.",
+				'google-site-kit'
 		  )
 		: createInterpolateElement(
 				__(
@@ -121,7 +116,9 @@ export default function Description() {
 
 	return (
 		<Fragment>
-			<P>{ description }</P>
+			<P className="googlesitekit-view-only-menu__signin">
+				{ description }
+			</P>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ _x(
