@@ -107,9 +107,9 @@ export default function SettingsEmailReporting( { loading = false } ) {
 			`${ viewContext }_email_reports_settings`,
 			'deactivate_periodic_email_reports'
 		);
+		setIsDisableDialogOpen( false );
 		await setEmailReportingEnabled( false );
 		await saveEmailReportingSettings();
-		setIsDisableDialogOpen( false );
 	}, [ saveEmailReportingSettings, setEmailReportingEnabled, viewContext ] );
 
 	const handleDisableCancel = useCallback( () => {
