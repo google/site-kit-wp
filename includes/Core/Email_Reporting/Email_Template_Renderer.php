@@ -28,10 +28,36 @@ class Email_Template_Renderer {
 	const EMAIL_ASSETS_BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
 
 	/**
+	 * Asset paths mapping.
+	 *
+	 * Maps asset filenames to their versioned folder paths.
+	 * Format: 'asset-filename.png' => 'version/template-name'
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	const EMAIL_ASSET_PATHS = array(
+		// email-report assets (1.168.0).
+		'site-kit-logo.png'               => '1.168.0/email-report',
+		'shooting-stars-graphic.png'      => '1.168.0/email-report',
+		'icon-conversions.png'            => '1.168.0/email-report',
+		'icon-growth.png'                 => '1.168.0/email-report',
+		'icon-link-arrow.png'             => '1.168.0/email-report',
+		'icon-search.png'                 => '1.168.0/email-report',
+		'icon-views.png'                  => '1.168.0/email-report',
+		'icon-visitors.png'               => '1.168.0/email-report',
+		'conversions-timeline-green.png'  => '1.168.0/email-report',
+		'conversions-timeline-red.png'    => '1.168.0/email-report',
+		'notification-icon-star.png'      => '1.168.0/email-report',
+		// invitation-email assets (1.172.0).
+		'invitation-envelope-graphic.png' => '1.172.0/invitation-email',
+	);
+
+	/**
 	 * The sections map instance.
 	 *
 	 * @since 1.168.0
-	 * @var Sections_Map
+	 * @var Sections_Map|null
 	 */
 	protected $sections_map;
 
@@ -57,10 +83,11 @@ class Email_Template_Renderer {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Sections map is now optional for templates that don't use sections.
 	 *
-	 * @param Sections_Map $sections_map The sections map instance.
+	 * @param Sections_Map|null $sections_map The sections map instance, or null for simple templates.
 	 */
-	public function __construct( Sections_Map $sections_map ) {
+	public function __construct( Sections_Map $sections_map = null ) {
 		$this->sections_map  = $sections_map;
 		$this->templates_dir = realpath( __DIR__ . '/templates' );
 	}
@@ -68,13 +95,20 @@ class Email_Template_Renderer {
 	/**
 	 * Gets the full URL for an email asset.
 	 *
+	 * Constructs a URL following the folder structure:
+	 * {base_url}/{version}/{template-name}/{asset-filename}
+	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Updated to use asset-specific path mapping.
 	 *
 	 * @param string $asset_name The asset filename (e.g., 'icon-conversions.png').
 	 * @return string The full URL to the asset.
 	 */
 	public function get_email_asset_url( $asset_name ) {
-		return self::EMAIL_ASSETS_BASE_URL . ltrim( $asset_name, '/' );
+		$asset_name = ltrim( $asset_name, '/' );
+		$asset_path = self::EMAIL_ASSET_PATHS[ $asset_name ] ?? '1.168.0/email-report';
+
+		return self::EMAIL_ASSETS_BASE_URL . $asset_path . '/' . $asset_name;
 	}
 
 	/**
@@ -92,7 +126,7 @@ class Email_Template_Renderer {
 			return '';
 		}
 
-		$sections = $this->sections_map->get_sections();
+		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
 
 		$shared_parts_dir   = $this->templates_dir . '/parts';
 		$template_parts_dir = $this->templates_dir . '/' . $template_name . '/parts';
@@ -171,13 +205,20 @@ class Email_Template_Renderer {
 	 * Plain_Text_Formatter for formatting.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added support for invitation-email template.
 	 *
-	 * @param string $template_name The template name (unused for plain text, kept for API consistency with render()).
+	 * @param string $template_name The template name.
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		$sections = $this->sections_map->get_sections();
+		// Handle invitation email separately.
+		if ( 'invitation-email' === $template_name ) {
+			return Plain_Text_Formatter::format_invitation_email( $data );
+		}
+
+		// Handle email-report template with sections.
+		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
 
 		$output = Plain_Text_Formatter::format_header(
 			$data['site']['domain'] ?? '',

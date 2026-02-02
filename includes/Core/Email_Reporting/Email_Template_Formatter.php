@@ -272,6 +272,44 @@ class Email_Template_Formatter {
 	}
 
 	/**
+	 * Builds template data for invitation email rendering.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $inviter_email Email address of the person sending the invitation.
+	 * @return array Template data for invitation email.
+	 */
+	public function prepare_invitation_template_data( $inviter_email ) {
+		$site_domain = $this->get_site_domain();
+
+		return array(
+			'subject'                => sprintf(
+				/* translators: 1: Inviter email address, 2: Site domain. */
+				__( '%1$s invited you to receive periodic Site Kit performance reports for %2$s', 'google-site-kit' ),
+				$inviter_email,
+				$site_domain
+			),
+			'preheader'              => sprintf(
+				/* translators: %s: Inviter email address. */
+				__( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
+				$inviter_email
+			),
+			'site'                   => array(
+				'domain' => $site_domain,
+			),
+			'inviter_email'          => $inviter_email,
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'primary_call_to_action' => array(
+				'label' => __( 'Get your report', 'google-site-kit' ),
+				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+			),
+			'footer'                 => array(
+				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),
+			),
+		);
+	}
+
+	/**
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0

@@ -41,6 +41,57 @@ class Plain_Text_Formatter {
 	}
 
 	/**
+	 * Formats the invitation email as plain text.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data The invitation email data.
+	 * @return string Formatted plain text email.
+	 */
+	public static function format_invitation_email( $data ) {
+		$site_domain    = $data['site']['domain'] ?? '';
+		$inviter_email  = $data['inviter_email'] ?? '';
+		$learn_more_url = $data['learn_more_url'] ?? '';
+		$cta            = $data['primary_call_to_action'] ?? array();
+		$footer_copy    = $data['footer']['copy'] ?? '';
+
+		$lines = array(
+			__( 'Site Kit by Google', 'google-site-kit' ),
+			'',
+			$site_domain,
+			'',
+			sprintf(
+				/* translators: %s: Email address of the person who sent the invitation */
+				__( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
+				$inviter_email
+			),
+			'',
+			__( 'Receive the most important insights about your site\'s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' ),
+			'',
+			self::format_link( __( 'Learn more', 'google-site-kit' ), $learn_more_url ),
+			'',
+			__( 'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.', 'google-site-kit' ),
+			'',
+			str_repeat( '-', 50 ),
+			'',
+		);
+
+		// Primary CTA.
+		if ( ! empty( $cta['url'] ) ) {
+			$label   = $cta['label'] ?? __( 'Get your report', 'google-site-kit' );
+			$lines[] = self::format_link( $label, $cta['url'] );
+			$lines[] = '';
+		}
+
+		// Footer copy.
+		if ( ! empty( $footer_copy ) ) {
+			$lines[] = $footer_copy;
+		}
+
+		return implode( "\n", $lines );
+	}
+
+	/**
 	 * Formats a section based on its template type.
 	 *
 	 * @since 1.170.0
