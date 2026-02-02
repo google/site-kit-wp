@@ -41,40 +41,48 @@ class Plain_Text_Formatter {
 	}
 
 	/**
-	 * Formats the invitation email as plain text.
+	 * Formats a simple email as plain text.
+	 *
+	 * Simple emails share a common structure with customizable content.
+	 * The preheader is used as the main message body in plain text format.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $data The invitation email data.
+	 * @param array $data The simple email data containing site, preheader, learn_more_url,
+	 *                    primary_call_to_action, and footer.
 	 * @return string Formatted plain text email.
 	 */
-	public static function format_invitation_email( $data ) {
+	public static function format_simple_email( $data ) {
 		$site_domain    = $data['site']['domain'] ?? '';
-		$inviter_email  = $data['inviter_email'] ?? '';
+		$preheader      = $data['preheader'] ?? '';
 		$learn_more_url = $data['learn_more_url'] ?? '';
 		$cta            = $data['primary_call_to_action'] ?? array();
 		$footer_copy    = $data['footer']['copy'] ?? '';
+		$body           = $data['body'] ?? array();
 
 		$lines = array(
 			__( 'Site Kit by Google', 'google-site-kit' ),
 			'',
 			$site_domain,
 			'',
-			sprintf(
-				/* translators: %s: Email address of the person who sent the invitation */
-				__( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
-				$inviter_email
-			),
-			'',
-			__( 'Receive the most important insights about your site\'s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' ),
-			'',
-			self::format_link( __( 'Learn more', 'google-site-kit' ), $learn_more_url ),
-			'',
-			__( 'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.', 'google-site-kit' ),
-			'',
-			str_repeat( '-', 50 ),
+			$preheader,
 			'',
 		);
+
+		// Body paragraphs.
+		foreach ( (array) $body as $paragraph ) {
+			$lines[] = $paragraph;
+			$lines[] = '';
+		}
+
+		// Learn more link (optional).
+		if ( ! empty( $learn_more_url ) ) {
+			$lines[] = self::format_link( __( 'Learn more', 'google-site-kit' ), $learn_more_url );
+			$lines[] = '';
+		}
+
+		$lines[] = str_repeat( '-', 50 );
+		$lines[] = '';
 
 		// Primary CTA.
 		if ( ! empty( $cta['url'] ) ) {

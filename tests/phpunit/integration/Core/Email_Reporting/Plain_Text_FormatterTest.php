@@ -275,12 +275,16 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertEquals( '', $result, 'Section with unknown template should return empty string.' );
 	}
 
-	public function test_format_invitation_email() {
+	public function test_format_simple_email() {
 		$data = array(
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'inviter_email'          => 'admin@example.com',
+			'preheader'              => 'admin@example.com invited you to receive periodic performance reports',
+			'body'                   => array(
+				'Receive the most important insights about your site\'s performance, key trends, and tailored metrics.',
+				'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.',
+			),
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
 			'primary_call_to_action' => array(
 				'label' => 'Get your report',
@@ -291,24 +295,25 @@ class Plain_Text_FormatterTest extends TestCase {
 			),
 		);
 
-		$result = Plain_Text_Formatter::format_invitation_email( $data );
+		$result = Plain_Text_Formatter::format_simple_email( $data );
 
-		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Invitation email should contain Site Kit branding.' );
-		$this->assertStringContainsString( 'example.com', $result, 'Invitation email should contain site domain.' );
-		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Invitation email should contain inviter email and invitation text.' );
-		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Invitation email should contain description.' );
-		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Invitation email should contain Learn more link.' );
-		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Invitation email should contain unsubscribe note.' );
-		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Invitation email should contain CTA link.' );
-		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Invitation email should contain footer copy.' );
+		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding.' );
+		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
+		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Simple email should contain preheader text.' );
+		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Simple email should contain first body paragraph.' );
+		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
+		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Simple email should contain Learn more link.' );
+		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
+		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
 	}
 
-	public function test_format_invitation_email_with_missing_data() {
+	public function test_format_simple_email_with_missing_data() {
 		$data = array(
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'inviter_email'          => 'admin@example.com',
+			'preheader'              => 'You have been invited to receive performance reports',
+			'body'                   => array(),
 			'learn_more_url'         => '',
 			'primary_call_to_action' => array(),
 			'footer'                 => array(
@@ -316,10 +321,11 @@ class Plain_Text_FormatterTest extends TestCase {
 			),
 		);
 
-		$result = Plain_Text_Formatter::format_invitation_email( $data );
+		$result = Plain_Text_Formatter::format_simple_email( $data );
 
-		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Invitation email should contain Site Kit branding even with missing data.' );
-		$this->assertStringContainsString( 'example.com', $result, 'Invitation email should contain site domain.' );
-		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Invitation email should contain invitation text.' );
+		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding even with missing data.' );
+		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
+		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain preheader text.' );
+		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
 	}
 }

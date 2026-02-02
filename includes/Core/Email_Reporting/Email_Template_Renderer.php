@@ -205,19 +205,21 @@ class Email_Template_Renderer {
 	 * Plain_Text_Formatter for formatting.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added support for invitation-email template.
+	 * @since n.e.x.t Added support for simple email templates.
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		// Handle invitation email separately.
-		if ( 'invitation-email' === $template_name ) {
-			return Plain_Text_Formatter::format_invitation_email( $data );
+		// Handle email-report template with sections.
+		if ( 'email-report' !== $template_name ) {
+			// Handle simple email templates (invitation-email, etc.).
+			$data['body'] = Body_Content_Map::get_body( $template_name );
+			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 
-		// Handle email-report template with sections.
+		// Render email report including sections.
 		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
 
 		$output = Plain_Text_Formatter::format_header(
