@@ -667,71 +667,125 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 		} );
 
 		describe.each( [
-			[ undefined, '' ],
-			[
-				CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
-				':CONTENT_POLICY_STATE_OK',
-			],
-			[
-				CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_UNSPECIFIED,
-				':CONTENT_POLICY_STATE_UNSPECIFIED',
-			],
-		] )(
-			'with contentPolicyState %s',
-			( contentPolicyState, expectedLabelSuffix ) => {
-				const contentPolicyStatus = contentPolicyState
-					? {
-							contentPolicyState,
-							policyInfoLink: 'https://example.com/policy',
-					  }
-					: undefined;
+			undefined,
+			...Object.values( CONTENT_POLICY_STATES ),
+		] )( 'with contentPolicyState %s', ( contentPolicyState ) => {
+			const contentPolicyStatus = contentPolicyState
+				? {
+						contentPolicyState,
+						policyInfoLink: 'https://example.com/policy',
+				  }
+				: undefined;
 
-				it( 'should track the events when the notification is dismissed', async () => {
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( {
-							publicationOnboardingState: ONBOARDING_COMPLETE,
-							paymentOption: 'subscriptions',
-							productID: 'basic',
-							contentPolicyStatus,
-						} );
+			const expectedLabelSuffix = contentPolicyState
+				? `:${ contentPolicyState }`
+				: '';
 
-					const { getByRole, waitForRegistry } = render(
-						<NotificationWithComponentProps />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-						}
-					);
+			const hasPolicyViolation =
+				contentPolicyState &&
+				( PENDING_POLICY_VIOLATION_STATES.includes(
+					contentPolicyState
+				) ||
+					ACTIVE_POLICY_VIOLATION_STATES.includes(
+						contentPolicyState
+					) );
 
-					await waitForRegistry();
-
-					expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-						1,
-						'mainDashboard_setup-success-notification-rrm',
-						'view_notification',
-						'ONBOARDING_COMPLETE:subscriptions:yes' +
-							expectedLabelSuffix,
-						undefined
-					);
-
-					// eslint-disable-next-line require-await
-					await act( async () => {
-						fireEvent.click(
-							getByRole( 'button', { name: /Got it/i } )
-						);
+			it( 'should track the events when the notification is dismissed', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus,
 					} );
 
-					expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-						2,
-						'mainDashboard_setup-success-notification-rrm',
-						'dismiss_notification',
-						'ONBOARDING_COMPLETE:subscriptions:yes' +
-							expectedLabelSuffix,
-						undefined
+				const { getByRole, waitForRegistry } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					1,
+					'mainDashboard_setup-success-notification-rrm',
+					'view_notification',
+					'ONBOARDING_COMPLETE:subscriptions:yes' +
+						expectedLabelSuffix,
+					undefined
+				);
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /Got it/i } )
 					);
 				} );
 
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					2,
+					'mainDashboard_setup-success-notification-rrm',
+					'dismiss_notification',
+					'ONBOARDING_COMPLETE:subscriptions:yes' +
+						expectedLabelSuffix,
+					undefined
+				);
+			} );
+
+			it( 'should track the event when the CTA button is clicked', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'noPayment',
+						productID: 'basic',
+						contentPolicyStatus,
+					} );
+
+				const { getByText, waitForRegistry } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					1,
+					'mainDashboard_setup-success-notification-rrm',
+					'view_notification',
+					'ONBOARDING_COMPLETE:noPayment:yes' + expectedLabelSuffix,
+					undefined
+				);
+
+				// CTA button should be present.
+				const ctaButton = hasPolicyViolation
+					? getByText( 'View violations' )
+					: getByText( 'Get started' );
+
+				expect( ctaButton ).toBeInTheDocument();
+
+				// eslint-disable-next-line require-await
+				await act( async () => {
+					fireEvent.click( ctaButton );
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+					2,
+					'mainDashboard_setup-success-notification-rrm',
+					'confirm_notification',
+					'ONBOARDING_COMPLETE:noPayment:yes' + expectedLabelSuffix,
+					undefined
+				);
+			} );
+
+			if ( ! hasPolicyViolation ) {
 				it( 'should track the event when the "Learn more" link is clicked', async () => {
 					registry
 						.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -779,170 +833,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						undefined
 					);
 				} );
-
-				it( 'should track the event when the CTA button is clicked', async () => {
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.receiveGetSettings( {
-							publicationOnboardingState: ONBOARDING_COMPLETE,
-							paymentOption: 'noPayment',
-							productID: 'basic',
-							contentPolicyStatus,
-						} );
-
-					const { getByText, waitForRegistry } = render(
-						<NotificationWithComponentProps />,
-						{
-							registry,
-							viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-						}
-					);
-
-					await waitForRegistry();
-
-					expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-						1,
-						'mainDashboard_setup-success-notification-rrm',
-						'view_notification',
-						'ONBOARDING_COMPLETE:noPayment:yes' +
-							expectedLabelSuffix,
-						undefined
-					);
-
-					// CTA button should be present.
-					const ctaButton = getByText( 'Get started' );
-					expect( ctaButton ).toBeInTheDocument();
-
-					// eslint-disable-next-line require-await
-					await act( async () => {
-						fireEvent.click( ctaButton );
-					} );
-
-					expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-						2,
-						'mainDashboard_setup-success-notification-rrm',
-						'confirm_notification',
-						'ONBOARDING_COMPLETE:noPayment:yes' +
-							expectedLabelSuffix,
-						undefined
-					);
-				} );
 			}
-		);
-	} );
-
-	describe.each( [
-		...PENDING_POLICY_VIOLATION_STATES,
-		...ACTIVE_POLICY_VIOLATION_STATES,
-	] )( 'with contentPolicyState %s', ( contentPolicyState ) => {
-		const contentPolicyStatus = {
-			contentPolicyState,
-			policyInfoLink: 'https://example.com/policy',
-		};
-
-		beforeEach( async () => {
-			mockTrackEvent.mockClear();
-
-			await registry
-				.dispatch( CORE_NOTIFICATIONS )
-				.registerNotification( id, {
-					Component: NotificationWithComponentProps,
-					areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-					viewContexts: [ 'mainDashboard' ],
-					isDismissible: false,
-				} );
-
-			registry
-				.dispatch( CORE_UI )
-				.setValue( `notification/${ id }/viewed`, true );
-		} );
-
-		it( 'should track the events when the notification is dismissed', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					publicationOnboardingState: ONBOARDING_COMPLETE,
-					paymentOption: 'subscriptions',
-					productID: 'basic',
-					contentPolicyStatus,
-				} );
-
-			const { getByRole, waitForRegistry } = render(
-				<NotificationWithComponentProps />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
-				'mainDashboard_setup-success-notification-rrm',
-				'view_notification',
-				`ONBOARDING_COMPLETE:subscriptions:yes:${ contentPolicyState }`,
-				undefined
-			);
-
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click( getByRole( 'button', { name: /Got it/i } ) );
-			} );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				'mainDashboard_setup-success-notification-rrm',
-				'dismiss_notification',
-				`ONBOARDING_COMPLETE:subscriptions:yes:${ contentPolicyState }`,
-				undefined
-			);
-		} );
-
-		it( 'should track the event when the CTA button is clicked', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					publicationOnboardingState: ONBOARDING_COMPLETE,
-					paymentOption: 'noPayment',
-					productID: 'basic',
-					contentPolicyStatus,
-				} );
-
-			const { getByText, waitForRegistry } = render(
-				<NotificationWithComponentProps />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
-				'mainDashboard_setup-success-notification-rrm',
-				'view_notification',
-				`ONBOARDING_COMPLETE:noPayment:yes:${ contentPolicyState }`,
-				undefined
-			);
-
-			// CTA button should be present.
-			const ctaButton = getByText( 'View violations' );
-			expect( ctaButton ).toBeInTheDocument();
-
-			// eslint-disable-next-line require-await
-			await act( async () => {
-				fireEvent.click( ctaButton );
-			} );
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				2,
-				'mainDashboard_setup-success-notification-rrm',
-				'confirm_notification',
-				`ONBOARDING_COMPLETE:noPayment:yes:${ contentPolicyState }`,
-				undefined
-			);
 		} );
 	} );
 } );
