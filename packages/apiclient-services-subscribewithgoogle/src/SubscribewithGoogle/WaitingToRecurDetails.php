@@ -20,16 +20,25 @@ namespace Google\Service\SubscribewithGoogle;
 class WaitingToRecurDetails extends \Google\Model
 {
   /**
+   * Indicates whether the plan is currently in free trial or not. Currently,
+   * only set for SUBSCRIPTION plan_type.
+   *
    * @var bool
    */
   public $freeTrial;
   /**
+   * Timestamp when the next recurrence of this plan would take place, ie, the
+   * next billing cycle starts.
+   *
    * @var string
    */
   public $nextRecurrenceTime;
 
   /**
-   * @param bool
+   * Indicates whether the plan is currently in free trial or not. Currently,
+   * only set for SUBSCRIPTION plan_type.
+   *
+   * @param bool $freeTrial
    */
   public function setFreeTrial($freeTrial)
   {
@@ -43,7 +52,10 @@ class WaitingToRecurDetails extends \Google\Model
     return $this->freeTrial;
   }
   /**
-   * @param string
+   * Timestamp when the next recurrence of this plan would take place, ie, the
+   * next billing cycle starts.
+   *
+   * @param string $nextRecurrenceTime
    */
   public function setNextRecurrenceTime($nextRecurrenceTime)
   {

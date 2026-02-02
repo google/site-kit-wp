@@ -20,6 +20,8 @@ namespace Google\Service\SubscribewithGoogle;
 class PurchaseInfo extends \Google\Model
 {
   /**
+   * Latest order id of the purchase.
+   *
    * @var string
    */
   public $latestOrderId;
@@ -27,7 +29,9 @@ class PurchaseInfo extends \Google\Model
   protected $totalAmountDataType = '';
 
   /**
-   * @param string
+   * Latest order id of the purchase.
+   *
+   * @param string $latestOrderId
    */
   public function setLatestOrderId($latestOrderId)
   {
@@ -41,7 +45,9 @@ class PurchaseInfo extends \Google\Model
     return $this->latestOrderId;
   }
   /**
-   * @param Money
+   * Represents the total amount of the purchase.
+   *
+   * @param Money $totalAmount
    */
   public function setTotalAmount(Money $totalAmount)
   {
