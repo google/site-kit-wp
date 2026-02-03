@@ -17,10 +17,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\AdSense\Email_Reporting\Report_Options as AdSense_Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_4_Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Request_Assembler as Analytics_4_Report_Request_Assembler;
 use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Options as Search_Console_Report_Options;
@@ -237,8 +235,6 @@ class Email_Reporting_Data_Requests {
 				$result = $this->collect_analytics_payloads( $module, $date_range );
 			} elseif ( Search_Console::MODULE_SLUG === $slug ) {
 				$result = $this->collect_search_console_payloads( $module, $date_range );
-			} elseif ( AdSense::MODULE_SLUG === $slug ) {
-				$result = $this->collect_adsense_payloads( $module, $date_range );
 			} else {
 				continue;
 			}
@@ -331,30 +327,6 @@ class Email_Reporting_Data_Requests {
 		}
 
 		return $request_assembler->map_responses( $response, $request_map );
-	}
-
-	/**
-	 * Collects AdSense payloads keyed by section-part identifiers.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param object $module     Module instance.
-	 * @param array  $date_range Date range payload.
-	 * @return array|WP_Error AdSense payload or WP_Error from module call.
-	 */
-	private function collect_adsense_payloads( $module, array $date_range ) {
-		$account_id     = $this->get_adsense_account_id( $module );
-		$report_options = new AdSense_Report_Options( $date_range, array(), $account_id );
-
-		$response = $module->get_data( 'report', $report_options->get_total_earnings_options() );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		return array(
-			'total_earnings' => $response,
-		);
 	}
 
 	/**
