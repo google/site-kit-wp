@@ -73,9 +73,6 @@ test.describe( 'Site Health', () => {
 					hasText: /Search Console: Shared Roles/i,
 				} )
 			).toBeVisible();
-
-			// TODO: Remove this - intentional failure to test report output
-			await expect( page ).toHaveTitle( /This will fail/i );
 		} );
 	} );
 } );
