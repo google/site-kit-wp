@@ -137,6 +137,18 @@ class Email_Report_Section_Builder {
 
 				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
+				if ( empty( $section_payload['title'] ) || ! is_string( $section_payload['title'] ) ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for section payload validation.
+					error_log(
+						sprintf(
+							'[Site Kit] email reporting section payload missing title: module=%s section_key=%s payload=%s',
+							$module_slug,
+							$section_payload['section_key'] ?? 'section',
+							wp_json_encode( $section_payload )
+						)
+					);
+				}
+
 				$section = new Email_Report_Data_Section_Part(
 					$section_payload['section_key'] ?? 'section',
 					array(
