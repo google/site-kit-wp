@@ -182,9 +182,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				const requestURL = new URL( request.url() );
 				const destinationID =
 					requestURL.searchParams.get( 'destinationID' );
-				const googleTagID = global.googlesitekit.data
-					.select( 'modules/analytics-4' )
-					.googleTagID();
+				const googleTagID = fixtures.googleTagSettings.googleTagID;
 				const container = {
 					...fixtures.containerE2E[ 'G-500' ],
 					tagIds: [ destinationID, googleTagID ],
@@ -196,9 +194,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			} else if (
 				request.url().match( 'analytics-4/data/container-destinations' )
 			) {
-				const googleTagID = global.googlesitekit.data
-					.select( 'modules/analytics-4' )
-					.googleTagID();
+				const googleTagID = fixtures.googleTagSettings.googleTagID;
 				// eslint-disable-next-line sitekit/acronym-case
 				const destination = { destinationId: googleTagID };
 				request.respond( {

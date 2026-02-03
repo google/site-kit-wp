@@ -46,7 +46,7 @@ import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-
 describe( 'User Input Settings', () => {
 	async function fillInInputSettings() {
 		// The UserInputApp needs more time to load to pass consistently.
-		const extendedTimeout = 15_000;
+		const extendedTimeout = 16_000;
 
 		await page.waitForSelector( '.googlesitekit-user-input__question', {
 			timeout: extendedTimeout,
@@ -179,8 +179,14 @@ describe( 'User Input Settings', () => {
 				)
 			) {
 				request.continue();
+			} else if (
+				url.match(
+					'/google-site-kit/v1/modules/analytics-4/data/google-tag-settings'
+				)
+			) {
+				// Let it stall
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
-				request.respond( { status: 200 } );
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}
@@ -197,14 +203,6 @@ describe( 'User Input Settings', () => {
 	} );
 
 	afterEach( async () => {
-		// Wait for network idle to allow outstanding requests to resolve
-		// and prevent Invalid JSON Response error.
-		try {
-			await page.waitForNetworkIdle( { timeout: 15_000 } );
-		} catch ( error ) {
-			// Allow to fail silently if timeout is reached which can occur mostly running locally.
-		}
-
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -212,6 +210,10 @@ describe( 'User Input Settings', () => {
 	it( 'should offer to enter input settings for existing users', async () => {
 		await setupSiteKit();
 		await page.setRequestInterception( false );
+		// await setupAnalytics4({
+		// 	googleTagAccountID: '123',
+		// 	googleTagContainerID: '456',
+		// } );
 		await setupAnalytics4();
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();

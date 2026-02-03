@@ -24,7 +24,6 @@ process.on( 'unhandledRejection', ( err ) => {
  */
 /* eslint-disable-next-line jest/no-jest-import */
 const jest = require( 'jest' );
-const { sync: spawn } = require( 'cross-spawn' );
 
 // getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
 // https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11
@@ -58,13 +57,13 @@ function hasArgInCLI( arg ) {
 	return getArgFromCLI( arg ) !== undefined;
 }
 
-const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
-	stdio: 'inherit',
-} );
+// const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
+// 	stdio: 'inherit',
+// } );
 
-if ( result.status > 0 ) {
-	process.exit( result.status );
-}
+// if ( result.status > 0 ) {
+// 	process.exit( result.status );
+// }
 
 const config = [ '--config=jest.config.js' ];
 
@@ -95,4 +94,9 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 
 const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
 
-jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
+jest.run( [
+	...config,
+	...runInBand,
+	'--no-sandbox',
+	...getArgsFromCLI( cleanUpPrefixes ),
+] );

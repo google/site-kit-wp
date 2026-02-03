@@ -68,12 +68,15 @@ export async function activateAMPWithMode( mode, sharedRequestInterception ) {
 		] );
 	} else {
 		// If no sharedRequestInterception is passed, we need to create a new request interception.
+		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( '&amp_validate' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( {} ),
 				} );
+			} else {
+				request.continue();
 			}
 		} );
 	}
