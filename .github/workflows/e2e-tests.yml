@@ -70,6 +70,9 @@ on:
       - synchronize
       - ready_for_review
 
+permissions:
+  contents: read
+
 concurrency:
   group: e2e-tests-${{ github.ref }}
   cancel-in-progress: true
@@ -91,7 +94,7 @@ jobs:
 
       - name: Build
         run: |
-          npm i -w assets --include-workspace-root
+          npm i --workspaces --include-workspace-root
           npm run build:test
 
       - uses: shivammathur/setup-php@v2
@@ -154,7 +157,7 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: npm i -w tests/e2e --include-workspace-root
+        run: npm i --workspaces --include-workspace-root
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
