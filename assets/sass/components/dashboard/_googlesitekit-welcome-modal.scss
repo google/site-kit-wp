@@ -66,11 +66,16 @@
 				@include mdc-button-filled-accessible( $c-site-kit-sk-500 );
 				@include mdc-button-ink-color( $c-surfaces-surface );
 
-				// Disable ripple effect on focus to prevent background color flicker.
-				&::before,
-				&::after {
-					display: none;
+				// Set ripple opacity to 0 on focus to prevent the lighter overlay from showing.
+				// This preserves the ripple click effect while showing the desired solid focus color.
+				&::before {
+					opacity: 0 !important;
 				}
+			}
+
+			// Also handle the upgraded ripple state for when MDCRipple JS has attached.
+			&.mdc-ripple-upgraded--background-focused::before {
+				opacity: 0 !important;
 			}
 		}
 
