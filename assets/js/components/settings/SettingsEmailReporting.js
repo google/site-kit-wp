@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import {
 	Fragment,
 	useCallback,
+	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -43,6 +44,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
 import EmailReportingCardNotice, {
 	EMAIL_REPORTING_CARD_NOTICE,
 } from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
@@ -53,6 +55,7 @@ import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/E
 
 export default function SettingsEmailReporting( { loading = false } ) {
 	const viewContext = useViewContext();
+	const [ isDisableDialogOpen, setIsDisableDialogOpen ] = useState( false );
 
 	const isEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
@@ -81,18 +84,16 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const handleToggle = useCallback( async () => {
 		if ( isEnabled ) {
-			trackEvent(
-				`${ viewContext }_email_reports_settings`,
-				'deactivate_periodic_email_reports'
-			);
-		} else {
-			trackEvent(
-				`${ viewContext }_email_reports_settings`,
-				'activate_periodic_email_reports'
-			);
+			setIsDisableDialogOpen( true );
+			return;
 		}
 
-		await setEmailReportingEnabled( ! isEnabled );
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'activate_periodic_email_reports'
+		);
+
+		await setEmailReportingEnabled( true );
 		await saveEmailReportingSettings();
 	}, [
 		isEnabled,
@@ -101,13 +102,28 @@ export default function SettingsEmailReporting( { loading = false } ) {
 		viewContext,
 	] );
 
+	const handleDisableConfirm = useCallback( async () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'deactivate_periodic_email_reports'
+		);
+		setIsDisableDialogOpen( false );
+		await setEmailReportingEnabled( false );
+		await saveEmailReportingSettings();
+	}, [ saveEmailReportingSettings, setEmailReportingEnabled, viewContext ] );
+
+	const handleDisableCancel = useCallback( () => {
+		setIsDisableDialogOpen( false );
+	}, [] );
+
 	const handleManageClick = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_email_reports_settings`,
 			'manage_email_reports_subscription'
 		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue, viewContext ] );
+		handleDisableCancel();
+	}, [ setValue, viewContext, handleDisableCancel ] );
 
 	if ( loading || settings === undefined ) {
 		return null;
@@ -192,6 +208,45 @@ export default function SettingsEmailReporting( { loading = false } ) {
 				) }
 			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
+			{ isDisableDialogOpen && (
+				<RefocusableModalDialog
+					className="googlesitekit-settings-email-reporting__confirm-disable-modal"
+					title={ __(
+						'Are you sure you want to disable email reports?',
+						'google-site-kit'
+					) }
+					subtitle={
+						<Fragment>
+							<span>
+								{ __(
+									'Disabling email reports will pause sending email reports for all subscribed users.',
+									'google-site-kit'
+								) }
+							</span>
+							<br />
+							{ createInterpolateElement(
+								__(
+									'You can manage your subscription in your <a>email report settings</a>.',
+									'google-site-kit'
+								),
+								{
+									a: <Link onClick={ handleManageClick } />,
+								}
+							) }
+							<br />
+							{ /** TODO update learn more link when it is provided. */ }
+							<Link href="">
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</Link>
+						</Fragment>
+					}
+					handleConfirm={ handleDisableConfirm }
+					handleCancel={ handleDisableCancel }
+					onClose={ handleDisableCancel }
+					confirmButton={ __( 'Disable', 'google-site-kit' ) }
+					dialogActive
+				/>
+			) }
 		</Fragment>
 	);
 }
