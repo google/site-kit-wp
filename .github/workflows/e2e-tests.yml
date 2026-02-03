@@ -91,6 +91,7 @@ jobs:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
       CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
+      E2E_PARALLEL_WORKERS: 4
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
@@ -131,10 +132,10 @@ jobs:
         run: composer install --no-interaction --no-progress --no-dev
 
       - name: Start environment
-        run: npm run env:start
+        run: npm run env:start:parallel
 
       - name: Run the tests
-        run: npm run test:e2e
+        run: npm run test:e2e:parallel
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

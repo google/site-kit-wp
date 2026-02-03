@@ -1,6 +1,8 @@
 const path = require( 'path' );
 
-module.exports = {
+const isParallel = process.env.E2E_PARALLEL === '1';
+
+const config = {
 	preset: 'jest-puppeteer',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/screenshots.js',
@@ -24,3 +26,19 @@ module.exports = {
 	testPathIgnorePatterns: [ '.git', 'node_modules' ],
 	verbose: true,
 };
+
+if ( isParallel ) {
+	config.testEnvironment = path.join(
+		__dirname,
+		'config',
+		'parallel-environment.js'
+	);
+	config.globalSetup = path.join( __dirname, 'config', 'global-setup.js' );
+	config.globalTeardown = path.join(
+		__dirname,
+		'config',
+		'global-teardown.js'
+	);
+}
+
+module.exports = config;

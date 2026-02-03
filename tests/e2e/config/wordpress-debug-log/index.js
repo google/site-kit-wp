@@ -78,8 +78,10 @@ logStream.on( 'data', ( chunk ) => {
  * @return {Docker.Container} Container instance.
  */
 async function getContainer() {
+	const composeProject =
+		process.env.E2E_COMPOSE_PROJECT || 'googlesitekit-e2e';
 	const e2eContainers = await docker.listContainers( {
-		filters: JSON.stringify( { name: [ 'googlesitekit-e2e' ] } ),
+		filters: JSON.stringify( { name: [ composeProject ] } ),
 	} );
 
 	// This avoids conflicts due to variations in the formatting of container names.
