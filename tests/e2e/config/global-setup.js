@@ -65,7 +65,7 @@ async function waitForWorker( workerIndex ) {
 	);
 }
 
-module.exports = async function globalSetup() {
+module.exports = async function globalSetup( globalConfig ) {
 	// Clear screenshots directory once before all workers.
 	const screenshotsDir = path.resolve( __dirname, '..', 'screenshots' );
 	await rm( screenshotsDir, { recursive: true, force: true } );
@@ -77,4 +77,12 @@ module.exports = async function globalSetup() {
 	}
 
 	await Promise.all( checks );
+
+	// Run jest-puppeteer's global setup to launch browser(s) and set
+	// PUPPETEER_WS_ENDPOINTS, which the PuppeteerEnvironment needs to
+	// connect workers to Chromium instances.
+	const {
+		setup: puppeteerGlobalSetup,
+	} = require( 'jest-environment-puppeteer' );
+	await puppeteerGlobalSetup( globalConfig );
 };

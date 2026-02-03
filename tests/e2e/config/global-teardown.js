@@ -18,6 +18,11 @@
  * limitations under the License.
  */
 
-module.exports = async function globalTeardown() {
-	// No-op for now. Container cleanup is handled by stop-parallel.sh.
+module.exports = async function globalTeardown( globalConfig ) {
+	// Run jest-puppeteer's global teardown to close browser(s) that were
+	// launched during global setup.
+	const {
+		teardown: puppeteerGlobalTeardown,
+	} = require( 'jest-environment-puppeteer' );
+	await puppeteerGlobalTeardown( globalConfig );
 };
