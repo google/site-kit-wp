@@ -45,6 +45,17 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets compare period range values.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Compare period range array.
+	 */
+	public function get_compare_range() {
+		return $this->get_compare_range_values();
+	}
+
+	/**
 	 * Gets report options for keywords with highest CTR.
 	 *
 	 * @since 1.167.0
@@ -58,7 +69,25 @@ class Report_Options extends Base_Report_Options {
 			'startDate'  => $current_range['startDate'],
 			'endDate'    => $current_range['endDate'],
 			'dimensions' => 'query',
-			'limit'      => 10,
+			'rowLimit'   => 10,
+		);
+	}
+
+	/**
+	 * Gets report options for keywords with biggest CTR increase.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Report request options array.
+	 */
+	public function get_keywords_ctr_increase_options() {
+		$current_range = $this->get_current_range_values();
+
+		return array(
+			'startDate'  => $current_range['startDate'],
+			'endDate'    => $current_range['endDate'],
+			'dimensions' => 'query',
+			'rowLimit'   => 50,
 		);
 	}
 
@@ -76,7 +105,25 @@ class Report_Options extends Base_Report_Options {
 			'startDate'  => $current_range['startDate'],
 			'endDate'    => $current_range['endDate'],
 			'dimensions' => 'page',
-			'limit'      => 10,
+			'rowLimit'   => 10,
+		);
+	}
+
+	/**
+	 * Gets report options for pages with biggest clicks increase.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Report request options array.
+	 */
+	public function get_pages_clicks_increase_options() {
+		$current_range = $this->get_current_range_values();
+
+		return array(
+			'startDate'  => $current_range['startDate'],
+			'endDate'    => $current_range['endDate'],
+			'dimensions' => 'page',
+			'rowLimit'   => 50,
 		);
 	}
 

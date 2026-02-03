@@ -29,16 +29,11 @@ class OptinMonsterTest extends TestCase {
 		$this->optinmonster = new OptinMonster( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'OMAPI_FILE' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'OMAPI_FILE' );
-		}
-	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->optinmonster->is_active() );
 		define( 'OMAPI_FILE', 1 );

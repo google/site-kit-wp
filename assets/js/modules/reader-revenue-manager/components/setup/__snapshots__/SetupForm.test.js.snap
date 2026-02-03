@@ -4,23 +4,27 @@ exports[`SetupForm should not silently fail when there is an error 1`] = `
 <div>
   <form>
     <div
-      class="googlesitekit-notice googlesitekit-notice--error"
+      class="googlesitekit-notice-container"
     >
       <div
-        class="googlesitekit-notice__icon"
+        class="googlesitekit-notice googlesitekit-notice--error"
       >
-        <svg />
-      </div>
-      <div
-        class="googlesitekit-notice__content"
-      >
-        <p
-          class="googlesitekit-notice__description"
+        <div
+          class="googlesitekit-notice__icon"
         >
-          <span>
-            Error: Test error message (Please try again.)
-          </span>
-        </p>
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-notice__content"
+        >
+          <p
+            class="googlesitekit-notice__description"
+          >
+            <span>
+              Error: Test error message (Please try again.)
+            </span>
+          </p>
+        </div>
       </div>
     </div>
     <p

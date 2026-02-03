@@ -41,7 +41,6 @@ import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTag
 import Typography from '@/js/components/Typography';
 
 export default function SettingsForm() {
-	const paxEnabled = useFeature( 'adsPax' );
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
@@ -63,10 +62,8 @@ export default function SettingsForm() {
 		)
 	);
 
-	const conversionIDValue =
-		paxEnabled && paxConversionID ? paxConversionID : conversionID;
-
-	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
+	const conversionIDValue = paxConversionID || conversionID;
+	const isPaxView = paxConversionID || extCustomerID;
 
 	return (
 		<div className="googlesitekit-ads-settings-fields">

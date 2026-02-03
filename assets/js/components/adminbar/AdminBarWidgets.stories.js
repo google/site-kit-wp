@@ -35,6 +35,7 @@ import {
 } from './common-GA4-stories';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -98,6 +99,52 @@ AnalyticsInactiveNewCompleteActivation.args = {
 		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
 	},
+};
+
+export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
+WithSetupFlowRefreshSetUpAnalytics.storyName =
+	'Setup Flow Refresh - Set up Analytics CTA';
+WithSetupFlowRefreshSetUpAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		setupSearchConsoleMockReports( registry );
+	},
+};
+WithSetupFlowRefreshSetUpAnalytics.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
+WithSetupFlowRefreshCompleteSetup.storyName =
+	'Setup Flow Refresh - Complete Setup CTA';
+WithSetupFlowRefreshCompleteSetup.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		setupSearchConsoleMockReports( registry );
+	},
+};
+WithSetupFlowRefreshCompleteSetup.parameters = {
+	features: [ 'setupFlowRefresh' ],
 };
 
 export const Analytics4WidgetsLoading = Template.bind( {} );

@@ -25,7 +25,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
-use WP_User;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -416,13 +415,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
@@ -442,13 +441,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 			exit();
 		} catch ( Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
 		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-			wp_safe_redirect( $this->authorize_user_redirect_url() );
+			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
@@ -507,26 +506,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->owner_id->set( $current_user_id );
 		}
 
-		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
-
-		if ( $redirect_url ) {
-			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
-
-			if ( $url_query ) {
-				parse_str( $url_query, $query_args );
-			}
-
-			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
-
-			if ( false === $reauth && empty( $query_args['notification'] ) ) {
-				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
-			}
-			$this->user_options->delete( self::OPTION_REDIRECT_URL );
-			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
-		} else {
-			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
-		}
+		$redirect_url = $this->get_authorize_user_redirect_url();
 
 		// Store the redirect URL in transients using the authorization code hash as the key.
 		// This prevents duplicate setup attempts if the user clicks the setup CTA button multiple times,
@@ -653,7 +633,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 *
 	 * @since 1.77.0
 	 */
-	private function authorize_user_redirect_url() {
+	private function get_authorize_user_redirect_url_for_error() {
 		$error_redirect_url = $this->user_options->get( self::OPTION_ERROR_REDIRECT_URL );
 
 		if ( $error_redirect_url ) {
@@ -664,5 +644,40 @@ final class OAuth_Client extends OAuth_Client_Base {
 		return current_user_can( Permissions::VIEW_DASHBOARD )
 			? $this->context->admin_url( 'dashboard' )
 			: $this->context->admin_url( 'splash' );
+	}
+
+	/**
+	 * Return the URL to redirect the user to after authorization, including important query params.
+	 *
+	 * @since 1.170.0
+	 */
+	private function get_authorize_user_redirect_url() {
+		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
+
+		if ( $redirect_url ) {
+			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
+
+			if ( $url_query ) {
+				parse_str( $url_query, $query_args );
+			}
+
+			$reauth = isset( $query_args['reAuth'] ) && 'true' === $query_args['reAuth'];
+
+			if ( false === $reauth && empty( $query_args['notification'] ) ) {
+				$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
+			}
+
+			if ( $this->context->input()->filter( INPUT_GET, 'searchConsoleSetupSuccess' ) ) {
+				$redirect_url = add_query_arg( array( 'searchConsoleSetupSuccess' => 'true' ), $redirect_url );
+			}
+
+			$this->user_options->delete( self::OPTION_REDIRECT_URL );
+			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
+		} else {
+			// No redirect_url is set, use default page.
+			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+		}
+
+		return $redirect_url;
 	}
 }

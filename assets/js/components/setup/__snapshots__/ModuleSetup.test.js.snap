@@ -50,6 +50,138 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
               Exit setup
             </span>
           </button>
+          <div
+            class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+          >
+            <button
+              aria-controls="googlesitekit-help-menu"
+              aria-expanded="false"
+              aria-haspopup="menu"
+              aria-label="Help"
+              class="mdc-button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+              target="_self"
+              title="Help"
+            >
+              <svg />
+            </button>
+            <div
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto googlesitekit-help-menu"
+            >
+              <ul
+                aria-hidden="true"
+                aria-orientation="vertical"
+                class="mdc-list"
+                id="googlesitekit-help-menu"
+                role="menu"
+                tabindex="-1"
+              >
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Browse documentation (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://sitekit.withgoogle.com/documentation/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Browse documentation
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Get free support (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Get free support
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <button
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    role="menuitem"
+                    tabindex="-1"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Start a feature tour
+                    </span>
+                  </button>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Send feedback (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/reviews/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Send feedback
+                    </span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -219,6 +351,8 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
                               >
                                 <svg />
                               </span>
@@ -273,6 +407,8 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
                               >
                                 <svg />
                               </span>

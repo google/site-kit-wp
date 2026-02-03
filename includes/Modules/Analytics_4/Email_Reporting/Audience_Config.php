@@ -123,6 +123,31 @@ final class Audience_Config {
 	}
 
 	/**
+	 * Builds a map of audience resource name to display name.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Associative map of resource name => display name.
+	 */
+	public function get_available_audience_display_map() {
+		$available = $this->module_settings->get();
+		$available = is_array( $available ) ? $available : array();
+
+		$map = array();
+
+		foreach ( $available['availableAudiences'] ?? array() as $audience ) {
+			if ( empty( $audience['name'] ) ) {
+				continue;
+			}
+
+			$resource_name         = $audience['name'];
+			$map[ $resource_name ] = $audience['displayName'] ?? $resource_name;
+		}
+
+		return $map;
+	}
+
+	/**
 	 * Sanitizes a list of audience resource names.
 	 *
 	 * @since 1.167.0

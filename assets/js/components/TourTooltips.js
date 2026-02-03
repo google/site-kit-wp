@@ -37,18 +37,23 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
+import { isFeatureEnabled } from '@/js/features';
+
+const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
 	options: {
 		arrowColor: '#3c7251', // $c-content-primary
 		backgroundColor: '#3c7251', // $c-content-primary
-		overlayColor: 'rgba(0, 0, 0, 0.6)',
+		overlayColor: setupFlowRefreshEnabled
+			? 'rgba(0, 0, 0, 0.25)'
+			: 'rgba(0, 0, 0, 0.6)',
 		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000,
 	},
 	spotlight: {
-		border: '2px solid #3c7251', // $c-content-primary
+		border: setupFlowRefreshEnabled ? 'none' : '2px solid #3c7251', // $c-content-primary
 		backgroundColor: '#fff',
 	},
 };
@@ -89,12 +94,13 @@ export default function TourTooltips( {
 	steps,
 	tourID,
 	gaEventCategory,
+	isRepeatable,
 	callback,
 } ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
-	const { dismissTour } = useDispatch( CORE_USER );
+	const { dismissTour, receiveCurrentTour } = useDispatch( CORE_USER );
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
@@ -109,17 +115,31 @@ export default function TourTooltips( {
 		);
 	} );
 
+	function getStepClassName( index ) {
+		return `googlesitekit-showing-feature-tour--${ tourID }-${
+			steps[ index ].slug || index
+		}`;
+	}
+
 	function changeStep( index, action ) {
-		return setValue(
-			stepKey,
-			index + ( action === ACTIONS.PREV ? -1 : 1 )
-		);
+		const newStepIndex = index + ( action === ACTIONS.PREV ? -1 : 1 );
+
+		global.document.body.classList.remove( getStepClassName( index ) );
+
+		if ( steps[ newStepIndex ] ) {
+			global.document.body.classList.add(
+				getStepClassName( newStepIndex )
+			);
+		}
+
+		return setValue( stepKey, newStepIndex );
 	}
 
 	function startTour() {
 		global.document.body.classList.add(
 			'googlesitekit-showing-feature-tour',
-			`googlesitekit-showing-feature-tour--${ tourID }`
+			`googlesitekit-showing-feature-tour--${ tourID }`,
+			getStepClassName( stepIndex )
 		);
 		setValue( runKey, true );
 	}
@@ -129,8 +149,22 @@ export default function TourTooltips( {
 			'googlesitekit-showing-feature-tour',
 			`googlesitekit-showing-feature-tour--${ tourID }`
 		);
-		// Dismiss tour to avoid unwanted repeat viewing.
-		dismissTour( tourID );
+
+		// `stepIndex` may be out of bounds if the user has advanced beyond the last step.
+		if ( steps[ stepIndex ] ) {
+			global.document.body.classList.remove(
+				getStepClassName( stepIndex )
+			);
+		}
+
+		if ( isRepeatable ) {
+			setValue( runKey, false );
+			setValue( stepKey, null );
+			receiveCurrentTour( null );
+		} else {
+			// Dismiss tour to avoid unwanted repeat viewing.
+			dismissTour( tourID );
+		}
 	}
 
 	function trackAllTourEvents( {
@@ -233,7 +267,7 @@ export default function TourTooltips( {
 		}
 	}
 
-	// Start tour on initial render
+	// Start tour on initial render.
 	useMount( startTour );
 
 	const parsedSteps = steps.map( ( step ) => ( {
@@ -243,20 +277,33 @@ export default function TourTooltips( {
 		...step,
 	} ) );
 
+	// Customize floater props based on feature flag.
+	const customFloaterProps = setupFlowRefreshEnabled
+		? {
+				...floaterProps,
+				styles: {
+					...floaterProps.styles,
+					floater: {
+						filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
+					},
+				},
+		  }
+		: floaterProps;
+
 	return (
 		<Joyride
 			callback={ handleJoyrideCallback }
-			floaterProps={ floaterProps }
+			floaterProps={ customFloaterProps }
 			locale={ joyrideLocale }
 			run={ run }
 			stepIndex={ stepIndex }
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
+			showProgress={ ! setupFlowRefreshEnabled }
 			continuous
 			disableOverlayClose
 			disableScrolling
-			showProgress
 		/>
 	);
 }
@@ -267,5 +314,6 @@ TourTooltips.propTypes = {
 	tourID: PropTypes.string.isRequired,
 	gaEventCategory: PropTypes.oneOfType( [ PropTypes.string, PropTypes.func ] )
 		.isRequired,
+	isRepeatable: PropTypes.bool,
 	callback: PropTypes.func,
 };

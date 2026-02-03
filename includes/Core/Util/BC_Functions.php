@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Util;
 
 use BadMethodCallException;
-use WP_REST_Request;
 
 /**
  * Class for providing backwards compatible core functions, without polyfilling.
@@ -146,5 +145,21 @@ class BC_Functions {
 		}
 
 		return null;
+	}
+
+	/**
+	 * A fallback for the array_is_list function introduced in PHP 8.1.
+	 *
+	 * @since 1.171.0
+	 *
+	 * @param array $value The array to check.
+	 * @return bool True if the array is a list, false otherwise.
+	 */
+	protected static function array_is_list( array $value ) {
+		if ( array() === $value ) {
+			return true;
+		}
+
+		return array_keys( $value ) === range( 0, count( $value ) - 1 );
 	}
 }

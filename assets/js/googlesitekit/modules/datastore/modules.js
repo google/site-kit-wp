@@ -51,9 +51,10 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { listFormat } from '@/js/util';
 import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -75,6 +76,7 @@ const moduleDefaults = {
 	internal: false,
 	active: false,
 	connected: false,
+	disconnectedAt: null,
 	dependencies: [],
 	dependants: [],
 	order: 10,
@@ -84,6 +86,7 @@ const moduleDefaults = {
 	SettingsEditComponent: null,
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
+	SettingsStatusComponent: DefaultSettingsStatus,
 	SetupComponent: null,
 	onCompleteSetup: undefined,
 	checkRequirements: () => true,
@@ -336,6 +339,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsEditComponent]            Optional. React component to render the settings edit panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsViewComponent]            Optional. React component to render the settings view panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
+	 * @param {WPComponent}    [settings.SettingsStatusComponent]          Optional. React component to render the module status. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
 	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
@@ -361,6 +365,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SettingsSetupIncompleteComponent,
+				SettingsStatusComponent,
 				SetupComponent,
 				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
@@ -381,6 +386,7 @@ const baseActions = {
 				SettingsEditComponent,
 				SettingsViewComponent,
 				SettingsSetupIncompleteComponent,
+				SettingsStatusComponent,
 				SetupComponent,
 				overrideSetupSuccessNotification,
 				onCompleteSetup,
@@ -860,6 +866,8 @@ const baseResolvers = {
 	isModuleActive: waitForModules,
 
 	isModuleConnected: waitForModules,
+
+	isModuleDisconnected: waitForModules,
 };
 
 const baseSelectors = {
@@ -1170,6 +1178,41 @@ const baseSelectors = {
 			}
 
 			return module.active && module.connected;
+		}
+	),
+
+	/**
+	 * Checks whether a module is disconnected or not.
+	 *
+	 * Returns `undefined` if state is still loading or if no module with that slug exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|null|undefined)} True if the module was disconnected.
+	 * 									  `undefined` if state is still loading.
+	 * 									  `null` if said module doesn't exist.
+	 */
+	isModuleDisconnected: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
+
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `null` to signify the
+			// "not found" state.
+			if ( module === null ) {
+				return null;
+			}
+
+			return (
+				select( CORE_MODULES ).isModuleConnected( slug ) === false &&
+				module.disconnectedAt > 0
+			);
 		}
 	),
 

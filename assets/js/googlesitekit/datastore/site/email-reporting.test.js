@@ -22,6 +22,7 @@
 import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -32,6 +33,13 @@ describe( 'core/site Email Reporting', () => {
 
 	const emailReportingSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting'
+	);
+	const eligibleSubscribersEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-eligible-subscribers'
+	);
+
+	const emailReportingErrorsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-errors'
 	);
 
 	beforeAll( () => {
@@ -243,10 +251,14 @@ describe( 'core/site Email Reporting', () => {
 		} );
 
 		describe( 'isEmailReportingEnabled', () => {
-			it( 'returns false when settings are not loaded', () => {
+			it( 'returns undefined when settings are undefined', () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingSettings( {} );
+
 				expect(
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
-				).toBe( false );
+				).toBe( undefined );
 			} );
 
 			it( 'returns the enabled status when settings are loaded', () => {
@@ -274,72 +286,143 @@ describe( 'core/site Email Reporting', () => {
 			} );
 		} );
 
-		describe( 'getWasAnalytics4Connected', () => {
-			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
+		describe( 'getEligibleSubscribers', () => {
+			it( 'uses a resolver to fetch eligible subscribers', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				const response = [
 					{
-						body: { wasConnected: true },
-						status: 200,
-					}
-				);
+						id: 1,
+						displayName: 'Current User',
+						email: 'current@example.com',
+						role: 'administrator',
+						subscribed: true,
+					},
+					{
+						id: 2,
+						displayName: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+					},
+				];
 
-				const initialValue = registry
-					.select( CORE_SITE )
-					.getWasAnalytics4Connected();
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: response,
+					status: 200,
+				} );
 
-				expect( initialValue ).toBeUndefined();
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getWasAnalytics4Connected();
+				).getEligibleSubscribers();
 
-				const value = registry
-					.select( CORE_SITE )
-					.getWasAnalytics4Connected();
-
-				expect( value ).toBe( true );
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toEqual( [
+					{
+						id: 2,
+						name: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+					},
+				] );
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/
+					eligibleSubscribersEndpointRegExp
 				);
 			} );
 
-			it( 'returns undefined if the request fails', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/,
+			it( 'returns an empty array when only current user is returned', () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [
 					{
-						body: { error: 'something went wrong' },
-						status: 500,
-					}
-				);
+						id: 1,
+						displayName: 'Current User',
+						email: 'current@example.com',
+						role: 'administrator',
+						subscribed: true,
+					},
+				] );
 
-				const initialValue = registry
-					.select( CORE_SITE )
-					.getWasAnalytics4Connected();
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toEqual( [] );
+			} );
 
-				expect( initialValue ).toBeUndefined();
+			it( 'returns undefined if the request fails', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getWasAnalytics4Connected();
+				).getEligibleSubscribers();
 
-				const value = registry
-					.select( CORE_SITE )
-					.getWasAnalytics4Connected();
-
-				// Verify the value is still undefined after the selector is resolved.
-				expect( value ).toBeUndefined();
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
 
 				await waitForDefaultTimeouts();
 
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/core\/site\/data\/was-analytics-4-connected/
+					eligibleSubscribersEndpointRegExp
 				);
 
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getEmailReportingErrors', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const emailReportingErrors = {
+					errors: {
+						email_report_section_build_failed: [
+							'title must be a non-empty string',
+						],
+					},
+					error_data: [],
+				};
+
+				fetchMock.getOnce( emailReportingErrorsEndpointRegExp, {
+					body: emailReportingErrors,
+					status: 200,
+				} );
+
+				const initialErrors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( initialErrors ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEmailReportingErrors();
+
+				const errors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( errors ).toEqual( emailReportingErrors );
+
+				expect( fetchMock ).toHaveFetched(
+					emailReportingErrorsEndpointRegExp
+				);
 			} );
 		} );
 	} );

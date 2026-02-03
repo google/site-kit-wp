@@ -34,6 +34,8 @@ use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Core\Util\Sort;
 use Google\Site_Kit\Modules\Search_Console\Settings;
+use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalyticsBatch;
+use Google\Site_Kit\Modules\Search_Console\Datapoints\SearchAnalytics;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse as Google_Service_SearchConsole_SitesListResponse;
@@ -180,13 +182,36 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
-			'GET:searchanalytics' => array(
-				'service'   => 'searchconsole',
-				'shareable' => true,
+			'GET:matched-sites'          => array( 'service' => 'searchconsole' ),
+			'GET:searchanalytics'        => new SearchAnalytics(
+				array(
+					'service'        => 'searchconsole',
+					'shareable'      => true,
+					'prepare_args'   => function ( array $request_data ) {
+						return $this->prepare_search_analytics_request_args( $request_data );
+					},
+					'create_request' => function ( array $args ) {
+						return $this->create_search_analytics_data_request( $args );
+					},
+				)
 			),
-			'POST:site'           => array( 'service' => 'searchconsole' ),
-			'GET:sites'           => array( 'service' => 'searchconsole' ),
+			'POST:searchanalytics-batch' => new SearchAnalyticsBatch(
+				array(
+					'service'        => 'searchconsole',
+					'shareable'      => true,
+					'get_service'    => function () {
+						return $this->get_searchconsole_service();
+					},
+					'prepare_args'   => function ( array $request_data ) {
+						return $this->prepare_search_analytics_request_args( $request_data );
+					},
+					'create_request' => function ( array $args ) {
+						return $this->create_search_analytics_data_request( $args );
+					},
+				)
+			),
+			'POST:site'                  => array( 'service' => 'searchconsole' ),
+			'GET:sites'                  => array( 'service' => 'searchconsole' ),
 		);
 	}
 
@@ -204,32 +229,6 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				return $this->get_searchconsole_service()->sites->listSites();
-			case 'GET:searchanalytics':
-				$start_date = $data['startDate'];
-				$end_date   = $data['endDate'];
-				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					list ( $start_date, $end_date ) = Date::parse_date_range( 'last-28-days', 1, 1 );
-				}
-
-				$data_request = array(
-					'start_date' => $start_date,
-					'end_date'   => $end_date,
-				);
-
-				if ( ! empty( $data['url'] ) ) {
-					$data_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data['url'] );
-				}
-
-				if ( isset( $data['limit'] ) ) {
-					$data_request['row_limit'] = $data['limit'];
-				}
-
-				$dimensions = $this->parse_string_list( $data['dimensions'] );
-				if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
-					$data_request['dimensions'] = $dimensions;
-				}
-
-				return $this->create_search_analytics_data_request( $data_request );
 			case 'POST:site':
 				if ( empty( $data['siteURL'] ) ) {
 					return new WP_Error(
@@ -338,14 +337,53 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 						}
 					)
 				);
-			case 'GET:searchanalytics':
-				return $response->getRows();
 			case 'GET:sites':
 				/* @var Google_Service_SearchConsole_SitesListResponse $response Response object. */
 				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Prepares Search Console analytics request arguments from request data.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array $data_request Request data parameters.
+	 * @return array Parsed request arguments.
+	 */
+	protected function prepare_search_analytics_request_args( array $data_request ) {
+		$start_date = isset( $data_request['startDate'] ) ? $data_request['startDate'] : '';
+		$end_date   = isset( $data_request['endDate'] ) ? $data_request['endDate'] : '';
+
+		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+			list ( $start_date, $end_date ) = Date::parse_date_range( 'last-28-days', 1, 1 );
+		}
+
+		$parsed_request = array(
+			'start_date' => $start_date,
+			'end_date'   => $end_date,
+		);
+
+		if ( ! empty( $data_request['url'] ) ) {
+			$parsed_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data_request['url'] );
+		}
+
+		if ( isset( $data_request['rowLimit'] ) ) {
+			$parsed_request['row_limit'] = $data_request['rowLimit'];
+		}
+
+		if ( isset( $data_request['limit'] ) ) {
+			$parsed_request['row_limit'] = $data_request['limit'];
+		}
+
+		$dimensions = $this->parse_string_list( isset( $data_request['dimensions'] ) ? $data_request['dimensions'] : array() );
+		if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
+			$parsed_request['dimensions'] = $dimensions;
+		}
+
+		return $parsed_request;
 	}
 
 	/**

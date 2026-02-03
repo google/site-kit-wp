@@ -28,6 +28,36 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Set
 class Report_Options extends Base_Report_Options {
 
 	/**
+	 * Cached custom dimension availability flags.
+	 *
+	 * @since 1.170.0
+	 * @var array
+	 */
+	private $custom_dimension_availability = array();
+
+	/**
+	 * Conversion events.
+	 *
+	 * @since 1.170.0
+	 * @var array
+	 */
+	private $conversion_events = array();
+
+	/**
+	 * Whether audience segmentation is enabled.
+	 *
+	 * Null value means the 'audienceSegmentationSetupCompletedBy'
+	 * setting value will be used to determine whether Audience
+	 * Segmentation is enabled.
+	 *
+	 * See `is_audience_segmentation_enabled` method for more info.
+	 *
+	 * @since 1.170.0
+	 * @var bool|null
+	 */
+	private $audience_segmentation_enabled = null;
+
+	/**
 	 * Ecommerce conversion events.
 	 *
 	 * @since 1.167.0
@@ -69,6 +99,78 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Sets custom dimension availability map.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array $availability Availability map keyed by custom dimension slug.
+	 */
+	public function set_custom_dimension_availability( $availability ) {
+		$this->custom_dimension_availability = $availability;
+	}
+
+	/**
+	 * Sets conversion events.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array $events Conversion events.
+	 */
+	public function set_conversion_events( $events ) {
+		$this->conversion_events = $events;
+	}
+
+	/**
+	 * Sets audience segmentation flag.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param bool $enabled Whether audience segmentation is enabled.
+	 */
+	public function set_audience_segmentation_enabled( $enabled ) {
+		$this->audience_segmentation_enabled = (bool) $enabled;
+	}
+
+	/**
+	 * Gets conversion events.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Conversion events.
+	 */
+	public function get_conversion_events() {
+		return $this->conversion_events;
+	}
+
+	/**
+	 * Whether audience segmentation is enabled.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return bool
+	 */
+	public function is_audience_segmentation_enabled() {
+		if ( null !== $this->audience_segmentation_enabled ) {
+			return (bool) $this->audience_segmentation_enabled;
+		}
+
+		$settings = $this->audience_config->get_module_settings();
+		return ! empty( $settings['audienceSegmentationSetupCompletedBy'] );
+	}
+
+	/**
+	 * Whether custom dimension data is available.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param string $custom_dimension Custom dimension slug.
+	 * @return bool
+	 */
+	public function has_custom_dimension_data( $custom_dimension ) {
+		return ! empty( $this->custom_dimension_availability[ $custom_dimension ] );
+	}
+
+	/**
 	 * Gets report options for the total conversion events section.
 	 *
 	 * @since 1.167.0
@@ -84,7 +186,7 @@ class Report_Options extends Base_Report_Options {
 				'dimensionFilters' => array(
 					'eventName' => $this->ecommerce_events,
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);
@@ -113,7 +215,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 5,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			)
 		);
 	}
@@ -141,7 +243,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 5,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			)
 		);
 	}
@@ -214,7 +316,7 @@ class Report_Options extends Base_Report_Options {
 				'dimensionFilters' => array(
 					'audienceResourceName' => $audience_data['resource_names'],
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);
@@ -223,6 +325,18 @@ class Report_Options extends Base_Report_Options {
 			'options'   => $options,
 			'audiences' => $audience_data['audiences'],
 		);
+	}
+
+	/**
+	 * Gets resource names for Site Kit provided audiences (new/returning).
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array List of audience resource names.
+	 */
+	public function get_site_kit_audience_resource_names() {
+		$map = $this->audience_config->get_site_kit_audience_map();
+		return array_values( $map );
 	}
 
 	/**
@@ -248,7 +362,7 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 3,
-				'keepEmptyRows' => false,
+				'keepEmptyRows' => true,
 			),
 			true
 		);
@@ -268,6 +382,7 @@ class Report_Options extends Base_Report_Options {
 					array( 'name' => 'screenPageViews' ),
 				),
 				'dimensions'    => array(
+					array( 'name' => 'pageTitle' ),
 					array( 'name' => 'pagePath' ),
 				),
 				'orderby'       => array(
@@ -277,8 +392,9 @@ class Report_Options extends Base_Report_Options {
 					),
 				),
 				'limit'         => 3,
-				'keepEmptyRows' => false,
-			)
+				'keepEmptyRows' => true,
+			),
+			true
 		);
 	}
 
@@ -292,10 +408,10 @@ class Report_Options extends Base_Report_Options {
 	public function get_top_authors_options() {
 		return $this->with_current_range(
 			array(
-				'metrics'       => array(
+				'metrics'          => array(
 					array( 'name' => 'screenPageViews' ),
 				),
-				'dimensions'    => array(
+				'dimensions'       => array(
 					array(
 						'name' => sprintf(
 							'customEvent:%s',
@@ -303,15 +419,22 @@ class Report_Options extends Base_Report_Options {
 						),
 					),
 				),
-				'orderby'       => array(
+				'dimensionFilters' => array(
+					sprintf( 'customEvent:%s', Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR ) => array(
+						'filterType'    => 'emptyFilter',
+						'notExpression' => true,
+					),
+				),
+				'orderby'          => array(
 					array(
 						'metric' => array( 'metricName' => 'screenPageViews' ),
 						'desc'   => true,
 					),
 				),
-				'limit'         => 3,
-				'keepEmptyRows' => false,
-			)
+				'limit'            => 3,
+				'keepEmptyRows'    => true,
+			),
+			true
 		);
 	}
 
@@ -325,10 +448,10 @@ class Report_Options extends Base_Report_Options {
 	public function get_top_categories_options() {
 		return $this->with_current_range(
 			array(
-				'metrics'       => array(
+				'metrics'          => array(
 					array( 'name' => 'screenPageViews' ),
 				),
-				'dimensions'    => array(
+				'dimensions'       => array(
 					array(
 						'name' => sprintf(
 							'customEvent:%s',
@@ -336,15 +459,22 @@ class Report_Options extends Base_Report_Options {
 						),
 					),
 				),
-				'orderby'       => array(
+				'dimensionFilters' => array(
+					sprintf( 'customEvent:%s', Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES ) => array(
+						'filterType'    => 'emptyFilter',
+						'notExpression' => true,
+					),
+				),
+				'orderby'          => array(
 					array(
 						'metric' => array( 'metricName' => 'screenPageViews' ),
 						'desc'   => true,
 					),
 				),
-				'limit'         => 3,
-				'keepEmptyRows' => false,
-			)
+				'limit'            => 3,
+				'keepEmptyRows'    => true,
+			),
+			true
 		);
 	}
 
@@ -375,7 +505,7 @@ class Report_Options extends Base_Report_Options {
 							'value' => $resource_name,
 						),
 					),
-					'keepEmptyRows'    => false,
+					'keepEmptyRows'    => true,
 				),
 				true
 			);
@@ -394,7 +524,7 @@ class Report_Options extends Base_Report_Options {
 						'value' => $fallback_segment,
 					),
 				),
-				'keepEmptyRows'    => false,
+				'keepEmptyRows'    => true,
 			),
 			true
 		);

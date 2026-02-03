@@ -24,7 +24,11 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,11 +44,16 @@ import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
-} from '@/js/components/email-reporting/EmailReportingCardNotice';
-import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/AnalyticsDisconnectedNotice';
+	EMAIL_REPORTING_CARD_NOTICE,
+} from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
+import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotice';
 
 export default function SettingsEmailReporting( { loading = false } ) {
+	const viewContext = useViewContext();
+
 	const isEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
@@ -58,9 +67,11 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
+		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
+	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporiting' )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -69,13 +80,34 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handleToggle = useCallback( async () => {
+		if ( isEnabled ) {
+			trackEvent(
+				`${ viewContext }_email_reports_settings`,
+				'deactivate_periodic_email_reports'
+			);
+		} else {
+			trackEvent(
+				`${ viewContext }_email_reports_settings`,
+				'activate_periodic_email_reports'
+			);
+		}
+
 		await setEmailReportingEnabled( ! isEnabled );
 		await saveEmailReportingSettings();
-	}, [ isEnabled, setEmailReportingEnabled, saveEmailReportingSettings ] );
+	}, [
+		isEnabled,
+		setEmailReportingEnabled,
+		saveEmailReportingSettings,
+		viewContext,
+	] );
 
 	const handleManageClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'manage_email_reports_subscription'
+		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	}, [ setValue, viewContext ] );
 
 	if ( loading || settings === undefined ) {
 		return null;
@@ -105,9 +137,21 @@ export default function SettingsEmailReporting( { loading = false } ) {
 										size="medium"
 										className="googlesitekit-settings-email-reporting__label-description"
 									>
-										{ __(
-											'This allows you and any dashboard sharing user to subscribe to email reports',
-											'google-site-kit'
+										{ createInterpolateElement(
+											__(
+												'This allows you and any dashboard sharing user to subscribe to email reports. <a>Learn more</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
 										) }
 									</Typography>
 								</Fragment>
@@ -146,6 +190,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
+			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
 		</Fragment>
 	);

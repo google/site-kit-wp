@@ -62,6 +62,14 @@ class Email_Report_Data_Section_Part {
 	private $trends;
 
 	/**
+	 * Optional event_names matching values.
+	 *
+	 * @since 1.170.0
+	 * @var array|null
+	 */
+	private $event_names;
+
+	/**
 	 * Optional date range data.
 	 *
 	 * @since 1.167.0
@@ -76,6 +84,24 @@ class Email_Report_Data_Section_Part {
 	 * @var string|null
 	 */
 	private $dashboard_link;
+
+	/**
+	 * Dimension names.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @var array
+	 */
+	private $dimensions = array();
+
+	/**
+	 * Dimension values.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @var array
+	 */
+	private $dimension_values = array();
 
 	/**
 	 * Constructor.
@@ -100,8 +126,11 @@ class Email_Report_Data_Section_Part {
 		$this->set_labels( $section_data['labels'] ?? null );
 		$this->set_values( $section_data['values'] ?? null );
 		$this->set_trends( $section_data['trends'] ?? null );
+		$this->set_event_names( $section_data['event_names'] ?? null );
 		$this->set_date_range( $section_data['date_range'] ?? null );
 		$this->set_dashboard_link( $section_data['dashboard_link'] ?? null );
+		$this->set_dimensions( $section_data['dimensions'] ?? null );
+		$this->set_dimension_values( $section_data['dimension_values'] ?? null );
 
 		$this->section_key = $section_key;
 	}
@@ -162,6 +191,17 @@ class Email_Report_Data_Section_Part {
 	}
 
 	/**
+	 * Gets event names.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array|null Event names list or null.
+	 */
+	public function get_event_names() {
+		return $this->event_names;
+	}
+
+	/**
 	 * Gets date range.
 	 *
 	 * @since 1.167.0
@@ -181,6 +221,28 @@ class Email_Report_Data_Section_Part {
 	 */
 	public function get_dashboard_link() {
 		return $this->dashboard_link;
+	}
+
+	/**
+	 * Gets dimensions.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Dimensions list.
+	 */
+	public function get_dimensions() {
+		return $this->dimensions;
+	}
+
+	/**
+	 * Gets dimension values.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @return array Dimension values list.
+	 */
+	public function get_dimension_values() {
+		return $this->dimension_values;
 	}
 
 	/**
@@ -257,6 +319,28 @@ class Email_Report_Data_Section_Part {
 	}
 
 	/**
+	 * Validates and assigns event names.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array $event_names Event names.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_event_names( $event_names ) {
+		if ( null === $event_names ) {
+			$this->event_names = null;
+			return;
+		}
+
+		if ( ! is_array( $event_names ) ) {
+			throw new InvalidArgumentException( 'event_names must be an array or null' );
+		}
+
+		$this->event_names = $event_names;
+	}
+
+	/**
 	 * Validates and assigns date range.
 	 *
 	 * @since 1.167.0
@@ -319,6 +403,50 @@ class Email_Report_Data_Section_Part {
 		}
 
 		$this->dashboard_link = $dashboard_link;
+	}
+
+	/**
+	 * Sets dimensions.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array|null $dimensions Dimensions.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_dimensions( $dimensions ) {
+		if ( null === $dimensions ) {
+			$this->dimensions = array();
+			return;
+		}
+
+		if ( ! is_array( $dimensions ) ) {
+			throw new InvalidArgumentException( 'dimensions must be an array' );
+		}
+
+		$this->dimensions = $dimensions;
+	}
+
+	/**
+	 * Sets dimension values.
+	 *
+	 * @since 1.170.0
+	 *
+	 * @param array|null $dimension_values Dimension values.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_dimension_values( $dimension_values ) {
+		if ( null === $dimension_values ) {
+			$this->dimension_values = array();
+			return;
+		}
+
+		if ( ! is_array( $dimension_values ) ) {
+			throw new InvalidArgumentException( 'dimension_values must be an array' );
+		}
+
+		$this->dimension_values = $dimension_values;
 	}
 
 	/**

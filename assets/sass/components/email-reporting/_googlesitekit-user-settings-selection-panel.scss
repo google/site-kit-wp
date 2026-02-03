@@ -21,21 +21,20 @@
 	.googlesitekit-user-settings-selection-panel {
 		color: $c-surfaces-on-background-variant;
 
-		.googlesitekit-user-settings-selection__panel-content {
-			display: flex;
-			flex-direction: column;
-			padding: $grid-gap-phone;
-
-			@media (min-width: $bp-tablet) {
-				padding: $grid-gap-desktop;
+		.googlesitekit-selection-panel-header {
+			p {
+				color: $c-surfaces-on-background-variant;
 			}
 		}
 
-		.googlesitekit-selection-panel-header {
-			padding: 0 0 $grid-gap-phone + 3px;
+		.googlesitekit-user-settings-selection__panel-content {
+			display: flex;
+			flex-direction: column;
+			overflow: auto;
+			padding: 0  $grid-gap-phone $grid-gap-phone;
 
-			p {
-				color: $c-surfaces-on-background-variant;
+			@media (min-width: $bp-tablet) {
+				padding: 0 $grid-gap-desktop $grid-gap-desktop;
 			}
 		}
 
@@ -49,6 +48,7 @@
 
 		.googlesitekit-selection-panel-subscribe-actions {
 			display: flex;
+			gap: 10px;
 			justify-content: flex-end;
 			margin-top: 30px;
 
@@ -57,6 +57,16 @@
 					svg {
 						circle {
 							stroke: $c-surfaces-on-surface-variant;
+						}
+					}
+				}
+			}
+
+			.mdc-button--raised {
+				&.googlesitekit-button-icon--spinner__running {
+					svg {
+						circle {
+							stroke: $c-interactive-on-disable-container;
 						}
 					}
 				}

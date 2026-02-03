@@ -1,8 +1,8 @@
 [
-	"adsPax",
 	"googleTagGateway",
 	"gtagUserData",
 	"privacySandboxModule",
 	"proactiveUserEngagement",
+	"rrmPolicyViolations",
 	"setupFlowRefresh"
 ]

@@ -1,0 +1,650 @@
+description = "Implements a GitHub issue locally with automated review and iteration"
+
+prompt = """
+You are tasked with implementing GitHub issue #{{args}} from the google/site-kit-wp repository following a strict quality workflow.
+
+═══════════════════════════════════════════════════════════════════════════════
+CRITICAL INSTRUCTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+- You MUST ACTUALLY CREATE, MODIFY, and DELETE files in the current working directory
+- DO NOT just output proposed changes or describe what should be done
+- Use your developer tools to make ACTUAL file modifications
+- This is a LOCAL implementation - DO NOT create commits, pull requests, or push to remote
+- All changes remain local for the developer to review, test, and commit manually
+
+═══════════════════════════════════════════════════════════════════════════════
+WORKFLOW OVERVIEW
+═══════════════════════════════════════════════════════════════════════════════
+
+This is a multi-phase workflow with quality enforcement:
+1. Fetch GitHub Issue
+2. Reference Context Documentation
+3. Implement Changes
+4. Code Review (self-review with scoring)
+5. Iteration (up to 3 times if score < 0.85)
+6. Documentation (optional, for new architectural patterns)
+
+You will track your iteration count and exit gracefully if unable to reach a score of 0.85 after 3 iterations.
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 1: FETCH GITHUB ISSUE
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Retrieve the issue details and extract implementation instructions
+
+**Steps**:
+1. Use GitHub MCP tools to fetch issue #{{args}} from repository `google/site-kit-wp`
+   - If MCP tools are not available, use: !{gh issue view {{args}} --json title,body}
+
+2. Extract the "Acceptance criteria" section from the issue body
+   - This section typically appears between "## Acceptance criteria" and "## Implementation Brief"
+   - If the section markers are not present, stop execution and show an error
+
+3. Extract the "Implementation Brief" section from the issue body
+   - This section typically appears between "## Implementation Brief" and "## QA Brief"
+   - If the section markers are not present, stop execution and show an error
+
+**Error Handling**:
+- If the issue does not exist: STOP and report "ERROR: Issue #{{args}} not found in google/site-kit-wp"
+- If GitHub API is unavailable: STOP and report the error with suggestions
+- If the issue body is empty: STOP and report "ERROR: Issue #{{args}} has no description"
+- If "Acceptance criteria" markers are missing: STOP and report "ERROR: Acceptance criteria section markers not found"
+- If the "Implementation Brief" markers are missing: STOP and report "ERROR: Implementation Brief section markers not found"
+
+**Output**: Store the implementation instructions for use in subsequent phases
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 2: REFERENCE CONTEXT DOCUMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Understand the mandatory conventions and patterns for this codebase
+
+**Context Files Available**:
+All project context files are already loaded via .gemini/settings.json. You have access to:
+
+**JavaScript/React Context** (13 files in docs/context/js/):
+- component-conventions.md - Component structure and naming
+- module-architecture.md - Module organization patterns
+- state-management.md - State management with WordPress data stores
+- hooks.md - React hooks usage and custom hooks
+- tests.md - Testing conventions and patterns
+- jsdoc.md - Documentation standards
+- event-tracking.md - Analytics and event tracking
+- feature-flags.md - Feature flag implementation
+- feature-tours.md - User onboarding tours
+- notifications.md - Notification system patterns
+- widgets.md - Dashboard widget creation
+- storybook.md - Component story requirements
+- utils.md - Utility function conventions
+
+**PHP Context** (11 files in docs/context/php/):
+- module-architecture.md - PHP module patterns
+- settings-management.md - Settings API usage
+- dependency-injection.md - DI container patterns
+- context-pattern.md - Context object usage
+- admin-features.md - Admin interface patterns
+- rest-api.md - REST API conventions
+- asset-management.md - Asset registration
+- storage-patterns.md - Data storage patterns
+- prompts-and-dismissals.md - User prompt patterns
+- trait-composition.md - PHP trait usage
+- naming-conventions.md - PHP naming standards
+
+**Project Overview**:
+- AGENTS.md - High-level project architecture and development workflow
+
+**CRITICAL**: These files define MANDATORY conventions. Any deviation is considered a critical violation.
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 3: IMPLEMENTATION
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Implement the issue following documented principles
+
+Follow these implementation guidelines:
+
+1. **Understand the Task**
+   - Carefully read the Implementation Brief and Acceptance Criteria (AC) from Phase 1
+   - Note that the AC are the actual requirements that MUST be met
+   - Break down complex requirements into discrete steps
+   - Plan your implementation approach before writing code
+   - Identify all files that need to be created, modified, or deleted
+
+2. **Implement Following Strict Principles**
+   - Strictly follow ALL conventions from context documentation
+   - Study existing code patterns in similar features before implementing
+   - Use appropriate naming conventions from context docs
+   - Implement proper error handling and consider edge cases
+   - Ensure accessibility when implementing UI components
+   - Follow security best practices (avoid XSS, SQL injection, etc.)
+   - Use existing utilities and patterns rather than reinventing
+
+3. **Write Comprehensive Tests**
+   - **For JS**: Follow testing conventions from docs/context/js/tests.md
+   - **For PHP**: Follow PHPUnit patterns from docs/context/php/phpunit.md
+   - Write unit tests for ALL new functionality
+   - Include tests for edge cases and error scenarios
+   - Ensure tests are clear, maintainable, and follow existing patterns
+   - Mock external dependencies appropriately
+   - Aim for thorough test coverage of business logic
+
+4. **Document Your Code**
+   - **For JS**: Follow JSDoc conventions from docs/context/js/jsdoc.md
+   - **For PHP**: Follow PHPDoc conventions and WordPress documentation standards
+   - Document all exported functions, components, classes, and complex logic
+   - Include clear descriptions, parameter types, and return types
+   - Add inline comments for non-obvious logic
+   - Update README files if introducing new features
+
+5. **Consider Integration Points**
+
+   **For JavaScript/React**:
+   - **Event Tracking**: Use patterns from docs/context/js/event-tracking.md if user actions need tracking
+   - **Feature Flags**: Follow docs/context/js/feature-flags.md if feature should be toggleable
+   - **Feature Tours**: Follow docs/context/js/feature-tours.md for new UI features
+   - **Notifications**: Use docs/context/js/notifications.md for user notifications
+   - **State Management**: Follow docs/context/js/state-management.md for data stores
+   - **Widgets**: Follow docs/context/js/widgets.md for dashboard widgets
+
+   **For PHP**:
+   - **Module Architecture**: Follow docs/context/php/module-architecture.md for module structure
+   - **Settings**: Use docs/context/php/settings-management.md for settings API
+   - **REST API**: Follow docs/context/php/rest-api.md for REST endpoints
+   - **Dependency Injection**: Use docs/context/php/dependency-injection.md for DI patterns
+   - **Storage**: Follow docs/context/php/storage-patterns.md for data storage
+   - **Context Pattern**: Use docs/context/php/context-pattern.md for context objects
+   - **Asset Management**: Follow docs/context/php/asset-management.md for registering assets
+   - **Admin Features**: Use docs/context/php/admin-features.md for admin UI
+   - **Prompts**: Follow docs/context/php/prompts-and-dismissals.md for user prompts
+
+6. **Create Supporting Files**
+   - **For JS**: Add Storybook stories for UI components (docs/context/js/storybook.md)
+   - **For PHP**: Create appropriate test fixtures and mock data
+   - Create fixture data for tests if needed
+   - Update or create example usage if helpful
+
+7. **Verify Your Implementation**
+   Run these verification steps:
+
+   a. **Linting**:
+      - **For JS changes**: !{npm run lint:js}
+      - **For PHP changes**: !{composer run lint}
+      - Fix any linting errors immediately before proceeding
+      - Do not proceed with failing lints
+
+   b. **Tests**: Run tests to verify changes (MANDATORY - DO NOT SKIP)
+      - **For JS changes**: Run !{npm run test:js} to execute Jest tests
+      - **For PHP changes**: Run !{composer run test} to execute PHPUnit tests
+      - **CRITICAL**: You MUST actually execute these test commands and verify output
+      - **CRITICAL**: ALL tests must pass before proceeding - a passing test run is REQUIRED
+      - If tests fail, fix the issues and re-run tests until they pass
+      - Do NOT proceed to the next phase if tests are failing
+
+   c. **Build**: If you made significant changes, verify the build works
+      - Run !{npm run build:dev} if appropriate
+      - Fix any build errors
+
+8. **Provide Implementation Summary**
+   After completing implementation, provide a structured summary:
+
+   ```
+   IMPLEMENTATION SUMMARY
+   ======================
+   Files Created: [count]
+   - [file paths with brief description]
+
+   Files Modified: [count]
+   - [file paths with brief description of changes]
+
+   Files Deleted: [count]
+   - [file paths with reason for deletion]
+
+   Key Features Implemented:
+   - [feature 1 with brief description]
+   - [feature 2 with brief description]
+
+   Tests Added/Modified:
+   - [test file paths with coverage description]
+   - Edge cases covered: [list]
+
+   Context Compliance:
+   - [list of context conventions followed]
+   - [reference specific docs used]
+
+   Verification Results (MUST INCLUDE ACTUAL TEST OUTPUT):
+   - Linting: [pass/fail with details]
+   - JS Tests: [pass/fail - include output from: npm run test:js]
+   - PHP Tests: [pass/fail - include output from: composer run test]
+   - Build: [if applicable]
+
+   NOTE: Tests MUST have been executed. If tests were not run, go back and run them.
+   ```
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 4: CODE REVIEW
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Evaluate implementation quality and adherence to documented principles
+
+Follow these code review guidelines:
+
+1. **Verify Requirements Adherence (MANDATORY)**
+
+   Check compliance with the extracted "Acceptance criteria":
+   - ✓ Implementation fulfills all points in "Acceptance criteria"
+   - ✓ No required functionality is missing
+   - ✓ Behavioral requirements are met
+   - ✓ Edge cases defined in AC are handled
+
+2. **Verify Context Adherence (MANDATORY)**
+
+   Check strict compliance with documented principles. Review each relevant context file:
+
+   **For JavaScript/React changes**:
+   - ✓ Component structure follows component-conventions.md
+   - ✓ Module organization follows module-architecture.md
+   - ✓ State management follows state-management.md patterns
+   - ✓ Hooks usage follows hooks.md guidelines
+   - ✓ Tests follow tests.md conventions
+   - ✓ JSDoc follows jsdoc.md standards
+   - ✓ Event tracking follows event-tracking.md (if applicable)
+   - ✓ Feature flags follow feature-flags.md (if applicable)
+   - ✓ Tours follow feature-tours.md (if applicable)
+   - ✓ Notifications follow notifications.md (if applicable)
+   - ✓ Widgets follow widgets.md (if applicable)
+   - ✓ Storybook stories follow storybook.md (if UI components)
+   - ✓ Utils follow utils.md (if utility functions)
+
+   **For PHP changes**:
+   - ✓ Module structure follows php/module-architecture.md
+   - ✓ Settings follow php/settings-management.md
+   - ✓ DI follows php/dependency-injection.md
+   - ✓ Context usage follows php/context-pattern.md
+   - ✓ Admin features follow php/admin-features.md
+   - ✓ REST API follows php/rest-api.md
+   - ✓ Assets follow php/asset-management.md
+   - ✓ Storage follows php/storage-patterns.md
+   - ✓ Prompts follow php/prompts-and-dismissals.md
+   - ✓ Traits follow php/trait-composition.md
+   - ✓ Naming follows php/naming-conventions.md
+
+   **CRITICAL**: Document ANY violation found:
+   - Which principle was violated
+   - Which context file defines the violated principle (with section reference)
+   - How the code violates it (specific examples)
+   - What must be fixed to comply
+   - Which files are affected
+
+3. **Analyze Code Quality**
+
+   Review for general code quality issues:
+   - Code structure and organization
+   - Readability and maintainability
+   - Error handling and edge cases
+   - Security vulnerabilities (XSS, injection, auth bypass, etc.)
+   - Performance issues (unnecessary re-renders, N+1 queries, etc.)
+   - Test coverage and test quality
+   - Documentation completeness and clarity
+   - Accessibility compliance (WCAG standards)
+   - Browser/PHP version compatibility
+
+4. **Score the Implementation (0.0 to 1.0)**
+
+   Assign a score based on this rubric:
+
+   **0.0 - 0.5**: Poor quality OR contains requirements/principle violations
+   - Use this range if ANY "Acceptance criteria" are not met
+   - Use this range if ANY documented principles are violated
+   - Use this if critical security or functionality issues exist
+   - Use this if tests are missing or failing
+   - Use this if tests were NOT actually executed (npm run test:js / composer run test)
+
+   **0.5 - 0.84**: Below acceptable quality
+   - Code works but doesn't meet quality standards
+   - Multiple code quality issues present
+   - Tests exist but are incomplete
+   - Documentation is sparse or unclear
+
+   **0.85 - 0.94**: Good quality, production-ready
+   - Fulfills ALL requirements from "Acceptance criteria"
+   - Follows all documented principles
+   - Code is clean and maintainable
+   - Comprehensive tests with good coverage
+   - Tests were ACTUALLY EXECUTED and ALL passed (npm run test:js / composer run test)
+   - Well documented
+   - Minor improvements possible but not required
+
+   **0.95 - 1.0**: Excellent, exemplary code
+   - Exceeds quality standards
+   - Perfect adherence to all principles
+   - Exceptional test coverage
+   - Outstanding documentation
+   - Sets a positive example for future development
+
+5. **Provide Review Results**
+
+   Format your review as follows:
+
+   ```
+   CODE REVIEW RESULTS
+   ===================
+   Score: [0.0 - 1.0]
+   Status: [approved | needs_improvement]
+   Iteration: [current iteration number, 1-3]
+
+   REQUIREMENTS VIOLATIONS: [count]
+   
+   [If violations exist, list each:]
+   
+   Requirement Violation #[n]:
+   - AC Point: [which point from Acceptance criteria was violated]
+   - Details: [why the implementation does not meet this requirement]
+   - Fix Required: [what must be changed to implement the requirement]
+
+   CONTEXT VIOLATIONS: [count]
+
+   [If violations exist, list each:]
+
+   Violation #[n]:
+   - Principle: [what was violated]
+   - Context File: [docs/context/.../file.md - section name]
+   - Violation Details: [how code violates the principle]
+   - Fix Required: [specific steps to bring into compliance]
+   - Affected Files: [list of files]
+
+   QUALITY RECOMMENDATIONS: [count]
+
+   [List recommendations by priority:]
+
+   Recommendation #[n]:
+   - Category: [Security | Performance | Maintainability | Testing | Documentation | Accessibility]
+   - Priority: [critical | high | medium | low]
+   - Issue: [description of the issue]
+   - Suggestion: [specific actionable suggestion]
+   - Affected Files: [list of files]
+
+   STRENGTHS:
+   - [positive aspects of the implementation]
+   - [things done well]
+
+   FILES REVIEWED: [count]
+   - [list of all files reviewed]
+   ```
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 5: ITERATION (if score < 0.85)
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Fix issues until code reaches acceptable quality (score ≥ 0.85)
+
+**Iteration Rules**:
+- Maximum 3 iteration attempts
+- Track your current iteration number (1, 2, or 3)
+- Each iteration must address ALL requirements and context violations
+- After each iteration, return to Phase 4 for re-review
+
+**If score < 0.85, follow these steps**:
+
+**Iteration [1, 2, or 3]**:
+
+1. **Address ALL Requirements and Context Violations (MANDATORY)**
+   - Requirements and context violations are non-negotiable and must be fixed
+   - Follow the "Fix Required" instructions from the review
+   - Bring code into full compliance with requirements and documented principles
+   - Make ACTUAL file modifications to fix each violation
+
+2. **Address Critical and High Priority Recommendations**
+   - Fix security vulnerabilities immediately
+   - Address performance problems
+   - Improve code structure and maintainability
+   - Add missing tests or documentation
+
+3. **Re-run Verification (MANDATORY - DO NOT SKIP)**
+   - **Linting**:
+     - For JS: !{npm run lint:js}
+     - For PHP: !{composer run lint}
+   - **Tests** (MUST EXECUTE AND PASS):
+     - For JS: !{npm run test:js}
+     - For PHP: !{composer run test}
+   - **CRITICAL**: You MUST actually run these test commands and verify they pass
+   - **CRITICAL**: Do NOT proceed to Phase 4 re-review until ALL tests pass
+   - Ensure fixes don't break existing functionality
+
+4. **Return to Phase 4**
+   - Re-review your updated implementation
+   - Provide new score and updated review results
+   - Include iteration number in review
+
+5. **Check Score**
+   - If score ≥ 0.85: Proceed to Phase 6
+   - If score < 0.85 AND iteration < 3: Start next iteration
+   - If score < 0.85 AND iteration = 3: Execute graceful exit (below)
+
+**Graceful Exit** (if score < 0.85 after 3 iterations):
+
+If you cannot achieve a score of 0.85 after 3 iterations, exit with this summary:
+
+```
+IMPLEMENTATION INCOMPLETE - MANUAL INTERVENTION REQUIRED
+=========================================================
+
+Final Score: [score after 3rd iteration]
+Iterations Completed: 3
+Status: Needs manual review and fixes
+
+SUMMARY OF CHANGES MADE:
+All changes have been preserved in the working directory for your review.
+
+Files Created: [count]
+- [list with descriptions]
+
+Files Modified: [count]
+- [list with descriptions]
+
+Files Deleted: [count]
+- [list]
+
+REMAINING ISSUES:
+
+Context Violations Still Present: [count]
+[List each violation with fix instructions]
+
+Quality Issues Still Present: [count]
+[List critical and high priority issues]
+
+RECOMMENDATIONS FOR MANUAL FIXES:
+
+1. [Most important fix needed]
+   - Files: [list]
+   - Action: [specific steps]
+   - Reference: [context doc section]
+
+2. [Second most important fix]
+   - Files: [list]
+   - Action: [specific steps]
+
+[Continue for top 5 issues]
+
+WHAT WAS COMPLETED SUCCESSFULLY:
+- [aspects that meet quality standards]
+- [working features]
+
+FILES REQUIRING ATTENTION:
+Priority 1 (Critical): [files with violations]
+Priority 2 (Important): [files with quality issues]
+Priority 3 (Polish): [files with minor improvements]
+
+NEXT STEPS:
+1. Review the changes made in the working directory
+2. Address the remaining context violations (see above)
+3. Fix critical quality issues
+4. Re-run tests: npm test
+5. Re-run linting: npm run lint
+6. Consider manual code review with team
+```
+
+After providing this summary, STOP. Do not attempt further fixes.
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 6: DOCUMENTATION (optional - only if score ≥ 0.85)
+═══════════════════════════════════════════════════════════════════════════════
+
+**Objective**: Document new architectural patterns or significant concepts
+
+**When to create documentation**:
+- Only if you introduced NEW architectural patterns not covered in docs/context/
+- Only if you made significant design decisions worth documenting
+- Only if the implementation adds complex workflows or processes
+
+**Skip this phase if**:
+- You only implemented standard features using existing patterns
+- Everything follows documented conventions in docs/context/
+- No new architectural concepts were introduced
+
+**If documentation is needed**, follow these documentation guidelines:
+
+1. **Identify Documentation Needs**
+   - What new concepts were introduced?
+   - What architectural decisions were made?
+   - What complex patterns or workflows were created?
+
+2. **Create Developer Documentation**
+   - Location: docs/concepts/ directory
+   - Format: Markdown (.md files)
+   - Naming: Use descriptive kebab-case names (e.g., widget-lifecycle-management.md)
+
+3. **Documentation Structure**
+   Include these sections:
+   - **Overview**: What is this concept and why does it exist?
+   - **Core Principles**: Key architectural principles
+   - **How It Works**: Technical explanation of the pattern
+   - **Usage Examples**: Code examples showing how to use it
+   - **Best Practices**: Guidelines for working with this pattern
+   - **Common Pitfalls**: What to avoid
+   - **Related Concepts**: Links to related documentation
+
+4. **Documentation Style**
+   - Write for human developers, not AI agents
+   - Use clear, conversational language
+   - Include practical code examples
+   - Focus on WHY and HOW, not just WHAT
+   - Add diagrams if they help understanding (Mermaid or ASCII)
+
+5. **Example Documentation File:**
+   ```markdown
+   # [Concept Name]
+
+   ## Overview
+   Brief description of what this is and why it exists.
+
+   ## Core Principles
+   - Principle 1
+   - Principle 2
+
+   ## Architecture
+   How this concept fits into the system...
+
+   ## Usage Examples
+   ```javascript
+   // Example code
+   ```
+
+   ## Best Practices
+   - Practice 1
+   - Practice 2
+
+   ## Common Pitfalls
+   - Pitfall 1: Description and how to avoid
+
+   ## Related Concepts
+   - [Link to related doc]
+   ```
+
+6. **Update Existing Documentation (if needed)**
+   - If changes affect existing docs/concepts/ files, update them
+   - Mark deprecated information clearly
+   - Add new sections rather than replacing content
+
+═══════════════════════════════════════════════════════════════════════════════
+FINAL SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+After completing all phases (or exiting gracefully), provide a final summary:
+
+**If score ≥ 0.85 (Success)**:
+
+```
+IMPLEMENTATION COMPLETE ✓
+=========================
+
+Issue #{{args}}: [issue title]
+Final Score: [score]
+Status: Production-ready
+Iterations: [number of iterations needed]
+
+FILES CHANGED:
+
+Created ([count]):
+- [file path]: [brief description]
+
+Modified ([count]):
+- [file path]: [brief description of changes]
+
+Deleted ([count]):
+- [file path]: [reason]
+
+IMPLEMENTATION HIGHLIGHTS:
+- [key feature 1]
+- [key feature 2]
+- [notable technical decisions]
+
+QUALITY ASSURANCE:
+✓ All documented principles followed
+✓ Comprehensive tests added
+✓ Linting passed
+✓ Tests passed
+✓ Code reviewed and approved
+
+TEST COVERAGE:
+- [areas covered by tests]
+- [edge cases handled]
+
+DOCUMENTATION:
+- JSDoc added for all new functions/components
+- [Concept docs created if applicable]
+
+NEXT STEPS FOR DEVELOPER:
+1. Review the changes in your working directory
+2. Run the full test suite: npm test
+3. Run full linting: npm run lint
+4. Test manually in browser/environment
+5. Create a commit: git add . && git commit -m "Implement issue #{{args}}"
+6. Create a pull request if desired
+7. Request code review from team
+
+The implementation is ready for your review and testing!
+```
+
+**If score < 0.85 after 3 iterations (Graceful Exit)**:
+Use the "Graceful Exit" summary format from Phase 5.
+
+═══════════════════════════════════════════════════════════════════════════════
+IMPORTANT REMINDERS
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ ACTUALLY CREATE AND MODIFY FILES - do not just describe changes
+✓ DO NOT create commits or pull requests - keep all changes local
+✓ DO NOT proceed to next phase if previous phase failed critically
+✓ DO NOT accept score < 0.85 without trying to fix (up to 3 iterations)
+✓ DO read and follow ALL context documentation
+✓ DO fix ALL violations of documented principles
+✓ DO exit gracefully after 3 iterations if unable to reach 0.85
+✓ DO preserve all changes for human review
+✓ MUST RUN TESTS before completing implementation:
+  - JS: !{npm run test:js}
+  - PHP: !{composer run test}
+✓ DO NOT consider implementation complete until ALL tests pass
+
+Begin with Phase 1: Fetch GitHub Issue #{{args}}
+"""

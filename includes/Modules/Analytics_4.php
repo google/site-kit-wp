@@ -67,10 +67,6 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -86,12 +82,14 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Googl
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAudience;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -684,7 +682,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'GET:account-summaries'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                              => array( 'service' => 'analyticsadmin' ),
 			'GET:ads-links'                             => array( 'service' => 'analyticsadmin' ),
-			'GET:adsense-links'                         => array( 'service' => 'analyticsadsenselinks' ),
+			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
 			'GET:container-lookup'                      => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -751,9 +749,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
+			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsadmin-v1alpha' ),
 			'POST:enhanced-measurement-settings'        => array(
-				'service'                => 'analyticsenhancedmeasurement',
+				'service'                => 'analyticsadmin-v1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
@@ -775,7 +773,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
-				'service'                => 'analyticsaudiences',
+				'service'                => 'analyticsadmin-v1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			),
@@ -783,7 +781,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:sync-audiences'                       => array(
-				'service'   => 'analyticsaudiences',
+				'service'   => 'analyticsadmin-v1alpha',
 				'shareable' => true,
 			),
 			'GET:audience-settings'                     => array(
@@ -1189,7 +1187,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
-				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_adSenseLinks
+					->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1231,9 +1231,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-
-				return $analyticsadmin
+				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->create(
 						$property_id,
@@ -1394,10 +1392,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->getEnhancedMeasurementSettings( $name );
 			case 'POST:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -1458,12 +1454,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$post_body = new EnhancedMeasurementSettingsModel( $data['enhancedMeasurementSettings'] );
+				$post_body = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $data['enhancedMeasurementSettings'] );
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->updateEnhancedMeasurementSettings(
 						$name,
 						$post_body,
@@ -1603,10 +1597,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
 
-				return $analyticsadmin
+				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->listPropertiesAudiences( $property_id );
 			case 'POST:sync-custom-dimensions':
@@ -1942,6 +1935,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
+	 * Gets the configured Analytics Admin v1alpha service instance.
+	 *
+	 * @since 1.171.0
+	 *
+	 * @return GoogleAnalyticsAdminV1alpha
+	 */
+	protected function get_analyticsadminv1alpha_service(): GoogleAnalyticsAdminV1alpha {
+		return $this->get_service( 'analyticsadmin-v1alpha' );
+	}
+
+	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
 	 * @since 1.93.0
@@ -1950,39 +1954,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	protected function get_analyticsdata_service() {
 		return $this->get_service( 'analyticsdata' );
-	}
-
-	/**
-	 * Gets the configured Analytics Data service object instance.
-	 *
-	 * @since 1.110.0
-	 *
-	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
-	 */
-	protected function get_analyticsenhancedmeasurements_service() {
-		return $this->get_service( 'analyticsenhancedmeasurement' );
-	}
-
-	/**
-	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
-	 */
-	protected function get_analyticsadsenselinks_service() {
-		return $this->get_service( 'analyticsadsenselinks' );
-	}
-
-	/**
-	 * Gets the configured Analytics Data service object instance.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAudiencesService The Analytics Admin API service.
-	 */
-	protected function get_analyticsaudiences_service() {
-		return $this->get_service( 'analyticsaudiences' );
 	}
 
 	/**
@@ -2001,13 +1972,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$google_proxy = $this->authentication->get_google_proxy();
 
 		return array(
-			'analyticsadmin'               => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
-			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
-			'analyticsaudiences'           => new PropertiesAudiencesService( $client ),
-			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
-			'tagmanager'                   => new Google_Service_TagManager( $client ),
+			'analyticsadmin'         => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsadmin-v1alpha' => new GoogleAnalyticsAdminV1alpha( $client ),
+			'analyticsdata'          => new Google_Service_AnalyticsData( $client ),
+			'analyticsprovisioning'  => new AccountProvisioningService( $client, $google_proxy->url() ),
+			'tagmanager'             => new Google_Service_TagManager( $client ),
 		);
 	}
 

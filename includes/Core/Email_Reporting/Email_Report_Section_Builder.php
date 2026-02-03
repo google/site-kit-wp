@@ -11,6 +11,10 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Processor;
+use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Data_Builder as Search_Console_Report_Data_Builder;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Data_Builder as Analytics_Report_Data_Builder;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Data_Processor as Analytics_Report_Data_Processor;
 
 /**
  * Builder and helpers to construct Email_Report_Data_Section_Part instances for a single report section.
@@ -46,6 +50,38 @@ class Email_Report_Section_Builder {
 	protected $report_processor;
 
 	/**
+	 * Analytics report data builder.
+	 *
+	 * @since 1.170.0
+	 * @var Analytics_Report_Data_Builder
+	 */
+	protected $analytics_builder;
+
+	/**
+	 * Search Console report data builder.
+	 *
+	 * @since 1.170.0
+	 * @var Search_Console_Report_Data_Builder
+	 */
+	protected $search_console_builder;
+
+	/**
+	 * Search Console data processor.
+	 *
+	 * @since 1.170.0
+	 * @var Report_Data_Processor
+	 */
+	protected $search_console_processor;
+
+	/**
+	 * Current period length in days (for SC trend calculations).
+	 *
+	 * @since 1.170.0
+	 * @var int|null
+	 */
+	protected $current_period_length = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.167.0
@@ -54,15 +90,22 @@ class Email_Report_Section_Builder {
 	 * @param Email_Report_Payload_Processor|null $report_processor Optional. Report processor instance.
 	 */
 	public function __construct( Context $context, ?Email_Report_Payload_Processor $report_processor = null ) {
-		$this->context            = $context;
-		$this->report_processor   = $report_processor ?? new Email_Report_Payload_Processor();
-		$this->label_translations = array(
+		$this->context          = $context;
+		$this->report_processor = $report_processor ?? new Email_Report_Payload_Processor();
+
+		$this->analytics_builder        = new Analytics_Report_Data_Builder( $this->report_processor, new Analytics_Report_Data_Processor(), array(), $context );
+		$this->search_console_processor = new Report_Data_Processor();
+		$this->search_console_builder   = new Search_Console_Report_Data_Builder( $this->search_console_processor );
+		$this->label_translations       = array(
 			// Analytics 4.
-			'totalUsers'  => __( 'Total Visitors', 'google-site-kit' ),
-			'newUsers'    => __( 'New Visitors', 'google-site-kit' ),
+			'totalUsers'         => __( 'Total Visitors', 'google-site-kit' ),
+			'newUsers'           => __( 'New Visitors', 'google-site-kit' ),
+			'eventCount'         => __( 'Total conversion events', 'google-site-kit' ),
+			'addToCarts'         => __( 'Products added to cart', 'google-site-kit' ),
+			'ecommercePurchases' => __( 'Purchases', 'google-site-kit' ),
 			// Search Console.
-			'impressions' => __( 'Total impressions in Search', 'google-site-kit' ),
-			'clicks'      => __( 'Total clicks from Search', 'google-site-kit' ),
+			'impressions'        => __( 'Total impressions in Search', 'google-site-kit' ),
+			'clicks'             => __( 'Total clicks from Search', 'google-site-kit' ),
 		);
 	}
 
@@ -71,33 +114,41 @@ class Email_Report_Section_Builder {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param string   $module_slug Module slug (e.g. analytics-4) for the dashboard link only.
-	 * @param array    $raw_payloads Raw reports payloads.
+	 * @param string   $module_slug Module slug (e.g. analytics-4).
+	 * @param array    $raw_sections_payloads Raw reports payloads.
 	 * @param string   $user_locale  User locale (e.g. en_US).
 	 * @param \WP_Post $email_log   Optional. Email log post instance containing date metadata.
 	 * @return Email_Report_Data_Section_Part[] Section parts for the provided module.
 	 * @throws \Exception If an error occurs while building sections.
 	 */
-	public function build_sections( $module_slug, $raw_payloads, $user_locale, $email_log = null ) {
-		$sections        = array();
-		$switched_locale = switch_to_locale( $user_locale );
-		$log_date_range  = Email_Log::get_date_range_from_log( $email_log );
+	public function build_sections( $module_slug, $raw_sections_payloads, $user_locale, $email_log = null ) {
+		if ( is_object( $raw_sections_payloads ) ) {
+			$raw_sections_payloads = (array) $raw_sections_payloads;
+		}
+
+		$sections                    = array();
+		$switched_locale             = switch_to_locale( $user_locale );
+		$log_date_range              = Email_Log::get_date_range_from_log( $email_log );
+		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
 		try {
-			foreach ( $this->extract_sections_from_payloads( $raw_payloads ) as $section_payload ) {
-				list( $labels, $values, $trends ) = $this->normalize_section_payload_components( $section_payload );
+			foreach ( $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) as $section_payload ) {
+				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
 
 				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
 				$section = new Email_Report_Data_Section_Part(
 					$section_payload['section_key'] ?? 'section',
 					array(
-						'title'          => $section_payload['title'] ?? '',
-						'labels'         => $labels,
-						'values'         => $values,
-						'trends'         => $trends,
-						'date_range'     => $date_range,
-						'dashboard_link' => $this->format_dashboard_link( $module_slug ),
+						'title'            => $section_payload['title'] ?? '',
+						'labels'           => $labels,
+						'event_names'      => $event_names,
+						'values'           => $values,
+						'trends'           => $trends,
+						'dimensions'       => $section_payload['dimensions'] ?? array(),
+						'dimension_values' => $section_payload['dimension_values'] ?? array(),
+						'date_range'       => $date_range,
+						'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
 					)
 				);
 
@@ -115,6 +166,8 @@ class Email_Report_Section_Builder {
 			// Re-throw exception to the caller to prevent this email from being sent.
 			throw $exception;
 		}
+
+		$this->current_period_length = null;
 
 		return $sections;
 	}
@@ -187,8 +240,9 @@ class Email_Report_Section_Builder {
 		$values      = $this->normalize_values( $section_payload['values'] ?? array(), $value_types );
 		$trends_data = $section_payload['trends'] ?? null;
 		$trends      = null !== $trends_data ? $this->normalize_trends( $trends_data ) : null;
+		$event_names = $section_payload['event_names'] ?? array();
 
-		return array( $labels, $values, $trends );
+		return array( $labels, $values, $trends, $event_names );
 	}
 
 	/**
@@ -283,13 +337,18 @@ class Email_Report_Section_Builder {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param array $raw_payloads Raw payloads.
+	 * @param string $module_slug Module slug.
+	 * @param array  $raw_sections_payloads Raw section payloads.
 	 * @return array[] Structured section payloads.
 	 */
-	protected function extract_sections_from_payloads( $raw_payloads ) {
+	protected function extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) {
 		$sections = array();
 
-		foreach ( $raw_payloads as $payload_group ) {
+		foreach ( $raw_sections_payloads as $payload_group ) {
+			if ( is_object( $payload_group ) ) {
+				$payload_group = (array) $payload_group;
+			}
+
 			if ( ! is_array( $payload_group ) ) {
 				continue;
 			}
@@ -297,23 +356,19 @@ class Email_Report_Section_Builder {
 			$group_title_value = $payload_group['title'] ?? null;
 			$group_title       = null !== $group_title_value ? $group_title_value : null;
 
-			foreach ( $payload_group as $module_key => $module_payload ) {
-				if ( 'title' === $module_key ) {
-					continue;
-				}
+			if ( isset( $payload_group['title'] ) ) {
+				unset( $payload_group['title'] );
+			}
 
-				if ( ! is_array( $module_payload ) ) {
-					continue;
-				}
+			$module_sections = $this->build_module_section_payloads( $module_slug, $payload_group );
 
-				foreach ( $this->build_module_section_payloads( $module_key, $module_payload ) as $section ) {
-					if ( $group_title ) {
-						$section['title'] = $group_title;
-					} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
-						$section['title'] = $section['section_key'];
-					}
-					$sections[] = $section;
+			foreach ( $module_sections as $section ) {
+				if ( $group_title ) {
+					$section['title'] = $group_title;
+				} elseif ( empty( $section['title'] ) && isset( $section['section_key'] ) ) {
+					$section['title'] = $section['section_key'];
 				}
+				$sections[] = $section;
 			}
 		}
 
@@ -333,280 +388,38 @@ class Email_Report_Section_Builder {
 		switch ( $module_key ) {
 			case 'analytics-4':
 			case 'adsense':
-				return $this->build_sections_from_analytics_module( $module_payload );
+				return $this->analytics_builder->build_sections_from_module_payload( $module_payload );
 			case 'search-console':
-				return $this->build_sections_from_search_console_module( $module_payload );
+				return $this->search_console_builder->build_sections_from_module_payload( $module_payload, $this->current_period_length );
 			default:
 				return array();
 		}
 	}
-
 	/**
-	 * Builds section payloads from Analytics module data.
+	 * Calculates current period length in days from a date range array.
 	 *
-	 * @since 1.167.0
+	 * @since 1.170.0
 	 *
-	 * @param array $module_payload Module payload keyed by section slug.
-	 * @return array Section payloads.
+	 * @param array|null $date_range Date range containing startDate and endDate.
+	 * @return int|null Current-period length in days (inclusive) or null when unavailable.
 	 */
-	protected function build_sections_from_analytics_module( $module_payload ) {
-		$sections                = array();
-		$module_report_configs   = isset( $module_payload['report_configs'] ) && is_array( $module_payload['report_configs'] ) ? $module_payload['report_configs'] : array();
-		$module_payload_filtered = $module_payload;
-
-		unset( $module_payload_filtered['report_configs'] );
-
-		foreach ( $module_payload_filtered as $section_key => $section_data ) {
-			list( $reports, $section_report_configs ) = $this->normalize_analytics_section_input( $section_data );
-			if ( empty( $reports ) ) {
-				continue;
-			}
-
-			$report_configs = ! empty( $section_report_configs ) ? $section_report_configs : $module_report_configs;
-			$processed      = $this->build_section_payloads_from_processed_reports(
-				$this->report_processor->process_batch_reports( $reports, $report_configs )
-			);
-
-			foreach ( $processed as $payload ) {
-				$payload_section_key = $payload['section_key'] ?? '';
-				if ( '' === $payload_section_key || 0 === strpos( $payload_section_key, 'report_' ) ) {
-					$payload['section_key'] = $section_key;
-				}
-				if ( empty( $payload['title'] ) ) {
-					$payload['title'] = '';
-				}
-				$sections[] = $payload;
-			}
-		}
-
-		return $sections;
-	}
-
-	/**
-	 * Builds section payloads from Search Console module data.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param array $module_payload Module payload keyed by section slug.
-	 * @return array Section payloads.
-	 */
-	protected function build_sections_from_search_console_module( $module_payload ) {
-		$sections = array();
-
-		foreach ( $module_payload as $section_key => $section_data ) {
-			$rows = $this->normalize_search_console_rows( $section_data );
-			if ( empty( $rows ) ) {
-				continue;
-			}
-
-			$section = $this->build_section_payload_from_search_console( $rows, $section_key );
-			if ( $section ) {
-				$sections[] = $section;
-			}
-		}
-
-		return $sections;
-	}
-
-	/**
-	 * Normalizes analytics section input into reports and report configs.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param mixed $section_data Section payload.
-	 * @return array Normalized analytics section input.
-	 */
-	protected function normalize_analytics_section_input( $section_data ) {
-		$reports        = array();
-		$report_configs = array();
-
-		if ( ! is_array( $section_data ) ) {
-			return array( $reports, $report_configs );
-		}
-
-		if ( isset( $section_data['report_configs'] ) ) {
-			$report_configs = is_array( $section_data['report_configs'] ) ? $section_data['report_configs'] : array();
-			unset( $section_data['report_configs'] );
-		}
-
-		if ( $this->is_sequential_array( $section_data ) ) {
-			foreach ( $section_data as $item ) {
-				if ( is_array( $item ) ) {
-					$reports[] = $item;
-				}
-			}
-		} else {
-			foreach ( $section_data as $value ) {
-				if ( is_array( $value ) ) {
-					$reports[] = $value;
-				}
-			}
-		}
-
-		return array( $reports, $report_configs );
-	}
-
-	/**
-	 * Normalizes Search Console rows to an indexed array of row arrays.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param mixed $section_data Section payload.
-	 * @return array Normalized Search Console rows.
-	 */
-	protected function normalize_search_console_rows( $section_data ) {
-		if ( ! is_array( $section_data ) ) {
-			return array();
-		}
-
-		if ( $this->is_sequential_array( $section_data ) ) {
-			$rows = array();
-			foreach ( $section_data as $row ) {
-				if ( is_array( $row ) ) {
-					$rows[] = $row;
-				}
-			}
-			return $rows;
-		}
-
-		return array( $section_data );
-	}
-
-	/**
-	 * Determines whether an array uses sequential integer keys starting at zero.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param array $data Array to test.
-	 * @return bool Whether the array uses sequential integer keys starting at zero.
-	 */
-	protected function is_sequential_array( $data ) {
-		if ( empty( $data ) ) {
-			return true;
-		}
-
-		return array_keys( $data ) === range( 0, count( $data ) - 1 );
-	}
-
-	/**
-	 * Builds section payloads from processed GA4 reports.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param array $processed_reports Processed report data keyed by ID.
-	 * @return array Section payloads.
-	 */
-	protected function build_section_payloads_from_processed_reports( $processed_reports ) {
-		$sections = array();
-
-		foreach ( $processed_reports as $report_id => $report ) {
-			if ( empty( $report ) || empty( $report['metadata']['metrics'] ) ) {
-				continue;
-			}
-
-			$metrics      = $report['metadata']['metrics'];
-			$labels       = array();
-			$value_types  = array();
-			$metric_names = array();
-
-			foreach ( $metrics as $metric_meta ) {
-				$metric_name    = $metric_meta['name'];
-				$metric_names[] = $metric_name;
-				$labels[]       = $metric_meta['name'];
-				$value_types[]  = $metric_meta['type'] ?? 'TYPE_STANDARD';
-			}
-
-			list( $values, $trends ) = $this->report_processor->compute_metric_values_and_trends( $report, $metric_names );
-
-			$sections[] = array(
-				'section_key' => $report_id,
-				'title'       => $report['metadata']['title'] ?? '',
-				'labels'      => $labels,
-				'values'      => $values,
-				'value_types' => $value_types,
-				'trends'      => $trends,
-				'trend_types' => $value_types,
-				'date_range'  => null,
-			);
-		}
-
-		return $sections;
-	}
-
-	/**
-	 * Builds a section payload from Search Console report data.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @param array  $search_console_data Search Console report rows.
-	 * @param string $section_key         Section key identifier.
-	 * @return array|null Section payload array, or null if data is invalid.
-	 */
-	protected function build_section_payload_from_search_console( $search_console_data, $section_key ) {
-		if ( empty( $search_console_data ) ) {
+	protected function calculate_period_length_from_date_range( $date_range ) {
+		if ( empty( $date_range['startDate'] ) || empty( $date_range['endDate'] ) ) {
 			return null;
 		}
 
-		$labels        = array();
-		$values_by_key = array();
-		$value_types   = array();
-		$title         = '';
-
-		foreach ( $search_console_data as $row ) {
-			if ( ! is_array( $row ) ) {
-				continue;
-			}
-
-			if ( '' === $title && isset( $row['title'] ) && is_string( $row['title'] ) ) {
-				$title = trim( $row['title'] );
-			}
-
-			foreach ( $row as $key => $value ) {
-				if ( ! is_string( $key ) || '' === $key ) {
-					continue;
-				}
-				if ( 'title' === $key ) {
-					continue;
-				}
-
-				if ( is_array( $value ) || is_object( $value ) ) {
-					continue;
-				}
-
-				$raw_value = is_string( $value ) ? trim( $value ) : $value;
-				if ( '' === $raw_value ) {
-					continue;
-				}
-				if ( ! is_numeric( $raw_value ) ) {
-					continue;
-				}
-				if ( array_key_exists( $key, $values_by_key ) ) {
-					continue;
-				}
-
-				$labels[]              = $key;
-				$values_by_key[ $key ] = $raw_value;
-				$value_types[]         = 'TYPE_STANDARD';
-			}
-		}
-
-		if ( empty( $labels ) ) {
+		try {
+			$start = new \DateTime( $date_range['startDate'] );
+			$end   = new \DateTime( $date_range['endDate'] );
+		} catch ( \Exception $e ) {
 			return null;
 		}
 
-		$values = array();
-		foreach ( $labels as $key ) {
-			$values[] = (string) $values_by_key[ $key ];
+		$diff = $start->diff( $end );
+		if ( false === $diff ) {
+			return null;
 		}
 
-		return array(
-			'section_key' => $section_key,
-			'title'       => $title,
-			'labels'      => $labels,
-			'values'      => $values,
-			'value_types' => $value_types,
-			'trends'      => null,
-			'date_range'  => null,
-		);
+		return (int) $diff->days + 1;
 	}
 }

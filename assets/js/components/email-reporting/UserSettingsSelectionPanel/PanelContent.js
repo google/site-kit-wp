@@ -32,12 +32,14 @@ import { Fragment } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Header from './Header';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
+import Notices from './Notices';
 
 export default function PanelContent( {
 	notice,
@@ -51,40 +53,53 @@ export default function PanelContent( {
 } ) {
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
 	const email = user?.wpEmail;
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
 
 	return (
 		<Fragment>
+			<Header closePanel={ closePanel } />
 			<div className="googlesitekit-user-settings-selection__panel-content">
-				<Header closePanel={ closePanel } />
+				<Notices />
 
-				<div className="googlesitekit-user-settings-selection__panel-description">
-					<P type="body" size="small">
-						{ __(
-							'You’ll receive the report to your WordPress user email',
-							'google-site-kit'
-						) }
-						{ email && (
-							<Typography type="body" size="medium">
-								{ email }
-							</Typography>
-						) }
-					</P>
-				</div>
+				{ isEmailReportingEnabled && (
+					<Fragment>
+						<div className="googlesitekit-user-settings-selection__panel-description">
+							<P type="body" size="small">
+								{ __(
+									'You’ll receive the report to your WordPress user email',
+									'google-site-kit'
+								) }
+								{ email && (
+									<Typography type="body" size="medium">
+										{ email }
+									</Typography>
+								) }
+							</P>
+						</div>
 
-				<FrequencySelector isUserSubscribed={ isUserSubscribed } />
+						<FrequencySelector
+							isUserSubscribed={ isUserSubscribed }
+						/>
 
-				<SubscribeActions
-					onSubscribe={ onSubscribe }
-					onUnsubscribe={ onUnsubscribe }
-					updateSettings={ onSaveCallback }
-					isSubscribed={ isUserSubscribed }
-					isLoading={ isSavingSettings }
-				/>
+						<SubscribeActions
+							onSubscribe={ onSubscribe }
+							onUnsubscribe={ onUnsubscribe }
+							updateSettings={ onSaveCallback }
+							isSubscribed={ isUserSubscribed }
+							isLoading={ isSavingSettings }
+						/>
+					</Fragment>
+				) }
 			</div>
-			<SelectionPanelFooter
-				notice={ notice }
-				onNoticeDismiss={ onNoticeDismiss }
-			/>
+
+			{ isEmailReportingEnabled && (
+				<SelectionPanelFooter
+					notice={ notice }
+					onNoticeDismiss={ onNoticeDismiss }
+				/>
+			) }
 		</Fragment>
 	);
 }

@@ -30,14 +30,18 @@ import {
 	createReducer,
 	commonActions,
 	combineStores,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const baseInitialState = {
 	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
+		eligibleSubscribers: undefined,
+		errors: undefined,
 	},
 };
 
@@ -77,14 +81,24 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 	},
 } );
 
-const fetchGetWasAnalytics4Connected = createFetchStore( {
-	baseName: 'getWasAnalytics4Connected',
-	controlCallback: () => {
-		return get( 'core', 'site', 'was-analytics-4-connected' );
-	},
-	reducerCallback: createReducer( ( state, wasAnalytics4Connected ) => {
-		state.emailReporting.wasAnalytics4Connected = wasAnalytics4Connected;
+const fetchGetEligibleSubscribersStore = createFetchStore( {
+	baseName: 'getEligibleSubscribers',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
+		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
 	} ),
+} );
+
+const fetchGetEmailReportingErrorsStore = createFetchStore( {
+	baseName: 'getEmailReportingErrors',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-errors', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: ( state, errors ) => {
+		state.emailReporting.errors = errors || {};
+	},
 } );
 
 // Actions
@@ -160,15 +174,24 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
-	*getWasAnalytics4Connected() {
+	*getEligibleSubscribers() {
 		const registry = yield commonActions.getRegistry();
 
-		const wasAnalytics4Connected = registry
+		const eligibleSubscribers = registry
 			.select( CORE_SITE )
-			.getWasAnalytics4Connected();
+			.getEligibleSubscribers();
 
-		if ( wasAnalytics4Connected === undefined ) {
-			yield fetchGetWasAnalytics4Connected.actions.fetchGetWasAnalytics4Connected();
+		if ( eligibleSubscribers === undefined ) {
+			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
+		}
+	},
+	*getEmailReportingErrors() {
+		const registry = yield commonActions.getRegistry();
+
+		const errors = registry.select( CORE_SITE ).getEmailReportingErrors();
+
+		if ( errors === undefined ) {
+			yield fetchGetEmailReportingErrorsStore.actions.fetchGetEmailReportingErrors();
 		}
 	},
 };
@@ -192,30 +215,67 @@ const baseSelectors = {
 	 * @since 1.165.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE.
+	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE; `undefined` if not loaded.
 	 */
-	isEmailReportingEnabled( state ) {
-		const settings = state.emailReporting?.settings;
-		return !! settings?.enabled;
-	},
+	isEmailReportingEnabled: createRegistrySelector( ( select ) => () => {
+		const { enabled } =
+			select( CORE_SITE ).getEmailReportingSettings() || {};
+
+		return enabled;
+	} ),
 
 	/**
-	 * Gets whether Analytics 4 was ever connected.
+	 * Gets eligible subscribers for email report invitations.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} TRUE if Analytics 4 was connected, FALSE if not, or `undefined` if not loaded yet.
+	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
 	 */
-	getWasAnalytics4Connected( state ) {
-		return state.emailReporting?.wasAnalytics4Connected?.wasConnected;
+	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
+		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
+		const currentUserID = select( CORE_USER ).getID();
+
+		if (
+			eligibleSubscribers === undefined ||
+			currentUserID === undefined
+		) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( eligibleSubscribers ) ) {
+			return [];
+		}
+
+		return eligibleSubscribers
+			.filter( ( user ) => user.id !== currentUserID )
+			.map( ( user ) => ( {
+				id: user.id,
+				name: user.displayName || user.name,
+				email: user.email,
+				role: user.role,
+				subscribed: user.subscribed,
+			} ) );
+	} ),
+
+	/**
+	 * Gets the email reporting errors.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
+	 */
+	getEmailReportingErrors( state ) {
+		return state.emailReporting?.errors;
 	},
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
-	fetchGetWasAnalytics4Connected,
+	fetchGetEligibleSubscribersStore,
+	fetchGetEmailReportingErrorsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

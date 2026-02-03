@@ -14,6 +14,10 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
+use WC_Countries;
+use WC_Order;
+use WC_Order_Item_Product;
+use WC_Product;
 
 /**
  * Class for handling WooCommerce conversion events.
@@ -27,9 +31,9 @@ class WooCommerce extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'woocommerce';
 
 	/**
-	 * Avaialble products on the page.
+	 * Available products on the page.
 	 *
-	 * @var Array
+	 * @var array
 	 *
 	 * @since 1.153.0
 	 */
@@ -91,10 +95,9 @@ class WooCommerce extends Conversion_Events_Provider {
 			return array();
 		}
 
-		$settings    = get_option( 'woocommerce_google_analytics_settings' );
-		$event_names = array();
+		$settings = get_option( 'woocommerce_google_analytics_settings' );
 
-		// If only product identifier is availabe in the saved settings, it means default options are used.
+		// If only product identifier is available in the saved settings, it means default options are used.
 		// And by default all events are tracked.
 		if ( isset( $settings['ga_product_identifier'] ) && count( $settings ) === 1 ) {
 			return array(
@@ -195,7 +198,7 @@ class WooCommerce extends Conversion_Events_Provider {
 			function ( $button, $product ) {
 				// If the product is not a valid WC_Product instance, return
 				// early.
-				if ( false === $product instanceof \WC_Product ) {
+				if ( ! $product instanceof WC_Product ) {
 					return $button;
 				}
 
@@ -210,8 +213,14 @@ class WooCommerce extends Conversion_Events_Provider {
 		add_action(
 			'woocommerce_add_to_cart',
 			function ( $cart_item_key, $product_id, $quantity, $variation_id, $variation ) {
+				$product = wc_get_product( $product_id );
+
+				if ( ! $product instanceof WC_Product ) {
+					return;
+				}
+
 				$this->add_to_cart = $this->get_formatted_product(
-					wc_get_product( $product_id ),
+					$product,
 					$variation_id,
 					$variation,
 					$quantity
@@ -334,7 +343,7 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since 1.153.0
 	 *
-	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
+	 * @param WC_Order $order An instance of the WooCommerce Order object.
 	 *
 	 * @return array
 	 */
@@ -350,9 +359,11 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 			'items'       => array_map(
 				function ( $item ) {
-					// If the product is not a valid WC_Product instance, return
-					// early.
-					if ( $item->get_product() instanceof \WC_Product === false ) {
+					// If the product is not a valid WC_Product instance, return early.
+					if (
+						! $item instanceof WC_Order_Item_Product
+						|| ! $item->get_product() instanceof WC_Product
+					) {
 						return $item;
 					}
 
@@ -370,7 +381,7 @@ class WooCommerce extends Conversion_Events_Provider {
 			),
 		);
 
-		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+		if ( Feature_Flags::enabled( 'gtagUserData' ) && $order instanceof WC_Order ) {
 			$user_data = $this->extract_user_data_from_order( $order );
 			if ( ! empty( $user_data ) ) {
 				$order_data['user_data'] = $user_data;
@@ -385,11 +396,11 @@ class WooCommerce extends Conversion_Events_Provider {
 	 *
 	 * @since 1.161.0
 	 *
-	 * @param WC_Abstract_Order $order An instance of the WooCommerce Order object.
+	 * @param WC_Order $order An instance of the WooCommerce Order object.
 	 *
 	 * @return array Normalized user data or empty array if no supported fields are available.
 	 */
-	protected function extract_user_data_from_order( $order ) {
+	protected function extract_user_data_from_order( WC_Order $order ) {
 		$user_data = array();
 
 		// Extract billing information from the order.
@@ -482,7 +493,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 		// Try to use WooCommerce's country calling codes for proper E.164 formatting.
 		if ( class_exists( 'WC_Countries' ) && ! empty( $country ) ) {
-			$countries    = new \WC_Countries();
+			$countries    = new WC_Countries();
 			$calling_code = $countries->get_country_calling_code( $country );
 
 			// If we have a valid calling code, format to E.164.

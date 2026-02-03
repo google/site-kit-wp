@@ -25,45 +25,62 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from '@/js/googlesitekit-data';
+import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
+import { Divider, MenuItem } from '@/js/components/HeaderMenu';
 import { Button } from 'googlesitekit-components';
 
 export default function ManageEmailReports() {
 	const { setValue } = useDispatch( CORE_UI );
 
+	const hasEmailReportingDataAccess = useSelect( ( select ) => {
+		const viewableModules = select( CORE_USER ).getViewableModules();
+
+		if ( viewableModules === undefined ) {
+			return undefined;
+		}
+
+		return (
+			viewableModules.includes( 'analytics-4' ) ||
+			viewableModules.includes( 'search-console' )
+		);
+	} );
+
+	// Don't render if user doesn't have access to any email report data modules.
+	if ( ! hasEmailReportingDataAccess ) {
+		return null;
+	}
+
 	return (
 		<Fragment>
-			<li className="mdc-list-divider" role="separator"></li>
-			<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__email-reporting">
-				<ul className="googlesitekit-view-only-menu">
-					<li className="googlesitekit-view-only-menu__email-reporting-item">
-						<Button
-							onClick={ () =>
-								setValue(
-									USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
-									true
-								)
-							}
-							icon={
-								<span className="googlesitekit-view-only-menu__email-reporting-item--icon">
-									<ManageEmailReportsIcon width="24" />
-								</span>
-							}
-							tertiary
-						>
-							<span className="googlesitekit-view-only-menu__email-reporting-item--name">
-								{ __(
-									'Manage email reports',
-									'google-site-kit'
-								) }
-							</span>
-						</Button>
-					</li>
-				</ul>
-			</li>
+			<Divider />
+			<MenuItem
+				className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__email-reporting"
+				isInteractive={ false }
+			>
+				<Button
+					className="googlesitekit-view-only-menu__email-reporting-item"
+					onClick={ () =>
+						setValue(
+							USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+							true
+						)
+					}
+					icon={
+						<span className="googlesitekit-view-only-menu__email-reporting-item--icon">
+							<ManageEmailReportsIcon width="24" />
+						</span>
+					}
+					tertiary
+				>
+					<span className="googlesitekit-view-only-menu__email-reporting-item--name">
+						{ __( 'Manage email reports', 'google-site-kit' ) }
+					</span>
+				</Button>
+			</MenuItem>
 		</Fragment>
 	);
 }

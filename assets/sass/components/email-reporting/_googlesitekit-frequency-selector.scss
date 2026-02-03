@@ -20,10 +20,42 @@ h3.googlesitekit-frequency-selector-title {
 	color: $c-surfaces-on-surface-variant;
 }
 
-.googlesitekit-frequency-selector {
+.googlesitekit-frequency-selector__badge-row {
 	display: grid;
 	gap: $grid-gap-phone;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 8px;
+}
+
+.googlesitekit-frequency-selector__current-subscription {
+	@media (min-width: $bp-nonMobile) {
+		background-color: $c-blue-b-50;
+		color: $c-blue-b-500;
+		margin: 0;
+	}
+	background-color: $c-surfaces-surface;
+	border-radius: 4px;
+	color: $c-surfaces-on-surface-variant;
+	margin-bottom: $grid-gap-phone;
+	padding: 4px 0;
+	text-align: center;
+	width: 100%;
+}
+
+.googlesitekit-frequency-selector__current-subscription--selected {
+	background-color: $c-site-kit-sk-10;
+	color: $c-site-kit-sk-500;
+}
+
+.googlesitekit-frequency-selector {
+	display: grid;
+	gap: 10px;
+	grid-template-columns: 1fr;
+
+	@media (min-width: $bp-nonMobile) {
+		gap: $grid-gap-phone;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
 
 	.googlesitekit-frequency-selector__card {
 		background: $c-surfaces-surface-1;
@@ -40,49 +72,35 @@ h3.googlesitekit-frequency-selector-title {
 		}
 	}
 
-	.googlesitekit-frequency-selector__label-row {
-		display: flex;
-		justify-content: space-between;
-		margin-bottom: 4px;
+	.googlesitekit-frequency-selector__label {
+		min-width: 75px;
+	}
 
-		.googlesitekit-frequency-selector__saved-indicator {
-			background-color: $c-neutral-n-10;
-			border-radius: 50%;
-			height: 24px;
-			width: 24px;
-			svg {
-				color: $c-neutral-n-300;
-				height: 14px;
-				margin: 5px 0 0 5px;
-				width: 14px;
-			}
+	.googlesitekit-frequency-selector__content {
+		display: flex;
+		gap: 12px;
+
+		@media (min-width: $bp-nonMobile) {
+			flex-direction: column;
+			gap: 4px;
 		}
 	}
 
 	.googlesitekit-frequency-selector__period {
-		border-bottom: 1px solid $c-utility-divider-1;
-
-		padding-bottom: 8px;
-		padding-top: 8px;
+		@media (min-width: $bp-nonMobile) {
+			border-bottom: 1px solid $c-utility-divider-1;
+			padding: 8px 0;
+		}
 	}
 
 	.googlesitekit-frequency-selector__description {
-		padding-bottom: 8px;
-		padding-top: 8px;
+		@media (min-width: $bp-nonMobile) {
+			padding: 8px 0;
+		}
 	}
 
 	.googlesitekit-frequency-selector__card--selected {
 		background: $c-content-primary-container;
-
-		.googlesitekit-frequency-selector__label-row {
-			.googlesitekit-frequency-selector__saved-indicator {
-				background-color: $c-site-kit-sk-50;
-
-				svg {
-					color: $c-site-kit-sk-400;
-				}
-			}
-		}
 
 		.googlesitekit-frequency-selector__period {
 			border-color: $c-site-kit-sk-200;
