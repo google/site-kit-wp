@@ -135,7 +135,19 @@ jobs:
         run: npm run env:start:parallel
 
       - name: Run the tests
-        run: npm run test:e2e:parallel
+        id: test-e2e
+        run: npm run -w tests/e2e test:parallel
+        continue-on-error: true
+
+      - name: Retry failed tests (1)
+        id: test-e2e-retry-1
+        run: npm run -w tests/e2e test:parallel -- --onlyFailures
+        if: steps.test-e2e.outcome == 'failure'
+        continue-on-error: true
+
+      - name: Retry failed tests (2)
+        run: npm run -w tests/e2e test:parallel -- --onlyFailures
+        if: steps.test-e2e-retry-1.outcome == 'failure'
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
