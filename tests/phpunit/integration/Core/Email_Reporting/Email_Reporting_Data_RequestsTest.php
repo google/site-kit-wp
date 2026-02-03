@@ -16,8 +16,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -30,7 +28,6 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use Google\Site_Kit_Dependencies\Google\Service\Adsense\ReportResult as Google_Service_Adsense_ReportResult;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Analytics_Data_Row;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionValue;
@@ -104,35 +101,23 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			array( 'add_to_cart', 'purchase' )
 		);
 
-		$this->activate_modules( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG, AdSense::MODULE_SLUG );
-		$this->set_active_modules(
-			array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG, AdSense::MODULE_SLUG )
-		);
+		$this->activate_modules( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG );
+		$this->set_active_modules( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ) );
 		$this->set_analytics_settings_connected(
 			array(
 				'detectedEvents' => array( 'add_to_cart', 'purchase' ),
 			)
 		);
 		$this->set_search_console_settings_connected();
-		$this->set_adsense_settings_connected(
-			array(
-				'accountID'            => 'pub-123456',
-				'accountSetupComplete' => true,
-				'siteSetupComplete'    => true,
-			)
-		);
 
 		$analytics      = $this->modules->get_module( Analytics_4::MODULE_SLUG );
 		$search_console = $this->modules->get_module( Search_Console::MODULE_SLUG );
-		$adsense        = $this->modules->get_module( AdSense::MODULE_SLUG );
 
 		$analytics->register();
 		$search_console->register();
-		$adsense->register();
 
 		$this->fake_analytics_report( $analytics );
 		$this->fake_search_console_report( $search_console );
-		$this->fake_adsense_report( $adsense );
 
 		FakeHttp::fake_google_http_handler(
 			$this->authentication->get_oauth_client()->get_client(),
@@ -145,7 +130,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertIsArray( $payload, 'Payload should be an array keyed by module slug.' );
 		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Conversion data should be under analytics-4 module key.' );
 		$this->assertArrayHasKey( Search_Console::MODULE_SLUG, $payload, 'Search Console data should be under search-console module key.' );
-		$this->assertArrayHasKey( AdSense::MODULE_SLUG, $payload, 'AdSense data should be under adsense module key.' );
 
 		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should be included.' );
 		$this->assertArrayHasKey( 'products_added_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Products added to cart payload should be included.' );
@@ -157,7 +141,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console clicks payload should be included.' );
 		$this->assertArrayHasKey( 'top_ctr_keywords', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top CTR keywords payload should be included.' );
 		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top pages payload should be included.' );
-		$this->assertArrayHasKey( 'total_earnings', $payload[ AdSense::MODULE_SLUG ], 'AdSense earnings payload should be included.' );
 	}
 
 	public function test_user_without_shared_roles_gets_empty_payload() {
@@ -280,7 +263,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertIsArray( $payload, 'Payload for shared viewer should be an array.' );
 		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Shared viewer should see analytics-4 payload.' );
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Unshared Search Console data should be absent.' );
-		$this->assertArrayNotHasKey( AdSense::MODULE_SLUG, $payload, 'Unshared AdSense earnings should be absent.' );
 		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see conversion events.' );
 		$this->assertArrayHasKey( 'products_added_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see products added to cart.' );
 		$this->assertArrayHasKey( 'purchases', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchases.' );
@@ -303,15 +285,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 		add_filter( 'googlesitekit_is_module_recoverable', $recoverable_filter, 10, 2 );
 
-		$this->activate_modules( Search_Console::MODULE_SLUG, Analytics_4::MODULE_SLUG, AdSense::MODULE_SLUG );
-		$this->set_active_modules(
-			array( Search_Console::MODULE_SLUG, Analytics_4::MODULE_SLUG, AdSense::MODULE_SLUG )
-		);
+		$this->activate_modules( Search_Console::MODULE_SLUG, Analytics_4::MODULE_SLUG );
+		$this->set_active_modules( array( Search_Console::MODULE_SLUG, Analytics_4::MODULE_SLUG ) );
 		$this->set_search_console_settings_connected();
-		$this->set_adsense_settings_connected();
-		$adsense = $this->modules->get_module( AdSense::MODULE_SLUG );
-		$adsense->register();
-		$this->fake_adsense_report( $adsense );
 
 		$data_requests = $this->create_data_requests();
 		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
@@ -320,8 +296,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$this->assertArrayNotHasKey( Analytics_4::MODULE_SLUG, $payload, 'Recoverable Analytics should be skipped.' );
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
-		$this->assertArrayHasKey( AdSense::MODULE_SLUG, $payload, 'Active AdSense should remain in payload.' );
-		$this->assertArrayHasKey( 'total_earnings', $payload[ AdSense::MODULE_SLUG ], 'total_earnings should remain in payload.' );
 	}
 
 	private function create_data_requests( Conversion_Tracking $conversion_tracking = null ) {
@@ -349,20 +323,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 					'propertyID'      => '987654321',
 					'webDataStreamID' => '1234567890',
 					'measurementID'   => 'A1B2C3D4E5',
-				)
-			)
-		);
-	}
-
-	private function set_adsense_settings_connected( array $overrides = array() ) {
-		$settings = new AdSense_Settings( $this->options );
-		$settings->merge(
-			wp_parse_args(
-				$overrides,
-				array(
-					'accountID'            => 'pub-222',
-					'accountSetupComplete' => true,
-					'siteSetupComplete'    => true,
 				)
 			)
 		);
@@ -522,37 +482,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 	}
 
-	private function fake_adsense_report( AdSense $adsense ) {
-		FakeHttp::fake_google_http_handler(
-			$adsense->get_client(),
-			function ( Request $request ) {
-				if ( false === strpos( $request->getUri()->getHost(), 'adsense' ) ) {
-					return new FulfilledPromise( new Response( 200 ) );
-				}
-
-				$response = new Google_Service_Adsense_ReportResult(
-					array(
-						'rows' => array(
-							array(
-								'cells' => array(
-									array( 'value' => '10' ),
-								),
-							),
-						),
-					)
-				);
-
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						json_encode( $response )
-					)
-				);
-			}
-		);
-	}
-
 	private function authenticate_and_grant_required_scopes_for_user( $user_id ) {
 		$previous_user = get_current_user_id();
 		wp_set_current_user( $user_id );
@@ -564,7 +493,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$oauth_client = $this->authentication->get_oauth_client();
 		$scopes       = $oauth_client->get_required_scopes();
 
-		foreach ( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG, AdSense::MODULE_SLUG ) as $module_slug ) {
+		foreach ( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ) as $module_slug ) {
 			$module_scopes = $this->modules->get_module( $module_slug )->get_scopes();
 			if ( is_array( $module_scopes ) ) {
 				$scopes = array_merge( $scopes, $module_scopes );
