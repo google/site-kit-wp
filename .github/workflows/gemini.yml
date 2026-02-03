@@ -106,7 +106,7 @@ jobs:
         run: git apply implementation.patch
       - name: Create Pull Request
         id: create-pr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'Implement issue #${{ inputs.issue_number }}'
           branch: gemini/issue-${{ inputs.issue_number }}
