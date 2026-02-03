@@ -308,7 +308,10 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
-				if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				if (
+					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
+					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
+				) {
 					$module_recipients[ $slug ][ $user_id ] = true;
 					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload grouping.
 					error_log(
