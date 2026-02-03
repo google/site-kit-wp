@@ -210,6 +210,15 @@ abstract class Module {
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
 	final public function get_data( $datapoint, $data = array() ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for datapoint requests.
+		error_log(
+			sprintf(
+				'[Site Kit] module get_data: module=%s datapoint=%s user_id=%d',
+				$this->slug,
+				$datapoint,
+				get_current_user_id()
+			)
+		);
 		return $this->execute_data_request(
 			new Data_Request( 'GET', 'modules', $this->slug, $datapoint, $data )
 		);
@@ -393,6 +402,17 @@ abstract class Module {
 		}
 
 		if ( is_wp_error( $response ) ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for datapoint requests.
+			error_log(
+				sprintf(
+					'[Site Kit] module request error: module=%s datapoint=%s user_id=%d code=%s message=%s',
+					$this->slug,
+					$data->datapoint,
+					get_current_user_id(),
+					$response->get_error_code(),
+					$response->get_error_message()
+				)
+			);
 			return $response;
 		}
 
@@ -502,11 +522,13 @@ abstract class Module {
 	 * @return OAuth_Client OAuth_Client instance.
 	 */
 	private function get_oauth_client_for_datapoint( Datapoint $datapoint ) {
+		$current_user_id = get_current_user_id();
+		$owner_id        = $this instanceof Module_With_Owner ? (int) $this->get_owner_id() : 0;
 		if (
 			$this instanceof Module_With_Owner
 			&& $this->is_shareable()
 			&& $datapoint->is_shareable()
-			&& $this->get_owner_id() !== get_current_user_id()
+			&& $owner_id !== $current_user_id
 			&& ! $this->is_recoverable()
 			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
 		) {
@@ -514,12 +536,32 @@ abstract class Module {
 
 			try {
 				$this->validate_base_scopes( $oauth_client );
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for shared OAuth selection.
+				error_log(
+					sprintf(
+						'[Site Kit] oauth selection: module=%s current_user=%d owner_id=%d shared_branch=yes has_owner_token=%s',
+						$this->slug,
+						$current_user_id,
+						$owner_id,
+						empty( $oauth_client->get_access_token() ) ? 'no' : 'yes'
+					)
+				);
 				return $oauth_client;
 			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// Fallthrough to default oauth client if scopes are unsatisfied.
 			}
 		}
 
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for shared OAuth selection.
+		error_log(
+			sprintf(
+				'[Site Kit] oauth selection: module=%s current_user=%d owner_id=%d shared_branch=no has_current_token=%s',
+				$this->slug,
+				$current_user_id,
+				$owner_id,
+				empty( $this->authentication->get_oauth_client()->get_access_token() ) ? 'no' : 'yes'
+			)
+		);
 		return $this->authentication->get_oauth_client();
 	}
 
@@ -655,6 +697,18 @@ abstract class Module {
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint = '' ) { // phpcs:ignore phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter.Found,Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for datapoint exceptions.
+		error_log(
+			sprintf(
+				'[Site Kit] module exception: module=%s datapoint=%s user_id=%d class=%s code=%s message=%s',
+				$this->slug,
+				$datapoint,
+				get_current_user_id(),
+				get_class( $e ),
+				$e->getCode(),
+				$e->getMessage()
+			)
+		);
 		if ( $e instanceof WP_Errorable ) {
 			return $e->to_wp_error();
 		}

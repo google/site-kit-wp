@@ -112,6 +112,15 @@ class Google_Site_Kit_Client extends Google_Client {
 					call_user_func( $callback, '', $token_response['access_token'] );
 				}
 			} catch ( Exception $e ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for OAuth refresh failures.
+				error_log(
+					sprintf(
+						'[Site Kit] oauth refresh failed: user_id=%d code=%s message=%s',
+						get_current_user_id(),
+						$e->getCode(),
+						$e->getMessage()
+					)
+				);
 				// Pass exception to special callback if provided.
 				if ( $this->token_exception_callback ) {
 					call_user_func( $this->token_exception_callback, $e );
@@ -176,6 +185,14 @@ class Google_Site_Kit_Client extends Google_Client {
 		if ( null === $refresh_token ) {
 			$refresh_token = $this->getRefreshToken();
 			if ( ! $refresh_token ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for OAuth refresh failures.
+				error_log(
+					sprintf(
+						'[Site Kit] oauth refresh failed: user_id=%d message=%s',
+						get_current_user_id(),
+						'refresh token missing'
+					)
+				);
 				throw new LogicException( 'refresh token must be passed in or set as part of setAccessToken' );
 			}
 		}
@@ -187,6 +204,17 @@ class Google_Site_Kit_Client extends Google_Client {
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
 		$token_response = $this->fetchAuthToken( $auth, $http_handler, $extra_params );
+		if ( $token_response && isset( $token_response['error'] ) ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for OAuth refresh failures.
+			error_log(
+				sprintf(
+					'[Site Kit] oauth refresh token response: user_id=%d error=%s error_description=%s',
+					get_current_user_id(),
+					$token_response['error'],
+					isset( $token_response['error_description'] ) ? $token_response['error_description'] : ''
+				)
+			);
+		}
 		if ( $token_response && isset( $token_response['access_token'] ) ) {
 			$token_response['created'] = time();
 			if ( ! isset( $token_response['refresh_token'] ) ) {
@@ -223,7 +251,20 @@ class Google_Site_Kit_Client extends Google_Client {
 	public function execute( RequestInterface $request, $expected_class = null ) {
 		$request = $request->withHeader( 'X-Goog-Quota-User', self::getQuotaUser() );
 
-		return parent::execute( $request, $expected_class );
+		try {
+			return parent::execute( $request, $expected_class );
+		} catch ( Exception $e ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for API request failures.
+			error_log(
+				sprintf(
+					'[Site Kit] api request failed: user_id=%d code=%s message=%s',
+					get_current_user_id(),
+					$e->getCode(),
+					$e->getMessage()
+				)
+			);
+			throw $e;
+		}
 	}
 
 	/**
