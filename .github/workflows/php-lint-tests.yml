@@ -103,6 +103,8 @@ jobs:
           # Min supported PHP + WP Nightly
           - php_version: '7.4'
             wp_version: 'nightly'
+          - php_version: '8.4'
+            wp_version: 'latest'
     services:
       mysql:
         image: mysql:5.7
