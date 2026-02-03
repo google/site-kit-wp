@@ -176,6 +176,15 @@ class Worker_Task {
 				foreach ( $shared_payloads as $slug => $module_payload ) {
 					if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
 						$shared_payloads_for_user[ $slug ] = $module_payload;
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload grouping.
+						error_log(
+							sprintf(
+								'[Site Kit] email reporting using shared payload: post_id=%d user_id=%d module=%s',
+								$post_id,
+								$user->ID,
+								$slug
+							)
+						);
 					}
 				}
 			}
@@ -298,6 +307,14 @@ class Worker_Task {
 			foreach ( $module_slugs as $slug ) {
 				if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
 					$module_recipients[ $slug ][ $user_id ] = true;
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload grouping.
+					error_log(
+						sprintf(
+							'[Site Kit] email reporting shared payload candidate: module=%s user_id=%d',
+							$slug,
+							$user_id
+						)
+					);
 				}
 			}
 		}
@@ -327,6 +344,15 @@ class Worker_Task {
 			if ( $shared_user_id <= 0 ) {
 				continue;
 			}
+
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload grouping.
+			error_log(
+				sprintf(
+					'[Site Kit] email reporting building shared payload: module=%s user_id=%d',
+					$slug,
+					$shared_user_id
+				)
+			);
 
 			$payload = $this->data_requests->get_user_payload( $shared_user_id, $date_range, array(), array( $slug ) );
 

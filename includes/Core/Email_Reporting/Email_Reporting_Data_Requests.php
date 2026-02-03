@@ -201,10 +201,28 @@ class Email_Reporting_Data_Requests {
 		$payload = array();
 
 		foreach ( $modules as $slug => $module ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload collection.
+			error_log(
+				sprintf(
+					'[Site Kit] email reporting collecting payload: module=%s user_id=%d',
+					$slug,
+					get_current_user_id()
+				)
+			);
+
 			if ( array_key_exists( $slug, $shared_payloads ) ) {
 				$shared_payload = $shared_payloads[ $slug ];
 
 				if ( is_wp_error( $shared_payload ) ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload collection.
+					error_log(
+						sprintf(
+							'[Site Kit] email reporting shared payload error: module=%s code=%s message=%s',
+							$slug,
+							$shared_payload->get_error_code(),
+							$shared_payload->get_error_message()
+						)
+					);
 					return $shared_payload;
 				}
 
@@ -226,6 +244,15 @@ class Email_Reporting_Data_Requests {
 			}
 
 			if ( is_wp_error( $result ) ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Debug logging for email reporting payload collection.
+				error_log(
+					sprintf(
+						'[Site Kit] email reporting payload error: module=%s code=%s message=%s',
+						$slug,
+						$result->get_error_code(),
+						$result->get_error_message()
+					)
+				);
 				return $result;
 			}
 
