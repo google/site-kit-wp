@@ -39,6 +39,7 @@ export default function useOpenEmailReportingSelectionPanelEffect() {
 		// If redirected from a pointer CTA or following link from email footer, open the Email Reporting selection panel.
 		if ( emailReportingPanelOpen !== undefined ) {
 			setUIValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+			setUIValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
 			setEmailReportingPanelOpen( undefined );
 		}
 	} );

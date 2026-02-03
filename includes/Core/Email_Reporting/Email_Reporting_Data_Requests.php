@@ -118,12 +118,15 @@ class Email_Reporting_Data_Requests {
 	 * Gets the raw payload for a specific user.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
 	 *
-	 * @param int   $user_id    User ID.
-	 * @param array $date_range Date range array.
+	 * @param int   $user_id              User ID.
+	 * @param array $date_range           Date range array.
+	 * @param array $shared_payloads      Optional. Pre-fetched module payloads keyed by module slug. Default empty.
+	 * @param array $allowed_module_slugs Optional. Restrict payload to these module slugs. Default empty.
 	 * @return array|WP_Error Array of payloads keyed by section part identifiers or WP_Error.
 	 */
-	public function get_user_payload( $user_id, $date_range ) {
+	public function get_user_payload( $user_id, $date_range, array $shared_payloads = array(), array $allowed_module_slugs = array() ) {
 		$user_id = (int) $user_id;
 		$user    = get_user_by( 'id', $user_id );
 
@@ -141,7 +144,13 @@ class Email_Reporting_Data_Requests {
 			);
 		}
 
-		$active_modules    = $this->modules->get_active_modules();
+		$active_modules = $this->modules->get_active_modules();
+
+		if ( ! empty( $allowed_module_slugs ) ) {
+			// Flip slugs to keys so we can intersect by module slug.
+			$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
+		}
+
 		$available_modules = $this->filter_modules_for_user( $active_modules, $user );
 
 		if ( empty( $available_modules ) ) {
@@ -156,7 +165,7 @@ class Email_Reporting_Data_Requests {
 		// Collect payloads while impersonating the target user. Finally executes even
 		// when returning, so we restore user context on both success and unexpected throws.
 		try {
-			return $this->collect_payloads( $available_modules, $date_range );
+			return $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 		} finally {
 			if ( is_callable( $restore_user_options ) ) {
 				$restore_user_options();
@@ -167,18 +176,45 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
+	 * Gets active module slugs for email reporting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Active module slugs.
+	 */
+	public function get_active_module_slugs() {
+		return array_keys( $this->modules->get_active_modules() );
+	}
+
+	/**
 	 * Collects payloads for the allowed modules.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
 	 *
-	 * @param array $modules    Allowed modules.
-	 * @param array $date_range Date range payload.
+	 * @param array $modules         Allowed modules.
+	 * @param array $date_range      Date range payload.
+	 * @param array $shared_payloads Optional. Pre-fetched module payloads keyed by module slug. Default empty.
 	 * @return array|WP_Error Flat section payload map or WP_Error from a failing module.
 	 */
-	private function collect_payloads( array $modules, array $date_range ) {
+	private function collect_payloads( array $modules, array $date_range, array $shared_payloads = array() ) {
 		$payload = array();
 
 		foreach ( $modules as $slug => $module ) {
+			if ( array_key_exists( $slug, $shared_payloads ) ) {
+				$shared_payload = $shared_payloads[ $slug ];
+
+				if ( is_wp_error( $shared_payload ) ) {
+					return $shared_payload;
+				}
+
+				if ( ! empty( $shared_payload ) ) {
+					$payload[ $slug ] = $shared_payload;
+				}
+
+				continue;
+			}
+
 			if ( Analytics_4::MODULE_SLUG === $slug ) {
 				$result = $this->collect_analytics_payloads( $module, $date_range );
 			} elseif ( Search_Console::MODULE_SLUG === $slug ) {
@@ -304,9 +340,7 @@ class Email_Reporting_Data_Requests {
 	 * @return array Filtered modules.
 	 */
 	private function filter_modules_for_user( array $modules, WP_User $user ) {
-		$allowed          = array();
-		$user_roles       = (array) $user->roles;
-		$sharing_settings = $this->modules->get_module_sharing_settings();
+		$allowed = array();
 
 		foreach ( $modules as $slug => $module ) {
 			if ( ! $module->is_connected() || $module->is_recoverable() ) {
@@ -318,16 +352,10 @@ class Email_Reporting_Data_Requests {
 				continue;
 			}
 
-			$shared_roles = $sharing_settings->get_shared_roles( $slug );
-			if ( empty( $shared_roles ) ) {
+			if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				$allowed[ $slug ] = $module;
 				continue;
 			}
-
-			if ( empty( array_intersect( $user_roles, $shared_roles ) ) ) {
-				continue;
-			}
-
-			$allowed[ $slug ] = $module;
 		}
 
 		return $allowed;

@@ -33,12 +33,15 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 
 const baseInitialState = {
 	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
+		eligibleSubscribers: undefined,
+		errors: undefined,
 	},
 };
 
@@ -75,6 +78,26 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 			typeof settings.enabled === 'boolean',
 			'enabled should be a boolean.'
 		);
+	},
+} );
+
+const fetchGetEligibleSubscribersStore = createFetchStore( {
+	baseName: 'getEligibleSubscribers',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
+		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
+	} ),
+} );
+
+const fetchGetEmailReportingErrorsStore = createFetchStore( {
+	baseName: 'getEmailReportingErrors',
+	controlCallback: () =>
+		get( 'core', 'site', 'email-reporting-errors', undefined, {
+			useCache: false,
+		} ),
+	reducerCallback: ( state, errors ) => {
+		state.emailReporting.errors = errors || {};
 	},
 } );
 
@@ -151,6 +174,26 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
+	*getEligibleSubscribers() {
+		const registry = yield commonActions.getRegistry();
+
+		const eligibleSubscribers = registry
+			.select( CORE_SITE )
+			.getEligibleSubscribers();
+
+		if ( eligibleSubscribers === undefined ) {
+			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
+		}
+	},
+	*getEmailReportingErrors() {
+		const registry = yield commonActions.getRegistry();
+
+		const errors = registry.select( CORE_SITE ).getEmailReportingErrors();
+
+		if ( errors === undefined ) {
+			yield fetchGetEmailReportingErrorsStore.actions.fetchGetEmailReportingErrors();
+		}
+	},
 };
 
 const baseSelectors = {
@@ -180,11 +223,80 @@ const baseSelectors = {
 
 		return enabled;
 	} ),
+
+	/**
+	 * Gets eligible subscribers for email report invitations.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
+	 */
+	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
+		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
+		const currentUserID = select( CORE_USER ).getID();
+
+		if (
+			eligibleSubscribers === undefined ||
+			currentUserID === undefined
+		) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( eligibleSubscribers ) ) {
+			return [];
+		}
+
+		return eligibleSubscribers
+			.filter( ( user ) => user.id !== currentUserID )
+			.map( ( user ) => ( {
+				id: user.id,
+				name: user.displayName || user.name,
+				email: user.email,
+				role: user.role,
+				subscribed: user.subscribed,
+			} ) );
+	} ),
+
+	/**
+	 * Gets the email reporting errors.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
+	 */
+	getEmailReportingErrors( state ) {
+		return state.emailReporting?.errors;
+	},
+
+	/**
+	 * Gets the category ID of the latest email reporting error.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
+	 */
+	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
+		( select ) => () => {
+			const { errors, error_data: errorData } =
+				select( CORE_SITE ).getEmailReportingErrors() || {};
+
+			if ( errors === undefined ) {
+				return undefined;
+			}
+
+			return errorData[ Object.keys( errors )[ 0 ] ]?.category_id;
+		}
+	),
 };
 
 const store = combineStores(
 	fetchGetEmailReportingSettingsStore,
 	fetchSaveEmailReportingSettingsStore,
+	fetchGetEligibleSubscribersStore,
+	fetchGetEmailReportingErrorsStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

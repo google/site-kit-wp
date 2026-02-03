@@ -106,6 +106,20 @@ final class View_Only_Pointer {
 					return true;
 				},
 				'class'           => 'googlesitekit-view-only-pointer',
+				'tracking'        => array(
+					'view'    => array(
+						'category' => 'wpDashboard_pointer_view_only_dashboard',
+						'action'   => 'view_notification',
+					),
+					'dismiss' => array(
+						'category' => 'wpDashboard_pointer_view_only_dashboard',
+						'action'   => 'dismiss_notification',
+					),
+					'click'   => array(
+						'category' => 'wpDashboard_pointer_view_only_dashboard',
+						'action'   => 'confirm_notification',
+					),
+				),
 				'buttons'         =>
 					sprintf(
 						'<a class="googlesitekit-pointer-cta button-primary" href="%s" data-action="dismiss">%s</a>',

@@ -20,12 +20,16 @@ namespace Google\Service\SubscribewithGoogle;
 class CheckFreeAccessResponse extends \Google\Model
 {
   /**
+   * True if free access should be allowed, false otherwise.
+   *
    * @var bool
    */
   public $isAllowed;
 
   /**
-   * @param bool
+   * True if free access should be allowed, false otherwise.
+   *
+   * @param bool $isAllowed
    */
   public function setIsAllowed($isAllowed)
   {

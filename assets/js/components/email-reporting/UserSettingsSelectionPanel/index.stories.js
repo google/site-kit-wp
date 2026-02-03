@@ -197,6 +197,10 @@ export default {
 					} );
 
 				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEmailReportingErrors( [] );
+
+				registry
 					.dispatch( CORE_UI )
 					.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
 

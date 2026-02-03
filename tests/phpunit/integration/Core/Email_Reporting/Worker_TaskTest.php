@@ -286,7 +286,8 @@ class Worker_TaskTest extends TestCase {
 			$this->limiter,
 			$this->batch_query,
 			$this->scheduler,
-			$log_processor_mock
+			$log_processor_mock,
+			$this->data_requests
 		);
 
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
@@ -314,7 +315,8 @@ class Worker_TaskTest extends TestCase {
 				$this->data_requests,
 				$this->template_formatter,
 				new Email_Report_Sender( $this->template_renderer_factory, $this->email_sender )
-			)
+			),
+			$this->data_requests
 		);
 
 		$batch_id       = 'batch-real';
@@ -638,7 +640,8 @@ class Worker_TaskTest extends TestCase {
 			$this->limiter,
 			$batch_query,
 			$this->scheduler,
-			$log_processor
+			$log_processor,
+			$this->data_requests
 		);
 	}
 

@@ -149,6 +149,28 @@ class PointerTest extends TestCase {
 		$this->assertEquals( $buttons, $pointer->get_buttons(), 'Pointer buttons should match the provided value.' );
 	}
 
+	public function test_get_tracking() {
+		$tracking = array(
+			'view'    => array(
+				'category' => 'test-category',
+				'action'   => 'view',
+			),
+			'dismiss' => array(
+				'category' => 'test-category',
+				'action'   => 'dismiss',
+				'label'    => 'test-label',
+			),
+		);
+		$pointer  = new Pointer(
+			'test-slug',
+			array(
+				'tracking' => $tracking,
+			)
+		);
+
+		$this->assertEquals( $tracking, $pointer->get_tracking(), 'Pointer tracking should match the provided value.' );
+	}
+
 	public function data_is_active() {
 		return array(
 			'no args'             => array(

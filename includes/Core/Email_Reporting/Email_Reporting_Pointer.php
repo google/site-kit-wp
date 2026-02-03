@@ -158,6 +158,20 @@ final class Email_Reporting_Pointer {
 					return true;
 				},
 				'class'           => 'googlesitekit-email-pointer',
+				'tracking'        => array(
+					'view'    => array(
+						'category' => 'wpDashboard_pointer_email_reports_setup_cta',
+						'action'   => 'view_notification',
+					),
+					'dismiss' => array(
+						'category' => 'wpDashboard_pointer_email_reports_setup_cta',
+						'action'   => 'dismiss_notification',
+					),
+					'click'   => array(
+						'category' => 'wpDashboard_pointer_email_reports_setup_cta',
+						'action'   => 'confirm_notification',
+					),
+				),
 				// Inline JS function to render CTA button and add delegated handlers for CTA and dismiss.
 				'buttons'         => sprintf(
 					'<a class="googlesitekit-pointer-cta button-primary" data-action="dismiss" href="%s">%s</a>',

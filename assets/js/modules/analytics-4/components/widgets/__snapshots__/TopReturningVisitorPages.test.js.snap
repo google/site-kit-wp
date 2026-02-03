@@ -21,6 +21,8 @@ exports[`TopReturningVisitorPages should render correctly with the expected metr
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages that attracted the most returning visitors"
           >
             <svg />
@@ -145,6 +147,8 @@ exports[`TopReturningVisitorPages should render the generic error variant when t
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages that attracted the most returning visitors"
         >
           <svg />
@@ -207,6 +211,8 @@ exports[`TopReturningVisitorPages should render the insufficient permissions err
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages that attracted the most returning visitors"
         >
           <svg />
@@ -276,6 +282,8 @@ exports[`TopReturningVisitorPages should render the loading state while resolvin
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Pages that attracted the most returning visitors"
             >
               <svg />

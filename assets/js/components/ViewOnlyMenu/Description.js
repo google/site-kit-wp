@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -86,14 +90,9 @@ export default function Description() {
 	}, [ viewContext ] );
 
 	const description = canAuthenticate
-		? createInterpolateElement(
-				__(
-					"You can see stats from all shared Google services, but you can't make any changes. <strong>Sign in to connect more services and control sharing access.</strong>",
-					'google-site-kit'
-				),
-				{
-					strong: <strong />,
-				}
+		? __(
+				"You can see stats from all shared Google services, but you can't make any changes. Sign in to connect more services and control sharing access.",
+				'google-site-kit'
 		  )
 		: createInterpolateElement(
 				__(
@@ -116,8 +115,10 @@ export default function Description() {
 		  );
 
 	return (
-		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
-			<P>{ description }</P>
+		<Fragment>
+			<P className="googlesitekit-view-only-menu__signin">
+				{ description }
+			</P>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ _x(
@@ -127,6 +128,6 @@ export default function Description() {
 					) }
 				</Button>
 			) }
-		</li>
+		</Fragment>
 	);
 }

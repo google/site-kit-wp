@@ -22,6 +22,7 @@
 import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
@@ -32,6 +33,13 @@ describe( 'core/site Email Reporting', () => {
 
 	const emailReportingSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting'
+	);
+	const eligibleSubscribersEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-eligible-subscribers'
+	);
+
+	const emailReportingErrorsEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-errors'
 	);
 
 	beforeAll( () => {
@@ -275,6 +283,146 @@ describe( 'core/site Email Reporting', () => {
 				expect(
 					registry.select( CORE_SITE ).isEmailReportingEnabled()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'getEligibleSubscribers', () => {
+			it( 'uses a resolver to fetch eligible subscribers', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				const response = [
+					{
+						id: 1,
+						displayName: 'Current User',
+						email: 'current@example.com',
+						role: 'administrator',
+						subscribed: true,
+					},
+					{
+						id: 2,
+						displayName: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+					},
+				];
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: response,
+					status: 200,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toEqual( [
+					{
+						id: 2,
+						name: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+					},
+				] );
+
+				expect( fetchMock ).toHaveFetched(
+					eligibleSubscribersEndpointRegExp
+				);
+			} );
+
+			it( 'returns an empty array when only current user is returned', () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [
+					{
+						id: 1,
+						displayName: 'Current User',
+						email: 'current@example.com',
+						role: 'administrator',
+						subscribed: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toEqual( [] );
+			} );
+
+			it( 'returns undefined if the request fails', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: { error: 'something went wrong' },
+					status: 500,
+				} );
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers()
+				).toBeUndefined();
+
+				await waitForDefaultTimeouts();
+
+				expect( fetchMock ).toHaveFetched(
+					eligibleSubscribersEndpointRegExp
+				);
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getEmailReportingErrors', () => {
+			it( 'uses a resolver to make a network request', async () => {
+				const emailReportingErrors = {
+					errors: {
+						email_report_section_build_failed: [
+							'title must be a non-empty string',
+						],
+					},
+					error_data: [],
+				};
+
+				fetchMock.getOnce( emailReportingErrorsEndpointRegExp, {
+					body: emailReportingErrors,
+					status: 200,
+				} );
+
+				const initialErrors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( initialErrors ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEmailReportingErrors();
+
+				const errors = registry
+					.select( CORE_SITE )
+					.getEmailReportingErrors();
+
+				expect( errors ).toEqual( emailReportingErrors );
+
+				expect( fetchMock ).toHaveFetched(
+					emailReportingErrorsEndpointRegExp
+				);
 			} );
 		} );
 	} );

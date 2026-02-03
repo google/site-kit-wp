@@ -37,20 +37,36 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import Link from '@/js/components/Link';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
 export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
 	'email-reporting-setup-analytics-notice';
 
+export const EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG =
+	'email_reports_setup_analytics_notice';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
+
 export default function SetupAnalyticsNotice() {
 	const [ inProgress, setInProgress ] = useState( false );
+
+	const trackEvents = useNotificationEvents(
+		EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG
+	);
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
 
 	const isViewOnly = useViewOnly();
+
+	const isAnalyticsActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
+	);
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -72,16 +88,31 @@ export default function SetupAnalyticsNotice() {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
+	const completeModuleActivation = useCompleteModuleActivationCallback(
+		MODULE_SLUG_ANALYTICS_4
+	);
+
+	// If Analytics is already active but not connected, skip activation
+	// and go directly to the setup flow.
+	const onClickCallback = isAnalyticsActive
+		? completeModuleActivation
+		: activateAnalytics;
+
 	const handleCTAClick = useCallback( () => {
+		if ( ! onClickCallback ) {
+			return;
+		}
+		trackEvents.confirm();
 		setInProgress( true );
-		activateAnalytics();
-	}, [ activateAnalytics ] );
+		onClickCallback();
+	}, [ onClickCallback, trackEvents ] );
 
 	const handleDismiss = useCallback( async () => {
+		trackEvents.dismiss();
 		await dismissItem(
 			EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM
 		);
-	}, [ dismissItem ] );
+	}, [ dismissItem, trackEvents ] );
 
 	const learnMoreLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4' )
@@ -97,8 +128,12 @@ export default function SetupAnalyticsNotice() {
 		return null;
 	}
 
+	const ctaLabel = isAnalyticsActive
+		? __( 'Complete setup', 'google-site-kit' )
+		: __( 'Connect Analytics', 'google-site-kit' );
+
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			type={ TYPES.NEW }
 			title={ __(
 				'Understand how visitors interact with your content',
@@ -110,17 +145,11 @@ export default function SetupAnalyticsNotice() {
 					'google-site-kit'
 				),
 				{
-					a: (
-						<Link
-							href={ learnMoreLink }
-							external
-							hideExternalIndicator
-						/>
-					),
+					a: <Link href={ learnMoreLink } external />,
 				}
 			) }
 			ctaButton={ {
-				label: __( 'Connect Analytics', 'google-site-kit' ),
+				label: ctaLabel,
 				inProgress,
 				disabled: inProgress,
 				onClick: handleCTAClick,
@@ -129,6 +158,7 @@ export default function SetupAnalyticsNotice() {
 				label: __( 'Maybe later', 'google-site-kit' ),
 				onClick: handleDismiss,
 			} }
+			onInView={ trackEvents.view }
 		/>
 	);
 }

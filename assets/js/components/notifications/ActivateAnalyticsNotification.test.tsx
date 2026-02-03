@@ -83,8 +83,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -122,8 +121,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		await waitForRegistry();
 
@@ -159,8 +157,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		fireEvent.click(
 			getByRole( 'button', {
@@ -200,8 +197,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		fireEvent.click(
 			getByRole( 'button', {
@@ -239,8 +235,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		fireEvent.click(
 			getByRole( 'button', {
@@ -286,8 +281,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		fireEvent.click(
 			getByRole( 'button', {
@@ -332,8 +326,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 			{
 				registry,
 			}
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		) as any;
+		);
 
 		fireEvent.click(
 			getByRole( 'button', {

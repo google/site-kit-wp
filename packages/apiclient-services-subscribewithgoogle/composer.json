@@ -1,4 +1,8 @@
 {
-  "name": "google/apiclient-services-subscribewithgoogle",
-  "version": "dev-latest"
+    "name": "google/apiclient-services-subscribewithgoogle",
+    "version": "dev-latest",
+    "description": "This package is @generated automatically",
+    "extra": {
+        "identifier": "244b76bfed631b8b48c10a9255965a88:4152583d88e5adcc6454220f6063f82b2ae650b6"
+    }
 }

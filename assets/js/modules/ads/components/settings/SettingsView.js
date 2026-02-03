@@ -42,7 +42,6 @@ import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
-	const paxEnabled = useFeature( 'adsPax' );
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 
@@ -62,10 +61,8 @@ export default function SettingsView() {
 		select( CORE_USER ).isAdBlockerActive()
 	);
 
-	const conversionIDValue =
-		paxEnabled && paxConversionID ? paxConversionID : conversionID;
-
-	const isPaxView = paxEnabled && ( paxConversionID || extCustomerID );
+	const conversionIDValue = paxConversionID || conversionID;
+	const isPaxView = paxConversionID || extCustomerID;
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConversionTrackingEnabled()

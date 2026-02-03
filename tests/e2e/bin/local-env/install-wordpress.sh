@@ -6,23 +6,55 @@ set -e
 # Common variables.
 WP_VERSION=${WP_VERSION-"latest"}
 
-# Include useful functions
+# Include useful functions.
 . "$(dirname "$0")/includes.sh"
 
-# Make sure Docker containers are running
+# Make sure Docker containers are running.
 dc up -d >/dev/null 2>&1
 
-# Get the host port for the WordPress container.
-HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
+status_message "Waiting for containers to settle and port mapping to be available..."
+attempt=0
+MAX_ATTEMPTS=15
+HOST_PORT=""
+while [[ -z "$HOST_PORT" ]]; do
+	attempt=$((attempt + 1))
+	if [[ $attempt -gt $MAX_ATTEMPTS ]]; then
+		error_message "Failed to get host port for $CONTAINER after $MAX_ATTEMPTS attempts."
+		error_message "Last attempt output for 'dc port $CONTAINER 80': $(dc port $CONTAINER 80 2>&1)"
+		dc ps
+		exit 1
+	fi
 
-# Wait until the Docker containers are running and the WordPress site is
-# responding to requests.
-status_message "Attempting to connect to WordPress..."
-until $(curl -L http://localhost:$HOST_PORT -so - 2>&1 | grep -q "WordPress"); do
-    echo -n '.'
-    sleep 1
+	# Capture the output and extract the trailing number.
+	port_output_raw=$(dc port $CONTAINER 80 2>&1)
+	port_output=$(echo "$port_output_raw" | grep -oE '[0-9]+$' | tail -n 1)
+
+	# Check if the output is a valid port number.
+	if [[ "$port_output" =~ ^[0-9]+$ ]]; then
+		HOST_PORT=$port_output
+	else
+		if [[ $attempt -eq 1 ]]; then # Print warning only on first few failures.
+			 warning_message "Attempt $attempt: 'dc port $CONTAINER 80' returned: '$port_output'. Waiting..."
+		fi
+		sleep 2
+	fi
 done
-echo ''
+status_message "Successfully fetched HOST_PORT: $HOST_PORT"
+
+# Wait until the Web server in the container is up and responding to requests.
+status_message "Waiting for web server on http://localhost:$HOST_PORT..."
+attempt=0
+until curl -L -s -f -o /dev/null "http://localhost:$HOST_PORT"; do
+    attempt=$((attempt + 1))
+    if [[ $attempt -gt 60 ]]; then
+        error_message "Failed to connect to web server at http://localhost:$HOST_PORT after multiple attempts."
+        curl -L -v "http://localhost:$HOST_PORT" # Show final attempt details.
+        exit 1
+    fi
+    echo -n '.'
+    sleep 2
+done
+echo -e "\nWeb server is up!"
 
 # If this is the test site, we reset the database so no posts/comments/etc.
 # dirty up the tests.
@@ -88,9 +120,9 @@ if [ "$WP_VERSION" == "latest" ]; then
 fi
 
 if [ -n "$CA_CERT_REFRESH" ]; then
-  status_message "Updating WordPress certificate bundle..."
-  container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
-  container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
+	status_message "Updating WordPress certificate bundle..."
+	container curl --remote-name --show-error --silent https://raw.githubusercontent.com/WordPress/wordpress-develop/refs/heads/trunk/src/wp-includes/certificates/ca-bundle.crt
+	container mv ca-bundle.crt wp-includes/certificates/ca-bundle.crt
 fi
 
 # Switch to `twentytwenty` theme for consistent results (particularly for AMP compatibility).
@@ -133,6 +165,9 @@ container touch /var/www/html/favicon.ico
 container chmod 767 /var/www/html/favicon.ico
 
 # Activate Google Site Kit plugin.
+status_message "Listing available plugins..."
+wp plugin list
+
 status_message "Activating Google Site Kit plugin..."
 wp plugin activate google-site-kit --quiet
 # Reset post-activate state.

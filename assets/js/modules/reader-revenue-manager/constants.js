@@ -50,4 +50,8 @@ export const RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID =
 	'rrm-product-id-contributions-notification';
 export const RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID =
 	'rrm-product-id-subscriptions-notification';
+export const RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID =
+	'rrm-policy-violation-moderate-high-notification';
+export const RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID =
+	'rrm-policy-violation-extreme-notification';
 export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';
