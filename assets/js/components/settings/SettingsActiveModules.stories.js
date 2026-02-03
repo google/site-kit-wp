@@ -160,6 +160,9 @@ WithRRMActionNeeded.args = {
 			} );
 	},
 };
+WithRRMActionNeeded.parameters = {
+	features: [ 'rrmPolicyViolations' ],
+};
 WithRRMActionNeeded.scenario = {};
 
 export default {
