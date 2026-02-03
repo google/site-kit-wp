@@ -266,7 +266,7 @@ final class Plugin {
 				 *
 				 * @since 1.0.0
 				 */
-				do_action( 'googlesitekit_init' );
+				do_action( 'googlesitekit_init', compact( 'assets' ) );
 			},
 			-999
 		);
