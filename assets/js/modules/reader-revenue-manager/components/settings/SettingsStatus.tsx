@@ -38,17 +38,12 @@ import {
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import Badge from '@/js/components/Badge';
 import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
-import { useFeature } from '@/js/hooks/useFeature';
 
 interface SettingsStatusProps {
 	slug: string;
 }
 
 const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
-	const rrmPolicyViolationsEnabled = useFeature(
-		'rrmPolicyViolations'
-	) as boolean;
-
 	const isConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected(
 			MODULE_SLUG_READER_REVENUE_MANAGER
@@ -66,7 +61,7 @@ const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
 		);
 	} );
 
-	if ( rrmPolicyViolationsEnabled && isConnected && hasPolicyViolation ) {
+	if ( isConnected && hasPolicyViolation ) {
 		return (
 			<Badge
 				// @ts-expect-error - The `Badge` component is not typed yet.
