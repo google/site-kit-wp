@@ -36,7 +36,11 @@ import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 } from './datastore/constants';
 import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from './components/settings';
+import {
+	SettingsEdit,
+	SettingsStatus,
+	SettingsView,
+} from './components/settings';
 import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import {
@@ -49,8 +53,6 @@ import {
 	NOTIFICATION_AREAS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
-import { asyncRequireAll } from '@/js/util/async';
-import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -71,6 +73,9 @@ import PublicationApprovedOverlayNotification, {
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
+import { asyncRequireAll } from '@/js/util/async';
+import { isFeatureEnabled } from '@/js/features';
+import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
 
 export { registerStore } from './datastore';
 
@@ -95,6 +100,9 @@ export function registerModule( modules ) {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
+		...( isFeatureEnabled( 'rrmPolicyViolations' ) && {
+			SettingsStatusComponent: SettingsStatus,
+		} ),
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
