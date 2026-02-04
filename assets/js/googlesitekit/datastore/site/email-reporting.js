@@ -287,7 +287,14 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			return errorData[ Object.keys( errors )[ 0 ] ]?.category_id;
+			const categoryID =
+				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
+
+			if ( categoryID === undefined ) {
+				return null;
+			}
+
+			return categoryID;
 		}
 	),
 };
