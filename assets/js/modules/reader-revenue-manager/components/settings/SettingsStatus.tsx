@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { type Select, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CONTENT_POLICY_STATES,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import Badge from '@/js/components/Badge';
 import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
