@@ -189,8 +189,6 @@ class Worker_Task {
 				$this->log_processor->process( $post_id, $frequency, $shared_payloads_for_user );
 			}
 		}
-
-		$this->should_abort( $initiator_timestamp );
 	}
 
 	/**
@@ -299,6 +297,16 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
+				// Ensure the module still has an owner at send time, since the
+				// owner could have been removed after we initially collected
+				// modules.
+				if ( 0 === $this->data_requests->get_module_owner_id( $slug ) ) {
+					// If there's no module owner, skip this module.
+					continue;
+				}
+
+				// Only add this user to the receipt list if they have
+				// permission to view the module data.
 				if (
 					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
 					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
@@ -328,8 +336,7 @@ class Worker_Task {
 				continue;
 			}
 
-			reset( $user_ids );
-			$shared_user_id = (int) key( $user_ids );
+			$shared_user_id = $this->data_requests->get_module_owner_id( $slug );
 			if ( $shared_user_id <= 0 ) {
 				continue;
 			}
