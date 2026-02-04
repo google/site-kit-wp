@@ -404,10 +404,22 @@ export const selectors = {
 					return adminURL;
 				}
 
-				const baseURL =
-					adminURL[ adminURL.length - 1 ] === '/'
-						? adminURL
-						: `${ adminURL }/`;
+				let baseURL = adminURL;
+				let baseQuery = '';
+				try {
+					const admin = new URL( adminURL );
+					const pathname = admin.pathname.endsWith( '/' )
+						? admin.pathname
+						: `${ admin.pathname }/`;
+					baseURL = `${ admin.origin }${ pathname }`;
+					baseQuery = admin.search || '';
+				} catch ( e ) {
+					baseURL =
+						adminURL[ adminURL.length - 1 ] === '/'
+							? adminURL
+							: `${ adminURL }/`;
+					baseQuery = '';
+				}
 				let pageArg = page;
 				let phpFile = 'admin.php';
 
@@ -426,7 +438,7 @@ export const selectors = {
 				// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
 				const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
 
-				return addQueryArgs( `${ baseURL }${ phpFile }`, {
+				return addQueryArgs( `${ baseURL }${ phpFile }${ baseQuery }`, {
 					page: pageArg,
 					...queryArgs,
 				} );
