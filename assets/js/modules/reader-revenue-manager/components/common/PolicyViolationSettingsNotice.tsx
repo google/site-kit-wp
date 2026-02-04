@@ -56,6 +56,7 @@ const PolicyViolationSettingsNotice: FC = () => {
 	return (
 		<Notice
 			// @ts-expect-error - The `Notice` component is not typed yet.
+			className="googlesitekit-policy-violation-settings-notice"
 			type={ type }
 			title={ title }
 			description={ description }
