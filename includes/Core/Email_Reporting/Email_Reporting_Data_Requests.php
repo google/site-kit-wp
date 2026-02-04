@@ -334,6 +334,28 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
+	 * Gets the owner user ID for a module, if available.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $module_slug Module slug.
+	 * @return int Owner user ID or 0 if unavailable.
+	 */
+	public function get_module_owner_id( $module_slug ) {
+		$module = $this->modules->get_module( $module_slug );
+		if ( ! $module instanceof \Google\Site_Kit\Core\Modules\Module_With_Owner ) {
+			return 0;
+		}
+
+		$owner_id = $module->get_owner_id();
+		if ( ! get_user_by( 'id', $owner_id ) ) {
+			return 0;
+		}
+
+		return $owner_id;
+	}
+
+	/**
 	 * Gets the connected AdSense account ID if available.
 	 *
 	 * @since 1.168.0

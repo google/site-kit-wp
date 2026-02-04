@@ -299,6 +299,10 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
+				if ( 0 === $this->data_requests->get_module_owner_id( $slug ) ) {
+					// Owner gating is enforced here so we re-check right before shared payloads are built. In case module owner was removed in the meeantime.
+					continue;
+				}
 				if (
 					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
 					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
@@ -328,8 +332,7 @@ class Worker_Task {
 				continue;
 			}
 
-			reset( $user_ids );
-			$shared_user_id = (int) key( $user_ids );
+			$shared_user_id = (int) $this->data_requests->get_module_owner_id( $slug );
 			if ( $shared_user_id <= 0 ) {
 				continue;
 			}
