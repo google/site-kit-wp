@@ -60,6 +60,19 @@
 			margin-bottom: 8px; // Override 24px bottom margin to match spacing before the below `id-warning-notice` refactoring.
 		}
 
+		// Policy violation notice spacing.
+		// The container needs 26px margin-bottom to achieve 42px total gap
+		// (42px - 16px margin-top from product-id-container = 26px).
+		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
+			margin-bottom: 26px;
+
+			// Error notices have an extra 1rem margin-bottom from setup module styling.
+			// Reduce container margin to maintain 42px total gap: 26px - 1rem = 10px.
+			&:has(.googlesitekit-notice--error) {
+				margin-bottom: 10px;
+			}
+		}
+
 		.googlesitekit-rrm-settings-edit__product-id-container {
 			align-items: center;
 			display: flex;
