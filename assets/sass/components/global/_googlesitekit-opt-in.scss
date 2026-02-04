@@ -37,6 +37,35 @@
 	}
 }
 
+.googlesitekit-opt-in--layout-stacked {
+
+	.mdc-checkbox {
+		margin-left: -7px;
+	}
+
+	.mdc-form-field {
+
+		label {
+			color: $c-surfaces-on-surface;
+			display: block;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+	}
+
+	.googlesitekit-opt-in__description {
+		color: $c-surfaces-on-background-variant;
+		display: block;
+		font-size: $fs-body-md;
+		font-weight: $fw-normal;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+		margin-top: 2px;
+	}
+}
+
 .googlesitekit-opt-in--border {
 	border-top: 1px solid $c-border-medium;
 	padding-top: $grid-gap-phone;
@@ -51,5 +80,5 @@
 }
 
 .googlesitekit-opt-in--align-top .mdc-checkbox {
-	margin-top: -7px;
+	margin-top: 0;
 }

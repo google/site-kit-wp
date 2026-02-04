@@ -20,20 +20,32 @@ namespace Google\Service\SubscribewithGoogle;
 class PaymentAddress extends \Google\Model
 {
   /**
+   * Top-level administrative subdivision of this country. Examples: US state,
+   * IT region, UK constituent nation, JP prefecture.
+   *
    * @var string
    */
   public $administrativeArea;
   /**
+   * Two-letter country code (in ISO 3166-1-alpha-2) of the user payment
+   * profile's legal address.
+   *
    * @var string
    */
   public $countryCode;
   /**
+   * Despite the name, postal_code_number values are frequently alphanumeric.
+   * Examples: "94043", "SW1W", "SW1W 9TQ".
+   *
    * @var string
    */
   public $postalCode;
 
   /**
-   * @param string
+   * Top-level administrative subdivision of this country. Examples: US state,
+   * IT region, UK constituent nation, JP prefecture.
+   *
+   * @param string $administrativeArea
    */
   public function setAdministrativeArea($administrativeArea)
   {
@@ -47,7 +59,10 @@ class PaymentAddress extends \Google\Model
     return $this->administrativeArea;
   }
   /**
-   * @param string
+   * Two-letter country code (in ISO 3166-1-alpha-2) of the user payment
+   * profile's legal address.
+   *
+   * @param string $countryCode
    */
   public function setCountryCode($countryCode)
   {
@@ -61,7 +76,10 @@ class PaymentAddress extends \Google\Model
     return $this->countryCode;
   }
   /**
-   * @param string
+   * Despite the name, postal_code_number values are frequently alphanumeric.
+   * Examples: "94043", "SW1W", "SW1W 9TQ".
+   *
+   * @param string $postalCode
    */
   public function setPostalCode($postalCode)
   {

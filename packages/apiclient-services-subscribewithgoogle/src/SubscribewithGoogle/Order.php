@@ -21,28 +21,47 @@ class Order extends \Google\Collection
 {
   protected $collection_key = 'stateDetails';
   /**
+   * Output only. The time that the order was created.
+   *
    * @var string
    */
   public $createTime;
   /**
+   * Identifier. The resource name of the Order. Format:
+   * `publications/{publication}/readers/{reader}/orders/{order}`.
+   *
    * @var string
    */
   public $name;
   /**
+   * This is the offer ID associated with the purchase, which corresponds to the
+   * value in the 'External ID' column within the paywall section of the
+   * Publisher Center. This is of the form SWGPD.dddd-dddd-dddd-dddd
+   *
    * @var string
    */
   public $offerId;
   /**
+   * Output only. Unique identifier of a purchase order. This is the id that is
+   * displayed on the publisher center’s member page. This is of the form .dddd-
+   * dddd-dddd-ddddd where is a string specific to the billable service.
+   *
    * @var string
    */
   public $orderId;
   protected $paymentAddressType = PaymentAddress::class;
   protected $paymentAddressDataType = '';
   /**
+   * The product title associated with the offer. Each subscription/plan title
+   * follows the format 'publication name - offer name'. For contribution, this
+   * will be 'publication name - (frequency) payment'
+   *
    * @var string
    */
   public $planTitle;
   /**
+   * The product ids of the order at the time of purchase.
+   *
    * @var string[]
    */
   public $productIds;
@@ -51,12 +70,16 @@ class Order extends \Google\Collection
   protected $stateDetailsType = StateDetails::class;
   protected $stateDetailsDataType = 'array';
   /**
+   * Output only. The last time the order was updated.
+   *
    * @var string
    */
   public $updateTime;
 
   /**
-   * @param string
+   * Output only. The time that the order was created.
+   *
+   * @param string $createTime
    */
   public function setCreateTime($createTime)
   {
@@ -70,7 +93,10 @@ class Order extends \Google\Collection
     return $this->createTime;
   }
   /**
-   * @param string
+   * Identifier. The resource name of the Order. Format:
+   * `publications/{publication}/readers/{reader}/orders/{order}`.
+   *
+   * @param string $name
    */
   public function setName($name)
   {
@@ -84,7 +110,11 @@ class Order extends \Google\Collection
     return $this->name;
   }
   /**
-   * @param string
+   * This is the offer ID associated with the purchase, which corresponds to the
+   * value in the 'External ID' column within the paywall section of the
+   * Publisher Center. This is of the form SWGPD.dddd-dddd-dddd-dddd
+   *
+   * @param string $offerId
    */
   public function setOfferId($offerId)
   {
@@ -98,7 +128,11 @@ class Order extends \Google\Collection
     return $this->offerId;
   }
   /**
-   * @param string
+   * Output only. Unique identifier of a purchase order. This is the id that is
+   * displayed on the publisher center’s member page. This is of the form .dddd-
+   * dddd-dddd-ddddd where is a string specific to the billable service.
+   *
+   * @param string $orderId
    */
   public function setOrderId($orderId)
   {
@@ -112,7 +146,9 @@ class Order extends \Google\Collection
     return $this->orderId;
   }
   /**
-   * @param PaymentAddress
+   * The payment address of the buyer.
+   *
+   * @param PaymentAddress $paymentAddress
    */
   public function setPaymentAddress(PaymentAddress $paymentAddress)
   {
@@ -126,7 +162,11 @@ class Order extends \Google\Collection
     return $this->paymentAddress;
   }
   /**
-   * @param string
+   * The product title associated with the offer. Each subscription/plan title
+   * follows the format 'publication name - offer name'. For contribution, this
+   * will be 'publication name - (frequency) payment'
+   *
+   * @param string $planTitle
    */
   public function setPlanTitle($planTitle)
   {
@@ -140,7 +180,9 @@ class Order extends \Google\Collection
     return $this->planTitle;
   }
   /**
-   * @param string[]
+   * The product ids of the order at the time of purchase.
+   *
+   * @param string[] $productIds
    */
   public function setProductIds($productIds)
   {
@@ -154,7 +196,9 @@ class Order extends \Google\Collection
     return $this->productIds;
   }
   /**
-   * @param RecurrenceDetails
+   * The recurrence details of the order.
+   *
+   * @param RecurrenceDetails $recurrenceDetails
    */
   public function setRecurrenceDetails(RecurrenceDetails $recurrenceDetails)
   {
@@ -168,7 +212,10 @@ class Order extends \Google\Collection
     return $this->recurrenceDetails;
   }
   /**
-   * @param StateDetails[]
+   * The current and previous purchase order states that the message held.
+   * (Sorted by PurchaseOrderData.update_time descending.)
+   *
+   * @param StateDetails[] $stateDetails
    */
   public function setStateDetails($stateDetails)
   {
@@ -182,7 +229,9 @@ class Order extends \Google\Collection
     return $this->stateDetails;
   }
   /**
-   * @param string
+   * Output only. The last time the order was updated.
+   *
+   * @param string $updateTime
    */
   public function setUpdateTime($updateTime)
   {

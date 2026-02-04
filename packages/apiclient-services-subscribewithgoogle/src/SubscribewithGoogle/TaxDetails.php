@@ -22,12 +22,16 @@ class TaxDetails extends \Google\Model
   protected $amountType = Money::class;
   protected $amountDataType = '';
   /**
+   * The tax category.
+   *
    * @var string
    */
   public $taxCategory;
 
   /**
-   * @param Money
+   * The amount of tax to collect.
+   *
+   * @param Money $amount
    */
   public function setAmount(Money $amount)
   {
@@ -41,7 +45,9 @@ class TaxDetails extends \Google\Model
     return $this->amount;
   }
   /**
-   * @param string
+   * The tax category.
+   *
+   * @param string $taxCategory
    */
   public function setTaxCategory($taxCategory)
   {

@@ -26,9 +26,9 @@ import {
 	fireEvent,
 	muteFetch,
 	act,
-} from '../../../tests/js/test-utils';
+} from '../../../../tests/js/test-utils';
 import * as tracking from '@/js/util/tracking';
-import OptIn from './OptIn';
+import OptIn from './';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -59,22 +59,17 @@ describe( 'OptIn', () => {
 	it( 'should render correctly', () => {
 		provideTracking( registry, false );
 
-		const { container, getByRole, getByText } = render(
-			<OptIn { ...optInProps } />,
-			{
-				viewContext: 'test-view-context',
-				registry,
-			}
-		);
+		const { container, getByRole } = render( <OptIn { ...optInProps } />, {
+			viewContext: 'test-view-context',
+			registry,
+		} );
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByRole( 'checkbox' ) ).toBeInTheDocument();
-
 		expect(
-			getByText(
-				'Help us improve Site Kit by sharing anonymous usage data.'
-			)
+			getByRole( 'checkbox', {
+				name: /Help us improve Site Kit by sharing anonymous usage data/i,
+			} )
 		).toBeInTheDocument();
 	} );
 

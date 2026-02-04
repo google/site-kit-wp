@@ -30,6 +30,7 @@ import {
 	useEffect,
 	useState,
 	createInterpolateElement,
+	Fragment,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -37,20 +38,26 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Checkbox } from 'googlesitekit-components';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '@/js/util/tracking';
-import Link from './Link';
+import Link from '@/js/components/Link';
 import useViewContext from '@/js/hooks/useViewContext';
 import { useDebounce } from '@/js/hooks/useDebounce';
+import LayoutDefault from './LayoutDefault';
+import LayoutStacked from './LayoutStacked';
+
+const DEFAULT_LAYOUT = 'default';
+const STACKED_LAYOUT = 'stacked';
 
 export default function OptIn( {
 	id = 'googlesitekit-opt-in',
 	name = 'optIn',
 	className,
+	layout = DEFAULT_LAYOUT,
+	title = null,
+	description = null,
 	trackEventCategory,
 	trackEventAction = 'tracking_optin',
-	alignLeftCheckbox = false,
 } ) {
 	const [ checked, setChecked ] = useState();
 
@@ -110,34 +117,67 @@ export default function OptIn( {
 		[ debouncedHandleOptIn ]
 	);
 
+	const labelTitle = title ?? (
+		<span>
+			{ __(
+				'Help us improve Site Kit by sharing anonymous usage data.',
+				'google-site-kit'
+			) }
+		</span>
+	);
+	const labelDescription =
+		description ??
+		createInterpolateElement(
+			__(
+				'<span>All collected data is treated in accordance with the <a>Google Privacy Policy</a></span>',
+				'google-site-kit'
+			),
+			{
+				a: (
+					<Link
+						key="link"
+						href="https://policies.google.com/privacy"
+						external
+					/>
+				),
+				span: <span />,
+			}
+		);
+
+	const checkboxProps = {
+		id,
+		name,
+		value: '1',
+		checked,
+		onChange: handleCheck,
+		loading: enabled === undefined,
+	};
+
 	return (
-		<div className={ classnames( 'googlesitekit-opt-in', className ) }>
-			<Checkbox
-				id={ id }
-				name={ name }
-				value="1"
-				checked={ checked }
-				onChange={ handleCheck }
-				loading={ enabled === undefined }
-				alignLeft={ alignLeftCheckbox }
-			>
-				{ createInterpolateElement(
-					__(
-						'<span>Help us improve Site Kit by sharing anonymous usage data.</span> <span>All collected data is treated in accordance with the <a>Google Privacy Policy</a></span>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							<Link
-								key="link"
-								href="https://policies.google.com/privacy"
-								external
-							/>
-						),
-						span: <span />,
+		<div
+			className={ classnames(
+				'googlesitekit-opt-in',
+				className,
+				layout === STACKED_LAYOUT &&
+					'googlesitekit-opt-in--layout-stacked'
+			) }
+		>
+			{ layout === STACKED_LAYOUT ? (
+				<LayoutStacked
+					checkboxProps={ checkboxProps }
+					title={ labelTitle }
+					description={ labelDescription }
+				/>
+			) : (
+				<LayoutDefault
+					checkboxProps={ checkboxProps }
+					label={
+						<Fragment>
+							{ labelTitle } { labelDescription }
+						</Fragment>
 					}
-				) }
-			</Checkbox>
+				/>
+			) }
 
 			{ error?.message && (
 				<div className="googlesitekit-error-text">
@@ -152,6 +192,8 @@ OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
 	className: PropTypes.string,
+	title: PropTypes.node,
+	description: PropTypes.node,
+	layout: PropTypes.oneOf( [ DEFAULT_LAYOUT, STACKED_LAYOUT ] ),
 	trackEventCategory: PropTypes.string,
-	alignLeftCheckbox: PropTypes.bool,
 };

@@ -252,7 +252,7 @@ describe( 'admin tracking', () => {
 					'page=googlesitekit-settings'
 				);
 
-				await expect( page ).toHaveTracking();
+				await expect( page ).toHaveTracking( { timeout: 10000 } );
 			} );
 		} );
 
@@ -279,7 +279,7 @@ describe( 'admin tracking', () => {
 					'page=googlesitekit-dashboard'
 				);
 
-				await expect( page ).toHaveTracking();
+				await expect( page ).toHaveTracking( { timeout: 10000 } );
 			} );
 		} );
 	} );

@@ -22,3 +22,4 @@ export { default as PublicationApprovedOverlayNotification } from './Publication
 export { default as ReaderRevenueManagerSetupCTABanner } from './ReaderRevenueManagerSetupCTABanner';
 export { default as RRMSetupSuccessSubtleNotification } from './RRMSetupSuccessSubtleNotification';
 export { default as RRMIntroductoryOverlayNotification } from './RRMIntroductoryOverlayNotification';
+export { default as PolicyViolationNotification } from './PolicyViolationNotification';
