@@ -298,7 +298,8 @@ class Worker_Task {
 
 			foreach ( $module_slugs as $slug ) {
 				if ( 0 === $this->data_requests->get_module_owner_id( $slug ) ) {
-					// Owner gating is enforced here so we re-check right before shared payloads are built. In case module owner was removed in the meeantime.
+					// Gate on owner here to ensure the module still has an owner at send time,
+					// since the owner could have been removed after we initially collected modules.
 					continue;
 				}
 				if (
@@ -330,7 +331,7 @@ class Worker_Task {
 				continue;
 			}
 
-			$shared_user_id = (int) $this->data_requests->get_module_owner_id( $slug );
+			$shared_user_id = $this->data_requests->get_module_owner_id( $slug );
 			if ( $shared_user_id <= 0 ) {
 				continue;
 			}
