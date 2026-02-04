@@ -297,11 +297,16 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
+				// Ensure the module still has an owner at send time, since the
+				// owner could have been removed after we initially collected
+				// modules.
 				if ( 0 === $this->data_requests->get_module_owner_id( $slug ) ) {
-					// Gate on owner here to ensure the module still has an owner at send time,
-					// since the owner could have been removed after we initially collected modules.
+					// If there's no module owner, skip this module.
 					continue;
 				}
+
+				// Only add this user to the receipt list if they have
+				// permission to view the module data.
 				if (
 					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
 					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
