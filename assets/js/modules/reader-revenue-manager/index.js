@@ -380,7 +380,7 @@ export const NOTIFICATIONS = {
 				// Show for pending or active violation states (not extreme).
 				return (
 					contentPolicyState !==
-						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE &&
+						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE &&
 					( PENDING_POLICY_VIOLATION_STATES.includes(
 						contentPolicyState
 					) ||
@@ -416,7 +416,7 @@ export const NOTIFICATIONS = {
 				// Show only for EXTREME severity.
 				return (
 					contentPolicyState ===
-					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 				);
 			}
 		),

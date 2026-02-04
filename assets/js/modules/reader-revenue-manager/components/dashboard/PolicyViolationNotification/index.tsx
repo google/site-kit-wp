@@ -38,7 +38,7 @@ interface PolicyViolationNotificationProps {
 	Notification: ElementType;
 }
 
-const { CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE } =
+const { CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE } =
 	CONTENT_POLICY_STATES;
 
 const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
@@ -57,7 +57,8 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 		getPolicyViolationNotificationCopy( contentPolicyState );
 
 	const dismissOptions =
-		contentPolicyState === CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+		contentPolicyState ===
+		CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 			? {}
 			: {
 					skipExpiryCheck: true,
