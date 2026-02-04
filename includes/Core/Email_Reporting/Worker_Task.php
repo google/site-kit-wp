@@ -174,7 +174,10 @@ class Worker_Task {
 
 			if ( ! empty( $shared_payloads ) && $user instanceof \WP_User ) {
 				foreach ( $shared_payloads as $slug => $module_payload ) {
-					if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+					if (
+						user_can( $user, Permissions::MANAGE_OPTIONS ) ||
+						user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
+					) {
 						$shared_payloads_for_user[ $slug ] = $module_payload;
 					}
 				}
@@ -296,7 +299,10 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
-				if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				if (
+					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
+					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
+				) {
 					$module_recipients[ $slug ][ $user_id ] = true;
 				}
 			}
