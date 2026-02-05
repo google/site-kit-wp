@@ -36,7 +36,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
-	waitForDefaultTimeouts,
+	waitForMDCCleanup,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -151,7 +151,7 @@ describe( 'WebContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
 
-		await waitForDefaultTimeouts();
+		await waitForMDCCleanup();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -207,7 +207,7 @@ describe( 'WebContainerSelect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( webContainer.containerId );
 
-		await waitForDefaultTimeouts();
+		await waitForMDCCleanup();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

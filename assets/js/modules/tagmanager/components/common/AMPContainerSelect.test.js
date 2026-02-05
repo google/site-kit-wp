@@ -20,12 +20,7 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import {
-	fireEvent,
-	render,
-	act,
-	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
@@ -38,6 +33,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
+	waitForMDCCleanup,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -120,7 +116,7 @@ describe( 'AMPContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', () => {
+	it( 'can select the "Set up a new container" option', async () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_AMP ] },
 		} );
@@ -151,6 +147,8 @@ describe( 'AMPContainerSelect', () => {
 		expect(
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
+
+		await waitForMDCCleanup();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -173,12 +171,9 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText, waitForRegistry } = render(
-			<AMPContainerSelect />,
-			{
-				registry,
-			}
-		);
+		const { container, getByText } = render( <AMPContainerSelect />, {
+			registry,
+		} );
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -207,10 +202,7 @@ describe( 'AMPContainerSelect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 
-		// Ensure any pending async updates from the enhanced Select finish before unmount,
-		// preventing setState on unmounted component warnings in Jest.
-		await waitForRegistry();
-		await waitForDefaultTimeouts();
+		await waitForMDCCleanup();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

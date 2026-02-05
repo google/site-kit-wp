@@ -21,6 +21,7 @@
  */
 import fetchMock from 'fetch-mock';
 import { debounce, keyBy, mapValues } from 'lodash';
+import { act } from '@testing-library/react';
 
 /**
  * WordPress dependencies
@@ -673,6 +674,24 @@ export function waitForDefaultTimeouts() {
 export function waitForTimeouts( timeout ) {
 	return new Promise( ( resolve ) => {
 		setTimeout( resolve, timeout );
+	} );
+}
+
+/**
+ * Waits for MDC (Material Design Components) async cleanup to complete.
+ *
+ * The MDC MenuSurface foundation schedules a requestAnimationFrame + setTimeout(75ms)
+ * on close that it doesn't save a reference to, so destroy() can't cancel it.
+ * Wrapping in act() ensures React properly processes these deferred setState calls,
+ * preventing "setState on unmounted component" warnings in Jest.
+ *
+ * @since 1.174.0
+ *
+ * @return {Promise} A promise that resolves after MDC cleanup timers have fired.
+ */
+export async function waitForMDCCleanup() {
+	await act( async () => {
+		await waitForTimeouts( 150 );
 	} );
 }
 

@@ -1,0 +1,29 @@
+name: Flaky Test Monitor - AMPContainerSelect
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch: # Allow manual trigger
+
+concurrency:
+  group: flaky-test-monitor
+  cancel-in-progress: true
+
+jobs:
+  flaky-test:
+    name: AMPContainerSelect Stability Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        run: [1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets -w storybook -w tests/js --include-workspace-root
+      - name: Run AMPContainerSelect test (attempt ${{ matrix.run }})
+        run: npm run test:js -- assets/js/modules/tagmanager/components/common/AMPContainerSelect.test.js
