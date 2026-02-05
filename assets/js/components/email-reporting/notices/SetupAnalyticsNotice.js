@@ -136,7 +136,7 @@ export default function SetupAnalyticsNotice() {
 		<NoticeWithIntersectionObserver
 			type={ TYPES.NEW }
 			title={ __(
-				'HERE Understand how visitors interact with your content',
+				'Understand how visitors interact with your content',
 				'google-site-kit'
 			) }
 			description={ createInterpolateElement(
