@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PolicyViolationSettingsNotice should render error notice with extreme violation copy for CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE 1`] = `
+exports[`PolicyViolationSettingsNotice should render error notice with extreme violation copy for CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE 1`] = `
 <div>
   <div
     class="googlesitekit-notice-container"
