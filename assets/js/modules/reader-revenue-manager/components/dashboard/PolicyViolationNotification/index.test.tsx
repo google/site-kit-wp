@@ -49,7 +49,7 @@ const {
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
 	CONTENT_POLICY_VIOLATION_ACTIVE,
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
-	CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 } = CONTENT_POLICY_STATES;
 
 const POLICY_INFO_URL = 'https://example.com/policy-info';
@@ -219,7 +219,7 @@ describe( 'PolicyViolationNotification', () => {
 	} );
 
 	it( 'should render error notification for immediate organization violation', () => {
-		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE );
+		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE );
 
 		const { container, getByText, getByRole } = render(
 			<ExtremeNotificationWithComponentProps />,
@@ -269,7 +269,7 @@ describe( 'PolicyViolationNotification', () => {
 
 	it.each( [
 		CONTENT_POLICY_STATE_OK,
-		CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+		CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 	] )(
 		'moderateHighNotification.checkRequirements should return false for content policy state %s',
 		async ( contentPolicyState ) => {
@@ -299,8 +299,8 @@ describe( 'PolicyViolationNotification', () => {
 		expect( isActive ).toBe( false );
 	} );
 
-	it( 'extremeNotification.checkRequirements should return true for `CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE`', async () => {
-		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE );
+	it( 'extremeNotification.checkRequirements should return true for `CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE`', async () => {
+		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE );
 
 		const isActive = await extremeNotification.checkRequirements(
 			registry
