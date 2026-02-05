@@ -200,10 +200,10 @@ class Worker_TaskTest extends TestCase {
 		$expected_delay  = 11 * MINUTE_IN_SECONDS;
 		$captured_delay  = null;
 
-		$this->limiter->expects( $this->exactly( 5 ) )
+		$this->limiter->expects( $this->exactly( 4 ) )
 			->method( 'should_abort' )
 			->with( $initiator_stamp )
-			->willReturnOnConsecutiveCalls( false, false, false, false, false );
+			->willReturnOnConsecutiveCalls( false, false, false, false );
 
 		$this->batch_query->expects( $this->once() )
 			->method( 'is_complete' )
