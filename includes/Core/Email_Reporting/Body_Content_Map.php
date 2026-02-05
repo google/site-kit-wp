@@ -45,7 +45,7 @@ class Body_Content_Map {
 		return array(
 			'invitation-email' => array(
 				__( 'Receive the most important insights about your site’s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' ),
-				__( 'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.', 'google-site-kit' ),
+				__( 'You can unsubscribe or change how often emails are sent anytime from your Site Kit dashboard.', 'google-site-kit' ),
 			),
 		);
 	}
