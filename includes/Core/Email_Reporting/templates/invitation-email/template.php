@@ -155,7 +155,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic.png' );
 										<?php /* Description with Learn more link. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php
-											echo esc_html__( 'Receive the most important insights about your site\'s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' );
+											echo esc_html__( 'Receive the most important insights about your site’s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' );
 											?>
 											<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 										</p>
