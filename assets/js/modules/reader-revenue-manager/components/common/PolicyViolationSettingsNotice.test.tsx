@@ -38,7 +38,7 @@ const {
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
 	CONTENT_POLICY_VIOLATION_ACTIVE,
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
-	CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 } = CONTENT_POLICY_STATES;
 
 const POLICY_INFO_URL = 'https://example.com/policy-info';
@@ -176,8 +176,8 @@ describe( 'PolicyViolationSettingsNotice', () => {
 		}
 	);
 
-	it( 'should render error notice with extreme violation copy for CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE', () => {
-		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE );
+	it( 'should render error notice with extreme violation copy for CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE', () => {
+		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE );
 
 		const { getByText, getByRole, container } = render(
 			<PolicyViolationSettingsNotice />,
