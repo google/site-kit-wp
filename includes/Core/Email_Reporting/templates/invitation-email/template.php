@@ -24,7 +24,7 @@ $get_asset_url      = $data['get_asset_url'];
 $render_part        = $data['render_part'];
 $render_shared_part = $data['render_shared_part'];
 
-$envelope_url = $get_asset_url( 'invitation-envelope-graphic.png' );
+$envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 ?>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">

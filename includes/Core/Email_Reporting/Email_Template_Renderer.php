@@ -18,42 +18,6 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Email_Template_Renderer {
 
 	/**
-	 * CDN base URL for email assets.
-	 *
-	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
-	 *
-	 * @since 1.168.0
-	 * @var string
-	 */
-	const EMAIL_ASSETS_BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
-
-	/**
-	 * Asset paths mapping.
-	 *
-	 * Maps asset filenames to their versioned folder paths.
-	 * Format: 'asset-filename.png' => 'version/template-name'
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	const EMAIL_ASSET_PATHS = array(
-		// email-report assets (1.168.0).
-		'site-kit-logo.png'               => '1.168.0/email-report',
-		'shooting-stars-graphic.png'      => '1.168.0/email-report',
-		'icon-conversions.png'            => '1.168.0/email-report',
-		'icon-growth.png'                 => '1.168.0/email-report',
-		'icon-link-arrow.png'             => '1.168.0/email-report',
-		'icon-search.png'                 => '1.168.0/email-report',
-		'icon-views.png'                  => '1.168.0/email-report',
-		'icon-visitors.png'               => '1.168.0/email-report',
-		'conversions-timeline-green.png'  => '1.168.0/email-report',
-		'conversions-timeline-red.png'    => '1.168.0/email-report',
-		'notification-icon-star.png'      => '1.168.0/email-report',
-		// invitation-email assets (1.172.0).
-		'invitation-envelope-graphic.png' => '1.172.0/invitation-email',
-	);
-
-	/**
 	 * The sections map instance.
 	 *
 	 * @since 1.168.0
@@ -93,25 +57,6 @@ class Email_Template_Renderer {
 	}
 
 	/**
-	 * Gets the full URL for an email asset.
-	 *
-	 * Constructs a URL following the folder structure:
-	 * {base_url}/{version}/{template-name}/{asset-filename}
-	 *
-	 * @since 1.168.0
-	 * @since n.e.x.t Updated to use asset-specific path mapping.
-	 *
-	 * @param string $asset_name The asset filename (e.g., 'icon-conversions.png').
-	 * @return string The full URL to the asset.
-	 */
-	public function get_email_asset_url( $asset_name ) {
-		$asset_name = ltrim( $asset_name, '/' );
-		$asset_path = self::EMAIL_ASSET_PATHS[ $asset_name ] ?? '1.168.0/email-report';
-
-		return self::EMAIL_ASSETS_BASE_URL . $asset_path . '/' . $asset_name;
-	}
-
-	/**
 	 * Renders the email template with the given data.
 	 *
 	 * @since 1.168.0
@@ -135,7 +80,7 @@ class Email_Template_Renderer {
 			$data,
 			array(
 				'sections'           => $sections,
-				'get_asset_url'      => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
+				'get_asset_url'      => fn( $slug ) => Email_Assets::url( $slug ),
 				'render_part'        => fn( $part_name, $vars = array() ) => $this->render_part_file( $template_parts_dir . '/' . $part_name . '.php', $vars ),
 				'render_shared_part' => fn( $part_name, $vars = array() ) => $this->render_part_file( $shared_parts_dir . '/' . $part_name . '.php', $vars ),
 			)

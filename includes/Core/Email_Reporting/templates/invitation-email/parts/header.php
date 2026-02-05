@@ -13,7 +13,7 @@
  * @var callable $get_asset_url Function to generate asset URLs.
  */
 
-$logo_url = $get_asset_url( 'site-kit-logo.png' );
+$logo_url = $get_asset_url( 'site-kit-logo' );
 ?>
 <table role="presentation" width="100%">
 	<tr>
