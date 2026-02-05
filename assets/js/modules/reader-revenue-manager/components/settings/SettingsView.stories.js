@@ -139,7 +139,7 @@ WithPolicyViolationExtreme.parameters = {
 };
 WithPolicyViolationExtreme.args = {
 	contentPolicyState:
-		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 };
 WithPolicyViolationExtreme.scenario = {};
 
