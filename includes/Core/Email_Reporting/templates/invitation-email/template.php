@@ -162,7 +162,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 
 										<?php /* Unsubscribe note. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 24px 0;">
-											<?php echo esc_html__( 'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.', 'google-site-kit' ); ?>
+											<?php echo esc_html__( 'You can unsubscribe or change how often emails are sent anytime from your Site Kit dashboard.', 'google-site-kit' ); ?>
 										</p>
 
 										<?php /* CTA Button. */ ?>
