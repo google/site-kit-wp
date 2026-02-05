@@ -34,8 +34,11 @@
 		"lint:css": "stylelint ./assets/sass ./storybook/assets/sass",
 		"lint:css-fix": "stylelint ./assets/sass ./storybook/assets/sass --fix",
 		"env:start": "npm run -w tests/e2e start",
+		"env:start:parallel": "npm run -w tests/e2e start:parallel",
 		"env:stop": "npm run -w tests/e2e stop",
+		"env:stop:parallel": "npm run -w tests/e2e stop:parallel",
 		"env:reset-site": "npm run -w tests/e2e reset-site",
+		"test:e2e:parallel": "npm run -w tests/e2e test:parallel",
 		"postinstall": "patch-package",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit"

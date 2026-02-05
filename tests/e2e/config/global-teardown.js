@@ -1,7 +1,9 @@
 /**
- * E2E setup for screenshots.
+ * Global teardown for parallel E2E tests.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Runs once after all workers complete. Stub for any post-parallel cleanup.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +18,11 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { clearScreenshots } from '../utils';
-
-// In parallel mode, screenshots are cleared in globalSetup to avoid
-// race conditions between workers. Only clear here in serial mode.
-if ( process.env.E2E_PARALLEL !== '1' ) {
-	clearScreenshots();
-}
+module.exports = async function globalTeardown( globalConfig ) {
+	// Run jest-puppeteer's global teardown to close browser(s) that were
+	// launched during global setup.
+	const {
+		teardown: puppeteerGlobalTeardown,
+	} = require( 'jest-environment-puppeteer' );
+	await puppeteerGlobalTeardown( globalConfig );
+};

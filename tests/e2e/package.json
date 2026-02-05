@@ -6,7 +6,11 @@
 		"test:watch": "npm run test -- --watch",
 		"test:watch:interactive": "npm run test -- --watch --puppeteer-interactive",
 		"start": "./bin/local-env/start.sh",
+		"start:parallel": "./bin/local-env/start-parallel.sh",
 		"stop": "./bin/local-env/stop.sh",
+		"stop:parallel": "./bin/local-env/stop-parallel.sh",
+		"pretest:parallel": "./bin/test-docker-connectivity",
+		"test:parallel": "cross-env E2E_PARALLEL=1 WP_BASE_URL=http://localhost:9002 ./script.js",
 		"reset-site": "./bin/local-env/install-wordpress.sh --reset-site"
 	},
 	"config": {

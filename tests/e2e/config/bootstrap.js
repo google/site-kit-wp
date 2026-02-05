@@ -201,9 +201,13 @@ const pageEvents = [];
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for Puppeteer waits.
-page.setDefaultTimeout( 10_000 );
+// In parallel mode, multiple workers share host resources so pages load slower.
+const isParallel = process.env.E2E_PARALLEL === '1';
+page.setDefaultTimeout( isParallel ? 20_000 : 10_000 );
 // Set default timeout for individual expect-puppeteer assertions.
-setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 3000 } );
+setDefaultOptions( {
+	timeout: EXPECT_PUPPETEER_TIMEOUT || ( isParallel ? 10_000 : 3000 ),
+} );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
