@@ -41,6 +41,16 @@
 				margin-top: $grid-gap-desktop;
 			}
 		}
+
+		// Policy violation error notice spacing for settings view.
+		// Error notices have an extra 1rem margin-bottom from setup module styling.
+		// Add negative margin to maintain the existing total gap.
+		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
+
+			&:has(.googlesitekit-notice--error) {
+				margin-bottom: -1rem;
+			}
+		}
 	}
 
 	.googlesitekit-rrm-settings-edit {
@@ -61,6 +71,9 @@
 		}
 
 		// Policy violation notice spacing to achieve 42px total gap.
+		// Disable specificity warning: this selector targets a different parent context
+		// than settings view and will never compete with those selectors.
+		// stylelint-disable-next-line no-descending-specificity
 		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
 			margin-bottom: 42px;
 
