@@ -82,27 +82,27 @@ export { registerStore } from './datastore';
 /**
  * Checks if the setup success notification is currently being shown.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  *
  * @return {boolean} True if the setup success notification is being shown, false otherwise.
  */
 function isShowingSuccessNotification() {
-	const notification = getQueryArg( location.href, 'notification' );
-	const slug = getQueryArg( location.href, 'slug' );
+	const notification = getQueryArg(location.href, 'notification');
+	const slug = getQueryArg(location.href, 'slug');
 	return (
 		notification === 'authentication_success' &&
 		slug === MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 }
 
-export function registerModule( modules ) {
-	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {
+export function registerModule(modules) {
+	modules.registerModule(MODULE_SLUG_READER_REVENUE_MANAGER, {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		...( isFeatureEnabled( 'rrmPolicyViolations' ) && {
+		...(isFeatureEnabled('rrmPolicyViolations') && {
 			SettingsStatusComponent: SettingsStatus,
-		} ),
+		}),
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
@@ -112,12 +112,12 @@ export function registerModule( modules ) {
 			),
 		],
 		overrideSetupSuccessNotification: true,
-		checkRequirements: async ( registry ) => {
+		checkRequirements: async (registry) => {
 			// Ensure the site info is resolved to get the home URL.
-			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
-			const homeURL = registry.select( CORE_SITE ).getHomeURL();
+			await registry.resolveSelect(CORE_SITE).getSiteInfo();
+			const homeURL = registry.select(CORE_SITE).getHomeURL();
 
-			if ( isURLUsingHTTPS( homeURL ) ) {
+			if (isURLUsingHTTPS(homeURL)) {
 				return;
 			}
 
@@ -130,22 +130,22 @@ export function registerModule( modules ) {
 				data: null,
 			};
 		},
-	} );
+	});
 }
 
 async function checkRequirementsForProductIDNotification(
 	{ select, resolveSelect },
 	requiredPaymentOption
 ) {
-	const readerRevenueManagerActive = select( CORE_MODULES ).isModuleActive(
+	const readerRevenueManagerActive = select(CORE_MODULES).isModuleActive(
 		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
-	if ( ! readerRevenueManagerActive ) {
+	if (!readerRevenueManagerActive) {
 		return false;
 	}
 
-	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+	await resolveSelect(MODULES_READER_REVENUE_MANAGER).getSettings();
 
 	const publicationOnboardingState = select(
 		MODULES_READER_REVENUE_MANAGER
@@ -155,9 +155,9 @@ async function checkRequirementsForProductIDNotification(
 		MODULES_READER_REVENUE_MANAGER
 	).getPaymentOption();
 
-	const productIDs = select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
+	const productIDs = select(MODULES_READER_REVENUE_MANAGER).getProductIDs();
 
-	const productID = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
+	const productID = select(MODULES_READER_REVENUE_MANAGER).getProductID();
 
 	if (
 		publicationOnboardingState ===
@@ -173,38 +173,38 @@ async function checkRequirementsForProductIDNotification(
 }
 
 export const NOTIFICATIONS = {
-	[ RRM_SETUP_NOTIFICATION_ID ]: {
+	[RRM_SETUP_NOTIFICATION_ID]: {
 		Component: ReaderRevenueManagerSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
+		checkRequirements: async ({ select, resolveSelect }) => {
+			await Promise.all([
 				// The isPromptDismissed selector relies on the resolution
 				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				resolveSelect( CORE_MODULES ).isModuleConnected(
+				resolveSelect(CORE_USER).getDismissedPrompts(),
+				resolveSelect(CORE_MODULES).isModuleConnected(
 					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
-				resolveSelect( CORE_MODULES ).canActivateModule(
+				resolveSelect(CORE_MODULES).canActivateModule(
 					MODULE_SLUG_READER_REVENUE_MANAGER
 				),
-			] );
+			]);
 
 			// Check if the prompt with the legacy key used before the banner was refactored
 			// to use the `notification ID` as the dismissal key, is dismissed.
-			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
+			const isLegacyDismissed = select(CORE_USER).isPromptDismissed(
 				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
 			);
 
-			const isRRMModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
+			const isRRMModuleConnected = select(CORE_MODULES).isModuleConnected(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			);
 
-			const canActivateRRMModule = select(
-				CORE_MODULES
-			).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
+			const canActivateRRMModule = select(CORE_MODULES).canActivateModule(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			);
 
 			if (
 				isLegacyDismissed === false &&
@@ -219,20 +219,20 @@ export const NOTIFICATIONS = {
 		isDismissible: true,
 		dismissRetries: 1,
 	},
-	[ RRM_SETUP_SUCCESS_NOTIFICATION_ID ]: {
+	[RRM_SETUP_SUCCESS_NOTIFICATION_ID]: {
 		Component: RRMSetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
+		checkRequirements: async ({ select, resolveSelect }) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
+			).isModuleConnected(MODULE_SLUG_READER_REVENUE_MANAGER);
 
-			if ( ! rrmConnected ) {
+			if (!rrmConnected) {
 				return false;
 			}
 
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+			await resolveSelect(MODULES_READER_REVENUE_MANAGER).getSettings();
 			const publicationOnboardingState = await select(
 				MODULES_READER_REVENUE_MANAGER
 			).getPublicationOnboardingState();
@@ -248,13 +248,13 @@ export const NOTIFICATIONS = {
 		},
 		isDismissible: false,
 	},
-	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
+	[RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID]: {
 		Component: ProductIDContributionsNotification,
 		priority: 20,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
+		checkRequirements: async (registry) => {
 			const isActive = await checkRequirementsForProductIDNotification(
 				registry,
 				'contributions'
@@ -263,13 +263,13 @@ export const NOTIFICATIONS = {
 			return isActive;
 		},
 	},
-	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
+	[RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID]: {
 		Component: ProductIDSubscriptionsNotification,
 		priority: 20,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
+		checkRequirements: async (registry) => {
 			const isActive = await checkRequirementsForProductIDNotification(
 				registry,
 				'subscriptions'
@@ -278,19 +278,19 @@ export const NOTIFICATIONS = {
 			return isActive;
 		},
 	},
-	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
+	[RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION]: {
 		Component: PublicationApprovedOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect, dispatch } ) => {
+		checkRequirements: async ({ resolveSelect, dispatch }) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
+			).isModuleConnected(MODULE_SLUG_READER_REVENUE_MANAGER);
 
-			if ( ! rrmConnected ) {
+			if (!rrmConnected) {
 				return false;
 			}
 
@@ -299,9 +299,9 @@ export const NOTIFICATIONS = {
 				paymentOption,
 				publicationOnboardingStateChanged,
 			} =
-				( await resolveSelect(
+				(await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
+				).getSettings()) || {};
 
 			// Show the overlay if the publication onboarding state is complete, and if either
 			// setup has just been completed but there is no paymentOption selected, or if the
@@ -309,18 +309,18 @@ export const NOTIFICATIONS = {
 			if (
 				publicationOnboardingState ===
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				( ( isShowingSuccessNotification() && paymentOption === '' ) ||
-					publicationOnboardingStateChanged === true )
+				((isShowingSuccessNotification() && paymentOption === '') ||
+					publicationOnboardingStateChanged === true)
 			) {
 				// If the publication onboarding state has changed, reset it to false and save the settings.
 				// This is to ensure that the overlay is not shown again for this reason.
-				if ( publicationOnboardingStateChanged === true ) {
+				if (publicationOnboardingStateChanged === true) {
 					const {
 						saveSettings,
 						setPublicationOnboardingStateChanged,
-					} = dispatch( MODULES_READER_REVENUE_MANAGER );
+					} = dispatch(MODULES_READER_REVENUE_MANAGER);
 
-					setPublicationOnboardingStateChanged( false );
+					setPublicationOnboardingStateChanged(false);
 					saveSettings();
 				}
 
@@ -330,32 +330,32 @@ export const NOTIFICATIONS = {
 			return false;
 		},
 	},
-	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
+	[RRM_INTRODUCTORY_OVERLAY_NOTIFICATION]: {
 		Component: RRMIntroductoryOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
+		checkRequirements: async ({ resolveSelect }) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
+			).isModuleConnected(MODULE_SLUG_READER_REVENUE_MANAGER);
 
-			if ( ! rrmConnected ) {
+			if (!rrmConnected) {
 				return false;
 			}
 
 			const { publicationOnboardingState, paymentOption } =
-				( await resolveSelect(
+				(await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
+				).getSettings()) || {};
 
 			if (
 				publicationOnboardingState ===
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				[ 'noPayment', '' ].includes( paymentOption ) &&
-				! isShowingSuccessNotification()
+				['noPayment', ''].includes(paymentOption) &&
+				!isShowingSuccessNotification()
 			) {
 				return true;
 			}
@@ -363,17 +363,17 @@ export const NOTIFICATIONS = {
 			return false;
 		},
 	},
-	[ RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID ]: {
+	[RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID]: {
 		Component: PolicyViolationNotification,
 		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		featureFlag: 'rrmPolicyViolations',
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
-			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
+			requireModuleConnected(MODULE_SLUG_READER_REVENUE_MANAGER),
+			async ({ select, resolveSelect }) => {
+				if (isShowingSuccessNotification()) {
 					return false;
 				}
 
@@ -389,27 +389,27 @@ export const NOTIFICATIONS = {
 				return (
 					contentPolicyState !==
 						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE &&
-					( PENDING_POLICY_VIOLATION_STATES.includes(
+					(PENDING_POLICY_VIOLATION_STATES.includes(
 						contentPolicyState
 					) ||
 						ACTIVE_POLICY_VIOLATION_STATES.includes(
 							contentPolicyState
-						) )
+						))
 				);
 			}
 		),
 	},
-	[ RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID ]: {
+	[RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID]: {
 		Component: PolicyViolationNotification,
 		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
 		featureFlag: 'rrmPolicyViolations',
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
-			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
+			requireModuleConnected(MODULE_SLUG_READER_REVENUE_MANAGER),
+			async ({ select, resolveSelect }) => {
+				if (isShowingSuccessNotification()) {
 					return false;
 				}
 
@@ -431,11 +431,11 @@ export const NOTIFICATIONS = {
 	},
 };
 
-export function registerNotifications( notificationsAPI ) {
-	for ( const notificationID in NOTIFICATIONS ) {
+export function registerNotifications(notificationsAPI) {
+	for (const notificationID in NOTIFICATIONS) {
 		notificationsAPI.registerNotification(
 			notificationID,
-			NOTIFICATIONS[ notificationID ]
+			NOTIFICATIONS[notificationID]
 		);
 	}
 }

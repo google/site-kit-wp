@@ -116,7 +116,7 @@ class Email_Reporting_Data_Requests {
 	 * Gets the raw payload for a specific user.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
+	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
 	 *
 	 * @param int   $user_id              User ID.
 	 * @param array $date_range           Date range array.
@@ -176,7 +176,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Gets active module slugs for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return string[] Active module slugs.
 	 */
@@ -188,7 +188,7 @@ class Email_Reporting_Data_Requests {
 	 * Collects payloads for the allowed modules.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
+	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
 	 *
 	 * @param array $modules         Allowed modules.
 	 * @param array $date_range      Date range payload.
@@ -336,7 +336,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Gets the owner user ID for a module, if available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param string $module_slug Module slug.
 	 * @return int Owner user ID or 0 if unavailable.
