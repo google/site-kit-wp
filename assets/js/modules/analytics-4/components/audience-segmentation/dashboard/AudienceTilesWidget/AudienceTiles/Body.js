@@ -279,11 +279,6 @@ export default function Body( {
 		isViewOnly,
 	] );
 
-	// TODO: The variable `audienceTileNumber` is part of a temporary workaround to ensure `AudienceErrorModal` is only rendered once
-	// within `AudienceTilesWidget`. This should be removed once the `AudienceErrorModal` render is extracted
-	// from `AudienceTilePagesMetric` and it's rendered once at a higher level instead. See https://github.com/google/site-kit-wp/issues/9543.
-	let audienceTileNumber = 0;
-
 	return (
 		<div className="googlesitekit-widget-audience-tiles__body">
 			{ allTilesError && ! loading && (
@@ -362,7 +357,6 @@ export default function Body( {
 					return (
 						<AudienceTile
 							key={ audienceResourceName }
-							audienceTileNumber={ audienceTileNumber++ }
 							audienceSlug={ audienceSlug }
 							title={ audienceName }
 							infoTooltip={

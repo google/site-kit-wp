@@ -30,6 +30,7 @@ import {
 	useEffect,
 	useMemo,
 	useRef,
+	Fragment,
 } from '@wordpress/element';
 
 /**
@@ -47,6 +48,8 @@ import Body from './Body';
 import Header from './Header';
 import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal';
+import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 
 function hasZeroDataForAudience( report, dimensionName ) {
 	const audienceData = report?.rows?.find(
@@ -266,6 +269,8 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	const activeTileIndex = getAudienceTileIndex( activeTile );
 
+	const { showErrorModal } = useCreateCustomDimension();
+
 	// Determine loading state.
 	const loading =
 		widgetLoading ||
@@ -278,31 +283,34 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		isSyncingAvailableCustomDimensions;
 
 	return (
-		<Widget className="googlesitekit-widget-audience-tiles" noPadding>
-			{ allTilesError === false &&
-				! loading &&
-				isTabbedBreakpoint &&
-				visibleAudiences.length > 0 && (
-					<Header
-						activeTileIndex={ activeTileIndex }
-						setActiveTile={ setActiveTile }
-						visibleAudiences={ visibleAudiences }
-					/>
-				) }
-			<Body
-				activeTileIndex={ activeTileIndex }
-				allTilesError={ allTilesError }
-				individualTileErrors={ individualTileErrors }
-				loading={ loading }
-				topCitiesReportsLoaded={ topCitiesReportsLoaded }
-				topContentReportsLoaded={ topContentReportsLoaded }
-				topContentPageTitlesReportsLoaded={
-					topContentPageTitlesReportsLoaded
-				}
-				visibleAudiences={ visibleAudiences }
-				Widget={ Widget }
-			/>
-		</Widget>
+		<Fragment>
+			<Widget className="googlesitekit-widget-audience-tiles" noPadding>
+				{ allTilesError === false &&
+					! loading &&
+					isTabbedBreakpoint &&
+					visibleAudiences.length > 0 && (
+						<Header
+							activeTileIndex={ activeTileIndex }
+							setActiveTile={ setActiveTile }
+							visibleAudiences={ visibleAudiences }
+						/>
+					) }
+				<Body
+					activeTileIndex={ activeTileIndex }
+					allTilesError={ allTilesError }
+					individualTileErrors={ individualTileErrors }
+					loading={ loading }
+					topCitiesReportsLoaded={ topCitiesReportsLoaded }
+					topContentReportsLoaded={ topContentReportsLoaded }
+					topContentPageTitlesReportsLoaded={
+						topContentPageTitlesReportsLoaded
+					}
+					visibleAudiences={ visibleAudiences }
+					Widget={ Widget }
+				/>
+			</Widget>
+			{ showErrorModal && <CustomDimensionErrorModal /> }
+		</Fragment>
 	);
 }
 
