@@ -55,12 +55,6 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 	const notification =
 		DEFAULT_NOTIFICATIONS[ GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID ];
 
-	const gtgSettings = {
-		isEnabled: true,
-		isGTGHealthy: false,
-		isScriptAccessEnabled: false,
-	};
-
 	const GTGWarningNotificationComponent = withNotificationComponentProps(
 		GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID
 	)( GoogleTagGatewayWarningNotification );
@@ -96,9 +90,14 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 				notification
 			);
 
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetGoogleTagGatewaySettings( gtgSettings );
+		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
+			isEnabled: true,
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+			isUpstreamHealthy: false,
+			isMpathHealthy: false,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
@@ -119,9 +118,12 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 
 		it( 'is not active when server requirements are met and GTG is enabled', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
-				...gtgSettings,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			const isActive = await notification.checkRequirements(
@@ -134,8 +136,12 @@ describe( 'GoogleTagGatewayWarningNotification', () => {
 
 		it( 'is not active when server requirements are not met, but GTG is disabled', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
-				...gtgSettings,
 				isEnabled: false,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
 			} );
 
 			const isActive = await notification.checkRequirements(

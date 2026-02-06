@@ -42,14 +42,13 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Moved health status to Google_Tag_Gateway_Health setting.
 	 *
 	 * @return array The default value.
 	 */
 	protected function get_default() {
 		return array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
 		);
 	}
 
@@ -57,6 +56,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Removed health status sanitization (moved to Google_Tag_Gateway_Health).
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -68,14 +68,6 @@ class Google_Tag_Gateway_Settings extends Setting {
 				$new_value['isEnabled'] = (bool) $value['isEnabled'];
 			}
 
-			if ( isset( $value['isGTGHealthy'] ) ) {
-				$new_value['isGTGHealthy'] = (bool) $value['isGTGHealthy'];
-			}
-
-			if ( isset( $value['isScriptAccessEnabled'] ) ) {
-				$new_value['isScriptAccessEnabled'] = (bool) $value['isScriptAccessEnabled'];
-			}
-
 			return $new_value;
 		};
 	}
@@ -84,6 +76,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Merges an array of settings to update.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Only merges isEnabled (health status moved to Google_Tag_Gateway_Health).
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -98,9 +91,7 @@ class Google_Tag_Gateway_Settings extends Setting {
 		);
 
 		$allowed_settings = array(
-			'isEnabled'             => true,
-			'isGTGHealthy'          => true,
-			'isScriptAccessEnabled' => true,
+			'isEnabled' => true,
 		);
 
 		$updated = array_intersect_key( $partial, $allowed_settings );
@@ -112,19 +103,15 @@ class Google_Tag_Gateway_Settings extends Setting {
 	 * Checks if Google tag gateway is active.
 	 *
 	 * @since 1.162.0
+	 * @since n.e.x.t Deprecated. Use Google_Tag_Gateway::is_ready_and_active() instead.
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
 	public function is_google_tag_gateway_active() {
-		$settings          = $this->get();
-		$required_settings = array( 'isEnabled', 'isGTGHealthy', 'isScriptAccessEnabled' );
+		_deprecated_function( __METHOD__, 'n.e.x.t', 'Google_Tag_Gateway::is_ready_and_active' );
 
-		foreach ( $required_settings as $setting ) {
-			if ( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) {
-				return false;
-			}
-		}
+		$settings = $this->get();
 
-		return true;
+		return isset( $settings['isEnabled'] ) && $settings['isEnabled'];
 	}
 }

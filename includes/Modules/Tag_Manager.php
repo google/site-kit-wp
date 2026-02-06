@@ -37,6 +37,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Site_Health\Debug_Data;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -662,6 +663,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Checks if Google tag gateway is active.
 	 *
 	 * @since 1.162.0
+	 * @since n.e.x.t Updated to use Google_Tag_Gateway::is_ready_and_active() for proper health checks.
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
@@ -670,8 +672,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return false;
 		}
 
-		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway = new Google_Tag_Gateway( $this->context, $this->options );
 
-		return $google_tag_gateway_settings->is_google_tag_gateway_active();
+		return $google_tag_gateway->is_ready_and_active();
 	}
 }

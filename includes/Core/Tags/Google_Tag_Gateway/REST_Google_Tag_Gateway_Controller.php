@@ -45,16 +45,27 @@ class REST_Google_Tag_Gateway_Controller {
 	private $google_tag_gateway_settings;
 
 	/**
+	 * Google_Tag_Gateway_Health instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Tag_Gateway_Health
+	 */
+	private $health_state;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added health state parameter.
 	 *
 	 * @param Google_Tag_Gateway          $google_tag_gateway          Google_Tag_Gateway instance.
 	 * @param Google_Tag_Gateway_Settings $google_tag_gateway_settings Google_Tag_Gateway_Settings instance.
+	 * @param Google_Tag_Gateway_Health   $health_state                Google_Tag_Gateway_Health instance.
 	 */
-	public function __construct( Google_Tag_Gateway $google_tag_gateway, Google_Tag_Gateway_Settings $google_tag_gateway_settings ) {
+	public function __construct( Google_Tag_Gateway $google_tag_gateway, Google_Tag_Gateway_Settings $google_tag_gateway_settings, Google_Tag_Gateway_Health $health_state ) {
 		$this->google_tag_gateway          = $google_tag_gateway;
 		$this->google_tag_gateway_settings = $google_tag_gateway_settings;
+		$this->health_state                = $health_state;
 	}
 
 	/**
@@ -87,6 +98,7 @@ class REST_Google_Tag_Gateway_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added gtg-health and gtg-health-checks endpoints, updated existing endpoints.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -141,13 +153,26 @@ class REST_Google_Tag_Gateway_Controller {
 			),
 
 			new REST_Route(
-				'core/site/data/gtg-server-requirement-status',
+				'core/site/data/gtg-health',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function () {
+							return new WP_REST_Response( $this->health_state->get() );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+				)
+			),
+
+			new REST_Route(
+				'core/site/data/gtg-health-checks',
+				array(
+					array(
+						'methods'             => WP_REST_Server::CREATABLE,
+						'callback'            => function () {
 							$this->google_tag_gateway->healthcheck();
-							return new WP_REST_Response( $this->google_tag_gateway_settings->get() );
+							return new WP_REST_Response( $this->health_state->get() );
 						},
 						'permission_callback' => $can_manage_options,
 					),

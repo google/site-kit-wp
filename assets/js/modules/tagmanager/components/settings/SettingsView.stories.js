@@ -78,8 +78,10 @@ GTGEnabled.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: true,
-			isGTGHealthy: true,
-			isScriptAccessEnabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+			isUpstreamHealthy: true,
+			isMpathHealthy: true,
 		} );
 	},
 };

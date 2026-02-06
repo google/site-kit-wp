@@ -89,8 +89,11 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
-			isGTGHealthy: true,
-			isScriptAccessEnabled: true,
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+			isUpstreamHealthy: true,
+			isMpathHealthy: true,
 		} );
 
 		registry
@@ -121,8 +124,11 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 		it( 'is not active when GTG is enabled', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			} );
 
 			const isActive = await notification.checkRequirements(
@@ -133,11 +139,14 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when GTG is not healthy', async () => {
+		it( 'is not active when upstream is not healthy', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: true,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: false,
+				isMpathHealthy: true,
 			} );
 
 			const isActive = await notification.checkRequirements(
@@ -148,11 +157,14 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when script access is not enabled', async () => {
+		it( 'is not active when mpath is not healthy', async () => {
 			registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: false,
+			} );
+
+			registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+				isUpstreamHealthy: true,
+				isMpathHealthy: false,
 			} );
 
 			const isActive = await notification.checkRequirements(
@@ -196,8 +208,6 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 		fetchMock.postOnce( gtgSettingsEndpoint, {
 			body: JSON.stringify( {
 				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
 			} ),
 			status: 200,
 		} );
@@ -289,8 +299,6 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 		fetchMock.postOnce( gtgSettingsEndpoint, {
 			body: JSON.stringify( {
 				isEnabled: true,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
 			} ),
 			status: 200,
 		} );

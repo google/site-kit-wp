@@ -507,9 +507,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry
 					.dispatch( CORE_USER )
@@ -534,8 +536,6 @@ describe( 'modules/tagmanager settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -560,9 +560,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 					body: JSON.parse( opts.body ).data,
@@ -591,9 +593,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
 					body: JSON.parse( opts.body )?.data,
@@ -613,9 +617,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -634,8 +640,6 @@ describe( 'modules/tagmanager settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -669,9 +673,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -690,8 +696,6 @@ describe( 'modules/tagmanager settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -720,9 +724,11 @@ describe( 'modules/tagmanager settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -741,8 +747,6 @@ describe( 'modules/tagmanager settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -772,8 +776,11 @@ describe( 'modules/tagmanager settings', () => {
 
 				const googleTagGatewaySettings = {
 					isEnabled: false,
-					isGTGHealthy: true,
-					isScriptAccessEnabled: true,
+				};
+
+				const googleTagGatewayHealth = {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
 				};
 
 				registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
@@ -786,6 +793,9 @@ describe( 'modules/tagmanager settings', () => {
 					.receiveGetGoogleTagGatewaySettings( {
 						...googleTagGatewaySettings,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					...googleTagGatewayHealth,
+				} );
 
 				registry
 					.dispatch( CORE_SITE )
