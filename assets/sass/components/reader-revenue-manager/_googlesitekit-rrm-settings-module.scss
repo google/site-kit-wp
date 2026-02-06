@@ -46,6 +46,18 @@
 		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
 			margin-bottom: 0;
 		}
+
+		// Add spacing between consecutive notice containers in settings view only.
+		.googlesitekit-setup-module--reader-revenue-manager {
+
+			> .googlesitekit-notice-container + .googlesitekit-notice-container {
+				margin-top: $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					margin-top: $grid-gap-desktop;
+				}
+			}
+		}
 	}
 
 	.googlesitekit-rrm-settings-edit {
@@ -66,6 +78,7 @@
 		}
 
 		// Policy violation notice spacing to achieve 42px total gap.
+		// stylelint-disable-next-line no-descending-specificity
 		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
 			margin-bottom: 42px;
 		}
