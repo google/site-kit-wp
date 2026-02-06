@@ -82,6 +82,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -248,6 +249,13 @@ export default function DashboardMainApp() {
 		lastWidgetAnchor = ANCHOR_ID_KEY_METRICS;
 	}
 
+	const isWelcomeModalActive = useSelect(
+		( select ) =>
+			setupFlowRefreshEnabled &&
+			( isInitialWelcomeModalActive() ||
+				select( CORE_USER ).isDataGatheringCompleteModalActive() )
+	);
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -337,7 +345,7 @@ export default function DashboardMainApp() {
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ setupFlowRefreshEnabled && <WelcomeModal /> }
+			{ isWelcomeModalActive && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>
