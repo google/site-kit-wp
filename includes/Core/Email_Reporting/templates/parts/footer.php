@@ -30,12 +30,12 @@
 				</div>
 			<?php endif; ?>
 			<?php if ( ! empty( $footer['copy'] ) ) : ?>
-				<p style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom: 30px; text-align: left;">
+				<p class="dm-text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom: 30px; text-align: left;">
 					<?php
 					$unsubscribe_link = '';
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
-							'<a href="%s" style="color:#108080; text-decoration:none;">%s</a>',
+							'<a class="dm-link" href="%s" style="color:#108080; text-decoration:none;">%s</a>',
 							esc_url( $footer['unsubscribe_url'] ),
 							esc_html__( 'here', 'google-site-kit' )
 						);
@@ -54,7 +54,7 @@
 							$align = isset( $alignments[ $index ] ) ? $alignments[ $index ] : 'center';
 							?>
 							<td width="33.33%" style="text-align:<?php echo esc_attr( $align ); ?>;">
-								<a href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
+								<a class="dm-text-secondary" href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
 									<?php echo esc_html( $footer_link['label'] ); ?>
 								</a>
 							</td>

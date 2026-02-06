@@ -23,7 +23,7 @@ $label = $label ?? __( 'Open dashboard', 'google-site-kit' );
 </v:roundrect>
 <![endif]-->
 <!--[if !mso]><!-->
-<a href="<?php echo esc_url( $url ); ?>" style="font-size:14px; line-height:20px; font-weight:500; text-decoration:none; display:inline-block; background:#3C7251; color:#ffffff; padding:10px 16px; border-radius:100px; mso-hide:all;" rel="noopener" target="_blank">
+<a class="dm-button" href="<?php echo esc_url( $url ); ?>" style="font-size:14px; line-height:20px; font-weight:500; text-decoration:none; display:inline-block; background:#3C7251; color:#ffffff; padding:10px 16px; border-radius:100px; mso-hide:all;" rel="noopener" target="_blank">
 	<?php echo esc_html( $label ); ?>
 </a>
 <!--<![endif]-->
