@@ -1144,24 +1144,49 @@ final class Authentication implements Provides_Feature_Metrics {
 						?>
 						<a
 							href="#"
-							onclick="clearSiteKitAppStorage()"
+							onclick="reauthenticateAndContinueSetup()"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
 					<?php
 					BC_Functions::wp_print_inline_script_tag(
 						sprintf(
 							"
-							function clearSiteKitAppStorage() {
-								if ( localStorage ) {
-									localStorage.clear();
+							function reauthenticateAndContinueSetup() {
+								var moduleSlug;
+								[ localStorage, sessionStorage ].forEach( storage => {
+									if ( storage ) {
+										for ( let i = 0; i < storage.length; i++ ) {
+											var itemKey = storage.key( i );
+											if ( itemKey.match( 'googlesitekit_%1\$s_.*_module_setup' ) ) {
+												moduleSlug = JSON.parse( storage.getItem( itemKey ) )?.value;
+											}
+										}
+									}
+								});
+								if ( moduleSlug ) {
+									var redirect = '%3\$s&slug=' + moduleSlug;
+									document.location = '%2\$s&redirect=' + encodeURIComponent(redirect);
+								} else {
+									if ( localStorage ) {
+										localStorage.clear();
+									}
+									if ( sessionStorage ) {
+										sessionStorage.clear();
+									}
+									document.location = '%2\$s';
 								}
-								if ( sessionStorage ) {
-									sessionStorage.clear();
-								}
-								document.location = '%s';
 							}
 							",
-							esc_url_raw( $this->get_connect_url() )
+							GOOGLESITEKIT_VERSION,
+							esc_url_raw( $this->get_connect_url() ),
+							esc_url_raw(
+								$this->context->admin_url(
+									'dashboard',
+									array(
+										'reAuth' => 'true',
+									)
+								)
+							)
 						)
 					);
 					return ob_get_clean();
