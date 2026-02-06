@@ -17,29 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
+import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
 export const EMAIL_REPORTING_ERROR_NOTICE = 'email_reporting_error_notice';
 
-const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
-
-export default function EmailReportingErrorNotice() {
+export default function EmailReportingErrorNotices() {
 	const isViewOnly = useViewOnly();
-
-	const trackEvents = useNotificationEvents( EMAIL_REPORTING_ERROR_NOTICE );
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
@@ -49,24 +38,23 @@ export default function EmailReportingErrorNotice() {
 		select( CORE_SITE ).getEmailReportingErrors()
 	);
 
+	const latestEmailReportingErrorCategoryID = useSelect( ( select ) =>
+		select( CORE_SITE ).getLatestEmailReportingErrorCategoryID()
+	);
+
 	if (
 		! isEmailReportingEnabled ||
 		isViewOnly ||
-		emailReportingErrors?.length === 0
+		emailReportingErrors?.length === 0 ||
+		latestEmailReportingErrorCategoryID === undefined
 	) {
 		return null;
 	}
 
-	return (
-		<NoticeWithIntersectionObserver
-			className="googlesitekit-email-reporting__admin-settings-notice"
-			type={ TYPES.ERROR }
-			title={ __( 'Email reports are paused', 'google-site-kit' ) }
-			description={ __(
-				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.',
-				'google-site-kit'
-			) }
-			onInView={ trackEvents.view }
-		/>
-	);
+	switch ( latestEmailReportingErrorCategoryID ) {
+		case 'sending_error':
+			return <SendingErrorNotice />;
+		default:
+			return <ServerErrorNotice />;
+	}
 }

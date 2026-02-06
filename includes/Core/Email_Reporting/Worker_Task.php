@@ -52,7 +52,7 @@ class Worker_Task {
 	/**
 	 * Email reporting data requests service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @var Email_Reporting_Data_Requests
 	 */
@@ -174,7 +174,10 @@ class Worker_Task {
 
 			if ( ! empty( $shared_payloads ) && $user instanceof \WP_User ) {
 				foreach ( $shared_payloads as $slug => $module_payload ) {
-					if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+					if (
+						user_can( $user, Permissions::MANAGE_OPTIONS ) ||
+						user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
+					) {
 						$shared_payloads_for_user[ $slug ] = $module_payload;
 					}
 				}
@@ -186,8 +189,6 @@ class Worker_Task {
 				$this->log_processor->process( $post_id, $frequency, $shared_payloads_for_user );
 			}
 		}
-
-		$this->should_abort( $initiator_timestamp );
 	}
 
 	/**
@@ -241,7 +242,7 @@ class Worker_Task {
 	/**
 	 * Builds shared payloads per module for view-only recipients.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array $pending_ids Pending post IDs.
 	 * @return array Shared payloads keyed by module slug.
@@ -264,7 +265,7 @@ class Worker_Task {
 	/**
 	 * Collects the date range and module recipients from pending logs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array    $pending_ids  Pending post IDs.
 	 * @param string[] $module_slugs Active module slugs.
@@ -296,7 +297,20 @@ class Worker_Task {
 			}
 
 			foreach ( $module_slugs as $slug ) {
-				if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				// Ensure the module still has an owner at send time, since the
+				// owner could have been removed after we initially collected
+				// modules.
+				if ( 0 === $this->data_requests->get_module_owner_id( $slug ) ) {
+					// If there's no module owner, skip this module.
+					continue;
+				}
+
+				// Only add this user to the receipt list if they have
+				// permission to view the module data.
+				if (
+					user_can( $user, Permissions::MANAGE_OPTIONS ) ||
+					user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug )
+				) {
 					$module_recipients[ $slug ][ $user_id ] = true;
 				}
 			}
@@ -308,7 +322,7 @@ class Worker_Task {
 	/**
 	 * Builds shared module payloads based on a recipient map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array $module_recipients Module recipients keyed by slug.
 	 * @param array $date_range        Date range for the report.
@@ -322,8 +336,7 @@ class Worker_Task {
 				continue;
 			}
 
-			reset( $user_ids );
-			$shared_user_id = (int) key( $user_ids );
+			$shared_user_id = $this->data_requests->get_module_owner_id( $slug );
 			if ( $shared_user_id <= 0 ) {
 				continue;
 			}

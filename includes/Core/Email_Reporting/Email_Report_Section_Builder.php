@@ -98,8 +98,8 @@ class Email_Report_Section_Builder {
 		$this->search_console_builder   = new Search_Console_Report_Data_Builder( $this->search_console_processor );
 		$this->label_translations       = array(
 			// Analytics 4.
-			'totalUsers'         => __( 'Total Visitors', 'google-site-kit' ),
-			'newUsers'           => __( 'New Visitors', 'google-site-kit' ),
+			'totalUsers'         => __( 'Total visitors', 'google-site-kit' ),
+			'newUsers'           => __( 'New visitors', 'google-site-kit' ),
 			'eventCount'         => __( 'Total conversion events', 'google-site-kit' ),
 			'addToCarts'         => __( 'Products added to cart', 'google-site-kit' ),
 			'ecommercePurchases' => __( 'Purchases', 'google-site-kit' ),

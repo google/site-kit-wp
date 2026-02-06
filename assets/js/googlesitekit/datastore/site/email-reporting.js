@@ -227,7 +227,7 @@ const baseSelectors = {
 	/**
 	 * Gets eligible subscribers for email report invitations.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
@@ -261,7 +261,7 @@ const baseSelectors = {
 	/**
 	 * Gets the email reporting errors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
@@ -269,6 +269,34 @@ const baseSelectors = {
 	getEmailReportingErrors( state ) {
 		return state.emailReporting?.errors;
 	},
+
+	/**
+	 * Gets the category ID of the latest email reporting error.
+	 *
+	 * @since 1.172.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
+	 */
+	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
+		( select ) => () => {
+			const { errors, error_data: errorData } =
+				select( CORE_SITE ).getEmailReportingErrors() || {};
+
+			if ( errors === undefined ) {
+				return undefined;
+			}
+
+			const categoryID =
+				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
+
+			if ( categoryID === undefined ) {
+				return null;
+			}
+
+			return categoryID;
+		}
+	),
 };
 
 const store = combineStores(
