@@ -38,9 +38,9 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
-import Link from '@/js/components/Link';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
 export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
@@ -145,7 +145,13 @@ export default function SetupAnalyticsNotice() {
 					'google-site-kit'
 				),
 				{
-					a: <Link href={ learnMoreLink } external />,
+					a: (
+						<LearnMoreLink
+							id={ EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG }
+							label={ __( 'Learn more', 'google-site-kit' ) }
+							url={ learnMoreLink }
+						/>
+					),
 				}
 			) }
 			ctaButton={ {

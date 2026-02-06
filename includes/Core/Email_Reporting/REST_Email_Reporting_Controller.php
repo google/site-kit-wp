@@ -65,7 +65,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Email_Log_Batch_Query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 * @var Email_Log_Batch_Query
 	 */
 	private $email_log_batch_query;

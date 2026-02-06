@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "google-site-kit/sign-in-with-google",
-	"version": "1.171.0",
+	"version": "1.172.0",
 	"title": "Sign in with Google",
 	"category": "widgets",
 	"icon": "google",
@@ -11,7 +11,7 @@
 	"attributes": {
 		"shape": {
 			"type": "string",
-			"enum": [ "", "rectangular", "pill" ]
+			"enum": ["", "rectangular", "pill"]
 		},
 		"text": {
 			"type": "string",
@@ -25,7 +25,7 @@
 		},
 		"theme": {
 			"type": "string",
-			"enum": [ "", "outline", "filled_blue", "filled_black" ]
+			"enum": ["", "outline", "filled_blue", "filled_black"]
 		},
 		"buttonClassName": {
 			"type": "string"

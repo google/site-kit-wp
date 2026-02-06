@@ -82,7 +82,7 @@ export { registerStore } from './datastore';
 /**
  * Checks if the setup success notification is currently being shown.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  *
  * @return {boolean} True if the setup success notification is being shown, false otherwise.
  */
@@ -100,7 +100,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		...( isFeatureEnabled( 'rrmPolicyViolations' ) && {
+		...( isFeatureEnabled( 'rrmPolicyViolation s' ) && {
 			SettingsStatusComponent: SettingsStatus,
 		} ),
 		SetupComponent: SetupMain,

@@ -43,7 +43,7 @@ export interface NotificationCopy {
 /**
  * Returns the notification copy based on the content policy state.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  *
  * @param {string} contentPolicyState The content policy state.
  * @return {Object} An object with title, description, ctaLabel, and type.
