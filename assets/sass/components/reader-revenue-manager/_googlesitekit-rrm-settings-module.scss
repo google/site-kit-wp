@@ -52,10 +52,6 @@
 			// Add spacing between consecutive notice containers.
 			> .googlesitekit-notice-container + .googlesitekit-notice-container {
 				margin-top: $grid-gap-phone;
-
-				@media (min-width: $bp-desktop) {
-					margin-top: $grid-gap-desktop;
-				}
 			}
 		}
 	}
