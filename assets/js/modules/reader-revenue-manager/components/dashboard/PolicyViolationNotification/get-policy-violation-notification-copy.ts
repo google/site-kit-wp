@@ -65,13 +65,13 @@ export function getPolicyViolationNotificationCopy(
 				'Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.',
 				'google-site-kit'
 			),
-			ctaLabel: __('Learn more', 'google-site-kit'),
+			ctaLabel: __( 'Learn more', 'google-site-kit' ),
 			type: TYPES.ERROR,
 		};
 	}
 
 	// Active moderate/high severity - restricted account.
-	if (ACTIVE_POLICY_VIOLATION_STATES.includes(contentPolicyState)) {
+	if ( ACTIVE_POLICY_VIOLATION_STATES.includes( contentPolicyState ) ) {
 		return {
 			title: __(
 				'Action needed: Your Reader Revenue Manager account is restricted',
@@ -81,7 +81,7 @@ export function getPolicyViolationNotificationCopy(
 				'Your site has content that doesn’t follow the rules. To see more details and resolve the violation, please visit Publisher Center.',
 				'google-site-kit'
 			),
-			ctaLabel: __('View violations', 'google-site-kit'),
+			ctaLabel: __( 'View violations', 'google-site-kit' ),
 			type: TYPES.WARNING,
 		};
 	}
@@ -96,7 +96,7 @@ export function getPolicyViolationNotificationCopy(
 			'Your site has content that breaks the rules for Reader Revenue Manager. To keep your account active and CTAs public, you must resolve all policy violations.',
 			'google-site-kit'
 		),
-		ctaLabel: __('View violations', 'google-site-kit'),
+		ctaLabel: __( 'View violations', 'google-site-kit' ),
 		type: TYPES.WARNING,
 	};
 }
