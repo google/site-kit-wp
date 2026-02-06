@@ -46,32 +46,32 @@ const baseInitialState = {
 };
 
 const fetchStoreReducerCallback = createReducer(
-	(state, emailReportingSettings) => {
+	( state, emailReportingSettings ) => {
 		state.emailReporting.settings = emailReportingSettings;
 		state.emailReporting.savedSettings = emailReportingSettings;
 	}
 );
 
-const fetchGetEmailReportingSettingsStore = createFetchStore({
+const fetchGetEmailReportingSettingsStore = createFetchStore( {
 	baseName: 'getEmailReportingSettings',
 	controlCallback: () =>
-		get('core', 'site', 'email-reporting', undefined, {
+		get( 'core', 'site', 'email-reporting', undefined, {
 			useCache: false,
-		}),
+		} ),
 	reducerCallback: fetchStoreReducerCallback,
-});
+} );
 
-const fetchSaveEmailReportingSettingsStore = createFetchStore({
+const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 	baseName: 'saveEmailReportingSettings',
-	controlCallback: (settings) =>
-		set('core', 'site', 'email-reporting', {
+	controlCallback: ( settings ) =>
+		set( 'core', 'site', 'email-reporting', {
 			settings,
-		}),
+		} ),
 	reducerCallback: fetchStoreReducerCallback,
-	argsToParams: (settings) => settings,
-	validateParams: (settings) => {
+	argsToParams: ( settings ) => settings,
+	validateParams: ( settings ) => {
 		invariant(
-			isPlainObject(settings),
+			isPlainObject( settings ),
 			'Email Reporting settings should be an object.'
 		);
 		invariant(
@@ -79,27 +79,27 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore({
 			'enabled should be a boolean.'
 		);
 	},
-});
+} );
 
-const fetchGetEligibleSubscribersStore = createFetchStore({
+const fetchGetEligibleSubscribersStore = createFetchStore( {
 	baseName: 'getEligibleSubscribers',
 	controlCallback: () =>
-		get('core', 'site', 'email-reporting-eligible-subscribers'),
-	reducerCallback: createReducer((state, eligibleSubscribers) => {
+		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
 		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
-	}),
-});
+	} ),
+} );
 
-const fetchGetEmailReportingErrorsStore = createFetchStore({
+const fetchGetEmailReportingErrorsStore = createFetchStore( {
 	baseName: 'getEmailReportingErrors',
 	controlCallback: () =>
-		get('core', 'site', 'email-reporting-errors', undefined, {
+		get( 'core', 'site', 'email-reporting-errors', undefined, {
 			useCache: false,
-		}),
-	reducerCallback: (state, errors) => {
+		} ),
+	reducerCallback: ( state, errors ) => {
 		state.emailReporting.errors = errors || {};
 	},
-});
+} );
 
 // Actions
 const SET_EMAIL_REPORTING_SETTINGS = 'SET_EMAIL_REPORTING_SETTINGS';
@@ -114,7 +114,7 @@ const baseActions = {
 	 */
 	*saveEmailReportingSettings() {
 		const { select } = yield commonActions.getRegistry();
-		const settings = select(CORE_SITE).getEmailReportingSettings();
+		const settings = select( CORE_SITE ).getEmailReportingSettings();
 
 		const results =
 			yield fetchSaveEmailReportingSettingsStore.actions.fetchSaveEmailReportingSettings(
@@ -132,8 +132,11 @@ const baseActions = {
 	 * @param {*} enabled Whether email reporting is enabled.
 	 * @return {Object} Redux-style action.
 	 */
-	setEmailReportingEnabled(enabled) {
-		invariant(typeof enabled === 'boolean', 'enabled should be a boolean.');
+	setEmailReportingEnabled( enabled ) {
+		invariant(
+			typeof enabled === 'boolean',
+			'enabled should be a boolean.'
+		);
 
 		return {
 			type: SET_EMAIL_REPORTING_SETTINGS,
@@ -142,10 +145,10 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = createReducer((state, action) => {
+export const baseReducer = createReducer( ( state, action ) => {
 	const { type, payload } = action;
 
-	switch (type) {
+	switch ( type ) {
 		case SET_EMAIL_REPORTING_SETTINGS: {
 			state.emailReporting.settings = {
 				...state.emailReporting.settings,
@@ -157,17 +160,17 @@ export const baseReducer = createReducer((state, action) => {
 		default:
 			break;
 	}
-});
+} );
 
 const baseResolvers = {
 	*getEmailReportingSettings() {
 		const registry = yield commonActions.getRegistry();
 
 		const emailReportingSettings = registry
-			.select(CORE_SITE)
+			.select( CORE_SITE )
 			.getEmailReportingSettings();
 
-		if (emailReportingSettings === undefined) {
+		if ( emailReportingSettings === undefined ) {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
@@ -175,19 +178,19 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 
 		const eligibleSubscribers = registry
-			.select(CORE_SITE)
+			.select( CORE_SITE )
 			.getEligibleSubscribers();
 
-		if (eligibleSubscribers === undefined) {
+		if ( eligibleSubscribers === undefined ) {
 			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
 		}
 	},
 	*getEmailReportingErrors() {
 		const registry = yield commonActions.getRegistry();
 
-		const errors = registry.select(CORE_SITE).getEmailReportingErrors();
+		const errors = registry.select( CORE_SITE ).getEmailReportingErrors();
 
-		if (errors === undefined) {
+		if ( errors === undefined ) {
 			yield fetchGetEmailReportingErrorsStore.actions.fetchGetEmailReportingErrors();
 		}
 	},
@@ -202,7 +205,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Email Reporting settings; `undefined` if not loaded.
 	 */
-	getEmailReportingSettings(state) {
+	getEmailReportingSettings( state ) {
 		return state.emailReporting?.settings;
 	},
 
@@ -214,11 +217,12 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if email reporting is enabled, otherwise FALSE; `undefined` if not loaded.
 	 */
-	isEmailReportingEnabled: createRegistrySelector((select) => () => {
-		const { enabled } = select(CORE_SITE).getEmailReportingSettings() || {};
+	isEmailReportingEnabled: createRegistrySelector( ( select ) => () => {
+		const { enabled } =
+			select( CORE_SITE ).getEmailReportingSettings() || {};
 
 		return enabled;
-	}),
+	} ),
 
 	/**
 	 * Gets eligible subscribers for email report invitations.
@@ -228,28 +232,31 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
 	 */
-	getEligibleSubscribers: createRegistrySelector((select) => (state) => {
+	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
 		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
-		const currentUserID = select(CORE_USER).getID();
+		const currentUserID = select( CORE_USER ).getID();
 
-		if (eligibleSubscribers === undefined || currentUserID === undefined) {
+		if (
+			eligibleSubscribers === undefined ||
+			currentUserID === undefined
+		) {
 			return undefined;
 		}
 
-		if (!Array.isArray(eligibleSubscribers)) {
+		if ( ! Array.isArray( eligibleSubscribers ) ) {
 			return [];
 		}
 
 		return eligibleSubscribers
-			.filter((user) => user.id !== currentUserID)
-			.map((user) => ({
+			.filter( ( user ) => user.id !== currentUserID )
+			.map( ( user ) => ( {
 				id: user.id,
 				name: user.displayName || user.name,
 				email: user.email,
 				role: user.role,
 				subscribed: user.subscribed,
-			}));
-	}),
+			} ) );
+	} ),
 
 	/**
 	 * Gets the email reporting errors.
@@ -259,7 +266,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Email Reporting errors; `undefined` if not loaded.
 	 */
-	getEmailReportingErrors(state) {
+	getEmailReportingErrors( state ) {
 		return state.emailReporting?.errors;
 	},
 
@@ -272,17 +279,18 @@ const baseSelectors = {
 	 * @return {(string|null|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
 	 */
 	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
-		(select) => () => {
+		( select ) => () => {
 			const { errors, error_data: errorData } =
-				select(CORE_SITE).getEmailReportingErrors() || {};
+				select( CORE_SITE ).getEmailReportingErrors() || {};
 
-			if (errors === undefined) {
+			if ( errors === undefined ) {
 				return undefined;
 			}
 
-			const categoryID = errorData?.[Object.keys(errors)[0]]?.category_id;
+			const categoryID =
+				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
 
-			if (categoryID === undefined) {
+			if ( categoryID === undefined ) {
 				return null;
 			}
 
