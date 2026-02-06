@@ -64,3 +64,6 @@ tests/backstop/tests/
 # Jest
 coverage/
 tests/e2e/screenshots
+
+# Playwright
+tests/e2e/artifacts
