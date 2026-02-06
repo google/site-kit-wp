@@ -27,12 +27,10 @@ import type { FC } from 'react';
 import { useSelect, type Select } from 'googlesitekit-data';
 import {
 	MODULES_READER_REVENUE_MANAGER,
-	CONTENT_POLICY_STATES,
+	POLICY_VIOLATION_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
 import Notice from '@/js/components/Notice';
-
-const { CONTENT_POLICY_STATE_OK } = CONTENT_POLICY_STATES;
 
 const PolicyViolationSettingsNotice: FC = () => {
 	const contentPolicyState = useSelect( ( select: Select ) =>
@@ -43,10 +41,7 @@ const PolicyViolationSettingsNotice: FC = () => {
 		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
 	);
 
-	if (
-		contentPolicyState === undefined ||
-		contentPolicyState === CONTENT_POLICY_STATE_OK
-	) {
+	if ( ! POLICY_VIOLATION_STATES.includes( contentPolicyState ) ) {
 		return null;
 	}
 
