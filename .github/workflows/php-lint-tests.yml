@@ -103,6 +103,8 @@ jobs:
           # Min supported PHP + WP Nightly
           - php_version: '7.4'
             wp_version: 'nightly'
+          - php_version: '8.4'
+            wp_version: 'latest'
     services:
       mysql:
         image: mysql:5.7
@@ -128,14 +130,14 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, uopz
-          tools: composer:2.1
+          tools: composer
           php-version: ${{ matrix.php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ !matrix.composer_php_version }}
       - uses: shivammathur/setup-php@v2
         with:
-          tools: composer:2.1
+          tools: composer
           php-version: ${{ matrix.composer_php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -160,7 +162,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, uopz
-          tools: composer:2.1
+          tools: composer
           php-version: ${{ matrix.php_version }}
         if: ${{ matrix.composer_php_version }}
 
