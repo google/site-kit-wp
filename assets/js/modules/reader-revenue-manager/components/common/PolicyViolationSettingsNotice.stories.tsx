@@ -69,20 +69,19 @@ function setupRegistry( registry: Registry, contentPolicyState: string ) {
 	} );
 }
 
-export const PendingGracePeriodViolation = Template.bind( {} );
-PendingGracePeriodViolation.storyName = 'Pending Grace Period Violation';
-PendingGracePeriodViolation.parameters = {
+export const PendingViolation = Template.bind( {} );
+PendingViolation.storyName = 'Pending Violation';
+PendingViolation.parameters = {
 	contentPolicyState: CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
 };
-PendingGracePeriodViolation.scenario = {};
+PendingViolation.scenario = {};
 
-export const OrganizationPendingGracePeriodViolation = Template.bind( {} );
-OrganizationPendingGracePeriodViolation.storyName =
-	'Organization Pending Grace Period Violation';
-OrganizationPendingGracePeriodViolation.parameters = {
+export const OrganizationPendingViolation = Template.bind( {} );
+OrganizationPendingViolation.storyName = 'Organization Pending Violation';
+OrganizationPendingViolation.parameters = {
 	contentPolicyState: CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
 };
-OrganizationPendingGracePeriodViolation.scenario = {};
+OrganizationPendingViolation.scenario = {};
 
 export const ActiveViolation = Template.bind( {} );
 ActiveViolation.storyName = 'Active Violation';
