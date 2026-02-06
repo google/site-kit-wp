@@ -42,14 +42,14 @@
 			}
 		}
 
-		// Remove the extra margin-bottom from error notices to maintain the existing gap.
-		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
-			margin-bottom: 0;
-		}
+		// Settings view specific styles (exclude settings edit which also has this class).
+		.googlesitekit-setup-module--reader-revenue-manager:not(.googlesitekit-rrm-settings-edit) {
+			// Remove the extra margin-bottom from error notices to maintain the existing gap.
+			.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
+				margin-bottom: 0;
+			}
 
-		// Add spacing between consecutive notice containers in settings view only.
-		.googlesitekit-setup-module--reader-revenue-manager {
-
+			// Add spacing between consecutive notice containers.
 			> .googlesitekit-notice-container + .googlesitekit-notice-container {
 				margin-top: $grid-gap-phone;
 
@@ -77,15 +77,12 @@
 			margin-bottom: 8px; // Override 24px bottom margin to match spacing before the below `id-warning-notice` refactoring.
 		}
 
-		// Policy violation notice spacing to achieve 42px total gap.
+		// Policy violation notice spacing.
+		// Also override the global error notice margin from _googlesitekit-setup-module.scss.
 		// stylelint-disable-next-line no-descending-specificity
-		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
-			margin-bottom: 42px;
-		}
-
-		// Remove the extra margin-bottom from error notices to maintain the 42px gap.
+		.googlesitekit-policy-violation-settings-notice,
 		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
-			margin-bottom: 0;
+			margin-bottom: $grid-gap-phone;
 		}
 
 		.googlesitekit-rrm-settings-edit__product-id-container {
@@ -101,6 +98,7 @@
 				width: 100%;
 			}
 
+			// stylelint-disable-next-line no-descending-specificity
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice .googlesitekit-notice-container {
 				// This is a special case where we want the notice layout to depend on the viewport width
 				// and not the parent container width. So container queries are overridden with media queries
