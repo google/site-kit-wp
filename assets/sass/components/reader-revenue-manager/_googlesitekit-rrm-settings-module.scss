@@ -42,14 +42,9 @@
 			}
 		}
 
-		// Policy violation error notice spacing for settings view.
-		// Error notices have an extra 1rem margin-bottom from setup module styling.
-		// Add negative margin to maintain the existing total gap.
-		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
-
-			&:has(.googlesitekit-notice--error) {
-				margin-bottom: -1rem;
-			}
+		// Remove the extra margin-bottom from error notices to maintain the existing gap.
+		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
+			margin-bottom: 0;
 		}
 	}
 
@@ -71,17 +66,13 @@
 		}
 
 		// Policy violation notice spacing to achieve 42px total gap.
-		// Disable specificity warning: this selector targets a different parent context
-		// than settings view and will never compete with those selectors.
-		// stylelint-disable-next-line no-descending-specificity
 		.googlesitekit-notice-container:has(.googlesitekit-policy-violation-settings-notice) {
 			margin-bottom: 42px;
+		}
 
-			// Error notices have an extra 1rem margin-bottom from setup module styling.
-			// Reduce container margin to maintain 42px total gap: 42px - 1rem = 26px.
-			&:has(.googlesitekit-notice--error) {
-				margin-bottom: 26px;
-			}
+		// Remove the extra margin-bottom from error notices to maintain the 42px gap.
+		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
+			margin-bottom: 0;
 		}
 
 		.googlesitekit-rrm-settings-edit__product-id-container {
