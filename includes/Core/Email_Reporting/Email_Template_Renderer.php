@@ -18,20 +18,10 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Email_Template_Renderer {
 
 	/**
-	 * CDN base URL for email assets.
-	 *
-	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
-	 *
-	 * @since 1.168.0
-	 * @var string
-	 */
-	const EMAIL_ASSETS_BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
-
-	/**
 	 * The sections map instance.
 	 *
 	 * @since 1.168.0
-	 * @var Sections_Map
+	 * @var Sections_Map|null
 	 */
 	protected $sections_map;
 
@@ -57,24 +47,13 @@ class Email_Template_Renderer {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Sections map is now optional for templates that don't use sections.
 	 *
-	 * @param Sections_Map $sections_map The sections map instance.
+	 * @param Sections_Map|null $sections_map The sections map instance, or null for simple templates.
 	 */
-	public function __construct( Sections_Map $sections_map ) {
+	public function __construct( Sections_Map $sections_map = null ) {
 		$this->sections_map  = $sections_map;
 		$this->templates_dir = realpath( __DIR__ . '/templates' );
-	}
-
-	/**
-	 * Gets the full URL for an email asset.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param string $asset_name The asset filename (e.g., 'icon-conversions.png').
-	 * @return string The full URL to the asset.
-	 */
-	public function get_email_asset_url( $asset_name ) {
-		return self::EMAIL_ASSETS_BASE_URL . ltrim( $asset_name, '/' );
 	}
 
 	/**
@@ -92,7 +71,7 @@ class Email_Template_Renderer {
 			return '';
 		}
 
-		$sections = $this->sections_map->get_sections();
+		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
 
 		$shared_parts_dir   = $this->templates_dir . '/parts';
 		$template_parts_dir = $this->templates_dir . '/' . $template_name . '/parts';
@@ -101,7 +80,7 @@ class Email_Template_Renderer {
 			$data,
 			array(
 				'sections'           => $sections,
-				'get_asset_url'      => fn( $asset_path ) => $this->get_email_asset_url( $asset_path ),
+				'get_asset_url'      => fn( $slug ) => Email_Assets::url( $slug ),
 				'render_part'        => fn( $part_name, $vars = array() ) => $this->render_part_file( $template_parts_dir . '/' . $part_name . '.php', $vars ),
 				'render_shared_part' => fn( $part_name, $vars = array() ) => $this->render_part_file( $shared_parts_dir . '/' . $part_name . '.php', $vars ),
 			)
@@ -171,13 +150,22 @@ class Email_Template_Renderer {
 	 * Plain_Text_Formatter for formatting.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added support for simple email templates.
 	 *
-	 * @param string $template_name The template name (unused for plain text, kept for API consistency with render()).
+	 * @param string $template_name The template name.
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		$sections = $this->sections_map->get_sections();
+		// Handle email-report template with sections.
+		if ( 'email-report' !== $template_name ) {
+			// Handle simple email templates (invitation-email, etc.).
+			$data['body'] = Body_Content_Map::get_body( $template_name );
+			return Plain_Text_Formatter::format_simple_email( $data );
+		}
+
+		// Render email report including sections.
+		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
 
 		$output = Plain_Text_Formatter::format_header(
 			$data['site']['domain'] ?? '',

@@ -272,6 +272,54 @@ class Email_Template_Formatter {
 	}
 
 	/**
+	 * Builds template data for simple email rendering.
+	 *
+	 * Simple emails share the same structure (subject, preheader, site, CTA, footer)
+	 * but differ in their content. The $email_data array provides the variable content.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $subject   Email subject line.
+	 * @param string $preheader Email preheader text.
+	 * @param array  $email_data {
+	 *     Additional email-specific data.
+	 *
+	 *     @type string $learn_more_url URL for the learn more link.
+	 *     @type string $cta_label      Label for the primary call-to-action button.
+	 *     @type string $cta_url        URL for the primary call-to-action button.
+	 *     @type string $footer_copy    Footer copy text.
+	 *     @type array  $custom_data    Any additional custom data for the template.
+	 * }
+	 * @return array Template data for simple email.
+	 */
+	public function prepare_simple_email_data( $subject, $preheader, $email_data = array() ) {
+		$site_domain = $this->get_site_domain();
+
+		$data = array(
+			'subject'                => $subject,
+			'preheader'              => $preheader,
+			'site'                   => array(
+				'domain' => $site_domain,
+			),
+			'learn_more_url'         => $email_data['learn_more_url'] ?? '',
+			'primary_call_to_action' => array(
+				'label' => $email_data['cta_label'] ?? __( 'Get your report', 'google-site-kit' ),
+				'url'   => $email_data['cta_url'] ?? admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+			),
+			'footer'                 => array(
+				'copy' => $email_data['footer_copy'] ?? '',
+			),
+		);
+
+		// Merge any custom data for template-specific needs.
+		if ( ! empty( $email_data['custom_data'] ) && is_array( $email_data['custom_data'] ) ) {
+			$data = array_merge( $data, $email_data['custom_data'] );
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0

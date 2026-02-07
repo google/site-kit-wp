@@ -41,6 +41,65 @@ class Plain_Text_Formatter {
 	}
 
 	/**
+	 * Formats a simple email as plain text.
+	 *
+	 * Simple emails share a common structure with customizable content.
+	 * The preheader is used as the main message body in plain text format.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data The simple email data containing site, preheader, learn_more_url,
+	 *                    primary_call_to_action, and footer.
+	 * @return string Formatted plain text email.
+	 */
+	public static function format_simple_email( $data ) {
+		$site_domain    = $data['site']['domain'] ?? '';
+		$preheader      = $data['preheader'] ?? '';
+		$learn_more_url = $data['learn_more_url'] ?? '';
+		$cta            = $data['primary_call_to_action'] ?? array();
+		$footer_copy    = $data['footer']['copy'] ?? '';
+		$body           = $data['body'] ?? array();
+
+		$lines = array(
+			__( 'Site Kit by Google', 'google-site-kit' ),
+			'',
+			$site_domain,
+			'',
+			$preheader,
+			'',
+		);
+
+		// Body paragraphs.
+		foreach ( (array) $body as $paragraph ) {
+			$lines[] = $paragraph;
+			$lines[] = '';
+		}
+
+		// Learn more link (optional).
+		if ( ! empty( $learn_more_url ) ) {
+			$lines[] = self::format_link( __( 'Learn more', 'google-site-kit' ), $learn_more_url );
+			$lines[] = '';
+		}
+
+		$lines[] = str_repeat( '-', 50 );
+		$lines[] = '';
+
+		// Primary CTA.
+		if ( ! empty( $cta['url'] ) ) {
+			$label   = $cta['label'] ?? __( 'Get your report', 'google-site-kit' );
+			$lines[] = self::format_link( $label, $cta['url'] );
+			$lines[] = '';
+		}
+
+		// Footer copy.
+		if ( ! empty( $footer_copy ) ) {
+			$lines[] = $footer_copy;
+		}
+
+		return implode( "\n", $lines );
+	}
+
+	/**
 	 * Formats a section based on its template type.
 	 *
 	 * @since 1.170.0
