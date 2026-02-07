@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as PolicyViolationSettingsNotice } from './PolicyViolationSettingsNotice';
 export { default as PublicationOnboardingStateNotice } from './PublicationOnboardingStateNotice';
 export { default as PublicationCreate } from './PublicationCreate';
 export { default as PublicationSelect } from './PublicationSelect';

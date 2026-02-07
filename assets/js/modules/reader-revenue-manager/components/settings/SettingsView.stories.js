@@ -21,12 +21,18 @@
  */
 import {
 	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	CONTENT_POLICY_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import SettingsView from './SettingsView';
@@ -105,6 +111,38 @@ WithoutModuleAccess.args = {
 };
 WithoutModuleAccess.scenario = {};
 
+export const WithPolicyViolationPending = Template.bind( {} );
+WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
+WithPolicyViolationPending.parameters = {
+	features: [ 'rrmPolicyViolations' ],
+};
+WithPolicyViolationPending.args = {
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+};
+WithPolicyViolationPending.scenario = {};
+
+export const WithPolicyViolationActive = Template.bind( {} );
+WithPolicyViolationActive.storyName = 'With Policy Violation (Active)';
+WithPolicyViolationActive.parameters = {
+	features: [ 'rrmPolicyViolations' ],
+};
+WithPolicyViolationActive.args = {
+	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+};
+WithPolicyViolationActive.scenario = {};
+
+export const WithPolicyViolationExtreme = Template.bind( {} );
+WithPolicyViolationExtreme.storyName = 'With Policy Violation (Extreme)';
+WithPolicyViolationExtreme.parameters = {
+	features: [ 'rrmPolicyViolations' ],
+};
+WithPolicyViolationExtreme.args = {
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+};
+WithPolicyViolationExtreme.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsView',
 	component: SettingsView,
@@ -118,13 +156,19 @@ export default {
 					],
 				} );
 
-				provideModuleRegistrations( registry, [
+				provideUserAuthentication( registry );
+				provideUserInfo( registry );
+
+				const extraData = [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
 						active: true,
 						connected: true,
 					},
-				] );
+				];
+
+				provideModules( registry, extraData );
+				provideModuleRegistrations( registry, extraData );
 
 				const settings = {
 					ownerID: 1,
@@ -134,6 +178,15 @@ export default {
 					snippetMode: 'post_types',
 					postTypes: [ 'post' ],
 				};
+
+				// Add content policy status if provided.
+				if ( args?.contentPolicyState ) {
+					settings.contentPolicyStatus = {
+						contentPolicyState: args.contentPolicyState,
+						policyInfoLink:
+							'https://publishercenter.google.com/policy',
+					};
+				}
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
