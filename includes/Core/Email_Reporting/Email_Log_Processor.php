@@ -81,7 +81,7 @@ class Email_Log_Processor {
 	 * Processes a single email log record.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
+	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
 	 *
 	 * @param int    $post_id         Email log post ID.
 	 * @param string $frequency       Frequency slug.

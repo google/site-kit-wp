@@ -52,7 +52,7 @@ class Worker_Task {
 	/**
 	 * Email reporting data requests service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @var Email_Reporting_Data_Requests
 	 */
@@ -242,7 +242,7 @@ class Worker_Task {
 	/**
 	 * Builds shared payloads per module for view-only recipients.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array $pending_ids Pending post IDs.
 	 * @return array Shared payloads keyed by module slug.
@@ -265,7 +265,7 @@ class Worker_Task {
 	/**
 	 * Collects the date range and module recipients from pending logs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array    $pending_ids  Pending post IDs.
 	 * @param string[] $module_slugs Active module slugs.
@@ -322,7 +322,7 @@ class Worker_Task {
 	/**
 	 * Builds shared module payloads based on a recipient map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array $module_recipients Module recipients keyed by slug.
 	 * @param array $date_range        Date range for the report.

@@ -143,7 +143,7 @@ final class Modules implements Provides_Feature_Metrics {
 	/**
 	 * Disconnected_Modules setting instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 * @var Disconnected_Modules
 	 */
 	private $disconnected_modules;
@@ -639,7 +639,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * Checks whether the module identified by the given slug is disconnected
 	 * and returns the timestamp of disconnection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param string $slug Unique module slug.
 	 * @return null|int Null if module is not disconnected, timestamp of disconnection otherwise.

@@ -63,7 +63,7 @@ final class Dashboard {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 * @var Dismissed_Items
 	 */
 	private $dismissed_items;
@@ -72,7 +72,7 @@ final class Dashboard {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added Dismissed_Items instance.
+	 * @since 1.172.0 Added Dismissed_Items instance.
 	 *
 	 * @param Context         $context         Plugin context.
 	 * @param Assets          $assets          Optional. Assets API instance. Default is a new instance.

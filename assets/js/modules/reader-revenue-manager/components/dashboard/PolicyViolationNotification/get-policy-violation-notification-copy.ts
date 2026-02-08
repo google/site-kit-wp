@@ -30,7 +30,7 @@ import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
-const { CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE } =
+const { CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE } =
 	CONTENT_POLICY_STATES;
 
 export interface NotificationCopy {
@@ -43,7 +43,7 @@ export interface NotificationCopy {
 /**
  * Returns the notification copy based on the content policy state.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  *
  * @param {string} contentPolicyState The content policy state.
  * @return {Object} An object with title, description, ctaLabel, and type.
@@ -53,7 +53,8 @@ export function getPolicyViolationNotificationCopy(
 ): NotificationCopy {
 	// Extreme severity - terminated account.
 	if (
-		contentPolicyState === CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE
+		contentPolicyState ===
+		CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 	) {
 		return {
 			title: __(
