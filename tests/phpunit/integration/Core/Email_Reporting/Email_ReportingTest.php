@@ -134,6 +134,19 @@ class Email_ReportingTest extends TestCase {
 		$this->assertSame( 0, $metrics['email_reporting_last_batch_failed'], 'Expected last batch failed count to be zero for incomplete batch.' );
 	}
 
+	public function test_register__adds_email_reporting_feature_metrics() {
+		$email_reporting = $this->create_email_reporting();
+		$email_reporting->register();
+
+		$metrics = apply_filters( 'googlesitekit_feature_metrics', array() );
+
+		$this->assertArrayHasKey( 'email_reporting_total_sent', $metrics, 'Feature metrics should include email reporting total sent.' );
+		$this->assertArrayHasKey( 'email_reporting_total_failed', $metrics, 'Feature metrics should include email reporting total failed.' );
+		$this->assertArrayHasKey( 'email_reporting_last_batch_sent', $metrics, 'Feature metrics should include email reporting last batch sent.' );
+		$this->assertArrayHasKey( 'email_reporting_last_batch_failed', $metrics, 'Feature metrics should include email reporting last batch failed.' );
+		$this->assertArrayHasKey( 'email_reporting_subscribers', $metrics, 'Feature metrics should include email reporting subscribers.' );
+	}
+
 	public function test_register_schedules_initiators_when_enabled() {
 		$email_reporting = $this->create_email_reporting();
 		$email_reporting->register();
