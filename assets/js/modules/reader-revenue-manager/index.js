@@ -100,7 +100,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		...( isFeatureEnabled( 'rrmPolicyViolation s' ) && {
+		...( isFeatureEnabled( 'rrmPolicyViolations' ) && {
 			SettingsStatusComponent: SettingsStatus,
 		} ),
 		SetupComponent: SetupMain,
