@@ -29,7 +29,8 @@ import {
 
 function getDashboardSharingStep(
 	isViewOnly: boolean,
-	canAuthenticate: boolean
+	canAuthenticate: boolean,
+	isAnalyticsConnected: boolean
 ) {
 	if ( isViewOnly ) {
 		return {
@@ -61,7 +62,11 @@ function getDashboardSharingStep(
 		slug: 'dashboard-sharing',
 		target: '.googlesitekit-header',
 		floaterProps: {
-			target: '.googlesitekit-sharing-settings__button svg',
+			// The Analytics-connected tour targets the SVG inside the button,
+			// while the SC-only tour targets the button itself.
+			target: isAnalyticsConnected
+				? '.googlesitekit-sharing-settings__button svg'
+				: '.googlesitekit-sharing-settings__button',
 		},
 		title: __( 'Share insights with your team', 'google-site-kit' ),
 		content: __(
@@ -74,13 +79,95 @@ function getDashboardSharingStep(
 	};
 }
 
+function getActivateAnalyticsStep() {
+	return {
+		slug: 'activate-analytics',
+		target: '#activate-analytics-cta',
+		floaterProps: {
+			target: '#activate-analytics-cta .googlesitekit-banner__cta',
+		},
+		title: __(
+			'Want to know what people do once they land on your site?',
+			'google-site-kit'
+		),
+		content: __(
+			'Get insights on how visitors navigate your site and help you achieve your goals by connecting Analytics',
+			'google-site-kit'
+		),
+		offset: 0,
+		spotlightPadding: 0,
+		placement: 'bottom',
+	};
+}
+
 export function getWelcomeTour( {
 	isViewOnly,
 	canAuthenticate,
+	isAnalyticsConnected,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
+	isAnalyticsConnected: boolean;
 } ) {
+	if ( ! isAnalyticsConnected ) {
+		const steps = [
+			{
+				slug: 'search-funnel',
+				target: '.googlesitekit-widget--searchFunnelGA4',
+				floaterProps: {
+					target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+				},
+				title: __(
+					'Track Search traffic trends, identify baselines',
+					'google-site-kit'
+				),
+				content: __(
+					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
+					'google-site-kit'
+				),
+				offset: 0,
+				spotlightPadding: 0,
+				placement: 'top',
+			},
+			{
+				slug: 'top-search-queries',
+				target: '.googlesitekit-widget--searchConsolePopularKeywords',
+				floaterProps: {
+					target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
+				},
+				title: __(
+					'Track how your site is doing on Search',
+					'google-site-kit'
+				),
+				content: __(
+					'Know what’s driving growth and bringing your site more visitors',
+					'google-site-kit'
+				),
+				offset: 0,
+				spotlightPadding: 0,
+				placement: 'top',
+			},
+			getDashboardSharingStep( isViewOnly, canAuthenticate, false ),
+		];
+
+		// Add the Activate Analytics step for authenticated users only.
+		if ( ! isViewOnly ) {
+			steps.push( getActivateAnalyticsStep() );
+		}
+
+		return {
+			slug: 'welcome-no-analytics',
+			isRepeatable: true,
+			contexts: [
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			],
+			gaEventCategory: ( viewContext: string ) =>
+				`${ viewContext }_dashboard-tour-sc`,
+			steps,
+		};
+	}
+
 	return {
 		slug: 'welcome-with-analytics',
 		isRepeatable: true,
@@ -101,7 +188,7 @@ export function getWelcomeTour( {
 					'google-site-kit'
 				),
 				content: __(
-					"These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what's working and what's not.",
+					'These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what’s working and what’s not.',
 					'google-site-kit'
 				),
 				offset: -3,
@@ -118,7 +205,7 @@ export function getWelcomeTour( {
 					'google-site-kit'
 				),
 				content: __(
-					"Know what's normal for your site. This is how you spot trends and measure real growth.",
+					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
 					'google-site-kit'
 				),
 				offset: 35,
@@ -159,7 +246,7 @@ export function getWelcomeTour( {
 				spotlightPadding: 0,
 				placement: 'top',
 			},
-			getDashboardSharingStep( isViewOnly, canAuthenticate ),
+			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
 		],
 	};
 }
