@@ -169,6 +169,24 @@ class AssetsTest extends TestCase {
 		}
 	}
 
+	public function test_assets_marked_registered_after_register() {
+		// Ensure the current user can authenticate.
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// Call register to register assets.
+		$this->assets->register();
+
+		// Ensure admin context is set before triggering admin enqueue.
+		set_current_screen( 'dashboard' );
+
+		// Trigger the registration callback via the admin enqueue hook.
+		do_action( 'admin_enqueue_scripts' );
+
+		// The first asset handle from get_assets is 'googlesitekit-commons'.
+		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Assets should be marked as registered after calling register().' );
+	}
+
 	public function test_enqueue_asset_with_unknown() {
 		$this->assertFalse( wp_script_is( 'unknown_script', 'enqueued' ), 'Unknown script should not be enqueued initially.' );
 		$this->assets->enqueue_asset( 'unknown_script' );
