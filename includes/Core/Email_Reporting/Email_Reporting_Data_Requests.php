@@ -17,10 +17,8 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\AdSense\Email_Reporting\Report_Options as AdSense_Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_4_Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Request_Assembler as Analytics_4_Report_Request_Assembler;
 use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Options as Search_Console_Report_Options;
@@ -118,7 +116,7 @@ class Email_Reporting_Data_Requests {
 	 * Gets the raw payload for a specific user.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
+	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
 	 *
 	 * @param int   $user_id              User ID.
 	 * @param array $date_range           Date range array.
@@ -178,7 +176,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Gets active module slugs for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return string[] Active module slugs.
 	 */
@@ -190,7 +188,7 @@ class Email_Reporting_Data_Requests {
 	 * Collects payloads for the allowed modules.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Adds optional shared payloads to reuse per-module data.
+	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
 	 *
 	 * @param array $modules         Allowed modules.
 	 * @param array $date_range      Date range payload.
@@ -219,8 +217,6 @@ class Email_Reporting_Data_Requests {
 				$result = $this->collect_analytics_payloads( $module, $date_range );
 			} elseif ( Search_Console::MODULE_SLUG === $slug ) {
 				$result = $this->collect_search_console_payloads( $module, $date_range );
-			} elseif ( AdSense::MODULE_SLUG === $slug ) {
-				$result = $this->collect_adsense_payloads( $module, $date_range );
 			} else {
 				continue;
 			}
@@ -307,30 +303,6 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
-	 * Collects AdSense payloads keyed by section-part identifiers.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param object $module     Module instance.
-	 * @param array  $date_range Date range payload.
-	 * @return array|WP_Error AdSense payload or WP_Error from module call.
-	 */
-	private function collect_adsense_payloads( $module, array $date_range ) {
-		$account_id     = $this->get_adsense_account_id( $module );
-		$report_options = new AdSense_Report_Options( $date_range, array(), $account_id );
-
-		$response = $module->get_data( 'report', $report_options->get_total_earnings_options() );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		return array(
-			'total_earnings' => $response,
-		);
-	}
-
-	/**
 	 * Filters modules to those accessible to the provided user.
 	 *
 	 * @since 1.168.0
@@ -359,6 +331,28 @@ class Email_Reporting_Data_Requests {
 		}
 
 		return $allowed;
+	}
+
+	/**
+	 * Gets the owner user ID for a module, if available.
+	 *
+	 * @since 1.172.0
+	 *
+	 * @param string $module_slug Module slug.
+	 * @return int Owner user ID or 0 if unavailable.
+	 */
+	public function get_module_owner_id( $module_slug ) {
+		$module = $this->modules->get_module( $module_slug );
+		if ( ! $module instanceof \Google\Site_Kit\Core\Modules\Module_With_Owner ) {
+			return 0;
+		}
+
+		$owner_id = $module->get_owner_id();
+		if ( ! get_user_by( 'id', $owner_id ) ) {
+			return 0;
+		}
+
+		return $owner_id;
 	}
 
 	/**

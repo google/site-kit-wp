@@ -48,7 +48,7 @@ const {
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
 	CONTENT_POLICY_VIOLATION_ACTIVE,
 	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
-	CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+	CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 } = CONTENT_POLICY_STATES;
 
 const POLICY_INFO_URL = 'https://publishercenter.google.com/policy';
@@ -112,7 +112,7 @@ OrganizationActiveViolation.scenario = {};
 export const ExtremeViolation = ExtremeTemplate.bind( {} );
 ExtremeViolation.storyName = 'Extreme Violation (Terminated)';
 ExtremeViolation.parameters = {
-	contentPolicyState: CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+	contentPolicyState: CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 };
 ExtremeViolation.scenario = {};
 

@@ -45,7 +45,8 @@ export default function EmailReportingErrorNotices() {
 	if (
 		! isEmailReportingEnabled ||
 		isViewOnly ||
-		emailReportingErrors?.length === 0
+		emailReportingErrors?.length === 0 ||
+		latestEmailReportingErrorCategoryID === undefined
 	) {
 		return null;
 	}

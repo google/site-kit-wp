@@ -17,8 +17,8 @@ $non_dev_packages = array_filter(
 );
 
 return array(
-	'prefix'                     => 'Google\\Site_Kit_Dependencies',
-	'finders'                    => array(
+	'prefix'                  => 'Google\\Site_Kit_Dependencies',
+	'finders'                 => array(
 		// All non-dev dependency package files.
 		Finder::create()
 			->files()
@@ -38,11 +38,11 @@ return array(
 				)
 			),
 	),
-	'files-whitelist'            => array(
+	'exclude-files'           => array(
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
-	'patchers'                   => array(
+	'patchers'                => array(
 		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
@@ -82,8 +82,8 @@ return array(
 			return $contents;
 		},
 	),
-	'whitelist'                  => array(),
-	'whitelist-global-constants' => false,
-	'whitelist-global-classes'   => false,
-	'whitelist-global-functions' => false,
+	'expose-namespaces'       => array(),
+	'expose-global-constants' => false,
+	'expose-global-classes'   => false,
+	'expose-global-functions' => false,
 );

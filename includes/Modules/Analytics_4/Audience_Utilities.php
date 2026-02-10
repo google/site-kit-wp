@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\Goog
 /**
  * Utility class for manipulating Analytics 4 audiences.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  * @access private
  * @ignore
  */
@@ -41,7 +41,7 @@ class Audience_Utilities {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param Audience_Settings $audience_settings Audience_Settings instance.
 	 */
@@ -52,7 +52,7 @@ class Audience_Utilities {
 	/**
 	 * Sets and returns available audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
 	 * @return array The available audiences.
@@ -126,7 +126,7 @@ class Audience_Utilities {
 	/**
 	 * Returns the Site Kit-created audience display names from the passed list of audiences.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array $audiences List of audiences.
 	 *
@@ -150,7 +150,7 @@ class Audience_Utilities {
 	/**
 	 * Gets the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
 	 * @return string The audience slug.
@@ -191,7 +191,7 @@ class Audience_Utilities {
 	/**
 	 * Gets the audience type based on the audience slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param string $audience_slug The audience slug.
 	 * @return string The audience type.
@@ -215,7 +215,7 @@ class Audience_Utilities {
 	 * Checks if an audience Site Kit identifier
 	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param array|object $data The array or object to search.
 	 * @param mixed        $identifier The identifier to search for.

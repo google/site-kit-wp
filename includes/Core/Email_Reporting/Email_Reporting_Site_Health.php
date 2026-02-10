@@ -41,7 +41,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Email log batch query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 * @var Email_Log_Batch_Query
 	 */
 	private $email_log_batch_query;

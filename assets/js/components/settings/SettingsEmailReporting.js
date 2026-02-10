@@ -74,7 +74,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	);
 
 	const documentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporiting' )
+		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =

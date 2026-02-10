@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for disconnected modules settings.
  *
- * @since n.e.x.t
+ * @since 1.172.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Disconnected_Modules extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return array
 	 */
@@ -37,7 +37,7 @@ class Disconnected_Modules extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return string The type name.
 	 */
@@ -49,7 +49,7 @@ class Disconnected_Modules extends Setting {
 	 * Adds a module to the list of disconnected modules
 	 * alongwith the timestamp of disconnection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param string $module_slug Module slug to disconnect.
 	 * @return bool True on success, false on failure.
@@ -67,7 +67,7 @@ class Disconnected_Modules extends Setting {
 	/**
 	 * Removes a module from the list of disconnected modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param string $module_slug Module slug to remove.
 	 * @return bool True on success, false on failure.
