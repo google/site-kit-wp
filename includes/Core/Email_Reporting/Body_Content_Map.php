@@ -43,9 +43,15 @@ class Body_Content_Map {
 	 */
 	protected static function get_all_bodies() {
 		return array(
-			'invitation-email' => array(
+			'invitation-email'          => array(
 				__( 'Receive the most important insights about your site’s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' ),
 				__( 'You can unsubscribe or change how often emails are sent anytime from your Site Kit dashboard.', 'google-site-kit' ),
+			),
+			'subscription-confirmation' => array(
+				__( 'You’re all set to receive your site performance reports.', 'google-site-kit' ),
+				/* translators: %1$s: frequency (e.g., "monthly"), %2$s: first report date */
+				__( 'You’ve successfully set your frequency to %1$s, and you can expect to receive your first report on %2$s.', 'google-site-kit' ),
+				__( 'You can manage your subscription settings or change the report frequency anytime in your Site Kit dashboard.', 'google-site-kit' ),
 			),
 		);
 	}
