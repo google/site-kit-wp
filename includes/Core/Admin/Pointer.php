@@ -119,7 +119,7 @@ final class Pointer {
 	/**
 	 * Gets the pointer tracking data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return array Pointer tracking config.
 	 */

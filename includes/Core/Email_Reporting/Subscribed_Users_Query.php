@@ -124,7 +124,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Queries super admins for multisite networks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return int[] User IDs.
 	 */

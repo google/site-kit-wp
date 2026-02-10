@@ -26,7 +26,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Email log statuses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @var string[]
 	 */
@@ -219,7 +219,7 @@ class Email_Log_Batch_Query {
 	 * Gets the error details of the first email log
 	 * if ALL emails in the latest batch failed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @return string|null Error details or null if no error.
 	 */

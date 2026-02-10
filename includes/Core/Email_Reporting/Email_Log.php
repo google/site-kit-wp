@@ -76,7 +76,7 @@ final class Email_Log {
 	/**
 	 * Site ID meta key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 */
 	const META_SITE_ID = '_site_id';
 
@@ -475,7 +475,7 @@ final class Email_Log {
 	/**
 	 * Sanitizes the site ID meta value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return int Sanitized site ID.

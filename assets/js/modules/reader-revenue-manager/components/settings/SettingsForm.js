@@ -30,11 +30,13 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	PolicyViolationSettingsNotice,
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
 	SnippetModeSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import { useFeature } from '@/js/hooks/useFeature';
 import ProductIDSettings from './ProductIDSettings';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/settings';
@@ -43,6 +45,8 @@ import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const rrmPolicyViolationsEnabled = useFeature( 'rrmPolicyViolations' );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
@@ -158,6 +162,11 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				{ hasModuleAccess && publicationAvailable && (
 					<PublicationOnboardingStateNotice />
 				) }
+				{ hasModuleAccess &&
+					publicationAvailable &&
+					rrmPolicyViolationsEnabled && (
+						<PolicyViolationSettingsNotice />
+					) }
 				{ ! hasModuleAccess && (
 					<Notice
 						className="googlesitekit-moduleaccess-warning-notice"

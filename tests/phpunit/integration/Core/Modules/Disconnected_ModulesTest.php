@@ -20,7 +20,7 @@ class Disconnected_ModulesTest extends SettingsTestCase {
 	/**
 	 * Disconnected_Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.172.0
 	 * @var Disconnected_Modules
 	 */
 	private $disconnected_modules;

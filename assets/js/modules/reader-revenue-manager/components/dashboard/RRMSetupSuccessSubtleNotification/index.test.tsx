@@ -476,7 +476,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
-			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_IMMEDIATE,
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 	];
