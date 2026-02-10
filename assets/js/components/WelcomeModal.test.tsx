@@ -43,6 +43,8 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
@@ -51,9 +53,6 @@ import {
 } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import WelcomeModal from './WelcomeModal';
-
-const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
-const GATHERING_DATA_DISMISSED_ITEM_SLUG = 'welcome-modal-gathering-data';
 
 describe( 'WelcomeModal', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -207,14 +206,14 @@ describe( 'WelcomeModal', () => {
 
 				// Model the responses for the two POST requests to `dismiss-item`.
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
 					body: [
-						WITH_TOUR_DISMISSED_ITEM_SLUG,
-						GATHERING_DATA_DISMISSED_ITEM_SLUG,
+						WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 					],
 					status: 200,
 				} );
@@ -261,7 +260,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -270,7 +269,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -311,14 +310,14 @@ describe( 'WelcomeModal', () => {
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [
-					WITH_TOUR_DISMISSED_ITEM_SLUG,
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				],
 				status: 200,
 			} );
@@ -383,14 +382,14 @@ describe( 'WelcomeModal', () => {
 
 		// Model the responses for the two POST requests to `dismiss-item`.
 		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+			body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 			status: 200,
 		} );
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: [
-				WITH_TOUR_DISMISSED_ITEM_SLUG,
-				GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 			],
 			status: 200,
 		} );
@@ -443,7 +442,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ WITH_TOUR_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, waitForRegistry } = render( <WelcomeModal />, {
 			registry,
@@ -495,14 +496,14 @@ describe( 'WelcomeModal', () => {
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [
-					WITH_TOUR_DISMISSED_ITEM_SLUG,
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				],
 				status: 200,
 			} );
@@ -670,7 +671,7 @@ describe( 'WelcomeModal', () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 			} );
@@ -719,7 +720,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -772,7 +773,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, waitForRegistry } = render( <WelcomeModal />, {
 			registry,
@@ -812,7 +815,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WelcomeModal />,
@@ -863,7 +868,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WelcomeModal />,
@@ -922,11 +929,11 @@ describe( 'WelcomeModal', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedItems( [
-						GATHERING_DATA_DISMISSED_ITEM_SLUG,
+						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 					] );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 			} );
@@ -973,7 +980,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -1013,11 +1020,11 @@ describe( 'WelcomeModal', () => {
 			registry
 				.dispatch( CORE_USER )
 				.receiveGetDismissedItems( [
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				] );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
@@ -1079,10 +1086,12 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+			body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 			status: 200,
 		} );
 
@@ -1135,8 +1144,8 @@ describe( 'WelcomeModal', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				GATHERING_DATA_DISMISSED_ITEM_SLUG,
-				WITH_TOUR_DISMISSED_ITEM_SLUG,
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 			] );
 
 		const { container, waitForRegistry } = render( <WelcomeModal />, {

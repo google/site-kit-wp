@@ -270,6 +270,32 @@ describe( 'Actions', () => {
 			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
 		} );
 
+		it( 'should navigate to the dashboard when the button is clicked and setupFlowRefresh is enabled', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<Actions { ...actionsProps } />,
+				{
+					viewContext: VIEW_CONTEXT_SPLASH,
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			expect( global.location.assign ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Skip sign-in and view limited dashboard',
+				} )
+			);
+
+			await waitForRegistry();
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success'
+			);
+			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+		} );
+
 		it( 'should dismiss the shared dashboard splash item when the button is clicked', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<Actions { ...actionsProps } />,

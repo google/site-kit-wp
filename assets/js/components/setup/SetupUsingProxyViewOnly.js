@@ -25,6 +25,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -46,6 +47,7 @@ import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
@@ -63,14 +65,28 @@ export default function SetupUsingProxyViewOnly() {
 		);
 	} );
 
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const onButtonClick = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
 			trackEvent( viewContext, 'confirm_viewonly' ),
 		] ).finally( () => {
-			navigateTo( dashboardURL );
+			const redirectURL = setupFlowRefreshEnabled
+				? addQueryArgs( dashboardURL, {
+						notification: 'initial_setup_success',
+				  } )
+				: dashboardURL;
+
+			navigateTo( redirectURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
+	}, [
+		setupFlowRefreshEnabled,
+		dashboardURL,
+		dismissItem,
+		navigateTo,
+		viewContext,
+	] );
 
 	if ( ! dashboardURL ) {
 		return null;

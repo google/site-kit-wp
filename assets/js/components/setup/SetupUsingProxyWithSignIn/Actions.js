@@ -25,6 +25,7 @@ import {
 	useCallback,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -82,7 +83,13 @@ export default function Actions( {
 					: 'skip_setup_to_viewonly'
 			),
 		] ).finally( () => {
-			navigateTo( dashboardURL );
+			const redirectURL = setupFlowRefreshEnabled
+				? addQueryArgs( dashboardURL, {
+						notification: 'initial_setup_success',
+				  } )
+				: dashboardURL;
+
+			navigateTo( redirectURL );
 		} );
 	}, [
 		dashboardURL,

@@ -16,6 +16,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -512,6 +513,52 @@ class OAuth_ClientTest extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			// Verify the redirect URL is preserved, including the original notification query parameter.
 			$this->assertEquals( $success_redirect, $redirect->get_location() );
+		}
+	}
+
+	public function test_default_redirect_url__notification_initial_setup() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		$this->fake_site_connection();
+		$this->mock_google_client( $client );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'notification', 'initial_setup_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
+				$redirect->get_location()
+			);
+		}
+	}
+
+	public function test_default_redirect_url__notification_existing_user() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options    = new User_Options( $context );
+		$client          = new OAuth_Client( $context, null, $user_options );
+		$dismissed_items = new Dismissed_Items( $user_options );
+		$dismissed_items->add( 'welcome-modal-gathering-data' );
+
+		$this->fake_site_connection();
+		$this->mock_google_client( $client );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'notification', 'authentication_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
+				$redirect->get_location()
+			);
 		}
 	}
 

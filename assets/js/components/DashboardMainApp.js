@@ -82,6 +82,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -231,6 +232,16 @@ export default function DashboardMainApp() {
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const showWelcomeModal = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return false;
+		}
+
+		return (
+			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
+			isInitialWelcomeModalActive()
+		);
+	} );
 
 	useMonitorInternetConnection();
 
@@ -337,7 +348,7 @@ export default function DashboardMainApp() {
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ setupFlowRefreshEnabled && <WelcomeModal /> }
+			{ showWelcomeModal && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>

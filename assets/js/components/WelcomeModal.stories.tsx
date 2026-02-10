@@ -19,12 +19,13 @@
 /**
  * Internal dependencies
  */
-import WelcomeModal, {
-	GATHERING_DATA_DISMISSED_ITEM_SLUG,
-} from './WelcomeModal';
+import WelcomeModal from './WelcomeModal';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+} from '@/js/googlesitekit/datastore/user/constants';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;
@@ -73,7 +74,9 @@ DataGatheringComplete.args = {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 	},
 };
 DataGatheringComplete.scenario = {};
