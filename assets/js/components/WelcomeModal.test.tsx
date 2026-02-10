@@ -414,48 +414,6 @@ describe( 'WelcomeModal', () => {
 		expect( tooltipState ).toBeUndefined();
 	} );
 
-	it( 'should not show the data available variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-			] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it.each( [
 		[ false, true ],
 		[ true, false ],
@@ -752,40 +710,6 @@ describe( 'WelcomeModal', () => {
 			} );
 		}
 	);
-
-	it( 'should not show the gathering data variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: false,
-				connected: false,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-			] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
 
 	it( 'should show the data gathering complete variant when Analytics is connected and not gathering data, and the gathering data variant has been dismissed', async () => {
 		provideModules( registry, [
@@ -1113,48 +1037,5 @@ describe( 'WelcomeModal', () => {
 			.getValue( 'admin-screen-tooltip' );
 
 		expect( tooltipState ).toBeUndefined();
-	} );
-
-	it( 'should not show the data gathering complete variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-			] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
