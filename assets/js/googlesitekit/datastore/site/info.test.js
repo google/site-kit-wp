@@ -343,6 +343,70 @@ describe( 'core/site site info', () => {
 
 				expect( adminURL ).toEqual( undefined );
 			} );
+
+			it( 'supports adminURL that already contains query parameters (no trailing slash)', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage' );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toBe( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toBe( 'testpage' );
+			} );
+
+			it( 'supports adminURL that already contains query parameters (with trailing slash)', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin/?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage', {
+						arg1: 'argument-1',
+					} );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toBe( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toBe( 'testpage' );
+				expect( parsed.searchParams.get( 'arg1' ) ).toBe(
+					'argument-1'
+				);
+			} );
+
+			it( 'preserves base adminURL query params for full page argument and ignores extra page in args', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'custom.php?page=correct-page', {
+						page: 'wrong-page',
+						arg2: 'argument-2',
+					} );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toBe( '/wp-admin/custom.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toBe(
+					'correct-page'
+				);
+				expect( parsed.searchParams.get( 'arg2' ) ).toBe(
+					'argument-2'
+				);
+			} );
 		} );
 
 		describe( 'getSiteInfo', () => {
