@@ -29,7 +29,7 @@ final class Email_Log {
 	 *
 	 * @since 1.166.0
 	 */
-	const POST_TYPE = 'gsk_email_log';
+	const POST_TYPE = 'googlesitekit_email';
 
 	/**
 	 * Report frequency meta key.
@@ -87,9 +87,9 @@ final class Email_Log {
 	 *
 	 * @since 1.166.0
 	 */
-	const STATUS_SENT      = 'gsk_email_sent';
-	const STATUS_FAILED    = 'gsk_email_failed';
-	const STATUS_SCHEDULED = 'gsk_email_scheduled';
+	const STATUS_SENT      = 'email_sent';
+	const STATUS_FAILED    = 'email_failed';
+	const STATUS_SCHEDULED = 'email_scheduled';
 
 	/**
 	 * Extracts a normalized date range array from an email log post.
