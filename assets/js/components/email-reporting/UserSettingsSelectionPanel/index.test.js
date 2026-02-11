@@ -217,7 +217,7 @@ describe( 'UserSettingsSelectionPanel', () => {
 		);
 		expect(
 			getByText(
-				"Look for a confirmation email in your inbox. If you don't see it, check your spam folder.",
+				'Look for a confirmation email in your inbox. If you don’t see it, check your spam folder.',
 				{ exact: false }
 			)
 		).toBeInTheDocument();
