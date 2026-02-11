@@ -31,26 +31,34 @@
 	}
 }
 
+@mixin narrow-notice-layout {
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 10px;
+	padding: 14px $grid-gap-phone;
+}
+
+@mixin wide-notice-layout {
+	align-items: center;
+	flex-direction: row;
+	gap: $grid-gap-phone;
+	padding: 14px $grid-gap-desktop;
+}
+
 .googlesitekit-notice-container {
 	container-type: inline-size;
 	width: 100%; // Prevents shrinkage when the parent / wrapping container uses flexbox.
 }
 
 .googlesitekit-notice {
-	align-items: flex-start;
+	@include narrow-notice-layout;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
 	color: $c-content-on-primary-container;
 	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding: 14px $grid-gap-phone;
 
 	@container (width > #{$container-width-desktop}) {
-		align-items: center;
-		flex-direction: row;
-		gap: $grid-gap-phone;
-		padding: 14px $grid-gap-desktop;
+		@include wide-notice-layout;
 	}
 
 	.googlesitekit-notice__icon {
