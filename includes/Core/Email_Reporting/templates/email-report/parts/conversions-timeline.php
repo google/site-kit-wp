@@ -14,7 +14,7 @@
  */
 
 $is_positive = (float) $change >= 0;
-$image_url   = $get_asset_url( $is_positive ? 'conversions-timeline-green.png' : 'conversions-timeline-red.png' );
+$image_url   = $get_asset_url( $is_positive ? 'conversions-timeline-green' : 'conversions-timeline-red' );
 $alt_text    = $is_positive
 	? __( 'Positive trend indicator', 'google-site-kit' )
 	: __( 'Negative trend indicator', 'google-site-kit' );
