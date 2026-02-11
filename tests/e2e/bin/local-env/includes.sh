@@ -6,7 +6,7 @@ CLI='cli'
 CONTAINER='wordpress'
 SITE_TITLE='Google Site Kit Dev'
 # Set the name of the Docker Compose project.
-export COMPOSE_PROJECT_NAME='googlesitekit-e2e'
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-googlesitekit-e2e}"
 
 # TTY compatibility.
 # For some environments, a TTY may not be available (e.g. GitHub Actions).

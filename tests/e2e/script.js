@@ -68,8 +68,17 @@ if ( result.status > 0 ) {
 
 const config = [ '--config=jest.config.js' ];
 
+const isParallel =
+	process.env.E2E_PARALLEL === '1' || hasArgInCLI( '--parallel' );
 const hasRunInBand = hasArgInCLI( '--runInBand' ) || hasArgInCLI( '-i' );
-const runInBand = ! hasRunInBand ? [ '--runInBand' ] : [];
+
+let runInBand;
+if ( isParallel ) {
+	const workers = process.env.E2E_PARALLEL_WORKERS || '4';
+	runInBand = [ `--maxWorkers=${ workers }` ];
+} else {
+	runInBand = ! hasRunInBand ? [ '--runInBand' ] : [];
+}
 
 if ( hasArgInCLI( '--puppeteer-interactive' ) ) {
 	process.env.PUPPETEER_HEADLESS = 'false';
@@ -93,6 +102,6 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 	}
 } );
 
-const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
+const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-', '--parallel' ];
 
 jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
