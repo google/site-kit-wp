@@ -85,6 +85,54 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertSame( '2024-01-31', $options['compareEndDate'], 'Compare end should match provided compare range.' );
 	}
 
+	public function test_get_total_conversion_events_options__uses_dynamic_conversion_event_filters() {
+		$builder = $this->create_builder();
+		$builder->set_conversion_events( array( 'begin_checkout', 'purchase' ) );
+
+		$options = $builder->get_total_conversion_events_options();
+
+		$this->assertArrayHasKey( 'dimensionFilters', $options, 'Total conversions report should include dimension filters.' );
+		$this->assertArrayHasKey( 'eventName', $options['dimensionFilters'], 'Total conversions report should filter by conversion events.' );
+		$this->assertSame(
+			array( 'begin_checkout', 'purchase' ),
+			$options['dimensionFilters']['eventName'],
+			'Total conversions report should filter by the dynamic conversion events list.'
+		);
+	}
+
+	public function test_conversion_event_options__builds_expected_request() {
+		$builder = $this->create_builder();
+		$options = $builder->get_conversion_event_options( 'begin_checkout' );
+
+		$this->assertSame(
+			array( array( 'name' => 'eventCount' ) ),
+			$options['metrics'],
+			'Conversion event report should request eventCount.'
+		);
+		$this->assertSame(
+			array( array( 'name' => 'sessionDefaultChannelGroup' ) ),
+			$options['dimensions'],
+			'Conversion event report should group by sessionDefaultChannelGroup.'
+		);
+		$this->assertSame(
+			array( 'value' => 'begin_checkout' ),
+			$options['dimensionFilters']['eventName'],
+			'Conversion event report should filter by the requested event name.'
+		);
+		$this->assertSame(
+			array(
+				array(
+					'metric' => array( 'metricName' => 'eventCount' ),
+					'desc'   => true,
+				),
+			),
+			$options['orderby'],
+			'Conversion event report should order rows by event count descending.'
+		);
+		$this->assertSame( 1, $options['limit'], 'Conversion event report should limit to one top row.' );
+		$this->assertTrue( $options['keepEmptyRows'], 'Conversion event report should include empty rows.' );
+	}
+
 	public function test_products_added_to_cart_report_orders_by_metric() {
 		$builder = $this->create_builder();
 		$options = $builder->get_products_added_to_cart_options();
