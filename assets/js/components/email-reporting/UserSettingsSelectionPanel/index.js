@@ -157,7 +157,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: 'info',
+				type: 'info-alt-2',
 				text: __(
 					'You’ve unsubscribed from email reports',
 					'google-site-kit'
