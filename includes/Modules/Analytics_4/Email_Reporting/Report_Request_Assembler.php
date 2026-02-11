@@ -55,19 +55,20 @@ class Report_Request_Assembler {
 			'popular_content'  => $this->report_options->get_popular_content_options(),
 		);
 
-		$conversion_events = $this->report_options->get_conversion_events();
-		$has_add_to_cart   = in_array( 'add_to_cart', $conversion_events, true );
-		$has_purchase      = in_array( 'purchase', $conversion_events, true );
+		$conversion_events = $this->report_options->get_normalized_conversion_events();
 
-		if ( $has_add_to_cart || $has_purchase ) {
+		if ( ! empty( $conversion_events ) ) {
 			$requests['total_conversion_events'] = $this->report_options->get_total_conversion_events_options();
 
-			if ( $has_add_to_cart ) {
-				$requests['products_added_to_cart'] = $this->report_options->get_products_added_to_cart_options();
-			}
+			foreach ( $conversion_events as $event_name ) {
+				$event_name_slug = sanitize_key( $event_name );
 
-			if ( $has_purchase ) {
-				$requests['purchases'] = $this->report_options->get_purchases_options();
+				$request_key = sprintf( 'conversion_event_%s', $event_name_slug );
+				if ( isset( $requests[ $request_key ] ) ) {
+					continue;
+				}
+
+				$requests[ $request_key ] = $this->report_options->get_conversion_event_options( $event_name );
 			}
 		}
 
