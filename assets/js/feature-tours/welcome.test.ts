@@ -91,9 +91,8 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 	},
 ];
 
-const SC_ONLY_TOUR_COMMON_STEPS = [
+const SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS = [
 	{
-		slug: 'search-funnel',
 		target: '.googlesitekit-widget--searchFunnelGA4',
 		floaterProps: {
 			target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
@@ -111,7 +110,6 @@ const SC_ONLY_TOUR_COMMON_STEPS = [
 		placement: 'top',
 	},
 	{
-		slug: 'top-search-queries',
 		target: '.googlesitekit-widget--searchConsolePopularKeywords',
 		floaterProps: {
 			target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
@@ -237,9 +235,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
-			expect( tour.slug ).toBe( 'welcome-no-analytics' );
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			expect( tour.steps ).toEqual( [
-				...SC_ONLY_TOUR_COMMON_STEPS,
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
 					slug: 'dashboard-sharing',
 					target: '.googlesitekit-header',
@@ -286,10 +284,10 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
-			expect( tour.slug ).toBe( 'welcome-no-analytics' );
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
-				...SC_ONLY_TOUR_COMMON_STEPS,
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
 					slug: 'dashboard-sharing',
 					target: '.googlesitekit-header',
@@ -318,10 +316,10 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
-			expect( tour.slug ).toBe( 'welcome-no-analytics' );
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
-				...SC_ONLY_TOUR_COMMON_STEPS,
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
 					slug: 'dashboard-sharing',
 					target: '.googlesitekit-header',
