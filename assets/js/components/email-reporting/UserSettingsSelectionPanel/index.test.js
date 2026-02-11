@@ -40,6 +40,9 @@ import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSe
 
 describe( 'UserSettingsSelectionPanel', () => {
 	const features = [ 'proactiveUserEngagement' ];
+	const emailReportingSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
+	);
 	let registry;
 
 	beforeEach( () => {
@@ -174,6 +177,50 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: true } );
+	} );
+
+	it( 'shows the updated subscribe success notice copy after subscribing', async () => {
+		const expectedSettings = {
+			subscribed: true,
+			frequency: 'monthly',
+		};
+		fetchMock.postOnce( emailReportingSettingsEndpoint, {
+			body: expectedSettings,
+			status: 200,
+		} );
+
+		const { getByRole, getByText } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				features,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Subscribe' } ) );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( emailReportingSettingsEndpoint, {
+				body: {
+					data: {
+						settings: expectedSettings,
+					},
+				},
+			} )
+		);
+
+		await waitFor( () =>
+			expect(
+				getByText( 'You’ve successfully subscribed to email reports!' )
+			).toBeInTheDocument()
+		);
+		expect(
+			getByText(
+				"Look for a confirmation email in your inbox. If you don't see it, check your spam folder.",
+				{ exact: false }
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'calls saveEmailReportingSettings with subscribed false when unsubscribing', async () => {
