@@ -103,6 +103,17 @@
 		margin: 0;
 	}
 
+	&.googlesitekit-notice--side-panel {
+		@include wide-notice-layout; // Even though the notice container is narrow, the notice uses the wide flex row layout.
+		gap: 10px;
+
+		p {
+			font-size: $fs-label-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+		}
+	}
+
 	&.googlesitekit-notice--small {
 		padding: $grid-gap-phone / 2 $grid-gap-phone;
 
