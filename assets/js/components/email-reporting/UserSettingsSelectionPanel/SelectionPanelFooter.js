@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notice from '@/js/components/Notice';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import P from '@/js/components/Typography/P';
 
 export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
@@ -37,7 +37,7 @@ export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
 		<footer className="googlesitekit-selection-panel-footer">
 			<div className="googlesitekit-selection-panel-footer__content">
 				{ notice ? (
-					<Notice
+					<SelectionPanelNotice
 						type={ notice.type }
 						description={ notice.text }
 						dismissButton={ {

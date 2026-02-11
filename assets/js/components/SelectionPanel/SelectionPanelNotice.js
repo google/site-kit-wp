@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Selection Panel Notice
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +16,28 @@
  * limitations under the License.
  */
 
-export const TYPES = {
-	NEW: 'new',
-	SUCCESS: 'success',
-	WARNING: 'warning',
-	INFO: 'info', // Grey background
-	INFO_ALT: 'info-alt', // White background
-	INFO_ALT_2: 'info-alt-2', // Black background
-	ERROR: 'error',
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Notice from '@/js/components/Notice';
+
+const SelectionPanelNotice = forwardRef( ( props, ref ) => {
+	return (
+		<Notice
+			className="googlesitekit-notice--square googlesitekit-notice--side-panel"
+			{ ...props }
+			ref={ ref }
+		/>
+	);
+} );
+
+export default SelectionPanelNotice;
+
+SelectionPanelNotice.propTypes = {
+	...Notice.propTypes,
 };
