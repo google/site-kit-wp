@@ -29,7 +29,7 @@ import Notice from '@/js/components/Notice';
 const SelectionPanelNotice = forwardRef( ( props, ref ) => {
 	return (
 		<Notice
-			className="googlesitekit-notice--square googlesitekit-selection-panel-notice"
+			className="googlesitekit-notice--square googlesitekit-notice--side-panel"
 			{ ...props }
 			ref={ ref }
 		/>
