@@ -58,18 +58,6 @@ class Report_Options extends Base_Report_Options {
 	private $audience_segmentation_enabled = null;
 
 	/**
-	 * Ecommerce conversion events.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @var string[]
-	 */
-	private $ecommerce_events = array(
-		'add_to_cart',
-		'purchase',
-	);
-
-	/**
 	 * Audience configuration helper.
 	 *
 	 * @since 1.167.0
@@ -143,6 +131,28 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
+	 * Gets normalized conversion events.
+	 *
+	 * Ensures conversion events are strings, de-duplicated, and non-empty.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Normalized conversion events.
+	 */
+	public function get_normalized_conversion_events() {
+		$events = array_map( 'strval', (array) $this->conversion_events );
+
+		$events = array_filter(
+			$events,
+			function ( $event_name ) {
+				return '' !== trim( $event_name );
+			}
+		);
+
+		return array_values( array_unique( $events ) );
+	}
+
+	/**
 	 * Whether audience segmentation is enabled.
 	 *
 	 * @since 1.170.0
@@ -178,17 +188,53 @@ class Report_Options extends Base_Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_total_conversion_events_options() {
+		$conversion_events = $this->get_normalized_conversion_events();
+
 		return $this->with_current_range(
 			array(
 				'metrics'          => array(
 					array( 'name' => 'eventCount' ),
 				),
 				'dimensionFilters' => array(
-					'eventName' => $this->ecommerce_events,
+					'eventName' => $conversion_events,
 				),
 				'keepEmptyRows'    => true,
 			),
 			true
+		);
+	}
+
+	/**
+	 * Gets report options for a conversion event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $event_name Conversion event name.
+	 * @return array Report request options array.
+	 */
+	public function get_conversion_event_options( string $event_name ) {
+		return $this->with_current_range(
+			array(
+				'metrics'          => array(
+					array( 'name' => 'eventCount' ),
+				),
+				'dimensions'       => array(
+					array( 'name' => 'sessionDefaultChannelGroup' ),
+				),
+				'dimensionFilters' => array(
+					'eventName' => array(
+						'value' => $event_name,
+					),
+				),
+				'orderby'          => array(
+					array(
+						'metric' => array( 'metricName' => 'eventCount' ),
+						'desc'   => true,
+					),
+				),
+				'limit'            => 1,
+				'keepEmptyRows'    => true,
+			)
 		);
 	}
 
