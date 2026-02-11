@@ -217,7 +217,7 @@ class Plain_Text_FormatterTest extends TestCase {
 			'title'            => 'Is my site helping my business grow?',
 			'section_template' => 'section-conversions',
 			'section_parts'    => array(
-				'total_conversion_events' => array(
+				'total_conversion_events'   => array(
 					'data' => array(
 						'label'          => 'Total conversions',
 						'value'          => '150',
@@ -225,9 +225,9 @@ class Plain_Text_FormatterTest extends TestCase {
 						'change_context' => 'Compared to previous 7 days',
 					),
 				),
-				'purchases'               => array(
+				'conversion_event_purchase' => array(
 					'data' => array(
-						'label'           => 'Purchases',
+						'label'           => 'purchase',
 						'value'           => '50',
 						'change'          => 15.0,
 						'event_name'      => 'purchase',
@@ -242,8 +242,8 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Is my site helping my business grow?', $result, 'Conversions section should contain title.' );
 		$this->assertStringContainsString( 'Total conversions: 150 (+25%)', $result, 'Conversions section should contain total conversions.' );
-		$this->assertStringContainsString( 'Purchases', $result, 'Conversions section should contain purchases label.' );
-		$this->assertStringContainsString( '“Purchase“ events', $result, 'Conversions section should contain event name.' );
+		$this->assertStringContainsString( 'purchase', $result, 'Conversions section should contain raw event label.' );
+		$this->assertStringContainsString( '“purchase“ events', $result, 'Conversions section should contain lowercase event name.' );
 		$this->assertStringContainsString( 'Top traffic channel driving the most conversions: Organic Search', $result, 'Conversions section should contain top traffic channel.' );
 	}
 

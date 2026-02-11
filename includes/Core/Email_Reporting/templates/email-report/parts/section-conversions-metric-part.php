@@ -49,7 +49,7 @@ $change_context  = $data['change_context'];
 							/* translators: %s: Event name (e.g., "Purchase") */
 							esc_html__( '"%s" events', 'google-site-kit' ),
 							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Event name is already escaped above.
-							ucfirst( $event_name )
+							$event_name
 						);
 						?>
 					</td>
