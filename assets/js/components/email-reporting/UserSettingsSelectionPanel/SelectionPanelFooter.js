@@ -39,6 +39,7 @@ export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
 				{ notice ? (
 					<SelectionPanelNotice
 						type={ notice.type }
+						title={ notice.title }
 						description={ notice.text }
 						dismissButton={ {
 							label: __( 'Got it', 'google-site-kit' ),
@@ -61,7 +62,8 @@ export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
 
 SelectionPanelFooter.propTypes = {
 	notice: PropTypes.shape( {
-		text: PropTypes.string,
+		title: PropTypes.node,
+		text: PropTypes.node,
 		type: PropTypes.oneOf( [ 'info', 'success', 'error' ] ),
 	} ),
 	onNoticeDismiss: PropTypes.func,

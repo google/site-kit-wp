@@ -131,8 +131,12 @@ export default function UserSettingsSelectionPanel() {
 		if ( ! error ) {
 			setNotice( {
 				type: TYPES.SUCCESS,
-				text: __(
+				title: __(
 					'You’ve successfully subscribed to email reports!',
+					'google-site-kit'
+				),
+				text: __(
+					'Look for a confirmation email in your inbox. If you don’t see it, check your spam folder.',
 					'google-site-kit'
 				),
 			} );
