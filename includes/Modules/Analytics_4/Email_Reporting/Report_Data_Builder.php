@@ -190,6 +190,15 @@ class Report_Data_Builder {
 
 		list( $dimension_values, $labels ) = $this->maybe_format_audience_dimensions( $dimensions, $dimension_values, $labels );
 
+		if ( 0 === strpos( $section_key, 'conversion_event_' ) ) {
+			$event_name = substr( $section_key, strlen( 'conversion_event_' ) );
+
+			if ( '' !== $event_name ) {
+				$labels       = array( $event_name );
+				$metric_names = array( $event_name );
+			}
+		}
+
 		return array(
 			'section_key'      => $section_key,
 			'title'            => $processed_report['metadata']['title'] ?? '',

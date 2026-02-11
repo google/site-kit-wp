@@ -34,6 +34,7 @@ import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function UserSettingsSelectionPanel() {
 	const viewContext = useViewContext();
@@ -100,7 +101,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: 'success',
+				type: TYPES.SUCCESS,
 				text: __(
 					'You’ve successfully updated frequency settings!',
 					'google-site-kit'
@@ -108,7 +109,7 @@ export default function UserSettingsSelectionPanel() {
 			} );
 		} else {
 			setNotice( {
-				type: 'error',
+				type: TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),
@@ -129,19 +130,19 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: 'success',
+				type: TYPES.SUCCESS,
 				title: __(
 					'You’ve successfully subscribed to email reports!',
 					'google-site-kit'
 				),
 				text: __(
-					"Look for a confirmation email in your inbox. If you don't see it, check your spam folder.",
+					'Look for a confirmation email in your inbox. If you don’t see it, check your spam folder.',
 					'google-site-kit'
 				),
 			} );
 		} else {
 			setNotice( {
-				type: 'error',
+				type: TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),
@@ -161,7 +162,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: 'info',
+				type: TYPES.INFO_ALT_2,
 				text: __(
 					'You’ve unsubscribed from email reports',
 					'google-site-kit'
@@ -169,7 +170,7 @@ export default function UserSettingsSelectionPanel() {
 			} );
 		} else {
 			setNotice( {
-				type: 'error',
+				type: TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),

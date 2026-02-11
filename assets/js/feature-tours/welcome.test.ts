@@ -34,7 +34,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 		},
 		title: __( 'Your goals, measured and clear', 'google-site-kit' ),
 		content: __(
-			"These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what's working and what's not.",
+			'These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what’s working and what’s not.',
 			'google-site-kit'
 		),
 		offset: -3,
@@ -51,7 +51,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 			'google-site-kit'
 		),
 		content: __(
-			"Know what's normal for your site. This is how you spot trends and measure real growth.",
+			'Know what’s normal for your site. This is how you spot trends and measure real growth.',
 			'google-site-kit'
 		),
 		offset: 35,
@@ -91,21 +91,158 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 	},
 ];
 
+const SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS = [
+	{
+		target: '.googlesitekit-widget--searchFunnelGA4',
+		floaterProps: {
+			target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+		},
+		title: __(
+			'Track Search traffic trends, identify baselines',
+			'google-site-kit'
+		),
+		content: __(
+			'Know what’s normal for your site. This is how you spot trends and measure real growth.',
+			'google-site-kit'
+		),
+		offset: 0,
+		spotlightPadding: 0,
+		placement: 'top',
+	},
+	{
+		target: '.googlesitekit-widget--searchConsolePopularKeywords',
+		floaterProps: {
+			target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
+		},
+		title: __(
+			'Track how your site is doing on Search',
+			'google-site-kit'
+		),
+		content: __(
+			'Know what’s driving growth and bringing your site more visitors',
+			'google-site-kit'
+		),
+		offset: 0,
+		spotlightPadding: 0,
+		placement: 'top',
+	},
+];
+
 describe( 'getWelcomeTour', () => {
-	it( 'should return the Analytics-connected tour variant for an authenticated user', () => {
-		const tour = getWelcomeTour( {
-			isViewOnly: false,
-			canAuthenticate: true,
+	describe( 'Analytics connected tour variant', () => {
+		it( 'should return the Analytics-connected tour variant for an authenticated user', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+			} );
+
+			expect( tour.slug ).toBe( 'welcome-with-analytics' );
+			expect( tour.steps ).toEqual( [
+				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
+				...[
+					{
+						slug: 'dashboard-sharing',
+						target: '.googlesitekit-header',
+						floaterProps: {
+							target: '.googlesitekit-sharing-settings__button svg',
+						},
+						title: __(
+							'Share insights with your team',
+							'google-site-kit'
+						),
+						content: __(
+							'Give access to your teammates or clients to view the dashboard instantly, no setup required. You control who sees what.',
+							'google-site-kit'
+						),
+						offset: 0,
+						spotlightPadding: 0,
+						placement: 'bottom',
+					},
+				],
+			] );
+			expect( tour ).toBeDefined();
 		} );
 
-		expect( tour.steps ).toEqual( [
-			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
-			...[
+		it( 'should return the Analytics-connected tour variant for a view-only user who can authenticate', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: true,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+			} );
+
+			expect( tour.slug ).toBe( 'welcome-with-analytics' );
+			expect( tour.steps ).toEqual( [
+				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
 				{
 					slug: 'dashboard-sharing',
 					target: '.googlesitekit-header',
 					floaterProps: {
-						target: '.googlesitekit-sharing-settings__button svg',
+						target: '.googlesitekit-view-only-menu',
+					},
+					title: __(
+						'Get instant access to insights, no setup',
+						'google-site-kit'
+					),
+					content: __(
+						'See what’s been shared with you here, or sign in with Google to configure services and sharing access',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
+				},
+			] );
+		} );
+
+		it( 'should return the Analytics-connected tour variant for a view-only user who cannot authenticate', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: true,
+				canAuthenticate: false,
+				isAnalyticsConnected: true,
+			} );
+
+			expect( tour.slug ).toBe( 'welcome-with-analytics' );
+			expect( tour.steps ).toEqual( [
+				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-view-only-menu',
+					},
+					title: __(
+						'Get instant access to insights, no setup',
+						'google-site-kit'
+					),
+					content: __(
+						'Site admins have shared the dashboard with you, so you can keep track of how your site is doing. See what’s been shared with you here.',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
+				},
+			] );
+		} );
+	} );
+
+	describe( 'Search Console only tour variant', () => {
+		it( 'should return the SC-only tour variant for an authenticated user', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+			} );
+
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
+			expect( tour.steps ).toEqual( [
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-sharing-settings__button',
 					},
 					title: __(
 						'Share insights with your team',
@@ -119,66 +256,122 @@ describe( 'getWelcomeTour', () => {
 					spotlightPadding: 0,
 					placement: 'bottom',
 				},
-			],
-		] );
-		expect( tour ).toBeDefined();
-	} );
-
-	it( 'should return the Analytics-connected tour variant for a view-only user who can authenticate', () => {
-		const tour = getWelcomeTour( {
-			isViewOnly: true,
-			canAuthenticate: true,
+				{
+					slug: 'activate-analytics',
+					target: '#activate-analytics-cta',
+					floaterProps: {
+						target: '#activate-analytics-cta .googlesitekit-banner__cta',
+					},
+					title: __(
+						'Want to know what people do once they land on your site?',
+						'google-site-kit'
+					),
+					content: __(
+						'Get insights on how visitors navigate your site and help you achieve your goals by connecting Analytics',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
+				},
+			] );
 		} );
 
-		expect( tour.steps ).toEqual( [
-			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
-			{
-				slug: 'dashboard-sharing',
-				target: '.googlesitekit-header',
-				floaterProps: {
-					target: '.googlesitekit-view-only-menu',
-				},
-				title: __(
-					'Get instant access to insights, no setup',
-					'google-site-kit'
-				),
-				content: __(
-					'See what’s been shared with you here, or sign in with Google to configure services and sharing access',
-					'google-site-kit'
-				),
-				offset: 0,
-				spotlightPadding: 0,
-				placement: 'bottom',
-			},
-		] );
-	} );
+		it( 'should return the SC-only tour variant for a view-only user who can authenticate', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: true,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+			} );
 
-	it( 'should return the Analytics-connected tour variant for a view-only user who cannot authenticate', () => {
-		const tour = getWelcomeTour( {
-			isViewOnly: true,
-			canAuthenticate: false,
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
+			// View-only users should NOT have the Activate Analytics step.
+			expect( tour.steps ).toEqual( [
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-view-only-menu',
+					},
+					title: __(
+						'Get instant access to insights, no setup',
+						'google-site-kit'
+					),
+					content: __(
+						'See what’s been shared with you here, or sign in with Google to configure services and sharing access',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
+				},
+			] );
 		} );
 
-		expect( tour.steps ).toEqual( [
-			...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
-			{
-				slug: 'dashboard-sharing',
-				target: '.googlesitekit-header',
-				floaterProps: {
-					target: '.googlesitekit-view-only-menu',
+		it( 'should return the SC-only tour variant for a view-only user who cannot authenticate', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: true,
+				canAuthenticate: false,
+				isAnalyticsConnected: false,
+			} );
+
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
+			// View-only users should NOT have the Activate Analytics step.
+			expect( tour.steps ).toEqual( [
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-view-only-menu',
+					},
+					title: __(
+						'Get instant access to insights, no setup',
+						'google-site-kit'
+					),
+					content: __(
+						'Site admins have shared the dashboard with you, so you can keep track of how your site is doing. See what’s been shared with you here.',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
 				},
-				title: __(
-					'Get instant access to insights, no setup',
-					'google-site-kit'
-				),
-				content: __(
-					'Site admins have shared the dashboard with you, so you can keep track of how your site is doing. See what’s been shared with you here.',
-					'google-site-kit'
-				),
-				offset: 0,
-				spotlightPadding: 0,
-				placement: 'bottom',
-			},
-		] );
+			] );
+		} );
+
+		it( 'should include the Activate Analytics step for authenticated non-view-only users', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+			} );
+
+			const activateAnalyticsStep = tour.steps.find(
+				( step ) => 'slug' in step && step.slug === 'activate-analytics'
+			);
+			expect( activateAnalyticsStep ).toBeDefined();
+			expect( activateAnalyticsStep ).toMatchObject( {
+				slug: 'activate-analytics',
+				target: '#activate-analytics-cta',
+				floaterProps: {
+					target: '#activate-analytics-cta .googlesitekit-banner__cta',
+				},
+			} );
+		} );
+
+		it( 'should NOT include the Activate Analytics step for view-only users', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: true,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+			} );
+
+			const activateAnalyticsStep = tour.steps.find(
+				( step ) => 'slug' in step && step.slug === 'activate-analytics'
+			);
+			expect( activateAnalyticsStep ).toBeUndefined();
+		} );
 	} );
 } );
