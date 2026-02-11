@@ -133,30 +133,6 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertTrue( $options['keepEmptyRows'], 'Conversion event report should include empty rows.' );
 	}
 
-	public function test_products_added_to_cart_report_orders_by_metric() {
-		$builder = $this->create_builder();
-		$options = $builder->get_products_added_to_cart_options();
-
-		$this->assertEquals(
-			array(
-				array( 'name' => 'sessionDefaultChannelGroup' ),
-			),
-			$options['dimensions'],
-			'Add to cart report should group by default channel group.'
-		);
-
-		$this->assertEquals(
-			array(
-				array(
-					'metric' => array( 'metricName' => 'addToCarts' ),
-					'desc'   => true,
-				),
-			),
-			$options['orderby'],
-			'Add to cart report should order by addToCarts metric.'
-		);
-	}
-
 	public function test_top_categories_uses_custom_dimension() {
 		$builder = $this->create_builder();
 		$options = $builder->get_top_categories_options();

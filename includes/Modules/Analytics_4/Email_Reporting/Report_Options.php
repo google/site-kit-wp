@@ -239,62 +239,6 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
-	 * Gets report options for products added to cart.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @return array Report request options array.
-	 */
-	public function get_products_added_to_cart_options() {
-		return $this->with_current_range(
-			array(
-				'metrics'       => array(
-					array( 'name' => 'addToCarts' ),
-				),
-				'dimensions'    => array(
-					array( 'name' => 'sessionDefaultChannelGroup' ),
-				),
-				'orderby'       => array(
-					array(
-						'metric' => array( 'metricName' => 'addToCarts' ),
-						'desc'   => true,
-					),
-				),
-				'limit'         => 5,
-				'keepEmptyRows' => true,
-			)
-		);
-	}
-
-	/**
-	 * Gets report options for purchases.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @return array Report request options array.
-	 */
-	public function get_purchases_options() {
-		return $this->with_current_range(
-			array(
-				'metrics'       => array(
-					array( 'name' => 'ecommercePurchases' ),
-				),
-				'dimensions'    => array(
-					array( 'name' => 'sessionDefaultChannelGroup' ),
-				),
-				'orderby'       => array(
-					array(
-						'metric' => array( 'metricName' => 'ecommercePurchases' ),
-						'desc'   => true,
-					),
-				),
-				'limit'         => 5,
-				'keepEmptyRows' => true,
-			)
-		);
-	}
-
-	/**
 	 * Gets report options for total visitors.
 	 *
 	 * @since 1.167.0
