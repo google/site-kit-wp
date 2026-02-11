@@ -170,11 +170,15 @@ class Email_Template_Formatter {
 					: $dimension_values[0];
 			}
 
-			$payload[ $section->get_section_key() ] = array(
+			$section_key = $section->get_section_key();
+			$label       = isset( $labels[0] ) ? $labels[0] : $section->get_title();
+			$event_name  = isset( $event_names[0] ) ? $event_names[0] : '';
+
+			$payload[ $section_key ] = array(
 				'value'            => isset( $values[0] ) ? $values[0] : '',
 				'values'           => $values,
-				'label'            => isset( $labels[0] ) ? $labels[0] : $section->get_title(),
-				'event_name'       => isset( $event_names[0] ) ? $event_names[0] : '',
+				'label'            => $label,
+				'event_name'       => $event_name,
 				'dimension'        => isset( $dimensions[0] ) ? $dimensions[0] : '',
 				'dimension_value'  => $first_dimension_value,
 				'dimension_values' => $dimension_values ?? array(),

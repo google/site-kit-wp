@@ -17,7 +17,9 @@
  */
 
 .googlesitekit-showing-feature-tour {
-	&.googlesitekit-showing-feature-tour--welcome-with-analytics-dashboard-sharing .react-joyride__spotlight {
+	&.googlesitekit-showing-feature-tour--welcome-with-analytics-dashboard-sharing .react-joyride__spotlight,
+	&.googlesitekit-showing-feature-tour--welcome-without-analytics-dashboard-sharing .react-joyride__spotlight,
+	&.googlesitekit-showing-feature-tour--welcome-without-analytics-activate-analytics .react-joyride__spotlight {
 		border-radius: 0 !important; // Override uncustomizable inline style.
 	}
 }

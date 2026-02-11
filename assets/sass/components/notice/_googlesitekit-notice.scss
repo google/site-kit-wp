@@ -1,5 +1,5 @@
 /**
- * Subtle notifications styles.
+ * Notice styles.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -31,26 +31,34 @@
 	}
 }
 
+@mixin narrow-notice-layout {
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 10px;
+	padding: 14px $grid-gap-phone;
+}
+
+@mixin wide-notice-layout {
+	align-items: center;
+	flex-direction: row;
+	gap: $grid-gap-phone;
+	padding: 14px $grid-gap-desktop;
+}
+
 .googlesitekit-notice-container {
 	container-type: inline-size;
 	width: 100%; // Prevents shrinkage when the parent / wrapping container uses flexbox.
 }
 
 .googlesitekit-notice {
-	align-items: flex-start;
+	@include narrow-notice-layout;
 	background-color: $c-content-primary-container;
 	border-radius: $br-sm;
 	color: $c-content-on-primary-container;
 	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding: 14px $grid-gap-phone;
 
 	@container (width > #{$container-width-desktop}) {
-		align-items: center;
-		flex-direction: row;
-		gap: $grid-gap-phone;
-		padding: 14px $grid-gap-desktop;
+		@include wide-notice-layout;
 	}
 
 	.googlesitekit-notice__icon {
@@ -95,22 +103,6 @@
 		margin: 0;
 	}
 
-	&.googlesitekit-notice--small {
-		padding: $grid-gap-phone / 2 $grid-gap-phone;
-
-		.googlesitekit-notice__content p {
-			font-size: $fs-body-sm;
-		}
-	}
-
-	&.googlesitekit-notice--square {
-		border-radius: 0;
-	}
-
-	&.googlesitekit-notice--bottom-margin {
-		margin-bottom: $grid-gap-desktop;
-	}
-
 	.mdc-button {
 		border-radius: $br-lg;
 		margin: 0 auto;
@@ -146,6 +138,41 @@
 		.mdc-button {
 			margin: 0;
 		}
+	}
+
+	&.googlesitekit-notice--side-panel {
+		@include wide-notice-layout; // Even though the notice container is narrow, the notice uses the wide flex row layout.
+		gap: 10px;
+
+		p {
+			font-size: $fs-label-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-label-sm;
+		}
+
+		.googlesitekit-notice__content {
+			flex: 1;
+		}
+
+		.googlesitekit-notice__action {
+			width: initial;
+		}
+	}
+
+	&.googlesitekit-notice--small {
+		padding: $grid-gap-phone / 2 $grid-gap-phone;
+
+		.googlesitekit-notice__content p {
+			font-size: $fs-body-sm;
+		}
+	}
+
+	&.googlesitekit-notice--square {
+		border-radius: 0;
+	}
+
+	&.googlesitekit-notice--bottom-margin {
+		margin-bottom: $grid-gap-desktop;
 	}
 
 	.googlesitekit-notice__cta {
@@ -202,6 +229,22 @@
 
 		.googlesitekit-notice__icon {
 			color: $c-surfaces-on-background-variant;
+		}
+	}
+
+	&.googlesitekit-notice--info-alt-2 {
+		background-color: $c-surfaces-on-surface;
+
+		.googlesitekit-notice__content {
+			color: $c-surfaces-background;
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-surfaces-background,
+				$c-interactive-tertiary-hover,
+				$c-interactive-tertiary-focus
+			);
 		}
 	}
 
