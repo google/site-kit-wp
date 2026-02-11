@@ -460,7 +460,7 @@ describe( 'WelcomeModal', () => {
 		[ true, false ],
 		[ true, true ],
 	] )(
-		'should trigger the tour when the "Start tour" button is clicked for the dashboard tour variant with isViewOnly: %s and canAuthenticate: %s (Analytics connected)',
+		'should trigger the correct tour when the "Start tour" button is clicked for the dashboard tour variant with Analytics connected, isViewOnly: %s and canAuthenticate: %s',
 		async ( isViewOnly, canAuthenticate ) => {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
@@ -549,7 +549,7 @@ describe( 'WelcomeModal', () => {
 		[ true, false ],
 		[ true, true ],
 	] )(
-		'should trigger the SC-only tour when the "Start tour" button is clicked with isViewOnly: %s and canAuthenticate: %s (Analytics not connected)',
+		'should trigger the correct tour when the "Start tour" button is clicked with Analytics not connected, isViewOnly: %s and canAuthenticate: %s',
 		async ( isViewOnly, canAuthenticate ) => {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
