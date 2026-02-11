@@ -27,6 +27,16 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 
+/**
+ * Gets the dashboard sharing step configuration based on user context.
+ *
+ * @since n.e.x.t
+ *
+ * @param isViewOnly           Whether the user is in view-only mode.
+ * @param canAuthenticate      Whether the user can authenticate.
+ * @param isAnalyticsConnected Whether Analytics is connected.
+ * @return The dashboard sharing step configuration object.
+ */
 function getDashboardSharingStep(
 	isViewOnly: boolean,
 	canAuthenticate: boolean,
@@ -34,6 +44,7 @@ function getDashboardSharingStep(
 ) {
 	if ( isViewOnly ) {
 		return {
+			// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 			slug: 'dashboard-sharing',
 			target: '.googlesitekit-header',
 			floaterProps: {
@@ -59,6 +70,7 @@ function getDashboardSharingStep(
 	}
 
 	return {
+		// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 		slug: 'dashboard-sharing',
 		target: '.googlesitekit-header',
 		floaterProps: {
@@ -79,8 +91,16 @@ function getDashboardSharingStep(
 	};
 }
 
+/**
+ * Gets the activate Analytics step configuration.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The activate Analytics step configuration object.
+ */
 function getActivateAnalyticsStep() {
 	return {
+		// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 		slug: 'activate-analytics',
 		target: '#activate-analytics-cta',
 		floaterProps: {
@@ -100,6 +120,17 @@ function getActivateAnalyticsStep() {
 	};
 }
 
+/**
+ * Gets the welcome tour configuration based on the current user context.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  params                      Tour parameters.
+ * @param {boolean} params.isViewOnly           Whether the user is in view-only mode.
+ * @param {boolean} params.canAuthenticate      Whether the user can authenticate.
+ * @param {boolean} params.isAnalyticsConnected Whether Analytics is connected.
+ * @return {Object} The welcome tour configuration object.
+ */
 export function getWelcomeTour( {
 	isViewOnly,
 	canAuthenticate,
@@ -112,7 +143,6 @@ export function getWelcomeTour( {
 	if ( ! isAnalyticsConnected ) {
 		const steps = [
 			{
-				slug: 'search-funnel',
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
 					target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
@@ -130,7 +160,6 @@ export function getWelcomeTour( {
 				placement: 'top',
 			},
 			{
-				slug: 'top-search-queries',
 				target: '.googlesitekit-widget--searchConsolePopularKeywords',
 				floaterProps: {
 					target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
@@ -156,7 +185,7 @@ export function getWelcomeTour( {
 		}
 
 		return {
-			slug: 'welcome-no-analytics',
+			slug: 'welcome-without-analytics',
 			isRepeatable: true,
 			contexts: [
 				VIEW_CONTEXT_MAIN_DASHBOARD,
