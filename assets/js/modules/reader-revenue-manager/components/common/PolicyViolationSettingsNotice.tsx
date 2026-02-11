@@ -22,13 +22,21 @@
 import type { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { useState, useCallback, useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
+import { useInView } from '@/js/hooks/useInView';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	POLICY_VIOLATION_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
 import Notice from '@/js/components/Notice';
 
@@ -40,6 +48,26 @@ const PolicyViolationSettingsNotice: FC = () => {
 	const policyInfoURL = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
 	);
+
+	const inView = useInView();
+	const trackEvents = useNotificationEvents(
+		RRM_POLICY_VIOLATION_NOTIFICATION_ID
+	);
+
+	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
+
+	// Track view event when notice comes into view.
+	useEffect( () => {
+		if ( ! isViewedOnce && inView ) {
+			trackEvents.view( contentPolicyState );
+
+			setIsViewedOnce( true );
+		}
+	}, [ inView, trackEvents, isViewedOnce, contentPolicyState ] );
+
+	const handleCTAClick = useCallback( () => {
+		trackEvents.confirm( contentPolicyState );
+	}, [ contentPolicyState, trackEvents ] );
 
 	if ( ! POLICY_VIOLATION_STATES.includes( contentPolicyState ) ) {
 		return null;
@@ -59,6 +87,7 @@ const PolicyViolationSettingsNotice: FC = () => {
 				label: ctaLabel,
 				href: policyInfoURL,
 				external: true,
+				onClick: handleCTAClick,
 			} }
 		/>
 	);
