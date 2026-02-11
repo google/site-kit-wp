@@ -232,6 +232,22 @@
 		}
 	}
 
+	&.googlesitekit-notice--info-alt-2 {
+		background-color: $c-surfaces-on-surface;
+
+		.googlesitekit-notice__content {
+			color: $c-surfaces-background;
+		}
+
+		.mdc-button--tertiary {
+			@include mdc-button-tertiary-styles(
+				$c-surfaces-background,
+				$c-interactive-tertiary-hover,
+				$c-interactive-tertiary-focus
+			);
+		}
+	}
+
 	&.googlesitekit-notice--warning {
 		background-color: $c-utility-warning-container;
 
