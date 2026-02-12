@@ -100,7 +100,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should close the menu when escape is pressed', () => {
-			fireEvent.keyUp( document, { keyCode: ESCAPE } );
+			fireEvent.keyDown( menu, { keyCode: ESCAPE } );
 			expect( menu ).toHaveAttribute( 'aria-hidden', 'true' );
 		} );
 
