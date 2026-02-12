@@ -11,8 +11,7 @@
  * @link      https://sitekit.withgoogle.com
  *
  * @var string   $site_domain        The site domain.
- * @var string   $frequency          The subscription frequency (e.g., "monthly").
- * @var string   $first_report_date  When the first report will be sent.
+ * @var array    $body               Body paragraphs (may contain HTML).
  * @var array    $cta                Primary CTA configuration with 'url' and 'label'.
  * @var callable $get_asset_url      Function to generate asset URLs.
  * @var callable $render_shared_part Function to render a shared part by name.
@@ -39,42 +38,15 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 
 			<?php /* Title. */ ?>
 			<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
-				<?php echo esc_html__( "Success! You're subscribed to Site Kit reports", 'google-site-kit' ); ?>
+				<?php echo esc_html__( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ); ?>
 			</h1>
 
-			<?php /* Body paragraph 1. */ ?>
+			<?php /* Body paragraphs from Body_Content_Map. */ ?>
+			<?php foreach ( $body as $paragraph ) : ?>
 			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
-				<?php echo esc_html__( "You're all set to receive your site performance reports.", 'google-site-kit' ); ?>
+				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
 			</p>
-
-			<?php
-			/*
-			 * Body paragraph 2 with frequency and first report date.
-			 *
-			 * Expected $first_report_date formats by frequency:
-			 * - weekly: "next Monday" (localized based on WP start_of_week)
-			 * - monthly: "1st of the following month"
-			 * - quarterly: "1st of {month name}" (e.g., "1st of April")
-			 */
-			?>
-			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
-				<?php
-				echo wp_kses(
-					sprintf(
-						/* translators: %1$s: frequency (e.g., "monthly") wrapped in strong tags, %2$s: first report date wrapped in strong tags */
-						__( "You've successfully set your frequency to <strong>%1\$s</strong>, and you can expect to receive your first report on <strong>%2\$s</strong>.", 'google-site-kit' ),
-						esc_html( $frequency ),
-						esc_html( $first_report_date )
-					),
-					array( 'strong' => array() )
-				);
-				?>
-			</p>
-
-			<?php /* Body paragraph 3. */ ?>
-			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 24px 0;">
-				<?php echo esc_html__( 'You can manage your subscription settings or change the report frequency anytime in your Site Kit dashboard.', 'google-site-kit' ); ?>
-			</p>
+			<?php endforeach; ?>
 
 			<?php /* CTA Button. */ ?>
 			<table role="presentation" cellpadding="0" cellspacing="0" border="0">

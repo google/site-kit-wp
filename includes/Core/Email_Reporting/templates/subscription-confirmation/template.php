@@ -16,8 +16,7 @@
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
-$frequency          = $data['frequency'];
-$first_report_date  = $data['first_report_date'];
+$body               = $data['body'];
 $cta                = $data['primary_call_to_action'];
 $footer             = $data['footer'];
 $get_asset_url      = $data['get_asset_url'];
@@ -136,8 +135,7 @@ $render_shared_part = $data['render_shared_part'];
 								'content',
 								array(
 									'site_domain'        => $site_domain,
-									'frequency'          => $frequency,
-									'first_report_date'  => $first_report_date,
+									'body'               => $body,
 									'cta'                => $cta,
 									'get_asset_url'      => $get_asset_url,
 									'render_shared_part' => $render_shared_part,

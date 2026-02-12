@@ -316,16 +316,6 @@ class Email_Template_Formatter {
 			),
 		);
 
-		// Body format arguments for plain text sprintf substitution.
-		if ( ! empty( $email_data['body_format_args'] ) && is_array( $email_data['body_format_args'] ) ) {
-			$data['body_format_args'] = $email_data['body_format_args'];
-		}
-
-		// Merge any custom data for template-specific needs.
-		if ( ! empty( $email_data['custom_data'] ) && is_array( $email_data['custom_data'] ) ) {
-			$data = array_merge( $data, $email_data['custom_data'] );
-		}
-
 		return $data;
 	}
 

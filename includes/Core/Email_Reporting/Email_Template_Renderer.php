@@ -157,24 +157,12 @@ class Email_Template_Renderer {
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		// Handle email-report template with sections.
+		// Handle simple email templates (invitation-email, subscription-confirmation, etc.).
 		if ( 'email-report' !== $template_name ) {
-			// Handle simple email templates (invitation-email, subscription-confirmation, etc.).
-			$body = Body_Content_Map::get_body( $template_name );
-
-			// Apply format arguments to body paragraphs if provided.
-			// This allows templates like subscription-confirmation to substitute
-			// placeholders like %1$s (frequency) and %2$s (first_report_date).
-			if ( ! empty( $data['body_format_args'] ) && is_array( $data['body_format_args'] ) ) {
-				$body = array_map(
-					function ( $paragraph ) use ( $data ) {
-						return vsprintf( $paragraph, $data['body_format_args'] );
-					},
-					$body
-				);
+			if ( empty( $data['body'] ) ) {
+				$data['body'] = Body_Content_Map::get_body( $template_name );
 			}
 
-			$data['body'] = $body;
 			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 
