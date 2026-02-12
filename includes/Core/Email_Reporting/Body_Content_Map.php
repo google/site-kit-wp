@@ -83,6 +83,9 @@ class Body_Content_Map {
 				__( 'You’ve successfully set your frequency to <strong>%1$s</strong>, and you can expect to receive your first report on <strong>%2$s</strong>.', 'google-site-kit' ),
 				__( 'You can manage your subscription settings or change the report frequency anytime in your Site Kit dashboard.', 'google-site-kit' ),
 			),
+			'error-email'               => array(
+				__( 'We were unable to generate your reports due to insufficient permissions. To fix this, contact your administrator or get help. Once the issue is resolved, report generation will resume automatically.', 'google-site-kit' ),
+			),
 		);
 	}
 }
