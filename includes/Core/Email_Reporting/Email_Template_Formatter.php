@@ -486,18 +486,9 @@ class Email_Template_Formatter {
 	private function get_next_week_start_label() {
 		$start_of_week = (int) get_option( 'start_of_week', 0 );
 
-		// Map WordPress start_of_week (0=Sunday) to day names.
-		$day_names = array(
-			0 => __( 'Sunday', 'google-site-kit' ),
-			1 => __( 'Monday', 'google-site-kit' ),
-			2 => __( 'Tuesday', 'google-site-kit' ),
-			3 => __( 'Wednesday', 'google-site-kit' ),
-			4 => __( 'Thursday', 'google-site-kit' ),
-			5 => __( 'Friday', 'google-site-kit' ),
-			6 => __( 'Saturday', 'google-site-kit' ),
-		);
+		global $wp_locale;
 
-		$day_name = $day_names[ $start_of_week ] ?? $day_names[1];
+		$day_name = $wp_locale->get_weekday( $start_of_week );
 
 		return sprintf(
 			/* translators: %s: Day of the week (e.g., "Monday"). */
