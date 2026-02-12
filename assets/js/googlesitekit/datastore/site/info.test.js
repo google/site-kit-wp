@@ -344,7 +344,7 @@ describe( 'core/site site info', () => {
 				expect( adminURL ).toEqual( undefined );
 			} );
 
-			it( 'supports adminURL that already contains query parameters (no trailing slash)', async () => {
+			it( 'returns the adminURL with preserved query parameters if adminURL already contains query arguments', async () => {
 				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					...baseInfo,
 					...entityInfo,
@@ -356,12 +356,14 @@ describe( 'core/site site info', () => {
 					.getAdminURL( 'testpage' );
 				const parsed = new URL( url );
 
-				expect( parsed.pathname ).toBe( '/wp-admin/admin.php' );
-				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
-				expect( parsed.searchParams.get( 'page' ) ).toBe( 'testpage' );
+				expect( parsed.pathname ).toEqual( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
+					'testpage'
+				);
 			} );
 
-			it( 'supports adminURL that already contains query parameters (with trailing slash)', async () => {
+			it( 'returns the adminURL with preserved query parameters and extra args if adminURL with trailing slash already contains query arguments', async () => {
 				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					...baseInfo,
 					...entityInfo,
@@ -375,15 +377,17 @@ describe( 'core/site site info', () => {
 					} );
 				const parsed = new URL( url );
 
-				expect( parsed.pathname ).toBe( '/wp-admin/admin.php' );
-				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
-				expect( parsed.searchParams.get( 'page' ) ).toBe( 'testpage' );
-				expect( parsed.searchParams.get( 'arg1' ) ).toBe(
+				expect( parsed.pathname ).toEqual( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
+					'testpage'
+				);
+				expect( parsed.searchParams.get( 'arg1' ) ).toEqual(
 					'argument-1'
 				);
 			} );
 
-			it( 'preserves base adminURL query params for full page argument and ignores extra page in args', async () => {
+			it( 'returns the adminURL with preserved query parameters if the full page argument is supplied and adminURL already contains query arguments', async () => {
 				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 					...baseInfo,
 					...entityInfo,
@@ -398,12 +402,12 @@ describe( 'core/site site info', () => {
 					} );
 				const parsed = new URL( url );
 
-				expect( parsed.pathname ).toBe( '/wp-admin/custom.php' );
-				expect( parsed.searchParams.get( 'foo' ) ).toBe( 'bar' );
-				expect( parsed.searchParams.get( 'page' ) ).toBe(
+				expect( parsed.pathname ).toEqual( '/wp-admin/custom.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
 					'correct-page'
 				);
-				expect( parsed.searchParams.get( 'arg2' ) ).toBe(
+				expect( parsed.searchParams.get( 'arg2' ) ).toEqual(
 					'argument-2'
 				);
 			} );
