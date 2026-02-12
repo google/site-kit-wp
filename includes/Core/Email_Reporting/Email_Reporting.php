@@ -208,6 +208,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 
 		$frequency_planner            = new Frequency_Planner();
 		$this->subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
+		$eligible_subscribers_query   = new Eligible_Subscribers_Query( $this->modules, $this->user_options );
 		$max_execution_limiter        = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
 		$this->email_log_batch_query  = new Email_Log_Batch_Query();
 		$email_sender                 = new Email();
@@ -217,7 +218,13 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$report_sender                = new Email_Report_Sender( $template_renderer_factory, $email_sender );
 		$log_processor                = new Email_Log_Processor( $this->email_log_batch_query, $this->data_requests, $template_formatter, $report_sender );
 
-		$this->rest_controller   = new REST_Email_Reporting_Controller( $this->settings, $this->modules, $this->user_options, $this->user_settings );
+		$this->rest_controller   = new REST_Email_Reporting_Controller(
+			$this->settings,
+			$this->modules,
+			$this->user_settings,
+			$eligible_subscribers_query,
+			$email_sender
+		);
 		$this->email_log         = new Email_Log( $this->context );
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );

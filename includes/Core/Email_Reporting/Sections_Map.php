@@ -112,17 +112,38 @@ class Sections_Map {
 	 * @return array Section configuration array.
 	 */
 	protected function get_business_growth_section() {
-		$section_parts = array(
+		$section_parts           = array(
 			'total_conversion_events' => array(
 				'data' => $this->payload['total_conversion_events'] ?? array(),
 			),
-			'products_added_to_cart'  => array(
-				'data' => $this->payload['products_added_to_cart'] ?? array(),
-			),
-			'purchases'               => array(
-				'data' => $this->payload['purchases'] ?? array(),
-			),
 		);
+		$conversion_metric_parts = array();
+
+		foreach ( $this->payload as $key => $data ) {
+			if ( 0 !== strpos( $key, 'conversion_event_' ) ) {
+				continue;
+			}
+
+			$conversion_metric_parts[ $key ] = array(
+				'data' => $data,
+			);
+		}
+
+		if ( ! empty( $conversion_metric_parts ) ) {
+			// Rank conversion events by event volume so we can surface only the top performers in the section.
+			uasort(
+				$conversion_metric_parts,
+				function ( $a, $b ) {
+					$value_a = $a['data']['value'] ?? 0;
+					$value_b = $b['data']['value'] ?? 0;
+
+					return floatval( $value_b ) <=> floatval( $value_a );
+				}
+			);
+
+			$conversion_metric_parts = array_slice( $conversion_metric_parts, 0, 2, true );
+			$section_parts           = array_merge( $section_parts, $conversion_metric_parts );
+		}
 
 		$section_parts = $this->filter_section_parts( $section_parts );
 		if ( empty( $section_parts ) ) {
