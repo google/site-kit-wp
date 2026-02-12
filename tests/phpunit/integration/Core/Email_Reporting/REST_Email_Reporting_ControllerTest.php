@@ -339,7 +339,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => $this->primary_admin_id,
+					'userID' => $this->primary_admin_id,
 				),
 			)
 		);
@@ -374,7 +374,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => $invitee_id,
+					'userID' => $invitee_id,
 				),
 			)
 		);
@@ -402,7 +402,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => $ineligible_user_id,
+					'userID' => $ineligible_user_id,
 				),
 			)
 		);
@@ -424,7 +424,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => 999999,
+					'userID' => 999999,
 				),
 			)
 		);
@@ -451,7 +451,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => $invitee_id,
+					'userID' => $invitee_id,
 				),
 			)
 		);
@@ -477,7 +477,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$request->set_body_params(
 			array(
 				'data' => array(
-					'userId' => $invitee_id,
+					'userID' => $invitee_id,
 				),
 			)
 		);
