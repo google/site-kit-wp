@@ -159,13 +159,6 @@ class Email_Template_Renderer {
 	public function render_text( $template_name, $data ) {
 		// Handle simple email templates (invitation-email, subscription-confirmation, etc.).
 		if ( 'email-report' !== $template_name ) {
-			if ( empty( $data['body'] ) ) {
-				$data['body'] = Content_Map::get_body( $template_name );
-			}
-			if ( empty( $data['title'] ) ) {
-				$data['title'] = Content_Map::get_title( $template_name );
-			}
-
 			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 

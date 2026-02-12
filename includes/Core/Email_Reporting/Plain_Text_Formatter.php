@@ -94,6 +94,9 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
+		$lines[] = str_repeat( '-', 50 );
+		$lines[] = '';
+
 		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
 			$lines[] = $footer_copy;
