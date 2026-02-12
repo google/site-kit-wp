@@ -21,15 +21,22 @@
  */
 import {
 	createTestRegistry,
+	fireEvent,
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
+	waitFor,
 } from '../../../../../../tests/js/test-utils';
+import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-manager/components/dashboard/PolicyViolationNotification/get-policy-violation-notification-copy';
+import * as tracking from '@/js/util/tracking';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	CONTENT_POLICY_STATES,
 	PUBLICATION_ONBOARDING_STATES,
+	POLICY_VIOLATION_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import PolicyViolationSettingsNotice from './PolicyViolationSettingsNotice';
 
 const {
@@ -42,6 +49,9 @@ const {
 } = CONTENT_POLICY_STATES;
 
 const POLICY_INFO_URL = 'https://example.com/policy-info';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'PolicyViolationSettingsNotice', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -222,4 +232,69 @@ describe( 'PolicyViolationSettingsNotice', () => {
 
 		expect( ctaHref ).toContain( encodeURIComponent( POLICY_INFO_URL ) );
 	} );
+
+	describe.each( POLICY_VIOLATION_STATES )(
+		'GA event tracking for content policy state %s',
+		( contentPolicyState ) => {
+			const eventCategory = `${ VIEW_CONTEXT_SETTINGS }_${ RRM_POLICY_VIOLATION_NOTIFICATION_ID }`;
+
+			beforeEach( () => {
+				mockTrackEvent.mockClear();
+
+				setupRegistry( contentPolicyState );
+			} );
+
+			it( 'should track an event when the notification is viewed', async () => {
+				const { waitForRegistry } = render(
+					<PolicyViolationSettingsNotice />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_SETTINGS,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'view_notification',
+					contentPolicyState
+				);
+			} );
+
+			it( 'should track an event when the CTA button is clicked', async () => {
+				const { ctaLabel } =
+					getPolicyViolationNotificationCopy( contentPolicyState );
+
+				const { getByRole, waitForRegistry } = render(
+					<PolicyViolationSettingsNotice />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_SETTINGS,
+					}
+				);
+
+				await waitForRegistry();
+
+				const ctaButton = getByRole( 'button', {
+					name: new RegExp( ctaLabel, 'i' ),
+				} );
+
+				// Add click handler to prevent navigation.
+				ctaButton.addEventListener( 'click', ( e ) =>
+					e.preventDefault()
+				);
+
+				fireEvent.click( ctaButton );
+
+				await waitFor( () => {
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						eventCategory,
+						'confirm_notification',
+						contentPolicyState
+					);
+				} );
+			} );
+		}
+	);
 } );
