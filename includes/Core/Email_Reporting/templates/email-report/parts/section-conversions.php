@@ -25,7 +25,7 @@ $section_parts = $section['section_parts'];
 		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
 			<?php
 			// Render section header.
-			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) . '.png' );
+			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) );
 			$render_part(
 				'section-header',
 				array(

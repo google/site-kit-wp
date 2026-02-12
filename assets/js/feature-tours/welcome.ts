@@ -27,12 +27,24 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 
+/**
+ * Gets the dashboard sharing step configuration based on user context.
+ *
+ * @since n.e.x.t
+ *
+ * @param isViewOnly           Whether the user is in view-only mode.
+ * @param canAuthenticate      Whether the user can authenticate.
+ * @param isAnalyticsConnected Whether Analytics is connected.
+ * @return The dashboard sharing step configuration object.
+ */
 function getDashboardSharingStep(
 	isViewOnly: boolean,
-	canAuthenticate: boolean
+	canAuthenticate: boolean,
+	isAnalyticsConnected: boolean
 ) {
 	if ( isViewOnly ) {
 		return {
+			// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 			slug: 'dashboard-sharing',
 			target: '.googlesitekit-header',
 			floaterProps: {
@@ -58,10 +70,15 @@ function getDashboardSharingStep(
 	}
 
 	return {
+		// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 		slug: 'dashboard-sharing',
 		target: '.googlesitekit-header',
 		floaterProps: {
-			target: '.googlesitekit-sharing-settings__button svg',
+			// The Analytics-connected tour targets the SVG inside the button,
+			// while the SC-only tour targets the button itself.
+			target: isAnalyticsConnected
+				? '.googlesitekit-sharing-settings__button svg'
+				: '.googlesitekit-sharing-settings__button',
 		},
 		title: __( 'Share insights with your team', 'google-site-kit' ),
 		content: __(
@@ -74,13 +91,112 @@ function getDashboardSharingStep(
 	};
 }
 
+/**
+ * Gets the activate Analytics step configuration.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The activate Analytics step configuration object.
+ */
+function getActivateAnalyticsStep() {
+	return {
+		// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
+		slug: 'activate-analytics',
+		target: '#activate-analytics-cta',
+		floaterProps: {
+			target: '#activate-analytics-cta .googlesitekit-banner__cta',
+		},
+		title: __(
+			'Want to know what people do once they land on your site?',
+			'google-site-kit'
+		),
+		content: __(
+			'Get insights on how visitors navigate your site and help you achieve your goals by connecting Analytics',
+			'google-site-kit'
+		),
+		offset: 0,
+		spotlightPadding: 0,
+		placement: 'bottom',
+	};
+}
+
+/**
+ * Gets the welcome tour configuration based on the current user context.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  params                      Tour parameters.
+ * @param {boolean} params.isViewOnly           Whether the user is in view-only mode.
+ * @param {boolean} params.canAuthenticate      Whether the user can authenticate.
+ * @param {boolean} params.isAnalyticsConnected Whether Analytics is connected.
+ * @return {Object} The welcome tour configuration object.
+ */
 export function getWelcomeTour( {
 	isViewOnly,
 	canAuthenticate,
+	isAnalyticsConnected,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
+	isAnalyticsConnected: boolean;
 } ) {
+	if ( ! isAnalyticsConnected ) {
+		const steps = [
+			{
+				target: '.googlesitekit-widget--searchFunnelGA4',
+				floaterProps: {
+					target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+				},
+				title: __(
+					'Track Search traffic trends, identify baselines',
+					'google-site-kit'
+				),
+				content: __(
+					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
+					'google-site-kit'
+				),
+				offset: 0,
+				spotlightPadding: 0,
+				placement: 'top',
+			},
+			{
+				target: '.googlesitekit-widget--searchConsolePopularKeywords',
+				floaterProps: {
+					target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
+				},
+				title: __(
+					'Track how your site is doing on Search',
+					'google-site-kit'
+				),
+				content: __(
+					'Know what’s driving growth and bringing your site more visitors',
+					'google-site-kit'
+				),
+				offset: 0,
+				spotlightPadding: 0,
+				placement: 'top',
+			},
+			getDashboardSharingStep( isViewOnly, canAuthenticate, false ),
+		];
+
+		// Add the Activate Analytics step for authenticated users only.
+		if ( ! isViewOnly ) {
+			steps.push( getActivateAnalyticsStep() );
+		}
+
+		return {
+			slug: 'welcome-without-analytics',
+			isRepeatable: true,
+			contexts: [
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			],
+			gaEventCategory: ( viewContext: string ) =>
+				`${ viewContext }_dashboard-tour-sc`,
+			steps,
+		};
+	}
+
 	return {
 		slug: 'welcome-with-analytics',
 		isRepeatable: true,
@@ -101,7 +217,7 @@ export function getWelcomeTour( {
 					'google-site-kit'
 				),
 				content: __(
-					"These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what's working and what's not.",
+					'These Key Metrics show you exactly how your site is performing against the goals you set. Watch these numbers to see what’s working and what’s not.',
 					'google-site-kit'
 				),
 				offset: -3,
@@ -118,7 +234,7 @@ export function getWelcomeTour( {
 					'google-site-kit'
 				),
 				content: __(
-					"Know what's normal for your site. This is how you spot trends and measure real growth.",
+					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
 					'google-site-kit'
 				),
 				offset: 35,
@@ -159,7 +275,7 @@ export function getWelcomeTour( {
 				spotlightPadding: 0,
 				placement: 'top',
 			},
-			getDashboardSharingStep( isViewOnly, canAuthenticate ),
+			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
 		],
 	};
 }

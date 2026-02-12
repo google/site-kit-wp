@@ -32,7 +32,10 @@ export default function NoticeNotification( {
 	gaTrackingEventArgs,
 	...props
 } ) {
-	const trackEvents = useNotificationEvents( notificationID );
+	const trackEvents = useNotificationEvents(
+		notificationID,
+		gaTrackingEventArgs?.category
+	);
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 

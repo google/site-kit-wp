@@ -164,24 +164,6 @@
 		}
 	}
 
-	.googlesitekit-selection-panel-notice {
-		background-color: $c-utility-warning-container;
-		padding: $grid-gap-phone $grid-gap-desktop;
-
-		p {
-			font-size: $fs-label-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-label-sm;
-			margin: 0;
-		}
-	}
-
-	.googlesitekit-selection-panel-error {
-		align-items: anchor-center;
-		flex-direction: row;
-		padding: $grid-gap-phone $grid-gap-desktop;
-	}
-
 	.googlesitekit-selection-panel-footer {
 		background-color: $c-surfaces-background;
 		margin-top: auto;
