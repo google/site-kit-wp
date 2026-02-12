@@ -253,9 +253,7 @@ final class Assets {
 	/**
 	 * Checks if assets have already been registered.
 	 *
-	 * This method will check the first asset handle from get_assets() using wp_script_is with status 'registered'.
-	 *
-	 * @since 1.126.0
+	 * @since n.e.x.t
 	 * @return bool True if already registered, false otherwise.
 	 */
 	private function has_registered_assets() {

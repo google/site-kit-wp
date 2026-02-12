@@ -169,22 +169,35 @@ class AssetsTest extends TestCase {
 		}
 	}
 
-	public function test_assets_marked_registered_after_register() {
+	public function test_has_registered_assets_prevents_duplicate_registration() {
 		// Ensure the current user can authenticate.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
-
-		// Call register to register assets.
-		$this->assets->register();
-
-		// Ensure admin context is set before triggering admin enqueue.
 		set_current_screen( 'dashboard' );
-
-		// Trigger the registration callback via the admin enqueue hook.
+		// Use reflection to access the private `has_registered_assets()` method.
+		$reflection = new \ReflectionMethod( $this->assets, 'has_registered_assets' );
+		$reflection->setAccessible( true );
+		// Initially, `has_registered_assets()` should return false.
+		$this->assertFalse( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return false before registration.' );
+		// Verify that no assets are registered.
+		$this->assertFalse( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should not be registered.' );
+		// Trigger registration twice to simulate scenarios where both hooks fire.
+		// In certain WordPress contexts (e.g., the site editor when editing pages),
+		// both `admin_enqueue_scripts` and `wp_enqueue_scripts` can fire, causing
+		// `register_assets()` to be called multiple times. This test ensures the
+		// `has_registered_assets()` check properly prevents duplicate registration.
+		$this->assets->register();
 		do_action( 'admin_enqueue_scripts' );
-
-		// The first asset handle from get_assets is 'googlesitekit-commons'.
-		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Assets should be marked as registered after calling register().' );
+		// After the first registration, `has_registered_assets()` should return true.
+		$this->assertTrue( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return true after first registration.' );
+		// Verify that assets are registered.
+		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should be registered after first registration.' );
+		// Trigger the second hook - should not cause re-registration.
+		do_action( 'wp_enqueue_scripts' );
+		// `has_registered_assets()` should still return true, preventing re-registration.
+		$this->assertTrue( $reflection->invoke( $this->assets ), '`has_registered_assets()` should still return true after second hook fires.' );
+		// Verify that assets are still registered.
+		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should still be registered after second hook fires.' );
 	}
 
 	public function test_enqueue_asset_with_unknown() {
