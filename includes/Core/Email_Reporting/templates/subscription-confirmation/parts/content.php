@@ -12,6 +12,7 @@
  *
  * @var string   $site_domain        The site domain.
  * @var string   $site_url           The full site URL with protocol.
+ * @var string   $title              The email title.
  * @var array    $body               Body paragraphs (may contain HTML).
  * @var array    $cta                Primary CTA configuration with 'url' and 'label'.
  * @var callable $get_asset_url      Function to generate asset URLs.
@@ -37,12 +38,12 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 				<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 			</p>
 
-			<?php /* Title. */ ?>
+			<?php /* Title from Content_Map. */ ?>
 			<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
-				<?php echo esc_html__( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ); ?>
+				<?php echo esc_html( $title ); ?>
 			</h1>
 
-			<?php /* Body paragraphs from Body_Content_Map. */ ?>
+			<?php /* Body paragraphs from Content_Map. */ ?>
 			<?php foreach ( $body as $paragraph ) : ?>
 			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
