@@ -174,13 +174,17 @@ class AssetsTest extends TestCase {
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 		set_current_screen( 'dashboard' );
+
 		// Use reflection to access the private `has_registered_assets()` method.
 		$reflection = new \ReflectionMethod( $this->assets, 'has_registered_assets' );
 		$reflection->setAccessible( true );
+
 		// Initially, `has_registered_assets()` should return false.
 		$this->assertFalse( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return false before registration.' );
+
 		// Verify that no assets are registered.
 		$this->assertFalse( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should not be registered.' );
+
 		// Trigger registration twice to simulate scenarios where both hooks fire.
 		// In certain WordPress contexts (e.g., the site editor when editing pages),
 		// both `admin_enqueue_scripts` and `wp_enqueue_scripts` can fire, causing
@@ -188,14 +192,19 @@ class AssetsTest extends TestCase {
 		// `has_registered_assets()` check properly prevents duplicate registration.
 		$this->assets->register();
 		do_action( 'admin_enqueue_scripts' );
+
 		// After the first registration, `has_registered_assets()` should return true.
 		$this->assertTrue( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return true after first registration.' );
+
 		// Verify that assets are registered.
 		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should be registered after first registration.' );
+
 		// Trigger the second hook - should not cause re-registration.
 		do_action( 'wp_enqueue_scripts' );
+
 		// `has_registered_assets()` should still return true, preventing re-registration.
 		$this->assertTrue( $reflection->invoke( $this->assets ), '`has_registered_assets()` should still return true after second hook fires.' );
+
 		// Verify that assets are still registered.
 		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'registered' ), 'Script should still be registered after second hook fires.' );
 	}
