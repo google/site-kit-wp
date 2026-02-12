@@ -13,7 +13,7 @@
  */
 
 $label     = $label ?? __( 'View more in dashboard', 'google-site-kit' );
-$arrow_url = $get_asset_url( 'icon-link-arrow.png' );
+$arrow_url = $get_asset_url( 'icon-link-arrow' );
 ?>
 <table role="presentation" width="100%">
 	<tr>

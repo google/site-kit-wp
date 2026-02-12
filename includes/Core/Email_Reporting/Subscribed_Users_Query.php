@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use WP_User_Query;
 
@@ -160,6 +161,10 @@ class Subscribed_Users_Query {
 		$filtered = array();
 
 		foreach ( $user_ids as $user_id ) {
+			if ( ! $this->user_has_email_reporting_access( $user_id ) ) {
+				continue;
+			}
+
 			$settings = get_user_meta( $user_id, $meta_key, true );
 
 			if ( ! is_array( $settings ) || empty( $settings['subscribed'] ) ) {
@@ -176,6 +181,18 @@ class Subscribed_Users_Query {
 		}
 
 		return array_values( $filtered );
+	}
+
+	/**
+	 * Checks whether a user can access Site Kit dashboard for email reporting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True if user has email reporting access, false otherwise.
+	 */
+	private function user_has_email_reporting_access( $user_id ) {
+		return user_can( $user_id, Permissions::VIEW_DASHBOARD );
 	}
 
 	/**

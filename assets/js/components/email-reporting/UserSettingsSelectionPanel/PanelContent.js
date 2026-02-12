@@ -107,6 +107,7 @@ export default function PanelContent( {
 PanelContent.propTypes = {
 	savedFrequency: PropTypes.string,
 	notice: PropTypes.shape( {
+		title: PropTypes.string,
 		text: PropTypes.string,
 		type: PropTypes.oneOf( [ 'info', 'success', 'error' ] ),
 	} ),

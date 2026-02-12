@@ -84,7 +84,10 @@
 			}
 
 			.googlesitekit-notice {
+				align-items: center;
 				border-radius: 0;
+				flex-direction: row;
+				gap: $grid-gap-phone;
 				margin-top: $grid-gap-phone - 4px;
 				padding: $grid-gap-phone - 6px $grid-gap-desktop;
 				width: 100%;
@@ -92,6 +95,17 @@
 				p {
 					font-size: $fs-body-sm;
 					padding: 0;
+				}
+
+				.googlesitekit-notice__content {
+					flex: 1;
+					min-width: 0;
+				}
+
+				.googlesitekit-notice__action {
+					flex-shrink: 0;
+					flex-wrap: nowrap;
+					width: auto;
 				}
 			}
 		}
