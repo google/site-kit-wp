@@ -255,7 +255,7 @@ class REST_Email_Reporting_Controller {
 								'type'       => 'object',
 								'required'   => true,
 								'properties' => array(
-									'userId' => array(
+									'userID' => array(
 										'type'     => 'integer',
 										'required' => true,
 										'minimum'  => 1,
@@ -278,7 +278,7 @@ class REST_Email_Reporting_Controller {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function invite_user( WP_REST_Request $request ) {
-		$user_id = (int) $request['data']['userId'];
+		$user_id = (int) $request['data']['userID'];
 
 		if ( $user_id <= 0 ) {
 			return $this->invite_error(
