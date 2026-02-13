@@ -124,7 +124,7 @@ class TestCase extends WP_UnitTestCase {
 	protected function force_set_property( $class_instance, $property, $value ) {
 		$reflection_property = new \ReflectionProperty( $class_instance, $property );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $class_instance, $value );
+		$reflection_property->setValue( is_string( $class_instance ) ? null : $class_instance, $value );
 	}
 
 	/**
