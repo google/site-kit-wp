@@ -24,3 +24,5 @@ jobs:
           # disable a rule, so this must be disabled using
           # an env variable.
           SHELLCHECK_OPTS: "-e SC2129"
+      - name: Confirm validation
+        run: echo Validation confirmed
