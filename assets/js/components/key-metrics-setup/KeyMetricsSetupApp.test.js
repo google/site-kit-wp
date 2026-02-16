@@ -544,7 +544,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitFor( () => {
 				expect( global.location.assign ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success'
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success'
 				);
 			} );
 		} );
