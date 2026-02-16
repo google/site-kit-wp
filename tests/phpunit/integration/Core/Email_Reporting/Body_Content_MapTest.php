@@ -46,4 +46,37 @@ class Body_Content_MapTest extends TestCase {
 		$this->assertIsArray( $body, 'Body should be an array.' );
 		$this->assertEmpty( $body, 'Body should be empty for email-report template as it uses sections.' );
 	}
+
+	public function test_get_body_with_args_substitutes_placeholders() {
+		$body = Body_Content_Map::get_body_with_args(
+			'subscription-confirmation',
+			array( 'monthly', '1st of April' )
+		);
+
+		$this->assertCount( 3, $body, 'Subscription confirmation body should contain 3 paragraphs.' );
+		$this->assertStringContainsString( 'monthly', $body[1], 'Second paragraph should contain frequency.' );
+		$this->assertStringContainsString( '1st of April', $body[1], 'Second paragraph should contain first report date.' );
+		$this->assertStringNotContainsString( '%1$s', $body[1], 'Second paragraph should not contain unresolved placeholders.' );
+	}
+
+	public function test_get_body_with_args_returns_unmodified_body_with_empty_args() {
+		$body_without_args = Body_Content_Map::get_body( 'invitation-email' );
+		$body_with_args    = Body_Content_Map::get_body_with_args( 'invitation-email', array() );
+
+		$this->assertSame( $body_without_args, $body_with_args, 'Body should be identical when no args are provided.' );
+	}
+
+	public function test_get_body_with_args_returns_empty_array_for_unknown_template() {
+		$body = Body_Content_Map::get_body_with_args( 'unknown-template', array( 'arg1' ) );
+
+		$this->assertIsArray( $body, 'Body should be an array.' );
+		$this->assertEmpty( $body, 'Body should be empty for unknown template.' );
+	}
+
+	public function test_subscription_confirmation_body_contains_strong_tags_for_placeholders() {
+		$body = Body_Content_Map::get_body( 'subscription-confirmation' );
+
+		$this->assertStringContainsString( '<strong>%1$s</strong>', $body[1], 'Second paragraph should wrap frequency placeholder in strong tags.' );
+		$this->assertStringContainsString( '<strong>%2$s</strong>', $body[1], 'Second paragraph should wrap date placeholder in strong tags.' );
+	}
 }

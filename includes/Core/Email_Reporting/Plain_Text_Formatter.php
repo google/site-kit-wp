@@ -69,9 +69,9 @@ class Plain_Text_Formatter {
 			'',
 		);
 
-		// Body paragraphs.
+		// Body paragraphs (strip any HTML tags for plain text output).
 		foreach ( (array) $body as $paragraph ) {
-			$lines[] = $paragraph;
+			$lines[] = wp_strip_all_tags( $paragraph );
 			$lines[] = '';
 		}
 

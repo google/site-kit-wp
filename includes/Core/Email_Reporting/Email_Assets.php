@@ -41,20 +41,22 @@ class Email_Assets {
 	 */
 	const ASSETS = array(
 		// Shared assets.
-		'site-kit-logo'               => '2025-12-01-site-kit-logo.png',
+		'site-kit-logo'                 => '2025-12-01-site-kit-logo.png',
 		// email-report assets.
-		'shooting-stars-graphic'      => '2025-12-01-shooting-stars-graphic.png',
-		'icon-conversions'            => '2025-12-01-icon-conversions.png',
-		'icon-growth'                 => '2025-12-01-icon-growth.png',
-		'icon-link-arrow'             => '2025-12-01-icon-link-arrow.png',
-		'icon-search'                 => '2025-12-01-icon-search.png',
-		'icon-views'                  => '2025-12-01-icon-views.png',
-		'icon-visitors'               => '2025-12-01-icon-visitors.png',
-		'conversions-timeline-green'  => '2025-12-01-conversions-timeline-green.png',
-		'conversions-timeline-red'    => '2025-12-01-conversions-timeline-red.png',
-		'notification-icon-star'      => '2025-12-01-notification-icon-star.png',
+		'shooting-stars-graphic'        => '2025-12-01-shooting-stars-graphic.png',
+		'icon-conversions'              => '2025-12-01-icon-conversions.png',
+		'icon-growth'                   => '2025-12-01-icon-growth.png',
+		'icon-link-arrow'               => '2025-12-01-icon-link-arrow.png',
+		'icon-search'                   => '2025-12-01-icon-search.png',
+		'icon-views'                    => '2025-12-01-icon-views.png',
+		'icon-visitors'                 => '2025-12-01-icon-visitors.png',
+		'conversions-timeline-green'    => '2025-12-01-conversions-timeline-green.png',
+		'conversions-timeline-red'      => '2025-12-01-conversions-timeline-red.png',
+		'notification-icon-star'        => '2025-12-01-notification-icon-star.png',
 		// invitation-email assets.
-		'invitation-envelope-graphic' => '2026-02-05-invitation-envelope-graphic.png',
+		'invitation-envelope-graphic'   => '2026-02-05-invitation-envelope-graphic.png',
+		// subscription-confirmation assets.
+		'subscription-envelope-graphic' => '2026-02-20-subscription-envelope-graphic.png',
 	);
 
 	/**
