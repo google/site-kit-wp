@@ -16,6 +16,7 @@
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
+$site_url           = $data['site']['url'];
 $body               = $data['body'];
 $inviter_email      = $data['inviter_email'];
 $learn_more_url     = $data['learn_more_url'];
@@ -138,7 +139,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
 										<?php /* Site domain. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-											<a href="<?php echo esc_url( '//' . $site_domain ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Invitation title. */ ?>

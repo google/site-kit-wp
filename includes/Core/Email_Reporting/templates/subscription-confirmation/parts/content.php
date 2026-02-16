@@ -11,6 +11,7 @@
  * @link      https://sitekit.withgoogle.com
  *
  * @var string   $site_domain        The site domain.
+ * @var string   $site_url           The full site URL with protocol.
  * @var array    $body               Body paragraphs (may contain HTML).
  * @var array    $cta                Primary CTA configuration with 'url' and 'label'.
  * @var callable $get_asset_url      Function to generate asset URLs.
@@ -33,7 +34,7 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 
 			<?php /* Site domain. */ ?>
 			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-				<a href="<?php echo esc_url( '//' . $site_domain ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+				<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 			</p>
 
 			<?php /* Title. */ ?>

@@ -506,6 +506,7 @@ class REST_Email_Reporting_Controller {
 			),
 			'site'                   => array(
 				'domain' => $site_domain,
+				'url'    => home_url( '/' ),
 			),
 			'inviter_email'          => $inviter_email,
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',

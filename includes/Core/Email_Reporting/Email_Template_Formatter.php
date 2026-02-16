@@ -305,6 +305,7 @@ class Email_Template_Formatter {
 			'preheader'              => $preheader,
 			'site'                   => array(
 				'domain' => $site_domain,
+				'url'    => $this->context->get_reference_site_url(),
 			),
 			'learn_more_url'         => $email_data['learn_more_url'] ?? '',
 			'primary_call_to_action' => array(
@@ -334,6 +335,7 @@ class Email_Template_Formatter {
 			'preheader'              => __( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
 			'site'                   => array(
 				'domain' => $this->get_site_domain(),
+				'url'    => $this->context->get_reference_site_url(),
 			),
 			'date_range'             => array(
 				'label'   => $this->build_date_label( $date_range ),
