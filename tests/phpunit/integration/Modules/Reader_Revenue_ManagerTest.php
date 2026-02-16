@@ -133,6 +133,33 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		}
 	}
 
+	public function test_register__reset_policy_violation_notification_dismissals_on_publication_change() {
+		$this->enable_feature( 'rrmPolicyViolations' );
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		// Set dismissals for policy violation notifications.
+		foreach ( Reader_Revenue_Manager::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
+			$dismissed_items->add( $notification );
+
+			$this->assertTrue( $dismissed_items->is_dismissed( $notification ), 'Policy violation notification should be dismissed after adding it to dismissed items.' );
+		}
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'A1A2C4D5E6',
+			)
+		);
+
+		// Verify that the product ID notification dismissals are reset.
+		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
+			$this->assertFalse( $dismissed_items->is_dismissed( $notification ), 'Product ID notification dismissals should be reset when publication ID changes.' );
+		}
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug, 'Reader Revenue Manager module slug should be correct.' );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name, 'Reader Revenue Manager module name should be correct.' );
