@@ -539,14 +539,14 @@ describe( 'WelcomeModal', () => {
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [
-					WITH_TOUR_DISMISSED_ITEM_SLUG,
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				],
 				status: 200,
 			} );
