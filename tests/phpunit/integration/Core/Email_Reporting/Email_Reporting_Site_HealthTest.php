@@ -11,9 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Site_Health;
+use Google\Site_Kit\Core\Email_Reporting\Subscribed_Users_Query;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
@@ -46,6 +49,20 @@ class Email_Reporting_Site_HealthTest extends TestCase {
 	private $user_options;
 
 	/**
+	 * Authentication instance.
+	 *
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
+	 * Modules instance.
+	 *
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Email log instance.
 	 *
 	 * @var Email_Log
@@ -62,10 +79,12 @@ class Email_Reporting_Site_HealthTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->options      = new Options( $this->context );
-		$this->user_options = new User_Options( $this->context );
-		$this->settings     = new Email_Reporting_Settings( $this->options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->options        = new Options( $this->context );
+		$this->user_options   = new User_Options( $this->context );
+		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->settings       = new Email_Reporting_Settings( $this->options );
 		$this->settings->register();
 
 		$this->email_log = new Email_Log( $this->context );
@@ -307,20 +326,12 @@ class Email_Reporting_Site_HealthTest extends TestCase {
 
 		$args = array_merge( $defaults, $args );
 
-		$post_id = wp_insert_post(
+		$post_id = $this->factory()->post->create(
 			array(
-				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $args['status'],
-				'post_title'     => 'Email Log',
-				'post_date_gmt'  => $args['post_date_gmt'],
-				'post_date'      => get_date_from_gmt( $args['post_date_gmt'] ),
-				'post_author'    => 0,
-				'post_content'   => '',
-				'post_excerpt'   => '',
-				'comment_status' => 'closed',
-				'ping_status'    => 'closed',
-			),
-			true
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => $args['status'],
+				'post_title'  => 'Email Log',
+			)
 		);
 
 		$this->assertIsInt( $post_id, 'Failed to create email log post.' );
@@ -356,9 +367,14 @@ class Email_Reporting_Site_HealthTest extends TestCase {
 	 * @return Email_Reporting_Site_Health
 	 */
 	private function instantiate_site_health( $user_options = null ) {
+		$subscribed_users_query = new Subscribed_Users_Query(
+			new User_Email_Reporting_Settings( $user_options ?: $this->user_options ),
+			$this->modules
+		);
+
 		return new Email_Reporting_Site_Health(
 			$this->settings,
-			$user_options ?: $this->user_options
+			$subscribed_users_query
 		);
 	}
 

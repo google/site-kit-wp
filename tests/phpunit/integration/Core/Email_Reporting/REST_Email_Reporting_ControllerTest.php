@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
+use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -115,7 +117,13 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->set_user_access_token( $this->primary_admin_id );
 		wp_set_current_user( $this->primary_admin_id );
 
-		$this->controller              = new REST_Email_Reporting_Controller( $this->settings, $this->modules, $this->user_options, $this->user_settings );
+		$this->controller              = new REST_Email_Reporting_Controller(
+			$this->settings,
+			$this->modules,
+			$this->user_settings,
+			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
+			new Email()
+		);
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}
 
@@ -126,6 +134,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			if ( $user ) {
 				$user->remove_cap( Permissions::MANAGE_OPTIONS );
 			}
+			delete_transient( REST_Email_Reporting_Controller::INVITE_RATE_LIMIT_TRANSIENT_KEY_PREFIX . $user_id );
 		}
 		parent::tear_down();
 		if ( false === $this->original_sharing_option ) {
@@ -154,6 +163,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$routes     = array(
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
@@ -315,6 +325,167 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertSame( array(), $response->get_data(), 'No eligible users should return an empty array.' );
+	}
+
+	public function test_invite_user__permission_denied_for_non_admin() {
+		$non_admin = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $non_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $this->primary_admin_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 403, $response->get_status(), 'Non-admin should receive 403 when inviting a user.' );
+	}
+
+	public function test_invite_user__succeeds_for_eligible_user() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$invitee_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_user_access_token( $invitee_id );
+		wp_set_current_user( $this->primary_admin_id );
+
+		$captured_atts        = null;
+		$pre_wp_mail_callback = function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+			$captured_atts = $atts;
+			return true;
+		};
+		add_filter( 'pre_wp_mail', $pre_wp_mail_callback, 10, 2 );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $invitee_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		remove_filter( 'pre_wp_mail', $pre_wp_mail_callback, 10 );
+
+		$this->assertEquals( 200, $response->get_status(), 'Eligible invitee should return 200.' );
+		$this->assertTrue( $response->get_data()['success'], 'Eligible invitee should return success true.' );
+		$this->assertNotNull( $captured_atts, 'Invitation should call wp_mail.' );
+		$this->assertEquals( get_userdata( $invitee_id )->user_email, $captured_atts['to'], 'Invitation email should be sent to the invited user.' );
+		$this->assertStringContainsString( 'invited you to receive periodic performance reports', $captured_atts['message'], 'Invitation email body should contain invitation copy.' );
+	}
+
+	public function test_invite_user__returns_error_for_ineligible_user() {
+		$ineligible_user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $ineligible_user_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'Ineligible user should return 400.' );
+		$this->assertEquals( 'email_reporting_ineligible_user', $response->get_data()['code'], 'Ineligible user should return expected error code.' );
+	}
+
+	public function test_invite_user__returns_error_for_invalid_user_id() {
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => 999999,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'Invalid user ID should return 400.' );
+		$this->assertEquals( 'email_reporting_invalid_user_id', $response->get_data()['code'], 'Invalid user ID should return expected error code.' );
+	}
+
+	public function test_invite_user__returns_error_for_already_subscribed_user() {
+		$invitee_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_user_access_token( $invitee_id );
+		$user_settings = new User_Email_Reporting_Settings( new User_Options( $this->context, $invitee_id ) );
+		$user_settings->merge( array( 'subscribed' => true ) );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $invitee_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'Already subscribed user should return 400.' );
+		$this->assertEquals( 'email_reporting_user_already_subscribed', $response->get_data()['code'], 'Already subscribed user should return expected error code.' );
+	}
+
+	public function test_invite_user__rate_limit_is_enforced() {
+		$invitee_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_user_access_token( $invitee_id );
+		set_transient( REST_Email_Reporting_Controller::INVITE_RATE_LIMIT_TRANSIENT_KEY_PREFIX . $invitee_id, time(), DAY_IN_SECONDS );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'userID' => $invitee_id,
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 429, $response->get_status(), 'Rate-limited invite should return 429.' );
+		$this->assertEquals( 'email_reporting_invite_rate_limited', $response->get_data()['code'], 'Rate-limited invite should return expected error code.' );
 	}
 
 	public function provider_wrong_data() {
