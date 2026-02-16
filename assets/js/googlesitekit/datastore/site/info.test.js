@@ -343,6 +343,74 @@ describe( 'core/site site info', () => {
 
 				expect( adminURL ).toEqual( undefined );
 			} );
+
+			it( 'returns the adminURL with preserved query parameters if adminURL already contains query arguments', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage' );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toEqual( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
+					'testpage'
+				);
+			} );
+
+			it( 'returns the adminURL with preserved query parameters and extra args if adminURL with trailing slash already contains query arguments', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin/?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage', {
+						arg1: 'argument-1',
+					} );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toEqual( '/wp-admin/admin.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
+					'testpage'
+				);
+				expect( parsed.searchParams.get( 'arg1' ) ).toEqual(
+					'argument-1'
+				);
+			} );
+
+			it( 'returns the adminURL with preserved query parameters if the full page argument is supplied and adminURL already contains query arguments', async () => {
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin?foo=bar',
+				} );
+
+				const url = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'custom.php?page=correct-page', {
+						page: 'wrong-page',
+						arg2: 'argument-2',
+					} );
+				const parsed = new URL( url );
+
+				expect( parsed.pathname ).toEqual( '/wp-admin/custom.php' );
+				expect( parsed.searchParams.get( 'foo' ) ).toEqual( 'bar' );
+				expect( parsed.searchParams.get( 'page' ) ).toEqual(
+					'correct-page'
+				);
+				expect( parsed.searchParams.get( 'arg2' ) ).toEqual(
+					'argument-2'
+				);
+			} );
 		} );
 
 		describe( 'getSiteInfo', () => {

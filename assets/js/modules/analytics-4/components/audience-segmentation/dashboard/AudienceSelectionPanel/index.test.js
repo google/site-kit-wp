@@ -1936,7 +1936,7 @@ describe( 'AudienceSelectionPanel', () => {
 			fireEvent.click( returningVisitorsCheckbox );
 
 			expect(
-				document.querySelector( '.googlesitekit-selection-panel-error' )
+				document.querySelector( '.googlesitekit-notice--error' )
 					.textContent
 			).toBe( 'Select at least 1 group (0 selected)' );
 

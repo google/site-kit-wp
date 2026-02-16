@@ -25,12 +25,14 @@ import { FC, ElementType } from 'react';
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { HOUR_IN_SECONDS } from '@/js/util/dates';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	CONTENT_POLICY_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { RRM_POLICY_VIOLATION_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import { getPolicyViolationNotificationCopy } from './get-policy-violation-notification-copy';
 
 interface PolicyViolationNotificationProps {
@@ -45,6 +47,8 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 	id,
 	Notification,
 } ) => {
+	const viewContext = useViewContext();
+
 	const contentPolicyState = useSelect( ( select: Select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
 	);
@@ -65,8 +69,13 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 					expiresInSeconds: HOUR_IN_SECONDS,
 			  };
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_${ RRM_POLICY_VIOLATION_NOTIFICATION_ID }`,
+		label: contentPolicyState,
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ type }
@@ -83,6 +92,7 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 					dismissOnClick: true,
 					dismissOptions,
 				} }
+				gaTrackingEventArgs={ gaTrackingEventArgs }
 			/>
 		</Notification>
 	);

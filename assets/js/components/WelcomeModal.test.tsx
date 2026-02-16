@@ -419,7 +419,7 @@ describe( 'WelcomeModal', () => {
 		[ true, false ],
 		[ true, true ],
 	] )(
-		'should trigger the tour when the "Start tour" button is clicked for the dashboard tour variant with isViewOnly: %s and canAuthenticate: %s',
+		'should trigger the correct tour when the "Start tour" button is clicked for the dashboard tour variant with Analytics connected, isViewOnly: %s and canAuthenticate: %s',
 		async ( isViewOnly, canAuthenticate ) => {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
@@ -496,6 +496,92 @@ describe( 'WelcomeModal', () => {
 					getWelcomeTour( {
 						isViewOnly,
 						canAuthenticate,
+						isAnalyticsConnected: true,
+					} )
+				)
+			);
+		}
+	);
+
+	it.each( [
+		[ false, true ],
+		[ true, false ],
+		[ true, true ],
+	] )(
+		'should trigger the correct tour when the "Start tour" button is clicked with Analytics not connected, isViewOnly: %s and canAuthenticate: %s',
+		async ( isViewOnly, canAuthenticate ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+				{
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Model the responses for the two POST requests to `dismiss-item`.
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				status: 200,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [
+					WITH_TOUR_DISMISSED_ITEM_SLUG,
+					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				],
+				status: 200,
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<WelcomeModal />,
+				{
+					registry,
+					viewContext: isViewOnly
+						? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+			) as any;
+
+			await waitForRegistry();
+
+			const closeButton = getByRole( 'button', { name: 'Start tour' } );
+			fireEvent.click( closeButton );
+
+			await waitFor( () => {
+				// Wait for the dismissal to complete.
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			expect(
+				// Use JSON.stringify to compare the tours, `toEqual` won't work because
+				// the tours are objects that contain functions.
+				JSON.stringify( registry.select( CORE_USER ).getCurrentTour() )
+			).toEqual(
+				JSON.stringify(
+					getWelcomeTour( {
+						isViewOnly,
+						canAuthenticate,
+						isAnalyticsConnected: false,
 					} )
 				)
 			);

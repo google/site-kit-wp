@@ -118,7 +118,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm i --include-workspace-root -w assets
+        run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
           mkdir -p "${{ github.ref }}"
