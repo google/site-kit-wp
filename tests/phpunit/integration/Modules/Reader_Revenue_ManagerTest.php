@@ -145,7 +145,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		foreach ( Reader_Revenue_Manager::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
 			$dismissed_items->add( $notification );
 
-			$this->assertTrue( $dismissed_items->is_dismissed( $notification ), 'Policy violation notification dismissals should be reset when publication ID changes.' );
+			$this->assertTrue( $dismissed_items->is_dismissed( $notification ), 'Policy violation notification should be dismissed after adding it to dismissed items.' );
 		}
 
 		$this->reader_revenue_manager->get_settings()->merge(
