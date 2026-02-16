@@ -217,15 +217,12 @@ export default function DashboardPageSpeed() {
 		[ referenceURL, strategy, finishedResolution ]
 	);
 
-	// Set the default data source based on report data.
+	// Set the default data source based on report data for the current view.
 	useEffect( () => {
-		if (
-			reportMobile?.loadingExperience?.metrics &&
-			reportDesktop?.loadingExperience?.metrics
-		) {
+		if ( reportData?.loadingExperience?.metrics ) {
 			setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } );
 		}
-	}, [ reportMobile, reportDesktop, setValues ] );
+	}, [ reportData, setValues ] );
 
 	const isLoading =
 		! referenceURL || ( isFetching && ! reportData ) || ! dataSrc;

@@ -19,6 +19,7 @@
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
+$site_url           = $data['site']['url'];
 $date_label         = $data['date_range']['label'];
 $primary_cta        = $data['primary_call_to_action'];
 $footer_content     = $data['footer'];
@@ -131,6 +132,7 @@ $render_shared_part = $data['render_shared_part'];
 								'header',
 								array(
 									'site_domain'   => $site_domain,
+									'site_url'      => $site_url,
 									'date_label'    => $date_label,
 									'get_asset_url' => $get_asset_url,
 								)

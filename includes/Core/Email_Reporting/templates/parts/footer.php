@@ -13,11 +13,11 @@
  */
 
 ?>
-<table role="presentation" width="100%" style="margin-top:24px;">
+<table role="presentation" width="100%" style="margin-top:16px;">
 	<tr>
 		<td style="text-align:center;">
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
-				<div style="margin-bottom:60px;">
+				<div style="margin-top: 8px; margin-bottom:52px;">
 					<?php
 					$render_shared_part(
 						'dashboard-link',

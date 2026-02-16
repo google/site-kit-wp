@@ -15,11 +15,11 @@ on:
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
-      - '/*.php'
+      - '*.php'
       - 'jest-puppeteer.config.js'
       - 'composer.json'
       - 'composer.lock'
-      - '/php-scoper/composer.lock'
+      - 'php-scoper/composer.lock'
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
@@ -47,11 +47,11 @@ on:
       - '.babelrc'
       - 'assets/**'
       - 'includes/**'
-      - '/*.php'
+      - '*.php'
       - 'jest-puppeteer.config.js'
       - 'composer.json'
       - 'composer.lock'
-      - '/php-scoper/composer.lock'
+      - 'php-scoper/composer.lock'
       - 'package.json'
       - 'package-lock.json'
       - 'postcss.config.js'
@@ -104,7 +104,7 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: npm i --workspaces --include-workspace-root
+        run: npm ci --workspaces --include-workspace-root
 
       - name: Build
         run: npm run build:test

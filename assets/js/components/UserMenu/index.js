@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useClickAway, useEvent } from 'react-use';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -101,18 +101,6 @@ export default function UserMenu() {
 		toggleDialog( false );
 		setMenuOpen( false );
 	}, [ toggleDialog, setMenuOpen ] );
-
-	const handleEscapeKeyPress = useCallback(
-		( e ) => {
-			// Close if Escape key is pressed.
-			if ( ESCAPE === e.keyCode ) {
-				handleClose();
-			}
-		},
-		[ handleClose ]
-	);
-
-	useEvent( 'keyup', handleEscapeKeyPress );
 
 	const { setValue } = useDispatch( CORE_UI );
 	const handleMenu = useCallback( () => {

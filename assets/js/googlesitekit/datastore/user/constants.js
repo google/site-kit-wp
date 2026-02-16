@@ -127,3 +127,7 @@ export const allKeyMetricsTileWidgets = [
 	...keyMetricsGA4Widgets,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 ];
+
+export const WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
+export const WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG =
+	'welcome-modal-gathering-data';

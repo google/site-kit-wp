@@ -88,7 +88,7 @@ describe( 'SettingsEmailReporting', () => {
 
 		expect( link ).toHaveAttribute(
 			'href',
-			'https://sitekit.withgoogle.com/support/?doc=email-reporiting'
+			'https://sitekit.withgoogle.com/support/?doc=email-reporting'
 		);
 	} );
 

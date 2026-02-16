@@ -43,6 +43,8 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
@@ -51,9 +53,6 @@ import {
 } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import WelcomeModal from './WelcomeModal';
-
-const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
-const GATHERING_DATA_DISMISSED_ITEM_SLUG = 'welcome-modal-gathering-data';
 
 describe( 'WelcomeModal', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -207,14 +206,14 @@ describe( 'WelcomeModal', () => {
 
 				// Model the responses for the two POST requests to `dismiss-item`.
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
 					body: [
-						WITH_TOUR_DISMISSED_ITEM_SLUG,
-						GATHERING_DATA_DISMISSED_ITEM_SLUG,
+						WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 					],
 					status: 200,
 				} );
@@ -261,7 +260,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -270,7 +269,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -311,14 +310,14 @@ describe( 'WelcomeModal', () => {
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [
-					WITH_TOUR_DISMISSED_ITEM_SLUG,
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				],
 				status: 200,
 			} );
@@ -383,14 +382,14 @@ describe( 'WelcomeModal', () => {
 
 		// Model the responses for the two POST requests to `dismiss-item`.
 		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+			body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 			status: 200,
 		} );
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: [
-				WITH_TOUR_DISMISSED_ITEM_SLUG,
-				GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 			],
 			status: 200,
 		} );
@@ -415,52 +414,12 @@ describe( 'WelcomeModal', () => {
 		expect( tooltipState ).toBeUndefined();
 	} );
 
-	it( 'should not show the data available variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ WITH_TOUR_DISMISSED_ITEM_SLUG ] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it.each( [
 		[ false, true ],
 		[ true, false ],
 		[ true, true ],
 	] )(
-		'should trigger the tour when the "Start tour" button is clicked for the dashboard tour variant with isViewOnly: %s and canAuthenticate: %s',
+		'should trigger the correct tour when the "Start tour" button is clicked for the dashboard tour variant with Analytics connected, isViewOnly: %s and canAuthenticate: %s',
 		async ( isViewOnly, canAuthenticate ) => {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
@@ -495,14 +454,14 @@ describe( 'WelcomeModal', () => {
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [
-					WITH_TOUR_DISMISSED_ITEM_SLUG,
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				],
 				status: 200,
 			} );
@@ -537,6 +496,92 @@ describe( 'WelcomeModal', () => {
 					getWelcomeTour( {
 						isViewOnly,
 						canAuthenticate,
+						isAnalyticsConnected: true,
+					} )
+				)
+			);
+		}
+	);
+
+	it.each( [
+		[ false, true ],
+		[ true, false ],
+		[ true, true ],
+	] )(
+		'should trigger the correct tour when the "Start tour" button is clicked with Analytics not connected, isViewOnly: %s and canAuthenticate: %s',
+		async ( isViewOnly, canAuthenticate ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: canAuthenticate,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+				{
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsDataAvailableOnLoad( true );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			// Model the responses for the two POST requests to `dismiss-item`.
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				status: 200,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [
+					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				],
+				status: 200,
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<WelcomeModal />,
+				{
+					registry,
+					viewContext: isViewOnly
+						? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
+			) as any;
+
+			await waitForRegistry();
+
+			const closeButton = getByRole( 'button', { name: 'Start tour' } );
+			fireEvent.click( closeButton );
+
+			await waitFor( () => {
+				// Wait for the dismissal to complete.
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			expect(
+				// Use JSON.stringify to compare the tours, `toEqual` won't work because
+				// the tours are objects that contain functions.
+				JSON.stringify( registry.select( CORE_USER ).getCurrentTour() )
+			).toEqual(
+				JSON.stringify(
+					getWelcomeTour( {
+						isViewOnly,
+						canAuthenticate,
+						isAnalyticsConnected: false,
 					} )
 				)
 			);
@@ -670,7 +715,7 @@ describe( 'WelcomeModal', () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ GATHERING_DATA_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 			} );
@@ -719,7 +764,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: GATHERING_DATA_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -752,38 +797,6 @@ describe( 'WelcomeModal', () => {
 		}
 	);
 
-	it( 'should not show the gathering data variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: false,
-				connected: false,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-		} );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'should show the data gathering complete variant when Analytics is connected and not gathering data, and the gathering data variant has been dismissed', async () => {
 		provideModules( registry, [
 			{
@@ -812,7 +825,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WelcomeModal />,
@@ -863,7 +878,9 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		const { container, getByText, getByRole, waitForRegistry } = render(
 			<WelcomeModal />,
@@ -922,11 +939,11 @@ describe( 'WelcomeModal', () => {
 				registry
 					.dispatch( CORE_USER )
 					.receiveGetDismissedItems( [
-						GATHERING_DATA_DISMISSED_ITEM_SLUG,
+						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 					] );
 
 				fetchMock.postOnce( dismissItemEndpoint, {
-					body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+					body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 					status: 200,
 				} );
 			} );
@@ -973,7 +990,7 @@ describe( 'WelcomeModal', () => {
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
 					body: {
 						data: {
-							slug: WITH_TOUR_DISMISSED_ITEM_SLUG,
+							slug: WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 							expiration: 0,
 						},
 					},
@@ -1013,11 +1030,11 @@ describe( 'WelcomeModal', () => {
 			registry
 				.dispatch( CORE_USER )
 				.receiveGetDismissedItems( [
-					GATHERING_DATA_DISMISSED_ITEM_SLUG,
+					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 				] );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 				status: 200,
 			} );
 
@@ -1079,10 +1096,12 @@ describe( 'WelcomeModal', () => {
 
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [ GATHERING_DATA_DISMISSED_ITEM_SLUG ] );
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
 
 		fetchMock.postOnce( dismissItemEndpoint, {
-			body: [ WITH_TOUR_DISMISSED_ITEM_SLUG ],
+			body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
 			status: 200,
 		} );
 
@@ -1104,48 +1123,5 @@ describe( 'WelcomeModal', () => {
 			.getValue( 'admin-screen-tooltip' );
 
 		expect( tooltipState ).toBeUndefined();
-	} );
-
-	it( 'should not show the data gathering complete variant when it has been dismissed', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				GATHERING_DATA_DISMISSED_ITEM_SLUG,
-				WITH_TOUR_DISMISSED_ITEM_SLUG,
-			] );
-
-		const { container, waitForRegistry } = render( <WelcomeModal />, {
-			registry,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `render` is not typed yet.
-		} ) as any;
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

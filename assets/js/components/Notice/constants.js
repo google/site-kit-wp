@@ -18,7 +18,8 @@ export const TYPES = {
 	NEW: 'new',
 	SUCCESS: 'success',
 	WARNING: 'warning',
-	INFO: 'info',
-	INFO_ALT: 'info-alt',
+	INFO: 'info', // Grey background
+	INFO_ALT: 'info-alt', // White background
+	INFO_ALT_2: 'info-alt-2', // Black background
 	ERROR: 'error',
 };

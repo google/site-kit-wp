@@ -31,7 +31,6 @@ import {
 	provideUserInfo,
 	provideUserAuthentication,
 	fireEvent,
-	setEnabledFeatures,
 } from '../../../../tests/js/test-utils';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
@@ -40,10 +39,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { SITE_KIT_SETUP_SUCCESS_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
-import {
-	GATHERING_DATA_DISMISSED_ITEM_SLUG,
-	WITH_TOUR_DISMISSED_ITEM_SLUG,
-} from '@/js/components/WelcomeModal';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import SiteKitSetupSuccessNotification from './SiteKitSetupSuccessNotification';
 
@@ -131,65 +126,28 @@ describe( 'SiteKitSetupSuccessNotification', () => {
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'is active when the `notification` query arg is set to `authentication_success` and the `slug` query arg is not set', async () => {
+		it( 'is active when the `notification` query arg is set to `authentication_success` and the `slug` query arg is not set', () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
-			const isActive = await notification.checkRequirements( registry );
+			const isActive = notification.checkRequirements();
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when the `notification` query arg is not set to `authentication_success`', async () => {
+		it( 'is not active when the `notification` query arg is not set to `authentication_success`', () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=some_other_notification';
 
-			const isActive = await notification.checkRequirements( registry );
+			const isActive = notification.checkRequirements();
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when the `slug` query arg is set', async () => {
+		it( 'is not active when the `slug` query arg is set', () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success&slug=some_other_slug';
 
-			const isActive = await notification.checkRequirements( registry );
+			const isActive = notification.checkRequirements();
 			expect( isActive ).toBe( false );
-		} );
-
-		describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
-			beforeEach( () => {
-				setEnabledFeatures( [ 'setupFlowRefresh' ] );
-			} );
-
-			it( 'is active when the Welcome modal is dismissed', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?notification=authentication_success';
-
-				// Dismissing the Welcome modal's dashboard tour variant also dismisses
-				// the gathering data modal variant.
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						WITH_TOUR_DISMISSED_ITEM_SLUG,
-						GATHERING_DATA_DISMISSED_ITEM_SLUG,
-					] );
-
-				const isActive = await notification.checkRequirements(
-					registry
-				);
-				expect( isActive ).toBe( true );
-			} );
-
-			it( 'is not active when the Welcome modal is not dismissed', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?notification=authentication_success';
-
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-				const isActive = await notification.checkRequirements(
-					registry
-				);
-				expect( isActive ).toBe( false );
-			} );
 		} );
 	} );
 } );
