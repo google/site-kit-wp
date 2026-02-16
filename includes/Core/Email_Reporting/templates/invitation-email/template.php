@@ -16,6 +16,8 @@
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
+$site_url           = $data['site']['url'];
+$body               = $data['body'];
 $inviter_email      = $data['inviter_email'];
 $learn_more_url     = $data['learn_more_url'];
 $primary_cta        = $data['primary_call_to_action'];
@@ -137,7 +139,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
 										<?php /* Site domain. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-											<a href="<?php echo esc_url( '//' . $site_domain ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Invitation title. */ ?>
@@ -152,18 +154,15 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 											?>
 										</h1>
 
-										<?php /* Description with Learn more link. */ ?>
+										<?php /* Body paragraphs from Body_Content_Map. */ ?>
+										<?php foreach ( $body as $index => $paragraph ) : ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
-											<?php
-											echo esc_html__( 'Receive the most important insights about your site’s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' );
-											?>
+											<?php echo esc_html( $paragraph ); ?>
+											<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
 											<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+											<?php endif; ?>
 										</p>
-
-										<?php /* Unsubscribe note. */ ?>
-										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 24px 0;">
-											<?php echo esc_html__( 'You can unsubscribe or change how often emails are sent anytime from your Site Kit dashboard.', 'google-site-kit' ); ?>
-										</p>
+										<?php endforeach; ?>
 
 										<?php /* CTA Button. */ ?>
 										<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">

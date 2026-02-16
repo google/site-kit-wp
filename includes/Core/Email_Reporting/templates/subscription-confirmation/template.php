@@ -1,29 +1,25 @@
 <?php
 /**
- * Base template for the email-report email.
+ * Base template for the subscription-confirmation email.
  *
- * This template receives $data containing both metadata and $sections.
- * Sections are already processed with their rendered parts.
+ * This template is used to confirm when users subscribe to periodic performance reports.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
- * @copyright 2025 Google LLC
+ * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array $data All template data including metadata and sections.
+ * @var array $data All template data including metadata.
  */
 
 // Extract metadata from data.
-// These keys are always present as they are mapped in Email_Template_Data,
-// so we access them directly without checking for existence.
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
 $site_url           = $data['site']['url'];
-$date_label         = $data['date_range']['label'];
-$primary_cta        = $data['primary_call_to_action'];
-$footer_content     = $data['footer'];
-$sections           = $data['sections'];
+$body               = $data['body'];
+$cta                = $data['primary_call_to_action'];
+$footer             = $data['footer'];
 $get_asset_url      = $data['get_asset_url'];
 $render_part        = $data['render_part'];
 $render_shared_part = $data['render_shared_part'];
@@ -73,7 +69,6 @@ $render_shared_part = $data['render_shared_part'];
 
 		.body {
 			width: 100%;
-			<?php /* Outlook only allows max-width when set on table elements. */ ?>
 			max-width: 520px;
 			background-color: #F3F5F7;
 		}
@@ -127,45 +122,35 @@ $render_shared_part = $data['render_shared_part'];
 					<tr>
 						<td class="wrapper">
 							<?php
-							// Render header.
+							// Render header (Site Kit logo).
 							$render_part(
 								'header',
 								array(
-									'site_domain'   => $site_domain,
-									'site_url'      => $site_url,
-									'date_label'    => $date_label,
 									'get_asset_url' => $get_asset_url,
 								)
 							);
-
-							// Render each section with its parts.
-							foreach ( $sections as $section_key => $section ) {
-								// Skip sections without parts.
-								if ( empty( $section['section_parts'] ) ) {
-									continue;
-								}
-
-								// If a section_template is specified, use it to render the entire section.
-								if ( ! empty( $section['section_template'] ) ) {
-									$render_part(
-										$section['section_template'],
-										array(
-											'section'     => $section,
-											'render_part' => $render_part,
-											'render_shared_part' => $render_shared_part,
-											'get_asset_url' => $get_asset_url,
-										)
-									);
-									continue;
-								}
-							}
-
-							// Render footer.
+							?>
+							<?php
+							// Render content (envelope, domain, title, body, CTA).
+							$render_part(
+								'content',
+								array(
+									'site_domain'        => $site_domain,
+									'site_url'           => $site_url,
+									'body'               => $body,
+									'cta'                => $cta,
+									'get_asset_url'      => $get_asset_url,
+									'render_shared_part' => $render_shared_part,
+								)
+							);
+							?>
+							<?php
+							// Render full footer (unsubscribe, links) without CTA since it's already in the content.
 							$render_shared_part(
 								'footer',
 								array(
-									'cta'                => $primary_cta,
-									'footer'             => $footer_content,
+									'cta'                => array(), // CTA is in content, not footer.
+									'footer'             => $footer,
 									'render_shared_part' => $render_shared_part,
 								)
 							);
