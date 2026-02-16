@@ -123,6 +123,11 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		'rrm-product-id-subscriptions-notification',
 	);
 
+	const POLICY_VIOLATION_NOTIFICATIONS = array(
+		'rrm-policy-violation-moderate-high-notification',
+		'rrm-policy-violation-extreme-notification',
+	);
+
 	/**
 	 * Constructor.
 	 *
@@ -204,7 +209,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		// If the publication ID changes, clear the dismissed state for product ID notifications.
+		// If the publication ID changes, clear the dismissed state for notifications.
 		$this->get_settings()->on_change(
 			function ( $old_value, $new_value ) {
 				if ( $old_value['publicationID'] !== $new_value['publicationID'] ) {
@@ -212,6 +217,12 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 					foreach ( self::PRODUCT_ID_NOTIFICATIONS as $notification ) {
 						$dismissed_items->remove( $notification );
+					}
+
+					if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) ) {
+						foreach ( self::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
+							$dismissed_items->remove( $notification );
+						}
 					}
 				}
 			}

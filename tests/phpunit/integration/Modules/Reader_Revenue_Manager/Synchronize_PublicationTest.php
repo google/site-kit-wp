@@ -305,7 +305,7 @@ class Synchronize_PublicationTest extends TestCase {
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
 
-		$this->assertEquals( (object) array(), $settings['contentPolicyStatus'], 'Content policy status should be empty before sync.' );
+		$this->assertEquals( array(), $settings['contentPolicyStatus'], 'Content policy status should be empty before sync.' );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
