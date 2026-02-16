@@ -83,7 +83,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		);
 
 		if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) ) {
-			$defaults['contentPolicyStatus'] = (object) array();
+			$defaults['contentPolicyStatus'] = array();
 		}
 
 		return $defaults;
@@ -190,9 +190,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			}
 
 			if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) && isset( $option['contentPolicyStatus'] ) ) {
-				// If the `contentPolicyStatus` setting is not an associative array, set it to an empty object.
+				// If the `contentPolicyStatus` setting is not an associative array, set it to an empty array.
 				if ( ! ( is_array( $option['contentPolicyStatus'] ) && ! BC_Functions::array_is_list( $option['contentPolicyStatus'] ) ) ) {
-					$option['contentPolicyStatus'] = (object) array();
+					$option['contentPolicyStatus'] = array();
 				}
 			}
 
