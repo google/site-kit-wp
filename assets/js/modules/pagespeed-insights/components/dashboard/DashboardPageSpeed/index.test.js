@@ -150,12 +150,9 @@ describe( 'DashboardPageSpeed', () => {
 		} );
 	} );
 
-	it( 'displays field data by default when available in both mobile and desktop reports', () => {
+	it( "displays field data by default when field data is available in the current view's report", () => {
 		expect(
 			fixtures.pagespeedMobileNoStackPacks.loadingExperience
-		).toHaveProperty( 'metrics' );
-		expect(
-			fixtures.pagespeedDesktopNoStackPacks.loadingExperience
 		).toHaveProperty( 'metrics' );
 
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
@@ -167,8 +164,50 @@ describe( 'DashboardPageSpeed', () => {
 		).toHaveClass( activeClass );
 	} );
 
-	it( 'displays lab data by default when field data is not present in both mobile and desktop reports', () => {
+	it( "displays field data by default when field data is available only in the current view's report", () => {
 		setupRegistryNoFieldDataDesktop();
+
+		const { getByLabelText } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		// Mobile is the default view and has field data; desktop does not.
+		// Field tab should be selected immediately without waiting for desktop.
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+	} );
+
+	it( "displays lab data by default when field data is not present in the current view's report", () => {
+		registry = createTestRegistry();
+		const { dispatch } = registry;
+
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedMobileNoFieldDataNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_MOBILE,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_MOBILE,
+		] );
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport(
+			fixtures.pagespeedDesktopNoStackPacks,
+			{
+				url,
+				strategy: STRATEGY_DESKTOP,
+			}
+		);
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [
+			url,
+			STRATEGY_DESKTOP,
+		] );
+		dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: url,
+			currentEntityURL: null,
+		} );
 
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
@@ -234,12 +273,15 @@ describe( 'DashboardPageSpeed', () => {
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
-		const { container, getByRole, queryByRole } = render(
+		const { container, getByRole, getByLabelText, queryByRole } = render(
 			<DashboardPageSpeed />,
 			{
 				registry,
 			}
 		);
+
+		// Switch to Lab tab so the "Run test again" button is visible.
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
 
 		const runTestAgainBtn = getByRole( 'button', {
 			name: /Run test again/i,
@@ -283,14 +325,10 @@ describe( 'DashboardPageSpeed', () => {
 			getReport( url, STRATEGY_DESKTOP ).loadingExperience
 		).not.toHaveProperty( 'metrics' );
 
-		// Lab data is shown by default as both reports do not have field data.
+		// Field data is shown by default as the current view (mobile) has field data.
 		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-		// Switch to Field data source.
-		fireEvent.click(
 			getByLabelText( /In the Field/i ).closest( 'button' )
-		);
+		).toHaveClass( activeClass );
 
 		expect( getByLabelText( /mobile/i ) ).toHaveClass( activeClass );
 		// Mobile has field data, so ensure the no data message is not present.
@@ -318,9 +356,12 @@ describe( 'DashboardPageSpeed', () => {
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
-		const { getByRole } = render( <DashboardPageSpeed />, {
+		const { getByRole, getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
+
+		// Switch to Lab tab so the "Run test again" button is visible.
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
 
 		const runTestAgainBtn = getByRole( 'button', {
 			name: /Run test again/i,
@@ -353,9 +394,12 @@ describe( 'DashboardPageSpeed', () => {
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
-		const { getByRole } = render( <DashboardPageSpeed />, {
+		const { getByRole, getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
+
+		// Switch to Lab tab so the "Run test again" button is visible.
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
 
 		const runTestAgainBtn = getByRole( 'button', {
 			name: /Run test again/i,
@@ -394,9 +438,12 @@ describe( 'DashboardPageSpeed', () => {
 				'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 		);
-		const { getByRole } = render( <DashboardPageSpeed />, {
+		const { getByRole, getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
+
+		// Switch to Lab tab so the "Run test again" button is visible.
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
 
 		const runTestAgainBtn = getByRole( 'button', {
 			name: /Run test again/i,

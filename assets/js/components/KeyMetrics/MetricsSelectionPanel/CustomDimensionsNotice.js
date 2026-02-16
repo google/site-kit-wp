@@ -41,7 +41,8 @@ import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widg
 import { elementsOverlap } from '@/js/util/geometry';
 import whenActive from '@/js/util/when-active';
 import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import { TYPES } from '@/js/components/Notice/constants';
 
 function CustomDimensionsNotice() {
 	const selectedMetrics = useFormValue(
@@ -119,9 +120,12 @@ function CustomDimensionsNotice() {
 		  );
 
 	return (
-		<div className="googlesitekit-selection-panel-notice" ref={ noticeRef }>
-			<P>{ customDimensionMessage }</P>
-		</div>
+		<SelectionPanelNotice
+			ref={ noticeRef }
+			type={ TYPES.WARNING }
+			description={ customDimensionMessage }
+			hideIcon
+		/>
 	);
 }
 

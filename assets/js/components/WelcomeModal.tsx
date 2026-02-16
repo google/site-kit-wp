@@ -272,6 +272,8 @@ export default function WelcomeModal() {
 									getWelcomeTour( {
 										isViewOnly,
 										canAuthenticate,
+										isAnalyticsConnected:
+											!! analyticsConnected,
 									} )
 								);
 							} }

@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use WP_User_Query;
 
@@ -73,6 +74,37 @@ class Subscribed_Users_Query {
 		$user_ids = array_unique( array_map( 'intval', $user_ids ) );
 
 		return $this->filter_subscribed_user_ids( $user_ids, $frequency, $meta_key );
+	}
+
+	/**
+	 * Gets the number of subscribed users across all frequencies.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return int
+	 */
+	public function get_subscriber_count() {
+		$meta_key = $this->email_reporting_settings->get_meta_key();
+
+		$user_query = new WP_User_Query(
+			array(
+				'fields'   => 'ids',
+				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'compare'  => 'EXISTS',
+			)
+		);
+
+		$subscribers = 0;
+
+		foreach ( $user_query->get_results() as $user_id ) {
+			$settings = get_user_meta( $user_id, $meta_key, true );
+
+			if ( is_array( $settings ) && ! empty( $settings['subscribed'] ) ) {
+				++$subscribers;
+			}
+		}
+
+		return $subscribers;
 	}
 
 	/**
@@ -160,6 +192,10 @@ class Subscribed_Users_Query {
 		$filtered = array();
 
 		foreach ( $user_ids as $user_id ) {
+			if ( ! $this->user_has_email_reporting_access( $user_id ) ) {
+				continue;
+			}
+
 			$settings = get_user_meta( $user_id, $meta_key, true );
 
 			if ( ! is_array( $settings ) || empty( $settings['subscribed'] ) ) {
@@ -176,6 +212,18 @@ class Subscribed_Users_Query {
 		}
 
 		return array_values( $filtered );
+	}
+
+	/**
+	 * Checks whether a user can access Site Kit dashboard for email reporting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True if user has email reporting access, false otherwise.
+	 */
+	private function user_has_email_reporting_access( $user_id ) {
+		return user_can( $user_id, Permissions::VIEW_DASHBOARD );
 	}
 
 	/**

@@ -22,6 +22,7 @@
 import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
@@ -41,6 +42,10 @@ describe( 'core/site Email Reporting', () => {
 	const emailReportingErrorsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting-errors'
 	);
+	const inviteUserEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/site/data/email-reporting-invite-user'
+	);
+	const USER_ID_PARAM = 'userID';
 
 	beforeAll( () => {
 		setUsingCache( false );
@@ -178,6 +183,73 @@ describe( 'core/site Email Reporting', () => {
 						.dispatch( CORE_SITE )
 						.setEmailReportingEnabled( false );
 				} ).not.toThrow( 'enabled should be a boolean.' );
+			} );
+		} );
+
+		describe( 'inviteUser', () => {
+			it( 'sends an invite request and returns successful response', async () => {
+				const userID = 123;
+				const successResponse = { success: true };
+
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: successResponse,
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( CORE_SITE )
+					.inviteUser( userID );
+
+				expect( fetchMock ).toHaveFetched( inviteUserEndpointRegExp, {
+					body: {
+						data: {
+							[ USER_ID_PARAM ]: userID,
+						},
+					},
+				} );
+				expect( response ).toEqual( successResponse );
+				expect( error ).toBeUndefined();
+			} );
+
+			it( 'returns an error response if invite fails', async () => {
+				const userID = 321;
+				const errorResponse = {
+					code: 'email_reporting_ineligible_user',
+					message:
+						'The provided user is not eligible for invitation.',
+					data: { status: 400 },
+				};
+
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: errorResponse,
+					status: 400,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( CORE_SITE )
+					.inviteUser( userID );
+
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'validates userID as a positive integer', () => {
+				expect( () => {
+					registry.dispatch( CORE_SITE ).inviteUser();
+				} ).toThrow( 'userID should be a positive integer.' );
+				expect( () => {
+					registry.dispatch( CORE_SITE ).inviteUser( -1 );
+				} ).toThrow( 'userID should be a positive integer.' );
+				expect( () => {
+					registry.dispatch( CORE_SITE ).inviteUser( 0 );
+				} ).toThrow( 'userID should be a positive integer.' );
+				expect( () => {
+					registry.dispatch( CORE_SITE ).inviteUser( 1.5 );
+				} ).toThrow( 'userID should be a positive integer.' );
+				expect( () => {
+					registry.dispatch( CORE_SITE ).inviteUser( '1' );
+				} ).toThrow( 'userID should be a positive integer.' );
 			} );
 		} );
 	} );
@@ -422,6 +494,81 @@ describe( 'core/site Email Reporting', () => {
 
 				expect( fetchMock ).toHaveFetched(
 					emailReportingErrorsEndpointRegExp
+				);
+			} );
+		} );
+
+		describe( 'isInvitingUser', () => {
+			it( 'returns true while invitation is in progress and false after completion', async () => {
+				const loadingUserID = 47;
+				const completedUserID = 48;
+
+				freezeFetch( inviteUserEndpointRegExp );
+
+				expect(
+					registry.select( CORE_SITE ).isInvitingUser( loadingUserID )
+				).toBe( false );
+
+				registry.dispatch( CORE_SITE ).inviteUser( loadingUserID );
+
+				expect(
+					registry.select( CORE_SITE ).isInvitingUser( loadingUserID )
+				).toBe( true );
+
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( CORE_SITE )
+					.inviteUser( completedUserID );
+
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isInvitingUser( completedUserID )
+				).toBe( false );
+			} );
+
+			it( 'tracks concurrent invitations for different users independently', async () => {
+				fetchMock.post( inviteUserEndpointRegExp, ( _url, options ) => {
+					const requestBody =
+						typeof options.body === 'string'
+							? JSON.parse( options.body )
+							: options.body;
+					const userID = requestBody?.data?.[ USER_ID_PARAM ];
+
+					if ( userID === 2 ) {
+						return new Promise( () => {} );
+					}
+
+					return {
+						body: { success: true },
+						status: 200,
+					};
+				} );
+
+				registry.dispatch( CORE_SITE ).inviteUser( 2 );
+
+				expect( registry.select( CORE_SITE ).isInvitingUser( 2 ) ).toBe(
+					true
+				);
+				expect( registry.select( CORE_SITE ).isInvitingUser( 3 ) ).toBe(
+					false
+				);
+
+				const { response, error } = await registry
+					.dispatch( CORE_SITE )
+					.inviteUser( 3 );
+
+				expect( response ).toEqual( { success: true } );
+				expect( error ).toBeUndefined();
+				expect( registry.select( CORE_SITE ).isInvitingUser( 2 ) ).toBe(
+					true
+				);
+				expect( registry.select( CORE_SITE ).isInvitingUser( 3 ) ).toBe(
+					false
 				);
 			} );
 		} );

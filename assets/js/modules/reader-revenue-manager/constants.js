@@ -42,3 +42,6 @@ export const RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID =
 export const RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID =
 	'rrm-policy-violation-extreme-notification';
 export const MODULE_SLUG_READER_REVENUE_MANAGER = 'reader-revenue-manager';
+
+export const RRM_POLICY_VIOLATION_NOTIFICATION_ID =
+	'rrm-policy-violation-notification';
