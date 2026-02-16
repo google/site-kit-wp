@@ -104,7 +104,7 @@ class Email_Report_Section_Builder {
 			'add_to_cart' => __( 'Products added to cart', 'google-site-kit' ),
 			'purchase'    => __( 'Purchases', 'google-site-kit' ),
 			// Search Console.
-			'impressions' => __( 'Total impressions in Search', 'google-site-kit' ),
+			'impressions' => __( 'Total impressions from Search', 'google-site-kit' ),
 			'clicks'      => __( 'Total clicks from Search', 'google-site-kit' ),
 		);
 	}
