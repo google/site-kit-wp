@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -675,9 +676,29 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+			$notification = $this->get_notification_for_default_redirect_url();
+			$redirect_url = $this->context->admin_url( 'dashboard', array( 'notification' => $notification ) );
 		}
 
 		return $redirect_url;
+	}
+
+	/**
+	 * Returns the notification to use for the redirect URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Notification slug.
+	 */
+	private function get_notification_for_default_redirect_url() {
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+		// Only need to check the gathering data modal's dismissal status as it's dismissed when the with-tour variant is dismissed.
+		// If we want to suppress the Welcome modal for existing users who reconnect, we can add a migration to set the dismissed items
+		// for users who have the `wp_googlesitekitpersistent_initial_version` meta item set. Add a note about this to the phase 3
+		// design doc.
+		if ( $dismissed_items->is_dismissed( 'welcome-modal-gathering-data' ) ) {
+			return 'authentication_success';
+		}
+		return 'initial_setup_success';
 	}
 }

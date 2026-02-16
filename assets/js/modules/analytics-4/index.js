@@ -110,6 +110,7 @@ import {
 import DashboardMainEffectComponent from './components/DashboardMainEffectComponent';
 import { AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION } from './components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -158,6 +159,7 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import { isFeatureEnabled } from '@/js/features';
 
 export { registerStore } from './datastore';
@@ -868,21 +870,38 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: asyncRequireAll(
-			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			requireAudienceSegmentationSetupCompleted(),
-			asyncRequire( false, requireAudienceSegmentationWidgetHidden() ),
-			// Only show the notification to users who are authenticated or the module is shared with.
-			asyncRequireAny(
-				requireIsAuthenticated(),
-				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
-			),
-			// Only show if the current user is not the one who set up AS.
-			asyncRequire(
-				false,
-				requireAudienceSegmentationSetupCompletedByUser()
-			)
-		),
+		checkRequirements: ( registry ) => {
+			if (
+				isFeatureEnabled( 'setupFlowRefresh' ) &&
+				isInitialWelcomeModalActive()
+			) {
+				registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.dismissNotification(
+						AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+					);
+				return false;
+			}
+
+			return asyncRequireAll(
+				requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+				requireAudienceSegmentationSetupCompleted(),
+				asyncRequire(
+					false,
+					requireAudienceSegmentationWidgetHidden()
+				),
+				// Only show the notification to users who are authenticated or the module is shared with.
+				asyncRequireAny(
+					requireIsAuthenticated(),
+					requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
+				),
+				// Only show if the current user is not the one who set up AS.
+				asyncRequire(
+					false,
+					requireAudienceSegmentationSetupCompletedByUser()
+				)
+			)( registry );
+		},
 	},
 	[ ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS ]: {
 		Component: EnhancedConversionsNotification,
