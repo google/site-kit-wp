@@ -73,6 +73,21 @@ describe( 'core/user welcome modal', () => {
 						.isDataGatheringCompleteModalActive()
 				).toBe( false );
 			} );
+
+			it( 'should return false when both the gathering data and tour variants are dismissed', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedItems( [
+						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+						WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+					] );
+
+				expect(
+					registry
+						.select( CORE_USER )
+						.isDataGatheringCompleteModalActive()
+				).toBe( false );
+			} );
 		} );
 	} );
 } );
