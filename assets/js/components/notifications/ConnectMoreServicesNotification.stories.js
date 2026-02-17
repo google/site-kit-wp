@@ -1,5 +1,5 @@
 /**
- * ConnectMoreServices component stories.
+ * ConnectMoreServicesNotification component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
