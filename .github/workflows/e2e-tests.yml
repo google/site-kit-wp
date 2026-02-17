@@ -112,8 +112,8 @@ jobs:
       # E2E tests use a dedicated container, this is just for Composer.
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
-          tools: composer:2.1
+          php-version: 8.4
+          tools: composer:2.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

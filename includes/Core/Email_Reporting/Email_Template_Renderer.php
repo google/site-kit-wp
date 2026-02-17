@@ -51,7 +51,7 @@ class Email_Template_Renderer {
 	 *
 	 * @param Sections_Map|null $sections_map The sections map instance, or null for simple templates.
 	 */
-	public function __construct( Sections_Map $sections_map = null ) {
+	public function __construct( ?Sections_Map $sections_map = null ) {
 		$this->sections_map  = $sections_map;
 		$this->templates_dir = realpath( __DIR__ . '/templates' );
 	}

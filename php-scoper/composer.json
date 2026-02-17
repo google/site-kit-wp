@@ -1,15 +1,7 @@
 {
-    "require": {
-        "humbug/php-scoper": "^0.13.0"
-    },
-    "config": {
-      "platform": {
-        "php": "7.4"
-      },
-      "allow-plugins": {
-        "composer/package-versions-deprecated": true
-      }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+	"require": {
+		"humbug/php-scoper": "^0.18.8"
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }
