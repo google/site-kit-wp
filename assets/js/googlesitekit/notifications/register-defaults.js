@@ -87,9 +87,30 @@ import {
 	requireCanActivateModule,
 	requireModuleActive,
 	requireModuleGatheringData,
+	requireIsAuthenticatedUser,
 } from '@/js/googlesitekit/data-requirements';
+import ConnectMoreServices from '@/js/components/notifications/ConnectMoreServices';
 
 export const DEFAULT_NOTIFICATIONS = {
+	'connect-more-services-notification': {
+		Component: ConnectMoreServices,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.HEADER,
+		viewContext: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		featureFlag: 'setupFlowRefresh',
+		isDismissible: true,
+		checkRequirements: asyncRequireAll(
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_ANALYTICS_4 )
+			),
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+			),
+			requireIsAuthenticatedUser()
+		),
+	},
 	'activate-analytics-cta': {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
