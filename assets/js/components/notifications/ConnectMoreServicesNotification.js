@@ -1,5 +1,5 @@
 /**
- * ConnectMoreServices component.
+ * ConnectMoreServicesNotification component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -36,7 +36,7 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-function ConnectMoreServices( { id, Notification } ) {
+function ConnectMoreServicesNotification( { id, Notification } ) {
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: __(
@@ -102,9 +102,9 @@ function ConnectMoreServices( { id, Notification } ) {
 	);
 }
 
-ConnectMoreServices.propTypes = {
+ConnectMoreServicesNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };
 
-export default ConnectMoreServices;
+export default ConnectMoreServicesNotification;

@@ -89,11 +89,11 @@ import {
 	requireModuleGatheringData,
 	requireIsAuthenticatedUser,
 } from '@/js/googlesitekit/data-requirements';
-import ConnectMoreServices from '@/js/components/notifications/ConnectMoreServices';
+import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
 
 export const DEFAULT_NOTIFICATIONS = {
 	'connect-more-services-notification': {
-		Component: ConnectMoreServices,
+		Component: ConnectMoreServicesNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContext: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
