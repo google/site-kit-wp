@@ -47,7 +47,7 @@ class Plain_Text_Formatter {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $data The simple email data containing site, title, preheader, learn_more_url,
+	 * @param array $data The simple email data containing site, title, learn_more_url,
 	 *                    primary_call_to_action, body, and footer.
 	 * @return string Formatted plain text email.
 	 */

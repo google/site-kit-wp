@@ -280,7 +280,6 @@ class Plain_Text_FormatterTest extends TestCase {
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'preheader'              => 'admin@example.com invited you to receive periodic performance reports',
 			'body'                   => array(
 				'Receive the most important insights about your site\'s performance, key trends, and tailored metrics.',
 				'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.',
@@ -299,7 +298,6 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
-		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Simple email should contain preheader text.' );
 		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Simple email should contain first body paragraph.' );
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
 		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Simple email should contain Learn more link.' );
@@ -312,7 +310,6 @@ class Plain_Text_FormatterTest extends TestCase {
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'preheader'              => 'You have been invited to receive performance reports',
 			'body'                   => array(),
 			'learn_more_url'         => '',
 			'primary_call_to_action' => array(),
@@ -325,7 +322,6 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding even with missing data.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
-		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain preheader text.' );
 		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
 	}
 }
