@@ -121,6 +121,7 @@
 		"storybook",
 		"tests/backstop",
 		"tests/e2e",
-		"tests/js"
+		"tests/js",
+		"tests/playwright"
 	]
 }

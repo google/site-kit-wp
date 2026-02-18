@@ -1,0 +1,14 @@
+{
+	"scripts": {
+		"test": "playwright test --config=playwright.config.ts",
+		"test:ui": "npm run test --silent -- --ui",
+		"test:ui:debug": "npm run test:ui --silent -- --debug"
+	},
+	"dependencies": {
+		"@playwright/test": "^1.58.2",
+		"@wordpress/e2e-test-utils-playwright": "^1.39.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.19.11"
+	}
+}
