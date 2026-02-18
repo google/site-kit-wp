@@ -41,12 +41,15 @@ import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
+import { mockLocation } from 'tests/js/mock-browser-utils';
 
 const CONNECT_MORE_SERVICES_NOTIFICATION_SLUG =
 	'connect-more-services-notification';
 
 describe( 'ConnectMoreServicesNotification', () => {
 	let registry;
+
+	mockLocation();
 
 	const ConnectMoreServicesNotificationComponent =
 		withNotificationComponentProps(
@@ -68,20 +71,22 @@ describe( 'ConnectMoreServicesNotification', () => {
 				notification
 			);
 
-		// Stub data-available for modules to prevent unmatched POST warnings/errors.
-		fetchMock.reset();
 		fetchMock.post(
-			/\/google-site-kit\/v1\/modules\/analytics-4\/data\/data-available\?_locale=user/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+			),
 			{ body: { dataAvailable: true } }
 		);
+
 		fetchMock.post(
-			/\/google-site-kit\/v1\/modules\/search-console\/data\/data-available\?_locale=user/,
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/data-available'
+			),
 			{ body: { dataAvailable: true } }
 		);
 	} );
 
 	it( 'should render correctly', async () => {
-		// Provide that neither module is gathering data.
 		provideGatheringDataState( registry, {
 			[ MODULE_SLUG_ANALYTICS_4 ]: false,
 			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
@@ -162,7 +167,6 @@ describe( 'ConnectMoreServicesNotification', () => {
 			},
 		} );
 
-		// Provide a connect-more-services URL.
 		provideSiteInfo( registry, {
 			connectMoreServicesURL: 'https://example.com/connect',
 		} );
@@ -172,18 +176,13 @@ describe( 'ConnectMoreServicesNotification', () => {
 			{ registry }
 		);
 
-		// Mock location.assign to avoid jsdom navigation errors and assert redirect.
-		delete window.location;
-		window.location = { assign: jest.fn() };
-
 		fireEvent.click(
 			getByRole( 'button', { name: 'Connect more services' } )
 		);
 
 		await waitForRegistry();
 
-		// Verify navigation started to the settings URL for connecting more services.
-		expect( window.location.assign ).toHaveBeenCalledWith(
+		expect( global.location.assign ).toHaveBeenCalledWith(
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services'
 		);
 	} );
@@ -227,7 +226,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
 			} );
-			// Mark user unauthenticated.
+
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			const isActive = await notification.checkRequirements( registry );
@@ -239,7 +238,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
 			} );
-			// Mark user unauthenticated.
+
 			provideUserAuthentication( registry, { authenticated: false } );
 
 			const isActive = await notification.checkRequirements( registry );
