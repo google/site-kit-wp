@@ -96,8 +96,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: ConnectMoreServicesNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
-		viewContext: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		featureFlag: 'setupFlowRefresh',
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
 			asyncRequire(
@@ -110,6 +109,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			),
 			requireIsAuthenticatedUser()
 		),
+		featureFlag: 'setupFlowRefresh',
 	},
 	'activate-analytics-cta': {
 		Component: ActivateAnalyticsNotification,
