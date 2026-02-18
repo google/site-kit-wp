@@ -57,6 +57,8 @@ class Email_Assets {
 		'invitation-envelope-graphic'   => '2026-02-05-invitation-envelope-graphic.png',
 		// subscription-confirmation assets.
 		'subscription-envelope-graphic' => '2026-02-20-subscription-envelope-graphic.png',
+		// error-email assets.
+		'warning-icon'                  => '2026-02-20-warning-icon.png',
 	);
 
 	/**

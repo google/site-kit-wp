@@ -1,8 +1,8 @@
 <?php
 /**
- * Base template for the subscription-confirmation email.
+ * Base template for the error-email.
  *
- * This template is used to confirm when users subscribe to periodic performance reports.
+ * This template is used to notify users when email report generation fails.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
@@ -132,7 +132,7 @@ $render_shared_part = $data['render_shared_part'];
 							);
 							?>
 							<?php
-							// Render content (envelope, domain, title, body, CTA).
+							// Render content (warning icon, domain, title, body, CTA).
 							$render_part(
 								'content',
 								array(
