@@ -1,0 +1,19 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 0
+    treatPhpDocTypesAsCertain: false
+    inferPrivatePropertyTypeFromConstructor: true
+    paths:
+        - %currentWorkingDirectory%/google-site-kit.php
+        - %currentWorkingDirectory%/includes/
+    bootstrapFiles:
+        - %currentWorkingDirectory%/google-site-kit.php
+        - %currentWorkingDirectory%/includes/loader.php
+        - %currentWorkingDirectory%/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+        - %currentWorkingDirectory%/vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+    scanDirectories:
+        - %currentWorkingDirectory%/gtg
+        - %currentWorkingDirectory%/third-party
