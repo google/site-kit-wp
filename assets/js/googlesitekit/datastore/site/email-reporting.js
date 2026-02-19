@@ -89,7 +89,15 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 const fetchGetEligibleSubscribersStore = createFetchStore( {
 	baseName: 'getEligibleSubscribers',
 	controlCallback: () =>
-		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+		get(
+			'core',
+			'site',
+			'email-reporting-eligible-subscribers',
+			undefined,
+			{
+				useCache: false,
+			}
+		),
 	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
 		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
 	} ),
@@ -343,6 +351,7 @@ const baseSelectors = {
 				email: user.email,
 				role: user.role,
 				subscribed: user.subscribed,
+				invited: user.invited,
 			} ) );
 	} ),
 

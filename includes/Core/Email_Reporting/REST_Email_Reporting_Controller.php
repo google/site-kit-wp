@@ -381,6 +381,7 @@ class REST_Email_Reporting_Controller {
 			'email'       => $user->user_email,
 			'role'        => $this->get_primary_role( $user ),
 			'subscribed'  => is_array( $settings ) && ! empty( $settings['subscribed'] ),
+			'invited'     => $this->is_invite_rate_limited( $user->ID ),
 		);
 	}
 
@@ -514,7 +515,7 @@ class REST_Email_Reporting_Controller {
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
 			'primary_call_to_action' => array(
 				'label' => __( 'Get your report', 'google-site-kit' ),
-				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel=1' ),
 			),
 			'footer'                 => array(
 				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),

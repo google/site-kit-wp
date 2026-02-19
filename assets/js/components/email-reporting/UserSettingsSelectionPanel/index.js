@@ -202,6 +202,7 @@ export default function UserSettingsSelectionPanel() {
 				onUnsubscribe={ onUnsubscribe }
 				onNoticeDismiss={ onNoticeDismiss }
 				closePanel={ closePanel }
+				isOpen={ !! isOpen }
 			/>
 		</SelectionPanel>
 	);

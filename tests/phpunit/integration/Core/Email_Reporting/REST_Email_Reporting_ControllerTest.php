@@ -327,6 +327,54 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertSame( array(), $response->get_data(), 'No eligible users should return an empty array.' );
 	}
 
+	public function test_get_eligible_subscribers_includes_invited_field() {
+		$current_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$other_admin   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$this->set_user_access_token( $current_admin );
+		$this->set_user_access_token( $other_admin );
+		$this->unset_user_access_token( $this->primary_admin_id );
+
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		// Without rate limit transient, invited should be false.
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$other_admin_data = current(
+			array_filter(
+				$data,
+				function ( $user ) use ( $other_admin ) {
+					return (int) $user['id'] === $other_admin;
+				}
+			)
+		);
+
+		$this->assertFalse( $other_admin_data['invited'], 'User without rate limit transient should have invited=false.' );
+
+		// Set the rate limit transient for the other admin.
+		set_transient( REST_Email_Reporting_Controller::INVITE_RATE_LIMIT_TRANSIENT_KEY_PREFIX . $other_admin, time(), HOUR_IN_SECONDS );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$other_admin_data = current(
+			array_filter(
+				$data,
+				function ( $user ) use ( $other_admin ) {
+					return (int) $user['id'] === $other_admin;
+				}
+			)
+		);
+
+		$this->assertTrue( $other_admin_data['invited'], 'User with rate limit transient should have invited=true.' );
+	}
+
 	public function test_invite_user__permission_denied_for_non_admin() {
 		$non_admin = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $non_admin );
