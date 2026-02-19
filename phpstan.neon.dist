@@ -3,7 +3,7 @@ includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
 
 parameters:
-    level: 0
+    level: 1
     treatPhpDocTypesAsCertain: false
     inferPrivatePropertyTypeFromConstructor: true
     paths:
