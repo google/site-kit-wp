@@ -281,7 +281,7 @@ class Email_Template_Formatter {
 	 * Simple emails share the same structure (subject, preheader, site, CTA, footer)
 	 * but differ in their content. The $email_data array provides the variable content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $subject   Email subject line.
 	 * @param string $preheader Email preheader text.
@@ -446,7 +446,7 @@ class Email_Template_Formatter {
 	 * Returns a localized string describing when the user can expect their
 	 * first report based on their selected frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $frequency Frequency slug (weekly, monthly, quarterly).
 	 * @return string First report date label.
@@ -471,7 +471,7 @@ class Email_Template_Formatter {
 	 * Uses WordPress start_of_week setting to determine which day
 	 * of the week reports are sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "next Monday".
 	 */
@@ -495,7 +495,7 @@ class Email_Template_Formatter {
 	 * Quarters are: Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec).
 	 * Returns "1st of {month}" for the first month of the next quarter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "1st of April".
 	 */

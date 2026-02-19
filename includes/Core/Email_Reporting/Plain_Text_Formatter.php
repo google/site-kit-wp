@@ -46,7 +46,7 @@ class Plain_Text_Formatter {
 	 * Simple emails share a common structure with customizable content.
 	 * The preheader is used as the main message body in plain text format.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param array $data The simple email data containing site, preheader, learn_more_url,
 	 *                    primary_call_to_action, and footer.

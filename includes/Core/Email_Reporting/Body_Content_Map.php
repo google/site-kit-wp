@@ -19,14 +19,14 @@ namespace Google\Site_Kit\Core\Email_Reporting;
  * renderer preserves via wp_kses() and the plain text renderer
  * strips via wp_strip_all_tags().
  *
- * @since n.e.x.t
+ * @since 1.173.0
  */
 class Body_Content_Map {
 
 	/**
 	 * Gets the body content for a template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $template_name The template name.
 	 * @return array Array of body paragraphs (may contain HTML).
@@ -43,7 +43,7 @@ class Body_Content_Map {
 	 * Retrieves paragraphs for the given template and substitutes
 	 * any sprintf-style placeholders with the provided arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $args          Format arguments for vsprintf substitution.
@@ -67,7 +67,7 @@ class Body_Content_Map {
 	/**
 	 * Gets all template body content mappings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return array Mapping of template names to body paragraph arrays.
 	 */
