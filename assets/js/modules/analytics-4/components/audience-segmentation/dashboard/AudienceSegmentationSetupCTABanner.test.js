@@ -40,6 +40,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
@@ -264,6 +265,28 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setAudienceSegmentationSetupCompletedBy( 1 );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the user does not have access to the analytics module', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+					shareable: true,
+				},
+			] );
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideUserCapabilities( registry, {
+				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+			} );
 
 			const isActive = await notification.checkRequirements(
 				registry,

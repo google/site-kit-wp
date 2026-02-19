@@ -132,7 +132,14 @@ class Email_Report_Section_Builder {
 		$this->current_period_length = $this->calculate_period_length_from_date_range( $log_date_range );
 
 		try {
-			foreach ( $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) as $section_payload ) {
+			$section_payloads = $this->extract_sections_from_payloads( $module_slug, $raw_sections_payloads );
+
+			if ( is_wp_error( $section_payloads ) ) {
+				// Surface payload build failures directly so callers receive the original module error context.
+				return $section_payloads;
+			}
+
+			foreach ( $section_payloads as $section_payload ) {
 				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
 
 				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
@@ -339,7 +346,7 @@ class Email_Report_Section_Builder {
 	 *
 	 * @param string $module_slug Module slug.
 	 * @param array  $raw_sections_payloads Raw section payloads.
-	 * @return array[] Structured section payloads.
+	 * @return array[]|\WP_Error Structured section payloads, or WP_Error on module payload failure.
 	 */
 	protected function extract_sections_from_payloads( $module_slug, $raw_sections_payloads ) {
 		$sections = array();
@@ -361,6 +368,9 @@ class Email_Report_Section_Builder {
 			}
 
 			$module_sections = $this->build_module_section_payloads( $module_slug, $payload_group );
+			if ( is_wp_error( $module_sections ) ) {
+				return $module_sections;
+			}
 
 			foreach ( $module_sections as $section ) {
 				if ( $group_title ) {

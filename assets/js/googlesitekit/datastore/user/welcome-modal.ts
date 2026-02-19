@@ -30,7 +30,7 @@ export const selectors = {
 	/**
 	 * Determines whether the data gathering complete variant of the welcome modal is active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return {boolean} Whether the data gathering complete modal is active.
 	 */

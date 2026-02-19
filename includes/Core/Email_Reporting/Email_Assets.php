@@ -16,7 +16,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
  * Maps slug-based asset keys to their full CDN filenames.
  * Callers only need the slug; the class resolves the URL.
  *
- * @since n.e.x.t
+ * @since 1.173.0
  */
 class Email_Assets {
 
@@ -25,7 +25,7 @@ class Email_Assets {
 	 *
 	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var string
 	 */
 	const BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
@@ -36,7 +36,7 @@ class Email_Assets {
 	 * Maps asset slugs to their full CDN filenames.
 	 * Format: 'asset-slug' => 'YYYY-MM-DD-asset-slug.ext'
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var array
 	 */
 	const ASSETS = array(
@@ -57,12 +57,14 @@ class Email_Assets {
 		'invitation-envelope-graphic'   => '2026-02-05-invitation-envelope-graphic.png',
 		// subscription-confirmation assets.
 		'subscription-envelope-graphic' => '2026-02-20-subscription-envelope-graphic.png',
+		// error-email assets.
+		'warning-icon'                  => '2026-02-20-warning-icon.png',
 	);
 
 	/**
 	 * Gets the full CDN URL for an email asset by slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $slug The asset slug (e.g. 'site-kit-logo').
 	 * @return string The full URL to the asset, or empty string if not found.

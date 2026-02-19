@@ -34,7 +34,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Invite rate limit transient key prefix.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var string
 	 */
 	const INVITE_RATE_LIMIT_TRANSIENT_KEY_PREFIX = 'googlesitekit_email_reporting_invite_user_';
@@ -42,7 +42,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Invite rate limit window in seconds.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var int
 	 */
 	const INVITE_RATE_LIMIT_TTL = DAY_IN_SECONDS;
@@ -90,7 +90,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Email sender instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Email
 	 */
 	private $email_sender;
@@ -100,7 +100,7 @@ class REST_Email_Reporting_Controller {
 	 *
 	 * @since 1.162.0
 	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
-	 * @since n.e.x.t Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
+	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.
@@ -272,7 +272,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Sends an invitation email to a single eligible user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response|WP_Error
@@ -405,7 +405,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Determines whether a user is eligible to receive an invitation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool
@@ -420,7 +420,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Determines whether a user is already subscribed to email reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool
@@ -434,7 +434,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Determines whether an invite for the user is currently rate-limited.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool
@@ -446,7 +446,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the invite rate-limit transient key for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return string
@@ -458,7 +458,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Creates a standardized invite endpoint error response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $code    Error code.
 	 * @param string $message Error message.
@@ -479,7 +479,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Prepares invitation email template data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return array
 	 */
@@ -508,7 +508,8 @@ class REST_Email_Reporting_Controller {
 				'domain' => $site_domain,
 				'url'    => home_url( '/' ),
 			),
-			'body'                   => Body_Content_Map::get_body( 'invitation-email' ),
+			'title'                  => Content_Map::get_title( 'invitation-email' ),
+			'body'                   => Content_Map::get_body( 'invitation-email' ),
 			'inviter_email'          => $inviter_email,
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
 			'primary_call_to_action' => array(
@@ -524,7 +525,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the site domain including subdirectory context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string
 	 */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Email_Reporting\Body_Content_Map
+ * Class Google\Site_Kit\Core\Email_Reporting\Content_Map
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
@@ -11,22 +11,55 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 /**
- * Class for mapping email template body content.
+ * Class for mapping email template content (titles and body).
  *
- * Provides centralized body content for simple email templates,
+ * Provides centralized content for simple email templates,
  * used by both HTML and plain text renderers. Body paragraphs may
  * contain safe inline HTML (e.g. strong tags) which the HTML
  * renderer preserves via wp_kses() and the plain text renderer
  * strips via wp_strip_all_tags().
  *
- * @since n.e.x.t
+ * @since 1.173.0
  */
-class Body_Content_Map {
+class Content_Map {
+
+	/**
+	 * Gets the title for a template.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $template_name The template name.
+	 * @return string The title string (may contain sprintf placeholders).
+	 */
+	public static function get_title( $template_name ) {
+		$titles = self::get_all_titles();
+
+		return $titles[ $template_name ] ?? '';
+	}
+
+	/**
+	 * Gets title with format arguments applied.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $template_name The template name.
+	 * @param array  $args          Format arguments for sprintf substitution.
+	 * @return string The resolved title string.
+	 */
+	public static function get_title_with_args( $template_name, $args = array() ) {
+		$title = self::get_title( $template_name );
+
+		if ( empty( $args ) || empty( $title ) ) {
+			return $title;
+		}
+
+		return vsprintf( $title, $args );
+	}
 
 	/**
 	 * Gets the body content for a template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $template_name The template name.
 	 * @return array Array of body paragraphs (may contain HTML).
@@ -43,7 +76,7 @@ class Body_Content_Map {
 	 * Retrieves paragraphs for the given template and substitutes
 	 * any sprintf-style placeholders with the provided arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $args          Format arguments for vsprintf substitution.
@@ -65,9 +98,26 @@ class Body_Content_Map {
 	}
 
 	/**
-	 * Gets all template body content mappings.
+	 * Gets all template title mappings.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return array Mapping of template names to title strings.
+	 */
+	protected static function get_all_titles() {
+		return array(
+			/* translators: %s: Email address of the person who sent the invitation */
+			'invitation-email'          => __( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
+			'subscription-confirmation' => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
+			// Note: Error email titles can be overridden for specific error titles directly when calling Email_Template_Renderer::render().
+			'error-email'               => __( 'We’ve detected an issue with your Site Kit email reports', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets all template body content mappings.
+	 *
+	 * @since 1.173.0
 	 *
 	 * @return array Mapping of template names to body paragraph arrays.
 	 */
@@ -82,6 +132,9 @@ class Body_Content_Map {
 				/* translators: %1$s: frequency (e.g., "monthly") wrapped in strong tags, %2$s: first report date wrapped in strong tags */
 				__( 'You’ve successfully set your frequency to <strong>%1$s</strong>, and you can expect to receive your first report on <strong>%2$s</strong>.', 'google-site-kit' ),
 				__( 'You can manage your subscription settings or change the report frequency anytime in your Site Kit dashboard.', 'google-site-kit' ),
+			),
+			'error-email'               => array(
+				__( 'We were unable to generate your reports due to insufficient permissions. To fix this, contact your administrator or get help. Once the issue is resolved, report generation will resume automatically.', 'google-site-kit' ),
 			),
 		);
 	}

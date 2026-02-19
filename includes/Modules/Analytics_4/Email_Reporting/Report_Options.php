@@ -135,7 +135,7 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * Ensures conversion events are strings, de-duplicated, and non-empty.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string[] Normalized conversion events.
 	 */
@@ -207,7 +207,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options for a conversion event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $event_name Conversion event name.
 	 * @return array Report request options array.

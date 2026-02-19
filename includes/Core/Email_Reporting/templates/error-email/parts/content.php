@@ -1,9 +1,9 @@
 <?php
 /**
- * Content section for the subscription-confirmation email template.
+ * Content section for the error-email template.
  *
- * Renders the main card with envelope graphic at top, site domain,
- * title, body paragraphs, and CTA button confirming the subscription.
+ * Renders the main card with left-aligned warning icon, site domain,
+ * title, body paragraphs, and CTA button for getting help.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
@@ -19,16 +19,16 @@
  * @var callable $render_shared_part Function to render a shared part by name.
  */
 
-$envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
+$warning_icon_url = $get_asset_url( 'warning-icon' );
 ?>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tr>
 		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px;">
-			<?php /* Envelope illustration at top, centered. */ ?>
+			<?php /* Warning icon at top, left-aligned. */ ?>
 			<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<tr>
-					<td align="center" style="padding-bottom: 16px;">
-						<img src="<?php echo esc_url( $envelope_url ); ?>" alt="" width="177" height="143" style="display: block; max-width: 100%; height: auto;" />
+					<td align="left" style="padding-bottom: 16px;">
+						<img src="<?php echo esc_url( $warning_icon_url ); ?>" alt="" width="32" height="32" style="display: block;" />
 					</td>
 				</tr>
 			</table>
@@ -43,7 +43,13 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 				<?php echo esc_html( $title ); ?>
 			</h1>
 
-			<?php /* Body paragraphs from Content_Map. */ ?>
+			<?php
+			/*
+			 * Body paragraphs from Content_Map.
+			 * Uses wp_kses() for consistency with other simple templates
+			 * and to future-proof if HTML tags are added to content later.
+			 */
+			?>
 			<?php foreach ( $body as $paragraph ) : ?>
 			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
@@ -51,6 +57,7 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 			<?php endforeach; ?>
 
 			<?php /* CTA Button. */ ?>
+			<?php if ( ! empty( $cta['url'] ) ) : ?>
 			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
 				<tr>
 					<td>
@@ -59,13 +66,14 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 							'dashboard-link',
 							array(
 								'url'   => $cta['url'],
-								'label' => isset( $cta['label'] ) ? $cta['label'] : __( 'View dashboard', 'google-site-kit' ),
+								'label' => isset( $cta['label'] ) ? $cta['label'] : __( 'Get help', 'google-site-kit' ),
 							)
 						);
 						?>
 					</td>
 				</tr>
 			</table>
+			<?php endif; ?>
 		</td>
 	</tr>
 </table>

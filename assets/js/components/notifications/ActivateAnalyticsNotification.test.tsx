@@ -34,6 +34,7 @@ import {
 	fireEvent,
 } from '../../../../tests/js/test-utils';
 import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -44,11 +45,15 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { WEEK_IN_SECONDS } from '@/js/util';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import * as tracking from '@/js/util/tracking';
 import ActivateAnalyticsNotification from './ActivateAnalyticsNotification';
 
 jest.mock( '@/js/hooks/useActivateModuleCallback' );
 
-const ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG = 'activate-analytics-cta';
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG = 'activate-analytics-notification';
 
 describe( 'ActivateAnalyticsNotification', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -73,6 +78,10 @@ describe( 'ActivateAnalyticsNotification', () => {
 				ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
 				notification
 			);
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render correctly', async () => {
@@ -328,6 +337,12 @@ describe( 'ActivateAnalyticsNotification', () => {
 			}
 		);
 
+		let tooltip = registry
+			.select( CORE_UI )
+			.getValue( 'admin-screen-tooltip' );
+
+		expect( tooltip ).toBeUndefined();
+
 		fireEvent.click(
 			getByRole( 'button', {
 				name: 'Don’t show again',
@@ -336,15 +351,181 @@ describe( 'ActivateAnalyticsNotification', () => {
 
 		await waitForRegistry();
 
-		const tooltip = registry
-			.select( CORE_UI )
-			.getValue( 'admin-screen-tooltip' );
+		tooltip = registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' );
 
 		expect( tooltip ).toEqual( {
 			isTooltipVisible: true,
 			tooltipSlug: ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
 			title: 'You can always set up Analytics from Settings later',
 			dismissLabel: 'Got it',
+		} );
+	} );
+
+	describe( 'GA event tracking', () => {
+		const expectedCategory = `${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-notification`;
+
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue(
+					`notification/${ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG }/viewed`,
+					true
+				);
+		} );
+
+		it( 'should track the `view_notification` event when the notification is viewed', () => {
+			render( <ActivateAnalyticsNotificationComponent />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track the `confirm_notification` event when the "Set up Analytics" button is clicked', () => {
+			const activateAnalyticsMock = jest.fn();
+
+			mocked( useActivateModuleCallback ).mockImplementation(
+				() => activateAnalyticsMock
+			);
+
+			fetchMock.postOnce( dismissPromptEndpoint, {
+				body: {
+					[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+						expires: 0,
+						count: 1,
+					},
+				},
+			} );
+
+			const { getByRole } = render(
+				<ActivateAnalyticsNotificationComponent />,
+				{
+					registry,
+					viewContext: 'mainDashboard',
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Set up Analytics',
+				} )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				expectedCategory,
+				'confirm_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track the `dismiss_notification` event when the "Maybe later" button is clicked', async () => {
+			fetchMock.postOnce( dismissPromptEndpoint, {
+				body: {
+					[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+						expires: 2 * WEEK_IN_SECONDS,
+						count: 1,
+					},
+				},
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ActivateAnalyticsNotificationComponent />,
+				{
+					registry,
+					viewContext: 'mainDashboard',
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Maybe later',
+				} )
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				expectedCategory,
+				'dismiss_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track the `dismiss_notification` event when the "Don’t show again" button is clicked', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+					expires: 0,
+					count: 2,
+				},
+			} );
+
+			fetchMock.postOnce( dismissPromptEndpoint, {
+				body: {
+					[ ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG ]: {
+						expires: 2 * WEEK_IN_SECONDS,
+						count: 3,
+					},
+				},
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ActivateAnalyticsNotificationComponent />,
+				{
+					registry,
+					viewContext: 'mainDashboard',
+				}
+			);
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				'view_notification',
+				undefined,
+				undefined
+			);
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Don’t show again',
+				} )
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				expectedCategory,
+				'dismiss_notification',
+				undefined,
+				undefined
+			);
 		} );
 	} );
 
