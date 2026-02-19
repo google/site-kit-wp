@@ -120,4 +120,23 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
 	}
+
+	public function test_build_sections__returns_wp_error_for_search_console_error_payload() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$builder = new Email_Report_Section_Builder( $context );
+
+		$payloads = array(
+			array(
+				'total_clicks' => new \WP_Error(
+					'email_report_search_console_missing_result',
+					'Search Console data could not be retrieved.'
+				),
+			),
+		);
+
+		$sections = $builder->build_sections( 'search-console', $payloads, 'en_US' );
+
+		$this->assertWPError( $sections, 'Search Console errors should be propagated as WP_Error.' );
+		$this->assertSame( 'email_report_search_console_missing_result', $sections->get_error_code(), 'Expected original Search Console error code to be preserved.' );
+	}
 }
