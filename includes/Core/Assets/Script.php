@@ -70,6 +70,7 @@ class Script extends Asset {
 
 		if ( $src ) {
 			$entry = Manifest::get( $this->handle );
+			list( $filename, $hash ) = array( null, null );
 
 			if ( is_array( $entry[0] ) ) {
 				// If the first entry item is an array, we can assume `$entry` is an array of entries in the format filename => hash.
