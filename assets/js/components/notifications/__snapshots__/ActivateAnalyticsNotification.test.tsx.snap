@@ -3,7 +3,7 @@
 exports[`ActivateAnalyticsNotification should render correctly 1`] = `
 <div>
   <section
-    id="activate-analytics-cta"
+    id="activate-analytics-notification"
   >
     <div
       class="googlesitekit-banner-notification googlesitekit-banner-notification--info"
@@ -77,7 +77,7 @@ exports[`ActivateAnalyticsNotification should render correctly 1`] = `
 exports[`ActivateAnalyticsNotification should render with a "Don’t show again" button when the notification has been dismissed twice 1`] = `
 <div>
   <section
-    id="activate-analytics-cta"
+    id="activate-analytics-notification"
   >
     <div
       class="googlesitekit-banner-notification googlesitekit-banner-notification--info"
