@@ -152,6 +152,17 @@ export default function WelcomeModal() {
 		}
 	}, [ closeAndDismissModal, modalVariant, showTooltip ] );
 
+	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	);
+
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return null;
+	}
+
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
 		return null;
