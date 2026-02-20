@@ -22,6 +22,7 @@
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import PermissionsErrorNotice from '@/js/components/email-reporting/notices/errors/PermissionsErrorNotice';
 import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
@@ -52,6 +53,12 @@ export default function EmailReportingErrorNotices() {
 	}
 
 	switch ( latestEmailReportingError?.category ) {
+		case 'permissions_error':
+			return (
+				<PermissionsErrorNotice
+					moduleSlug={ latestEmailReportingError.module_slug }
+				/>
+			);
 		case 'sending_error':
 			return <SendingErrorNotice />;
 		default:
