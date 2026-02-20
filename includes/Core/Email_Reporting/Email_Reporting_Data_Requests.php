@@ -249,7 +249,7 @@ class Email_Reporting_Data_Requests {
 				$shared_payload = $shared_payloads[ $slug ];
 
 				if ( is_wp_error( $shared_payload ) ) {
-					return $shared_payload;
+					return $this->categorize_error( $shared_payload, $slug );
 				}
 
 				if ( ! empty( $shared_payload ) ) {
@@ -268,7 +268,7 @@ class Email_Reporting_Data_Requests {
 			}
 
 			if ( is_wp_error( $result ) ) {
-				return $result;
+				return $this->categorize_error( $result, $slug );
 			}
 
 			if ( empty( $result ) ) {
