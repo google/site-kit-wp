@@ -37,6 +37,20 @@ use WP_User;
  */
 class Email_Reporting_Data_Requests {
 
+	const PERMISSIONS_ERROR_STATUSES = array( 401, 403 );
+
+	const PERMISSIONS_ERROR_REASONS = array(
+		'unauthorized',
+		'authError',
+		'expired',
+		'required',
+		'forbidden',
+		'insufficientPermissions',
+		'accountDeleted',
+		'accountDisabled',
+		'accessNotConfigured',
+	);
+
 	/**
 	 * Modules instance.
 	 *
