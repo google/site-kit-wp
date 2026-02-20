@@ -55,6 +55,8 @@ describe( 'Actions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash';
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
@@ -266,6 +268,32 @@ describe( 'Actions', () => {
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should preserve the panel query parameter when navigating to the dashboard', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&panel=email-reporting';
+
+			const { getByRole, waitForRegistry } = render(
+				<Actions { ...actionsProps } />,
+				{
+					viewContext: VIEW_CONTEXT_SPLASH,
+					registry,
+				}
+			);
+
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Skip sign-in and view limited dashboard',
+				} )
+			);
+
+			await waitForRegistry();
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting'
 			);
 			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
 		} );
