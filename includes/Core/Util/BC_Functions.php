@@ -18,6 +18,10 @@ use BadMethodCallException;
  * @since 1.7.0
  * @access private
  * @ignore
+ *
+ * @method static void wp_print_script_tag( $attributes )
+ * @method static void wp_print_inline_script_tag( $javascript, $attributes = array() )
+ * @method static bool array_is_list( array $value )
  */
 class BC_Functions {
 

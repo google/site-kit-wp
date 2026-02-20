@@ -521,7 +521,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			 *
 			 * @param array $args Optional arguments to customize button attributes.
 			 */
-			do_action( 'googlesitekit_render_sign_in_with_google_button' );
+			do_action( 'googlesitekit_render_sign_in_with_google_button', array() );
 			$content .= ob_get_clean();
 		}
 		return $content;
