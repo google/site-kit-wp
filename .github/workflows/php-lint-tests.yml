@@ -10,8 +10,10 @@ on:
       - '.github/workflows/php-lint-tests.yml'
       - 'includes/**'
       - 'tests/phpunit/**'
+      - 'tests/phpstan/**'
       - '**.php'
       - 'phpcs.xml*'
+      - 'phpstan.neon.*'
       - 'phpunit*.xml*'
       - composer.json
       - composer.lock
@@ -29,9 +31,11 @@ on:
     paths:
       - '.github/workflows/php-lint-tests.yml'
       - includes/**
-      - tests/phpunit/**
+      - 'tests/phpunit/**'
+      - 'tests/phpstan/**'
       - '**.php'
       - 'phpcs.xml*'
+      - 'phpstan.neon.*'
       - 'phpunit*.xml*'
       - composer.json
       - composer.lock
@@ -53,7 +57,7 @@ jobs:
   php-lint:
     name: PHP Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
 
@@ -79,6 +83,37 @@ jobs:
         run: composer install --no-interaction --no-progress
       - name: PHP Lint
         run: composer lint
+
+  php-static-analysis:
+    name: PHP Static Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress
+      - name: Run Analysis
+        run: composer analyze
+
   php-tests:
     name: PHP Tests (PHP ${{ matrix.php_version }}, WordPress ${{ matrix.wp_version }}${{ matrix.wp_multisite && ', Multisite' }})
     runs-on: ubuntu-latest
