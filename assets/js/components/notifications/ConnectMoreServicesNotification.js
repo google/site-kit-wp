@@ -66,7 +66,7 @@ function ConnectMoreServicesNotification( { id, Notification } ) {
 			<BannerNotification
 				notificationID={ id }
 				title={ __(
-					"Boost your site's performance by enhancing your dashboard",
+					'Boost your site’s performance by enhancing your dashboard',
 					'google-site-kit'
 				) }
 				description={ __(

@@ -42,6 +42,8 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
 import { mockLocation } from 'tests/js/mock-browser-utils';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 
 const CONNECT_MORE_SERVICES_NOTIFICATION_SLUG =
 	'connect-more-services-notification';
@@ -70,125 +72,141 @@ describe( 'ConnectMoreServicesNotification', () => {
 				CONNECT_MORE_SERVICES_NOTIFICATION_SLUG,
 				notification
 			);
-
-		fetchMock.post(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-			),
-			{ body: { dataAvailable: true } }
-		);
-
-		fetchMock.post(
-			new RegExp(
-				'^/google-site-kit/v1/modules/search-console/data/data-available'
-			),
-			{ body: { dataAvailable: true } }
-		);
 	} );
 
-	it( 'should render correctly', async () => {
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+	describe( 'component behaviour', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsDataAvailableOnLoad( true );
 		} );
 
-		const { container, getByRole, getByText, waitForRegistry } = render(
-			<ConnectMoreServicesNotificationComponent />,
-			{ registry }
-		);
+		it( 'should render correctly', () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
 
-		await waitForRegistry();
+			const { container, getByRole, getByText } = render(
+				<ConnectMoreServicesNotificationComponent />,
+				{ registry }
+			);
 
-		expect( container ).toMatchSnapshot();
+			expect( container ).toMatchSnapshot();
 
-		expect(
-			getByText(
-				"Boost your site's performance by enhancing your dashboard"
-			)
-		).toBeInTheDocument();
+			// Accept both straight and curly apostrophe for robustness.
+			expect(
+				getByText(
+					( content ) =>
+						content.includes(
+							"Boost your site's performance by enhancing your dashboard"
+						) ||
+						content.includes(
+							'Boost your site’s performance by enhancing your dashboard'
+						)
+				)
+			).toBeInTheDocument();
 
-		expect(
-			getByRole( 'button', { name: 'Connect more services' } )
-		).toBeInTheDocument();
+			expect(
+				getByRole( 'button', { name: 'Connect more services' } )
+			).toBeInTheDocument();
 
-		expect(
-			getByRole( 'button', { name: 'Maybe later' } )
-		).toBeInTheDocument();
-	} );
-
-	it( 'should show a tooltip when the "Maybe later" button is clicked', async () => {
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			expect(
+				getByRole( 'button', { name: 'Maybe later' } )
+			).toBeInTheDocument();
 		} );
 
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: {
-				[ CONNECT_MORE_SERVICES_NOTIFICATION_SLUG ]: {
-					expires: 0,
-					count: 1,
+		it( 'should show a tooltip when the "Maybe later" button is clicked', () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: {
+					[ CONNECT_MORE_SERVICES_NOTIFICATION_SLUG ]: {
+						expires: 0,
+						count: 1,
+					},
 				},
-			},
+			} );
+
+			const { getByRole } = render(
+				<ConnectMoreServicesNotificationComponent />,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			const tooltip = registry
+				.select( CORE_UI )
+				.getValue( 'admin-screen-tooltip' );
+
+			expect( tooltip ).toEqual( {
+				isTooltipVisible: true,
+				tooltipSlug: CONNECT_MORE_SERVICES_NOTIFICATION_SLUG,
+				title: 'You can always set up additional services from Settings later',
+				dismissLabel: 'Got it',
+			} );
 		} );
 
-		const { getByRole, waitForRegistry } = render(
-			<ConnectMoreServicesNotificationComponent />,
-			{ registry }
-		);
+		it( 'should redirect to the "connect more services" URL dismiss the notification dismissed when the "Connect more services" button is clicked.', async () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
 
-		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
-
-		await waitForRegistry();
-
-		const tooltip = registry
-			.select( CORE_UI )
-			.getValue( 'admin-screen-tooltip' );
-
-		expect( tooltip ).toEqual( {
-			isTooltipVisible: true,
-			tooltipSlug: CONNECT_MORE_SERVICES_NOTIFICATION_SLUG,
-			title: 'You can always set up additional services from Settings later',
-			dismissLabel: 'Got it',
-		} );
-	} );
-
-	it( 'Should redirect to connect more services url and notification is dismissed when "Connect more services" button is clicked.', async () => {
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		fetchMock.postOnce( dismissItemEndpoint, {
-			body: {
-				[ CONNECT_MORE_SERVICES_NOTIFICATION_SLUG ]: {
-					expires: 0,
-					count: 1,
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: {
+					[ CONNECT_MORE_SERVICES_NOTIFICATION_SLUG ]: {
+						expires: 0,
+						count: 1,
+					},
 				},
-			},
+			} );
+
+			provideSiteInfo( registry, {
+				connectMoreServicesURL: 'https://example.com/connect',
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<ConnectMoreServicesNotificationComponent />,
+				{ registry }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Connect more services' } )
+			);
+
+			await waitForRegistry();
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services'
+			);
 		} );
-
-		provideSiteInfo( registry, {
-			connectMoreServicesURL: 'https://example.com/connect',
-		} );
-
-		const { getByRole, waitForRegistry } = render(
-			<ConnectMoreServicesNotificationComponent />,
-			{ registry }
-		);
-
-		fireEvent.click(
-			getByRole( 'button', { name: 'Connect more services' } )
-		);
-
-		await waitForRegistry();
-
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services'
-		);
 	} );
 
 	describe( 'checkRequirements', () => {
-		it( 'Is active when Analytics and Search console modules are not in gather data state and user is authenticated', async () => {
+		beforeEach( () => {
+			fetchMock.post(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+				),
+				{ body: { dataAvailable: false } }
+			);
+
+			fetchMock.post(
+				new RegExp(
+					'^/google-site-kit/v1/modules/search-console/data/data-available'
+				),
+				{ body: { dataAvailable: false } }
+			);
+		} );
+
+		it( 'is active when the Search Console and Analytics modules are not in the gathering data state and the user is authenticated', async () => {
 			provideGatheringDataState( registry, {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
@@ -199,32 +217,49 @@ describe( 'ConnectMoreServicesNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'Is not active when Search console module is in gathering data state and Analytics module is not in gathering data state and user is authenticated', async () => {
+		it( 'Is not active when Search console module is not in gathering data state and the Analytics module is in the gathering data state and user is authenticated', async () => {
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
 			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-			} );
-			provideUserAuthentication( registry );
-
-			const isActive = await notification.checkRequirements( registry );
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'Is not active when Search console module is in gathering data state (regardless of Analytics) and user is authenticated', async () => {
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-			} );
-			provideUserAuthentication( registry );
-
-			const isActive = await notification.checkRequirements( registry );
-			expect( isActive ).toBe( false );
-		} );
-
-		it( 'Is not active when Analytics and search console modules are not in gathering data state and user is not authenticated', async () => {
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+			provideUserAuthentication( registry );
+
+			const isActive = await notification.checkRequirements( registry );
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the Search Console module is not in the gathering data state and the Analytics module is in the gathering data state and the user is not authenticated', async () => {
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+			} );
+			provideUserAuthentication( registry, { authenticated: false } );
+
+			const isActive = await notification.checkRequirements( registry );
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the Search Console module is in the gathering data state and the Analytics module is not in the gathering data state and the user is authenticated', async () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+			} );
+			provideUserAuthentication( registry );
+
+			const isActive = await notification.checkRequirements( registry );
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active when the Search Console and Analytics modules are not in the gathering data state and the user is not authenticated', async () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 			} );
 
 			provideUserAuthentication( registry, { authenticated: false } );

@@ -35,5 +35,5 @@ Default.storyName = 'ConnectMoreServicesNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Components/Notifications/Banners/ConnectMoreServices',
+	title: 'Components/Notifications/Banners/ConnectMoreServicesNotification',
 };

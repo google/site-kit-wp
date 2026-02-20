@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ConnectMoreServicesNotification should render correctly 1`] = `
+exports[`ConnectMoreServicesNotification component behaviour should render correctly 1`] = `
 <div>
   <section
     id="connect-more-services-notification"
@@ -26,7 +26,7 @@ exports[`ConnectMoreServicesNotification should render correctly 1`] = `
                 <p
                   class="googlesitekit-banner__title"
                 >
-                  Boost your site's performance by enhancing your dashboard
+                  Boost your site’s performance by enhancing your dashboard
                 </p>
                 <div
                   class="googlesitekit-banner__description"
