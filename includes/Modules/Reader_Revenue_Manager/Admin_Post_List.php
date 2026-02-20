@@ -74,13 +74,7 @@ class Admin_Post_List {
 			);
 		}
 
-		add_action(
-			'bulk_edit_custom_box',
-			array( $this, 'bulk_edit_field' ),
-			10,
-			2
-		);
-
+		add_action( 'bulk_edit_custom_box', array( $this, 'bulk_edit_field' ) );
 		add_action( 'save_post', array( $this, 'save_field' ) );
 	}
 

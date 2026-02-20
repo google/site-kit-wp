@@ -380,7 +380,7 @@ const REST_ROOT = 'google-site-kit/v1';
 
 ## Option and Setting Names
 
-### Pattern: googlesitekit_{category}_{name}
+### Pattern: googlesitekit*{category}*{name}
 
 ```php
 // Core options
@@ -550,13 +550,13 @@ private $context;
 
 ### \@since Tag Convention
 
-For all new code (classes, methods, properties, constants), use `\@since n.e.x.t` as a placeholder.
+For all new code (classes, methods, properties, constants), use `\@since 1.173.0` as a placeholder.
 
 ```php
 /**
  * New method added in development.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  *
  * \@param string $param Parameter description.
  * \@return bool True on success, false otherwise.
@@ -568,7 +568,7 @@ public function new_method( $param ) {
 /**
  * New class added in development.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  */
 final class New_Feature {
 ```
@@ -577,13 +577,13 @@ final class New_Feature {
 /**
  * New property added in development.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  * \@var string
  */
 private $new_property;
 ```
 
-The `n.e.x.t` placeholder will be automatically replaced with the actual version number when a new version is released. This ensures consistent version tracking without needing to know the exact release version during development.
+The `1.173.0` placeholder will be automatically replaced with the actual version number when a new version is released. This ensures consistent version tracking without needing to know the exact release version during development.
 
 ## Best Practices Summary
 

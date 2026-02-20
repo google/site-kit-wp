@@ -38,7 +38,7 @@ class Email_Reporting_Site_Health {
 	/**
 	 * Subscribed users query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Subscribed_Users_Query
 	 */
 	private $subscribed_users_query;

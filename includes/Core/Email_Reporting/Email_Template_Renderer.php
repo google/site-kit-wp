@@ -47,7 +47,7 @@ class Email_Template_Renderer {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Sections map is now optional for templates that don't use sections.
+	 * @since 1.173.0 Sections map is now optional for templates that don't use sections.
 	 *
 	 * @param Sections_Map|null $sections_map The sections map instance, or null for simple templates.
 	 */
@@ -150,7 +150,7 @@ class Email_Template_Renderer {
 	 * Plain_Text_Formatter for formatting.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added support for simple email templates.
+	 * @since 1.173.0 Added support for simple email templates.
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $data          The data to render (metadata like subject, preheader, etc.).

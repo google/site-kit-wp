@@ -34,7 +34,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import HelpIcon from '@/svg/icons/help.svg';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import { trackEvent } from '@/js/util';
 import HelpMenuLink from './HelpMenuLink';
@@ -47,6 +46,8 @@ import FeedbackIcon from '@/svg/icons/feedback.svg';
 import CompassIcon from '@/svg/icons/compass.svg';
 import SupportIcon from '@/svg/icons/support.svg';
 import DocumentationIcon from '@/svg/icons/documentation.svg';
+import HelpIcon from '@/svg/icons/help.svg';
+import AdsenseHelpIcon from '@/svg/icons/adsense-help.svg';
 import classnames from 'classnames';
 
 export default function HelpMenu( { children } ) {
@@ -133,6 +134,18 @@ export default function HelpMenu( { children } ) {
 			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
 			children: __( 'Send feedback', 'google-site-kit' ),
 		},
+		...( adSenseModuleActive
+			? [
+					{
+						href: 'https://support.google.com/adsense/',
+						icon: <AdsenseHelpIcon width={ 24 } height={ 24 } />,
+						children: __(
+							'Get help with AdSense',
+							'google-site-kit'
+						),
+					},
+			  ]
+			: [] ),
 	];
 
 	return (
