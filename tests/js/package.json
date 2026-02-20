@@ -5,7 +5,9 @@
 		"test:js:watch": "npm run test:js -- --watch"
 	},
 	"dependencies": {
-		"@wordpress/element": "^2.20.3",
+		"@wordpress/compose": "^7.37.0",
+		"@wordpress/data": "^10.39.0",
+		"@wordpress/element": "^6.37.0",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12"
 	},
@@ -13,10 +15,8 @@
 		"@babel/preset-env": "^7.27.2",
 		"@jackfranklin/test-data-bot": "^2.0.0",
 		"@shopify/jest-dom-mocks": "^4.0.2",
-		"@testing-library/jest-dom": "^6.9.1",
-		"@testing-library/react": "^16.3.1",
-		"@testing-library/react-hooks": "^7.0.0",
 		"@wordpress/babel-preset-default": "^8.23.0",
+		"@wordpress/jest-console": "^8.39.0",
 		"@wordpress/jest-preset-default": "^12.23.0",
 		"babel-jest": "^29.7.0",
 		"cross-env": "^7.0.3",
@@ -26,7 +26,7 @@
 		"jest-environment-jsdom": "^29.7.0",
 		"jest-localstorage-mock": "^2.4.2",
 		"jsdom": "^26.1.0",
-		"react": "^18.3.1",
-		"react-test-renderer": "^18.3.1"
+		"react-test-renderer": "18.2.0",
+		"redux": "^5.0.1"
 	}
 }

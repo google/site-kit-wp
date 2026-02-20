@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,11 +39,12 @@ domReady( async () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
 
 	if ( renderTarget ) {
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ VIEW_CONTEXT_SPLASH }>
 				<DashboardSplashApp />
-			</Root>,
-			renderTarget
+			</Root>
 		);
 	}
 } );

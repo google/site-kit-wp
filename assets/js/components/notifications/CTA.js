@@ -30,16 +30,16 @@ import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 
 function CTA( {
-	title,
-	headerText,
-	headerContent,
-	description,
-	ctaLink,
-	ctaLabel,
+	title = '',
+	headerText = '',
+	headerContent = '',
+	description = '',
+	ctaLink = '',
+	ctaLabel = '',
+	ctaType = 'link',
+	error = false,
+	onClick = () => {},
 	ctaLinkExternal,
-	ctaType,
-	error,
-	onClick,
 	'aria-label': ariaLabel,
 	children,
 } ) {
@@ -125,18 +125,6 @@ CTA.propTypes = {
 	onClick: PropTypes.func,
 	children: PropTypes.node,
 	headerContent: PropTypes.node,
-};
-
-CTA.defaultProps = {
-	title: '',
-	headerText: '',
-	headerContent: '',
-	description: '',
-	ctaLink: '',
-	ctaLabel: '',
-	ctaType: 'link',
-	error: false,
-	onClick: () => {},
 };
 
 export default CTA;

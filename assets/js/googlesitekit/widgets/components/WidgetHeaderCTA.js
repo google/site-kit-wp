@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import Link from '@/js/components/Link';
 
-function WidgetHeaderCTA( { href, label, external } ) {
+function WidgetHeaderCTA( { href = '', label, external = true } ) {
 	return (
 		<div className="googlesitekit-widget__header--cta">
 			<Link href={ href } external={ external }>
@@ -40,11 +40,6 @@ WidgetHeaderCTA.propTypes = {
 	href: PropTypes.string,
 	label: PropTypes.string.isRequired,
 	external: PropTypes.bool,
-};
-
-WidgetHeaderCTA.defaultProps = {
-	href: '',
-	external: true,
 };
 
 export default WidgetHeaderCTA;

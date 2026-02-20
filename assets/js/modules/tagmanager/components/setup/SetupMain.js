@@ -41,7 +41,7 @@ import useExistingTagEffect from '@/js/modules/tagmanager/hooks/useExistingTagEf
 import { AccountCreate } from '@/js/modules/tagmanager/components/common';
 import Typography from '@/js/components/Typography';
 
-export default function SetupMain( { finishSetup } ) {
+export default function SetupMain( { finishSetup = () => {} } ) {
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccounts()
 	);
@@ -95,8 +95,4 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupMain.defaultProps = {
-	finishSetup: () => {},
 };

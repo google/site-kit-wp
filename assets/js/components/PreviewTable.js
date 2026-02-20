@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import PreviewBlock from './PreviewBlock';
 
-function PreviewTable( { rows, rowHeight, padding } ) {
+function PreviewTable( { rows = 11, rowHeight = 35, padding = false } ) {
 	const rowData = [];
 	for ( let x = 0; rows > x; x++ ) {
 		rowData.push(
@@ -55,12 +55,6 @@ PreviewTable.propTypes = {
 	rows: PropTypes.number,
 	rowHeight: PropTypes.number,
 	padding: PropTypes.bool,
-};
-
-PreviewTable.defaultProps = {
-	rows: 11,
-	rowHeight: 35,
-	padding: false,
 };
 
 export default PreviewTable;

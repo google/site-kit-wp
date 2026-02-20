@@ -30,16 +30,16 @@ import {
 } from '@/js/hooks/useBreakpoint';
 
 export default function ProgressBar( {
-	className,
-	small,
-	compress,
-	indeterminate,
-	height,
+	className = '',
+	small = false,
+	compress = false,
+	indeterminate = true,
+	height = 4,
 	verticalSpacing,
 	mobileVerticalSpacing,
 	tabletVerticalSpacing,
 	desktopVerticalSpacing,
-	progress,
+	progress = 0,
 } ) {
 	const breakpoint = useBreakpoint();
 
@@ -114,13 +114,4 @@ ProgressBar.propTypes = {
 	mobileVerticalSpacing: PropTypes.number,
 	tabletVerticalSpacing: PropTypes.number,
 	desktopVerticalSpacing: PropTypes.number,
-};
-
-ProgressBar.defaultProps = {
-	className: '',
-	small: false,
-	compress: false,
-	indeterminate: true,
-	progress: 0,
-	height: 4,
 };

@@ -49,7 +49,7 @@ import SettingsGroup from '@/js/components/settings/SettingsGroup';
 import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
 import { useFeature } from '@/js/hooks/useFeature';
 
-export default function SettingsForm( { hasModuleAccess } ) {
+export default function SettingsForm( { hasModuleAccess = true } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 
 	const module = useSelect( ( select ) =>
@@ -121,8 +121,4 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 SettingsForm.propTypes = {
 	hasModuleAccess: PropTypes.bool,
-};
-
-SettingsForm.defaultProps = {
-	hasModuleAccess: true,
 };

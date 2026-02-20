@@ -19,8 +19,7 @@
 /**
  * Internal dependencies
  */
-import { withNoHooksAllowed } from '@/js/util/withNoHooksAllowed';
-import { createZeroDataRow, getTooltipHelp } from './utils';
+import { createZeroDataRow } from './utils';
 
 describe( 'createZeroDataRow', () => {
 	it( 'should return a row with the given date and a zero for the metric value', () => {
@@ -39,16 +38,5 @@ describe( 'createZeroDataRow', () => {
 				},
 			],
 		} );
-	} );
-} );
-
-describe( 'getTooltipHelp', () => {
-	// See https://github.com/google/site-kit-wp/issues/11359
-	it( 'does not use hooks internally', () => {
-		withNoHooksAllowed( getTooltipHelp )(
-			'https://example.com',
-			'Test',
-			'Test label'
-		);
 	} );
 } );

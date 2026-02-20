@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import UpArrow from '@/svg/icons/arrow-up.svg';
 import Typography from './Typography';
 
-export default function PreviewGraph( { title, GraphSVG, showIcons } ) {
+export default function PreviewGraph( { title, GraphSVG, showIcons = true } ) {
 	return (
 		<div className="googlesitekit-analytics-cta__preview-graph">
 			<Typography
@@ -55,8 +55,4 @@ PreviewGraph.propTypes = {
 	title: PropTypes.string.isRequired,
 	GraphSVG: PropTypes.elementType.isRequired,
 	showIcons: PropTypes.bool,
-};
-
-PreviewGraph.defaultProps = {
-	showIcons: true,
 };

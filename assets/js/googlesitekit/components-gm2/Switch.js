@@ -34,7 +34,13 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { MDCSwitch } from '@/js/material-components';
 
-function Switch( { onClick, label, checked, disabled, hideLabel } ) {
+function Switch( {
+	onClick,
+	label,
+	checked = false,
+	disabled = false,
+	hideLabel = true,
+} ) {
 	const instanceID = useInstanceId( Switch );
 	const switchRef = useCallback( ( el ) => {
 		if ( el !== null ) {
@@ -99,12 +105,6 @@ Switch.propTypes = {
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	hideLabel: PropTypes.bool,
-};
-
-Switch.defaultProps = {
-	checked: false,
-	disabled: false,
-	hideLabel: true,
 };
 
 export default Switch;

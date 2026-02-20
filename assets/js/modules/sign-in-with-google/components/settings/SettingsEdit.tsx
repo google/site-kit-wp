@@ -25,19 +25,17 @@ import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/da
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {
-	const isDoingSubmitChanges: boolean = useSelect(
-		( select: unknown ) =>
-			// Selectors are not typed yet, and `useSelect` calls have no types
-			// until we upgrade our version of `wp-data`.
-			//
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			( select as any )(
-				MODULES_SIGN_IN_WITH_GOOGLE
-			).isDoingSubmitChanges() as boolean
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		(
+			select( MODULES_SIGN_IN_WITH_GOOGLE ) as {
+				isDoingSubmitChanges: () => boolean;
+			}
+		 ).isDoingSubmitChanges()
 	);
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--sign-in-with-google">
+			{ /* @ts-expect-error - `ProgressBar` is not yet typed. */ }
 			{ isDoingSubmitChanges ? <ProgressBar /> : <SettingsForm /> }
 		</div>
 	);

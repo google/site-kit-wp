@@ -46,8 +46,8 @@ const Menu = forwardRef(
 			className,
 			menuOpen,
 			menuItems,
-			onSelected,
-			nonInteractive,
+			onSelected = () => {},
+			nonInteractive = false,
 			id,
 		},
 		ref
@@ -145,11 +145,6 @@ Menu.propTypes = {
 	id: PropTypes.string.isRequired,
 	onSelected: PropTypes.func,
 	nonInteractive: PropTypes.bool,
-};
-
-Menu.defaultProps = {
-	onSelected: () => {},
-	nonInteractive: false,
 };
 
 export default Menu;

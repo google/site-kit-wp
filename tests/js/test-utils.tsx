@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { Dispatch, FC, ReactElement, SetStateAction } from 'react';
+import { Dispatch, FC, ReactElement, ReactNode, SetStateAction } from 'react';
 import { render, act, RenderResult } from '@testing-library/react';
 import {
 	renderHook,
@@ -16,7 +16,6 @@ import { createMemoryHistory } from 'history';
 /**
  * WordPress dependencies
  */
-// @ts-expect-error - No types available.
 import { RegistryProvider } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
@@ -102,7 +101,7 @@ function customRender(
 		history.push( route );
 	}
 
-	const Wrapper: FC = ( { children } ) => {
+	const Wrapper: FC< { children: ReactNode } > = ( { children } ) => {
 		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
 		setInView = setInViewStateValue;
 
@@ -210,7 +209,7 @@ function customRenderHook< Props, Result >(
 
 	let setInView: Dispatch< SetStateAction< boolean > > | undefined;
 
-	const Wrapper: FC = ( { children } ) => {
+	const Wrapper: FC< { children: ReactNode } > = ( { children } ) => {
 		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
 		setInView = setInViewStateValue;
 
@@ -244,7 +243,10 @@ function customRenderHook< Props, Result >(
 	const waitForRegistry = createWaitForRegistry( registry );
 
 	return {
-		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),
+		...renderHook< unknown, unknown >( callback, {
+			wrapper: Wrapper,
+			...renderHookOptions,
+		} ),
 		// @ts-expect-error - `waitForRegistry` is not typed yet.
 		waitForRegistry: () => actHook( waitForRegistry ),
 		setInView,

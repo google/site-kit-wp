@@ -82,8 +82,12 @@ describe( 'all modules', () => {
 					getComponentNames( componentDirPath ).sort();
 
 				const filteredComponentNames = componentNames.filter(
-					( component ) =>
-						component !== 'custom-dimensions-report-options'
+					( component ) => {
+						return (
+							component !== 'custom-dimensions-report-options' &&
+							component !== ''
+						);
+					}
 				);
 
 				expect( indexExportNames ).toEqual( filteredComponentNames );

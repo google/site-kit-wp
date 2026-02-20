@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function VisuallyHidden( { className, children, ...otherProps } ) {
+function VisuallyHidden( { className = '', children, ...otherProps } ) {
 	if ( ! children ) {
 		return null;
 	}
@@ -40,10 +40,6 @@ function VisuallyHidden( { className, children, ...otherProps } ) {
 VisuallyHidden.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
-};
-
-VisuallyHidden.defaultProps = {
-	className: '',
 };
 
 export default VisuallyHidden;

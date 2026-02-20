@@ -26,7 +26,12 @@ import PropTypes from 'prop-types';
  */
 import GoogleChart from './GoogleChart';
 
-function Sparkline( { change, data, invertChangeColor, loadingHeight } ) {
+function Sparkline( {
+	change,
+	data,
+	invertChangeColor = false,
+	loadingHeight = '46px',
+} ) {
 	if ( ! data ) {
 		return null;
 	}
@@ -93,11 +98,6 @@ function Sparkline( { change, data, invertChangeColor, loadingHeight } ) {
 Sparkline.propTypes = {
 	invertChangeColor: PropTypes.bool,
 	loadingHeight: PropTypes.string,
-};
-
-Sparkline.defaultProps = {
-	invertChangeColor: false,
-	loadingHeight: '46px',
 };
 
 export default Sparkline;

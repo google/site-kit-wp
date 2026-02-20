@@ -13,8 +13,8 @@
 !.vscode/settings.json
 !.editorconfig
 !.eslintignore
-!.eslintrc.json
-!.eslintrc.staged.json
+!.eslintrc.js
+!.eslintrc.staged.js
 !.geminiignore
 !.gitignore
 !.nvmrc

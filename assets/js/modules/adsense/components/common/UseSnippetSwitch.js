@@ -39,17 +39,15 @@ import useViewContext from '@/js/hooks/useViewContext';
 import Badge from '@/js/components/Badge';
 import Notice from '@/js/components/Notice';
 
-export default function UseSnippetSwitch( props ) {
-	const {
-		label = __(
-			'Let Site Kit place AdSense code on your site',
-			'google-site-kit'
-		),
-		checkedMessage,
-		uncheckedMessage,
-		saveOnChange,
-	} = props;
-
+export default function UseSnippetSwitch( {
+	label = __(
+		'Let Site Kit place AdSense code on your site',
+		'google-site-kit'
+	),
+	checkedMessage,
+	uncheckedMessage,
+	saveOnChange = false,
+} ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
@@ -114,8 +112,4 @@ UseSnippetSwitch.propTypes = {
 	checkedMessage: PropTypes.string,
 	uncheckedMessage: PropTypes.string,
 	saveOnChange: PropTypes.bool,
-};
-
-UseSnippetSwitch.defaultProps = {
-	saveOnChange: false,
 };

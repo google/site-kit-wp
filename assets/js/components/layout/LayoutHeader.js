@@ -22,68 +22,64 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 
-class LayoutHeader extends Component {
-	render() {
-		const { title, badge, ctaLabel, ctaLink } = this.props;
+function LayoutHeader( {
+	title = '',
+	badge = null,
+	ctaLabel = '',
+	ctaLink = '',
+} ) {
+	const titleCellProps = ctaLink
+		? {
+				alignMiddle: true,
+				smSize: 4,
+				lgSize: 6,
+		  }
+		: {
+				alignMiddle: true,
+				smSize: 4,
+				mdSize: 8,
+				lgSize: 12,
+		  };
 
-		const titleCellProps = ctaLink
-			? {
-					alignMiddle: true,
-					smSize: 4,
-					lgSize: 6,
-			  }
-			: {
-					alignMiddle: true,
-					smSize: 4,
-					mdSize: 8,
-					lgSize: 12,
-			  };
-
-		return (
-			<header className="googlesitekit-layout__header">
-				<Grid>
-					<Row>
-						{ title && (
-							<Cell { ...titleCellProps }>
-								<Typography
-									as="h3"
-									size="small"
-									type="title"
-									className="googlesitekit-subheading-1 googlesitekit-layout__header-title"
-								>
-									{ title }
-									{ badge }
-								</Typography>
-							</Cell>
-						) }
-						{ ctaLink && (
-							<Cell
-								smSize={ 4 }
-								lgSize={ 6 }
-								alignMiddle
-								mdAlignRight
+	return (
+		<header className="googlesitekit-layout__header">
+			<Grid>
+				<Row>
+					{ title && (
+						<Cell { ...titleCellProps }>
+							<Typography
+								as="h3"
+								size="small"
+								type="title"
+								className="googlesitekit-subheading-1 googlesitekit-layout__header-title"
 							>
-								<Link href={ ctaLink } external>
-									{ ctaLabel }
-								</Link>
-							</Cell>
-						) }
-					</Row>
-				</Grid>
-			</header>
-		);
-	}
+								{ title }
+								{ badge }
+							</Typography>
+						</Cell>
+					) }
+					{ ctaLink && (
+						<Cell
+							smSize={ 4 }
+							lgSize={ 6 }
+							alignMiddle
+							mdAlignRight
+						>
+							<Link href={ ctaLink } external>
+								{ ctaLabel }
+							</Link>
+						</Cell>
+					) }
+				</Row>
+			</Grid>
+		</header>
+	);
 }
 
 LayoutHeader.propTypes = {
@@ -91,13 +87,6 @@ LayoutHeader.propTypes = {
 	badge: PropTypes.node,
 	ctaLabel: PropTypes.string,
 	ctaLink: PropTypes.string,
-};
-
-LayoutHeader.defaultProps = {
-	title: '',
-	badge: null,
-	ctaLabel: '',
-	ctaLink: '',
 };
 
 export default LayoutHeader;

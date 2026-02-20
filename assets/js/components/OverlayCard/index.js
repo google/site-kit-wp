@@ -30,9 +30,11 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import Body from './Body';
 import { buttonProps } from './DismissButton';
 
-export default function OverlayCard( props ) {
-	const { visible, className, ...cardProps } = props;
-
+export default function OverlayCard( {
+	visible = false,
+	className,
+	...cardProps
+} ) {
 	const breakpoint = useBreakpoint();
 
 	if ( ! visible ) {
@@ -73,8 +75,4 @@ OverlayCard.propTypes = {
 	GraphicMobile: PropTypes.elementType,
 	newBadge: PropTypes.bool,
 	visible: PropTypes.bool,
-};
-
-OverlayCard.defaultProps = {
-	visible: false,
 };

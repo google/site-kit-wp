@@ -68,6 +68,8 @@ export function getTooltipHelp( url, label, rowLabel ) {
 		// We're not using the `P` component here because that uses `useBreakpoint`
 		// under the hood. This causes issues when this function is used inside a
 		// tooltip callback as that is not at the top-level of a component.
+		//
+		// See https://github.com/google/site-kit-wp/issues/11359
 		<Typography as="p" size="medium" type="body">
 			<Link
 				className="googlesitekit-cta-link__tooltip"

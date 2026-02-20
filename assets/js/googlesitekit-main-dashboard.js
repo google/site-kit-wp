@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -54,11 +54,12 @@ domReady( async () => {
 				: VIEW_CONTEXT_MAIN_DASHBOARD;
 		}
 
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ viewContext }>
 				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
-			</Root>,
-			renderTarget
+			</Root>
 		);
 	}
 } );

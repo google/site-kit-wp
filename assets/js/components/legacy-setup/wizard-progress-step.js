@@ -23,87 +23,84 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import ExclamationIcon from '@/svg/icons/exclamation.svg';
 import CheckIcon from '@/svg/icons/check.svg';
 
-class WizardProgressStep extends Component {
-	render() {
-		const { currentStep, step, title, status, warning, error, stepKey } =
-			this.props;
+function WizardProgressStep( {
+	title = '',
+	status = '',
+	warning = false,
+	error = false,
+	currentStep,
+	step,
+	stepKey,
+} ) {
+	let statusClass = status;
+	if ( warning ) {
+		statusClass = 'warning';
+	} else if ( error ) {
+		statusClass = 'error';
+	}
 
-		let statusClass = status;
-		if ( warning ) {
-			statusClass = 'warning';
-		} else if ( error ) {
-			statusClass = 'error';
-		}
+	/* @TODO We need to set these statuses dynamically. */
+	let statusIcon = false;
+	switch ( statusClass ) {
+		case 'warning':
+			statusIcon = <ExclamationIcon height="12" width="2" />;
+			break;
+		case 'error':
+			statusIcon = <ExclamationIcon height="12" width="2" />;
+			break;
+		case 'completed':
+			statusIcon = <CheckIcon height="12" width="16" />;
+			break;
+	}
 
-		/* @TODO We need to set these statuses dynamically. */
-		let statusIcon = false;
-		switch ( statusClass ) {
-			case 'warning':
-				statusIcon = <ExclamationIcon height="12" width="2" />;
-				break;
-			case 'error':
-				statusIcon = <ExclamationIcon height="12" width="2" />;
-				break;
-			case 'completed':
-				statusIcon = <CheckIcon height="12" width="16" />;
-				break;
-		}
-
-		return (
-			<div
-				className={ classnames(
-					'googlesitekit-wizard-progress-step',
-					`googlesitekit-wizard-progress-step--${ step }`,
-					`googlesitekit-wizard-progress-step--${ stepKey }`,
-					{
-						'googlesitekit-wizard-progress-step--current':
-							currentStep,
-					}
-				) }
-			>
-				<div className="googlesitekit-wizard-progress-step__number-wrapper">
-					<div
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-wizard-progress-step',
+				`googlesitekit-wizard-progress-step--${ step }`,
+				`googlesitekit-wizard-progress-step--${ stepKey }`,
+				{
+					'googlesitekit-wizard-progress-step--current': currentStep,
+				}
+			) }
+		>
+			<div className="googlesitekit-wizard-progress-step__number-wrapper">
+				<div
+					className={ classnames(
+						'googlesitekit-wizard-progress-step__number',
+						`googlesitekit-wizard-progress-step__number--${ statusClass }`
+					) }
+				>
+					<span
 						className={ classnames(
-							'googlesitekit-wizard-progress-step__number',
-							`googlesitekit-wizard-progress-step__number--${ statusClass }`
+							'googlesitekit-wizard-progress-step__number-text',
+							`googlesitekit-wizard-progress-step__number-text--${ statusClass }`
 						) }
 					>
+						{ step }
+					</span>
+					{ statusIcon && (
 						<span
 							className={ classnames(
-								'googlesitekit-wizard-progress-step__number-text',
-								`googlesitekit-wizard-progress-step__number-text--${ statusClass }`
+								'googlesitekit-wizard-progress-step__number-icon',
+								`googlesitekit-wizard-progress-step__number-icon--${ statusClass }`
 							) }
 						>
-							{ step }
+							{ statusIcon }
 						</span>
-						{ statusIcon && (
-							<span
-								className={ classnames(
-									'googlesitekit-wizard-progress-step__number-icon',
-									`googlesitekit-wizard-progress-step__number-icon--${ statusClass }`
-								) }
-							>
-								{ statusIcon }
-							</span>
-						) }
-					</div>
+					) }
 				</div>
-				<p className="googlesitekit-wizard-progress-step__text">
-					{ title }
-				</p>
 			</div>
-		);
-	}
+			<p className="googlesitekit-wizard-progress-step__text">
+				{ title }
+			</p>
+		</div>
+	);
 }
 
 WizardProgressStep.propTypes = {
@@ -113,14 +110,6 @@ WizardProgressStep.propTypes = {
 	status: PropTypes.string,
 	warning: PropTypes.bool,
 	error: PropTypes.bool,
-};
-
-WizardProgressStep.defaultProps = {
-	title: '',
-	status: '',
-	warning: false,
-	error: false,
-	removeFirstStep: false,
 };
 
 export default WizardProgressStep;

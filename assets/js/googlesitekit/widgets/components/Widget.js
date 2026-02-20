@@ -28,7 +28,10 @@ import PropTypes from 'prop-types';
 import { forwardRef } from '@wordpress/element';
 
 const Widget = forwardRef(
-	( { children, className, widgetSlug, noPadding, Header, Footer }, ref ) => {
+	(
+		{ children, className, widgetSlug, noPadding = false, Header, Footer },
+		ref
+	) => {
 		return (
 			<div
 				className={ classnames(
@@ -55,11 +58,6 @@ const Widget = forwardRef(
 		);
 	}
 );
-
-Widget.defaultProps = {
-	children: undefined,
-	noPadding: false,
-};
 
 Widget.propTypes = {
 	children: PropTypes.node,

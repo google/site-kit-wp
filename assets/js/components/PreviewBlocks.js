@@ -27,10 +27,10 @@ import PropTypes from 'prop-types';
 import PreviewBlock from './PreviewBlock';
 
 function PreviewBlocks( {
-	width,
-	height,
-	shape,
-	count,
+	width = '100px',
+	height = '100px',
+	shape = 'square',
+	count = 1,
 	smallWidth,
 	smallHeight,
 	tabletWidth,
@@ -71,13 +71,6 @@ PreviewBlocks.propTypes = {
 	tabletHeight: PropTypes.string,
 	desktopWidth: PropTypes.string,
 	desktopHeight: PropTypes.string,
-};
-
-PreviewBlocks.defaultProps = {
-	width: '100px',
-	height: '100px',
-	shape: 'square',
-	count: 1,
 };
 
 export default PreviewBlocks;

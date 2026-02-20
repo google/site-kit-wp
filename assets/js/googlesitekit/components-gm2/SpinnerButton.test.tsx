@@ -25,7 +25,6 @@ import SpinnerButton, { SPINNER_POSITION } from './SpinnerButton';
 describe( 'SpinnerButton', () => {
 	it( 'should render a button without a spinner when not saving', () => {
 		const { container, getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton isSaving={ false }>Button text</SpinnerButton>
 		);
 
@@ -39,7 +38,6 @@ describe( 'SpinnerButton', () => {
 
 	it( 'should render a button with a spinner after the text when saving and `spinnerPosition` is not provided', () => {
 		const { container, getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton isSaving>Button text</SpinnerButton>
 		);
 
@@ -58,7 +56,6 @@ describe( 'SpinnerButton', () => {
 
 	it( 'should render a button with a spinner before the text when `spinnerPosition` is `before`', () => {
 		const { container, getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton spinnerPosition={ SPINNER_POSITION.BEFORE } isSaving>
 				Button text
 			</SpinnerButton>
@@ -79,7 +76,6 @@ describe( 'SpinnerButton', () => {
 
 	it( 'should render a button with a spinner after the text when `spinnerPosition` is `after`', () => {
 		const { container, getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton spinnerPosition={ SPINNER_POSITION.AFTER } isSaving>
 				Button text
 			</SpinnerButton>
@@ -102,7 +98,6 @@ describe( 'SpinnerButton', () => {
 		const onClick = jest.fn();
 
 		const { getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton onClick={ onClick }>Button text</SpinnerButton>
 		);
 
@@ -115,7 +110,6 @@ describe( 'SpinnerButton', () => {
 
 	it( 'should pass additional props to the button', () => {
 		const { getByRole } = render(
-			// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 			<SpinnerButton data-test="test-value">Button text</SpinnerButton>
 		);
 
@@ -142,7 +136,6 @@ describe( 'SpinnerButton', () => {
 				[ propName ]: undefined,
 			};
 			const { container, getByRole } = render(
-				// @ts-expect-error - The `SpinnerButton` component is not typed yet.
 				<SpinnerButton
 					spinnerPosition={ spinnerPosition }
 					isSaving

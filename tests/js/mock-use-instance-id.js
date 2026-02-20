@@ -25,8 +25,10 @@ import { useInstanceId } from '@wordpress/compose';
 /**
  * Creates a new ID for a given object.
  *
- * This uses a `Map` to track object instances, as opposed to the `WeakMap` used in the original `useInstanceId()` from @wordpress/compose.
- * Using a regular `Map` to track objects will ensure they are not unpredictably garbage collected during tests, which can cause the
+ * This uses a `Map` to track object instances, as opposed to the `WeakMap`
+ * used in the original `useInstanceId()` from @wordpress/compose.
+ * Using a regular `Map` to track objects will ensure they are not
+ * unpredictably garbage collected during tests, which can cause the
  * generated instance IDs to change, with resulting test failures.
  *
  * @since 1.115.0
@@ -74,7 +76,8 @@ export function mockUseInstanceID() {
 	const instanceMap = new Map();
 
 	beforeAll( () => {
-		// Note that `useInstanceId()` is a Jest spy, having been spied on in the global `@wordpress/compose` mock.
+		// Note that `useInstanceId()` is a Jest spy, having been spied on in
+		// the global `@wordpress/compose` mock.
 		useInstanceId.mockImplementation(
 			useInstanceID.bind( null, instanceMap )
 		);

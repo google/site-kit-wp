@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -27,7 +27,7 @@ import type { ReactNode } from 'react';
 import { renderHook } from 'tests/js/test-utils';
 import {
 	Provider as WidgetContextProvider,
-	type WidgetContextValue,
+	WidgetContextValue,
 } from '@/js/googlesitekit/widgets/components/WidgetContext';
 import useWidget from './useWidget';
 
@@ -46,13 +46,14 @@ describe( 'useWidget', () => {
 			priority: 10,
 		};
 
-		function wrapper( { children }: { children: ReactNode } ) {
+		const wrapper: FC< { children: ReactNode } > = ( { children } ) => {
 			return (
 				<WidgetContextProvider value={ mockWidget }>
+					{ /* @ts-expect-error - Likely caused by dependency version issues; this type error can be resolved later as it only affects tests. */ }
 					{ children }
 				</WidgetContextProvider>
 			);
-		}
+		};
 
 		const { result } = renderHook(
 			() => useWidget(),

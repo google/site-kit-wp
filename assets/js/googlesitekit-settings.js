@@ -25,7 +25,7 @@ import { HashRouter } from 'react-router-dom';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,13 +39,14 @@ domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-settings' );
 
 	if ( renderTarget ) {
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>
-			</Root>,
-			renderTarget
+			</Root>
 		);
 	}
 } );

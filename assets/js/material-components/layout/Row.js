@@ -27,27 +27,25 @@ import classnames from 'classnames';
  */
 import { forwardRef } from '@wordpress/element';
 
-const Row = forwardRef( ( { className, children, ...otherProps }, ref ) => {
-	return (
-		<div
-			ref={ ref }
-			className={ classnames( 'mdc-layout-grid__inner', className ) }
-			{ ...otherProps }
-		>
-			{ children }
-		</div>
-	);
-} );
+const Row = forwardRef(
+	( { className = '', children, ...otherProps }, ref ) => {
+		return (
+			<div
+				ref={ ref }
+				className={ classnames( 'mdc-layout-grid__inner', className ) }
+				{ ...otherProps }
+			>
+				{ children }
+			</div>
+		);
+	}
+);
 
 Row.displayName = 'Row';
 
 Row.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
-};
-
-Row.defaultProps = {
-	className: '',
 };
 
 export default Row;

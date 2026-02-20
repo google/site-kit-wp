@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
-export default function ModuleIcon( { slug, size, ...props } ) {
+export default function ModuleIcon( { slug, size = 33, ...props } ) {
 	const ModuleIconComponent = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( slug )
 	);
@@ -42,8 +42,4 @@ export default function ModuleIcon( { slug, size, ...props } ) {
 ModuleIcon.propTypes = {
 	slug: PropTypes.string.isRequired,
 	size: PropTypes.number,
-};
-
-ModuleIcon.defaultProps = {
-	size: 33,
 };

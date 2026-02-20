@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "checkJs": false,
     "esModuleInterop": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "noImplicitAny": true,
     "noEmit": true,
     "paths": {

@@ -21,7 +21,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render } from '@wordpress/element';
+import { createRoot } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,11 +45,12 @@ domReady( () => {
 			? VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY
 			: VIEW_CONTEXT_WP_DASHBOARD;
 
-		render(
+		const root = createRoot( renderTarget );
+
+		root.render(
 			<Root viewContext={ viewContext }>
 				<WPDashboardApp />
-			</Root>,
-			renderTarget
+			</Root>
 		);
 	}
 } );

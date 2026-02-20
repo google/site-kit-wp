@@ -34,7 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
-export default function TagCheckProgress( { className } ) {
+export default function TagCheckProgress( { className = '' } ) {
 	const isResolvingLiveContainerVersion = useSelect( ( select ) => {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
@@ -70,8 +70,4 @@ export default function TagCheckProgress( { className } ) {
 
 TagCheckProgress.propTypes = {
 	className: PropTypes.string,
-};
-
-TagCheckProgress.defaultProps = {
-	className: '',
 };

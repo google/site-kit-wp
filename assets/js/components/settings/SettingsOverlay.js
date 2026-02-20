@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import LockIcon from '@/svg/icons/lock.svg';
 import Typography from '@/js/components/Typography';
 
-function SettingsOverlay( { compress } ) {
+function SettingsOverlay( { compress = false } ) {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-overlay', {
@@ -62,10 +62,6 @@ function SettingsOverlay( { compress } ) {
 
 SettingsOverlay.propTypes = {
 	compress: PropTypes.bool,
-};
-
-SettingsOverlay.defaultProps = {
-	compress: false,
 };
 
 export default SettingsOverlay;

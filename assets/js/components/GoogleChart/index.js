@@ -63,30 +63,28 @@ import {
 import { stringToDate, getDateString, getLocale } from '@/js/util';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
-export default function GoogleChart( props ) {
-	const {
-		chartEvents,
-		chartType,
-		children,
-		className,
-		data,
-		dateMarkers,
-		getChartWrapper,
-		height,
-		loaded,
-		loadingHeight,
-		loadingWidth,
-		onMouseOver,
-		onMouseOut,
-		onReady,
-		onSelect,
-		selectedStats,
-		width,
-		options,
-		gatheringData,
-		...otherProps
-	} = props;
-
+export default function GoogleChart( {
+	chartEvents,
+	chartType,
+	children,
+	className,
+	data,
+	dateMarkers = [],
+	getChartWrapper,
+	height,
+	loaded = true,
+	loadingHeight,
+	loadingWidth,
+	onMouseOver,
+	onMouseOut,
+	onReady,
+	onSelect,
+	selectedStats,
+	width,
+	options,
+	gatheringData = false,
+	...otherProps
+} ) {
 	/**
 	 * Size of the icons (in pixels) used in the tooltip.
 	 */
@@ -421,14 +419,19 @@ export default function GoogleChart( props ) {
 						// existing `onReady` events and other event listeners, which will
 						// cause bugs.
 						if ( chartWrapper !== chartWrapperRef.current ) {
-							// eslint-disable-next-line no-unused-expressions
-							googleRef.current?.visualization.events.removeAllListeners(
-								chartWrapperRef.current?.getChart()
-							);
-							// eslint-disable-next-line no-unused-expressions
-							googleRef.current?.visualization.events.removeAllListeners(
-								chartWrapperRef.current
-							);
+							if ( !! chartWrapperRef.current?.getChart() ) {
+								// eslint-disable-next-line no-unused-expressions
+								googleRef.current?.visualization?.events?.removeAllListeners?.(
+									chartWrapperRef.current?.getChart()
+								);
+							}
+
+							if ( !! chartWrapperRef.current ) {
+								// eslint-disable-next-line no-unused-expressions
+								googleRef.current?.visualization?.events?.removeAllListeners?.(
+									chartWrapperRef.current
+								);
+							}
 						}
 
 						chartWrapperRef.current = chartWrapper;
@@ -502,11 +505,4 @@ GoogleChart.propTypes = {
 	width: PropTypes.string,
 	options: PropTypes.object,
 	gatheringData: PropTypes.bool,
-};
-
-GoogleChart.defaultProps = {
-	...Chart.defaultProps,
-	dateMarkers: [],
-	gatheringData: false,
-	loaded: true,
 };

@@ -1,6 +1,9 @@
 {
-  "name": "eslint-plugin-sitekit",
-  "version": "1.0.0",
-  "private": true,
-  "main": "index.js"
+	"name": "eslint-plugin-sitekit",
+	"version": "1.0.0",
+	"private": true,
+	"main": "index.js",
+	"devDependencies": {
+		"eslint-plugin-jsdoc": "^41.1.2"
+	}
 }

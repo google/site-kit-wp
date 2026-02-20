@@ -32,23 +32,21 @@ import { Fragment } from '@wordpress/element';
  */
 import Spinner from '@/js/components/Spinner';
 
-export default function Checkbox( props ) {
-	const {
-		onChange,
-		id,
-		name,
-		value,
-		checked,
-		disabled,
-		children,
-		tabIndex,
-		onKeyDown,
-		loading,
-		alignLeft,
-		description,
-		badge,
-	} = props;
-
+export default function Checkbox( {
+	checked = false,
+	disabled = false,
+	tabIndex = undefined,
+	onKeyDown = null,
+	loading = false,
+	alignLeft = false,
+	description = '',
+	onChange,
+	id,
+	name,
+	value,
+	children,
+	badge,
+} ) {
 	const label = !! badge ? (
 		<div className="mdc-checkbox__label-wrapper">
 			<label htmlFor={ id }>{ children }</label>
@@ -129,14 +127,4 @@ Checkbox.propTypes = {
 	alignLeft: PropTypes.bool,
 	description: PropTypes.node,
 	badge: PropTypes.node,
-};
-
-Checkbox.defaultProps = {
-	checked: false,
-	disabled: false,
-	tabIndex: undefined,
-	onKeyDown: null,
-	loading: false,
-	alignLeft: false,
-	description: '',
 };

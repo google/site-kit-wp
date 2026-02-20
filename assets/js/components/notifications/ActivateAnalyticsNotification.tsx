@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ElementType } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -45,7 +45,11 @@ import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
-	Notification: ElementType;
+	Notification: ( {
+		children,
+	}: {
+		children: React.ReactNode;
+	} ) => JSX.Element;
 }
 
 const ActivateAnalyticsNotification: FC<

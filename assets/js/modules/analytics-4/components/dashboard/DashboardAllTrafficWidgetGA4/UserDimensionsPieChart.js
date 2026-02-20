@@ -63,10 +63,13 @@ import useViewContext from '@/js/hooks/useViewContext';
 import usePieChartSlices from './hooks/usePieChartSlices';
 import { getTooltipHelp } from './utils';
 
-export default function UserDimensionsPieChart( props ) {
-	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
-		props;
-
+export default function UserDimensionsPieChart( {
+	dimensionName = 'sessionDefaultChannelGrouping',
+	dimensionValue,
+	gatheringData,
+	loaded,
+	report,
+} ) {
 	const [ selectable, setSelectable ] = useState( false );
 	const [ isTooltipOpen, setIsTooltipOpen ] = useState( false );
 	const viewContext = useViewContext();
@@ -700,10 +703,6 @@ export default function UserDimensionsPieChart( props ) {
 		</div>
 	);
 }
-
-UserDimensionsPieChart.defaultProps = {
-	dimensionName: 'sessionDefaultChannelGrouping',
-};
 
 UserDimensionsPieChart.chartOptions = {
 	chartArea: {

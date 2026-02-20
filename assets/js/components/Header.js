@@ -49,7 +49,7 @@ import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useGlobalTrackingEffect } from '@/js/hooks/useGlobalTrackingEffect';
 
-function Header( { children, subHeader, showNavigation } ) {
+function Header( { children = null, subHeader = null, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
 	useGlobalTrackingEffect();
@@ -134,11 +134,6 @@ Header.propTypes = {
 	children: PropTypes.node,
 	subHeader: PropTypes.element,
 	showNavigation: PropTypes.bool,
-};
-
-Header.defaultProps = {
-	children: null,
-	subHeader: null,
 };
 
 export default Header;

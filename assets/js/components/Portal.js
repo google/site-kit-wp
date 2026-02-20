@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
  */
 import { createPortal, useState } from '@wordpress/element';
 
-function Portal( { children, slug } ) {
+function Portal( { children, slug = '' } ) {
 	// Using state as we need `el` to not change when the component re-renders
 	const [ el ] = useState( document.createElement( 'div' ) );
 
@@ -49,11 +49,6 @@ function Portal( { children, slug } ) {
 Portal.propTypes = {
 	slug: PropTypes.string,
 	children: PropTypes.node,
-};
-
-Portal.defaultProps = {
-	slug: '',
-	children: null,
 };
 
 export default Portal;

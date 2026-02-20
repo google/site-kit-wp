@@ -26,7 +26,7 @@ WordPress plugin providing Google services integration. PHP backend (`includes/`
 
 ### Key Config Files
 - **Build**: `assets/webpack.config.js`
-- **Quality**: `.eslintrc.json`, `phpcs.xml`, `.prettierrc.js`
+- **Quality**: `.eslintrc.js`, `phpcs.xml`, `.prettierrc.js`
 - **Tests**: `tests/js/jest.config.js`, `phpunit.xml.dist`
 
 ## Development Standards
@@ -40,7 +40,7 @@ WordPress plugin providing Google services integration. PHP backend (`includes/`
 ### JavaScript Conventions  
 - WordPress ESLint preset + custom rules
 - Function components, React Hooks patterns
-- **Details**: See `.eslintrc.json` and custom ESLint plugin
+- **Details**: See `.eslintrc.js` and custom ESLint plugin
 
 ## Testing Strategy
 **Comprehensive multi-layer testing:**

@@ -54,7 +54,7 @@ function DeviceSizeTabBar( {
 	const onUpdate = useCallback(
 		( index ) => {
 			const device = deviceSizes[ index ];
-			handleDeviceSizeUpdate( device, index );
+			handleDeviceSizeUpdate?.( device, index );
 		},
 		[ deviceSizes, handleDeviceSizeUpdate ]
 	);
@@ -100,10 +100,6 @@ DeviceSizeTabBar.propTypes = {
 		} )
 	),
 	handleDeviceSizeUpdate: PropTypes.func,
-};
-
-DeviceSizeTabBar.defaultProps = {
-	handleDeviceSizeUpdate: () => {},
 };
 
 export default DeviceSizeTabBar;

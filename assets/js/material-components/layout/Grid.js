@@ -29,7 +29,7 @@ import { forwardRef } from '@wordpress/element';
 
 const Grid = forwardRef(
 	(
-		{ alignLeft, fill, className, children, collapsed, ...otherProps },
+		{ alignLeft, fill, className = '', children, collapsed, ...otherProps },
 		ref
 	) => {
 		return (
@@ -56,10 +56,6 @@ Grid.propTypes = {
 	className: PropTypes.string,
 	collapsed: PropTypes.bool,
 	children: PropTypes.node,
-};
-
-Grid.defaultProps = {
-	className: '',
 };
 
 export default Grid;

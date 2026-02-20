@@ -48,7 +48,10 @@ class MediaErrorHandler extends Component {
 	}
 
 	render() {
-		const { children, errorMessage } = this.props;
+		const {
+			children,
+			errorMessage = __( 'Failed to load media', 'google-site-kit' ),
+		} = this.props;
 		const { error } = this.state;
 
 		// If there is no caught error, render the children components normally.
@@ -59,10 +62,6 @@ class MediaErrorHandler extends Component {
 		return <ErrorNotice message={ errorMessage } />;
 	}
 }
-
-MediaErrorHandler.defaultProps = {
-	errorMessage: __( 'Failed to load media', 'google-site-kit' ),
-};
 
 MediaErrorHandler.propTypes = {
 	children: PropTypes.node.isRequired,

@@ -65,7 +65,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 
-export default function SetupMain( { finishSetup } ) {
+export default function SetupMain( { finishSetup = () => {} } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
 	const [ showPaxAppQueryParam, setShowPaxAppQueryParam ] =
 		useQueryArg( PAX_PARAM_SETUP_STEP );
@@ -417,7 +417,3 @@ export default function SetupMain( { finishSetup } ) {
 		</div>
 	);
 }
-
-SetupMain.defaultProps = {
-	finishSetup: () => {},
-};

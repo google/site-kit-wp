@@ -60,7 +60,7 @@ import { useFeature } from '@/js/hooks/useFeature';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
 
-export default function SetupForm( { finishSetup } ) {
+export default function SetupForm( { finishSetup = () => {} } ) {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
@@ -204,8 +204,4 @@ export default function SetupForm( { finishSetup } ) {
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
-};
-
-SetupForm.defaultProps = {
-	finishSetup: () => {},
 };

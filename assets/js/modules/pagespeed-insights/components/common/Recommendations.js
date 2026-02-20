@@ -37,7 +37,7 @@ import {
 import Recommendation from './Recommendation';
 
 export default function Recommendations( {
-	className,
+	className = '',
 	recommendations,
 	referenceURL,
 	strategy,
@@ -75,8 +75,4 @@ Recommendations.propTypes = {
 	referenceURL: PropTypes.string.isRequired,
 	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
 		.isRequired,
-};
-
-Recommendations.defaultProps = {
-	className: '',
 };

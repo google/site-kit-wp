@@ -49,10 +49,10 @@ export default function UserInputSelectOptions( {
 	slug,
 	descriptions,
 	options,
-	max,
+	max = 1,
 	next,
-	showInstructions,
-	alignLeftOptions,
+	showInstructions = false,
+	alignLeftOptions = false,
 	gaTrackingEventArgs,
 } ) {
 	const viewContext = useViewContext();
@@ -253,10 +253,4 @@ UserInputSelectOptions.propTypes = {
 	showInstructions: PropTypes.bool,
 	alignLeftOptions: PropTypes.bool,
 	gaTrackingEventArgs: PropTypes.object,
-};
-
-UserInputSelectOptions.defaultProps = {
-	max: 1,
-	showInstructions: false,
-	alignLeftOptions: false,
 };

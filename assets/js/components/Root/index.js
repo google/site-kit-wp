@@ -48,7 +48,11 @@ import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '@/js/components/InViewProvider';
 import { isSiteKitScreen } from '@/js/util/is-site-kit-screen';
 
-export default function Root( { children, registry, viewContext = null } ) {
+export default function Root( {
+	children,
+	registry = Data,
+	viewContext = null,
+} ) {
 	const theme =
 		process.env.NODE_ENV === 'production'
 			? createMuiTheme
@@ -88,8 +92,4 @@ Root.propTypes = {
 	children: PropTypes.node,
 	registry: PropTypes.object,
 	viewContext: PropTypes.string.isRequired,
-};
-
-Root.defaultProps = {
-	registry: Data,
 };

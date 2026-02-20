@@ -30,10 +30,15 @@ import ExclamationIcon from '@/svg/icons/exclamation.svg';
 import IconWrapper from './IconWrapper';
 import Typography from './Typography';
 
-export default function PageHeader( props ) {
-	const { title, icon, className, status, statusText, fullWidth, children } =
-		props;
-
+export default function PageHeader( {
+	children,
+	title = '',
+	icon = null,
+	className = 'googlesitekit-heading-3',
+	status = '',
+	statusText = '',
+	fullWidth = false,
+} ) {
 	const titleCellProps = fullWidth
 		? {
 				size: 12,
@@ -114,13 +119,4 @@ PageHeader.propTypes = {
 	status: PropTypes.string,
 	statusText: PropTypes.string,
 	fullWidth: PropTypes.bool,
-};
-
-PageHeader.defaultProps = {
-	title: '',
-	icon: null,
-	className: 'googlesitekit-heading-3',
-	status: '',
-	statusText: '',
-	fullWidth: false,
 };

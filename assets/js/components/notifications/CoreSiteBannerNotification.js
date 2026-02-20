@@ -34,7 +34,18 @@ import { useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import NotificationFromServer from '@/js/components/NotificationFromServer';
 
-function CoreSiteBannerNotification( { id, ...props } ) {
+function CoreSiteBannerNotification( {
+	content = '',
+	ctaLabel = '',
+	ctaTarget = '',
+	ctaURL = '',
+	dismissLabel = __( 'OK, Got it!', 'google-site-kit' ),
+	dismissible = true,
+	learnMoreLabel = '',
+	learnMoreURL = '',
+	id,
+	...props
+} ) {
 	const { dismissNotification, acceptNotification } =
 		useDispatch( CORE_SITE );
 
@@ -50,6 +61,14 @@ function CoreSiteBannerNotification( { id, ...props } ) {
 		<NotificationFromServer
 			onCTAClick={ onCTAClick }
 			onDismissClick={ onDismissClick }
+			content={ content }
+			ctaLabel={ ctaLabel }
+			ctaTarget={ ctaTarget }
+			ctaURL={ ctaURL }
+			dismissLabel={ dismissLabel }
+			dismissible={ dismissible }
+			learnMoreLabel={ learnMoreLabel }
+			learnMoreURL={ learnMoreURL }
 			{ ...props }
 			id={ id }
 		/>
@@ -68,17 +87,6 @@ CoreSiteBannerNotification.propTypes = {
 	learnMoreLabel: PropTypes.string,
 	learnMoreURL: PropTypes.string,
 	title: PropTypes.string.isRequired,
-};
-
-CoreSiteBannerNotification.defaultProps = {
-	content: '',
-	ctaLabel: '',
-	ctaTarget: '',
-	ctaURL: '',
-	dismissLabel: __( 'OK, Got it!', 'google-site-kit' ),
-	dismissible: true,
-	learnMoreLabel: '',
-	learnMoreURL: '',
 };
 
 export default CoreSiteBannerNotification;

@@ -4,7 +4,12 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-function ChangeArrow( { direction, invertColor, width, height } ) {
+function ChangeArrow( {
+	direction = 'up',
+	invertColor = false,
+	width = 9,
+	height = 9,
+} ) {
 	return (
 		<svg
 			className={ classnames(
@@ -31,13 +36,6 @@ ChangeArrow.propTypes = {
 	invertColor: PropTypes.bool,
 	width: PropTypes.number,
 	height: PropTypes.number,
-};
-
-ChangeArrow.defaultProps = {
-	direction: 'up',
-	invertColor: false,
-	width: 9,
-	height: 9,
 };
 
 export default ChangeArrow;

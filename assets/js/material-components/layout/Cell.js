@@ -22,31 +22,29 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Cell( props ) {
-	const {
-		className,
-		alignTop,
-		alignMiddle,
-		alignBottom,
-		alignRight,
-		alignLeft,
-		smAlignRight,
-		mdAlignRight,
-		lgAlignRight,
-		smSize,
-		smStart,
-		smOrder,
-		mdSize,
-		mdStart,
-		mdOrder,
-		lgSize,
-		lgStart,
-		lgOrder,
-		size,
-		children,
-		...otherProps
-	} = props;
-
+export default function Cell( {
+	className = '',
+	size = 0,
+	smSize = 0,
+	smStart = 0,
+	smOrder = 0,
+	mdSize = 0,
+	mdStart = 0,
+	mdOrder = 0,
+	lgSize = 0,
+	lgStart = 0,
+	lgOrder = 0,
+	alignTop,
+	alignMiddle,
+	alignBottom,
+	alignRight,
+	alignLeft,
+	smAlignRight,
+	mdAlignRight,
+	lgAlignRight,
+	children,
+	...otherProps
+} ) {
 	return (
 		<div
 			{ ...otherProps }
@@ -107,18 +105,4 @@ Cell.propTypes = {
 	lgAlignRight: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node,
-};
-
-Cell.defaultProps = {
-	className: '',
-	size: 0,
-	smSize: 0,
-	smStart: 0,
-	smOrder: 0,
-	mdSize: 0,
-	mdStart: 0,
-	mdOrder: 0,
-	lgSize: 0,
-	lgStart: 0,
-	lgOrder: 0,
 };

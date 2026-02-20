@@ -43,6 +43,7 @@
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
 	],
+	"type": "commonjs",
 	"husky": {
 		"hooks": {
 			"pre-commit": "lint-staged",
@@ -73,11 +74,22 @@
 			"./vendor/bin/phpcs"
 		]
 	},
+	"dependencies": {
+		"history": "^5.3.0",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"react-router-dom": "^6.0.0"
+	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/react": "^16.3.2",
+		"@testing-library/react-hooks": "^7.0.0",
+		"@testing-library/user-event": "^14.6.1",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@wordpress/browserslist-config": "^5.40.0",
+		"@wordpress/compose": "^7.37.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
 		"@wordpress/prettier-config": "^2.0",
 		"@wordpress/stylelint-config": "^21.0.0",
@@ -115,6 +127,11 @@
 		"tsc-files": "^1.1.4",
 		"typescript": "^5.9.3",
 		"webpack-cli": "^6.0.1"
+	},
+	"overrides": {
+		"react": {
+			".": "18.2.0"
+		}
 	},
 	"workspaces": [
 		"assets",

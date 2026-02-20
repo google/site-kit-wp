@@ -35,10 +35,10 @@ import {
 
 function PreviewBlock( {
 	className,
-	width,
-	height,
-	shape,
-	padding,
+	width = '100px',
+	height = '100px',
+	shape = 'square',
+	padding = false,
 	smallWidth,
 	smallHeight,
 	tabletWidth,
@@ -98,20 +98,6 @@ PreviewBlock.propTypes = {
 	tabletHeight: PropTypes.string,
 	desktopWidth: PropTypes.string,
 	desktopHeight: PropTypes.string,
-};
-
-PreviewBlock.defaultProps = {
-	className: undefined,
-	width: '100px',
-	height: '100px',
-	shape: 'square',
-	padding: false,
-	smallWidth: undefined,
-	smallHeight: undefined,
-	tabletWidth: undefined,
-	tabletHeight: undefined,
-	desktopWidth: undefined,
-	desktopHeight: undefined,
 };
 
 export default PreviewBlock;

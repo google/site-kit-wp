@@ -64,7 +64,16 @@ export default function DefaultSettingsStatus( { slug }: { slug: string } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const onActionClick = useCallback(
-		( event ) => {
+		(
+			/**
+			 * The `Button` element can render as either a `<button>` or an
+			 * `<a>`, so either event type is possible here.
+			 */
+			// These types violate our usual acronym case rules, but are
+			// external to Site Kit so are allowed.
+			/* eslint-disable-next-line sitekit/acronym-case */
+			event: React.MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+		) => {
 			event.stopPropagation();
 			navigateTo( adminReauthURL );
 		},

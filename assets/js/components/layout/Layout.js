@@ -23,66 +23,57 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import LayoutHeader from './LayoutHeader';
 import LayoutFooter from './LayoutFooter';
 
-class Layout extends Component {
-	render() {
-		const {
-			header,
-			footer,
-			children,
-			title,
-			badge,
-			headerCTALabel,
-			headerCTALink,
-			footerCTALabel,
-			footerCTALink,
-			footerContent,
-			className,
-			fill,
-			relative,
-			rounded = false,
-			transparent = false,
-			...otherProps
-		} = this.props;
-
-		return (
-			<div
-				className={ classnames( 'googlesitekit-layout', className, {
-					'googlesitekit-layout--fill': fill,
-					'googlesitekit-layout--relative': relative,
-					'googlesitekit-layout--rounded': rounded,
-					'googlesitekit-layout--transparent': transparent,
-				} ) }
-				{ ...otherProps }
-			>
-				{ header && (
-					<LayoutHeader
-						title={ title }
-						badge={ badge }
-						ctaLabel={ headerCTALabel }
-						ctaLink={ headerCTALink }
-					/>
-				) }
-				{ children }
-				{ footer && (
-					<LayoutFooter
-						ctaLabel={ footerCTALabel }
-						ctaLink={ footerCTALink }
-						footerContent={ footerContent }
-					/>
-				) }
-			</div>
-		);
-	}
+function Layout( {
+	children,
+	header = false,
+	footer = false,
+	title = '',
+	badge = null,
+	headerCTALabel = '',
+	headerCTALink = '',
+	footerCTALabel = '',
+	footerCTALink = '',
+	footerContent = null,
+	className = '',
+	fill = false,
+	relative = false,
+	rounded = false,
+	transparent = false,
+	...otherProps
+} ) {
+	return (
+		<div
+			className={ classnames( 'googlesitekit-layout', className, {
+				'googlesitekit-layout--fill': fill,
+				'googlesitekit-layout--relative': relative,
+				'googlesitekit-layout--rounded': rounded,
+				'googlesitekit-layout--transparent': transparent,
+			} ) }
+			{ ...otherProps }
+		>
+			{ header && (
+				<LayoutHeader
+					title={ title }
+					badge={ badge }
+					ctaLabel={ headerCTALabel }
+					ctaLink={ headerCTALink }
+				/>
+			) }
+			{ children }
+			{ footer && (
+				<LayoutFooter
+					ctaLabel={ footerCTALabel }
+					ctaLink={ footerCTALink }
+					footerContent={ footerContent }
+				/>
+			) }
+		</div>
+	);
 }
 
 Layout.propTypes = {
@@ -101,21 +92,6 @@ Layout.propTypes = {
 	relative: PropTypes.bool,
 	rounded: PropTypes.bool,
 	transparent: PropTypes.bool,
-};
-
-Layout.defaultProps = {
-	header: false,
-	footer: false,
-	title: '',
-	badge: null,
-	headerCTALabel: '',
-	headerCTALink: '',
-	footerCTALabel: '',
-	footerCTALink: '',
-	footerContent: null,
-	className: '',
-	fill: false,
-	relative: false,
 };
 
 export default Layout;

@@ -28,11 +28,11 @@ import { Button } from 'googlesitekit-components';
 import SurveyHeader from './SurveyHeader';
 
 function SurveyCompletion( {
-	title,
-	children,
-	ctaText,
-	ctaURL,
-	ctaOnClick,
+	title = '',
+	children = null,
+	ctaText = '',
+	ctaURL = '',
+	ctaOnClick = null,
 	dismissSurvey,
 } ) {
 	return (
@@ -63,14 +63,6 @@ SurveyCompletion.propTypes = {
 	ctaURL: PropTypes.string,
 	ctaOnClick: PropTypes.func,
 	dismissSurvey: PropTypes.func.isRequired,
-};
-
-SurveyCompletion.defaultProps = {
-	title: '',
-	children: null,
-	ctaText: '',
-	ctaURL: '',
-	ctaOnClick: null,
 };
 
 export default SurveyCompletion;
