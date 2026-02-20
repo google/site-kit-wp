@@ -48,9 +48,11 @@ import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
+import getForwardableParams from '@/js/util/getForwardableParams';
 
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const forwardableParams = getForwardableParams();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -66,6 +68,12 @@ export default function SetupUsingProxyWithSignIn() {
 	const connectAnalytics = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
 		ANALYTICS_NOTICE_CHECKBOX
+	);
+	const postAuthDashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			forwardableParams
+		)
 	);
 
 	const onButtonClick = useCallback(
@@ -131,6 +139,16 @@ export default function SetupUsingProxyWithSignIn() {
 				navigateTo(
 					addQueryArgs( proxySetupURL, { redirect: moduleReauthURL } )
 				);
+			} else if (
+				proxySetupURL &&
+				Object.keys( forwardableParams ).length &&
+				postAuthDashboardURL
+			) {
+				navigateTo(
+					addQueryArgs( proxySetupURL, {
+						redirect: postAuthDashboardURL,
+					} )
+				);
 			} else {
 				navigateTo( proxySetupURL );
 			}
@@ -138,8 +156,10 @@ export default function SetupUsingProxyWithSignIn() {
 		[
 			connectAnalytics,
 			proxySetupURL,
+			postAuthDashboardURL,
 			isConnected,
 			activateModule,
+			forwardableParams,
 			viewContext,
 			setupFlowRefreshEnabled,
 			saveInitialSetupSettings,
