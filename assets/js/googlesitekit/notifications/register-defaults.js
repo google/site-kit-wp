@@ -111,7 +111,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		),
 		featureFlag: 'setupFlowRefresh',
 	},
-	'activate-analytics-cta': {
+	'activate-analytics-notification': {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,

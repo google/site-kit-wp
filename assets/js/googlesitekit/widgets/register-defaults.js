@@ -156,6 +156,14 @@ export function registerDefaults( widgetsAPI ) {
 			CTA: ChangeGroupsLink,
 			Footer: AudienceAreaFooter,
 			filterActiveWidgets( select, areaWidgets ) {
+				if (
+					! select( CORE_USER ).hasAccessToShareableModule(
+						MODULE_SLUG_ANALYTICS_4
+					)
+				) {
+					return [];
+				}
+
 				const isAudienceSegmentationWidgetHidden =
 					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 

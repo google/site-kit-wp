@@ -30,7 +30,7 @@ import {
 /**
  * Gets the dashboard sharing step configuration based on user context.
  *
- * @since n.e.x.t
+ * @since 1.173.0
  *
  * @param isViewOnly           Whether the user is in view-only mode.
  * @param canAuthenticate      Whether the user can authenticate.
@@ -94,7 +94,7 @@ function getDashboardSharingStep(
 /**
  * Gets the activate Analytics step configuration.
  *
- * @since n.e.x.t
+ * @since 1.173.0
  *
  * @return {Object} The activate Analytics step configuration object.
  */
@@ -123,7 +123,7 @@ function getActivateAnalyticsStep() {
 /**
  * Gets the welcome tour configuration based on the current user context.
  *
- * @since n.e.x.t
+ * @since 1.173.0
  *
  * @param {Object}  params                      Tour parameters.
  * @param {boolean} params.isViewOnly           Whether the user is in view-only mode.

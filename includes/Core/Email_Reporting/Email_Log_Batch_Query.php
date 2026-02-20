@@ -39,7 +39,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Gets the total count of email log entries by status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $status Post status to count.
 	 * @return int
@@ -69,7 +69,7 @@ class Email_Log_Batch_Query {
 	 *
 	 * Returns zeros if any entry in the batch is still scheduled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param array<int> $post_ids Post IDs in the batch.
 	 * @return array{sent:int,failed:int}
