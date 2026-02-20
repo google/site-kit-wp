@@ -91,7 +91,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Email log batch query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Email_Log_Batch_Query
 	 */
 	protected $email_log_batch_query;
@@ -99,7 +99,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Subscribed users query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Subscribed_Users_Query
 	 */
 	protected $subscribed_users_query;
@@ -294,7 +294,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Gets feature metrics for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return array
 	 */

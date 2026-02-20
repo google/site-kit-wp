@@ -203,7 +203,7 @@ class Report_Request_Assembler {
 	/**
 	 * Normalizes Search Console response results to surface API failures as WP_Error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param mixed      $result     Raw request result.
 	 * @param string|int $identifier Request identifier.
@@ -245,7 +245,7 @@ class Report_Request_Assembler {
 	/**
 	 * Extracts a normalized API error payload from a result.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param mixed $result Raw request result.
 	 * @return array|null
