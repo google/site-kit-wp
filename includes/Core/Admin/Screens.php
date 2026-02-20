@@ -292,8 +292,22 @@ final class Screens {
 		}
 
 		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
+			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
+			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
+
 			wp_safe_redirect(
-				$this->context->admin_url( 'splash' )
+				$this->context->admin_url(
+					'splash',
+					array_filter(
+						array(
+							'notification' => $notification,
+							'panel'        => $panel,
+						),
+						function ( $value ) {
+							return null !== $value && '' !== $value;
+						}
+					)
+				)
 			);
 			exit;
 		}
@@ -316,8 +330,22 @@ final class Screens {
 		}
 
 		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
+			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
+
 			wp_safe_redirect(
-				$this->context->admin_url()
+				$this->context->admin_url(
+					'dashboard',
+					array_filter(
+						array(
+							'notification' => $notification,
+							'panel'        => $panel,
+						),
+						function ( $value ) {
+							return null !== $value && '' !== $value;
+						}
+					)
+				)
 			);
 			exit;
 		}
@@ -506,9 +534,15 @@ final class Screens {
 							wp_safe_redirect(
 								$context->admin_url(
 									'dashboard',
-									array(
-										// Pass through the notification parameter, or removes it if none.
-										'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+									array_filter(
+										array(
+											// Pass through supported params, or remove if none.
+											'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+											'panel'        => $context->input()->filter( INPUT_GET, 'panel' ),
+										),
+										function ( $value ) {
+											return null !== $value && '' !== $value;
+										}
 									)
 								)
 							);
