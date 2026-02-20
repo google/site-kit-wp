@@ -41,6 +41,16 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
+	);
+
+	const requestAccessURL = useSelect( ( select ) =>
+		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
+			? select( storeName ).getServiceEntityAccessURL()
+			: null
+	);
+
 	const trackEvents = useNotificationEvents(
 		EMAIL_REPORTING_PERMISSIONS_ERROR_NOTICE
 	);
@@ -62,6 +72,17 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 				module.name
 			) }
 			onInView={ trackEvents.view }
+			ctaButton={
+				requestAccessURL
+					? {
+							label: __( 'Request access', 'google-site-kit' ),
+							href: requestAccessURL,
+							external: true,
+							hideExternalIndicator: true,
+							onClick: trackEvents.confirm,
+					  }
+					: null
+			}
 		/>
 	);
 }
