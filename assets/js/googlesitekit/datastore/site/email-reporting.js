@@ -361,6 +361,31 @@ const baseSelectors = {
 	/**
 	 * Gets the category ID of the latest email reporting error.
 	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null|undefined)} The latest email reporting error; `undefined` if not loaded; null if no errors.
+	 */
+	getLatestEmailReportingError: createRegistrySelector( ( select ) => () => {
+		const { errors, error_data: errorData } =
+			select( CORE_SITE ).getEmailReportingErrors() || {};
+
+		if ( errors === undefined ) {
+			return undefined;
+		}
+
+		const error = errorData?.[ Object.keys( errors )[ 0 ] ];
+
+		if ( error === undefined ) {
+			return null;
+		}
+
+		return error;
+	} ),
+
+	/**
+	 * Gets the category ID of the latest email reporting error.
+	 *
 	 * @since 1.172.0
 	 *
 	 * @param {Object} state Data store's state.
