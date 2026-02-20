@@ -52,6 +52,31 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	}
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * Overrides the parent to ensure empty contentPolicyStatus arrays are cast
+	 * to objects so that json_encode produces {} instead of [].
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed Value set for the option, or registered default if not set.
+	 */
+	public function get() {
+		$settings = parent::get();
+
+		if (
+			is_array( $settings )
+			&& Feature_Flags::enabled( 'rrmPolicyViolations' )
+			&& isset( $settings['contentPolicyStatus'] )
+			&& array() === $settings['contentPolicyStatus']
+		) {
+			$settings['contentPolicyStatus'] = (object) array();
+		}
+
+		return $settings;
+	}
+
+	/**
 	 * Returns keys for owned settings.
 	 *
 	 * @since 1.132.0
@@ -83,7 +108,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		);
 
 		if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) ) {
-			$defaults['contentPolicyStatus'] = (object) array();
+			$defaults['contentPolicyStatus'] = array();
 		}
 
 		return $defaults;
@@ -190,9 +215,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			}
 
 			if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) && isset( $option['contentPolicyStatus'] ) ) {
-				// If the `contentPolicyStatus` setting is not an associative array, set it to an empty object.
-				if ( ! ( is_array( $option['contentPolicyStatus'] ) && ! BC_Functions::array_is_list( $option['contentPolicyStatus'] ) ) ) {
-					$option['contentPolicyStatus'] = (object) array();
+				if ( ! is_array( $option['contentPolicyStatus'] ) || ( ! empty( $option['contentPolicyStatus'] ) && BC_Functions::array_is_list( $option['contentPolicyStatus'] ) ) ) {
+					$option['contentPolicyStatus'] = array();
 				}
 			}
 
