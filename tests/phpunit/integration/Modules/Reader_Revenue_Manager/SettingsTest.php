@@ -87,7 +87,7 @@ class SettingsTest extends SettingsTestCase {
 				'productID'                         => 'openaccess',
 				'productIDs'                        => array(),
 				'paymentOption'                     => '',
-				'contentPolicyStatus'               => (object) array(),
+				'contentPolicyStatus'               => array(),
 			),
 			get_option( Settings::OPTION ),
 			'RRM Settings should match the default values.'
@@ -185,22 +185,22 @@ class SettingsTest extends SettingsTestCase {
 				'contentPolicyStatus with empty object' => array(
 					'contentPolicyStatus',
 					(object) array(),
-					(object) array(),
+					array(),
 				),
 				'contentPolicyStatus with empty array'  => array(
 					'contentPolicyStatus',
 					array(),
-					(object) array(),
+					array(),
 				),
 				'contentPolicyStatus with number'       => array(
 					'contentPolicyStatus',
 					123,
-					(object) array(),
+					array(),
 				),
 				'contentPolicyStatus with boolean'      => array(
 					'contentPolicyStatus',
 					true,
-					(object) array(),
+					array(),
 				),
 			)
 		);
