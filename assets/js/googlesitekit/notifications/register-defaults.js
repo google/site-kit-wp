@@ -383,6 +383,14 @@ export const DEFAULT_NOTIFICATIONS = {
 				resolveSelect( CORE_SITE ).getSiteInfo(),
 			] );
 
+			const alreadyDismissed =
+				select( CORE_USER ).isDismissingItem(
+					ENABLE_AUTO_UPDATES_BANNER_SLUG
+				) ||
+				select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+					ENABLE_AUTO_UPDATES_BANNER_SLUG
+				);
+
 			const notification = getQueryArg( location.href, 'notification' );
 			const slug = getQueryArg( location.href, 'slug' );
 
@@ -395,9 +403,15 @@ export const DEFAULT_NOTIFICATIONS = {
 			 * minutes so they aren't immediately bothered by this CTA.
 			 */
 			if ( notification === 'authentication_success' && ! slug ) {
-				await dismissNotification( 'auto-update-cta', {
-					expiresInSeconds: MINUTE_IN_SECONDS * 10,
-				} );
+				if ( ! alreadyDismissed ) {
+					await dismissNotification(
+						ENABLE_AUTO_UPDATES_BANNER_SLUG,
+						{
+							expiresInSeconds: MINUTE_IN_SECONDS * 10,
+						}
+					);
+				}
+
 				return false;
 			}
 
