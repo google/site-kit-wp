@@ -63,6 +63,12 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 				module.name
 			) }
 			onInView={ trackEvents.view }
+			dismissButton={ {
+				label: __( 'Get help', 'google-site-kit' ),
+				onClick: trackEvents.dismiss,
+				href: '#',
+				external: true,
+			} }
 		/>
 	);
 }
