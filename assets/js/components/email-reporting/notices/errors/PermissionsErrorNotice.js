@@ -30,6 +30,7 @@ import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export const EMAIL_REPORTING_PERMISSIONS_ERROR_NOTICE =
 	'email_reporting_permissions_error_notice';
@@ -49,6 +50,12 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
 			? select( storeName ).getServiceEntityAccessURL()
 			: null
+	);
+
+	const getHelpURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getErrorTroubleshootingLinkURL( {
+			code: `${ moduleSlug }_insufficient_permissions`,
+		} )
 	);
 
 	const trackEvents = useNotificationEvents(
@@ -80,6 +87,16 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 							external: true,
 							hideExternalIndicator: true,
 							onClick: trackEvents.confirm,
+					  }
+					: null
+			}
+			dismissButton={
+				getHelpURL
+					? {
+							label: __( 'Get help', 'google-site-kit' ),
+							onClick: trackEvents.dismiss,
+							href: getHelpURL,
+							external: true,
 					  }
 					: null
 			}
