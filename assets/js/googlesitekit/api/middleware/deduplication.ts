@@ -33,7 +33,10 @@ import type { APIFetchOptions, APIFetchMiddleware } from '@wordpress/api-fetch';
  * @return {void}
  */
 export function logDuplicate( options: APIFetchOptions ) {
-	global.console.warn( 'Google Site Kit API: duplicate request', options );
+	global.console.warn(
+		'Google Site Kit API: duplicate request',
+		JSON.stringify( options )
+	);
 }
 
 interface DedupeMiddlewareOptions {
