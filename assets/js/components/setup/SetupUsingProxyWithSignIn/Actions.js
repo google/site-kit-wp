@@ -42,6 +42,7 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
+import getForwardableParams from '@/js/util/getForwardableParams';
 import { trackEvent } from '@/js/util';
 
 export default function Actions( {
@@ -56,6 +57,7 @@ export default function Actions( {
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const forwardableParams = getForwardableParams();
 
 	const isSecondAdmin = useSelect( ( select ) =>
 		select( CORE_SITE ).hasConnectedAdmins()
@@ -70,7 +72,10 @@ export default function Actions( {
 		select( CORE_SITE ).isResettable()
 	);
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			forwardableParams
+		)
 	);
 
 	const goToSharedDashboard = useCallback( () => {
@@ -85,7 +90,9 @@ export default function Actions( {
 		] ).finally( () => {
 			const redirectURL = setupFlowRefreshEnabled
 				? addQueryArgs( dashboardURL, {
-						notification: 'initial_setup_success',
+						notification:
+							forwardableParams.notification ||
+							'initial_setup_success',
 				  } )
 				: dashboardURL;
 
@@ -93,6 +100,7 @@ export default function Actions( {
 		} );
 	}, [
 		dashboardURL,
+		forwardableParams.notification,
 		dismissItem,
 		navigateTo,
 		setupFlowRefreshEnabled,
