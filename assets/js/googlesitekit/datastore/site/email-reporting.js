@@ -384,34 +384,6 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Gets the category ID of the latest email reporting error.
-	 *
-	 * @since 1.172.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
-	 */
-	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
-		( select ) => () => {
-			const { errors, error_data: errorData } =
-				select( CORE_SITE ).getEmailReportingErrors() || {};
-
-			if ( errors === undefined ) {
-				return undefined;
-			}
-
-			const categoryID =
-				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
-
-			if ( categoryID === undefined ) {
-				return null;
-			}
-
-			return categoryID;
-		}
-	),
-
-	/**
 	 * Checks whether an invitation is in progress for a given user.
 	 *
 	 * @since n.e.x.t
