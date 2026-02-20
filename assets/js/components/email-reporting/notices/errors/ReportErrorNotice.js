@@ -30,6 +30,7 @@ import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export const EMAIL_REPORTING_REPORT_ERROR_NOTICE =
 	'email_reporting_report_error_notice';
@@ -43,6 +44,10 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 
 	const trackEvents = useNotificationEvents(
 		EMAIL_REPORTING_REPORT_ERROR_NOTICE
+	);
+
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getModuleSettingsURL( moduleSlug )
 	);
 
 	return (
@@ -63,6 +68,17 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 				module.name
 			) }
 			onInView={ trackEvents.view }
+			ctaButton={
+				settingsURL
+					? {
+							label: __( 'Go to settings', 'google-site-kit' ),
+							href: settingsURL,
+							external: true,
+							hideExternalIndicator: true,
+							onClick: trackEvents.confirm,
+					  }
+					: null
+			}
 			dismissButton={ {
 				label: __( 'Get help', 'google-site-kit' ),
 				onClick: trackEvents.dismiss,
