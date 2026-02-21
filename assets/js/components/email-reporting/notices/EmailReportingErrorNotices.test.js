@@ -102,6 +102,34 @@ describe( 'EmailReportingErrorNotices', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( 'should render the report error notice when email reporting is enabled, user is not view-only, and there is a report_error category ID and a module slug', () => {
+		provideModules( registry );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [
+					'cURL error 6: Could not resolve host: searchconsole.googleapis.com (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://searchconsole.googleapis.com/batch',
+				],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { container } = render( <EmailReportingErrorNotices />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	it( 'should render the sending error notice when email reporting is enabled, user is not view-only, and there is a sending_error category ID', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
