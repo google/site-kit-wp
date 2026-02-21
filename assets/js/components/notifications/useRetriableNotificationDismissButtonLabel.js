@@ -1,5 +1,5 @@
 /**
- * `useNotificationRetryDismissButtonLabel` hook.
+ * `useRetriableNotificationDismissButtonLabel` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
