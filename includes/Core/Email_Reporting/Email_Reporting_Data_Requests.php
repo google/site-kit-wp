@@ -196,7 +196,7 @@ class Email_Reporting_Data_Requests {
 	 * @param string   $module_slug The module slug related to the error.
 	 * @return WP_Error The categorized error with an added 'category' data field.
 	 */
-	private function categorize_error( WP_Error $error, $module_slug ) {
+	public function categorize_error( WP_Error $error, $module_slug ) {
 		$status = $error->get_error_data()['status'];
 		$reason = $error->get_error_data()['reason'];
 
