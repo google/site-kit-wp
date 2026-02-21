@@ -309,7 +309,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 		$categorized_error = $this->create_data_requests()->categorize_error( $permissions_error, Analytics_4::MODULE_SLUG );
 
-		$this->assertEquals( 'permissions_error', $categorized_error->get_error_data()['category'], '403 forbidden errors should be categorized as permissions issues.' );
+		$this->assertEquals( 'permissions_error', $categorized_error->get_error_data()['category_id'], '403 forbidden errors should be categorized as permissions issues.' );
 		$this->assertEquals( Analytics_4::MODULE_SLUG, $categorized_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
 
 		$other_error             = new WP_Error(
@@ -322,7 +322,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 		$categorized_other_error = $this->create_data_requests()->categorize_error( $other_error, Search_Console::MODULE_SLUG );
 
-		$this->assertEquals( 'report_error', $categorized_other_error->get_error_data()['category'], 'Other errors should be categorized as report_error.' );
+		$this->assertEquals( 'report_error', $categorized_other_error->get_error_data()['category_id'], 'Other errors should be categorized as report_error.' );
 		$this->assertEquals( Search_Console::MODULE_SLUG, $categorized_other_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
 	}
 

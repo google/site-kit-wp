@@ -53,7 +53,7 @@ export default function EmailReportingErrorNotices() {
 		return null;
 	}
 
-	switch ( latestEmailReportingError?.category ) {
+	switch ( latestEmailReportingError?.category_id ) {
 		case 'permissions_error':
 			return (
 				<PermissionsErrorNotice

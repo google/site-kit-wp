@@ -212,7 +212,7 @@ class Email_Reporting_Data_Requests {
 			array_merge(
 				$error->get_error_data(),
 				array(
-					'category'    => $category,
+					'category_id' => $category,
 					'module_slug' => $module_slug,
 				)
 			)
