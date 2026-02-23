@@ -192,7 +192,7 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param WP_Error $error The error to categorize.
+	 * @param WP_Error $error       The error to categorize.
 	 * @param string   $module_slug The module slug related to the error.
 	 * @return WP_Error The categorized error with an added 'category' data field.
 	 */
