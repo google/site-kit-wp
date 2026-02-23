@@ -321,6 +321,64 @@ class Email_Template_Formatter {
 	}
 
 	/**
+	 * Builds template data for the subscription confirmation email.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $frequency Frequency slug.
+	 * @return array Template data.
+	 */
+	public function prepare_subscription_confirmation_template_data( $frequency ) {
+		$site_domain       = $this->get_site_domain();
+		$frequency_label   = $this->get_frequency_label( $frequency );
+		$first_report_date = $this->get_first_report_date_label( $frequency );
+
+		return array(
+			'subject'                => sprintf(
+				/* translators: %s: Site domain. */
+				__( 'Success! You’re subscribed to Site Kit reports for %s', 'google-site-kit' ),
+				$site_domain
+			),
+			'preheader'              => __( 'Your subscription is confirmed and your first report is on the way.', 'google-site-kit' ),
+			'site'                   => array(
+				'domain' => $site_domain,
+				'url'    => $this->context->get_reference_site_url(),
+			),
+			'title'                  => Content_Map::get_title( 'subscription-confirmation' ),
+			'body'                   => Content_Map::get_body_with_args(
+				'subscription-confirmation',
+				array(
+					$frequency_label,
+					$first_report_date,
+				)
+			),
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'primary_call_to_action' => array(
+				'label' => __( 'View dashboard', 'google-site-kit' ),
+				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+			),
+			'footer'                 => array(
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'unsubscribe_url' => admin_url( 'admin.php?page=googlesitekit-settings#/admin-settings' ),
+				'links'           => array(
+					array(
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' ),
+					),
+					array(
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
+						'url'   => 'https://policies.google.com/privacy',
+					),
+					array(
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+					),
+				),
+			),
+		);
+	}
+
+	/**
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0
