@@ -53,7 +53,7 @@ class Plain_Text_Formatter {
 	 */
 	public static function format_simple_email( $data ) {
 		$site_domain    = $data['site']['domain'] ?? '';
-		$title          = $data['title'] ?? '';
+		$title          = wp_strip_all_tags( $data['title'] ?? '' );
 		$learn_more_url = $data['learn_more_url'] ?? '';
 		$cta            = $data['primary_call_to_action'] ?? array();
 		$footer_copy    = $data['footer']['copy'] ?? '';
