@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -46,14 +47,27 @@ import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { useFeature } from '@/js/hooks/useFeature';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import Link from '@/js/components/Link';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
 export default function ActivateAnalyticsCTA( {
 	children,
 	dismissedItemSlug,
+	analyticsEventLabel,
 } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const trackEvents = useNotificationEvents( {
+		id: 'activate-analytics-cta',
+		category: undefined,
+		actions: {
+			viewAction: 'view_cta',
+			confirmAction: 'confirm_cta',
+			dismissAction: 'dismiss_cta',
+			clickLearnMoreAction: 'click_learn_more_link',
+		},
+	} );
 
 	const isDismissed = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
@@ -131,6 +145,20 @@ export default function ActivateAnalyticsCTA( {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
+	const trackEventArgs =
+		analyticsEventLabel !== undefined
+			? { label: analyticsEventLabel }
+			: undefined;
+
+	useMount( () => {
+		trackEvents.view( trackEventArgs );
+	} );
+
+	function handleDismiss() {
+		trackEvents.dismiss( trackEventArgs );
+		dismissItem( dismissedItemSlug );
+	}
+
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
 		: activateModuleCallback;
@@ -186,7 +214,17 @@ export default function ActivateAnalyticsCTA( {
 							'google-site-kit'
 						),
 						{
-							a: <Link href={ documentationURL } external />,
+							a: (
+								<Link
+									href={ documentationURL }
+									onClick={ () => {
+										trackEvents.clickLearnMore(
+											trackEventArgs
+										);
+									} }
+									external
+								/>
+							),
 						}
 					) }
 				</p>
@@ -194,7 +232,7 @@ export default function ActivateAnalyticsCTA( {
 			<div className="googlesitekit-activate-analytics-cta__actions">
 				<Button
 					className="googlesitekit-activate-analytics-cta__button--secondary"
-					onClick={ () => dismissItem( dismissedItemSlug ) }
+					onClick={ handleDismiss }
 					tertiary
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
@@ -217,4 +255,5 @@ export default function ActivateAnalyticsCTA( {
 ActivateAnalyticsCTA.propTypes = {
 	children: PropTypes.node,
 	dismissedItemSlug: PropTypes.string.isRequired,
+	analyticsEventLabel: PropTypes.string,
 };
