@@ -144,6 +144,10 @@ WithoutModuleAccess.args = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 2 );
 
 		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+
+		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },

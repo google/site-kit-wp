@@ -378,7 +378,7 @@ class Context {
 		if ( $exposes_support_mode ) {
 			// If recent version, we can properly detect the mode.
 			if ( $amp_plugin_version_2_or_higher ) {
-				$mode = AMP_Options_Manager::get_option( 'theme_support' );
+				$mode = AMP_Options_Manager::get_option( 'theme_support' ); // @phpstan-ignore class.notFound
 			} else {
 				$mode = AMP_Theme_Support::get_support_mode();
 			}

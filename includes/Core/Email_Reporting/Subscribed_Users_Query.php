@@ -77,6 +77,37 @@ class Subscribed_Users_Query {
 	}
 
 	/**
+	 * Gets the number of subscribed users across all frequencies.
+	 *
+	 * @since 1.166.0
+	 *
+	 * @return int
+	 */
+	public function get_subscriber_count() {
+		$meta_key = $this->email_reporting_settings->get_meta_key();
+
+		$user_query = new WP_User_Query(
+			array(
+				'fields'   => 'ids',
+				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'compare'  => 'EXISTS',
+			)
+		);
+
+		$subscribers = 0;
+
+		foreach ( $user_query->get_results() as $user_id ) {
+			$settings = get_user_meta( $user_id, $meta_key, true );
+
+			if ( is_array( $settings ) && ! empty( $settings['subscribed'] ) ) {
+				++$subscribers;
+			}
+		}
+
+		return $subscribers;
+	}
+
+	/**
 	 * Queries administrators with the email reporting meta set.
 	 *
 	 * @since 1.167.0
@@ -186,7 +217,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Checks whether a user can access Site Kit dashboard for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool True if user has email reporting access, false otherwise.

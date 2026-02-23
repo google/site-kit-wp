@@ -281,18 +281,19 @@ class Email_Template_Formatter {
 	 * Simple emails share the same structure (subject, preheader, site, CTA, footer)
 	 * but differ in their content. The $email_data array provides the variable content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $subject   Email subject line.
 	 * @param string $preheader Email preheader text.
 	 * @param array  $email_data {
 	 *     Additional email-specific data.
 	 *
-	 *     @type string $learn_more_url URL for the learn more link.
-	 *     @type string $cta_label      Label for the primary call-to-action button.
-	 *     @type string $cta_url        URL for the primary call-to-action button.
-	 *     @type string $footer_copy    Footer copy text.
-	 *     @type array  $custom_data    Any additional custom data for the template.
+	 *     @type string $learn_more_url   URL for the learn more link.
+	 *     @type string $cta_label        Label for the primary call-to-action button.
+	 *     @type string $cta_url          URL for the primary call-to-action button.
+	 *     @type string $footer_copy      Footer copy text.
+	 *     @type array  $body_format_args Format arguments for plain text body (e.g., frequency, first_report_date).
+	 *     @type array  $custom_data      Any additional custom data for the template.
 	 * }
 	 * @return array Template data for simple email.
 	 */
@@ -304,6 +305,7 @@ class Email_Template_Formatter {
 			'preheader'              => $preheader,
 			'site'                   => array(
 				'domain' => $site_domain,
+				'url'    => $this->context->get_reference_site_url(),
 			),
 			'learn_more_url'         => $email_data['learn_more_url'] ?? '',
 			'primary_call_to_action' => array(
@@ -314,11 +316,6 @@ class Email_Template_Formatter {
 				'copy' => $email_data['footer_copy'] ?? '',
 			),
 		);
-
-		// Merge any custom data for template-specific needs.
-		if ( ! empty( $email_data['custom_data'] ) && is_array( $email_data['custom_data'] ) ) {
-			$data = array_merge( $data, $email_data['custom_data'] );
-		}
 
 		return $data;
 	}
@@ -338,6 +335,7 @@ class Email_Template_Formatter {
 			'preheader'              => __( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
 			'site'                   => array(
 				'domain' => $this->get_site_domain(),
+				'url'    => $this->context->get_reference_site_url(),
 			),
 			'date_range'             => array(
 				'label'   => $this->build_date_label( $date_range ),
@@ -430,7 +428,7 @@ class Email_Template_Formatter {
 	 * @param string $frequency Frequency slug.
 	 * @return string Frequency label.
 	 */
-	private function get_frequency_label( $frequency ) {
+	public function get_frequency_label( $frequency ) {
 		switch ( $frequency ) {
 			case Email_Reporting_Settings::FREQUENCY_MONTHLY:
 				return __( 'monthly', 'google-site-kit' );
@@ -440,6 +438,94 @@ class Email_Template_Formatter {
 			default:
 				return __( 'weekly', 'google-site-kit' );
 		}
+	}
+
+	/**
+	 * Gets a human-readable label for when the first report will be sent.
+	 *
+	 * Returns a localized string describing when the user can expect their
+	 * first report based on their selected frequency.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param string $frequency Frequency slug (weekly, monthly, quarterly).
+	 * @return string First report date label.
+	 */
+	public function get_first_report_date_label( $frequency ) {
+		switch ( $frequency ) {
+			case Email_Reporting_Settings::FREQUENCY_MONTHLY:
+				return __( '1st of the following month', 'google-site-kit' );
+
+			case Email_Reporting_Settings::FREQUENCY_QUARTERLY:
+				return $this->get_next_quarter_label();
+
+			case Email_Reporting_Settings::FREQUENCY_WEEKLY:
+			default:
+				return $this->get_next_week_start_label();
+		}
+	}
+
+	/**
+	 * Gets the label for the next week start day.
+	 *
+	 * Uses WordPress start_of_week setting to determine which day
+	 * of the week reports are sent.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @return string Label like "next Monday".
+	 */
+	private function get_next_week_start_label() {
+		$start_of_week = (int) get_option( 'start_of_week', 0 );
+
+		global $wp_locale;
+
+		$day_name = $wp_locale->get_weekday( $start_of_week );
+
+		return sprintf(
+			/* translators: %s: Day of the week (e.g., "Monday"). */
+			__( 'next %s', 'google-site-kit' ),
+			$day_name
+		);
+	}
+
+	/**
+	 * Gets the label for the next quarterly report date.
+	 *
+	 * Quarters are: Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec).
+	 * Returns "1st of {month}" for the first month of the next quarter.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @return string Label like "1st of April".
+	 */
+	private function get_next_quarter_label() {
+		$current_month = (int) gmdate( 'n' );
+
+		// Determine the first month of the next quarter.
+		if ( $current_month <= 3 ) {
+			// Current: Q1 (Jan-Mar), Next: Q2 starts April.
+			$next_quarter_month = 4;
+		} elseif ( $current_month <= 6 ) {
+			// Current: Q2 (Apr-Jun), Next: Q3 starts July.
+			$next_quarter_month = 7;
+		} elseif ( $current_month <= 9 ) {
+			// Current: Q3 (Jul-Sep), Next: Q4 starts October.
+			$next_quarter_month = 10;
+		} else {
+			// Current: Q4 (Oct-Dec), Next: Q1 starts January.
+			$next_quarter_month = 1;
+		}
+
+		// Get localized month name.
+		$timestamp  = mktime( 0, 0, 0, $next_quarter_month, 1 );
+		$month_name = wp_date( 'F', $timestamp );
+
+		return sprintf(
+			/* translators: %s: Month name (e.g., "April"). */
+			__( '1st of %s', 'google-site-kit' ),
+			$month_name
+		);
 	}
 
 	/**

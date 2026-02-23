@@ -37,6 +37,75 @@ class Email_Log_Batch_Query {
 	);
 
 	/**
+	 * Gets the total count of email log entries by status.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param string $status Post status to count.
+	 * @return int
+	 */
+	public function get_total_count_by_status( $status ) {
+		if ( ! post_type_exists( Email_Log::POST_TYPE ) ) {
+			return 0;
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'              => Email_Log::POST_TYPE,
+				'post_status'            => (string) $status,
+				'posts_per_page'         => 1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => false,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
+
+		return (int) $query->found_posts;
+	}
+
+	/**
+	 * Gets sent/failed counts for a batch of email log entries.
+	 *
+	 * Returns zeros if any entry in the batch is still scheduled.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param array<int> $post_ids Post IDs in the batch.
+	 * @return array{sent:int,failed:int}
+	 */
+	public function get_batch_counts( array $post_ids ) {
+		$default = array(
+			'sent'   => 0,
+			'failed' => 0,
+		);
+
+		if ( empty( $post_ids ) ) {
+			return $default;
+		}
+
+		foreach ( $post_ids as $post_id ) {
+			if ( Email_Log::STATUS_SCHEDULED === get_post_status( $post_id ) ) {
+				return $default;
+			}
+		}
+
+		$counts = $default;
+
+		foreach ( $post_ids as $post_id ) {
+			$status = get_post_status( $post_id );
+
+			if ( Email_Log::STATUS_SENT === $status ) {
+				++$counts['sent'];
+			} elseif ( Email_Log::STATUS_FAILED === $status ) {
+				++$counts['failed'];
+			}
+		}
+
+		return $counts;
+	}
+
+	/**
 	 * Retrieves IDs for pending logs within a batch.
 	 *
 	 * @since 1.167.0

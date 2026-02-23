@@ -40,6 +40,8 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -58,10 +60,6 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
-
-export const WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
-export const GATHERING_DATA_DISMISSED_ITEM_SLUG =
-	'welcome-modal-gathering-data';
 
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
@@ -95,12 +93,8 @@ export default function WelcomeModal() {
 
 	const isGatheringDataVariantDismissed = useSelect( ( select: Select ) =>
 		select( CORE_USER ).isItemDismissed(
-			GATHERING_DATA_DISMISSED_ITEM_SLUG
+			WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
 		)
-	);
-
-	const isWithTourVariantDismissed = useSelect( ( select: Select ) =>
-		select( CORE_USER ).isItemDismissed( WITH_TOUR_DISMISSED_ITEM_SLUG )
 	);
 
 	const showGatheringDataModal = analyticsConnected
@@ -116,11 +110,6 @@ export default function WelcomeModal() {
 			? MODAL_VARIANT.DATA_GATHERING_COMPLETE
 			: MODAL_VARIANT.DATA_AVAILABLE;
 	}
-
-	const isItemDismissed =
-		modalVariant === MODAL_VARIANT.GATHERING_DATA
-			? isGatheringDataVariantDismissed
-			: isWithTourVariantDismissed;
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -141,14 +130,14 @@ export default function WelcomeModal() {
 		setIsOpen( false );
 
 		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
-			await dismissItem( WITH_TOUR_DISMISSED_ITEM_SLUG );
+			await dismissItem( WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG );
 		}
 
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
 			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
 		) {
-			await dismissItem( GATHERING_DATA_DISMISSED_ITEM_SLUG );
+			await dismissItem( WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG );
 		}
 
 		// Ensure the setup success notification won't be shown on page reload.
@@ -163,12 +152,23 @@ export default function WelcomeModal() {
 		}
 	}, [ closeAndDismissModal, modalVariant, showTooltip ] );
 
+	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	);
+
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return null;
+	}
+
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
 		return null;
 	}
 
-	if ( isItemDismissed || ! isOpen ) {
+	if ( ! isOpen ) {
 		return null;
 	}
 

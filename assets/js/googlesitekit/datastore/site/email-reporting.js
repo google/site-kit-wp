@@ -35,6 +35,10 @@ import {
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+
+const START_INVITING_USER = 'START_INVITING_USER';
+const FINISH_INVITING_USER = 'FINISH_INVITING_USER';
 
 const baseInitialState = {
 	emailReporting: {
@@ -42,6 +46,7 @@ const baseInitialState = {
 		savedSettings: undefined,
 		eligibleSubscribers: undefined,
 		errors: undefined,
+		invitingUsers: {},
 	},
 };
 
@@ -101,6 +106,21 @@ const fetchGetEmailReportingErrorsStore = createFetchStore( {
 	},
 } );
 
+const fetchInviteUserStore = createFetchStore( {
+	baseName: 'inviteUser',
+	controlCallback: ( { userID } ) =>
+		set( 'core', 'site', 'email-reporting-invite-user', {
+			userID,
+		} ),
+	argsToParams: ( userID ) => ( { userID } ),
+	validateParams: ( { userID } = {} ) => {
+		invariant(
+			Number.isInteger( userID ) && userID > 0,
+			'userID should be a positive integer.'
+		);
+	},
+} );
+
 // Actions
 const SET_EMAIL_REPORTING_SETTINGS = 'SET_EMAIL_REPORTING_SETTINGS';
 
@@ -125,6 +145,36 @@ const baseActions = {
 	},
 
 	/**
+	 * Sends an invitation to an eligible subscriber.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param {number} userID Eligible user ID.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	inviteUser: createValidatedAction(
+		( userID ) => {
+			invariant(
+				Number.isInteger( userID ) && userID > 0,
+				'userID should be a positive integer.'
+			);
+		},
+		function* ( userID ) {
+			const registry = yield commonActions.getRegistry();
+
+			registry.dispatch( CORE_SITE ).startInvitingUser( userID );
+
+			try {
+				return yield fetchInviteUserStore.actions.fetchInviteUser(
+					userID
+				);
+			} finally {
+				registry.dispatch( CORE_SITE ).finishInvitingUser( userID );
+			}
+		}
+	),
+
+	/**
 	 * Sets email reporting enabled state.
 	 *
 	 * @since 1.165.0
@@ -143,6 +193,36 @@ const baseActions = {
 			payload: { settings: { enabled } },
 		};
 	},
+
+	/**
+	 * Sets the inviting state to true for a user.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param {number} userID User ID.
+	 * @return {Object} Redux-style action.
+	 */
+	startInvitingUser( userID ) {
+		return {
+			type: START_INVITING_USER,
+			payload: { userID },
+		};
+	},
+
+	/**
+	 * Clears the inviting state for a user.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param {number} userID User ID.
+	 * @return {Object} Redux-style action.
+	 */
+	finishInvitingUser( userID ) {
+		return {
+			type: FINISH_INVITING_USER,
+			payload: { userID },
+		};
+	},
 };
 
 export const baseReducer = createReducer( ( state, action ) => {
@@ -154,6 +234,14 @@ export const baseReducer = createReducer( ( state, action ) => {
 				...state.emailReporting.settings,
 				...payload.settings,
 			};
+			break;
+		}
+		case START_INVITING_USER: {
+			state.emailReporting.invitingUsers[ payload.userID ] = true;
+			break;
+		}
+		case FINISH_INVITING_USER: {
+			state.emailReporting.invitingUsers[ payload.userID ] = false;
 			break;
 		}
 
@@ -297,6 +385,19 @@ const baseSelectors = {
 			return categoryID;
 		}
 	),
+
+	/**
+	 * Checks whether an invitation is in progress for a given user.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param {Object} state  Data store's state.
+	 * @param {number} userID User ID.
+	 * @return {boolean} True if invitation request is in progress, otherwise false.
+	 */
+	isInvitingUser( state, userID ) {
+		return !! state.emailReporting?.invitingUsers?.[ userID ];
+	},
 };
 
 const store = combineStores(
@@ -304,6 +405,7 @@ const store = combineStores(
 	fetchSaveEmailReportingSettingsStore,
 	fetchGetEligibleSubscribersStore,
 	fetchGetEmailReportingErrorsStore,
+	fetchInviteUserStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

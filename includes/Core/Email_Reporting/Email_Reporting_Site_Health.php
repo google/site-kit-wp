@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
-
 /**
  * Class responsible for exposing Email Reporting data to Site Health.
  *
@@ -31,14 +28,6 @@ class Email_Reporting_Site_Health {
 	private $settings;
 
 	/**
-	 * User options instance.
-	 *
-	 * @since 1.166.0
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
 	 * Email log batch query instance.
 	 *
 	 * @since 1.172.0
@@ -47,17 +36,25 @@ class Email_Reporting_Site_Health {
 	private $email_log_batch_query;
 
 	/**
+	 * Subscribed users query instance.
+	 *
+	 * @since 1.173.0
+	 * @var Subscribed_Users_Query
+	 */
+	private $subscribed_users_query;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.166.0
 	 *
-	 * @param Email_Reporting_Settings $settings     Email reporting settings.
-	 * @param User_Options             $user_options User options instance.
+	 * @param Email_Reporting_Settings $settings               Email reporting settings.
+	 * @param Subscribed_Users_Query   $subscribed_users_query Subscribed users query instance.
 	 */
-	public function __construct( Email_Reporting_Settings $settings, User_Options $user_options ) {
-		$this->settings              = $settings;
-		$this->user_options          = $user_options;
-		$this->email_log_batch_query = new Email_Log_Batch_Query();
+	public function __construct( Email_Reporting_Settings $settings, Subscribed_Users_Query $subscribed_users_query ) {
+		$this->settings               = $settings;
+		$this->email_log_batch_query  = new Email_Log_Batch_Query();
+		$this->subscribed_users_query = $subscribed_users_query;
 	}
 
 	/**
@@ -101,7 +98,7 @@ class Email_Reporting_Site_Health {
 			return $fields;
 		}
 
-		$subscriber_count                             = $this->get_subscriber_count();
+		$subscriber_count                             = $this->subscribed_users_query->get_subscriber_count();
 		$fields['email_reports_subscribers']['value'] = $subscriber_count;
 		$fields['email_reports_subscribers']['debug'] = $subscriber_count;
 
@@ -119,37 +116,6 @@ class Email_Reporting_Site_Health {
 		$fields['email_reports_last_sent']      = array_merge( $fields['email_reports_last_sent'], $this->build_last_sent_field( $batch_post_ids ) );
 
 		return $fields;
-	}
-
-	/**
-	 * Gets the number of subscribed users.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return int
-	 */
-	private function get_subscriber_count() {
-		$meta_key = $this->user_options->get_meta_key( User_Email_Reporting_Settings::OPTION );
-
-		$user_query = new \WP_User_Query(
-			array(
-				'fields'   => 'ids',
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'compare'  => 'EXISTS',
-			)
-		);
-
-		$subscribers = 0;
-
-		foreach ( $user_query->get_results() as $user_id ) {
-			$settings = get_user_meta( $user_id, $meta_key, true );
-
-			if ( is_array( $settings ) && ! empty( $settings['subscribed'] ) ) {
-				++$subscribers;
-			}
-		}
-
-		return $subscribers;
 	}
 
 	/**

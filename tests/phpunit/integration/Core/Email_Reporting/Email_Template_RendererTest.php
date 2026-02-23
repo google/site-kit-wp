@@ -78,6 +78,7 @@ class Email_Template_RendererTest extends TestCase {
 			'preheader'              => 'Test preheader',
 			'site'                   => array(
 				'domain' => 'example.com',
+				'url'    => 'https://example.com',
 			),
 			'date_range'             => array(
 				'label'   => $date_label,

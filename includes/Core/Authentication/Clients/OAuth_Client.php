@@ -18,10 +18,12 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
@@ -58,6 +60,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	private $transients;
 
 	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @since 1.173.0
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -91,8 +101,9 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id   = new Owner_ID( $this->options );
-		$this->transients = $transients ?: new Transients( $this->context );
+		$this->owner_id        = new Owner_ID( $this->options );
+		$this->transients      = $transients ?: new Transients( $this->context );
+		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 	}
 
 	/**
@@ -675,9 +686,28 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
 		} else {
 			// No redirect_url is set, use default page.
-			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
+			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => $this->get_notification_for_default_redirect_url() ) );
 		}
 
 		return $redirect_url;
+	}
+
+	/**
+	 * Returns the value of the `notification` query param to use in the redirect URL based on whether the welcome modal has been previously dismissed.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @return string The value of the `notification` query param.
+	 */
+	private function get_notification_for_default_redirect_url() {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return 'authentication_success';
+		}
+
+		if ( $this->dismissed_items->is_dismissed( 'welcome-modal-gathering-data' ) ) {
+			return 'authentication_success';
+		}
+
+		return 'initial_setup_success';
 	}
 }

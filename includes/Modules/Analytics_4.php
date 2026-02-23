@@ -939,7 +939,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		 *
 		 * @since 1.1.0
 		 *
-		 * @param $disabled bool Whether to disable tracking or not.
+		 * @param bool $disabled Whether to disable tracking or not.
 		 */
 		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
@@ -2427,6 +2427,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
+		return array();
 	}
 
 	/**

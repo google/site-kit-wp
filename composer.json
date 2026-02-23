@@ -8,11 +8,15 @@
     "automattic/vipwpcs": "^3",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
     "google/site-kit-phpcs-standards": "0.1",
+    "php-stubs/woocommerce-stubs": "^10.5",
+    "php-stubs/wp-cli-stubs": "^2.12",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^9.0",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
     "squizlabs/php_codesniffer": "^3.7",
+    "szepeviktor/phpstan-wordpress": "^2.0",
     "wp-coding-standards/wpcs": "^3",
     "wp-phpunit/wp-phpunit": ">=5.2",
     "yoast/phpunit-polyfills": "^2.0"
@@ -117,6 +121,7 @@
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
+    "analyze": "phpstan --memory-limit=2G",
     "lint": "phpcs",
     "lint-fix": "phpcbf",
     "test": "phpunit",

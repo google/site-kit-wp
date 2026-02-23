@@ -65,6 +65,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
@@ -82,6 +83,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
@@ -107,9 +109,19 @@ export default function DashboardMainApp() {
 			grantedScopes.includes( scope )
 		);
 
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
+	const hasAnalyticsAccess = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		)
 	);
+
+	const configuredAudiences = useSelect( ( select ) => {
+		if ( ! hasAnalyticsAccess ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getConfiguredAudiences();
+	} );
 
 	useMount( () => {
 		// Render the current survey portal in 5 seconds after the initial rendering.
@@ -231,6 +243,16 @@ export default function DashboardMainApp() {
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const showWelcomeModal = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return false;
+		}
+
+		return (
+			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
+			isInitialWelcomeModalActive()
+		);
+	} );
 
 	useMonitorInternetConnection();
 
@@ -337,7 +359,7 @@ export default function DashboardMainApp() {
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ setupFlowRefreshEnabled && <WelcomeModal /> }
+			{ showWelcomeModal && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>

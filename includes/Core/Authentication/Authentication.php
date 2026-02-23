@@ -312,9 +312,7 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				$this->set_connected_proxy_url();
-			},
-			10,
-			3
+			}
 		);
 
 		add_filter(

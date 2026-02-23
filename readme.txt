@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      6.9
 Requires PHP:      7.4
-Stable tag:        1.172.0
+Stable tag:        1.173.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -109,34 +109,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.172.0 =
+= 1.173.0 =
 
 **Enhanced**
 
-* Update generated PHP client library for Reader Revenue Manager. See [#12077](https://github.com/google/site-kit-wp/issues/12077).
-* Update the Welcome modal's close button interaction states (hover, active, focus) to match the new design. See [#12045](https://github.com/google/site-kit-wp/issues/12045).
-* Add Reader Revenue Manager setup success notification variants for publications with policy violations. See [#12015](https://github.com/google/site-kit-wp/issues/12015).
-* Add dashboard notifications for Reader Revenue Manager policy violations. See [#12005](https://github.com/google/site-kit-wp/issues/12005).
-* Fix bug that could cause tooltips to stay on-screen when the email frequency panel is opened. See [#11968](https://github.com/google/site-kit-wp/issues/11968).
-* Improve Analytics notice button behaviour and text in Email Reporting UI. See [#11960](https://github.com/google/site-kit-wp/issues/11960).
-* Add internal tracking for WP Pointer. See [#11932](https://github.com/google/site-kit-wp/issues/11932).
-* Add module disconnection tracking functionality. See [#11883](https://github.com/google/site-kit-wp/issues/11883).
-* Add error notices for the Email Reporting sending failures. See [#11861](https://github.com/google/site-kit-wp/issues/11861).
-* Implement error notice infrastructure in admin settings and email reports subscription panel. See [#11860](https://github.com/google/site-kit-wp/issues/11860).
-* Add eligible subscribers selector to email reporting datastore. See [#11858](https://github.com/google/site-kit-wp/issues/11858).
-* Share API requests for shared modules between users when generating email reports. See [#11845](https://github.com/google/site-kit-wp/issues/11845).
-* Prevent the Site Kit setup success notification from appearing when the Welcome modal is displayed. See [#11819](https://github.com/google/site-kit-wp/issues/11819).
-* Update the Analytics setup CTA shown in the Search Funnel widget, WP Dashboard and Admin Bar app, and make it dismissible. See [#11816](https://github.com/google/site-kit-wp/issues/11816).
-* Add new setup flow Analytics-connected dashboard tour. See [#11813](https://github.com/google/site-kit-wp/issues/11813).
-* Update info tooltips to be tappable. See [#11681](https://github.com/google/site-kit-wp/issues/11681).
-* Standardise the implementation of the user and view-only user menu. See [#11520](https://github.com/google/site-kit-wp/issues/11520).
+* Reset Reader Revenue Manager policy violation notification dismissals when connecting a different publication, or disconnecting the service. See [#12189](https://github.com/google/site-kit-wp/issues/12189).
+* Update opt-in user tracking for Reader Revenue Manager setup success notification. See [#12104](https://github.com/google/site-kit-wp/issues/12104).
+* Add GA4 tracking events for RRM policy violation notifications. See [#12103](https://github.com/google/site-kit-wp/issues/12103).
+* Prevent the Welcome modal from being shown to existing users when the Setup Flow Refresh feature flag is enabled. See [#12068](https://github.com/google/site-kit-wp/issues/12068).
+* Add "Action needed" badge to RRM module status for policy violations. See [#12017](https://github.com/google/site-kit-wp/issues/12017).
+* Add Reader Revenue Manager policy violation notifications in Site Kit settings. See [#12014](https://github.com/google/site-kit-wp/issues/12014).
+* Update email report to include dynamic conversion metrics based on sites' tracked metrics. See [#12001](https://github.com/google/site-kit-wp/issues/12001).
+* Update the unsubscribe notice of Email Reporting to have a black background. See [#11996](https://github.com/google/site-kit-wp/issues/11996).
+* Add a confirmation before disabling the Email Reporting settings. See [#11862](https://github.com/google/site-kit-wp/issues/11862).
+* Add subscription confirmation email template. See [#11853](https://github.com/google/site-kit-wp/issues/11853).
+* Add email invite template for email reporting. See [#11851](https://github.com/google/site-kit-wp/issues/11851).
+* Add Email Reporting stats to feature metrics. See [#11850](https://github.com/google/site-kit-wp/issues/11850).
+* Add the Search Console-only dashboard tour for the new setup flow. See [#11814](https://github.com/google/site-kit-wp/issues/11814).
+* Add support for base admin URLs that already contain query parameters in the `getAdminURL` selector. Props xipasduarte. See [#11115](https://github.com/google/site-kit-wp/issues/11115).
+* Add controls for Reader Revenue Manager settings in the WordPress site editor. See [#10312](https://github.com/google/site-kit-wp/issues/10312).
 
 **Fixed**
 
-* Fix redirect URLs used when the new setup flow is enabled. See [#12061](https://github.com/google/site-kit-wp/issues/12061).
-* Update Email Reporting templates to address minor issues. See [#11963](https://github.com/google/site-kit-wp/issues/11963).
-* Fix Email Reporting subscription panel issues on module setup screens. See [#11958](https://github.com/google/site-kit-wp/issues/11958).
-* Fix sending Email Reporting emails in multisite mode. See [#11955](https://github.com/google/site-kit-wp/issues/11955).
-* Fix bug that could cause administrators on multisites to be unable to access shared dashboard without signing in to their Google account. See [#11953](https://github.com/google/site-kit-wp/issues/11953).
+* Fix the issue when users with no permissions received emails from Email Reporting. See [#12152](https://github.com/google/site-kit-wp/issues/12152).
+* Update email headings text to use sentence-case. See [#11966](https://github.com/google/site-kit-wp/issues/11966).
+* Select the "In the field" tab immediately in the PageSpeed Insights widget when field data is available, preventing a flicker due to the "In the Lab" tab being active initially. See [#11173](https://github.com/google/site-kit-wp/issues/11173).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

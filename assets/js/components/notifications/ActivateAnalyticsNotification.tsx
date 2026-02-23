@@ -30,17 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { WEEK_IN_SECONDS } from '@/js/util';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useViewContext from '@/js/hooks/useViewContext';
 // @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { WEEK_IN_SECONDS } from '@/js/util';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
@@ -50,6 +51,8 @@ interface ActivateAnalyticsNotificationProps {
 const ActivateAnalyticsNotification: FC<
 	ActivateAnalyticsNotificationProps
 > = ( { id, Notification } ) => {
+	const viewContext = useViewContext();
+
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: __(
@@ -89,8 +92,12 @@ const ActivateAnalyticsNotification: FC<
 
 	const isBusy = isActivatingAnalytics || isNavigatingToReauthURL;
 
+	const gaTrackingEventArgs = {
+		category: `${ viewContext }_${ id }`,
+	};
+
 	return (
-		<Notification>
+		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			{ /* @ts-expect-error - The `BannerNotification` component is not typed yet. */ }
 			<BannerNotification
 				notificationID={ id }
