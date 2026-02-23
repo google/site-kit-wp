@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -73,11 +74,15 @@ describe( 'HelpMenu', () => {
 			features: [ 'setupFlowRefresh' ],
 		} );
 
-		fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
+		act( () => {
+			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
+		} );
 
-		fireEvent.click(
-			getByRole( 'menuitem', { name: 'Start a feature tour' } )
-		);
+		act( () => {
+			fireEvent.click(
+				getByRole( 'menuitem', { name: 'Start a feature tour' } )
+			);
+		} );
 
 		expect( getWelcomeTourMock ).toHaveBeenCalledWith( {
 			canAuthenticate: true,
