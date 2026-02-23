@@ -59,12 +59,11 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 				'google-site-kit'
 			) }
 			description={ sprintf(
-				/* translators: %1$s: module name, %2$s: module name */
+				/* translators: %1$s: module name */
 				__(
-					'We were unable to generate your report because data loading failed for %1$s. To fix this, go to %2$s settings in Site Kit or get help. Report delivery will automatically resume once the issue is resolved.',
+					'We were unable to generate your report because data loading failed for %1$s. To fix this, go to %1$s settings in Site Kit or get help. Report delivery will automatically resume once the issue is resolved.',
 					'google-site-kit'
 				),
-				module.name,
 				module.name
 			) }
 			onInView={ trackEvents.view }
