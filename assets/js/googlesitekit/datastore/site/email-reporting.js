@@ -359,7 +359,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the category ID of the latest email reporting error.
+	 * Gets the latest email reporting error.
 	 *
 	 * @since n.e.x.t
 	 *
