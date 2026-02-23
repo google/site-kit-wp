@@ -34,8 +34,8 @@ function Template( { user, inviteResult, ...args } ) {
 	return (
 		<div
 			style={ {
-				maxWidth: '400px',
-				padding: '16px',
+				maxWidth: '600px',
+				padding: '24px',
 				backgroundColor: '#fff',
 			} }
 		>
@@ -54,7 +54,6 @@ Default.storyName = 'Default State';
 Default.args = {
 	user: mockUser,
 };
-Default.scenario = {};
 
 export const Success = Template.bind( {} );
 Success.storyName = 'Success State';
@@ -62,7 +61,6 @@ Success.args = {
 	user: mockUser,
 	inviteResult: { status: 'success' },
 };
-Success.scenario = {};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error State';
@@ -70,7 +68,6 @@ Error.args = {
 	user: mockUser,
 	inviteResult: { status: 'error', message: 'Failed to send invitation' },
 };
-Error.scenario = {};
 
 export default {
 	title: 'Components/EmailReporting/InviteUserRow',

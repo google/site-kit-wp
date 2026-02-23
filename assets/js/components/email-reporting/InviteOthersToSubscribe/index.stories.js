@@ -132,7 +132,6 @@ Empty.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
-Empty.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading State';
@@ -151,7 +150,6 @@ Loading.decorators = [
 		</div>
 	),
 ];
-Loading.scenario = {};
 
 export default {
 	title: 'Components/EmailReporting/InviteOthersToSubscribe',
@@ -173,7 +171,7 @@ export default {
 						style={ {
 							display: 'flex',
 							flexDirection: 'column',
-							maxWidth: '400px',
+							maxWidth: '600px',
 							height: '600px',
 							padding: '24px',
 							backgroundColor: '#fff',
