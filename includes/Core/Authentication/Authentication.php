@@ -1171,8 +1171,8 @@ final class Authentication implements Provides_Feature_Metrics {
 									if ( ! storage ) {
 										continue;
 									}
-									const key = Object.keys( storage ).find( ( key ) =>
-										key.match( 'googlesitekit_%1\$s_.*_module_setup' )
+									const key = Object.keys( storage ).find( ( k ) =>
+										k.match( 'googlesitekit_%1\$s_.*_module_setup' )
 									);
 									if ( ! key ) {
 										continue;
