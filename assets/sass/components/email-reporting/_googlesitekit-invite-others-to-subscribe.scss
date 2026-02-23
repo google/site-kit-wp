@@ -25,6 +25,10 @@
 		margin-top: 70px;
 		min-height: 0;
 		overflow: hidden;
+
+		@media (max-height: 799px) {
+			margin-top: $grid-gap-phone;
+		}
 	}
 
 	.googlesitekit-invite-others-to-subscribe__header {
