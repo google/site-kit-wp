@@ -575,15 +575,15 @@ class Worker_TaskTest extends TestCase {
 		$this->template_renderer->method( 'render_text' )->willReturn( 'Subscription confirmation email' );
 
 		$captured_mail = null;
-		$pre_wp_mail   = function ( $pre_wp_mail_value, $atts ) use ( &$captured_mail ) {
+		$wp_mail       = function ( $atts ) use ( &$captured_mail ) {
 			$captured_mail = $atts;
-			return true;
+			return $atts;
 		};
-		add_filter( 'pre_wp_mail', $pre_wp_mail, 10, 2 );
+		add_filter( 'wp_mail', $wp_mail );
 
 		$task = $this->create_worker_task( $this->real_batch_query );
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
-		remove_filter( 'pre_wp_mail', $pre_wp_mail, 10 );
+		remove_filter( 'wp_mail', $wp_mail );
 
 		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Subscribe-success log should be marked sent when email delivery succeeds.' );
 		$this->assertIsArray( $captured_mail, 'Subscription confirmation should call wp_mail.' );
@@ -770,7 +770,7 @@ class Worker_TaskTest extends TestCase {
 		$site_id       = null !== $site_id ? (int) $site_id : get_current_blog_id();
 		$template_type = $template_type ?: Email_Log::TEMPLATE_TYPE_EMAIL_REPORT;
 
-		$post_id = wp_insert_post(
+		$post_id = $this->factory()->post->create(
 			array(
 				'post_type'     => Email_Log::POST_TYPE,
 				'post_status'   => $status,
@@ -778,16 +778,15 @@ class Worker_TaskTest extends TestCase {
 				'post_author'   => $user_id,
 				'post_date'     => '2000-01-01 00:00:00',
 				'post_date_gmt' => '2000-01-01 00:00:00',
-				'meta_input'    => array(
-					Email_Log::META_BATCH_ID               => $batch_id,
-					Email_Log::META_REPORT_FREQUENCY       => Email_Reporting_Settings::FREQUENCY_WEEKLY,
-					Email_Log::META_SEND_ATTEMPTS          => $attempts,
-					Email_Log::META_REPORT_REFERENCE_DATES => $date_range_meta ?: $this->get_reference_dates_meta(),
-					Email_Log::META_SITE_ID                => $site_id,
-					Email_Log::META_TEMPLATE_TYPE          => $template_type,
-				),
 			)
 		);
+
+		update_post_meta( $post_id, Email_Log::META_BATCH_ID, $batch_id );
+		update_post_meta( $post_id, Email_Log::META_REPORT_FREQUENCY, Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		update_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, $attempts );
+		update_post_meta( $post_id, Email_Log::META_REPORT_REFERENCE_DATES, $date_range_meta ?: $this->get_reference_dates_meta() );
+		update_post_meta( $post_id, Email_Log::META_SITE_ID, $site_id );
+		update_post_meta( $post_id, Email_Log::META_TEMPLATE_TYPE, $template_type );
 
 		$this->created_post_ids[] = $post_id;
 
