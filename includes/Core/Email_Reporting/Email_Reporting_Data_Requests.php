@@ -200,10 +200,9 @@ class Email_Reporting_Data_Requests {
 		$status = $error->get_error_data()['status'];
 		$reason = $error->get_error_data()['reason'];
 
+		$category = 'report_error';
 		if ( in_array( $status, self::PERMISSIONS_ERROR_STATUSES, true ) || in_array( $reason, self::PERMISSIONS_ERROR_REASONS, true ) ) {
 			$category = 'permissions_error';
-		} else {
-			$category = 'report_error';
 		}
 
 		return new WP_Error(
