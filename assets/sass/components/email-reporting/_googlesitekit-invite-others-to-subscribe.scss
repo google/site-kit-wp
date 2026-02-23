@@ -60,6 +60,7 @@
 		font-size: $fs-body-sm;
 		height: 32px;
 		letter-spacing: $ls-s;
+		min-height: 32px;
 		padding: 0 36px 0 16px;
 		width: calc(100% - 1px);
 
@@ -80,7 +81,7 @@
 	}
 
 	.googlesitekit-invite-user-list {
-		flex: 1 1 0;
+		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
 	}
@@ -88,10 +89,6 @@
 	.googlesitekit-invite-user-list__empty {
 		color: $c-surfaces-on-surface-variant;
 		font-size: $fs-body-sm;
-		padding: 16px 0;
-	}
-
-	.googlesitekit-invite-user-list__loading {
 		padding: 16px 0;
 	}
 
@@ -107,7 +104,10 @@
 	}
 
 	.googlesitekit-invite-user-row__info {
+		display: flex;
 		flex: 1;
+		flex-direction: column;
+		gap: 6px;
 		min-width: 0;
 	}
 

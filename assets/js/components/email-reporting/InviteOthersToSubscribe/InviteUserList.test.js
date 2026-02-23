@@ -165,9 +165,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			container.querySelector(
-				'.googlesitekit-invite-user-list__loading'
-			)
+			container.querySelector( '.googlesitekit-invite-user-row--loading' )
 		).toBeInTheDocument();
 	} );
 

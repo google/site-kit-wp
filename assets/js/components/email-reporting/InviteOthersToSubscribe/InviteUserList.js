@@ -30,7 +30,7 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ProgressBar } from 'googlesitekit-components';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import InviteUserRow from './InviteUserRow';
 
 export default function InviteUserList( {
@@ -64,8 +64,25 @@ export default function InviteUserList( {
 
 	if ( isLoading ) {
 		return (
-			<div className="googlesitekit-invite-user-list__loading">
-				<ProgressBar small />
+			<div className="googlesitekit-invite-user-list">
+				{ Array.from( { length: 3 } ).map( ( _, i ) => (
+					<div
+						key={ i }
+						className="googlesitekit-invite-user-row googlesitekit-invite-user-row--loading"
+					>
+						<div className="googlesitekit-invite-user-row__info">
+							<PreviewBlock width="120px" height="16px" />
+							<PreviewBlock width="180px" height="12px" />
+						</div>
+						<div className="googlesitekit-invite-user-row__action">
+							<PreviewBlock
+								width="90px"
+								height="32px"
+								shape="square"
+							/>
+						</div>
+					</div>
+				) ) }
 			</div>
 		);
 	}

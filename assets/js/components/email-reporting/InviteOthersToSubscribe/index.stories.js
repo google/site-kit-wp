@@ -26,7 +26,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import InviteOthersToSubscribe from '.';
-import InviteUserRow from './InviteUserRow';
 
 const mockEligibleSubscribers = [
 	{
@@ -107,6 +106,7 @@ Default.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
+Default.scenario = {};
 
 export const WithSearch = Template.bind( {} );
 WithSearch.storyName = 'With Search (7+ users)';
@@ -120,6 +120,7 @@ WithSearch.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
+WithSearch.scenario = {};
 
 export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty State (no eligible users)';
@@ -131,48 +132,26 @@ Empty.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
+Empty.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading State';
 Loading.args = {
-	setupRegistry: () => {
-		// Don't dispatch any eligible subscribers to simulate loading.
+	setupRegistry: ( registry ) => {
+		// Start resolution but never finish it so the component stays in loading state.
+		registry
+			.dispatch( CORE_SITE )
+			.startResolution( 'getEligibleSubscribers', [] );
 	},
 };
-
-// Individual InviteUserRow stories
-function RowTemplate( { user, inviteResult, ...args } ) {
-	return (
-		<div style={ { maxWidth: '400px', padding: '16px' } }>
-			<InviteUserRow
-				user={ user }
-				inviteResult={ inviteResult }
-				onInviteResult={ () => {} }
-				{ ...args }
-			/>
+Loading.decorators = [
+	( Story ) => (
+		<div className="googlesitekit-vrt-animation-paused">
+			<Story />
 		</div>
-	);
-}
-
-export const UserRowDefault = RowTemplate.bind( {} );
-UserRowDefault.storyName = 'User Row: Default State';
-UserRowDefault.args = {
-	user: mockEligibleSubscribers[ 0 ],
-};
-
-export const UserRowSuccess = RowTemplate.bind( {} );
-UserRowSuccess.storyName = 'User Row: Success State';
-UserRowSuccess.args = {
-	user: mockEligibleSubscribers[ 0 ],
-	inviteResult: { status: 'success' },
-};
-
-export const UserRowError = RowTemplate.bind( {} );
-UserRowError.storyName = 'User Row: Error State';
-UserRowError.args = {
-	user: mockEligibleSubscribers[ 0 ],
-	inviteResult: { status: 'error', message: 'Failed to send invitation' },
-};
+	),
+];
+Loading.scenario = {};
 
 export default {
 	title: 'Components/EmailReporting/InviteOthersToSubscribe',
@@ -192,7 +171,10 @@ export default {
 				<WithRegistrySetup func={ setupRegistry }>
 					<div
 						style={ {
+							display: 'flex',
+							flexDirection: 'column',
 							maxWidth: '400px',
+							height: '600px',
 							padding: '24px',
 							backgroundColor: '#fff',
 						} }
