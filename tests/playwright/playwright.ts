@@ -19,7 +19,7 @@
  */
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { test as base } from '@playwright/test';
+import { test as base, type Cookie } from '@playwright/test';
 import { createConnection } from 'mysql2/promise';
 
 export { expect, TestDetails } from '@playwright/test';
@@ -117,14 +117,37 @@ export const test = base.extend< WordPressFixture >( {
 		await createDatabase( dbName );
 
 		try {
-			// Set a cookie to identify the database.
-			await context.addCookies( [
+			const baseURL = new URL( WP_BASE_URL );
+			const cookieDefaults: Omit< Cookie, 'name' | 'value' > = {
+				domain: baseURL.hostname,
+				path: '/',
+				expires: -1,
+				httpOnly: false,
+				secure: false,
+				sameSite: 'Lax',
+			};
+
+			const cookies: Cookie[] = [
 				{
+					...cookieDefaults,
 					name: '_wp_test_db',
 					value: dbName,
-					url: WP_BASE_URL,
 				},
-			] );
+			];
+
+			// If the test specifies a user via asUser(), set the _wp_test_user cookie.
+			const userAnnotation = testInfo.annotations.find(
+				( { type } ) => type === '_wp:as-user'
+			);
+			if ( userAnnotation?.description ) {
+				cookies.push( {
+					...cookieDefaults,
+					name: '_wp_test_user',
+					value: userAnnotation.description,
+				} );
+			}
+
+			await context.addCookies( cookies );
 
 			// Use the WordPress fixture.
 			await use( new WordPress( page, WP_BASE_URL ) );
