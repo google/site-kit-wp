@@ -139,6 +139,7 @@ class Initiator_TaskTest extends TestCase {
 			$this->assertContains( (int) $post->post_author, $user_ids, 'Email log author should match subscriber ID list.' );
 			$this->assertSame( $captured_batch_id, get_post_meta( $post->ID, Email_Log::META_BATCH_ID, true ), 'Email log batch ID should match scheduled batch.' );
 			$this->assertSame( Email_Reporting_Settings::FREQUENCY_WEEKLY, get_post_meta( $post->ID, Email_Log::META_REPORT_FREQUENCY, true ), 'Email log frequency should match callback frequency.' );
+			$this->assertSame( Email_Log::TEMPLATE_TYPE_EMAIL_REPORT, get_post_meta( $post->ID, Email_Log::META_TEMPLATE_TYPE, true ), 'Email log template type should default to email-report.' );
 			$this->assertSame( get_current_blog_id(), (int) get_post_meta( $post->ID, Email_Log::META_SITE_ID, true ), 'Email log should store the current site ID.' );
 			$this->assertSame( $captured_batch_id, $post->post_title, 'Email log title should reflect the batch ID.' );
 
