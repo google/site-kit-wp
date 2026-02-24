@@ -62,6 +62,7 @@ describe( 'SettingsApp', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetAuthentication( { needsReauthentication: false } );
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
