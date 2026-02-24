@@ -159,6 +159,8 @@ import {
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
 import { isFeatureEnabled } from '@/js/features';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -904,6 +906,26 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			( { select, dispatch } ) => {
+				if (
+					! isFeatureEnabled( 'setupFlowRefresh' ) ||
+					! isInitialWelcomeModalActive()
+				) {
+					return true;
+				}
+
+				const isDismissing = select( CORE_USER ).isDismissingItem(
+					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+				);
+
+				if ( ! isDismissing ) {
+					dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+					);
+				}
+
+				return false;
+			},
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequireAny(
 				requireIsAuthenticated(),
