@@ -28,6 +28,8 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
+import { useFeature } from '@/js/hooks/useFeature';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 /**
  * Triggers on demand tour for shared key metrics if all conditions are met.
@@ -46,7 +48,12 @@ export function useChangeMetricsFeatureTourEffect( {
 	const currentUserID = useSelect( ( select ) =>
 		select( CORE_USER ).getID()
 	);
-	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+	const { triggerOnDemandTour, dismissTour } = useDispatch( CORE_USER );
+
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const isTourDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
+	);
 
 	const isUserEligibleForTour =
 		Number.isInteger( keyMetricsSetupCompletedBy ) &&
@@ -55,8 +62,22 @@ export function useChangeMetricsFeatureTourEffect( {
 		currentUserID !== keyMetricsSetupCompletedBy;
 
 	useEffect( () => {
+		if ( setupFlowRefreshEnabled && isInitialWelcomeModalActive() ) {
+			if ( ! isTourDismissed ) {
+				dismissTour( sharedKeyMetrics.slug );
+			}
+			return;
+		}
+
 		if ( renderChangeMetricLink && isUserEligibleForTour ) {
 			triggerOnDemandTour( sharedKeyMetrics );
 		}
-	}, [ renderChangeMetricLink, isUserEligibleForTour, triggerOnDemandTour ] );
+	}, [
+		renderChangeMetricLink,
+		isUserEligibleForTour,
+		triggerOnDemandTour,
+		dismissTour,
+		isTourDismissed,
+		setupFlowRefreshEnabled,
+	] );
 }
