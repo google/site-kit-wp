@@ -175,7 +175,7 @@ final class Email_Reporting_Pointer {
 				// Inline JS function to render CTA button and add delegated handlers for CTA and dismiss.
 				'buttons'         => sprintf(
 					'<a class="googlesitekit-pointer-cta button-primary" data-action="dismiss" href="%s">%s</a>',
-					$this->context->admin_url( 'dashboard', array( 'email-reporting-panel' => 1 ) ),
+					$this->context->admin_url( 'dashboard', array( 'panel' => 'email-reporting' ) ),
 					esc_html__( 'Set up', 'google-site-kit' )
 				),
 			),
