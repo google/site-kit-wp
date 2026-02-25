@@ -101,7 +101,7 @@ class Sections_Map {
 	 * @return string Dashboard URL.
 	 */
 	protected function get_dashboard_url() {
-		return $this->golinks->get_url( 'dashboard' ) ?: $this->context->admin_url( 'dashboard' );
+		return $this->golinks->get_url( 'dashboard' );
 	}
 
 	/**
