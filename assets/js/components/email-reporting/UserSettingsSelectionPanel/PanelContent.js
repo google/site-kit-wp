@@ -51,7 +51,6 @@ export default function PanelContent( {
 	onUnsubscribe,
 	onNoticeDismiss,
 	closePanel,
-	isOpen,
 } ) {
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
 	const email = user?.wpEmail;
@@ -93,7 +92,7 @@ export default function PanelContent( {
 							isLoading={ isSavingSettings }
 						/>
 
-						<InviteOthersToSubscribe isOpen={ isOpen } />
+						<InviteOthersToSubscribe />
 					</Fragment>
 				) }
 			</div>
@@ -122,5 +121,4 @@ PanelContent.propTypes = {
 	onUnsubscribe: PropTypes.func,
 	onNoticeDismiss: PropTypes.func,
 	closePanel: PropTypes.func,
-	isOpen: PropTypes.bool,
 };

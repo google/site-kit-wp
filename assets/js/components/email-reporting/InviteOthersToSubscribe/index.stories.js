@@ -106,7 +106,6 @@ Default.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
-Default.scenario = {};
 
 export const WithSearch = Template.bind( {} );
 WithSearch.storyName = 'With Search (7+ users)';

@@ -37,19 +37,6 @@ import Link from '@/js/components/Link';
 import MailIcon from '@/svg/icons/manage-email-reports.svg';
 import TickIcon from '@/svg/icons/tick.svg';
 
-// Map role slugs to display labels.
-const ROLE_LABELS = {
-	administrator: __( 'Administrator', 'google-site-kit' ),
-	editor: __( 'Editor', 'google-site-kit' ),
-	author: __( 'Author', 'google-site-kit' ),
-	contributor: __( 'Contributor', 'google-site-kit' ),
-	subscriber: __( 'Subscriber', 'google-site-kit' ),
-};
-
-function formatRole( roleSlug ) {
-	return ROLE_LABELS[ roleSlug ] || roleSlug;
-}
-
 export default function InviteUserRow( {
 	user,
 	inviteResult,
@@ -112,10 +99,9 @@ export default function InviteUserRow( {
 		<div className="googlesitekit-invite-user-row">
 			<div className="googlesitekit-invite-user-row__info">
 				<div className="googlesitekit-invite-user-row__name">
-					{ name || email }
+					{ name }
 					<span className="googlesitekit-invite-user-row__role">
-						{ ' ' }
-						({ formatRole( role ) })
+						({ role })
 					</span>
 				</div>
 				<div className="googlesitekit-invite-user-row__email">
@@ -132,7 +118,7 @@ export default function InviteUserRow( {
 InviteUserRow.propTypes = {
 	user: PropTypes.shape( {
 		id: PropTypes.number.isRequired,
-		name: PropTypes.string,
+		name: PropTypes.string.isRequired,
 		email: PropTypes.string.isRequired,
 		role: PropTypes.string,
 		invited: PropTypes.bool,

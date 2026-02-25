@@ -33,7 +33,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import CloseIcon from '@/svg/icons/close.svg';
 
-export default function InviteSearchInput( { value, onChange } ) {
+export default function InviteSearchInput( { show = true, value, onChange } ) {
 	const [ inputValue, setInputValue ] = useState( value );
 	const debouncedOnChange = useDebounce( onChange, 300 );
 
@@ -55,6 +55,10 @@ export default function InviteSearchInput( { value, onChange } ) {
 		debouncedOnChange.cancel();
 		onChange( '' );
 	}, [ debouncedOnChange, onChange ] );
+
+	if ( ! show ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-invite-search-input">
@@ -94,6 +98,7 @@ export default function InviteSearchInput( { value, onChange } ) {
 }
 
 InviteSearchInput.propTypes = {
+	show: PropTypes.bool,
 	value: PropTypes.string,
 	onChange: PropTypes.func.isRequired,
 };

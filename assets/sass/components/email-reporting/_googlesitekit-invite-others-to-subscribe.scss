@@ -35,7 +35,7 @@
 		align-items: center;
 		display: flex;
 		gap: 8px;
-		margin-bottom: 16px;
+		margin-bottom: $grid-gap-phone;
 
 		.googlesitekit-info-tooltip {
 			color: $c-content-secondary;
@@ -55,13 +55,13 @@
 
 	.googlesitekit-invite-search-input__input {
 		border: 1px solid $c-utility-outline;
-		border-radius: 16px;
+		border-radius: $grid-gap-phone;
 		font-family: $f-primary;
 		font-size: $fs-body-sm;
 		height: 32px;
 		letter-spacing: $ls-s;
 		min-height: 32px;
-		padding: 0 36px 0 16px;
+		padding: 0 36px 0 $grid-gap-phone;
 		width: calc(100% - 1px);
 
 		&::placeholder {
@@ -89,7 +89,7 @@
 	.googlesitekit-invite-user-list__empty {
 		color: $c-surfaces-on-surface-variant;
 		font-size: $fs-body-sm;
-		padding: 16px 0;
+		padding: $grid-gap-phone 0;
 	}
 
 	.googlesitekit-invite-user-row {
@@ -121,6 +121,8 @@
 		color: $c-surfaces-on-surface-variant;
 		font-size: $fs-body-md;
 		font-weight: 400;
+		margin-left: 4px;
+		text-transform: capitalize;
 	}
 
 	.googlesitekit-invite-user-row__email {
@@ -130,7 +132,7 @@
 
 	.googlesitekit-invite-user-row__action {
 		flex-shrink: 0;
-		margin-left: 16px;
+		margin-left: $grid-gap-phone;
 
 		.mdc-button {
 			color: $c-content-secondary;

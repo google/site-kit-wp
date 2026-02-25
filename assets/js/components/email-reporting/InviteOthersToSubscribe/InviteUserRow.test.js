@@ -53,11 +53,11 @@ describe( 'InviteUserRow', () => {
 		);
 
 		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
-		expect( getByText( '(Administrator)' ) ).toBeInTheDocument();
+		expect( getByText( '(administrator)' ) ).toBeInTheDocument();
 		expect( getByText( 'someone@anybusiness.com' ) ).toBeInTheDocument();
 	} );
 
-	it( 'formats role slugs correctly', () => {
+	it( 'renders the role slug', () => {
 		const editorUser = { ...mockUser, role: 'editor' };
 
 		const { getByText } = render(
@@ -68,25 +68,7 @@ describe( 'InviteUserRow', () => {
 			{ registry }
 		);
 
-		expect( getByText( '(Editor)' ) ).toBeInTheDocument();
-	} );
-
-	it( 'falls back to email when name is empty', () => {
-		const userWithoutName = { ...mockUser, name: '' };
-
-		const { container } = render(
-			<InviteUserRow
-				user={ userWithoutName }
-				onInviteResult={ mockOnInviteResult }
-			/>,
-			{ registry }
-		);
-
-		// The email should appear in the name position as well as the email position.
-		const nameElement = container.querySelector(
-			'.googlesitekit-invite-user-row__name'
-		);
-		expect( nameElement ).toHaveTextContent( 'someone@anybusiness.com' );
+		expect( getByText( '(editor)' ) ).toBeInTheDocument();
 	} );
 
 	it( 'shows "Send invite" button in default state', () => {

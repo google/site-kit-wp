@@ -31,7 +31,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import InviteOthersToSubscribe from '.';
 
 describe( 'InviteOthersToSubscribe', () => {
-	const features = [ 'proactiveUserEngagement' ];
 	let registry;
 
 	const eligibleSubscribersEndpoint = new RegExp(
@@ -84,41 +83,21 @@ describe( 'InviteOthersToSubscribe', () => {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	} );
 
-	it( 'renders null when feature flag is disabled', () => {
-		const { container } = render( <InviteOthersToSubscribe isOpen />, {
-			registry,
-			features: [], // No features enabled.
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'renders null when user does not have MANAGE_OPTIONS capability', () => {
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
 
-		const { container } = render( <InviteOthersToSubscribe isOpen />, {
+		const { container } = render( <InviteOthersToSubscribe />, {
 			registry,
-			features,
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders the component when feature flag is enabled and user is admin', () => {
-		const { getByText } = render( <InviteOthersToSubscribe isOpen />, {
-			registry,
-			features,
-		} );
-
-		expect( getByText( 'Invite others to subscribe' ) ).toBeInTheDocument();
-	} );
-
 	it( 'shows empty state when no eligible users exist', () => {
-		const { getByText } = render( <InviteOthersToSubscribe isOpen />, {
+		const { getByText } = render( <InviteOthersToSubscribe />, {
 			registry,
-			features,
 		} );
 
 		expect(
@@ -135,10 +114,9 @@ describe( 'InviteOthersToSubscribe', () => {
 			.finishResolution( 'getEligibleSubscribers', [] );
 
 		const { getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe isOpen />,
+			<InviteOthersToSubscribe />,
 			{
 				registry,
-				features,
 			}
 		);
 
@@ -159,10 +137,9 @@ describe( 'InviteOthersToSubscribe', () => {
 			.finishResolution( 'getEligibleSubscribers', [] );
 
 		const { queryByLabelText, getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe isOpen />,
+			<InviteOthersToSubscribe />,
 			{
 				registry,
-				features,
 			}
 		);
 
@@ -220,10 +197,9 @@ describe( 'InviteOthersToSubscribe', () => {
 			.finishResolution( 'getEligibleSubscribers', [] );
 
 		const { getByLabelText, waitForRegistry } = render(
-			<InviteOthersToSubscribe isOpen />,
+			<InviteOthersToSubscribe />,
 			{
 				registry,
-				features,
 			}
 		);
 
@@ -256,10 +232,9 @@ describe( 'InviteOthersToSubscribe', () => {
 			.finishResolution( 'getEligibleSubscribers', [] );
 
 		const { queryByText, getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe isOpen />,
+			<InviteOthersToSubscribe />,
 			{
 				registry,
-				features,
 			}
 		);
 
@@ -271,9 +246,8 @@ describe( 'InviteOthersToSubscribe', () => {
 	} );
 
 	it( 'displays the info tooltip with eligibility explanation', () => {
-		const { getByRole } = render( <InviteOthersToSubscribe isOpen />, {
+		const { getByRole } = render( <InviteOthersToSubscribe />, {
 			registry,
-			features,
 		} );
 
 		expect( getByRole( 'tooltip' ) ).toBeInTheDocument();

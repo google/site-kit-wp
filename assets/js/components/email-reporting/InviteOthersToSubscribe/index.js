@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -37,11 +32,12 @@ import {
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import Link from '@/js/components/Link';
 import InviteUserList from './InviteUserList';
@@ -49,11 +45,13 @@ import InviteSearchInput from './InviteSearchInput';
 
 const SEARCH_THRESHOLD = 6;
 
-export default function InviteOthersToSubscribe( { isOpen } ) {
-	const isEnabled = useFeature( 'proactiveUserEngagement' );
-
+export default function InviteOthersToSubscribe() {
 	const hasManageOptionsCapability = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
+	);
+
+	const isSelectionPanelOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
 
 	const eligibleSubscribers = useSelect( ( select ) =>
@@ -67,28 +65,30 @@ export default function InviteOthersToSubscribe( { isOpen } ) {
 			)
 	);
 
-	const dashboardSharingURL = useSelect( ( select ) =>
+	const dashboardSharingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'dashboard-sharing' )
 	);
 
-	const emailReportingURL = useSelect( ( select ) =>
+	const emailReportingDocumentationURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
 	);
 
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const [ inviteResults, setInviteResults ] = useState( {} );
 
-	// Reset state when panel closes.
+	// Reset state when panel opens so layout changes happen while
+	// the panel is still off-screen, avoiding visible shifts during
+	// the closing transition.
 	useEffect( () => {
 		if ( ! hasManageOptionsCapability ) {
 			return;
 		}
 
-		if ( ! isOpen ) {
+		if ( isSelectionPanelOpen ) {
 			setSearchTerm( '' );
 			setInviteResults( {} );
 		}
-	}, [ isOpen, hasManageOptionsCapability ] );
+	}, [ isSelectionPanelOpen, hasManageOptionsCapability ] );
 
 	const handleInviteResult = useCallback( ( userID, result ) => {
 		setInviteResults( ( prev ) => ( {
@@ -97,7 +97,7 @@ export default function InviteOthersToSubscribe( { isOpen } ) {
 		} ) );
 	}, [] );
 
-	if ( ! isEnabled || ! hasManageOptionsCapability ) {
+	if ( ! hasManageOptionsCapability ) {
 		return null;
 	}
 
@@ -113,8 +113,8 @@ export default function InviteOthersToSubscribe( { isOpen } ) {
 			'google-site-kit'
 		),
 		{
-			sharingLink: <Link href={ dashboardSharingURL } />,
-			learnMoreLink: <Link href={ emailReportingURL } />,
+			sharingLink: <Link href={ dashboardSharingDocumentationURL } />,
+			learnMoreLink: <Link href={ emailReportingDocumentationURL } />,
 		}
 	);
 
@@ -127,12 +127,11 @@ export default function InviteOthersToSubscribe( { isOpen } ) {
 				<InfoTooltip title={ tooltipContent } />
 			</div>
 
-			{ showSearch && (
-				<InviteSearchInput
-					value={ searchTerm }
-					onChange={ setSearchTerm }
-				/>
-			) }
+			<InviteSearchInput
+				show={ showSearch }
+				value={ searchTerm }
+				onChange={ setSearchTerm }
+			/>
 
 			<InviteUserList
 				users={ invitableUsers }
@@ -144,7 +143,3 @@ export default function InviteOthersToSubscribe( { isOpen } ) {
 		</div>
 	);
 }
-
-InviteOthersToSubscribe.propTypes = {
-	isOpen: PropTypes.bool,
-};
