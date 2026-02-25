@@ -120,6 +120,18 @@ const fetchInviteUserStore = createFetchStore( {
 		set( 'core', 'site', 'email-reporting-invite-user', {
 			userID,
 		} ),
+	// Mark invited subscriber in local state to persist invited
+	// state on panel re-open. The transient handles persistent
+	// state for 24 hours on app refresh.
+	reducerCallback: createReducer( ( state, response, { userID } ) => {
+		const subscribers = state.emailReporting.eligibleSubscribers;
+		if ( Array.isArray( subscribers ) ) {
+			const user = subscribers.find( ( u ) => u.id === userID );
+			if ( user ) {
+				user.invited = true;
+			}
+		}
+	} ),
 	argsToParams: ( userID ) => ( { userID } ),
 	validateParams: ( { userID } = {} ) => {
 		invariant(
@@ -173,9 +185,12 @@ const baseActions = {
 			registry.dispatch( CORE_SITE ).startInvitingUser( userID );
 
 			try {
-				return yield fetchInviteUserStore.actions.fetchInviteUser(
-					userID
-				);
+				const result =
+					yield fetchInviteUserStore.actions.fetchInviteUser(
+						userID
+					);
+
+				return result;
 			} finally {
 				registry.dispatch( CORE_SITE ).finishInvitingUser( userID );
 			}
