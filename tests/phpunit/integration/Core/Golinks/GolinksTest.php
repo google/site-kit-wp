@@ -56,7 +56,7 @@ class GolinksTest extends TestCase {
 		$this->assertNotNull( $this->golinks->get_url( 'dashboard' ), 'Expected golink URL to be available after handler registration.' );
 	}
 
-	public function test_get_url__returns_expected_format_and_null_for_unregistered() {
+	public function test_get_url__returns_expected_format() {
 		$this->golinks->register_handler( 'dashboard', $this->create_destination_handler( 'https://example.com/dashboard' ) );
 
 		$this->assertSame(
@@ -71,7 +71,17 @@ class GolinksTest extends TestCase {
 			'Expected registered golink URL to use the go action format.'
 		);
 
-		$this->assertNull( $this->golinks->get_url( 'unregistered' ), 'Expected null for unregistered golink key.' );
+		$this->assertSame(
+			add_query_arg(
+				array(
+					'action' => Golinks::ACTION_GO,
+					'to'     => 'unregistered',
+				),
+				admin_url( 'index.php' )
+			),
+			$this->golinks->get_url( 'unregistered' ),
+			'Expected unregistered golink key to still return a go action URL.'
+		);
 	}
 
 	public function test_handle_go__redirects_to_handler_destination() {
