@@ -91,13 +91,11 @@ class GolinksTest extends TestCase {
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected RedirectException!' );
 		} catch ( RedirectException $redirect_exception ) {
 			$this->assertSame( $destination_url, $redirect_exception->get_location(), 'Expected redirect to handler destination URL.' );
 			$this->assertSame( 302, $redirect_exception->get_status(), 'Expected default redirect status code.' );
-			return;
 		}
-
-		$this->fail( 'Expected RedirectException!' );
 	}
 
 	public function test_handle_go__dies_with_404_and_dashboard_link_for_invalid_key() {
@@ -115,15 +113,14 @@ class GolinksTest extends TestCase {
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
 			$this->assert_wp_die_response_code( $exception, 404, 'Expected 404 response code for invalid golink.' );
-			$this->assertStringContainsString( $this->context->admin_url( 'dashboard' ), $exception->getMessage(), 'Expected dashboard link in invalid golink error for dashboard users.' );
-			remove_filter( 'map_meta_cap', $grant_view_dashboard_cap, 20 );
-			return;
+			$this->assertStringContainsString( 'The link you followed is invalid.', $exception->getMessage(), 'Expected invalid golink message.' );
+			$invalid_golink_error_data = $this->get_invalid_golink_error_data();
+			$this->assertSame( $this->context->admin_url( 'dashboard' ), $invalid_golink_error_data['link_url'], 'Expected dashboard link URL in invalid golink error data.' );
 		}
-
 		remove_filter( 'map_meta_cap', $grant_view_dashboard_cap, 20 );
-		$this->fail( 'Expected WPDieException!' );
 	}
 
 	public function test_handle_go__dies_with_404_and_splash_link_for_invalid_key() {
@@ -132,13 +129,13 @@ class GolinksTest extends TestCase {
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
 			$this->assert_wp_die_response_code( $exception, 404, 'Expected 404 response code for invalid golink.' );
-			$this->assertStringContainsString( $this->context->admin_url( 'splash' ), $exception->getMessage(), 'Expected splash link in invalid golink error for users without dashboard access.' );
-			return;
+			$this->assertStringContainsString( 'The link you followed is invalid.', $exception->getMessage(), 'Expected invalid golink message.' );
+			$invalid_golink_error_data = $this->get_invalid_golink_error_data();
+			$this->assertSame( $this->context->admin_url( 'splash' ), $invalid_golink_error_data['link_url'], 'Expected splash link URL in invalid golink error data.' );
 		}
-
-		$this->fail( 'Expected WPDieException!' );
 	}
 
 	public function test_handle_go__dies_with_handler_error() {
@@ -158,56 +155,37 @@ class GolinksTest extends TestCase {
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
 			$this->assert_wp_die_response_code( $exception, 400, 'Expected status code from handler WP_Error.' );
 			$this->assertStringContainsString( 'Test golink error', $exception->getMessage(), 'Expected WP_Error message to be shown via wp_die.' );
-			return;
 		}
-
-		$this->fail( 'Expected WPDieException!' );
 	}
 
 	public function test_register_handler__throws_for_duplicate_key() {
 		$this->golinks->register_handler( 'dashboard', $this->create_destination_handler( 'https://example.com/dashboard' ) );
 
-		$this->expectException( InvalidArgumentException::class );
-		$this->golinks->register_handler( 'dashboard', $this->create_destination_handler( 'https://example.com/new-dashboard' ) );
+		try {
+			$this->golinks->register_handler( 'dashboard', $this->create_destination_handler( 'https://example.com/new-dashboard' ) );
+			$this->fail( 'Expected InvalidArgumentException!' );
+		} catch ( InvalidArgumentException $exception ) {
+			$this->assertStringContainsString( 'already registered', $exception->getMessage(), 'Expected duplicate handler registration message.' );
+		}
 	}
 
-	/**
-	 * Creates a golink handler that returns the provided destination.
-	 *
-	 * @param string|WP_Error $destination Destination URL or WP_Error.
-	 * @return Golink_Handler_Interface
-	 */
 	private function create_destination_handler( $destination ) {
-		return new class( $destination ) implements Golink_Handler_Interface {
-			/**
-			 * Destination result.
-			 *
-			 * @var string|WP_Error
-			 */
-			private $destination;
+		$handler = $this->createMock( Golink_Handler_Interface::class );
+		$handler->method( 'handle' )->willReturn( $destination );
 
-			/**
-			 * Constructor.
-			 *
-			 * @param string|WP_Error $destination Destination URL or error.
-			 */
-			public function __construct( $destination ) {
-				$this->destination = $destination;
-			}
+		return $handler;
+	}
 
-			/**
-			 * Handles the golink request.
-			 *
-			 * @param Context $context Plugin context.
-			 * @return string|WP_Error
-			 */
-			public function handle( Context $context ) {
-				return $this->destination;
-			}
-		};
+	private function get_invalid_golink_error_data() {
+		$reflection_method = new \ReflectionMethod( Golinks::class, 'get_invalid_golink_error' );
+		$reflection_method->setAccessible( true );
+		$error = $reflection_method->invoke( $this->golinks );
+
+		return is_wp_error( $error ) && is_array( $error->get_error_data() ) ? $error->get_error_data() : array();
 	}
 
 	/**

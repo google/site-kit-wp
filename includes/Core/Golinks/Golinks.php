@@ -115,23 +115,15 @@ class Golinks {
 		$key = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'to', FILTER_DEFAULT ) );
 
 		if ( empty( $this->handlers[ $key ] ) ) {
-			wp_die(
-				wp_kses(
-					$this->get_invalid_golink_message(),
-					array(
-						'a' => array(
-							'href' => array(),
-						),
-					)
-				),
-				404
-			);
+			$this->handle_destination_error( $this->get_invalid_golink_error() );
+			exit;
 		}
 
 		$destination = $this->handlers[ $key ]->handle( $this->context );
 
 		if ( is_wp_error( $destination ) ) {
 			$this->handle_destination_error( $destination );
+			exit;
 		}
 
 		wp_safe_redirect( $destination );
@@ -148,20 +140,28 @@ class Golinks {
 	private function handle_destination_error( WP_Error $error ) {
 		$status = 500;
 		$data   = $error->get_error_data();
+		$args   = array();
 
 		if ( is_array( $data ) && ! empty( $data['status'] ) ) {
 			$status = (int) $data['status'];
 		}
 
-		$message = $error->get_error_message();
+		if ( is_array( $data ) && ! empty( $data['link_url'] ) ) {
+			$args['link_url'] = esc_url_raw( $data['link_url'] );
+		}
+
+		if ( is_array( $data ) && ! empty( $data['link_text'] ) ) {
+			$args['link_text'] = sanitize_text_field( $data['link_text'] );
+		}
+
+		$args['response'] = absint( $status );
+		$message          = $error->get_error_message();
+
 		if ( '' === $message ) {
 			$message = __( 'Something went wrong.', 'google-site-kit' );
 		}
 
-		wp_die(
-			esc_html( $message ),
-			absint( $status )
-		);
+		wp_die( esc_html( $message ), '', $args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_die args are sanitized above.
 	}
 
 	/**
@@ -180,26 +180,29 @@ class Golinks {
 	}
 
 	/**
-	 * Gets the contextual message for invalid golinks.
+	 * Gets invalid golink error.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string HTML-safe error message.
+	 * @return WP_Error Invalid golink error.
 	 */
-	private function get_invalid_golink_message() {
+	private function get_invalid_golink_error() {
 		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-			$url   = $this->context->admin_url( 'dashboard' );
-			$label = __( 'Site Kit dashboard', 'google-site-kit' );
+			$link_url  = $this->context->admin_url( 'dashboard' );
+			$link_text = esc_html__( 'Site Kit dashboard', 'google-site-kit' );
 		} else {
-			$url   = $this->context->admin_url( 'splash' );
-			$label = __( 'Site Kit setup page', 'google-site-kit' );
+			$link_url  = $this->context->admin_url( 'splash' );
+			$link_text = esc_html__( 'Site Kit setup page', 'google-site-kit' );
 		}
 
-		return sprintf(
-			/* translators: 1: Site Kit URL, 2: Linked page label. */
-			__( 'The link you followed is invalid. Please go to the <a href="%1$s">%2$s</a>.', 'google-site-kit' ),
-			esc_url( $url ),
-			esc_html( $label )
+		return new WP_Error(
+			'googlesitekit_invalid_golink',
+			esc_html__( 'The link you followed is invalid.', 'google-site-kit' ),
+			array(
+				'status'    => 404,
+				'link_url'  => $link_url,
+				'link_text' => $link_text,
+			)
 		);
 	}
 }
