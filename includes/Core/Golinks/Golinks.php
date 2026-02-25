@@ -128,10 +128,7 @@ class Golinks {
 						),
 					)
 				),
-				'',
-				array(
-					'response' => 404,
-				)
+				404
 			);
 		}
 
@@ -167,10 +164,7 @@ class Golinks {
 
 		wp_die(
 			esc_html( $message ),
-			'',
-			array(
-				'response' => absint( $status ),
-			)
+			absint( $status )
 		);
 	}
 
