@@ -35,7 +35,7 @@
 		align-items: center;
 		display: flex;
 		gap: 8px;
-		margin-bottom: 16px;
+		margin-bottom: $grid-gap-phone;
 
 		.googlesitekit-info-tooltip {
 			color: $c-content-secondary;
