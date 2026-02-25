@@ -44,19 +44,20 @@ describe( 'Actions', () => {
 	mockLocation();
 
 	let registry;
-
-	const actionsProps = {
-		proxySetupURL: 'https://example.com/test-proxy-setup',
-		onButtonClick: jest.fn(),
-		complete: true,
-		inProgressFeedback: 'Test in progress feedback',
-		ctaFeedback: 'Test CTA feedback',
-	};
+	let actionsProps;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash';
+		actionsProps = {
+			proxySetupURL: 'https://example.com/test-proxy-setup',
+			onButtonClick: jest.fn(),
+			forwardableParams: {},
+			complete: true,
+			inProgressFeedback: 'Test in progress feedback',
+			ctaFeedback: 'Test CTA feedback',
+		};
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
@@ -277,7 +278,10 @@ describe( 'Actions', () => {
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&panel=email-reporting';
 
 			const { getByRole, waitForRegistry } = render(
-				<Actions { ...actionsProps } />,
+				<Actions
+					{ ...actionsProps }
+					forwardableParams={ { panel: 'email-reporting' } }
+				/>,
 				{
 					viewContext: VIEW_CONTEXT_SPLASH,
 					registry,
