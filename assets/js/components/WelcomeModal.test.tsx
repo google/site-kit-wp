@@ -25,17 +25,20 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../tests/js/test-utils';
+} from 'tests/js/test-utils';
 import {
+	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../tests/js/utils';
-import { provideGatheringDataState } from '../../../tests/js/gathering-data-utils';
+	waitForDefaultTimeouts,
+} from 'tests/js/utils';
+import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -53,15 +56,118 @@ import {
 } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import WelcomeModal from './WelcomeModal';
+import { type WPDataRegistry } from '@/js/googlesitekit-data';
+import * as tracking from '@/js/util/tracking';
+import { setItem } from '@/js/googlesitekit/api/cache';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: () => ( {
+		isIntersecting: true,
+		intersectionRatio: 1,
+	} ),
+} ) );
 
 describe( 'WelcomeModal', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
 
+	function provideDataAvailableVariantData() {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	}
+
+	function provideGatheringDataVariantData() {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+		} );
+
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( true );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	}
+
+	function provideDataGatheringCompleteVariantData() {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
+	}
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 
 		provideUserCapabilities( registry, {
@@ -177,32 +283,7 @@ describe( 'WelcomeModal', () => {
 		'when the "%s" button is clicked for the data available variant',
 		( buttonText ) => {
 			beforeEach( () => {
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-					},
-					{
-						slug: MODULE_SLUG_SEARCH_CONSOLE,
-						active: true,
-						connected: true,
-					},
-				] );
-
-				provideGatheringDataState( registry, {
-					[ MODULE_SLUG_ANALYTICS_4 ]: false,
-					[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsDataAvailableOnLoad( true );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveIsDataAvailableOnLoad( true );
-
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				provideDataAvailableVariantData();
 
 				// Model the responses for the two POST requests to `dismiss-item`.
 				fetchMock.postOnce( dismissItemEndpoint, {
@@ -281,32 +362,7 @@ describe( 'WelcomeModal', () => {
 	it.each( [ 'Maybe later', 'Close' ] )(
 		'should show a tooltip when the data available variant is closed by the "%s" button',
 		async ( buttonText ) => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-				{
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveIsDataAvailableOnLoad( true );
-
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			provideDataAvailableVariantData();
 
 			// Model the responses for the two POST requests to `dismiss-item`.
 			fetchMock.postOnce( dismissItemEndpoint, {
@@ -345,7 +401,7 @@ describe( 'WelcomeModal', () => {
 
 			expect( tooltipState ).toMatchObject( {
 				isTooltipVisible: true,
-				tooltipSlug: 'dashboard-tour',
+				tooltipSlug: 'welcome-modal',
 				title: 'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
 			} );
@@ -353,32 +409,7 @@ describe( 'WelcomeModal', () => {
 	);
 
 	it( 'should not show a tooltip when the data available variant is closed by the "Start tour" button', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		provideDataAvailableVariantData();
 
 		// Model the responses for the two POST requests to `dismiss-item`.
 		fetchMock.postOnce( dismissItemEndpoint, {
@@ -695,24 +726,7 @@ describe( 'WelcomeModal', () => {
 		'when the "%s" button is clicked for the gathering data variant',
 		( buttonText ) => {
 			beforeEach( () => {
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: false,
-						connected: false,
-					},
-					{
-						slug: MODULE_SLUG_SEARCH_CONSOLE,
-						active: true,
-						connected: true,
-					},
-				] );
-
-				provideGatheringDataState( registry, {
-					[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-				} );
-
-				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				provideGatheringDataVariantData();
 
 				fetchMock.postOnce( dismissItemEndpoint, {
 					body: [ WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG ],
@@ -911,36 +925,7 @@ describe( 'WelcomeModal', () => {
 		'when the "%s" button is clicked for the data gathering complete variant',
 		( buttonText ) => {
 			beforeEach( () => {
-				provideModules( registry, [
-					{
-						slug: MODULE_SLUG_ANALYTICS_4,
-						active: true,
-						connected: true,
-					},
-					{
-						slug: MODULE_SLUG_SEARCH_CONSOLE,
-						active: true,
-						connected: true,
-					},
-				] );
-
-				provideGatheringDataState( registry, {
-					[ MODULE_SLUG_ANALYTICS_4 ]: false,
-					[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-				} );
-
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsDataAvailableOnLoad( true );
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveIsDataAvailableOnLoad( true );
-
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetDismissedItems( [
-						WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-					] );
+				provideDataGatheringCompleteVariantData();
 
 				fetchMock.postOnce( dismissItemEndpoint, {
 					body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
@@ -1002,36 +987,7 @@ describe( 'WelcomeModal', () => {
 	it.each( [ 'Maybe later', 'Close' ] )(
 		'should show a tooltip when the data gathering complete variant is closed by the "%s" button',
 		async ( buttonText ) => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-				{
-					slug: MODULE_SLUG_SEARCH_CONSOLE,
-					active: true,
-					connected: true,
-				},
-			] );
-
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveIsDataAvailableOnLoad( true );
-
-			registry
-				.dispatch( CORE_USER )
-				.receiveGetDismissedItems( [
-					WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-				] );
+			provideDataGatheringCompleteVariantData();
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
@@ -1061,7 +1017,7 @@ describe( 'WelcomeModal', () => {
 
 			expect( tooltipState ).toMatchObject( {
 				isTooltipVisible: true,
-				tooltipSlug: 'dashboard-tour',
+				tooltipSlug: 'welcome-modal',
 				title: 'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
 			} );
@@ -1069,36 +1025,7 @@ describe( 'WelcomeModal', () => {
 	);
 
 	it( 'should not show a tooltip when the data gathering complete variant is closed by the "Start tour" button', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		provideGatheringDataState( registry, {
-			[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
-		} );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsDataAvailableOnLoad( true );
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveIsDataAvailableOnLoad( true );
-
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
-			] );
+		provideDataGatheringCompleteVariantData();
 
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: [ WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG ],
@@ -1124,4 +1051,148 @@ describe( 'WelcomeModal', () => {
 
 		expect( tooltipState ).toBeUndefined();
 	} );
+
+	describe.each( [
+		{
+			variant: 'data available',
+			expectedLabel: 'default',
+			provideData: provideDataAvailableVariantData,
+			confirmationButton: 'Start tour',
+			dismissalButtons: [ 'Maybe later', 'Close' ],
+		},
+		{
+			variant: 'gathering data',
+			expectedLabel: 'gathering_data',
+			provideData: provideGatheringDataVariantData,
+			confirmationButton: 'Get started',
+			dismissalButtons: [ 'Close' ],
+		},
+		{
+			variant: 'data gathering complete',
+			expectedLabel: 'data_available',
+			provideData: provideDataGatheringCompleteVariantData,
+			confirmationButton: 'Start tour',
+			dismissalButtons: [ 'Maybe later', 'Close' ],
+		},
+	] )(
+		'when the $variant variant of the welcome modal is shown',
+		( {
+			expectedLabel,
+			provideData,
+			confirmationButton,
+			dismissalButtons,
+		} ) => {
+			beforeEach( () => {
+				provideData();
+				freezeFetch( dismissItemEndpoint );
+			} );
+
+			it( 'should track the `setup_flow_v3_complete_site_setup` and `setup_flow_v3_complete_user_setup` events only once', async () => {
+				await setItem( 'start_site_setup', true );
+				await setItem( 'start_user_setup', true );
+
+				const { waitForRegistry } = render( <WelcomeModal />, {
+					registry,
+					viewContext: 'test-context',
+				} );
+
+				await waitForRegistry();
+
+				// The view_notice event is also tracked on view.
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-context_setup',
+					'setup_flow_v3_complete_site_setup'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-context_setup',
+					'setup_flow_v3_complete_user_setup'
+				);
+
+				mockTrackEvent.mockClear();
+
+				render( <WelcomeModal />, {
+					registry,
+					viewContext: 'test-context',
+				} );
+
+				// Only the view_notice event should be tracked the second time the modal is shown.
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'should track the `view_notice` event with the correct label', async () => {
+				const { waitForRegistry } = render( <WelcomeModal />, {
+					registry,
+					viewContext: 'test-context',
+				} );
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-context_welcome-modal',
+					'view_notice',
+					expectedLabel
+				);
+			} );
+
+			it( `should track the \`confirm_notice\` event when the \`${ confirmationButton }\` button is clicked`, async () => {
+				const { getByRole, waitForRegistry } = render(
+					<WelcomeModal />,
+					{
+						registry,
+						viewContext: 'test-context',
+					}
+				);
+
+				await waitForRegistry();
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', {
+							name: confirmationButton,
+						} )
+					);
+
+					await waitForDefaultTimeouts();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-context_welcome-modal',
+					'confirm_notice',
+					expectedLabel
+				);
+			} );
+
+			it.each( dismissalButtons )(
+				'should track the `dismiss_notice` event when the `%s` button is clicked',
+				async ( button ) => {
+					const { getByRole, waitForRegistry } = render(
+						<WelcomeModal />,
+						{
+							registry,
+							viewContext: 'test-context',
+						}
+					);
+
+					await waitForRegistry();
+
+					await act( async () => {
+						fireEvent.click(
+							getByRole( 'button', {
+								name: button,
+							} )
+						);
+
+						await waitForDefaultTimeouts();
+					} );
+
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						'test-context_welcome-modal',
+						'dismiss_notice',
+						expectedLabel
+					);
+				}
+			);
+		}
+	);
 } );
