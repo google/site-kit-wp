@@ -39,17 +39,6 @@ class Email_Reporting_Golink_Handler implements Golink_Handler_Interface {
 			)
 		);
 
-		// Shared-dashboard users can have splash access before they have dashboard access.
-		// Route through splash so dismissal can continue to the dashboard panel via redirect_url.
-		if ( current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-			return $context->admin_url(
-				'splash',
-				array(
-					'redirect_url' => $dashboard_url,
-				)
-			);
-		}
-
 		return $dashboard_url;
 	}
 }

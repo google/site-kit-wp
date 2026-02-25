@@ -312,8 +312,9 @@ class Email_Template_Formatter {
 	 */
 	public function prepare_simple_email_data( $subject, $preheader, $email_data = array() ) {
 		$site_domain        = $this->get_site_domain();
-		$dashboard_url      = $this->golinks->get_url( 'dashboard' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard' );
-		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' );
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'troubleshooting/site-kit-support', 'https://sitekit.withgoogle.com/support/' );
 
 		$data = array(
 			'subject'                => $subject,
@@ -341,7 +342,7 @@ class Email_Template_Formatter {
 					),
 					array(
 						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+						'url'   => $help_center_url,
 					),
 				),
 			),
@@ -362,8 +363,9 @@ class Email_Template_Formatter {
 		$site_domain        = $this->get_site_domain();
 		$frequency_label    = $this->get_frequency_label( $frequency );
 		$first_report_date  = $this->get_first_report_date_label( $frequency );
-		$dashboard_url      = $this->golinks->get_url( 'dashboard' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard' );
-		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' );
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'troubleshooting/site-kit-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => sprintf(
@@ -403,7 +405,7 @@ class Email_Template_Formatter {
 					),
 					array(
 						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+						'url'   => $help_center_url,
 					),
 				),
 			),
@@ -420,8 +422,9 @@ class Email_Template_Formatter {
 	 * @return array Template data.
 	 */
 	private function prepare_template_data( $frequency, $date_range ) {
-		$dashboard_url      = $this->golinks->get_url( 'dashboard' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard' );
-		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' ) ?: admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' );
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'troubleshooting/site-kit-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => $this->build_subject( $frequency ),
@@ -452,7 +455,7 @@ class Email_Template_Formatter {
 					),
 					array(
 						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+						'url'   => $help_center_url,
 					),
 				),
 			),

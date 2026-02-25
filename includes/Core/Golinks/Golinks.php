@@ -76,8 +76,8 @@ class Golinks {
 	 * @param Golink_Handler_Interface $handler Handler instance.
 	 * @throws InvalidArgumentException Thrown if a handler is already registered for the key.
 	 */
-	public function register_handler( $key, Golink_Handler_Interface $handler ) {
-		$key = sanitize_key( (string) $key );
+	public function register_handler( string $key, Golink_Handler_Interface $handler ) {
+		$key = sanitize_key( $key );
 
 		if ( isset( $this->handlers[ $key ] ) ) {
 			throw new InvalidArgumentException( sprintf( 'A handler is already registered for golink key "%s".', $key ) );
@@ -97,10 +97,6 @@ class Golinks {
 	public function get_url( $key ) {
 		$key = sanitize_key( (string) $key );
 
-		if ( ! isset( $this->handlers[ $key ] ) ) {
-			return null;
-		}
-
 		return add_query_arg(
 			array(
 				'action' => self::ACTION_GO,
@@ -118,7 +114,7 @@ class Golinks {
 	public function handle_go() {
 		$key = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'to', FILTER_DEFAULT ) );
 
-		if ( empty( $key ) || ! isset( $this->handlers[ $key ] ) ) {
+		if ( empty( $this->handlers[ $key ] ) ) {
 			wp_die(
 				wp_kses(
 					$this->get_invalid_golink_message(),

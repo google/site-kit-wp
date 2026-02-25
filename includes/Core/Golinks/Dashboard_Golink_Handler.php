@@ -33,10 +33,6 @@ class Dashboard_Golink_Handler implements Golink_Handler_Interface {
 		$dashboard_url = $context->admin_url( 'dashboard' );
 		$permalink     = $context->input()->filter( INPUT_GET, 'permaLink', FILTER_DEFAULT );
 
-		if ( empty( $permalink ) ) {
-			return $dashboard_url;
-		}
-
 		$permalink = esc_url_raw( wp_unslash( $permalink ) );
 
 		if ( empty( $permalink ) ) {
@@ -44,9 +40,8 @@ class Dashboard_Golink_Handler implements Golink_Handler_Interface {
 		}
 
 		return add_query_arg(
-			array(
-				'permaLink' => $permalink,
-			),
+			'permaLink',
+			$permalink,
 			$dashboard_url
 		);
 	}
