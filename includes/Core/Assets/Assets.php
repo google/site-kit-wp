@@ -253,7 +253,7 @@ final class Assets {
 	/**
 	 * Checks if assets have already been registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @return bool True if already registered, false otherwise.
 	 */
 	private function has_registered_assets() {

@@ -91,7 +91,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Email log batch query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Email_Log_Batch_Query
 	 */
 	protected $email_log_batch_query;
@@ -99,7 +99,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Subscribed users query instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Subscribed_Users_Query
 	 */
 	protected $subscribed_users_query;
@@ -225,7 +225,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$eligible_subscribers_query,
 			$email_sender
 		);
-		$this->email_log         = new Email_Log( $this->context );
+		$this->email_log         = new Email_Log();
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );
 		$this->worker_task       = new Worker_Task(
@@ -294,7 +294,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Gets feature metrics for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return array
 	 */

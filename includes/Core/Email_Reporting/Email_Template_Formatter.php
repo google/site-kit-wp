@@ -281,7 +281,7 @@ class Email_Template_Formatter {
 	 * Simple emails share the same structure (subject, preheader, site, CTA, footer)
 	 * but differ in their content. The $email_data array provides the variable content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $subject   Email subject line.
 	 * @param string $preheader Email preheader text.
@@ -318,6 +318,64 @@ class Email_Template_Formatter {
 		);
 
 		return $data;
+	}
+
+	/**
+	 * Builds template data for the subscription confirmation email.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $frequency Frequency slug.
+	 * @return array Template data.
+	 */
+	public function prepare_subscription_confirmation_template_data( $frequency ) {
+		$site_domain       = $this->get_site_domain();
+		$frequency_label   = $this->get_frequency_label( $frequency );
+		$first_report_date = $this->get_first_report_date_label( $frequency );
+
+		return array(
+			'subject'                => sprintf(
+				/* translators: %s: Site domain. */
+				__( 'Success! You’re subscribed to Site Kit reports for %s', 'google-site-kit' ),
+				$site_domain
+			),
+			'preheader'              => __( 'Your subscription is confirmed and your first report is on the way.', 'google-site-kit' ),
+			'site'                   => array(
+				'domain' => $site_domain,
+				'url'    => $this->context->get_reference_site_url(),
+			),
+			'title'                  => Content_Map::get_title( 'subscription-confirmation' ),
+			'body'                   => Content_Map::get_body_with_args(
+				'subscription-confirmation',
+				array(
+					$frequency_label,
+					$first_report_date,
+				)
+			),
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'primary_call_to_action' => array(
+				'label' => __( 'View dashboard', 'google-site-kit' ),
+				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+			),
+			'footer'                 => array(
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'unsubscribe_url' => admin_url( 'admin.php?page=googlesitekit-settings#/admin-settings' ),
+				'links'           => array(
+					array(
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' ),
+					),
+					array(
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
+						'url'   => 'https://policies.google.com/privacy',
+					),
+					array(
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+					),
+				),
+			),
+		);
 	}
 
 	/**
@@ -446,7 +504,7 @@ class Email_Template_Formatter {
 	 * Returns a localized string describing when the user can expect their
 	 * first report based on their selected frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $frequency Frequency slug (weekly, monthly, quarterly).
 	 * @return string First report date label.
@@ -471,7 +529,7 @@ class Email_Template_Formatter {
 	 * Uses WordPress start_of_week setting to determine which day
 	 * of the week reports are sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "next Monday".
 	 */
@@ -495,7 +553,7 @@ class Email_Template_Formatter {
 	 * Quarters are: Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec).
 	 * Returns "1st of {month}" for the first month of the next quarter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "1st of April".
 	 */
