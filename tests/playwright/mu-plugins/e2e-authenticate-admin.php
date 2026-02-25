@@ -34,6 +34,11 @@ add_filter(
 add_action(
 	'init',
 	function () use ( $e2e_test_username ) {
+		// Only wp-admin pages call auth_redirect(); nothing to do elsewhere.
+		if ( ! is_admin() ) {
+			return;
+		}
+
 		// Nothing to do if there is already a valid logged-in cookie.
 		if ( wp_validate_auth_cookie( '', 'logged_in' ) ) {
 			return;
@@ -42,6 +47,10 @@ add_action(
 		$user = get_user_by( 'login', $e2e_test_username );
 		if ( $user ) {
 			wp_set_auth_cookie( $user->ID, true );
+			// Redirect to the same URL so the browser re-sends the request
+			// with the newly-set cookie, allowing auth_redirect() to pass.
+			wp_safe_redirect( home_url( $_SERVER['REQUEST_URI'] ) );
+			exit;
 		}
 	}
 );
