@@ -47,12 +47,12 @@ import Actions from './Actions';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useFormValue from '@/js/hooks/useFormValue';
-import getForwardableParams from '@/js/util/getForwardableParams';
 
 export default function SetupUsingProxyWithSignIn() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const forwardableParams = getForwardableParams();
+	const forwardableParams = useForwardableParams();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -198,6 +198,9 @@ export default function SetupUsingProxyWithSignIn() {
 										<Actions
 											proxySetupURL={ proxySetupURL }
 											onButtonClick={ onButtonClick }
+											forwardableParams={
+												forwardableParams
+											}
 											complete={ complete }
 											inProgressFeedback={
 												inProgressFeedback

@@ -44,7 +44,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
-import getForwardableParams from '@/js/util/getForwardableParams';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
@@ -55,7 +55,7 @@ export default function SetupUsingProxyViewOnly() {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const forwardableParams = getForwardableParams();
+	const forwardableParams = useForwardableParams();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL(
