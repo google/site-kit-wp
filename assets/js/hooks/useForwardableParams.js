@@ -37,6 +37,9 @@ export default function useForwardableParams() {
 	const [ notification ] = useQueryArg( 'notification' );
 	const [ panel ] = useQueryArg( 'panel' );
 
+	// `useMemo` is used here to avoid unnecessary re-renders of
+	// components that consume this hook when the query params
+	// haven't changed.
 	return useMemo( () => {
 		const params = {};
 
