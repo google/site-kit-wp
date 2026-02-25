@@ -44,7 +44,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: "7.4"
           extensions: mysqli, runkit7, uopz
           tools: composer:2.1
         env:
@@ -69,7 +69,7 @@ jobs:
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
       - name: Install Gemini CLI
         run: |
-          npm install -g @google/gemini-cli@0.23.0
+          npm install -g @google/gemini-cli@0.30.0
           gemini --version
       - name: Run /implement command
         run: |
@@ -108,9 +108,9 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@v8
         with:
-          commit-message: 'Implement issue #${{ inputs.issue_number }}'
+          commit-message: "Implement issue #${{ inputs.issue_number }}"
           branch: gemini/issue-${{ inputs.issue_number }}
-          title: 'Implement #${{ inputs.issue_number }}'
+          title: "Implement #${{ inputs.issue_number }}"
           body: |
             🤖 Automated implementation of issue #${{ inputs.issue_number }}
 
