@@ -409,7 +409,7 @@ class Email_Template_Formatter {
 				'links'           => array(
 					array(
 						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel=1' ),
+						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&panel=email-reporting' ),
 					),
 					array(
 						'label' => __( 'Privacy Policy', 'google-site-kit' ),
