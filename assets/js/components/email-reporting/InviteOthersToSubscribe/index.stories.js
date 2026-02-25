@@ -119,7 +119,6 @@ WithSearch.args = {
 			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
-WithSearch.scenario = {};
 
 export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty State (no eligible users)';
