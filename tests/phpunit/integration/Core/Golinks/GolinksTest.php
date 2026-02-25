@@ -106,7 +106,7 @@ class GolinksTest extends TestCase {
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
 		} catch ( WPDieException $exception ) {
-			$this->assertSame( 404, $exception->getCode(), 'Expected 404 response code for invalid golink.' );
+			$this->assert_wp_die_response_code( $exception, 404, 'Expected 404 response code for invalid golink.' );
 			$this->assertStringContainsString( $this->context->admin_url( 'dashboard' ), $exception->getMessage(), 'Expected dashboard link in invalid golink error for dashboard users.' );
 			remove_filter( 'map_meta_cap', $grant_view_dashboard_cap, 20 );
 			return;
@@ -123,7 +123,7 @@ class GolinksTest extends TestCase {
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
 		} catch ( WPDieException $exception ) {
-			$this->assertSame( 404, $exception->getCode(), 'Expected 404 response code for invalid golink.' );
+			$this->assert_wp_die_response_code( $exception, 404, 'Expected 404 response code for invalid golink.' );
 			$this->assertStringContainsString( $this->context->admin_url( 'splash' ), $exception->getMessage(), 'Expected splash link in invalid golink error for users without dashboard access.' );
 			return;
 		}
@@ -149,7 +149,7 @@ class GolinksTest extends TestCase {
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
 		} catch ( WPDieException $exception ) {
-			$this->assertSame( 400, $exception->getCode(), 'Expected status code from handler WP_Error.' );
+			$this->assert_wp_die_response_code( $exception, 400, 'Expected status code from handler WP_Error.' );
 			$this->assertStringContainsString( 'Test golink error', $exception->getMessage(), 'Expected WP_Error message to be shown via wp_die.' );
 			return;
 		}
@@ -198,5 +198,30 @@ class GolinksTest extends TestCase {
 				return $this->destination;
 			}
 		};
+	}
+
+	/**
+	 * Asserts response code from a WPDieException.
+	 *
+	 * WP core test handlers prior to 5.9.0 do not expose wp_die response code
+	 * via WPDieException, so code remains 0 in those environments.
+	 *
+	 * @param WPDieException $exception      Exception thrown by wp_die.
+	 * @param int            $expected_code  Expected response code.
+	 * @param string         $failure_message Assertion failure message.
+	 */
+	private function assert_wp_die_response_code( WPDieException $exception, $expected_code, $failure_message ) {
+		global $wp_version;
+
+		if ( version_compare( $wp_version, '5.9', '<' ) ) {
+			$this->assertSame(
+				0,
+				$exception->getCode(),
+				'WP < 5.9 WPDieException does not include response code.'
+			);
+			return;
+		}
+
+		$this->assertSame( $expected_code, $exception->getCode(), $failure_message );
 	}
 }
