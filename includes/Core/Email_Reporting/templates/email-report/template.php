@@ -119,11 +119,26 @@ $render_shared_part = $data['render_shared_part'];
 			body,
 			.body {
 				background-color: #232824 !important;
+				box-shadow: inset 0 0 0 9999px #232824 !important;
 			}
 
 			/* Content card/section backgrounds */
 			.dm-card {
 				background-color: #161B18 !important;
+				box-shadow: inset 0 0 0 9999px #161B18 !important;
+			}
+
+			/* Force card descendants transparent so parent box-shadow shows through */
+			.dm-card table,
+			.dm-card tr,
+			.dm-card td,
+			.dm-card div,
+			.dm-card p,
+			.dm-card h1,
+			.dm-card h2,
+			.dm-card h3 {
+				background-color: transparent !important;
+				box-shadow: none !important;
 			}
 
 			/* Text colors */
@@ -143,17 +158,20 @@ $render_shared_part = $data['render_shared_part'];
 			/* Button colors */
 			.dm-button {
 				background-color: #93C9A8 !important;
+				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 				color: #161B18 !important;
 			}
 
 			/* Badge adjustments for dark mode - inverted colors for contrast */
 			.dm-badge-positive {
 				background-color: #1F4C04 !important;
+				box-shadow: inset 0 0 0 9999px #1F4C04 !important;
 				color: #D8FFC0 !important;
 			}
 
 			.dm-badge-negative {
 				background-color: #7A1E00 !important;
+				box-shadow: inset 0 0 0 9999px #7A1E00 !important;
 				color: #FFDED3 !important;
 			}
 
@@ -167,10 +185,25 @@ $render_shared_part = $data['render_shared_part'];
 		[data-ogsc] body,
 		[data-ogsc] .body {
 			background-color: #232824 !important;
+			box-shadow: inset 0 0 0 9999px #232824 !important;
 		}
 
 		[data-ogsc] .dm-card {
 			background-color: #161B18 !important;
+			box-shadow: inset 0 0 0 9999px #161B18 !important;
+		}
+
+		/* Force card descendants transparent so parent box-shadow shows through */
+		[data-ogsc] .dm-card table,
+		[data-ogsc] .dm-card tr,
+		[data-ogsc] .dm-card td,
+		[data-ogsc] .dm-card div,
+		[data-ogsc] .dm-card p,
+		[data-ogsc] .dm-card h1,
+		[data-ogsc] .dm-card h2,
+		[data-ogsc] .dm-card h3 {
+			background-color: transparent !important;
+			box-shadow: none !important;
 		}
 
 		[data-ogsc] .dm-text-primary {
@@ -187,16 +220,19 @@ $render_shared_part = $data['render_shared_part'];
 
 		[data-ogsc] .dm-button {
 			background-color: #93C9A8 !important;
+			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 			color: #161B18 !important;
 		}
 
 		[data-ogsc] .dm-badge-positive {
 			background-color: #1F4C04 !important;
+			box-shadow: inset 0 0 0 9999px #1F4C04 !important;
 			color: #D8FFC0 !important;
 		}
 
 		[data-ogsc] .dm-badge-negative {
 			background-color: #7A1E00 !important;
+			box-shadow: inset 0 0 0 9999px #7A1E00 !important;
 			color: #FFDED3 !important;
 		}
 

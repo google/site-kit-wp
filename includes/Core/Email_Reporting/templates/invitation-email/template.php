@@ -122,10 +122,25 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 			body,
 			.body {
 				background-color: #232824 !important;
+				box-shadow: inset 0 0 0 9999px #232824 !important;
 			}
 
 			.dm-card {
 				background-color: #161B18 !important;
+				box-shadow: inset 0 0 0 9999px #161B18 !important;
+			}
+
+			/* Force card descendants transparent so parent box-shadow shows through */
+			.dm-card table,
+			.dm-card tr,
+			.dm-card td,
+			.dm-card div,
+			.dm-card p,
+			.dm-card h1,
+			.dm-card h2,
+			.dm-card h3 {
+				background-color: transparent !important;
+				box-shadow: none !important;
 			}
 
 			.dm-text-primary {
@@ -142,6 +157,7 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 
 			.dm-button {
 				background-color: #93C9A8 !important;
+				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 				color: #161B18 !important;
 			}
 		}
@@ -150,10 +166,25 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 		[data-ogsc] body,
 		[data-ogsc] .body {
 			background-color: #232824 !important;
+			box-shadow: inset 0 0 0 9999px #232824 !important;
 		}
 
 		[data-ogsc] .dm-card {
 			background-color: #161B18 !important;
+			box-shadow: inset 0 0 0 9999px #161B18 !important;
+		}
+
+		/* Force card descendants transparent so parent box-shadow shows through */
+		[data-ogsc] .dm-card table,
+		[data-ogsc] .dm-card tr,
+		[data-ogsc] .dm-card td,
+		[data-ogsc] .dm-card div,
+		[data-ogsc] .dm-card p,
+		[data-ogsc] .dm-card h1,
+		[data-ogsc] .dm-card h2,
+		[data-ogsc] .dm-card h3 {
+			background-color: transparent !important;
+			box-shadow: none !important;
 		}
 
 		[data-ogsc] .dm-text-primary {
@@ -170,6 +201,7 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 
 		[data-ogsc] .dm-button {
 			background-color: #93C9A8 !important;
+			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 			color: #161B18 !important;
 		}
 	</style>
