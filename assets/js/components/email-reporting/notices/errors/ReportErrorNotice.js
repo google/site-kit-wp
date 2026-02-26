@@ -76,8 +76,6 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 					? {
 							label: __( 'Go to settings', 'google-site-kit' ),
 							href: settingsURL,
-							external: true,
-							hideExternalIndicator: true,
 							onClick: trackEvents.confirm,
 					  }
 					: null
