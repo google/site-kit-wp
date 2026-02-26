@@ -185,6 +185,7 @@ jobs:
     needs: playwright-tests
     if: always() && github.event_name == 'pull_request'
     permissions:
+      contents: read
       pull-requests: write
     steps:
       - name: Find existing comment
