@@ -81,7 +81,7 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 			dismissButton={ {
 				label: __( 'Get help', 'google-site-kit' ),
 				onClick: trackEvents.dismiss,
-				href: '#',
+				href: '#', // TODO Placeholder to be replaced with actual help link when available.
 				external: true,
 			} }
 		/>
