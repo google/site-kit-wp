@@ -30,6 +30,9 @@ $render_shared_part = $data['render_shared_part'];
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -42,7 +45,7 @@ $render_shared_part = $data['render_shared_part'];
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
 		:root {
-			color-scheme: light;
+			color-scheme: light dark;
 		}
 
 		body {
@@ -104,6 +107,62 @@ $render_shared_part = $data['render_shared_part'];
 			max-width: 0;
 			opacity: 0;
 			overflow: hidden;
+		}
+
+		/* Dark mode styles for email clients that support prefers-color-scheme */
+		@media (prefers-color-scheme: dark) {
+			body,
+			.body {
+				background-color: #232824 !important;
+			}
+
+			.dm-card {
+				background-color: #161B18 !important;
+			}
+
+			.dm-text-primary {
+				color: #EBEEF0 !important;
+			}
+
+			.dm-text-secondary {
+				color: #999F9B !important;
+			}
+
+			.dm-link {
+				color: #93C9A8 !important;
+			}
+
+			.dm-button {
+				background-color: #93C9A8 !important;
+				color: #161B18 !important;
+			}
+		}
+
+		/* Outlook app dark mode targeting via data-ogsc attribute */
+		[data-ogsc] body,
+		[data-ogsc] .body {
+			background-color: #232824 !important;
+		}
+
+		[data-ogsc] .dm-card {
+			background-color: #161B18 !important;
+		}
+
+		[data-ogsc] .dm-text-primary {
+			color: #EBEEF0 !important;
+		}
+
+		[data-ogsc] .dm-text-secondary {
+			color: #999F9B !important;
+		}
+
+		[data-ogsc] .dm-link {
+			color: #93C9A8 !important;
+		}
+
+		[data-ogsc] .dm-button {
+			background-color: #93C9A8 !important;
+			color: #161B18 !important;
 		}
 	</style>
 </head>

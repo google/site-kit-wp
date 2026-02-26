@@ -30,7 +30,7 @@ $render_shared_part   = $data['render_shared_part'];
 $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 
 // Build the title with mailto link for the inviter email.
-$inviter_email_link = '<a href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
+$inviter_email_link = '<a class="dm-text-primary" href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
 $email_title        = sprintf( $email_title_template, $inviter_email_link );
 ?>
 <!doctype html>
@@ -38,6 +38,9 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -50,7 +53,7 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
 		:root {
-			color-scheme: light;
+			color-scheme: light dark;
 		}
 
 		body {
@@ -113,6 +116,62 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 			opacity: 0;
 			overflow: hidden;
 		}
+
+		/* Dark mode styles for email clients that support prefers-color-scheme */
+		@media (prefers-color-scheme: dark) {
+			body,
+			.body {
+				background-color: #232824 !important;
+			}
+
+			.dm-card {
+				background-color: #161B18 !important;
+			}
+
+			.dm-text-primary {
+				color: #EBEEF0 !important;
+			}
+
+			.dm-text-secondary {
+				color: #999F9B !important;
+			}
+
+			.dm-link {
+				color: #93C9A8 !important;
+			}
+
+			.dm-button {
+				background-color: #93C9A8 !important;
+				color: #161B18 !important;
+			}
+		}
+
+		/* Outlook app dark mode targeting via data-ogsc attribute */
+		[data-ogsc] body,
+		[data-ogsc] .body {
+			background-color: #232824 !important;
+		}
+
+		[data-ogsc] .dm-card {
+			background-color: #161B18 !important;
+		}
+
+		[data-ogsc] .dm-text-primary {
+			color: #EBEEF0 !important;
+		}
+
+		[data-ogsc] .dm-text-secondary {
+			color: #999F9B !important;
+		}
+
+		[data-ogsc] .dm-link {
+			color: #93C9A8 !important;
+		}
+
+		[data-ogsc] .dm-button {
+			background-color: #93C9A8 !important;
+			color: #161B18 !important;
+		}
 	</style>
 </head>
 <body>
@@ -141,14 +200,14 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 							?>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 								<tr>
-									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
+									<td class="dm-card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
 										<?php /* Site domain. */ ?>
-										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+										<p class="dm-text-secondary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
+											<a class="dm-text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Title from Content_Map with inviter email link. */ ?>
-										<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+										<h1 class="dm-text-primary" style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
 											echo $email_title;
@@ -157,10 +216,10 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 
 										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
-										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+										<p class="dm-text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php echo esc_html( $paragraph ); ?>
 											<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
-											<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+											<a class="dm-link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 											<?php endif; ?>
 										</p>
 										<?php endforeach; ?>
@@ -198,7 +257,7 @@ $email_title        = sprintf( $email_title_template, $inviter_email_link );
 							<table role="presentation" width="100%" style="margin-top: 24px;">
 								<tr>
 									<td style="text-align: left;">
-										<p style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
+										<p class="dm-text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
 											<?php echo esc_html( $footer_copy ); ?>
 										</p>
 									</td>
