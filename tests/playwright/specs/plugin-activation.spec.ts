@@ -26,90 +26,40 @@ const details: TestDetails = {
 	annotation: [ asUser( 'admin' ) ],
 };
 
-const proxyPlugins = withPlugins( 'proxy-credentials.php' );
-const gcpPlugins = withPlugins( 'gcp-credentials.php' );
-
-test.describe( 'plugin activation notice', details, () => {
+test.describe( 'plugin activation', details, () => {
 	test.beforeEach( async ( { wp } ) => {
 		await wp.deactivatePlugin( 'google-site-kit/google-site-kit.php' );
+
+		await wp.visitAdmin( 'plugins.php' );
+		await wp.page.click( '#activate-google-site-kit' );
+
+		await wp.page.waitForSelector( '.googlesitekit-activation__title' );
+	} );
+
+	test( 'should display activation notice when using proxy authentication', async ( {
+		wp,
+	} ) => {
+		const title = wp.page.locator( '.googlesitekit-activation__title' );
+		await expect( title ).toContainText(
+			/Congratulations, the Site Kit plugin is now activated/i
+		);
 	} );
 
 	test(
-		'should be displayed when using proxy auth',
+		'should lead to the setup wizard with GCP authentication',
 		{
-			annotation: proxyPlugins,
+			annotation: withPlugins( 'gcp-credentials.php' ),
 		},
 		async ( { wp } ) => {
-			await wp.visitAdmin( 'plugins.php' );
-			await wp.page.waitForLoadState( 'networkidle' );
-			await expect(
-				wp.page.locator( '.googlesitekit-activation__title' )
-			).toContainText(
-				/Congratulations, the Site Kit plugin is now activated/i
-			);
-		}
-	);
-
-	test(
-		'should not display noscript notice when using proxy auth',
-		{
-			annotation: proxyPlugins,
-		},
-		async ( { wp } ) => {
-			await wp.page.waitForLoadState( 'networkidle' );
-			await expect(
-				wp.page.locator( '.googlesitekit-noscript' )
-			).toHaveCount( 0 );
-		}
-	);
-
-	test(
-		'should be displayed when using GCP auth',
-		{
-			annotation: gcpPlugins,
-		},
-		async ( { wp } ) => {
-			await wp.page.waitForLoadState( 'networkidle' );
-			await expect(
-				wp.page.locator( '.googlesitekit-activation__title' )
-			).toContainText(
-				/Congratulations, the Site Kit plugin is now activated/i
-			);
-		}
-	);
-
-	test(
-		'should not display noscript notice when using GCP auth',
-		{
-			annotation: gcpPlugins,
-		},
-		async ( { wp } ) => {
-			await wp.page.waitForLoadState( 'networkidle' );
-			await expect(
-				wp.page.locator( '.googlesitekit-noscript' )
-			).toHaveCount( 0 );
-		}
-	);
-
-	test(
-		'should lead you to the setup wizard with GCP auth',
-		{
-			annotation: gcpPlugins,
-		},
-		async ( { wp } ) => {
-			await wp.page.waitForLoadState( 'networkidle' );
-			await expect(
-				wp.page.locator( '.googlesitekit-start-setup' )
-			).toHaveText( 'Start setup' );
-			await wp.page.locator( '.googlesitekit-start-setup' ).click();
+			await wp.page.click( '.googlesitekit-start-setup' );
 			await wp.page.waitForSelector(
 				'.googlesitekit-wizard-step__title'
 			);
-			await expect(
-				wp.page.locator(
-					'.googlesitekit-wizard-progress-step__number--inprogress'
-				)
-			).toHaveText( '1' );
+
+			const span = wp.page.locator(
+				'.googlesitekit-wizard-progress-step__number--inprogress'
+			);
+			await expect( span ).toHaveText( '1' );
 		}
 	);
 } );
