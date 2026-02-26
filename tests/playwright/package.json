@@ -3,7 +3,8 @@
 		"test": "playwright test --config=playwright.config.ts",
 		"test:ui": "npm run test --silent -- --ui",
 		"start": "docker compose up -d",
-		"stop": "docker compose down"
+		"stop": "docker compose down",
+		"setup": "playwright install chromium"
 	},
 	"dependencies": {
 		"@playwright/test": "^1.58.2",

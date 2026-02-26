@@ -103,11 +103,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: npm install
-        run: npm ci --workspaces --include-workspace-root
-
-      - name: Build
-        run: npm run build:dev
+      - name: npm install and build
+        run: |
+          npm ci --workspaces --include-workspace-root
+          npm run -w tests/playwright setup
+          npm run build:dev
 
       - uses: shivammathur/setup-php@v2
         with:
