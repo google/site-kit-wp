@@ -76,6 +76,9 @@ concurrency:
 
 env:
   GCS_BUCKET: site-kit-playwright
+  FORBID_ONLY: true
+  RETRIES: 2
+  WORKERS: 4
 
 jobs:
   playwright-tests:

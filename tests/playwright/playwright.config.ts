@@ -26,9 +26,9 @@ export default defineConfig( {
 	testDir: './specs',
 	outputDir: 'artifacts/playwright-output',
 	fullyParallel: true,
-	forbidOnly: !! process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 1 : undefined,
+	forbidOnly: !! process.env.FORBID_ONLY,
+	retries: process.env.RETRIES ? Number( process.env.RETRIES ) : 0,
+	workers: process.env.WORKERS ? Number( process.env.WORKERS ) : undefined,
 	reporter: [
 		[ 'list' ],
 		[
@@ -39,13 +39,9 @@ export default defineConfig( {
 			},
 		],
 	],
-	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
-		/* Base URL to use in actions like `await page.goto('')`. */
-		baseURL: process.env.PLAYWRIGHT_WP_URL ?? 'http://localhost:9002',
-		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+		baseURL: 'http://localhost:9002',
 		trace: 'on-first-retry',
-		/* Capture screenshot on test failure. */
 		screenshot: 'on',
 	},
 	projects: [
