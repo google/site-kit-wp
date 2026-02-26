@@ -93,9 +93,10 @@ jobs:
       WP_VERSION: ${{ matrix.wp_version }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false )
     permissions:
       contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v6
 
@@ -111,25 +112,24 @@ jobs:
           npm run -w tests/playwright setup
           npm run build:dev
 
-      - uses: shivammathur/setup-php@v2
+      - name: Cache Docker images
+        id: docker-cache
+        uses: actions/cache@v5
         with:
-          php-version: "7.4"
-          tools: composer:2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/docker-images
+          key: docker-${{ env.WP_VERSION }}-${{ hashFiles('tests/playwright/docker-compose.yml') }}
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - name: Load Docker images from cache
+        if: steps.docker-cache.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/docker-images/images.tar
 
-      - uses: actions/cache@v5
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-dev
+      - name: Pull and cache Docker images
+        if: steps.docker-cache.outputs.cache-hit != 'true'
+        run: |
+          docker compose -f tests/playwright/docker-compose.yml pull
+          mkdir -p /tmp/docker-images
+          docker save $(docker compose -f tests/playwright/docker-compose.yml config --images | tr '\n' ' ') \
+            -o /tmp/docker-images/images.tar
 
       - name: Start environment
         run: npm run playwright:env:start
