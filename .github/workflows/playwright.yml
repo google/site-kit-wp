@@ -88,7 +88,7 @@ jobs:
       matrix:
         wp_version: ["latest"]
         include:
-          - wp_version: "5.2.21"
+          - wp_version: "5.2.4"
     env:
       WP_VERSION: ${{ matrix.wp_version }}
     runs-on: ubuntu-latest
@@ -201,7 +201,7 @@ jobs:
         run: |
           body="Playwright report is ready:
           - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
-          - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)"
+          - [WordPress 5.2.4](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.4/index.html)"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
           echo "$body" >> "$GITHUB_OUTPUT"
