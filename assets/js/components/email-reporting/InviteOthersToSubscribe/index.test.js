@@ -151,6 +151,42 @@ describe( 'InviteOthersToSubscribe', () => {
 		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
 	} );
 
+	it( 'does not fetch eligible subscribers until panel is opened', async () => {
+		const registry = setupRegistry();
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
+				total: 7,
+			} ),
+			status: 200,
+		} );
+
+		render( <InviteOthersToSubscribe />, {
+			registry,
+		} );
+
+		expect( fetchMock ).toHaveFetchedTimes( 0 );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
+				queryParams: {
+					page: 1,
+					search: '',
+				},
+			} )
+		);
+	} );
+
 	it( 'triggers server search after 300ms debounce when typing', async () => {
 		const registry = setupRegistry();
 

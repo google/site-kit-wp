@@ -30,7 +30,7 @@ import {
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
@@ -58,35 +58,63 @@ export default function InviteOthersToSubscribe() {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const [ debouncedSearchTerm, setDebouncedSearchTerm ] = useState( '' );
 	const [ inviteResults, setInviteResults ] = useState( {} );
+	const [ hasOpenedSelectionPanel, setHasOpenedSelectionPanel ] =
+		useState( isSelectionPanelOpen );
 	const debouncedSetSearchTerm = useDebounce( setDebouncedSearchTerm, 300 );
 
 	useEffect( () => {
 		debouncedSetSearchTerm( searchTerm );
 	}, [ searchTerm, debouncedSetSearchTerm ] );
 
-	const eligibleSubscribers = useSelect( ( select ) =>
-		select( CORE_SITE ).getEligibleSubscribers( {
-			search: debouncedSearchTerm,
-		} )
+	useEffect( () => {
+		if ( isSelectionPanelOpen ) {
+			setHasOpenedSelectionPanel( true );
+		}
+	}, [ isSelectionPanelOpen ] );
+
+	const eligibleSubscribers = useInViewSelect(
+		( select ) => {
+			if ( ! hasOpenedSelectionPanel ) {
+				return undefined;
+			}
+
+			return select( CORE_SITE ).getEligibleSubscribers( {
+				search: debouncedSearchTerm,
+			} );
+		},
+		[ debouncedSearchTerm, hasOpenedSelectionPanel ]
 	);
 
-	const allEligibleSubscribers = useSelect( ( select ) => {
-		// Reuse the current selector result when search is empty to avoid duplicate requests.
-		if ( debouncedSearchTerm === '' ) {
-			return undefined;
-		}
+	const allEligibleSubscribers = useInViewSelect(
+		( select ) => {
+			if ( ! hasOpenedSelectionPanel ) {
+				return undefined;
+			}
 
-		return select( CORE_SITE ).getEligibleSubscribers( {
-			search: '',
-		} );
-	} );
+			// Reuse the current selector result when search is empty to avoid duplicate requests.
+			if ( debouncedSearchTerm === '' ) {
+				return undefined;
+			}
 
-	const isLoading = useSelect(
-		( select ) =>
-			! select( CORE_SITE ).hasFinishedResolution(
+			return select( CORE_SITE ).getEligibleSubscribers( {
+				search: '',
+			} );
+		},
+		[ debouncedSearchTerm, hasOpenedSelectionPanel ]
+	);
+
+	const isLoading = useInViewSelect(
+		( select ) => {
+			if ( ! hasOpenedSelectionPanel ) {
+				return false;
+			}
+
+			return ! select( CORE_SITE ).hasFinishedResolution(
 				'getEligibleSubscribers',
 				[ { search: debouncedSearchTerm } ]
-			)
+			);
+		},
+		[ debouncedSearchTerm, hasOpenedSelectionPanel ]
 	);
 
 	const dashboardSharingDocumentationURL = useSelect( ( select ) =>
