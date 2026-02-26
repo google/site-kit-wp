@@ -23,7 +23,6 @@ import Modules from 'googlesitekit-modules';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
-import { isFeatureEnabled } from '@/js/features';
 
 export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 	storeName: MODULES_READER_REVENUE_MANAGER,
@@ -40,8 +39,6 @@ export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		'productID',
 		'productIDs',
 		'paymentOption',
-		...( isFeatureEnabled( 'rrmPolicyViolations' )
-			? [ 'contentPolicyStatus' ]
-			: [] ),
+		'contentPolicyStatus',
 	],
 } );
