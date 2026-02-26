@@ -123,6 +123,8 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {
@@ -345,6 +347,67 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		expect( fetchMock ).toHaveFetched( syncAudiencesEndpoint );
 		expect( fetchMock ).toHaveFetched( syncCustomDimensionsEndpoint );
+	} );
+
+	it( 'should not sync audiences and custom dimensions until Analytics 4 settings have resolved', async () => {
+		const analytics4SettingsEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/settings'
+		);
+
+		// Create a fresh registry without pre-populated Analytics 4
+		// settings so getSettings resolution remains pending.
+		const freshRegistry = createTestRegistry();
+		provideUserAuthentication( freshRegistry );
+		provideSiteInfo( freshRegistry );
+		freshRegistry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+		freshRegistry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		freshRegistry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		freshRegistry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+		freshRegistry
+			.dispatch( CORE_USER )
+			.receiveGetUserAudienceSettings( {
+				configuredAudiences: null,
+				isAudienceSegmentationWidgetHidden: false,
+				didSetAudiences: false,
+			} );
+		freshRegistry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+			isAnalyticsSetupComplete: false,
+		} );
+		freshRegistry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+
+		// Freeze the Analytics 4 settings endpoint so the resolver
+		// never completes and hasFinishedResolution stays false.
+		freezeFetch( analytics4SettingsEndpoint );
+
+		fetchMock.post( syncAudiencesEndpoint, { body: [], status: 200 } );
+		fetchMock.post( syncCustomDimensionsEndpoint, {
+			body: [],
+			status: 200,
+		} );
+		fetchMock.getOnce( searchAnalyticsRegexp, {
+			body: searchConsoleFixtures.report,
+		} );
+		fetchMock.getOnce( analytics4ReportRegexp, {
+			body: analyticsFixtures.report,
+		} );
+		muteFetch( searchConsoleDataAvailableRegexp );
+		muteFetch( analytics4DataAvailableRegexp );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry: freshRegistry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		// Since Analytics 4 settings have not resolved, the sync
+		// actions should not have been dispatched yet.
+		expect( fetchMock ).not.toHaveFetched( syncAudiencesEndpoint );
+		expect( fetchMock ).not.toHaveFetched(
+			syncCustomDimensionsEndpoint
+		);
 	} );
 
 	it( 'should not attempt to sync again while syncing is already in progress', async () => {

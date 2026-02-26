@@ -112,6 +112,17 @@ export default function KeyMetricsSetupApp() {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData();
 	} );
 
+	// Await the resolution of Analytics 4 settings before triggering
+	// the background sync of audiences and custom dimensions. This
+	// ensures propertyID is available for the sync and isSyncing
+	// check, preventing the button from being stuck in a disabled state.
+	const hasResolvedAnalytics4Settings = useSelect( ( select ) => {
+		select( MODULES_ANALYTICS_4 ).getSettings();
+		return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+			'getSettings'
+		);
+	} );
+
 	const isSyncing = useSelect( ( select ) => {
 		const isFetchingSyncAvailableCustomDimensions =
 			select(
@@ -189,9 +200,15 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
-		syncAvailableAudiences();
-		fetchSyncAvailableCustomDimensions();
-	}, [ syncAvailableAudiences, fetchSyncAvailableCustomDimensions ] );
+		if ( hasResolvedAnalytics4Settings ) {
+			syncAvailableAudiences();
+			fetchSyncAvailableCustomDimensions();
+		}
+	}, [
+		hasResolvedAnalytics4Settings,
+		syncAvailableAudiences,
+		fetchSyncAvailableCustomDimensions,
+	] );
 
 	const onSaveClick = useCallback( () => {
 		if ( isBusy || isSyncing ) {
