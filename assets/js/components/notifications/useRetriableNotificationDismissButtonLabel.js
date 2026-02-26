@@ -37,7 +37,8 @@ import { useState } from '@wordpress/element';
  * dismissal count reaches its limit. This then causes the "Maybe later" label
  * to momentarily change to "Don't show again" before the notification is
  * dismissed. This hook uses local state to ensure that the dismiss button
- * label remains consistent for the user and doesn't change unexpectedly.
+ * label is computed only once on mount, so that the label doesn't change after
+ * the CTA is clicked.
  *
  * @since n.e.x.t
  *
