@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\User;
 
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
+use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -45,8 +47,14 @@ class Email_Reporting {
 	 * @param User_Options $user_options User_Options instance.
 	 */
 	public function __construct( User_Options $user_options ) {
+		$frequency_planner = new Frequency_Planner();
+		$scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
+
 		$this->email_reporting_settings = new Email_Reporting_Settings( $user_options );
-		$this->rest_controller          = new REST_Email_Reporting_Controller( $this->email_reporting_settings );
+		$this->rest_controller          = new REST_Email_Reporting_Controller(
+			$this->email_reporting_settings,
+			$scheduler
+		);
 	}
 
 	/**
