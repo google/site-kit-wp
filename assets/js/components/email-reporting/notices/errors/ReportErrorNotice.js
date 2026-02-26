@@ -50,6 +50,10 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 		select( CORE_SITE ).getModuleSettingsURL( moduleSlug )
 	);
 
+	const getHelpURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
+	);
+
 	return (
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
@@ -81,7 +85,7 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 			dismissButton={ {
 				label: __( 'Get help', 'google-site-kit' ),
 				onClick: trackEvents.dismiss,
-				href: '#', // TODO Placeholder to be replaced with actual help link when available.
+				href: getHelpURL,
 				external: true,
 			} }
 		/>
