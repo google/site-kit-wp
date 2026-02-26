@@ -82,7 +82,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
         <a
           aria-label="Get help (opens in a new tab)"
           class="mdc-button mdc-button--tertiary"
-          href="#"
+          href="undefined?doc=email-reporting"
           role="button"
           target="_blank"
         >
@@ -93,11 +93,10 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
           </span>
         </a>
         <a
-          aria-label="Go to settings (opens in a new tab)"
           class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
           href="undefined#connected-services/search-console"
           role="button"
-          target="_blank"
+          target="_self"
         >
           <span
             class="mdc-button__label"
