@@ -13,10 +13,12 @@
 $change_value = (float) $value;
 $color        = '#1F4C04';
 $background   = '#D8FFC0';
+$badge_class  = 'dm-badge-positive';
 
 if ( $change_value < 0 ) {
-	$color      = '#7A1E00';
-	$background = '#FFDED3';
+	$color       = '#7A1E00';
+	$background  = '#FFDED3';
+	$badge_class = 'dm-badge-negative';
 }
 
 $prefix        = $change_value > 0 ? '+' : '';
@@ -32,7 +34,7 @@ $display_value = $prefix . round( $change_value, 1 ) . '%';
 </v:roundrect>
 <![endif]-->
 <!--[if !mso]><!-->
-<span style="display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:500; background:<?php echo esc_attr( $background ); ?>; color:<?php echo esc_attr( $color ); ?>; mso-hide:all;">
+<span class="<?php echo esc_attr( $badge_class ); ?>" style="display:inline-block; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:500; background:<?php echo esc_attr( $background ); ?>; color:<?php echo esc_attr( $color ); ?>; mso-hide:all;">
 	<?php echo esc_html( $display_value ); ?>
 </span>
 <!--<![endif]-->
