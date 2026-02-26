@@ -45,6 +45,8 @@ export default defineConfig( {
 		baseURL: process.env.PLAYWRIGHT_WP_URL ?? 'http://localhost:9002',
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
+		/* Capture screenshot on test failure. */
+		screenshot: 'on',
 	},
 	projects: [
 		{

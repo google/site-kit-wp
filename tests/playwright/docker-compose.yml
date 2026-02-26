@@ -25,7 +25,7 @@ services:
       retries: 10
 
   wp:
-    image: wordpress:6.7-php8.3
+    image: wordpress:${WP_VERSION:-6.7-php8.3}
     ports:
       - 9002:80
     volumes:

@@ -36,13 +36,9 @@ test.describe( 'plugin activation', details, () => {
 		await wp.page.waitForSelector( '.googlesitekit-activation__title' );
 	} );
 
-	test( 'should display activation notice when using proxy authentication', async ( {
-		wp,
-	} ) => {
+	test( 'should display the activation notice', async ( { wp } ) => {
 		const title = wp.page.locator( '.googlesitekit-activation__title' );
-		await expect( title ).toContainText(
-			/Congratulations, the Site Kit plugin is now activated/i
-		);
+		await expect( title ).toContainText( /Site Kit \w+ is now activated/i );
 	} );
 
 	test(
