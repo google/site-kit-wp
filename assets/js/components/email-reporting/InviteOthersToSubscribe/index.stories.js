@@ -94,16 +94,29 @@ function Template( { ...args } ) {
 	return <InviteOthersToSubscribe isOpen { ...args } />;
 }
 
+const defaultQueryArgs = { search: '' };
+
+function createEligibleSubscribersResponse( users ) {
+	return {
+		users,
+		total: users.length,
+		totalPages: 1,
+	};
+}
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default (3 users, no search)';
 Default.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -113,10 +126,13 @@ WithSearch.args = {
 	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( manyUsers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( manyUsers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -124,10 +140,15 @@ export const Empty = Template.bind( {} );
 Empty.storyName = 'Empty State (no eligible users)';
 Empty.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [] );
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( [] ),
+				{ page: 1, search: '' }
+			);
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -138,7 +159,7 @@ Loading.args = {
 		// Start resolution but never finish it so the component stays in loading state.
 		registry
 			.dispatch( CORE_SITE )
-			.startResolution( 'getEligibleSubscribers', [] );
+			.startResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 Loading.decorators = [
