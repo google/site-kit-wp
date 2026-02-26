@@ -40,6 +40,7 @@ import {
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import Link from '@/js/components/Link';
+import { useDebounce } from '@/js/hooks/useDebounce';
 import InviteUserList from './InviteUserList';
 import InviteSearchInput from './InviteSearchInput';
 
@@ -54,14 +55,37 @@ export default function InviteOthersToSubscribe() {
 		select( CORE_UI ).getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 	);
 
+	const [ searchTerm, setSearchTerm ] = useState( '' );
+	const [ debouncedSearchTerm, setDebouncedSearchTerm ] = useState( '' );
+	const [ inviteResults, setInviteResults ] = useState( {} );
+	const debouncedSetSearchTerm = useDebounce( setDebouncedSearchTerm, 300 );
+
+	useEffect( () => {
+		debouncedSetSearchTerm( searchTerm );
+	}, [ searchTerm, debouncedSetSearchTerm ] );
+
 	const eligibleSubscribers = useSelect( ( select ) =>
-		select( CORE_SITE ).getEligibleSubscribers()
+		select( CORE_SITE ).getEligibleSubscribers( {
+			search: debouncedSearchTerm,
+		} )
 	);
+
+	const allEligibleSubscribers = useSelect( ( select ) => {
+		// Reuse the current selector result when search is empty to avoid duplicate requests.
+		if ( debouncedSearchTerm === '' ) {
+			return undefined;
+		}
+
+		return select( CORE_SITE ).getEligibleSubscribers( {
+			search: '',
+		} );
+	} );
 
 	const isLoading = useSelect(
 		( select ) =>
 			! select( CORE_SITE ).hasFinishedResolution(
-				'getEligibleSubscribers'
+				'getEligibleSubscribers',
+				[ { search: debouncedSearchTerm } ]
 			)
 	);
 
@@ -73,9 +97,6 @@ export default function InviteOthersToSubscribe() {
 		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
 	);
 
-	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const [ inviteResults, setInviteResults ] = useState( {} );
-
 	// Reset state when panel opens so layout changes happen while
 	// the panel is still off-screen, avoiding visible shifts during
 	// the closing transition.
@@ -85,10 +106,16 @@ export default function InviteOthersToSubscribe() {
 		}
 
 		if ( isSelectionPanelOpen ) {
+			debouncedSetSearchTerm.cancel();
 			setSearchTerm( '' );
+			setDebouncedSearchTerm( '' );
 			setInviteResults( {} );
 		}
-	}, [ isSelectionPanelOpen, hasManageOptionsCapability ] );
+	}, [
+		isSelectionPanelOpen,
+		hasManageOptionsCapability,
+		debouncedSetSearchTerm,
+	] );
 
 	const handleInviteResult = useCallback( ( userID, result ) => {
 		setInviteResults( ( prev ) => ( {
@@ -101,11 +128,16 @@ export default function InviteOthersToSubscribe() {
 		return null;
 	}
 
-	// Filter out already-subscribed users.
-	const invitableUsers =
-		eligibleSubscribers?.filter( ( user ) => ! user.subscribed ) || [];
-
-	const showSearch = invitableUsers.length > SEARCH_THRESHOLD;
+	const users = eligibleSubscribers?.users || [];
+	// Show search only when the unfiltered eligible-user total is above the threshold.
+	// If current search is already empty, reuse that same response instead of fetching search:'' again.
+	const eligibleSubscribersForSearchThreshold =
+		debouncedSearchTerm === ''
+			? eligibleSubscribers
+			: allEligibleSubscribers;
+	const showSearch =
+		( eligibleSubscribersForSearchThreshold?.total || 0 ) >
+		SEARCH_THRESHOLD;
 
 	const tooltipContent = createInterpolateElement(
 		__(
@@ -134,8 +166,7 @@ export default function InviteOthersToSubscribe() {
 			/>
 
 			<InviteUserList
-				users={ invitableUsers }
-				searchTerm={ searchTerm }
+				users={ users }
 				inviteResults={ inviteResults }
 				onInviteResult={ handleInviteResult }
 				isLoading={ isLoading }
