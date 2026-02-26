@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export * from './wordpress';
 export * from './args';
+export * from './options';
+export * from './wordpress';

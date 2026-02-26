@@ -9,11 +9,11 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-if ( ! isset( $_COOKIE['_wp_test_user'] ) ) {
-	return;
+// Set the E2E test username.
+$e2e_test_username = 'admin';
+if ( ! empty( $_COOKIE['_wp_test_user'] ) ) {
+	$e2e_test_username = sanitize_user( $_COOKIE['_wp_test_user'], true );
 }
-
-$e2e_test_username = sanitize_user( $_COOKIE['_wp_test_user'], true );
 
 // Make the current request appear authenticated as the specified user.
 add_filter(

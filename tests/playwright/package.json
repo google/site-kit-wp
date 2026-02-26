@@ -2,7 +2,6 @@
 	"scripts": {
 		"test": "playwright test --config=playwright.config.ts",
 		"test:ui": "npm run test --silent -- --ui",
-		"test:ui:debug": "npm run test:ui --silent -- --debug",
 		"env:start": "docker compose up -d",
 		"env:stop": "docker compose down"
 	},

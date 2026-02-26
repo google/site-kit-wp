@@ -33,7 +33,7 @@ export { expect, TestDetails } from '@playwright/test';
 // Pick up environment variables or use defaults.
 const WP_BASE_URL = process.env.PLAYWRIGHT_WP_URL ?? 'http://localhost:9002';
 const DB_HOST = process.env.PLAYWRIGHT_DB_HOST ?? 'localhost';
-const DB_PORT = Number( process.env.PLAYWRIGHT_DB_PORT ) ?? 9306;
+const DB_PORT = Number( process.env.PLAYWRIGHT_DB_PORT ?? '9306' );
 const DB_USER = process.env.PLAYWRIGHT_DB_USER ?? 'root';
 const DB_PASSWORD = process.env.PLAYWRIGHT_DB_PASSWORD ?? 'example';
 

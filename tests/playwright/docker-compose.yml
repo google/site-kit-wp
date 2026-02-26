@@ -9,7 +9,17 @@ services:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-pexample",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -20,7 +30,9 @@ services:
       - 9002:80
     volumes:
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
-      - ./mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ./docker/wordpress/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ./docker/wordpress/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
+      - ./docker/wordpress/db.php:/var/www/html/wp-content/db.php
     environment:
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_USER: root
@@ -29,7 +41,7 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
         define( 'WP_DEBUG_LOG', true );
-        define( 'WP_DEBUG_DISPLAY', false );
+        define( 'WP_DEBUG_DISPLAY', true );
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
         define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
         define( 'WP_AUTO_UPDATE_CORE', false );

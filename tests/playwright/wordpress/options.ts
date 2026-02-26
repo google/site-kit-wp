@@ -20,17 +20,19 @@
 import { TestDetailsAnnotation } from '@playwright/test';
 
 /**
- * Sets the plugins to use for the test.
+ * Sets the plugins to activate for the test.
  *
  * @since n.e.x.t
  *
- * @param {string[]} plugins The plugins to use for the test.
+ * @param {string[]} plugins Plugin file paths relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
  */
 export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 	return {
 		type: '_wp:plugin',
-		description: plugins.join( ';' ),
+		description: plugins
+			.map( ( plugin ) => `google-site-kit-test-plugins/${ plugin }` )
+			.join( ';' ),
 	};
 }
 
