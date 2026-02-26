@@ -47,9 +47,7 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 	);
 
 	const requestAccessURL = useSelect( ( select ) =>
-		typeof select( storeName )?.getServiceEntityAccessURL === 'function'
-			? select( storeName ).getServiceEntityAccessURL()
-			: null
+		select( storeName )?.getServiceEntityAccessURL?.()
 	);
 
 	const getHelpURL = useSelect( ( select ) =>
