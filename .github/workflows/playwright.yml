@@ -86,9 +86,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        wp_version: ["latest"]
+        wp_version: ["latest", "nightly"]
         include:
-          - wp_version: "5.2.4"
+          - wp_version: "5.2.21"
     env:
       WP_VERSION: ${{ matrix.wp_version }}
     runs-on: ubuntu-latest
@@ -109,27 +109,41 @@ jobs:
       - name: npm install and build
         run: |
           npm ci --workspaces --include-workspace-root
-          npm run -w tests/playwright setup
           npm run build:dev
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npm run -w tests/playwright setup
 
       - name: Cache Docker images
         id: docker-cache
+        if: matrix.wp_version != 'nightly'
         uses: actions/cache@v5
         with:
           path: /tmp/docker-images
-          key: docker-${{ env.WP_VERSION }}-${{ hashFiles('tests/playwright/docker-compose.yml') }}
+          key: docker-${{ env.WP_VERSION }}-${{ hashFiles('tests/playwright/docker/wordpress/Dockerfile', 'tests/playwright/docker-compose.yml') }}
 
       - name: Load Docker images from cache
-        if: steps.docker-cache.outputs.cache-hit == 'true'
+        if: matrix.wp_version != 'nightly' && steps.docker-cache.outputs.cache-hit == 'true'
         run: docker load -i /tmp/docker-images/images.tar
 
-      - name: Pull and cache Docker images
-        if: steps.docker-cache.outputs.cache-hit != 'true'
+      - name: Build and cache Docker images
+        if: matrix.wp_version == 'nightly' || steps.docker-cache.outputs.cache-hit != 'true'
         run: |
-          docker compose -f tests/playwright/docker-compose.yml pull
-          mkdir -p /tmp/docker-images
-          docker save $(docker compose -f tests/playwright/docker-compose.yml config --images | tr '\n' ' ') \
-            -o /tmp/docker-images/images.tar
+          docker compose -f tests/playwright/docker-compose.yml build
+          docker compose -f tests/playwright/docker-compose.yml pull mysql
+          if [ "${{ matrix.wp_version }}" != "nightly" ]; then
+            mkdir -p /tmp/docker-images
+            docker save $(docker compose -f tests/playwright/docker-compose.yml config --images | tr '\n' ' ') \
+              -o /tmp/docker-images/images.tar
+          fi
 
       - name: Start environment
         run: npm run playwright:env:start
@@ -203,7 +217,8 @@ jobs:
         run: |
           body="Playwright report is ready:
           - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
-          - [WordPress 5.2.4](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.4/index.html)"
+          - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
+          - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
           echo "$body" >> "$GITHUB_OUTPUT"

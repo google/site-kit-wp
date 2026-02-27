@@ -25,7 +25,11 @@ services:
       retries: 10
 
   wp:
-    image: wordpress:${WP_VERSION:-6.7-php8.3}
+    build:
+      context: ./docker/wordpress
+      args:
+        WP_VERSION: ${WP_VERSION:-latest}
+    image: google-site-kit-wp:${WP_VERSION:-latest}
     ports:
       - 9002:80
     volumes:
