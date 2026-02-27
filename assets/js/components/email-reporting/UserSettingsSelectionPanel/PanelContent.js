@@ -42,6 +42,7 @@ import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import Notices from './Notices';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function PanelContent( {
 	notice,
@@ -136,7 +137,7 @@ PanelContent.propTypes = {
 	notice: PropTypes.shape( {
 		title: PropTypes.string,
 		text: PropTypes.string,
-		type: PropTypes.oneOf( [ 'info', 'success', 'error' ] ),
+		type: PropTypes.oneOf( Object.values( TYPES ) ),
 	} ),
 	onSaveCallback: PropTypes.func,
 	onUnsubscribe: PropTypes.func,
