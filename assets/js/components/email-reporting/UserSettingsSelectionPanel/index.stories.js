@@ -49,6 +49,17 @@ function Template( { viewContext } ) {
 	);
 }
 
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.scenario = {};
+Loading.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( CORE_USER )
+			.startResolution( 'getEmailReportingSettings', [] );
+	},
+};
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
@@ -133,6 +144,7 @@ AnalyticsWasNeverConnected.args = {
 				disconnectedAt: false,
 			},
 		] );
+
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: true,
 		} );
