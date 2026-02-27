@@ -67,6 +67,9 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
