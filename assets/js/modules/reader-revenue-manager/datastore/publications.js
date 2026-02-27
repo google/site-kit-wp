@@ -84,7 +84,10 @@ const fetchGetPublicationsStore = createFetchStore( {
 				}
 
 				Object.assign( state.settings, newSettings );
-				Object.assign( state.savedSettings, newSettings );
+
+				if ( state.savedSettings ) {
+					Object.assign( state.savedSettings, newSettings );
+				}
 			}
 		}
 	} ),
