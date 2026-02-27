@@ -54,32 +54,30 @@ export default function PanelContent( {
 	onNoticeDismiss,
 	closePanel,
 } ) {
-	// Ensure any errors are loaded and potentially show loading state
-	// if they haven't been loaded yet.
-	useSelect( ( select ) => select( CORE_SITE ).getEmailReportingErrors() );
-
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
 	const email = user?.wpEmail;
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
 
-	const isLoading = useSelect(
-		( select ) =>
-			( select( CORE_MODULES ).hasStartedResolution( 'getModules' ) &&
-				! select( CORE_MODULES ).hasFinishedResolution(
-					'getModules'
-				) ) ||
-			! select( CORE_USER ).hasFinishedResolution(
-				'getEmailReportingSettings'
-			) ||
-			! select( CORE_SITE ).hasFinishedResolution(
-				'getEmailReportingSettings'
-			) ||
-			! select( CORE_SITE ).hasFinishedResolution(
-				'getEmailReportingErrors'
-			)
+	// The following selectors are used to determine if the data is still loading,
+	// as these are used in child components within the panel.
+	const emailReportingErrors = useSelect( ( select ) =>
+		select( CORE_SITE ).getEmailReportingErrors()
 	);
+	const userEmailReportingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).getEmailReportingSettings()
+	);
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+
+	const isLoading = [
+		isEmailReportingEnabled,
+		userEmailReportingSettings,
+		emailReportingErrors,
+		modules,
+	].some( ( value ) => value === undefined );
 
 	if ( isLoading ) {
 		return <UserSettingsLoadingPanel />;
