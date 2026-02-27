@@ -26,6 +26,7 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserCapabilities,
+	createTestRegistry,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -54,9 +55,11 @@ Loading.storyName = 'Loading';
 Loading.scenario = {};
 Loading.args = {
 	setupRegistry: ( registry ) => {
+		// Reset registry to not have any data loaded, to show loading state.
+		registry = createTestRegistry();
 		registry
-			.dispatch( CORE_USER )
-			.startResolution( 'getEmailReportingSettings', [] );
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
 	},
 };
 
