@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { getPostTypesString, getProductIDLabel } from './settings';
+import {
+	getPostTypesString,
+	getProductIDLabel,
+	getProductIDs,
+	getPaymentOption,
+} from './settings';
 
 describe( 'getPostTypesString', () => {
 	it( 'returns post type labels for postTypes setting slugs', () => {
@@ -105,6 +110,92 @@ describe( 'getPostTypesString', () => {
 		];
 
 		expect( getPostTypesString( false, allPostTypes ) ).toBe( '' );
+	} );
+} );
+
+describe( 'getProductIDs', () => {
+	it( 'should return product ID names from products array', () => {
+		const products = [
+			{ name: 'ABC:product-1' },
+			{ name: 'DEF:product-2' },
+		];
+
+		expect( getProductIDs( products ) ).toEqual( [
+			'ABC:product-1',
+			'DEF:product-2',
+		] );
+	} );
+
+	it( 'should return an empty array when products is undefined', () => {
+		expect( getProductIDs( undefined ) ).toEqual( [] );
+	} );
+
+	it( 'should return an empty array when products is null', () => {
+		expect( getProductIDs( null ) ).toEqual( [] );
+	} );
+
+	it( 'should return an empty array when products is empty', () => {
+		expect( getProductIDs( [] ) ).toEqual( [] );
+	} );
+
+	it( 'should skip products with missing name property', () => {
+		const products = [
+			{ name: 'ABC:product-1' },
+			{},
+			{ name: 'DEF:product-2' },
+		];
+
+		expect( getProductIDs( products ) ).toEqual( [
+			'ABC:product-1',
+			'DEF:product-2',
+		] );
+	} );
+} );
+
+describe( 'getPaymentOption', () => {
+	it( 'should return the first truthy payment option', () => {
+		const paymentOptions = {
+			contributions: null,
+			subscriptions: true,
+			noPayment: null,
+			thankStickers: null,
+		};
+
+		expect( getPaymentOption( paymentOptions ) ).toBe( 'subscriptions' );
+	} );
+
+	it( 'should return the first truthy option when multiple are true', () => {
+		const paymentOptions = {
+			subscriptions: null,
+			contributions: true,
+			noPayment: true,
+			thankStickers: null,
+		};
+
+		expect( getPaymentOption( paymentOptions ) ).toBe( 'contributions' );
+	} );
+
+	it( 'should return an empty string when all options are null', () => {
+		const paymentOptions = {
+			subscriptions: null,
+			contributions: null,
+			noPayment: null,
+			thankStickers: null,
+		};
+
+		expect( getPaymentOption( paymentOptions ) ).toBe( '' );
+	} );
+
+	it( 'should return an empty string when paymentOptions is undefined', () => {
+		expect( getPaymentOption( undefined ) ).toBe( '' );
+	} );
+
+	it( 'should return an empty string when paymentOptions is null', () => {
+		expect( getPaymentOption( null ) ).toBe( '' );
+	} );
+
+	it( 'should return an empty string when paymentOptions is empty', () => {
+		expect( getPaymentOption( {} ) ).toBe( '' );
 	} );
 } );
 
