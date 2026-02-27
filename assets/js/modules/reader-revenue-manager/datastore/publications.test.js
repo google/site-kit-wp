@@ -536,6 +536,165 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 	} );
 
+	describe( 'fetchGetPublications settings synchronization', () => {
+		beforeEach( () => {
+			const extraData = [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: true,
+				},
+			];
+			provideModules( registry, extraData );
+			provideModuleRegistrations( registry, extraData );
+		} );
+
+		it( 'should update settings in state when publications are fetched', async () => {
+			const publication = fixtures.publications[ 0 ];
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+				} );
+
+			fetchMock.getOnce( publicationsEndpoint, {
+				body: fixtures.publications,
+				status: 200,
+			} );
+
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublications();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublications();
+
+			const settings = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSettings();
+
+			expect( settings.publicationOnboardingState ).toEqual(
+				publication.onboardingState
+			);
+			expect( settings.productIDs ).toEqual( [ 'basic' ] );
+			expect( settings.paymentOption ).toEqual( 'subscriptions' );
+		} );
+
+		it( 'should update savedSettings in state when publications are fetched', async () => {
+			const publication = fixtures.publications[ 0 ];
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+				} );
+
+			fetchMock.getOnce( publicationsEndpoint, {
+				body: fixtures.publications,
+				status: 200,
+			} );
+
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublications();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublications();
+
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.haveSettingsChanged()
+			).toBe( false );
+		} );
+
+		it( 'should not update settings when no matching publication exists', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: 'NON_EXISTENT',
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+				} );
+
+			fetchMock.getOnce( publicationsEndpoint, {
+				body: fixtures.publications,
+				status: 200,
+			} );
+
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublications();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublications();
+
+			const settings = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSettings();
+
+			expect( settings.publicationOnboardingState ).toEqual(
+				PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION
+			);
+			expect( settings.productIDs ).toEqual( [] );
+			expect( settings.paymentOption ).toEqual( '' );
+		} );
+
+		it( 'should sync contentPolicyStatus when rrmPolicyViolations feature is enabled', async () => {
+			setEnabledFeatures( [ 'rrmPolicyViolations' ] );
+
+			const contentPolicyStatus = {
+				contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
+				policyInfoLink: 'https://example.com/policy-info',
+			};
+
+			const publicationsWithPolicy = cloneDeep( fixtures.publications );
+			publicationsWithPolicy[ 0 ].contentPolicyStatus =
+				contentPolicyStatus;
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: publicationsWithPolicy[ 0 ].publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+				} );
+
+			fetchMock.getOnce( publicationsEndpoint, {
+				body: publicationsWithPolicy,
+				status: 200,
+			} );
+
+			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublications();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublications();
+
+			const settings = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSettings();
+
+			expect( settings.contentPolicyStatus ).toEqual(
+				contentPolicyStatus
+			);
+		} );
+	} );
+
 	describe( 'selectors', () => {
 		beforeEach( () => {
 			provideModules( registry );
