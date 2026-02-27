@@ -53,6 +53,10 @@ export default function PanelContent( {
 	onNoticeDismiss,
 	closePanel,
 } ) {
+	// Ensure any errors are loaded and potentially show loading state
+	// if they haven't been loaded yet.
+	useSelect( ( select ) => select( CORE_SITE ).getEmailReportingErrors() );
+
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
 	const email = user?.wpEmail;
 	const isEmailReportingEnabled = useSelect( ( select ) =>
