@@ -21,6 +21,7 @@
  */
 
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -154,9 +155,11 @@ describe( 'UserSettingsSelectionPanel', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
 
 		await waitFor( () =>
 			expect(
