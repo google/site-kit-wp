@@ -142,16 +142,16 @@ class Golinks {
 		$data   = $error->get_error_data();
 		$args   = array();
 
-		if ( is_array( $data ) && ! empty( $data['status'] ) ) {
+		if ( ! empty( $data['status'] ) ) {
 			$status = (int) $data['status'];
 		}
 
-		if ( is_array( $data ) && ! empty( $data['link_url'] ) ) {
+		if ( ! empty( $data['link_url'] ) ) {
 			$args['link_url'] = esc_url_raw( $data['link_url'] );
 		}
 
-		if ( is_array( $data ) && ! empty( $data['link_text'] ) ) {
-			$args['link_text'] = sanitize_text_field( $data['link_text'] );
+		if ( ! empty( $data['link_text'] ) ) {
+			$args['link_text'] = esc_html( $data['link_text'] );
 		}
 
 		$args['response'] = absint( $status );
@@ -189,15 +189,15 @@ class Golinks {
 	private function get_invalid_golink_error() {
 		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 			$link_url  = $this->context->admin_url( 'dashboard' );
-			$link_text = esc_html__( 'Site Kit dashboard', 'google-site-kit' );
+			$link_text = __( 'Site Kit dashboard', 'google-site-kit' );
 		} else {
 			$link_url  = $this->context->admin_url( 'splash' );
-			$link_text = esc_html__( 'Site Kit setup page', 'google-site-kit' );
+			$link_text = __( 'Site Kit setup page', 'google-site-kit' );
 		}
 
 		return new WP_Error(
 			'googlesitekit_invalid_golink',
-			esc_html__( 'The link you followed is invalid.', 'google-site-kit' ),
+			__( 'The link you followed is invalid.', 'google-site-kit' ),
 			array(
 				'status'    => 404,
 				'link_url'  => $link_url,

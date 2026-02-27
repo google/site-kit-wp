@@ -333,15 +333,15 @@ class Email_Template_Formatter {
 				'unsubscribe_url' => $email_settings_url,
 				'links'           => array(
 					array(
-						'label' => esc_html__( 'Manage subscription', 'google-site-kit' ),
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
 						'url'   => $email_settings_url,
 					),
 					array(
-						'label' => esc_html__( 'Privacy Policy', 'google-site-kit' ),
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
 						'url'   => 'https://policies.google.com/privacy',
 					),
 					array(
-						'label' => esc_html__( 'Help center', 'google-site-kit' ),
+						'label' => __( 'Help center', 'google-site-kit' ),
 						'url'   => $help_center_url,
 					),
 				),
@@ -370,7 +370,7 @@ class Email_Template_Formatter {
 		return array(
 			'subject'                => sprintf(
 				/* translators: %s: Site domain. */
-				esc_html__( 'Success! You’re subscribed to Site Kit reports for %s', 'google-site-kit' ),
+				__( 'Success! You’re subscribed to Site Kit reports for %s', 'google-site-kit' ),
 				$site_domain
 			),
 			'preheader'              => __( 'Your subscription is confirmed and your first report is on the way.', 'google-site-kit' ),
@@ -396,15 +396,15 @@ class Email_Template_Formatter {
 				'unsubscribe_url' => $email_settings_url,
 				'links'           => array(
 					array(
-						'label' => esc_html__( 'Manage subscription', 'google-site-kit' ),
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
 						'url'   => $email_settings_url,
 					),
 					array(
-						'label' => esc_html__( 'Privacy Policy', 'google-site-kit' ),
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
 						'url'   => 'https://policies.google.com/privacy',
 					),
 					array(
-						'label' => esc_html__( 'Help center', 'google-site-kit' ),
+						'label' => __( 'Help center', 'google-site-kit' ),
 						'url'   => $help_center_url,
 					),
 				),
@@ -428,7 +428,7 @@ class Email_Template_Formatter {
 
 		return array(
 			'subject'                => $this->build_subject( $frequency ),
-			'preheader'              => esc_html__( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
+			'preheader'              => __( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
 			'site'                   => array(
 				'domain' => $this->get_site_domain(),
 				'url'    => $this->context->get_reference_site_url(),
@@ -438,23 +438,23 @@ class Email_Template_Formatter {
 				'context' => $this->get_change_context_label( $date_range ),
 			),
 			'primary_call_to_action' => array(
-				'label' => esc_html__( 'View dashboard', 'google-site-kit' ),
+				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy'            => esc_html__( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
 				'unsubscribe_url' => $email_settings_url,
 				'links'           => array(
 					array(
-						'label' => esc_html__( 'Manage subscription', 'google-site-kit' ),
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
 						'url'   => $email_settings_url,
 					),
 					array(
-						'label' => esc_html__( 'Privacy Policy', 'google-site-kit' ),
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
 						'url'   => 'https://policies.google.com/privacy',
 					),
 					array(
-						'label' => esc_html__( 'Help center', 'google-site-kit' ),
+						'label' => __( 'Help center', 'google-site-kit' ),
 						'url'   => $help_center_url,
 					),
 				),

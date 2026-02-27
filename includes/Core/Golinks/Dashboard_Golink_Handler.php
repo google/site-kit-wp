@@ -35,7 +35,7 @@ class Dashboard_Golink_Handler implements Golink_Handler_Interface {
 
 		return add_query_arg(
 			'permaLink',
-			esc_url_raw( wp_unslash( $permalink ) ),
+			esc_url_raw( wp_unslash( $permalink ) ) ?: false,
 			$dashboard_url
 		);
 	}
