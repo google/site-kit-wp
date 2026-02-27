@@ -21,3 +21,12 @@ $_e2e_db_name = isset( $_COOKIE['_wp_test_db'] )
 $wpdb = new wpdb( DB_USER, DB_PASSWORD, $_e2e_db_name, DB_HOST );
 
 unset( $_e2e_db_name );
+
+// Skip DB upgrade on every request.
+add_filter(
+	'pre_option_db_version',
+	function () {
+		global $wp_db_version;
+		return $wp_db_version;
+	}
+);
