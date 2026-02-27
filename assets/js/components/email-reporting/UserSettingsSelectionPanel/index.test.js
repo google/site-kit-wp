@@ -23,6 +23,8 @@
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -48,7 +50,9 @@ describe( 'UserSettingsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideModules( registry );
 		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: false,
