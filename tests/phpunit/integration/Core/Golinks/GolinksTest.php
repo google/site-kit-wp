@@ -18,7 +18,9 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use InvalidArgumentException;
+use stdClass;
 use WP_Error;
+use WPDieException;
 
 /**
  * @group Golinks
@@ -38,20 +40,6 @@ class GolinksTest extends TestCase {
 	 * @var Golinks
 	 */
 	private $golinks;
-
-	/**
-	 * Captured wp_die message for assertions.
-	 *
-	 * @var string
-	 */
-	private $captured_wp_die_message = '';
-
-	/**
-	 * Captured wp_die args for assertions.
-	 *
-	 * @var array
-	 */
-	private $captured_wp_die_args = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -115,30 +103,32 @@ class GolinksTest extends TestCase {
 			return $caps;
 		};
 		add_filter( 'map_meta_cap', $grant_view_dashboard_cap, 20, 4 );
-		add_filter( 'wp_die_handler', array( $this, 'capture_wp_die_handler' ) );
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
-			$this->fail( 'Expected RuntimeException!' );
-		} catch ( \RuntimeException $exception ) {
-			$this->assertSame( 404, $this->captured_wp_die_args['response'], 'Expected 404 response code for invalid golink.' );
-			$this->assertStringContainsString( 'The link you followed is invalid.', $this->captured_wp_die_message, 'Expected invalid golink message.' );
-			$this->assertSame( $this->context->admin_url( 'dashboard' ), $this->captured_wp_die_args['link_url'], 'Expected dashboard link URL in invalid golink error args.' );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			list( $message, $title, $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 404, $args['response'], 'Expected 404 response code for invalid golink.' );
+			$this->assertStringContainsString( 'The link you followed is invalid.', $message, 'Expected invalid golink message.' );
+			$this->assertSame( $this->context->admin_url( 'dashboard' ), $args['link_url'], 'Expected dashboard link URL in invalid golink error args.' );
 		}
 	}
 
 	public function test_handle_go__dies_with_404_and_splash_link_for_invalid_key() {
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
-		$_GET['to'] = 'invalid-key';
-		add_filter( 'wp_die_handler', array( $this, 'capture_wp_die_handler' ) );
+		$_GET['to']         = 'invalid-key';
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
-			$this->fail( 'Expected RuntimeException!' );
-		} catch ( \RuntimeException $exception ) {
-			$this->assertSame( 404, $this->captured_wp_die_args['response'], 'Expected 404 response code for invalid golink.' );
-			$this->assertStringContainsString( 'The link you followed is invalid.', $this->captured_wp_die_message, 'Expected invalid golink message.' );
-			$this->assertSame( $this->context->admin_url( 'splash' ), $this->captured_wp_die_args['link_url'], 'Expected splash link URL in invalid golink error args.' );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			list( $message, $title, $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 404, $args['response'], 'Expected 404 response code for invalid golink.' );
+			$this->assertStringContainsString( 'The link you followed is invalid.', $message, 'Expected invalid golink message.' );
+			$this->assertSame( $this->context->admin_url( 'splash' ), $args['link_url'], 'Expected splash link URL in invalid golink error args.' );
 		}
 	}
 
@@ -155,15 +145,16 @@ class GolinksTest extends TestCase {
 				)
 			)
 		);
-		$_GET['to'] = 'error';
-		add_filter( 'wp_die_handler', array( $this, 'capture_wp_die_handler' ) );
+		$_GET['to']         = 'error';
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
 
 		try {
 			do_action( 'admin_action_' . Golinks::ACTION_GO );
-			$this->fail( 'Expected RuntimeException!' );
-		} catch ( \RuntimeException $exception ) {
-			$this->assertSame( 400, $this->captured_wp_die_args['response'], 'Expected status code from handler WP_Error.' );
-			$this->assertStringContainsString( 'Test golink error', $this->captured_wp_die_message, 'Expected WP_Error message to be shown via wp_die.' );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			list( $message, $title, $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 400, $args['response'], 'Expected status code from handler WP_Error.' );
+			$this->assertStringContainsString( 'Test golink error', $message, 'Expected WP_Error message to be shown via wp_die.' );
 		}
 	}
 
@@ -185,14 +176,25 @@ class GolinksTest extends TestCase {
 		return $handler;
 	}
 
-	public function capture_wp_die_handler() {
-		return array( $this, 'capture_wp_die' );
-	}
+	/**
+	 * Decorates the wp_die handler to spy on its arguments.
+	 * @return stdClass
+	 */
+	protected function spy_on_wp_die_handler() {
+		$spy = new stdClass();
 
-	public function capture_wp_die( $message, $title = '', $args = array() ) {
-		$this->captured_wp_die_message = (string) $message;
-		$this->captured_wp_die_args    = is_array( $args ) ? $args : array();
+		add_filter(
+			'wp_die_handler',
+			function ( $handler ) use ( $spy ) {
+				return function ( ...$args ) use ( $handler, $spy ) {
+					// Capture the args the handler is called with.
+					$spy->args = $args;
 
-		throw new \RuntimeException( 'wp_die called' );
+					return $handler( ...$args );
+				};
+			}
+		);
+
+		return $spy;
 	}
 }
