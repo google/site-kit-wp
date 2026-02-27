@@ -25,7 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import {
-	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -36,7 +35,6 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-	waitForDefaultTimeouts,
 } from 'tests/js/utils';
 import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -166,8 +164,6 @@ describe( 'WelcomeModal', () => {
 	}
 
 	beforeEach( () => {
-		mockTrackEvent.mockClear();
-
 		registry = createTestRegistry();
 
 		provideUserCapabilities( registry, {
@@ -175,6 +171,10 @@ describe( 'WelcomeModal', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should show the data available variant when Analytics is connected and not gathering data', async () => {
@@ -1098,7 +1098,7 @@ describe( 'WelcomeModal', () => {
 
 				await waitForRegistry();
 
-				// The view_notice event is also tracked on view.
+				// The `view_notice` event is also tracked on view.
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_setup',
@@ -1116,8 +1116,13 @@ describe( 'WelcomeModal', () => {
 					viewContext: 'test-context',
 				} );
 
-				// Only the view_notice event should be tracked the second time the modal is shown.
+				// Only the `view_notice` event should be tracked the second time the modal is shown.
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					'test-context_welcome-modal',
+					'view_notice',
+					expectedLabel
+				);
 			} );
 
 			it( 'should track the `view_notice` event with the correct label', async () => {
@@ -1146,16 +1151,15 @@ describe( 'WelcomeModal', () => {
 
 				await waitForRegistry();
 
-				await act( async () => {
-					fireEvent.click(
-						getByRole( 'button', {
-							name: confirmationButton,
-						} )
-					);
+				mockTrackEvent.mockClear();
 
-					await waitForDefaultTimeouts();
-				} );
+				fireEvent.click(
+					getByRole( 'button', {
+						name: confirmationButton,
+					} )
+				);
 
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_welcome-modal',
 					'confirm_notice',
@@ -1176,16 +1180,15 @@ describe( 'WelcomeModal', () => {
 
 					await waitForRegistry();
 
-					await act( async () => {
-						fireEvent.click(
-							getByRole( 'button', {
-								name: button,
-							} )
-						);
+					mockTrackEvent.mockClear();
 
-						await waitForDefaultTimeouts();
-					} );
+					fireEvent.click(
+						getByRole( 'button', {
+							name: button,
+						} )
+					);
 
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 					expect( mockTrackEvent ).toHaveBeenCalledWith(
 						'test-context_welcome-modal',
 						'dismiss_notice',

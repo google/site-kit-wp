@@ -236,7 +236,7 @@ describe( 'AdminMenuTooltip', () => {
 		);
 	} );
 
-	it( 'should use the provided tracking label when tracking ga events', async () => {
+	it( 'should use the provided tracking label when tracking GA events', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
 		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,

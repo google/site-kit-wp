@@ -107,7 +107,7 @@ describe( 'useGlobalTrackingEffect', () => {
 		expect( mockTrackEvent ).toHaveBeenCalled();
 	} );
 
-	it( 'should not track legacy events when setupFlowRefresh is enabled', async () => {
+	it( 'should not track legacy events when the setupFlowRefresh feature flag is enabled', async () => {
 		await setItem( 'start_user_setup', true );
 		await setItem( 'start_site_setup', true );
 

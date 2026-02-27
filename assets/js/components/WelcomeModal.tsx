@@ -71,7 +71,7 @@ enum MODAL_VARIANT {
 	DATA_GATHERING_COMPLETE,
 }
 
-const VARIANTS_TRACKING_LABELS = {
+const VARIANT_TRACKING_LABELS = {
 	[ MODAL_VARIANT.DATA_AVAILABLE ]: 'default',
 	[ MODAL_VARIANT.GATHERING_DATA ]: 'gathering_data',
 	[ MODAL_VARIANT.DATA_GATHERING_COMPLETE ]: 'data_available',
@@ -134,7 +134,7 @@ export default function WelcomeModal() {
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
-		gaTrackingEventLabel: VARIANTS_TRACKING_LABELS[ modalVariant ],
+		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );
@@ -200,7 +200,7 @@ export default function WelcomeModal() {
 		trackEvent(
 			`${ viewContext }_welcome-modal`,
 			'view_notice',
-			VARIANTS_TRACKING_LABELS[ modalVariant ]
+			VARIANT_TRACKING_LABELS[ modalVariant ]
 		);
 
 		async function trackSetupEventsOnce() {
@@ -230,7 +230,7 @@ export default function WelcomeModal() {
 		trackEvent(
 			`${ viewContext }_welcome-modal`,
 			'confirm_notice',
-			VARIANTS_TRACKING_LABELS[ modalVariant ]
+			VARIANT_TRACKING_LABELS[ modalVariant ]
 		);
 	}, [ viewContext, modalVariant ] );
 
@@ -238,7 +238,7 @@ export default function WelcomeModal() {
 		trackEvent(
 			`${ viewContext }_welcome-modal`,
 			'dismiss_notice',
-			VARIANTS_TRACKING_LABELS[ modalVariant ]
+			VARIANT_TRACKING_LABELS[ modalVariant ]
 		);
 	}, [ viewContext, modalVariant ] );
 
