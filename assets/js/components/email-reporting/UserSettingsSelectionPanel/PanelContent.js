@@ -33,6 +33,8 @@ import { Fragment } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import UserSettingsLoadingPanel from './UserSettingsLoadingPanel';
 import Header from './Header';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import P from '@/js/components/Typography/P';
@@ -56,6 +58,27 @@ export default function PanelContent( {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
+
+	const isLoading = useSelect(
+		( select ) =>
+			( select( CORE_MODULES ).hasStartedResolution( 'getModules' ) &&
+				! select( CORE_MODULES ).hasFinishedResolution(
+					'getModules'
+				) ) ||
+			! select( CORE_USER ).hasFinishedResolution(
+				'getEmailReportingSettings'
+			) ||
+			! select( CORE_SITE ).hasFinishedResolution(
+				'getEmailReportingSettings'
+			) ||
+			! select( CORE_SITE ).hasFinishedResolution(
+				'getEmailReportingErrors'
+			)
+	);
+
+	if ( isLoading ) {
+		return <UserSettingsLoadingPanel />;
+	}
 
 	return (
 		<Fragment>
