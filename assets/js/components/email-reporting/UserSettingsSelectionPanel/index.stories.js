@@ -147,7 +147,6 @@ AnalyticsWasNeverConnected.args = {
 				disconnectedAt: false,
 			},
 		] );
-
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: true,
 		} );
