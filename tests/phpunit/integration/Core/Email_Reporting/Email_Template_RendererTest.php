@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Renderer;
 use Google\Site_Kit\Core\Email_Reporting\Sections_Map;
+use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -21,7 +23,9 @@ use Google\Site_Kit\Tests\TestCase;
 class Email_Template_RendererTest extends TestCase {
 
 	public function test_conversions_section_uses_top_two_dynamic_events_and_raw_event_names() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
 		$date_label   = 'Jan 1 – Jan 7';
 		$payload      = array(
 			'total_conversion_events'         => array(
@@ -58,7 +62,7 @@ class Email_Template_RendererTest extends TestCase {
 				'change_context'  => 'Compared to previous 7 days',
 			),
 		);
-		$sections_map = new Sections_Map( $context, $payload );
+		$sections_map = new Sections_Map( $context, $payload, $golinks );
 		$renderer     = new Email_Template_Renderer( $sections_map );
 		$sections     = $sections_map->get_sections();
 

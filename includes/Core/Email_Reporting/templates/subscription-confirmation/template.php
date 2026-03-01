@@ -17,6 +17,7 @@ $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
 $site_url           = $data['site']['url'];
+$email_title        = $data['title'];
 $body               = $data['body'];
 $cta                = $data['primary_call_to_action'];
 $footer             = $data['footer'];
@@ -137,6 +138,7 @@ $render_shared_part = $data['render_shared_part'];
 								array(
 									'site_domain'        => $site_domain,
 									'site_url'           => $site_url,
+									'title'              => $email_title,
 									'body'               => $body,
 									'cta'                => $cta,
 									'get_asset_url'      => $get_asset_url,

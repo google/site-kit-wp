@@ -81,6 +81,13 @@ final class Email_Log {
 	const META_SITE_ID = '_site_id';
 
 	/**
+	 * Template type meta key.
+	 *
+	 * @since n.e.x.t
+	 */
+	const META_TEMPLATE_TYPE = '_template_type';
+
+	/**
 	 * Email log post statuses.
 	 *
 	 * Slugs must stay within the posts table varchar(20) limit.
@@ -90,6 +97,14 @@ final class Email_Log {
 	const STATUS_SENT      = 'email_sent';
 	const STATUS_FAILED    = 'email_failed';
 	const STATUS_SCHEDULED = 'email_scheduled';
+
+	/**
+	 * Email template types.
+	 *
+	 * @since n.e.x.t
+	 */
+	const TEMPLATE_TYPE_EMAIL_REPORT      = 'email-report';
+	const TEMPLATE_TYPE_SUBSCRIBE_SUCCESS = 'subscribe-success';
 
 	/**
 	 * Extracts a normalized date range array from an email log post.
@@ -352,6 +367,17 @@ final class Email_Log {
 				'sanitize_callback' => array( __CLASS__, 'sanitize_site_id' ),
 			)
 		);
+
+		register_post_meta(
+			self::POST_TYPE,
+			self::META_TEMPLATE_TYPE,
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'auth_callback'     => $auth_callback,
+				'sanitize_callback' => array( __CLASS__, 'sanitize_template_type' ),
+			)
+		);
 	}
 
 	/**
@@ -482,6 +508,29 @@ final class Email_Log {
 	 */
 	public static function sanitize_site_id( $value ) {
 		return absint( $value );
+	}
+
+	/**
+	 * Sanitizes the template type meta value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value Meta value.
+	 * @return string Sanitized template type.
+	 */
+	public static function sanitize_template_type( $value ) {
+		$value = sanitize_text_field( $value );
+
+		$allowed = array(
+			self::TEMPLATE_TYPE_EMAIL_REPORT,
+			self::TEMPLATE_TYPE_SUBSCRIBE_SUCCESS,
+		);
+
+		if ( in_array( $value, $allowed, true ) ) {
+			return $value;
+		}
+
+		return self::TEMPLATE_TYPE_EMAIL_REPORT;
 	}
 
 	/**

@@ -160,7 +160,7 @@ final class Client_Factory {
 		 *
 		 * @since 1.115.0
 		 *
-		 * @param $force_ip_resolve null|string IP version to force. Default: null.
+		 * @param null|string $force_ip_resolve IP version to force. Default: null.
 		 */
 		$force_ip_resolve = apply_filters( 'googlesitekit_force_ip_resolve', null );
 		if ( in_array( $force_ip_resolve, array( null, 'v4', 'v6' ), true ) ) {

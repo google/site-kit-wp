@@ -13,20 +13,25 @@
  */
 
 // Extract metadata from data.
-$subject            = $data['subject'];
-$preheader          = $data['preheader'];
-$site_domain        = $data['site']['domain'];
-$site_url           = $data['site']['url'];
-$body               = $data['body'];
-$inviter_email      = $data['inviter_email'];
-$learn_more_url     = $data['learn_more_url'];
-$primary_cta        = $data['primary_call_to_action'];
-$footer_copy        = $data['footer']['copy'];
-$get_asset_url      = $data['get_asset_url'];
-$render_part        = $data['render_part'];
-$render_shared_part = $data['render_shared_part'];
+$subject              = $data['subject'];
+$preheader            = $data['preheader'];
+$site_domain          = $data['site']['domain'];
+$site_url             = $data['site']['url'];
+$email_title_template = $data['title'];
+$body                 = $data['body'];
+$inviter_email        = $data['inviter_email'];
+$learn_more_url       = $data['learn_more_url'];
+$primary_cta          = $data['primary_call_to_action'];
+$footer_copy          = $data['footer']['copy'];
+$get_asset_url        = $data['get_asset_url'];
+$render_part          = $data['render_part'];
+$render_shared_part   = $data['render_shared_part'];
 
 $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
+
+// Build the title with mailto link for the inviter email.
+$inviter_email_link = '<a href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
+$email_title        = sprintf( $email_title_template, $inviter_email_link );
 ?>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -136,25 +141,21 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 							?>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 								<tr>
-									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
+									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 0 16px;">
 										<?php /* Site domain. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
 											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
-										<?php /* Invitation title. */ ?>
-										<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+										<?php /* Title from Content_Map with inviter email link. */ ?>
+										<h1 style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
-											printf(
-												/* translators: %s: Email address of the person who sent the invitation (wrapped in mailto link) */
-												esc_html__( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
-												/* Mailto link styled to match title text as inline styles prevent email clients from auto-styling the email address as a blue link. */
-												'<a href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>'
-											);
+											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
+											echo $email_title;
 											?>
 										</h1>
 
-										<?php /* Body paragraphs from Body_Content_Map. */ ?>
+										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php echo esc_html( $paragraph ); ?>
@@ -165,7 +166,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 										<?php endforeach; ?>
 
 										<?php /* CTA Button. */ ?>
-										<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+										<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px; margin-bottom: 12px;">
 											<tr>
 												<td>
 													<?php

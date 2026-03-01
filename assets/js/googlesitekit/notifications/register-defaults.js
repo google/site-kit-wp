@@ -90,7 +90,7 @@ import {
 } from '@/js/googlesitekit/data-requirements';
 
 export const DEFAULT_NOTIFICATIONS = {
-	'activate-analytics-cta': {
+	'activate-analytics-notification': {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
