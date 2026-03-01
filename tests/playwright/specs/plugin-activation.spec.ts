@@ -31,14 +31,28 @@ test.describe( 'plugin activation', details, () => {
 		await wp.deactivatePlugin( 'google-site-kit/google-site-kit.php' );
 
 		await wp.visitAdmin( 'plugins.php' );
-		await wp.page.click( 'tr[data-slug="google-site-kit"] .activate a' );
 
-		await wp.page.waitForSelector( '.googlesitekit-activation__title' );
+		await wp.page
+			.getByRole( 'link', { name: 'Activate Site Kit by Google' } )
+			.click();
 	} );
 
 	test( 'should display the activation notice', async ( { wp } ) => {
-		const title = wp.page.locator( '.googlesitekit-activation__title' );
-		await expect( title ).toContainText( /Site Kit \w+ is now activated/i );
+		const title = wp.page.getByRole( 'heading', {
+			name: 'Congratulations, the Site Kit',
+		} );
+
+		await expect( title ).toBeVisible();
+	} );
+
+	test( 'should lead to the splash screen', async ( { wp } ) => {
+		await wp.page.getByRole( 'button', { name: 'Start setup' } ).click();
+
+		const title = wp.page.getByRole( 'heading', {
+			name: 'Set up Site Kit',
+		} );
+
+		await expect( title ).toBeVisible();
 	} );
 
 	test(
@@ -47,15 +61,15 @@ test.describe( 'plugin activation', details, () => {
 			annotation: withPlugins( 'gcp-credentials.php' ),
 		},
 		async ( { wp } ) => {
-			await wp.page.click( '.googlesitekit-start-setup' );
-			await wp.page.waitForSelector(
-				'.googlesitekit-wizard-step__title'
-			);
+			await wp.page
+				.getByRole( 'button', { name: 'Start setup' } )
+				.click();
 
-			const span = wp.page.locator(
-				'.googlesitekit-wizard-progress-step__number--inprogress'
-			);
-			await expect( span ).toHaveText( '1' );
+			const title = wp.page.getByRole( 'heading', {
+				name: 'Authenticate with Google',
+			} );
+
+			await expect( title ).toBeVisible();
 		}
 	);
 } );
