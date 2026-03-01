@@ -91,23 +91,44 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: composer:2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress --no-dev
+
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: npm install and build
+      - name: Prepare plugin
         run: |
           npm ci --workspaces --include-workspace-root
-          npm run build:dev
+          npm run dev-zip
           npm run -w tests/playwright setup
+          unzip -q google-site-kit.v*.zip -d plugin/
 
-      - name: Upload dist artifact
+      - name: Upload plugin artifact
         uses: actions/upload-artifact@v6
         with:
-          name: dist
-          path: dist/
+          name: plugin
+          path: plugin/google-site-kit
 
       - name: Upload Playwright browsers artifact
         uses: actions/upload-artifact@v6
@@ -126,6 +147,7 @@ jobs:
           - wp_version: "5.2.21"
     env:
       WP_VERSION: ${{ matrix.wp_version }}
+      PLUGIN_PATH: ${{ github.workspace }}/plugin/google-site-kit
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -141,13 +163,15 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: npm ci --workspaces --include-workspace-root
+        run: npm ci -w tests/playwright
+        env:
+          SKIP_PATCH_PACKAGE: '1'
 
-      - name: Download dist artifact
+      - name: Download plugin artifact
         uses: actions/download-artifact@v6
         with:
-          name: dist
-          path: dist/
+          name: plugin
+          path: plugin/google-site-kit
 
       - name: Download Playwright browsers artifact
         uses: actions/download-artifact@v6

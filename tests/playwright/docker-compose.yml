@@ -33,10 +33,13 @@ services:
     ports:
       - 9002:80
     volumes:
-      - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ./docker/wordpress/mu-plugins:/var/www/html/wp-content/mu-plugins
       - ./docker/wordpress/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
       - ./docker/wordpress/db.php:/var/www/html/wp-content/db.php
+      - type: bind
+        source: ${PLUGIN_PATH:-../../}
+        target: /var/www/html/wp-content/plugins/google-site-kit
+        read_only: true
     environment:
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_USER: root
