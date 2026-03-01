@@ -175,8 +175,8 @@ jobs:
         run: |
           echo "Building Docker images..."
           docker compose -f tests/playwright/docker-compose.yml build --quiet
-          echo "Pulling MySQL image..."
-          docker compose -f tests/playwright/docker-compose.yml pull mysql
+          echo "Pulling images..."
+          docker compose -f tests/playwright/docker-compose.yml pull --ignore-buildable --quiet
           if [ "${{ matrix.wp_version }}" != "nightly" ]; then
             echo "Saving Docker images to cache..."
             mkdir -p /tmp/docker-images
