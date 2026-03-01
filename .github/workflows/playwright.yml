@@ -141,7 +141,7 @@ jobs:
           cache: npm
 
       - name: npm install
-        run: npm ci -w tests/playwright
+        run: npm ci -w tests/playwright --include-workspace-root
 
       - name: Download dist artifact
         uses: actions/download-artifact@v6
