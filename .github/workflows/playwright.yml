@@ -204,8 +204,8 @@ jobs:
           if [ "${{ matrix.wp_version }}" != "nightly" ]; then
             echo "Saving Docker images to cache..."
             mkdir -p /tmp/docker-images
-            docker save $(docker compose -f tests/playwright/docker-compose.yml config --images | tr '\n' ' ') \
-              -o /tmp/docker-images/images.tar
+            docker compose -f tests/playwright/docker-compose.yml config --images \
+              | xargs docker save -o /tmp/docker-images/images.tar
           fi
 
       - name: Start environment
