@@ -28,8 +28,8 @@ services:
     build:
       context: ./docker/wordpress
       args:
-        WP_VERSION: ${WP_VERSION:-latest}
-    image: google-site-kit-wp:${WP_VERSION:-latest}
+        WP_VERSION: ${WP_VERSION:-5.2.21}
+    image: site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21}
     ports:
       - 9002:80
     volumes:
@@ -45,7 +45,7 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
         define( 'WP_DEBUG_LOG', true );
-        define( 'WP_DEBUG_DISPLAY', true );
+        define( 'WP_DEBUG_DISPLAY', false );
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
         define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
         define( 'WP_AUTO_UPDATE_CORE', false );

@@ -31,7 +31,7 @@ test.describe( 'plugin activation', details, () => {
 		await wp.deactivatePlugin( 'google-site-kit/google-site-kit.php' );
 
 		await wp.visitAdmin( 'plugins.php' );
-		await wp.page.click( '#activate-google-site-kit' );
+		await wp.page.click( 'tr[data-slug="google-site-kit"] .activate a' );
 
 		await wp.page.waitForSelector( '.googlesitekit-activation__title' );
 	} );

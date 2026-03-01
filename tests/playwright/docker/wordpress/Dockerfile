@@ -18,4 +18,7 @@ RUN set -eux; \
         rm /tmp/wordpress.tar.gz; \
     fi; \
     cp -a /tmp/wordpress/. /usr/src/wordpress/; \
-    rm -rf /tmp/wordpress
+    rm -rf /tmp/wordpress; \
+    curl -fsSL "https://downloads.wordpress.org/theme/twentynineteen.latest-stable.zip" -o /tmp/twentynineteen.zip; \
+    unzip -o /tmp/twentynineteen.zip -d /usr/src/wordpress/wp-content/themes/; \
+    rm /tmp/twentynineteen.zip
