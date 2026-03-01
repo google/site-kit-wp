@@ -17,6 +17,8 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -242,11 +244,14 @@ class Email_ReportingTest extends TestCase {
 			new Transients( $this->context ),
 			$this->user_options
 		);
+		$golinks             = new Golinks( $this->context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
 
 		return new Email_Reporting(
 			$this->context,
 			$this->modules,
 			$data_requests,
+			$golinks,
 			$this->authentication,
 			$this->options,
 			$this->user_options
