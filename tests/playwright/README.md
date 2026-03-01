@@ -11,6 +11,7 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Cookie-Based Routing](#cookie-based-routing)
     -   [Authentication Without Login](#authentication-without-login)
     -   [Plugin Activation via Database](#plugin-activation-via-database)
+-   [Running Tests](#running-tests)
 -   [Writing Tests](#writing-tests)
     -   [Basic Test Structure](#basic-test-structure)
     -   [The `wp` Fixture](#the-wp-fixture)
@@ -23,6 +24,7 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Test Helper Plugins](#test-helper-plugins)
     -   [Database Snapshot](#database-snapshot)
 -   [Artifacts and Reporting](#artifacts-and-reporting)
+-   [CI / GitHub Actions](#ci--github-actions)
 
 ---
 
@@ -48,6 +50,7 @@ tests/playwright/
 │   ├── mariadb/
 │   │   └── backup.sql                  # WordPress DB snapshot (loaded on container init)
 │   └── wordpress/
+│       ├── Dockerfile                  # Custom WordPress image (configurable WP version)
 │       ├── db.php                      # DB drop-in: routes connections per test via cookie
 │       ├── mu-plugins/
 │       │   ├── e2e-authenticate-admin.php   # Authenticates user via cookie
@@ -104,6 +107,58 @@ This means tests never need to fill in a username/password form, making them fas
 `WordPressPlugins` activates and deactivates plugins by directly reading and writing the `active_plugins` option in `wp_options` (as a PHP-serialized array). This avoids the overhead of navigating the WordPress admin UI for plugin management.
 
 Plugins specified via the `withPlugins()` annotation are activated automatically during test setup, before the test body runs.
+
+---
+
+## Running Tests
+
+From the repository root:
+
+```bash
+# Start the Docker environment
+npm run playwright:env:start
+
+# Run all Playwright tests
+npm run test:playwright
+
+# Run tests with Playwright's interactive UI mode
+npm run test:playwright:ui
+
+# Stop the Docker environment
+npm run playwright:env:stop
+```
+
+Or from within `tests/playwright/` directly:
+
+```bash
+npm run start   # Start Docker
+npm run test    # Run tests
+npm run test:ui # Interactive UI mode
+npm run stop    # Stop Docker
+```
+
+**First-time setup** — install Playwright's Chromium browser before running tests:
+
+```bash
+npm run -w tests/playwright setup
+```
+
+### Environment Variables
+
+The following environment variables configure how tests connect to the running environment:
+
+| Variable                 | Default                 | Description                             |
+| ------------------------ | ----------------------- | --------------------------------------- |
+| `PLAYWRIGHT_WP_URL`      | `http://localhost:9002` | WordPress base URL                      |
+| `PLAYWRIGHT_DB_HOST`     | `localhost`             | MariaDB host                            |
+| `PLAYWRIGHT_DB_PORT`     | `9306`                  | MariaDB port                            |
+| `PLAYWRIGHT_DB_USER`     | `root`                  | MariaDB user                            |
+| `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                        |
+| `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount   |
+| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker      |
+| `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use) |
+| `RETRIES`                | `0`                     | Number of retries per failing test      |
+| `WORKERS`                | _(Playwright default)_  | Number of parallel workers              |
 
 ---
 
@@ -219,17 +274,16 @@ test( 'my test', async ( { wp } ) => {
 -   Credentials: `root` / `example`
 -   Initialized from `docker/mariadb/backup.sql` on first start
 
-**`wp` (WordPress 6.7-php8.3)**
+**`wp` (custom WordPress image — `docker/wordpress/Dockerfile`)**
 
 -   Port: `9002` → `80`
--   The plugin source (`../../`) is mounted at `wp-content/plugins/google-site-kit`
+-   Based on `wordpress:php7.4-apache`; the WordPress version is controlled by the `WP_VERSION` build arg (defaults to `5.2.21`)
+-   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
+-   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
 -   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable)
--   `SCRIPT_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY` are all enabled
+-   `SCRIPT_DEBUG` and `WP_DEBUG_LOG` are enabled; `WP_DEBUG_DISPLAY` is **disabled** (errors go to the log file, not the page)
+-   `WP_AUTO_UPDATE_CORE` is disabled
 -   Depends on `mysql` being healthy before starting
-
-**`wordpress-debug-log` (Alpine)**
-
--   Streams `wp-content/debug.log` to stdout — useful for monitoring PHP errors during local development with `docker compose logs -f wordpress-debug-log`
 
 ### Must-Use Plugins
 
@@ -286,3 +340,38 @@ npx playwright show-report artifacts/playwright-html
 ```bash
 npx playwright show-trace artifacts/playwright-output/<test-name>/trace.zip
 ```
+
+---
+
+## CI / GitHub Actions
+
+The Playwright workflow (`.github/workflows/playwright.yml`) has two jobs:
+
+### `build`
+
+Runs once and produces two shared artifacts:
+
+-   **`plugin`** — a built, unzipped plugin directory produced by `npm run dev-zip`. Test runs mount this via `PLUGIN_PATH` instead of the raw source tree, ensuring tests run against a production-like build.
+-   **`playwright-browsers`** — the Chromium browser binary cached for reuse across matrix jobs.
+
+### `playwright-tests`
+
+Runs in parallel across a matrix of WordPress versions:
+
+| WordPress version | Notes                                       |
+| ----------------- | ------------------------------------------- |
+| `latest`          | Current stable release                      |
+| `nightly`         | WordPress nightly build (no Docker caching) |
+| `5.2.21`          | Minimum supported version                   |
+
+Each matrix job:
+
+1. Downloads the `plugin` and `playwright-browsers` artifacts from the `build` job.
+2. Caches Docker images keyed on `WP_VERSION` and the `Dockerfile`/`docker-compose.yml` hashes (skipped for `nightly` builds).
+3. Starts the Docker environment and runs the full test suite with `RETRIES=2` and `WORKERS=4`.
+4. Uploads `tests/playwright/artifacts/` as a GitHub Actions artifact.
+5. Uploads the HTML report to the `site-kit-playwright` GCS bucket:
+    - PRs: `pull/<number>/wp-<version>/`
+    - Pushes: `<branch>/wp-<version>/`
+
+After all matrix jobs complete, a separate `add-comment-to-pr` job posts (or updates) a PR comment with direct links to each version's HTML report on GCS.
