@@ -57,12 +57,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-  wordpress-debug-log:
-    image: alpine:3.22.1
-    command: tail -n 0 -F /var/www/html/wp-content/debug.log
-    volumes_from:
-      - wp
-    depends_on:
-      wp:
-        condition: service_healthy
