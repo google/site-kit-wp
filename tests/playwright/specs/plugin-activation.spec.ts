@@ -19,8 +19,34 @@
 /**
  * Internal dependencies
  */
-import { test, expect, TestDetails } from '../playwright';
+import { test, expect, TestDetails, WordPressFixture } from '../playwright';
 import { asUser, withPlugins } from '../wordpress';
+
+/**
+ * Creates a test that checks for a setup screen with the given name.
+ *
+ * @since n.e.x.t
+ *
+ * @param name The name of the setup screen to check for.
+ * @return    A test function that checks for the setup screen.
+ */
+function makeSetupTest( name: string ) {
+	return async ( { wp }: WordPressFixture ) => {
+		await test.step( 'Click `Start setup` button', () => {
+			return wp.page
+				.getByRole( 'button', { name: 'Start setup' } )
+				.click();
+		} );
+
+		await test.step( 'Check the screen title', () => {
+			const title = wp.page.getByRole( 'heading', {
+				name,
+			} );
+
+			return expect( title ).toBeVisible();
+		} );
+	};
+}
 
 const details: TestDetails = {
 	annotation: [ asUser( 'admin' ) ],
@@ -32,44 +58,33 @@ test.describe( 'plugin activation', details, () => {
 
 		await wp.visitAdmin( 'plugins.php' );
 
-		await wp.page
-			.getByRole( 'link', { name: 'Activate Site Kit by Google' } )
-			.click();
-	} );
-
-	test( 'should display the activation notice', async ( { wp } ) => {
-		const title = wp.page.getByRole( 'heading', {
-			name: 'Congratulations, the Site Kit',
+		await test.step( 'Activate the Site Kit plugin', () => {
+			return wp.page
+				.getByRole( 'link', { name: 'Activate Site Kit by Google' } )
+				.click();
 		} );
-
-		await expect( title ).toBeVisible();
 	} );
 
-	test( 'should lead to the splash screen', async ( { wp } ) => {
-		await wp.page.getByRole( 'button', { name: 'Start setup' } ).click();
+	test( 'should display the activation notice', ( { wp } ) => {
+		return test.step( 'Check the notice title', () => {
+			const title = wp.page.getByRole( 'heading', {
+				name: 'Congratulations, the Site Kit',
+			} );
 
-		const title = wp.page.getByRole( 'heading', {
-			name: 'Set up Site Kit',
+			return expect( title ).toBeVisible();
 		} );
-
-		await expect( title ).toBeVisible();
 	} );
+
+	test(
+		'should lead to the splash screen',
+		makeSetupTest( 'Set up Site Kit' )
+	);
 
 	test(
 		'should lead to the setup wizard with GCP authentication',
 		{
 			annotation: withPlugins( 'gcp-credentials.php' ),
 		},
-		async ( { wp } ) => {
-			await wp.page
-				.getByRole( 'button', { name: 'Start setup' } )
-				.click();
-
-			const title = wp.page.getByRole( 'heading', {
-				name: 'Authenticate with Google',
-			} );
-
-			await expect( title ).toBeVisible();
-		}
+		makeSetupTest( 'Authenticate with Google' )
 	);
 } );

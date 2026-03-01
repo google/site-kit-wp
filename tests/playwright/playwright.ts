@@ -26,7 +26,7 @@ import { createConnection } from 'mysql2/promise';
 import { WordPress, type WordPressArgs } from './wordpress';
 
 /**
- * Re-export expect and TestDetails from @playwright/test.
+ * Re-export parts of @playwright/test.
  */
 export { expect, TestDetails } from '@playwright/test';
 
@@ -42,7 +42,7 @@ const DB_PASSWORD = process.env.PLAYWRIGHT_DB_PASSWORD ?? 'example';
  *
  * @since n.e.x.t
  */
-type WordPressFixture = {
+export type WordPressFixture = {
 	wp: WordPress;
 };
 
