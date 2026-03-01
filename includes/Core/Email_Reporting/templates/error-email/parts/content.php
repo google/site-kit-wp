@@ -23,7 +23,7 @@ $warning_icon_url = $get_asset_url( 'warning-icon' );
 ?>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tr>
-		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px;">
+		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 12px 16px;">
 			<?php /* Warning icon at top, left-aligned. */ ?>
 			<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<tr>
@@ -39,7 +39,7 @@ $warning_icon_url = $get_asset_url( 'warning-icon' );
 			</p>
 
 			<?php /* Title from Content_Map. */ ?>
-			<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+			<h1 style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 				<?php echo esc_html( $title ); ?>
 			</h1>
 
@@ -58,7 +58,7 @@ $warning_icon_url = $get_asset_url( 'warning-icon' );
 
 			<?php /* CTA Button. */ ?>
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
-			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+			<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px;">
 				<tr>
 					<td>
 						<?php
