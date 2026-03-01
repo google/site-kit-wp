@@ -1,4 +1,4 @@
-FROM wordpress:php8.3-apache
+FROM wordpress:php7.4-apache
 
 ARG WP_VERSION=latest
 
