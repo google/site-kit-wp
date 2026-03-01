@@ -81,22 +81,13 @@ env:
   WORKERS: 4
 
 jobs:
-  playwright-tests:
-    name: WordPress ${{ matrix.wp_version }}
-    strategy:
-      fail-fast: false
-      matrix:
-        wp_version: ["latest", "nightly"]
-        include:
-          - wp_version: "5.2.21"
-    env:
-      WP_VERSION: ${{ matrix.wp_version }}
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false )
     permissions:
       contents: read
-      actions: read
     steps:
       - uses: actions/checkout@v6
 
@@ -110,17 +101,62 @@ jobs:
         run: |
           npm ci --workspaces --include-workspace-root
           npm run build:dev
+          npm run -w tests/playwright setup
 
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v5
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v6
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
+          name: dist
+          path: dist/
 
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npm run -w tests/playwright setup
+      - name: Upload Playwright browsers artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-browsers
+          path: ~/.cache/ms-playwright
+
+  playwright-tests:
+    name: WordPress ${{ matrix.wp_version }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        wp_version: ["latest", "nightly"]
+        include:
+          - wp_version: "5.2.21"
+    env:
+      WP_VERSION: ${{ matrix.wp_version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: npm install
+        run: npm ci -w tests/playwright
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: dist
+          path: dist/
+
+      - name: Download Playwright browsers artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: playwright-browsers
+          path: ~/.cache/ms-playwright
+
+      - name: Restore Playwright browser permissions
+        run: chmod -R +x ~/.cache/ms-playwright
 
       - name: Cache Docker images
         id: docker-cache
@@ -137,9 +173,12 @@ jobs:
       - name: Build and cache Docker images
         if: matrix.wp_version == 'nightly' || steps.docker-cache.outputs.cache-hit != 'true'
         run: |
-          docker compose -f tests/playwright/docker-compose.yml build
+          echo "Building Docker images..."
+          docker compose -f tests/playwright/docker-compose.yml build --quiet
+          echo "Pulling MySQL image..."
           docker compose -f tests/playwright/docker-compose.yml pull mysql
           if [ "${{ matrix.wp_version }}" != "nightly" ]; then
+            echo "Saving Docker images to cache..."
             mkdir -p /tmp/docker-images
             docker save $(docker compose -f tests/playwright/docker-compose.yml config --images | tr '\n' ' ') \
               -o /tmp/docker-images/images.tar
