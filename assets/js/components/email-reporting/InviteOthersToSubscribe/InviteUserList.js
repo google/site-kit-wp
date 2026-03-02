@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,10 +41,33 @@ function EmptyMessage( { text } ) {
 
 export default function InviteUserList( {
 	users,
-	inviteResults,
+	searchTerm = '',
+	inviteResults = {},
 	onInviteResult,
-	isLoading,
+	isLoading = false,
 } ) {
+	const filteredUsers = useMemo( () => {
+		if ( ! searchTerm ) {
+			return users;
+		}
+
+		const lowerSearchTerm = searchTerm.toLowerCase();
+
+		return users.filter( ( user ) => {
+			const nameMatch = user.name
+				?.toLowerCase()
+				.includes( lowerSearchTerm );
+			const emailMatch = user.email
+				?.toLowerCase()
+				.includes( lowerSearchTerm );
+			const roleMatch = user.role
+				?.toLowerCase()
+				.includes( lowerSearchTerm );
+
+			return nameMatch || emailMatch || roleMatch;
+		} );
+	}, [ users, searchTerm ] );
+
 	if ( isLoading ) {
 		return <InviteUserSkeletonList visibleItems={ 3 } />;
 	}
@@ -59,9 +83,17 @@ export default function InviteUserList( {
 		);
 	}
 
+	if ( filteredUsers.length === 0 ) {
+		return (
+			<EmptyMessage
+				text={ __( 'No users match your search.', 'google-site-kit' ) }
+			/>
+		);
+	}
+
 	return (
 		<div className="googlesitekit-invite-user-list">
-			{ users.map( ( user ) => (
+			{ filteredUsers.map( ( user ) => (
 				<InviteUserRow
 					key={ user.id }
 					user={ user }
@@ -82,6 +114,7 @@ InviteUserList.propTypes = {
 			role: PropTypes.string,
 		} )
 	).isRequired,
+	searchTerm: PropTypes.string,
 	inviteResults: PropTypes.objectOf(
 		PropTypes.shape( {
 			status: PropTypes.oneOf( [ 'success', 'error' ] ),
@@ -90,9 +123,4 @@ InviteUserList.propTypes = {
 	),
 	onInviteResult: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool,
-};
-
-InviteUserList.defaultProps = {
-	inviteResults: {},
-	isLoading: false,
 };

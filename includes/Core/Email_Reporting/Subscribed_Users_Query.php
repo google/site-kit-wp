@@ -217,7 +217,7 @@ class Subscribed_Users_Query {
 	/**
 	 * Checks whether a user can access Site Kit dashboard for email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool True if user has email reporting access, false otherwise.

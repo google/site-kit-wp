@@ -37,6 +37,20 @@ use WP_User;
  */
 class Email_Reporting_Data_Requests {
 
+	const PERMISSIONS_ERROR_STATUSES = array( 401, 403 );
+
+	const PERMISSIONS_ERROR_REASONS = array(
+		'unauthorized',
+		'authError',
+		'expired',
+		'required',
+		'forbidden',
+		'insufficientPermissions',
+		'accountDeleted',
+		'accountDisabled',
+		'accessNotConfigured',
+	);
+
 	/**
 	 * Modules instance.
 	 *
@@ -174,6 +188,37 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
+	 * Categorizes a WP_Error based on its status and reason for better messaging in the front end.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error $error       The error to categorize.
+	 * @param string   $module_slug The module slug related to the error.
+	 * @return WP_Error The categorized error with an added 'category' data field.
+	 */
+	public function categorize_error( WP_Error $error, $module_slug ) {
+		$status = $error->get_error_data()['status'];
+		$reason = $error->get_error_data()['reason'];
+
+		$category = 'report_error';
+		if ( in_array( $status, self::PERMISSIONS_ERROR_STATUSES, true ) || in_array( $reason, self::PERMISSIONS_ERROR_REASONS, true ) ) {
+			$category = 'permissions_error';
+		}
+
+		return new WP_Error(
+			$error->get_error_code(),
+			$error->get_error_message(),
+			array_merge(
+				$error->get_error_data(),
+				array(
+					'category_id' => $category,
+					'module_slug' => $module_slug,
+				)
+			)
+		);
+	}
+
+	/**
 	 * Gets active module slugs for email reporting.
 	 *
 	 * @since 1.172.0
@@ -203,7 +248,7 @@ class Email_Reporting_Data_Requests {
 				$shared_payload = $shared_payloads[ $slug ];
 
 				if ( is_wp_error( $shared_payload ) ) {
-					return $shared_payload;
+					return $this->categorize_error( $shared_payload, $slug );
 				}
 
 				if ( ! empty( $shared_payload ) ) {
@@ -222,7 +267,7 @@ class Email_Reporting_Data_Requests {
 			}
 
 			if ( is_wp_error( $result ) ) {
-				return $result;
+				return $this->categorize_error( $result, $slug );
 			}
 
 			if ( empty( $result ) ) {

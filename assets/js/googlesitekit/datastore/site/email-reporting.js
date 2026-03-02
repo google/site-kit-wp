@@ -167,16 +167,14 @@ const fetchInviteUserStore = createFetchStore( {
 	// state for 24 hours on app refresh.
 	reducerCallback: createReducer( ( state, response, { userID } ) => {
 		const subscribers = state.emailReporting.eligibleSubscribers;
-		if ( isPlainObject( subscribers ) ) {
-			Object.values( subscribers ).forEach( ( subscribersResponse ) => {
-				const user = subscribersResponse?.users?.find(
-					( subscriber ) => subscriber.id === userID
-				);
-
-				if ( user ) {
-					user.invited = true;
-				}
-			} );
+		if ( Array.isArray( subscribers ) ) {
+			const user = subscribers.find(
+				( potentialNewlyInvitedUser ) =>
+					potentialNewlyInvitedUser.id === userID
+			);
+			if ( user ) {
+				user.invited = true;
+			}
 		}
 	} ),
 	argsToParams: ( userID ) => ( { userID } ),
@@ -214,7 +212,7 @@ const baseActions = {
 	/**
 	 * Sends an invitation to an eligible subscriber.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID Eligible user ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -267,7 +265,7 @@ const baseActions = {
 	/**
 	 * Sets the inviting state to true for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -282,7 +280,7 @@ const baseActions = {
 	/**
 	 * Clears the inviting state for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -510,37 +508,34 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the category ID of the latest email reporting error.
+	 * Gets the latest email reporting error.
 	 *
-	 * @since 1.172.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
+	 * @return {(Object|null|undefined)} The latest email reporting error; `undefined` if not loaded; null if no errors.
 	 */
-	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
-		( select ) => () => {
-			const { errors, error_data: errorData } =
-				select( CORE_SITE ).getEmailReportingErrors() || {};
+	getLatestEmailReportingError: createRegistrySelector( ( select ) => () => {
+		const { errors, error_data: errorData } =
+			select( CORE_SITE ).getEmailReportingErrors() || {};
 
-			if ( errors === undefined ) {
-				return undefined;
-			}
-
-			const categoryID =
-				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
-
-			if ( categoryID === undefined ) {
-				return null;
-			}
-
-			return categoryID;
+		if ( errors === undefined ) {
+			return undefined;
 		}
-	),
+
+		const error = errorData?.[ Object.keys( errors )[ 0 ] ];
+
+		if ( error === undefined ) {
+			return null;
+		}
+
+		return error;
+	} ),
 
 	/**
 	 * Checks whether an invitation is in progress for a given user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {number} userID User ID.

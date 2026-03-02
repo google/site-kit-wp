@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use WP_Error;
 use WP_Post;
@@ -44,16 +45,28 @@ class Email_Template_Formatter {
 	private $section_builder;
 
 	/**
+	 * Golinks instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Golinks
+	 */
+	private $golinks;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added golinks dependency.
 	 *
 	 * @param Context                      $context         Plugin context.
 	 * @param Email_Report_Section_Builder $section_builder Section builder instance.
+	 * @param Golinks                      $golinks         Golinks instance.
 	 */
-	public function __construct( Context $context, Email_Report_Section_Builder $section_builder ) {
+	public function __construct( Context $context, Email_Report_Section_Builder $section_builder, Golinks $golinks ) {
 		$this->context         = $context;
 		$this->section_builder = $section_builder;
+		$this->golinks         = $golinks;
 	}
 
 	/**
@@ -122,7 +135,7 @@ class Email_Template_Formatter {
 			);
 		}
 
-		$sections_map = new Sections_Map( $this->context, $sections_payload );
+		$sections_map = new Sections_Map( $this->context, $sections_payload, $this->golinks );
 		if ( empty( $sections_map->get_sections() ) ) {
 			return new WP_Error(
 				'email_report_no_data',
@@ -281,7 +294,7 @@ class Email_Template_Formatter {
 	 * Simple emails share the same structure (subject, preheader, site, CTA, footer)
 	 * but differ in their content. The $email_data array provides the variable content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $subject   Email subject line.
 	 * @param string $preheader Email preheader text.
@@ -298,7 +311,10 @@ class Email_Template_Formatter {
 	 * @return array Template data for simple email.
 	 */
 	public function prepare_simple_email_data( $subject, $preheader, $email_data = array() ) {
-		$site_domain = $this->get_site_domain();
+		$site_domain        = $this->get_site_domain();
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		$data = array(
 			'subject'                => $subject,
@@ -310,14 +326,90 @@ class Email_Template_Formatter {
 			'learn_more_url'         => $email_data['learn_more_url'] ?? '',
 			'primary_call_to_action' => array(
 				'label' => $email_data['cta_label'] ?? __( 'Get your report', 'google-site-kit' ),
-				'url'   => $email_data['cta_url'] ?? admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+				'url'   => $email_data['cta_url'] ?? $dashboard_url,
 			),
 			'footer'                 => array(
-				'copy' => $email_data['footer_copy'] ?? '',
+				'copy'            => $email_data['footer_copy'] ?? '',
+				'unsubscribe_url' => $email_settings_url,
+				'links'           => array(
+					array(
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => $email_settings_url,
+					),
+					array(
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
+						'url'   => 'https://policies.google.com/privacy',
+					),
+					array(
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => $help_center_url,
+					),
+				),
 			),
 		);
 
 		return $data;
+	}
+
+	/**
+	 * Builds template data for the subscription confirmation email.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $frequency Frequency slug.
+	 * @return array Template data.
+	 */
+	public function prepare_subscription_confirmation_template_data( $frequency ) {
+		$site_domain        = $this->get_site_domain();
+		$frequency_label    = $this->get_frequency_label( $frequency );
+		$first_report_date  = $this->get_first_report_date_label( $frequency );
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
+
+		return array(
+			'subject'                => sprintf(
+				/* translators: %s: Site domain. */
+				__( 'Success! You’re subscribed to Site Kit reports for %s', 'google-site-kit' ),
+				$site_domain
+			),
+			'preheader'              => __( 'Your subscription is confirmed and your first report is on the way.', 'google-site-kit' ),
+			'site'                   => array(
+				'domain' => $site_domain,
+				'url'    => $this->context->get_reference_site_url(),
+			),
+			'title'                  => Content_Map::get_title( 'subscription-confirmation' ),
+			'body'                   => Content_Map::get_body_with_args(
+				'subscription-confirmation',
+				array(
+					$frequency_label,
+					$first_report_date,
+				)
+			),
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'primary_call_to_action' => array(
+				'label' => __( 'View dashboard', 'google-site-kit' ),
+				'url'   => $dashboard_url,
+			),
+			'footer'                 => array(
+				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
+				'unsubscribe_url' => $email_settings_url,
+				'links'           => array(
+					array(
+						'label' => __( 'Manage subscription', 'google-site-kit' ),
+						'url'   => $email_settings_url,
+					),
+					array(
+						'label' => __( 'Privacy Policy', 'google-site-kit' ),
+						'url'   => 'https://policies.google.com/privacy',
+					),
+					array(
+						'label' => __( 'Help center', 'google-site-kit' ),
+						'url'   => $help_center_url,
+					),
+				),
+			),
+		);
 	}
 
 	/**
@@ -330,6 +422,10 @@ class Email_Template_Formatter {
 	 * @return array Template data.
 	 */
 	private function prepare_template_data( $frequency, $date_range ) {
+		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
+		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
+		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
+
 		return array(
 			'subject'                => $this->build_subject( $frequency ),
 			'preheader'              => __( 'See the latest highlights from Site Kit.', 'google-site-kit' ),
@@ -343,15 +439,15 @@ class Email_Template_Formatter {
 			),
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
-				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+				'url'   => $dashboard_url,
 			),
 			'footer'                 => array(
 				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
-				'unsubscribe_url' => admin_url( 'admin.php?page=googlesitekit-settings#/admin-settings' ),
+				'unsubscribe_url' => $email_settings_url,
 				'links'           => array(
 					array(
 						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard&email-reporting-panel=1' ),
+						'url'   => $email_settings_url,
 					),
 					array(
 						'label' => __( 'Privacy Policy', 'google-site-kit' ),
@@ -359,7 +455,7 @@ class Email_Template_Formatter {
 					),
 					array(
 						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => 'https://sitekit.withgoogle.com/documentation/troubleshooting/site-kit-support/',
+						'url'   => $help_center_url,
 					),
 				),
 			),
@@ -446,7 +542,7 @@ class Email_Template_Formatter {
 	 * Returns a localized string describing when the user can expect their
 	 * first report based on their selected frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param string $frequency Frequency slug (weekly, monthly, quarterly).
 	 * @return string First report date label.
@@ -471,7 +567,7 @@ class Email_Template_Formatter {
 	 * Uses WordPress start_of_week setting to determine which day
 	 * of the week reports are sent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "next Monday".
 	 */
@@ -495,7 +591,7 @@ class Email_Template_Formatter {
 	 * Quarters are: Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec).
 	 * Returns "1st of {month}" for the first month of the next quarter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string Label like "1st of April".
 	 */

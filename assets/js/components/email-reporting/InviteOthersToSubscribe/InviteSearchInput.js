@@ -24,45 +24,63 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import { useDebounce } from '@/js/hooks/useDebounce';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import CloseIcon from '@/svg/icons/close.svg';
 
-export default function InviteSearchInput( { show = true, value, onChange } ) {
+export default function InviteSearchInput( { value = '', onChange } ) {
+	const instanceID = useInstanceId( InviteSearchInput, 'InviteSearchInput' );
+	const [ inputValue, setInputValue ] = useState( value );
+	const debouncedOnChange = useDebounce( onChange, 300 );
+
+	// Sync external value changes (e.g., when panel resets).
+	useEffect( () => {
+		setInputValue( value );
+	}, [ value ] );
+
 	const handleChange = useCallback(
-		( event ) => onChange( event.target.value ),
-		[ onChange ]
+		( event ) => {
+			setInputValue( event.target.value );
+			debouncedOnChange( event.target.value );
+		},
+		[ debouncedOnChange ]
 	);
 
 	const handleClear = useCallback( () => {
+		setInputValue( '' );
+		debouncedOnChange.cancel();
 		onChange( '' );
-	}, [ onChange ] );
-
-	if ( ! show ) {
-		return null;
-	}
+	}, [ debouncedOnChange, onChange ] );
 
 	return (
 		<div className="googlesitekit-invite-search-input">
+			<VisuallyHidden>
+				<label htmlFor={ instanceID }>
+					{ __(
+						'Search user name, role, or email',
+						'google-site-kit'
+					) }
+				</label>
+			</VisuallyHidden>
 			<input
+				id={ instanceID }
 				type="text"
 				className="googlesitekit-invite-search-input__input"
 				placeholder={ __(
-					'Search user name, role or email',
+					'Search user name, role, or email',
 					'google-site-kit'
 				) }
-				aria-label={ __(
-					'Search user name, role or email',
-					'google-site-kit'
-				) }
-				value={ value }
+				value={ inputValue }
 				onChange={ handleChange }
 			/>
-			{ value && (
+			{ inputValue && (
 				<span
 					className="googlesitekit-invite-search-input__clear"
 					onClick={ handleClear }
@@ -84,11 +102,6 @@ export default function InviteSearchInput( { show = true, value, onChange } ) {
 }
 
 InviteSearchInput.propTypes = {
-	show: PropTypes.bool,
 	value: PropTypes.string,
 	onChange: PropTypes.func.isRequired,
-};
-
-InviteSearchInput.defaultProps = {
-	value: '',
 };

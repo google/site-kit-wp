@@ -183,6 +183,7 @@ class Report_Request_Assembler {
 					'email_report_search_console_missing_result',
 					__( 'Search Console data could not be retrieved.', 'google-site-kit' )
 				);
+			$result = $this->normalize_response_result( $result, $identifier );
 
 			if ( 'compare' === $metadata['context'] || 'current' === $metadata['context'] ) {
 				if ( ! isset( $payload[ $metadata['section_key'] ] ) || ! is_array( $payload[ $metadata['section_key'] ] ) ) {
@@ -197,5 +198,80 @@ class Report_Request_Assembler {
 		}
 
 		return $payload;
+	}
+
+	/**
+	 * Normalizes Search Console response results to surface API failures as WP_Error.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param mixed      $result     Raw request result.
+	 * @param string|int $identifier Request identifier.
+	 * @return mixed|WP_Error
+	 */
+	private function normalize_response_result( $result, $identifier ) {
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		// Some Search Console batch failures come back as error-shaped payloads, not WP_Error.
+		$error = $this->extract_error_payload( $result );
+
+		if ( ! is_array( $error ) ) {
+			return $result;
+		}
+
+		$status  = isset( $error['code'] ) && is_numeric( $error['code'] ) ? (int) $error['code'] : 500;
+		$message = __( 'Search Console data could not be retrieved.', 'google-site-kit' );
+
+		// Prefer API-provided error text when available.
+		if ( isset( $error['message'] ) && is_string( $error['message'] ) ) {
+			$message = trim( $error['message'] );
+		} elseif ( isset( $error['errors'][0]['message'] ) && is_string( $error['errors'][0]['message'] ) ) {
+			$message = trim( $error['errors'][0]['message'] );
+		}
+
+		return new WP_Error(
+			'email_report_search_console_request_failed',
+			$message,
+			array(
+				'identifier' => (string) $identifier,
+				'status'     => $status,
+				'error'      => $error,
+			)
+		);
+	}
+
+	/**
+	 * Extracts a normalized API error payload from a result.
+	 *
+	 * @since 1.173.0
+	 *
+	 * @param mixed $result Raw request result.
+	 * @return array|null
+	 */
+	private function extract_error_payload( $result ) {
+		// Batch responses may be stdClass entries from the Google client; normalize for key checks.
+		if ( is_object( $result ) ) {
+			$result = (array) $result;
+		}
+
+		if ( ! is_array( $result ) ) {
+			return null;
+		}
+
+		$error = null;
+
+		if ( isset( $result['error'] ) ) {
+			$error = $result['error'];
+		} elseif ( isset( $result['errors'] ) || isset( $result['message'] ) ) {
+			$error = $result;
+		}
+
+		if ( is_object( $error ) ) {
+			$error = (array) $error;
+		}
+
+		return is_array( $error ) ? $error : null;
 	}
 }

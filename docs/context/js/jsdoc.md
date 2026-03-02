@@ -38,27 +38,28 @@ All utility functions, hooks, and complex API functions should follow this patte
  *
  * [Brief description of function purpose]
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  *
  * \@param {type} paramName Description of parameter.
  * \@param {type} [optionalParam] Description of optional parameter.
  * \@return {type} Description of return value.
  */
 function myFunction( paramName, optionalParam = defaultValue ) {
-    // implementation
+	// implementation
 }
 ```
 
 ### Required JSDoc Tags
 
 #### \@since Tag
-**Always required** - Documents when the feature was introduced, always use `n.e.x.t` value which will be replaced with the actual version later on.
+
+**Always required** - Documents when the feature was introduced, always use `1.173.0` value which will be replaced with the actual version later on.
 
 ```javascript
 /**
  * Returns a callback to activate a module.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  *
  * \@param {string} moduleSlug Module slug.
  * \@return {Function|null} Callback to activate module.
@@ -66,6 +67,7 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 ```
 
 #### \@param Tag
+
 **Required for all parameters** - Documents parameter types and descriptions:
 
 ```javascript
@@ -83,6 +85,7 @@ function myFunction( paramName, optionalParam = defaultValue ) {
 ```
 
 #### \@return Tag
+
 **Required for functions that return values** - Documents return type and description:
 
 ```javascript
@@ -113,7 +116,7 @@ Use `\@typedef` to define complex object structures:
  * \@return {OverallPageMetricsData} Processed metrics data.
  */
 function parseReportData( report ) {
-    // implementation
+	// implementation
 }
 ```
 
@@ -126,13 +129,13 @@ Custom hooks require comprehensive JSDoc documentation:
  * Returns a callback to activate a module. If the call to activate the module
  * fails, an error will be returned to the returned callback.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  *
  * \@param {string} moduleSlug Module slug.
  * \@return {Function|null} Callback to activate module, null if the module doesn't exist.
  */
 export default function useActivateModuleCallback( moduleSlug ) {
-    // hook implementation
+	// hook implementation
 }
 ```
 
@@ -145,7 +148,7 @@ Utility functions require detailed documentation with examples for complex cases
  * Creates a store object implementing the necessary infrastructure for making
  * asynchronous API requests and storing their data.
  *
- * \@since n.e.x.t
+ * \@since 1.173.0
  *
  * \@param {Object}   args                   Arguments for creating the fetch store.
  * \@param {string}   args.baseName          The base name to use for all actions.
@@ -156,19 +159,20 @@ Utility functions require detailed documentation with examples for complex cases
  * \@return {Object} Partial store object with properties 'actions', 'controls', and 'reducer'.
  */
 export default function createFetchStore( {
-    baseName,
-    controlCallback,
-    reducerCallback,
-    argsToParams = ( ...args ) => args[ 0 ] || {},
-    validateParams = () => {},
+	baseName,
+	controlCallback,
+	reducerCallback,
+	argsToParams = ( ...args ) => args[ 0 ] || {},
+	validateParams = () => {},
 } ) {
-    // implementation
+	// implementation
 }
 ```
 
 ## JSDoc Documentation Requirements
 
 ### Always Document
+
 1. **Utility functions** - Complete JSDoc with all tags
 2. **Custom hooks** - Full documentation with usage patterns
 3. **API functions** - Detailed parameter and return documentation
@@ -176,10 +180,12 @@ export default function createFetchStore( {
 5. **Public interfaces** - Complete interface documentation
 
 ### Conditionally Document
+
 2. **Event handlers** - Document complex callback functions
 3. **Internal helpers** - Document if logic is non-obvious
 
 ### Never Document (Use PropTypes Instead)
+
 1. **Component props** - Use PropTypes for type checking
 2. **Simple getters/setters** - Self-explanatory functions
 3. **Trivial functions** - One-line utility functions
@@ -187,22 +193,26 @@ export default function createFetchStore( {
 ## Best Practices
 
 ### Parameter Documentation
+
 1. **Use descriptive parameter names** in the function signature
 2. **Document optional parameters** with bracket notation: `[optionalParam]`
 3. **Include default values** in documentation: `[enabled=true]`
 4. **Document object properties** when passing configuration objects
 
 ### Type Documentation
+
 1. **Use specific types** instead of generic `Object` when possible
 2. **Document array contents**: `Array.<string>` instead of `Array`
 3. **Use union types**: `{Function|null}` for multiple possible types
 4. **Create typedefs** for complex recurring data structures
 
 ### Version Tracking
-1. **Always include \@since** for new functions and significant changes using `n.e.x.t` value
-3. **Document breaking changes** in function descriptions
+
+1. **Always include \@since** for new functions and significant changes using `1.173.0` value
+2. **Document breaking changes** in function descriptions
 
 ### Consistency Rules
+
 1. **Follow established patterns** for similar function types
 2. **Use consistent terminology** across related functions
 3. **Maintain uniform formatting** for JSDoc blocks

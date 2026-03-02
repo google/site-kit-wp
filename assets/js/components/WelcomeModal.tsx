@@ -30,7 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import { ReactElement } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
+import { useIntersection } from 'react-use';
 
 /**
  * Internal dependencies
@@ -60,6 +61,9 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import { trackEvent } from '@/js/util';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import useViewContext from '@/js/hooks/useViewContext';
 
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
@@ -67,7 +71,15 @@ enum MODAL_VARIANT {
 	DATA_GATHERING_COMPLETE,
 }
 
+const VARIANT_TRACKING_LABELS = {
+	[ MODAL_VARIANT.DATA_AVAILABLE ]: 'default',
+	[ MODAL_VARIANT.GATHERING_DATA ]: 'gathering_data',
+	[ MODAL_VARIANT.DATA_GATHERING_COMPLETE ]: 'data_available',
+};
+
 export default function WelcomeModal() {
+	const viewContext = useViewContext();
+
 	const [ isOpen, setIsOpen ] = useState( true );
 
 	const isViewOnly = useViewOnly();
@@ -116,12 +128,13 @@ export default function WelcomeModal() {
 
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',
-		tooltipSlug: 'dashboard-tour',
+		tooltipSlug: 'welcome-modal',
 		title: __(
 			'You can always take the dashboard tour from the help menu',
 			'google-site-kit'
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
+		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );
@@ -151,6 +164,94 @@ export default function WelcomeModal() {
 			showTooltip();
 		}
 	}, [ closeAndDismissModal, modalVariant, showTooltip ] );
+
+	const startTourAndClose = useCallback( () => {
+		closeAndDismissModal();
+		triggerOnDemandTour(
+			getWelcomeTour( {
+				isViewOnly,
+				canAuthenticate,
+				isAnalyticsConnected: !! analyticsConnected,
+			} )
+		);
+	}, [
+		analyticsConnected,
+		canAuthenticate,
+		closeAndDismissModal,
+		isViewOnly,
+		triggerOnDemandTour,
+	] );
+
+	const intersectionRef = useRef( null );
+
+	const intersectionEntry = useIntersection( intersectionRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( ! inView || hasBeenInView ) {
+			return;
+		}
+
+		setHasBeenInView( true );
+
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'view_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+
+		async function trackSetupEventsOnce() {
+			const startSiteSetup = await getItem( 'start_site_setup' );
+			const startUserSetup = await getItem( 'start_user_setup' );
+
+			if ( startSiteSetup.cacheHit ) {
+				await deleteItem( 'start_site_setup' );
+				trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_site_setup'
+				);
+			}
+			if ( startUserSetup.cacheHit ) {
+				await deleteItem( 'start_user_setup' );
+				trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_user_setup'
+				);
+			}
+		}
+
+		trackSetupEventsOnce();
+	}, [ inView, hasBeenInView, viewContext, modalVariant ] );
+
+	const trackConfirmation = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'confirm_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+	}, [ viewContext, modalVariant ] );
+
+	const trackDismissal = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'dismiss_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+	}, [ viewContext, modalVariant ] );
+
+	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	);
+
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return null;
+	}
 
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
@@ -197,11 +298,17 @@ export default function WelcomeModal() {
 	return (
 		<Dialog
 			className="googlesitekit-dialog googlesitekit-welcome-modal"
-			onClose={ closeAndDismissModalWithTooltip }
+			onClose={ () => {
+				trackDismissal();
+				closeAndDismissModalWithTooltip();
+			} }
 			open
 		>
 			<DialogContent className="googlesitekit-welcome-modal__content">
-				<div className="googlesitekit-welcome-modal__graphic">
+				<div
+					ref={ intersectionRef }
+					className="googlesitekit-welcome-modal__graphic"
+				>
 					{ modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE ? (
 						<WelcomeModalDataGatheringCompleteGraphic />
 					) : (
@@ -212,7 +319,10 @@ export default function WelcomeModal() {
 						// @ts-expect-error - The `Button` component is not typed yet.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
-						onClick={ closeAndDismissModalWithTooltip }
+						onClick={ () => {
+							trackDismissal();
+							closeAndDismissModalWithTooltip();
+						} }
 						aria-label={ __( 'Close', 'google-site-kit' ) }
 						hideTooltipTitle
 					/>
@@ -241,14 +351,22 @@ export default function WelcomeModal() {
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				{ modalVariant === MODAL_VARIANT.GATHERING_DATA ? (
 					// @ts-expect-error - The `Button` component is not typed yet.
-					<Button onClick={ closeAndDismissModal }>
+					<Button
+						onClick={ () => {
+							trackConfirmation();
+							closeAndDismissModal();
+						} }
+					>
 						{ __( 'Get started', 'google-site-kit' ) }
 					</Button>
 				) : (
 					<Fragment>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 						<Button
-							onClick={ closeAndDismissModalWithTooltip }
+							onClick={ () => {
+								trackDismissal();
+								closeAndDismissModalWithTooltip();
+							} }
 							tertiary
 						>
 							{ __( 'Maybe later', 'google-site-kit' ) }
@@ -256,15 +374,8 @@ export default function WelcomeModal() {
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 						<Button
 							onClick={ () => {
-								closeAndDismissModal();
-								triggerOnDemandTour(
-									getWelcomeTour( {
-										isViewOnly,
-										canAuthenticate,
-										isAnalyticsConnected:
-											!! analyticsConnected,
-									} )
-								);
+								trackConfirmation();
+								startTourAndClose();
 							} }
 						>
 							{ __( 'Start tour', 'google-site-kit' ) }

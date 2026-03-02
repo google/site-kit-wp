@@ -22,7 +22,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Returns whether the welcome modal is active.
  *
- * @since n.e.x.t
+ * @since 1.173.0
  *
  * @return {boolean} Whether the welcome modal is currently active.
  */

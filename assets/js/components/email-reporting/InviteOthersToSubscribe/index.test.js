@@ -20,100 +20,70 @@
  * Internal dependencies
  */
 import {
-	act,
 	createTestRegistry,
-	fireEvent,
-	provideSiteInfo,
-	provideUserAuthentication,
+	freezeFetch,
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
-	waitFor,
 } from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import InviteOthersToSubscribe from '.';
 
 describe( 'InviteOthersToSubscribe', () => {
+	let registry;
+
 	const eligibleSubscribersEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting-eligible-subscribers'
 	);
-	const inviteUserEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/email-reporting-invite-user'
+
+	const permissionsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/permissions'
 	);
 
-	const defaultEligibleUsers = [
+	const mockEligibleSubscribers = [
 		{
 			id: 2,
 			displayName: 'MainAdminName',
 			name: 'MainAdminName',
-			email: 'mainadmin@example.com',
+			email: 'someone@anybusiness.com',
 			role: 'administrator',
 			subscribed: false,
-			invited: false,
 		},
-	];
-
-	const searchEligibleUsers = [
 		{
 			id: 3,
-			displayName: 'BetaUser',
-			name: 'BetaUser',
-			email: 'beta@example.com',
-			role: 'editor',
+			displayName: 'AdminName2',
+			name: 'AdminName2',
+			email: 'anotheradminname@anybusiness.com',
+			role: 'administrator',
 			subscribed: false,
-			invited: false,
+		},
+		{
+			id: 4,
+			displayName: 'AuthorName',
+			name: 'AuthorName',
+			email: 'admin2business@gmail.com',
+			role: 'author',
+			subscribed: false,
 		},
 	];
 
-	function createEligibleSubscribersResponse(
-		users,
-		{ total = users.length, totalPages = 1 } = {}
-	) {
-		return {
-			users,
-			total,
-			totalPages,
-		};
-	}
+	beforeEach( () => {
+		registry = createTestRegistry();
 
-	function setupRegistry() {
-		const registry = createTestRegistry();
+		freezeFetch( eligibleSubscribersEndpoint );
+		freezeFetch( permissionsEndpoint );
 
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
 		provideUserInfo( registry, { id: 1 } );
 		provideUserCapabilities( registry );
 
+		registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [] );
 		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-
-		return registry;
-	}
-
-	afterEach( () => {
-		jest.restoreAllMocks();
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
 	} );
 
 	it( 'renders null when user does not have MANAGE_OPTIONS capability', () => {
-		const registry = createTestRegistry();
-
-		provideSiteInfo( registry );
-		provideUserAuthentication( registry );
-		provideUserInfo( registry, { id: 1 } );
-
-		fetchMock.get( eligibleSubscribersEndpoint, {
-			body: {
-				users: [],
-				total: 0,
-				totalPages: 1,
-			},
-			status: 200,
-		} );
-
-		provideUserInfo( registry, { id: 1 } );
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
@@ -125,268 +95,161 @@ describe( 'InviteOthersToSubscribe', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'fetches eligible subscribers with empty search term on initial render', async () => {
-		const registry = setupRegistry();
-
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-
+	it( 'shows empty state when no eligible users exist', () => {
 		const { getByText } = render( <InviteOthersToSubscribe />, {
 			registry,
 		} );
 
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
-				queryParams: {
-					page: 1,
-					search: '',
-				},
-			} )
-		);
-
-		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'No users are eligible to receive invitations.' )
+		).toBeInTheDocument();
 	} );
 
-	it( 'does not fetch eligible subscribers until panel is opened', async () => {
-		const registry = setupRegistry();
+	it( 'shows user list when eligible users exist', async () => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
+
+		const { getByText, waitForRegistry } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		// Wait for async state updates before assertions.
+		await waitForRegistry();
+
+		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
+		expect( getByText( 'AdminName2' ) ).toBeInTheDocument();
+		expect( getByText( 'AuthorName' ) ).toBeInTheDocument();
+	} );
+
+	it( 'hides search input when 6 or fewer eligible users', async () => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
+
+		const { queryByLabelText, getByText, waitForRegistry } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		// Wait for async state updates before assertions.
+		await waitForRegistry();
+
+		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
+		expect(
+			queryByLabelText( 'Search user name, role, or email' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows search input when more than 6 eligible users', async () => {
+		const manyUsers = [
+			...mockEligibleSubscribers,
+			{
+				id: 5,
+				displayName: 'User5',
+				name: 'User5',
+				email: 'user5@example.com',
+				role: 'editor',
+				subscribed: false,
+			},
+			{
+				id: 6,
+				displayName: 'User6',
+				name: 'User6',
+				email: 'user6@example.com',
+				role: 'editor',
+				subscribed: false,
+			},
+			{
+				id: 7,
+				displayName: 'User7',
+				name: 'User7',
+				email: 'user7@example.com',
+				role: 'author',
+				subscribed: false,
+			},
+			{
+				id: 8,
+				displayName: 'User8',
+				name: 'User8',
+				email: 'user8@example.com',
+				role: 'contributor',
+				subscribed: false,
+			},
+		];
 
 		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( manyUsers );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
 
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
+		const { getByLabelText, waitForRegistry } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
 
-		render( <InviteOthersToSubscribe />, {
+		// Wait for async state updates before assertions.
+		await waitForRegistry();
+
+		expect(
+			getByLabelText( 'Search user name, role, or email' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'filters out already-subscribed users from the list', async () => {
+		const usersWithSubscribed = [
+			...mockEligibleSubscribers,
+			{
+				id: 5,
+				displayName: 'SubscribedUser',
+				name: 'SubscribedUser',
+				email: 'subscribed@example.com',
+				role: 'editor',
+				subscribed: true,
+			},
+		];
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( usersWithSubscribed );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
+
+		const { queryByText, getByText, waitForRegistry } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		// Wait for async state updates before assertions.
+		await waitForRegistry();
+
+		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
+		expect( queryByText( 'SubscribedUser' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'displays the info tooltip with eligibility explanation', () => {
+		const { getByRole } = render( <InviteOthersToSubscribe />, {
 			registry,
 		} );
 
-		expect( fetchMock ).toHaveFetchedTimes( 0 );
-
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-		} );
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
-				queryParams: {
-					page: 1,
-					search: '',
-				},
-			} )
-		);
-	} );
-
-	it( 'triggers server search after 300ms debounce when typing', async () => {
-		const registry = setupRegistry();
-
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( searchEligibleUsers, {
-				total: 1,
-			} ),
-			status: 200,
-		} );
-
-		const { getByLabelText, getByText, queryByText } = render(
-			<InviteOthersToSubscribe />,
-			{ registry }
-		);
-
-		await waitFor( () =>
-			expect(
-				getByLabelText( 'Search user name, role or email' )
-			).toBeInTheDocument()
-		);
-
-		const initialFetchCount = fetchMock.calls(
-			eligibleSubscribersEndpoint
-		).length;
-
-		fireEvent.change( getByLabelText( 'Search user name, role or email' ), {
-			target: { value: 'beta' },
-		} );
-
-		expect( fetchMock.calls( eligibleSubscribersEndpoint ).length ).toBe(
-			initialFetchCount
-		);
-
-		await waitFor( () =>
-			expect(
-				fetchMock.calls( eligibleSubscribersEndpoint ).length
-			).toBe( initialFetchCount + 1 )
-		);
-		const [ searchRequestURL ] = fetchMock.lastCall(
-			eligibleSubscribersEndpoint
-		);
-		const parsedSearchURL = new URL(
-			typeof searchRequestURL === 'string'
-				? searchRequestURL
-				: searchRequestURL.url,
-			'https://example.test'
-		);
-
-		expect( parsedSearchURL.searchParams.get( 'page' ) ).toBe( '1' );
-		expect( parsedSearchURL.searchParams.get( 'search' ) ).toBe( 'beta' );
-
-		await waitFor( () =>
-			expect( getByText( 'BetaUser' ) ).toBeInTheDocument()
-		);
-
-		expect( queryByText( 'MainAdminName' ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'clearing search restores cached unfiltered results', async () => {
-		const registry = setupRegistry();
-
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( searchEligibleUsers ),
-			status: 200,
-		} );
-
-		const { getByLabelText, getByText, queryByText } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		await waitFor( () =>
-			expect( getByText( 'MainAdminName' ) ).toBeInTheDocument()
-		);
-
-		const searchInput = getByLabelText( 'Search user name, role or email' );
-
-		fireEvent.change( searchInput, {
-			target: { value: 'beta' },
-		} );
-
-		await waitFor( () =>
-			expect( getByText( 'BetaUser' ) ).toBeInTheDocument()
-		);
-
-		fireEvent.click( getByLabelText( 'Clear search' ) );
-
-		await waitFor( () => expect( searchInput ).toHaveValue( '' ) );
-		await waitFor( () =>
-			expect( getByText( 'MainAdminName' ) ).toBeInTheDocument()
-		);
-		expect( queryByText( 'BetaUser' ) ).not.toBeInTheDocument();
-		expect( fetchMock ).toHaveFetchedTimes( 2 );
-	} );
-
-	it( 'resets search and invite results when panel opens', async () => {
-		const registry = setupRegistry();
-		const consoleErrorSpy = jest
-			.spyOn( console, 'error' )
-			.mockImplementation( () => {} );
-
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createEligibleSubscribersResponse( defaultEligibleUsers, {
-				total: 7,
-			} ),
-			status: 200,
-		} );
-		fetchMock.postOnce( inviteUserEndpoint, {
-			body: {
-				code: 'internal_error',
-				message: 'Failed to send invitation',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { getByLabelText, getByRole, getByText, queryByText } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		await waitFor( () =>
-			expect(
-				getByLabelText( 'Search user name, role or email' )
-			).toBeInTheDocument()
-		);
-		const searchInput = getByLabelText( 'Search user name, role or email' );
-
-		fireEvent.change( searchInput, {
-			target: { value: 'beta' },
-		} );
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
-				queryParams: {
-					page: 1,
-					search: 'beta',
-				},
-			} )
-		);
-
-		fireEvent.click( getByRole( 'button', { name: /send invite/i } ) );
-
-		await waitFor( () =>
-			expect( getByText( 'Failed to send invite.' ) ).toBeInTheDocument()
-		);
-
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
-		} );
-
-		expect( searchInput ).toHaveValue( 'beta' );
-		expect( getByText( 'Failed to send invite.' ) ).toBeInTheDocument();
-
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-		} );
-
-		await waitFor( () => expect( searchInput ).toHaveValue( '' ) );
-		await waitFor( () =>
-			expect(
-				queryByText( 'Failed to send invite.' )
-			).not.toBeInTheDocument()
-		);
-		expect(
-			getByRole( 'button', { name: /send invite/i } )
-		).toBeInTheDocument();
-
-		consoleErrorSpy.mockRestore();
+		expect( getByRole( 'tooltip' ) ).toBeInTheDocument();
 	} );
 } );

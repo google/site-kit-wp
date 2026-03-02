@@ -114,7 +114,9 @@ describe( 'InviteUserRow', () => {
 			{ registry }
 		);
 
-		expect( getByText( 'Failed to send invite.' ) ).toBeInTheDocument();
+		expect(
+			document.querySelector( '.googlesitekit-invite-user-row__error' )
+		).toBeInTheDocument();
 		expect( getByText( 'Retry' ) ).toBeInTheDocument();
 	} );
 

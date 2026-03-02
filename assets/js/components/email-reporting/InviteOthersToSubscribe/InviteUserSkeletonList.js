@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 
-export default function InviteUserSkeletonList( { visibleItems } ) {
+export default function InviteUserSkeletonList( { visibleItems = 3 } ) {
 	return (
 		<div className="googlesitekit-invite-user-list">
 			{ Array.from( { length: visibleItems } ).map( ( _, index ) => (
@@ -53,8 +53,4 @@ export default function InviteUserSkeletonList( { visibleItems } ) {
 
 InviteUserSkeletonList.propTypes = {
 	visibleItems: PropTypes.number,
-};
-
-InviteUserSkeletonList.defaultProps = {
-	visibleItems: 3,
 };

@@ -62,7 +62,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 * @var Dismissed_Items
 	 */
 	private $dismissed_items;
@@ -695,7 +695,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	/**
 	 * Returns the value of the `notification` query param to use in the redirect URL based on whether the welcome modal has been previously dismissed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @return string The value of the `notification` query param.
 	 */

@@ -91,7 +91,7 @@ const manyUsers = [
 ];
 
 function Template( { ...args } ) {
-	return <InviteOthersToSubscribe isOpen { ...args } />;
+	return <InviteOthersToSubscribe { ...args } />;
 }
 
 const defaultQueryArgs = { search: '' };

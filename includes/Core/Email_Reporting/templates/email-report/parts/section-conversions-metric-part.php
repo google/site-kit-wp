@@ -53,8 +53,7 @@ $change_context  = $data['change_context'];
 						);
 						?>
 					</td>
-					<td width="110"
-						style="font-size:12px; font-weight:500;  color:#6C726E; text-align: right; width: 110px; padding-bottom: 10px;">
+					<td class="subtitle" width="110" style="font-size:12px; font-weight:500; color:#6C726E; text-align: right; width: 110px; padding-bottom: 10px;">
 						<?php echo esc_html( $change_context ); ?>
 					</td>
 				</tr>
