@@ -196,6 +196,7 @@ export default function InviteOthersToSubscribe() {
 
 			<InviteUserList
 				users={ users }
+				searchTerm={ debouncedSearchTerm }
 				inviteResults={ inviteResults }
 				onInviteResult={ handleInviteResult }
 				isLoading={ isLoading }
