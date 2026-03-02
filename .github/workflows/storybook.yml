@@ -119,7 +119,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: storybook
           section-content: |
-            📚 **Storybook is ready:**
+            📚 **Storybook:**
             - [View Storybook](${{ steps.upload.outputs.public-url }}/index.html)
 
   test-storybook:
@@ -155,3 +155,26 @@ jobs:
       # TODO: #10473 will complete the migration to Storybook test-runner as storyshots is deprecated.
       # - name: Test Storybook
       #   run: npm run test:storybook
+
+  remove-storybook:
+    name: Remove Storybook
+    runs-on: ubuntu-latest
+    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/remove-gcs-path
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: storybook/pull/${{ github.event.pull_request.number }}
+
+      - uses: ./.github/actions/update-pr-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          section-id: storybook
+          section-content: |
+            📚 **Storybook:**
+            - Storybook has been deleted.

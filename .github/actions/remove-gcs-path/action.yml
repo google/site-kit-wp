@@ -1,0 +1,23 @@
+name: Remove from GCS
+description: Authenticates with GCP and removes all files at a given path from Cloud Storage.
+
+inputs:
+  credentials-json:
+    description: GCP service account credentials JSON
+    required: true
+  path:
+    description: Path within the GCS bucket to remove (e.g., playwright/pull/123)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: google-github-actions/auth@v3
+      with:
+        credentials_json: ${{ inputs.credentials-json }}
+
+    - uses: google-github-actions/setup-gcloud@v3
+
+    - name: Remove files
+      shell: bash
+      run: gcloud storage rm "gs://site-kit-github-artifacts/${{ inputs.path }}/**"
