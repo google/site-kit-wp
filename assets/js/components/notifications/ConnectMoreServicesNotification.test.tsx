@@ -150,7 +150,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 			} );
 		} );
 
-		it( 'should redirect to the "connect more services" URL when the "Connect more services" button is clicked and dismiss the notification', () => {
+		it( 'should redirect to the "connect more services" URL when the "Connect more services" button is clicked', () => {
 			provideGatheringDataState( registry, {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
@@ -209,7 +209,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when the Search console module is not in the gathering data state and the Analytics module is in the gathering data state and the user is authenticated', async () => {
+		it( 'is not active when the Search Console module is not in the gathering data state and the Analytics module is in the gathering data state and the user is authenticated', async () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
