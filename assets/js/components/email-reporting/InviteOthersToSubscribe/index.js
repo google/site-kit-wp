@@ -135,6 +135,8 @@ export default function InviteOthersToSubscribe() {
 
 		if ( isSelectionPanelOpen ) {
 			debouncedSetSearchTerm.cancel();
+			// Clear both immediate input state and debounced query state so the panel
+			// reopens unfiltered without waiting for debounce.
 			setSearchTerm( '' );
 			setDebouncedSearchTerm( '' );
 			setInviteResults( {} );
