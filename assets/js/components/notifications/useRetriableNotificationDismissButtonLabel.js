@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -37,7 +32,7 @@ import { useState } from '@wordpress/element';
  * dismissal count reaches its limit. This then causes the "Maybe later" label
  * to momentarily change to "Don't show again" before the notification is
  * dismissed. This hook uses local state to ensure that the dismiss button
- * label is computed only once on mount, so that the label doesn't change after
+ * label is computed only once, so that the label doesn't change after
  * the CTA is clicked.
  *
  * @since n.e.x.t
@@ -50,15 +45,11 @@ import { useState } from '@wordpress/element';
 export default function useRetriableNotificationDismissButtonLabel( {
 	isDismissalFinal,
 } = {} ) {
-	const [ dismissLabel, setDismissLabel ] = useState(
-		__( 'Maybe later', 'google-site-kit' )
+	const [ dismissLabel ] = useState(
+		true === isDismissalFinal
+			? __( 'Don’t show again', 'google-site-kit' )
+			: __( 'Maybe later', 'google-site-kit' )
 	);
-
-	useMount( () => {
-		if ( true === isDismissalFinal ) {
-			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
-		}
-	} );
 
 	return dismissLabel;
 }
