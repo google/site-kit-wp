@@ -43,8 +43,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 			<table role="presentation" width="100%" style="margin-bottom:12px;">
 				<tr>
 					<td>&nbsp;</td>
-					<td width="110"
-						style="text-align: right; font-size:12px; line-height:16px; font-weight:500; color:#6C726E; width: 110px;">
+					<td class="subtitle" width="110" style="text-align: right; font-size:12px; line-height:16px; font-weight:500; color:#6C726E; width: 110px;">
 						<?php echo esc_html( $subtitle ); ?>
 					</td>
 				</tr>

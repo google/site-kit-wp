@@ -280,7 +280,8 @@ class Plain_Text_FormatterTest extends TestCase {
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'preheader'              => 'admin@example.com invited you to receive periodic performance reports',
+			'title'                  => 'admin@example.com invited you to receive periodic performance reports',
+			'preheader'              => 'This preheader should not appear in plain text output',
 			'body'                   => array(
 				'Receive the most important insights about your site\'s performance, key trends, and tailored metrics.',
 				'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.',
@@ -299,7 +300,8 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
-		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Simple email should contain preheader text.' );
+		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Simple email should contain title text.' );
+		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Simple email should contain first body paragraph.' );
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
 		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Simple email should contain Learn more link.' );
@@ -307,12 +309,38 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
 	}
 
+	public function test_format_simple_email_strips_html_from_title() {
+		$data = array(
+			'site'  => array( 'domain' => 'example.com' ),
+			'title' => '<a href="mailto:admin@example.com" style="color: #161B18;">admin@example.com</a> invited you to receive reports',
+			'body'  => array(),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'admin@example.com invited you to receive reports', $result, 'Title should have HTML stripped for plain text.' );
+		$this->assertStringNotContainsString( '<a ', $result, 'Title should not contain HTML tags.' );
+	}
+
+	public function test_format_simple_email_outputs_plain_title_unchanged() {
+		$data = array(
+			'site'  => array( 'domain' => 'example.com' ),
+			'title' => 'Success! You are subscribed',
+			'body'  => array(),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'Success! You are subscribed', $result, 'Plain title should pass through unchanged.' );
+	}
+
 	public function test_format_simple_email_with_missing_data() {
 		$data = array(
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'preheader'              => 'You have been invited to receive performance reports',
+			'title'                  => 'You have been invited to receive performance reports',
+			'preheader'              => 'This preheader should not appear in plain text output',
 			'body'                   => array(),
 			'learn_more_url'         => '',
 			'primary_call_to_action' => array(),
@@ -325,7 +353,8 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding even with missing data.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
-		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain preheader text.' );
+		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain title text.' );
+		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
 	}
 }

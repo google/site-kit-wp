@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -42,13 +37,9 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
  * @return {boolean} Whether the CTA widget should be displayed.
  */
 export default function useDisplayCTAWidget() {
-	const { setValue } = useDispatch( CORE_UI );
-
-	const hasKeyMetricsSetupCTAWidgetAppeared = useSelect( ( select ) => {
-		return select( CORE_UI ).getValue(
-			'hasKeyMetricsSetupCTAWidgetAppeared'
-		);
-	} );
+	const keepKeyMetricsSetupCTAWidgetVisible = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'keepKeyMetricsSetupCTAWidgetVisible' )
+	);
 
 	const shouldDisplayCTAWidget = useSelect( ( select ) => {
 		const isDismissed = select( CORE_USER ).isItemDismissed(
@@ -84,29 +75,7 @@ export default function useDisplayCTAWidget() {
 		);
 	}, [] );
 
-	// If the CTA widget is displayed, we should keep it visible until the page
-	// is reloaded, even if the user dismisses it.
-	//
-	// This prevents the widget from disappearing while the user is redirected
-	// to a new page after clicking on the CTA. (The widget displays a loading
-	// indicator after the user clicks the CTA and "dismisses" it.)
-	useEffect( () => {
-		if (
-			! hasKeyMetricsSetupCTAWidgetAppeared &&
-			shouldDisplayCTAWidget === true
-		) {
-			setValue( 'hasKeyMetricsSetupCTAWidgetAppeared', true );
-		}
-	}, [
-		hasKeyMetricsSetupCTAWidgetAppeared,
-		setValue,
-		shouldDisplayCTAWidget,
-	] );
-
-	return (
-		hasKeyMetricsSetupCTAWidgetAppeared ||
-		( ! hasKeyMetricsSetupCTAWidgetAppeared && shouldDisplayCTAWidget )
-	);
+	return keepKeyMetricsSetupCTAWidgetVisible || shouldDisplayCTAWidget;
 }
 
 function isModuleDataAvailableOnLoad( select, slug, storeName ) {

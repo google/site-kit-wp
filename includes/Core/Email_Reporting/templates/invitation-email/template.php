@@ -17,6 +17,7 @@ $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
 $site_url           = $data['site']['url'];
+$email_title        = $data['title'];
 $body               = $data['body'];
 $inviter_email      = $data['inviter_email'];
 $learn_more_url     = $data['learn_more_url'];
@@ -142,19 +143,15 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
-										<?php /* Invitation title. */ ?>
+										<?php /* Title from Content_Map with inviter email link. */ ?>
 										<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
-											printf(
-												/* translators: %s: Email address of the person who sent the invitation (wrapped in mailto link) */
-												esc_html__( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
-												/* Mailto link styled to match title text as inline styles prevent email clients from auto-styling the email address as a blue link. */
-												'<a href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>'
-											);
+											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
+											echo $email_title;
 											?>
 										</h1>
 
-										<?php /* Body paragraphs from Body_Content_Map. */ ?>
+										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php echo esc_html( $paragraph ); ?>

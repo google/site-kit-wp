@@ -40,6 +40,7 @@ import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const [ saveError, setSaveError ] = useState( null );
@@ -72,6 +73,10 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
+
+	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
+		isDismissalFinal,
+	} );
 
 	const { setConsentModeEnabled, saveConsentModeSettings } =
 		useDispatch( CORE_SITE );
@@ -124,9 +129,7 @@ export default function ConsentModeSetupCTABanner( { id, Notification } ) {
 					},
 				} }
 				dismissButton={ {
-					label: isDismissalFinal
-						? __( 'Don’t show again', 'google-site-kit' )
-						: __( 'Maybe later', 'google-site-kit' ),
+					label: dismissLabel,
 					onClick: showTooltip,
 					dismissOptions: {
 						expiresInSeconds: isDismissalFinal

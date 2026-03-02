@@ -101,6 +101,13 @@ class Email_Log_Processor {
 			return;
 		}
 
+		$template_type = $this->get_template_type_from_log( $email_log );
+
+		if ( Email_Log::TEMPLATE_TYPE_SUBSCRIBE_SUCCESS === $template_type ) {
+			$this->process_subscription_confirmation_log( $post_id, $user, $frequency );
+			return;
+		}
+
 		$date_range = $this->get_date_range_for_log( $email_log );
 		if ( is_wp_error( $date_range ) ) {
 			$this->mark_failed( $post_id, $date_range );
@@ -142,6 +149,33 @@ class Email_Log_Processor {
 	}
 
 	/**
+	 * Processes a subscription confirmation log.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int     $post_id   Email log post ID.
+	 * @param WP_User $user      Recipient user.
+	 * @param string  $frequency Frequency slug.
+	 */
+	private function process_subscription_confirmation_log( $post_id, WP_User $user, $frequency ) {
+		$template_data = $this->template_formatter->prepare_subscription_confirmation_template_data( $frequency );
+
+		$send_result = $this->report_sender->send(
+			$user,
+			array(),
+			$template_data,
+			'subscription-confirmation'
+		);
+
+		if ( is_wp_error( $send_result ) ) {
+			$this->mark_failed( $post_id, $send_result );
+			return;
+		}
+
+		$this->mark_sent( $post_id );
+	}
+
+	/**
 	 * Retrieves a valid email log post.
 	 *
 	 * @since 1.170.0
@@ -161,6 +195,20 @@ class Email_Log_Processor {
 		}
 
 		return $email_log;
+	}
+
+	/**
+	 * Gets the template type for an email log.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post $email_log Email log post.
+	 * @return string Template type.
+	 */
+	private function get_template_type_from_log( WP_Post $email_log ) {
+		$template_type = get_post_meta( $email_log->ID, Email_Log::META_TEMPLATE_TYPE, true );
+
+		return Email_Log::sanitize_template_type( $template_type );
 	}
 
 	/**
