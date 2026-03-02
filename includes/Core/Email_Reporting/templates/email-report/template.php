@@ -19,7 +19,7 @@
 $subject            = $data['subject'];
 $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
-$site_url           = $data['site']['url'];
+$site_url           = ! empty( $data['site']['url'] ) ? $data['site']['url'] : '';
 $date_label         = $data['date_range']['label'];
 $primary_cta        = $data['primary_call_to_action'];
 $footer_content     = $data['footer'];
@@ -108,6 +108,13 @@ $render_shared_part = $data['render_shared_part'];
 			max-width: 0;
 			opacity: 0;
 			overflow: hidden;
+		}
+
+		@media (min-width: 481px) {
+			.subtitle {
+				/* `!important` used to override inline styles in the element. */
+				width: auto !important;
+			}
 		}
 	</style>
 </head>
