@@ -507,14 +507,6 @@ describe( 'core/site Email Reporting', () => {
 				).toEqual( {
 					users: [
 						{
-							id: 1,
-							name: 'Current User',
-							email: 'current@example.com',
-							role: 'administrator',
-							subscribed: false,
-							invited: false,
-						},
-						{
 							id: 2,
 							name: 'Eligible User',
 							email: 'eligible@example.com',
