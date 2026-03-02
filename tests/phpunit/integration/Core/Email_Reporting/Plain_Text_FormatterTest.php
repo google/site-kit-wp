@@ -309,6 +309,31 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
 	}
 
+	public function test_format_simple_email_strips_html_from_title() {
+		$data = array(
+			'site'  => array( 'domain' => 'example.com' ),
+			'title' => '<a href="mailto:admin@example.com" style="color: #161B18;">admin@example.com</a> invited you to receive reports',
+			'body'  => array(),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'admin@example.com invited you to receive reports', $result, 'Title should have HTML stripped for plain text.' );
+		$this->assertStringNotContainsString( '<a ', $result, 'Title should not contain HTML tags.' );
+	}
+
+	public function test_format_simple_email_outputs_plain_title_unchanged() {
+		$data = array(
+			'site'  => array( 'domain' => 'example.com' ),
+			'title' => 'Success! You are subscribed',
+			'body'  => array(),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'Success! You are subscribed', $result, 'Plain title should pass through unchanged.' );
+	}
+
 	public function test_format_simple_email_with_missing_data() {
 		$data = array(
 			'site'                   => array(

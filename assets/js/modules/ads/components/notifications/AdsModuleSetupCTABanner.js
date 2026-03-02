@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -51,6 +50,7 @@ import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import BannerSVGDesktop from '@/svg/graphics/banner-ads-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-ads-setup-cta-mobile.svg?url';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
@@ -138,14 +138,8 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 
-	const [ dismissLabel, setDismissLabel ] = useState(
-		__( 'Maybe later', 'google-site-kit' )
-	);
-
-	useMount( () => {
-		if ( true === isDismissalFinal ) {
-			setDismissLabel( __( 'Don’t show again', 'google-site-kit' ) );
-		}
+	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
+		isDismissalFinal,
 	} );
 
 	return (

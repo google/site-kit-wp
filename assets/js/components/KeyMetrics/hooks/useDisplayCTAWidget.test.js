@@ -27,6 +27,7 @@ import {
 	renderHook,
 } from '../../../../../tests/js/test-utils';
 import useDisplayCTAWidget from './useDisplayCTAWidget';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -77,7 +78,11 @@ describe( 'useDisplayCTAWidget hook', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'should return false if the CTA widget is dismissed', async () => {
+	it( 'should return false if the CTA widget is dismissed and keep-visible is false', async () => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( 'keepKeyMetricsSetupCTAWidgetVisible', false );
+
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] );
@@ -87,6 +92,22 @@ describe( 'useDisplayCTAWidget hook', () => {
 		} );
 
 		expect( result.current ).toBe( false );
+	} );
+
+	it( 'should return true if the CTA widget is dismissed and keep-visible is true', async () => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( 'keepKeyMetricsSetupCTAWidgetVisible', true );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [ KEY_METRICS_SETUP_CTA_WIDGET_SLUG ] );
+
+		const { result } = await renderHook( () => useDisplayCTAWidget(), {
+			registry,
+		} );
+
+		expect( result.current ).toBe( true );
 	} );
 
 	it( 'should return false if the CTA widget is being dismissed', async () => {

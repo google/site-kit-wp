@@ -32,12 +32,42 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import UserSettingsSelectionPanel from '.';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+
+const mockEligibleSubscribers = [
+	{
+		id: 2,
+		displayName: 'MainAdminName',
+		name: 'MainAdminName',
+		email: 'someone@anybusiness.com',
+		role: 'administrator',
+		subscribed: false,
+	},
+	{
+		id: 3,
+		displayName: 'AdminName2',
+		name: 'AdminName2',
+		email: 'anotheradminname@anybusiness.com',
+		role: 'administrator',
+		subscribed: false,
+	},
+	{
+		id: 4,
+		displayName: 'AuthorName',
+		name: 'AuthorName',
+		email: 'admin2business@gmail.com',
+		role: 'author',
+		subscribed: false,
+	},
+];
 
 function Template( { viewContext } ) {
 	return (
@@ -55,6 +85,12 @@ Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
 	},
 };
 
@@ -164,9 +200,30 @@ EmailReportingDisabledViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
+export const WithoutManagePermission = Template.bind( {} );
+WithoutManagePermission.storyName = 'Without manage permission';
+WithoutManagePermission.scenario = {};
+WithoutManagePermission.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [] );
+	},
+};
+
 export default {
 	title: 'Components/EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
+	parameters: {
+		features: [ 'proactiveUserEngagement' ],
+	},
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {

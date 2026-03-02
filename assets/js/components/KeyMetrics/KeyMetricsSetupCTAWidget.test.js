@@ -384,7 +384,7 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsDataAvailableOnLoad( true );
 
-		const { getByRole, waitForRegistry } = render(
+		const { getByRole, queryByRole, waitForRegistry } = render(
 			<KeyMetricsSetupCTAWidget
 				Widget={ Widget }
 				WidgetNull={ WidgetNull }
@@ -397,6 +397,12 @@ describe( 'KeyMetricsSetupCTAWidget', () => {
 
 		const button = getByRole( 'button', { name: /maybe later/i } );
 		fireEvent.click( button );
+
+		await waitFor( () => {
+			expect(
+				queryByRole( 'button', { name: /maybe later/i } )
+			).not.toBeInTheDocument();
+		} );
 
 		// Item should be dismissed when the "Maybe later" button is clicked.
 		await waitFor( () => {

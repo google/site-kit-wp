@@ -13,25 +13,25 @@
  */
 
 // Extract metadata from data.
-$subject              = $data['subject'];
-$preheader            = $data['preheader'];
-$site_domain          = $data['site']['domain'];
-$site_url             = $data['site']['url'];
-$email_title_template = $data['title'];
-$body                 = $data['body'];
-$inviter_email        = $data['inviter_email'];
-$learn_more_url       = $data['learn_more_url'];
-$primary_cta          = $data['primary_call_to_action'];
-$footer_copy          = $data['footer']['copy'];
-$get_asset_url        = $data['get_asset_url'];
-$render_part          = $data['render_part'];
-$render_shared_part   = $data['render_shared_part'];
+$subject            = $data['subject'];
+$preheader          = $data['preheader'];
+$site_domain        = $data['site']['domain'];
+$site_url           = $data['site']['url'];
+$email_title        = $data['title'];
+$body               = $data['body'];
+$inviter_email      = $data['inviter_email'];
+$learn_more_url     = $data['learn_more_url'];
+$primary_cta        = $data['primary_call_to_action'];
+$footer_copy        = $data['footer']['copy'];
+$get_asset_url      = $data['get_asset_url'];
+$render_part        = $data['render_part'];
+$render_shared_part = $data['render_shared_part'];
 
 $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 
 // Build the title with mailto link for the inviter email.
 $inviter_email_link = '<a class="dm-text-primary" href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
-$email_title        = sprintf( $email_title_template, $inviter_email_link );
+$email_title        = sprintf( $email_title, $inviter_email_link );
 ?>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">

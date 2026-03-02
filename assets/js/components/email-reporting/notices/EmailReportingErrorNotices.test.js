@@ -25,6 +25,7 @@ import {
 	render,
 	createTestRegistry,
 	provideUserAuthentication,
+	provideModules,
 } from '../../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as tracking from '@/js/util/tracking';
@@ -71,6 +72,62 @@ describe( 'EmailReportingErrorNotices', () => {
 				'We were unable to deliver your report. Report delivery will automatically resume once the issue is resolved.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render the permissions error notice when email reporting is enabled, user is not view-only, and there is a permissions_error category ID and a module slug', () => {
+		provideModules( registry );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				403: [
+					'User does not have sufficient permissions for this property. To learn more about Property ID, see https://developers.google.com/analytics/devguides/reporting/data/v1/property-id.',
+				],
+			},
+			error_data: {
+				403: {
+					status: 403,
+					reason: 'forbidden',
+					category_id: 'permissions_error',
+					module_slug: 'analytics-4',
+				},
+			},
+		} );
+
+		const { container } = render( <EmailReportingErrorNotices />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the report error notice when email reporting is enabled, user is not view-only, and there is a report_error category ID and a module slug', () => {
+		provideModules( registry );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [
+					'cURL error 6: Could not resolve host: searchconsole.googleapis.com (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://searchconsole.googleapis.com/batch',
+				],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { container } = render( <EmailReportingErrorNotices />, {
+			registry,
+		} );
+
+		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should render the sending error notice when email reporting is enabled, user is not view-only, and there is a sending_error category ID', () => {
