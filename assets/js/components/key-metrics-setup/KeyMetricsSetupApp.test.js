@@ -93,6 +93,7 @@ describe( 'KeyMetricsSetupApp', () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 
 		fetchMock.post( syncAudiencesEndpoint, { body: [], status: 200 } );
 		fetchMock.post( syncCustomDimensionsEndpoint, {
