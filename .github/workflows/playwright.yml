@@ -274,7 +274,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: playwright
           section-content: |
-            🎭 Playwright report is ready:
-            - 🟢 [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
-            - 🌙 [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
-            - 📌 [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)
+            🎭 **Playwright report is ready:**
+            - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
+            - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
+            - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)

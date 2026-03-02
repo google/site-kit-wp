@@ -148,8 +148,8 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: storybook
           section-content: |
-            📚 Storybook is ready:
-            - 👁 [View Storybook](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/index.html)
+            📚 **Storybook is ready:**
+            - [View Storybook](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/index.html)
 
   test-storybook:
     name: Test Storybook

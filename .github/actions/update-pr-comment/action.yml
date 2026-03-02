@@ -36,10 +36,11 @@ runs:
         SECTION_CONTENT = os.environ.get('SECTION_CONTENT', '')
         EXISTING_BODY = os.environ.get('EXISTING_BODY', '')
         BASE_MARKER = '<!-- site-kit-ci-status -->'
+        HEADER = BASE_MARKER + '\n> 🤖 _This comment is automatically updated by CI workflows. Each section is managed independently._\n'
 
-        body = EXISTING_BODY if EXISTING_BODY.strip() else BASE_MARKER + '\n'
+        body = EXISTING_BODY if EXISTING_BODY.strip() else HEADER
         if BASE_MARKER not in body:
-            body = BASE_MARKER + '\n' + body
+            body = HEADER + body
 
         marker_start = f'<!-- section: {SECTION_ID} -->'
         marker_end = f'<!-- /section: {SECTION_ID} -->'

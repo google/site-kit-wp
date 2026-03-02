@@ -174,9 +174,9 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: zips
           section-content: |
-            📦 Build files for ${{ github.event.pull_request.head.sha }} are ready:
-            - 🛠️ Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
-            - 🚀 Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})
+            📦 **Build files for ${{ github.event.pull_request.head.sha }} are ready:**
+            - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
+            - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})
 
   remove-zips:
     name: Remove Zips
