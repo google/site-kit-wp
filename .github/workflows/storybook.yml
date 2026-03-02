@@ -119,7 +119,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: storybook
           section-content: |
-            📚 **Storybook:**
+            📚 **Storybook for ${{ github.event.pull_request.head.sha }}:**
             - [View Storybook](${{ steps.upload.outputs.public-url }}/index.html)
 
   test-storybook:
@@ -176,5 +176,5 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: storybook
           section-content: |
-            📚 **Storybook:**
+            📚 **Storybook for ${{ github.event.pull_request.head.sha }}:**
             - Storybook has been deleted.

@@ -259,7 +259,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: playwright
           section-content: |
-            🎭 **Playwright reports:**
+            🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
             - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-latest/playwright-html/index.html)
             - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-nightly/playwright-html/index.html)
             - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/playwright-html/index.html)
@@ -284,5 +284,5 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: playwright
           section-content: |
-            🎭 **Playwright reports:**
+            🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
             - Reports have been deleted.
