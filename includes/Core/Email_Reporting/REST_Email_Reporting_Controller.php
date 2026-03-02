@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
@@ -96,24 +97,35 @@ class REST_Email_Reporting_Controller {
 	private $email_sender;
 
 	/**
+	 * Golinks instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Golinks
+	 */
+	private $golinks;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
 	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
 	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
+	 * @since n.e.x.t Added golinks dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.
 	 * @param User_Email_Reporting_Settings $user_email_reporting_settings  User email reporting settings instance.
 	 * @param Eligible_Subscribers_Query    $eligible_subscribers_query     Eligible subscribers query instance.
 	 * @param Email                         $email_sender                   Email sender instance.
+	 * @param Golinks                       $golinks                        Golinks instance.
 	 */
 	public function __construct(
 		Email_Reporting_Settings $settings,
 		Modules $modules,
 		User_Email_Reporting_Settings $user_email_reporting_settings,
 		Eligible_Subscribers_Query $eligible_subscribers_query,
-		Email $email_sender
+		Email $email_sender,
+		Golinks $golinks
 	) {
 		$this->settings                      = $settings;
 		$this->modules                       = $modules;
@@ -121,6 +133,7 @@ class REST_Email_Reporting_Controller {
 		$this->eligible_subscribers_query    = $eligible_subscribers_query;
 		$this->email_log_batch_query         = new Email_Log_Batch_Query();
 		$this->email_sender                  = $email_sender;
+		$this->golinks                       = $golinks;
 	}
 
 	/**
@@ -514,7 +527,7 @@ class REST_Email_Reporting_Controller {
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
 			'primary_call_to_action' => array(
 				'label' => __( 'Get your report', 'google-site-kit' ),
-				'url'   => admin_url( 'admin.php?page=googlesitekit-dashboard' ),
+				'url'   => $this->golinks->get_url( 'manage-subscription-email-reporting' ),
 			),
 			'footer'                 => array(
 				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),

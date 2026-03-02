@@ -137,6 +137,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-ga4'
+			);
 			expect( tour.slug ).toBe( 'welcome-with-analytics' );
 			expect( tour.steps ).toEqual( [
 				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
@@ -171,6 +174,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-ga4'
+			);
 			expect( tour.slug ).toBe( 'welcome-with-analytics' );
 			expect( tour.steps ).toEqual( [
 				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
@@ -202,6 +208,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-ga4'
+			);
 			expect( tour.slug ).toBe( 'welcome-with-analytics' );
 			expect( tour.steps ).toEqual( [
 				...ANALYTICS_CONNECTED_TOUR_COMMON_STEPS,
@@ -235,6 +244,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-sc'
+			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
@@ -284,6 +296,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-sc'
+			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
@@ -316,6 +331,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-sc'
+			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
 			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
@@ -348,6 +366,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-sc'
+			);
 			const activateAnalyticsStep = tour.steps.find(
 				( step ) => 'slug' in step && step.slug === 'activate-analytics'
 			);
@@ -368,6 +389,9 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 			} );
 
+			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+				'test-context_dashboard-tour-sc'
+			);
 			const activateAnalyticsStep = tour.steps.find(
 				( step ) => 'slug' in step && step.slug === 'activate-analytics'
 			);

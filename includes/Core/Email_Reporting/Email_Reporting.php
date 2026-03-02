@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -63,6 +64,14 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 * @var Authentication
 	 */
 	protected $authentication;
+
+	/**
+	 * Golinks instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Golinks
+	 */
+	protected $golinks;
 
 	/**
 	 * Email_Reporting_Settings instance.
@@ -181,10 +190,12 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.162.0
 	 * @since 1.168.0 Added authentication dependency.
+	 * @since n.e.x.t Added golinks dependency.
 	 *
 	 * @param Context                       $context       Plugin context.
 	 * @param Modules                       $modules       Modules instance.
 	 * @param Email_Reporting_Data_Requests $data_requests Email reporting data requests.
+	 * @param Golinks                       $golinks       Golinks instance.
 	 * @param Authentication                $authentication Authentication instance.
 	 * @param Options|null                  $options       Optional. Options instance. Default is a new instance.
 	 * @param User_Options|null             $user_options  Optional. User options instance. Default is a new instance.
@@ -193,6 +204,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		Context $context,
 		Modules $modules,
 		Email_Reporting_Data_Requests $data_requests,
+		Golinks $golinks,
 		Authentication $authentication,
 		?Options $options = null,
 		?User_Options $user_options = null
@@ -200,6 +212,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->context        = $context;
 		$this->modules        = $modules;
 		$this->data_requests  = $data_requests;
+		$this->golinks        = $golinks;
 		$this->authentication = $authentication;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
@@ -213,8 +226,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->email_log_batch_query  = new Email_Log_Batch_Query();
 		$email_sender                 = new Email();
 		$section_builder              = new Email_Report_Section_Builder( $this->context );
-		$template_formatter           = new Email_Template_Formatter( $this->context, $section_builder );
-		$template_renderer_factory    = new Email_Template_Renderer_Factory( $this->context );
+		$template_formatter           = new Email_Template_Formatter( $this->context, $section_builder, $this->golinks );
+		$template_renderer_factory    = new Email_Template_Renderer_Factory( $this->context, $this->golinks );
 		$report_sender                = new Email_Report_Sender( $template_renderer_factory, $email_sender );
 		$log_processor                = new Email_Log_Processor( $this->email_log_batch_query, $this->data_requests, $template_formatter, $report_sender );
 
@@ -223,7 +236,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$this->modules,
 			$this->user_settings,
 			$eligible_subscribers_query,
-			$email_sender
+			$email_sender,
+			$this->golinks
 		);
 		$this->email_log         = new Email_Log();
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
@@ -246,6 +260,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 * @since 1.162.0
 	 */
 	public function register() {
+		$this->golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
 		$this->settings->register();
 		$this->rest_controller->register();
 		$this->register_feature_metrics();
