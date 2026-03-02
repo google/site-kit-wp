@@ -13,11 +13,13 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -117,12 +119,16 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->set_user_access_token( $this->primary_admin_id );
 		wp_set_current_user( $this->primary_admin_id );
 
+		$golinks = new Golinks( $this->context );
+		$golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
+
 		$this->controller              = new REST_Email_Reporting_Controller(
 			$this->settings,
 			$this->modules,
 			$this->user_settings,
 			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
-			new Email()
+			new Email(),
+			$golinks
 		);
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}

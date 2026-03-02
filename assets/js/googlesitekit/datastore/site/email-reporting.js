@@ -170,7 +170,7 @@ const baseActions = {
 	/**
 	 * Sends an invitation to an eligible subscriber.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID Eligible user ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -223,7 +223,7 @@ const baseActions = {
 	/**
 	 * Sets the inviting state to true for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -238,7 +238,7 @@ const baseActions = {
 	/**
 	 * Clears the inviting state for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {number} userID User ID.
 	 * @return {Object} Redux-style action.
@@ -416,7 +416,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether an invitation is in progress for a given user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {number} userID User ID.

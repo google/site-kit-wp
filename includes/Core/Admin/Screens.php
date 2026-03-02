@@ -189,20 +189,18 @@ final class Screens {
 				// Move the Site Kit dashboard menu item to be one after the index.php item if it exists.
 				$dashboard_index = array_search( 'index.php', $menu_order, true );
 
-				$sitekit_index = false;
+				if ( false === $dashboard_index ) {
+					return $menu_order;
+				}
+
 				foreach ( $menu_order as $key => $value ) {
 					if ( strpos( $value, self::PREFIX ) === 0 ) {
-						$sitekit_index = $key;
-						$sitekit_value = $value;
+						unset( $menu_order[ $key ] );
+						array_splice( $menu_order, $dashboard_index + 1, 0, $value );
 						break;
 					}
 				}
 
-				if ( false === $dashboard_index || false === $sitekit_index ) {
-					return $menu_order;
-				}
-				unset( $menu_order[ $sitekit_index ] );
-				array_splice( $menu_order, $dashboard_index + 1, 0, $sitekit_value );
 				return $menu_order;
 			}
 		);
@@ -292,8 +290,22 @@ final class Screens {
 		}
 
 		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
+			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
+			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
+
 			wp_safe_redirect(
-				$this->context->admin_url( 'splash' )
+				$this->context->admin_url(
+					'splash',
+					array_filter(
+						array(
+							'notification' => $notification,
+							'panel'        => $panel,
+						),
+						function ( $value ) {
+							return null !== $value && '' !== $value;
+						}
+					)
+				)
 			);
 			exit;
 		}
@@ -316,8 +328,22 @@ final class Screens {
 		}
 
 		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
+			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
+
 			wp_safe_redirect(
-				$this->context->admin_url()
+				$this->context->admin_url(
+					'dashboard',
+					array_filter(
+						array(
+							'notification' => $notification,
+							'panel'        => $panel,
+						),
+						function ( $value ) {
+							return null !== $value && '' !== $value;
+						}
+					)
+				)
 			);
 			exit;
 		}
@@ -506,9 +532,15 @@ final class Screens {
 							wp_safe_redirect(
 								$context->admin_url(
 									'dashboard',
-									array(
-										// Pass through the notification parameter, or removes it if none.
-										'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+									array_filter(
+										array(
+											// Pass through supported params, or remove if none.
+											'notification' => $context->input()->filter( INPUT_GET, 'notification' ),
+											'panel'        => $context->input()->filter( INPUT_GET, 'panel' ),
+										),
+										function ( $value ) {
+											return null !== $value && '' !== $value;
+										}
 									)
 								)
 							);

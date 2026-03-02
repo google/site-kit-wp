@@ -49,6 +49,7 @@ export function AdminScreenTooltip() {
 		title,
 		content,
 		dismissLabel,
+		gaTrackingEventLabel,
 	} = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
@@ -57,7 +58,11 @@ export function AdminScreenTooltip() {
 	);
 
 	function handleViewTooltip() {
-		trackEvent( `${ viewContext }_${ tooltipSlug }`, 'tooltip_view' );
+		trackEvent(
+			`${ viewContext }_${ tooltipSlug }`,
+			'tooltip_view',
+			gaTrackingEventLabel
+		);
 	}
 
 	const handleDismissTooltip = useCallback( () => {
@@ -65,12 +70,13 @@ export function AdminScreenTooltip() {
 		if ( tooltipSlug ) {
 			trackEvent(
 				`${ viewContext }_${ tooltipSlug }`,
-				'tooltip_dismiss'
+				'tooltip_dismiss',
+				gaTrackingEventLabel
 			);
 		}
 
 		setValue( 'admin-screen-tooltip', undefined );
-	}, [ setValue, tooltipSlug, viewContext ] );
+	}, [ setValue, tooltipSlug, viewContext, gaTrackingEventLabel ] );
 
 	if ( ! isTooltipVisible ) {
 		return null;

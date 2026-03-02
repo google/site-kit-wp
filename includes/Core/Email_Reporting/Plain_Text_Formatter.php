@@ -45,7 +45,7 @@ class Plain_Text_Formatter {
 	 *
 	 * Simple emails share a common structure with customizable content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.173.0
 	 *
 	 * @param array $data The simple email data containing site, title, learn_more_url,
 	 *                    primary_call_to_action, body, and footer.
