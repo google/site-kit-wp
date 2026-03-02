@@ -142,41 +142,33 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'workflow_dispatch'
     needs: build-zips
-    steps:
-      - uses: actions/download-artifact@v7
-        with:
-          name: zip-files
-          path: ${{ github.ref }}
-      - uses: google-github-actions/auth@v3
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - name: Upload PR files
-        uses: google-github-actions/upload-cloud-storage@v2
-        with:
-          path: ${{ github.ref }}
-          destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
-          parent: false
-          process_gcloudignore: false
-
-  add-comment-to-pr:
-    name: Add comment to PR
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: upload-to-cloud-storage
     permissions:
       contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
 
+      - uses: actions/download-artifact@v7
+        with:
+          name: zip-files
+          path: ${{ github.ref }}
+
+      - uses: ./.github/actions/upload-to-gcs
+        id: upload
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: ${{ github.ref }}
+          destination: ${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
+
       - uses: ./.github/actions/update-pr-comment
+        if: github.event_name == 'pull_request'
         with:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: zips
           section-content: |
             📦 **Build files for ${{ github.event.pull_request.head.sha }} are ready:**
-            - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
-            - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})
+            - Download [development build](${{ steps.upload.outputs.public-url }}/google-site-kit-dev.zip?${{ github.sha }})
+            - Download [production build](${{ steps.upload.outputs.public-url }}/google-site-kit.zip?${{ github.sha }})
 
   remove-zips:
     name: Remove Zips

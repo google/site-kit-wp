@@ -75,7 +75,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GCS_BUCKET: site-kit-playwright
+  GCS_BUCKET: site-kit-github-artifacts
+  GCS_ROOT_PATH: playwright
   FORBID_ONLY: true
   RETRIES: 2
   WORKERS: 4
@@ -211,7 +212,7 @@ jobs:
       - name: Start environment
         run: npm run playwright:env:start
 
-      - name: Run the tests
+      - name: Run tests
         run: npm run test:playwright
 
       - name: Upload artifacts
@@ -232,31 +233,12 @@ jobs:
             echo "dir=${GITHUB_REF##*/}/${suffix}" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: google-github-actions/auth@v3
+      - uses: ./.github/actions/upload-to-gcs
         if: always()
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      - name: Upload report files
-        uses: google-github-actions/upload-cloud-storage@v2
-        if: always()
-        with:
-          path: tests/playwright/artifacts/playwright-html
-          destination: ${{ env.GCS_BUCKET }}/${{ steps.report-target.outputs.dir }}
-          parent: false
-          process_gcloudignore: false
-
-      - name: Upload no-cache report files
-        uses: google-github-actions/upload-cloud-storage@v2
-        if: always()
-        with:
-          path: tests/playwright/artifacts/playwright-html
-          glob: "!(*.js*)"
-          destination: ${{ env.GCS_BUCKET }}/${{ steps.report-target.outputs.dir }}
-          parent: false
-          process_gcloudignore: false
-          headers: |-
-            cache-control: no-store
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: tests/playwright/artifacts
+          destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
 
   add-comment-to-pr:
     name: Add comment to PR
@@ -275,6 +257,6 @@ jobs:
           section-id: playwright
           section-content: |
             🎭 **Playwright report is ready:**
-            - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
-            - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
-            - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)
+            - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
+            - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
+            - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)
