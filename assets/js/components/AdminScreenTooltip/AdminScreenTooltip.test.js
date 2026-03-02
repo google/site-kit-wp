@@ -112,7 +112,8 @@ describe( 'AdminMenuTooltip', () => {
 		// The tracking event should fire when the tooltip is viewed.
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'tooltip_view'
+			'tooltip_view',
+			undefined
 		);
 	} );
 
@@ -170,7 +171,8 @@ describe( 'AdminMenuTooltip', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'tooltip_dismiss'
+			'tooltip_dismiss',
+			undefined
 		);
 	} );
 
@@ -229,7 +231,73 @@ describe( 'AdminMenuTooltip', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`test-context_${ tooltipSlug }`,
-			'tooltip_dismiss'
+			'tooltip_dismiss',
+			undefined
+		);
+	} );
+
+	it( 'should use the provided tracking label when tracking GA events', async () => {
+		const tooltipSlug = 'test-tooltip-slug';
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug,
+			gaTrackingEventLabel: 'test-label',
+		} );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			const tooltip = document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			expect( tooltip ).toBeInTheDocument();
+		} );
+
+		let closeButton;
+		await waitFor( () => {
+			const tooltip = document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			expect( tooltip ).toBeInTheDocument();
+
+			closeButton = tooltip.querySelector(
+				'.googlesitekit-tooltip-close'
+			);
+			expect( closeButton ).toBeInTheDocument();
+		} );
+
+		fireEvent.click( closeButton );
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			1,
+			`test-context_${ tooltipSlug }`,
+			'tooltip_view',
+			'test-label'
+		);
+
+		expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+			2,
+			`test-context_${ tooltipSlug }`,
+			'tooltip_dismiss',
+			'test-label'
 		);
 	} );
 } );
