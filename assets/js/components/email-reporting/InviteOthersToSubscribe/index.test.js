@@ -20,14 +20,17 @@
  * Internal dependencies
  */
 import {
+	act,
 	createTestRegistry,
-	freezeFetch,
+	fireEvent,
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
+	waitForDefaultTimeouts,
 } from '../../../../../tests/js/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import InviteOthersToSubscribe from '.';
 
 describe( 'InviteOthersToSubscribe', () => {
@@ -37,50 +40,283 @@ describe( 'InviteOthersToSubscribe', () => {
 		'^/google-site-kit/v1/core/site/data/email-reporting-eligible-subscribers'
 	);
 
-	const permissionsEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/user/data/permissions'
-	);
-
-	const mockEligibleSubscribers = [
-		{
-			id: 2,
-			displayName: 'MainAdminName',
-			name: 'MainAdminName',
-			email: 'someone@anybusiness.com',
-			role: 'administrator',
-			subscribed: false,
-		},
-		{
-			id: 3,
-			displayName: 'AdminName2',
-			name: 'AdminName2',
-			email: 'anotheradminname@anybusiness.com',
-			role: 'administrator',
-			subscribed: false,
-		},
-		{
-			id: 4,
-			displayName: 'AuthorName',
-			name: 'AuthorName',
-			email: 'admin2business@gmail.com',
-			role: 'author',
-			subscribed: false,
-		},
-	];
+	function createSubscribersResponse( users, { total, totalPages } = {} ) {
+		return {
+			users,
+			total: total ?? users.length,
+			totalPages: totalPages ?? 1,
+		};
+	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-
-		freezeFetch( eligibleSubscribersEndpoint );
-		freezeFetch( permissionsEndpoint );
-
 		provideUserInfo( registry, { id: 1 } );
 		provideUserCapabilities( registry );
-
-		registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [] );
 		registry
-			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	} );
+
+	it( 'initial render fetches eligible subscribers with empty search', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse( [
+				{
+					id: 2,
+					displayName: 'Eligible User',
+					email: 'eligible@example.com',
+					role: 'editor',
+					subscribed: false,
+					invited: false,
+				},
+			] ),
+			status: 200,
+		} );
+
+		const { findByText } = render( <InviteOthersToSubscribe />, {
+			registry,
+		} );
+
+		await findByText( 'Eligible User' );
+
+		expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
+			queryParams: {
+				page: 1,
+				search: '',
+			},
+		} );
+
+		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'shows empty state when no eligible users exist', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse( [], { total: 0, totalPages: 0 } ),
+			status: 200,
+		} );
+
+		const { findByText } = render( <InviteOthersToSubscribe />, {
+			registry,
+		} );
+
+		await findByText( 'No users are eligible to receive invitations.' );
+		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'hides search input when 6 or fewer eligible users', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse(
+				[
+					{
+						id: 2,
+						displayName: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+						invited: false,
+					},
+				],
+				{ total: 6, totalPages: 1 }
+			),
+			status: 200,
+		} );
+
+		const { findByText, queryByLabelText } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		await findByText( 'Eligible User' );
+		expect(
+			queryByLabelText( /Search user name, role, or email/i )
+		).not.toBeInTheDocument();
+		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'shows search input when more than 6 eligible users', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse(
+				[
+					{
+						id: 2,
+						displayName: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+						invited: false,
+					},
+				],
+				{ total: 7, totalPages: 1 }
+			),
+			status: 200,
+		} );
+
+		const { findByText, findByLabelText } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		await findByText( 'Eligible User' );
+		expect(
+			await findByLabelText( /Search user name, role, or email/i )
+		).toBeInTheDocument();
+		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'displays the info tooltip with eligibility explanation', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse( [
+				{
+					id: 2,
+					displayName: 'Eligible User',
+					email: 'eligible@example.com',
+					role: 'editor',
+					subscribed: false,
+					invited: false,
+				},
+			] ),
+			status: 200,
+		} );
+
+		const { findByText, getByRole } = render( <InviteOthersToSubscribe />, {
+			registry,
+		} );
+
+		await findByText( 'Eligible User' );
+
+		fireEvent.mouseOver( getByRole( 'tooltip' ) );
+
+		expect(
+			await findByText(
+				/You can only invite users who have access to the dashboard/i
+			)
+		).toBeInTheDocument();
+		await act( waitForDefaultTimeouts );
+	} );
+
+	it( 'clearing search resets to unfiltered results', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse(
+				[
+					{
+						id: 2,
+						displayName: 'Unfiltered User',
+						email: 'first@example.com',
+						role: 'editor',
+						subscribed: false,
+						invited: false,
+					},
+				],
+				{ total: 7 }
+			),
+			status: 200,
+		} );
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse( [
+				{
+					id: 3,
+					displayName: 'Filtered User',
+					email: 'filtered@example.com',
+					role: 'editor',
+					subscribed: false,
+					invited: false,
+				},
+			] ),
+			status: 200,
+		} );
+
+		const { findByLabelText, findByText, getByLabelText } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		await findByText( 'Unfiltered User' );
+		const searchInput = await findByLabelText(
+			/Search user name, role, or email/i
+		);
+
+		fireEvent.change( searchInput, {
+			target: { value: 'filtered' },
+		} );
+
+		await findByText( 'Filtered User' );
+
+		fireEvent.click( getByLabelText( /Clear search/i ) );
+
+		await findByText( 'Unfiltered User' );
+	} );
+
+	it( 'resets search state when panel opens', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse(
+				[
+					{
+						id: 2,
+						displayName: 'Unfiltered User',
+						email: 'first@example.com',
+						role: 'editor',
+						subscribed: false,
+						invited: false,
+					},
+				],
+				{ total: 7 }
+			),
+			status: 200,
+		} );
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse( [
+				{
+					id: 3,
+					displayName: 'Filtered User',
+					email: 'filtered@example.com',
+					role: 'editor',
+					subscribed: false,
+					invited: false,
+				},
+			] ),
+			status: 200,
+		} );
+
+		const { findByLabelText, findByText } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		await findByText( 'Unfiltered User' );
+		const searchInput = await findByLabelText(
+			/Search user name, role, or email/i
+		);
+
+		fireEvent.change( searchInput, {
+			target: { value: 'filtered' },
+		} );
+
+		await findByText( 'Filtered User' );
+
+		await act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+			return Promise.resolve();
+		} );
+
+		await act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+			return Promise.resolve();
+		} );
+
+		expect( searchInput ).toHaveValue( '' );
+
+		await act( waitForDefaultTimeouts );
 	} );
 
 	it( 'renders null when user does not have MANAGE_OPTIONS capability', () => {
@@ -93,163 +329,5 @@ describe( 'InviteOthersToSubscribe', () => {
 		} );
 
 		expect( container ).toBeEmptyDOMElement();
-	} );
-
-	it( 'shows empty state when no eligible users exist', () => {
-		const { getByText } = render( <InviteOthersToSubscribe />, {
-			registry,
-		} );
-
-		expect(
-			getByText( 'No users are eligible to receive invitations.' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'shows user list when eligible users exist', async () => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
-		registry
-			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
-
-		const { getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		// Wait for async state updates before assertions.
-		await waitForRegistry();
-
-		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
-		expect( getByText( 'AdminName2' ) ).toBeInTheDocument();
-		expect( getByText( 'AuthorName' ) ).toBeInTheDocument();
-	} );
-
-	it( 'hides search input when 6 or fewer eligible users', async () => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
-		registry
-			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
-
-		const { queryByLabelText, getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		// Wait for async state updates before assertions.
-		await waitForRegistry();
-
-		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
-		expect(
-			queryByLabelText( 'Search user name, role, or email' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'shows search input when more than 6 eligible users', async () => {
-		const manyUsers = [
-			...mockEligibleSubscribers,
-			{
-				id: 5,
-				displayName: 'User5',
-				name: 'User5',
-				email: 'user5@example.com',
-				role: 'editor',
-				subscribed: false,
-			},
-			{
-				id: 6,
-				displayName: 'User6',
-				name: 'User6',
-				email: 'user6@example.com',
-				role: 'editor',
-				subscribed: false,
-			},
-			{
-				id: 7,
-				displayName: 'User7',
-				name: 'User7',
-				email: 'user7@example.com',
-				role: 'author',
-				subscribed: false,
-			},
-			{
-				id: 8,
-				displayName: 'User8',
-				name: 'User8',
-				email: 'user8@example.com',
-				role: 'contributor',
-				subscribed: false,
-			},
-		];
-
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( manyUsers );
-		registry
-			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
-
-		const { getByLabelText, waitForRegistry } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		// Wait for async state updates before assertions.
-		await waitForRegistry();
-
-		expect(
-			getByLabelText( 'Search user name, role, or email' )
-		).toBeInTheDocument();
-	} );
-
-	it( 'filters out already-subscribed users from the list', async () => {
-		const usersWithSubscribed = [
-			...mockEligibleSubscribers,
-			{
-				id: 5,
-				displayName: 'SubscribedUser',
-				name: 'SubscribedUser',
-				email: 'subscribed@example.com',
-				role: 'editor',
-				subscribed: true,
-			},
-		];
-
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( usersWithSubscribed );
-		registry
-			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
-
-		const { queryByText, getByText, waitForRegistry } = render(
-			<InviteOthersToSubscribe />,
-			{
-				registry,
-			}
-		);
-
-		// Wait for async state updates before assertions.
-		await waitForRegistry();
-
-		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
-		expect( queryByText( 'SubscribedUser' ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'displays the info tooltip with eligibility explanation', () => {
-		const { getByRole } = render( <InviteOthersToSubscribe />, {
-			registry,
-		} );
-
-		expect( getByRole( 'tooltip' ) ).toBeInTheDocument();
 	} );
 } );
