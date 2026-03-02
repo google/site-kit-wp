@@ -267,30 +267,14 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - name: Find existing comment
-        id: find-comment
-        uses: peter-evans/find-comment@v3
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/update-pr-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Playwright report is ready
-
-      - name: Get comment body
-        id: get-comment-body
-        run: |
-          body="Playwright report is ready:
-          - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
-          - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
-          - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)"
-          delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
-          echo "$body" >> "$GITHUB_OUTPUT"
-          echo "${delimiter}" >> "$GITHUB_OUTPUT"
-
-      - name: Create or update comment on PR
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          edit-mode: replace
-          body: ${{ steps.get-comment-body.outputs.body }}
+          section-id: playwright
+          section-content: |
+            🎭 Playwright report is ready:
+            - 🟢 [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-latest/index.html)
+            - 🌙 [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-nightly/index.html)
+            - 📌 [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/index.html)

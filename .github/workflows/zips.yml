@@ -164,39 +164,19 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: upload-to-cloud-storage
     permissions:
+      contents: read
       pull-requests: write
     steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v3
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/update-pr-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Get comment body
-        id: get-comment-body
-        # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
-        run: |
-          body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
-          delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
-          echo "$body" >> "$GITHUB_OUTPUT"
-          echo "${delimiter}" >> "$GITHUB_OUTPUT"
-      - name: Create comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
-      - name: Update comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: ${{ steps.get-comment-body.outputs.body }}
+          section-id: zips
+          section-content: |
+            📦 Build files for ${{ github.event.pull_request.head.sha }} are ready:
+            - 🛠️ Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
+            - 🚀 Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})
 
   remove-zips:
     name: Remove Zips
@@ -217,22 +197,16 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: remove-zips
     permissions:
+      contents: read
       pull-requests: write
     steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v3
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/update-pr-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Update comment on PR with links to plugin builds
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
+          section-id: zips
+          section-content: 🗑️ Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
 
   dryrun-publish-to-wporg:
     name: '[DRY RUN] Publish to WordPress.org'
