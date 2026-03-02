@@ -40,11 +40,14 @@ describe( 'InviteSearchInput', () => {
 			<InviteSearchInput value="" onChange={ onChange } />,
 			{ registry }
 		);
+		const searchInput = getByLabelText(
+			/Search user name, role, or email/i
+		);
 
-		fireEvent.change( getByLabelText( 'Search user name, role or email' ), {
+		fireEvent.change( searchInput, {
 			target: { value: 'a' },
 		} );
-		fireEvent.change( getByLabelText( 'Search user name, role or email' ), {
+		fireEvent.change( searchInput, {
 			target: { value: 'ab' },
 		} );
 
