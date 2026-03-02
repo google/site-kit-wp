@@ -80,6 +80,21 @@ describe( 'InviteUserList', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'shows no search matches empty state when search term is present', () => {
+		const { getByText } = render(
+			<InviteUserList
+				users={ [] }
+				searchTerm="john"
+				onInviteResult={ mockOnInviteResult }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByText( 'No users match your search.' )
+		).toBeInTheDocument();
+	} );
+
 	it( 'shows loading state when isLoading is true', () => {
 		const { container } = render(
 			<InviteUserList
