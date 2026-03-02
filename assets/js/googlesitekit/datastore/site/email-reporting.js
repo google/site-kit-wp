@@ -126,7 +126,10 @@ const fetchInviteUserStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, response, { userID } ) => {
 		const subscribers = state.emailReporting.eligibleSubscribers;
 		if ( Array.isArray( subscribers ) ) {
-			const user = subscribers.find( ( u ) => u.id === userID );
+			const user = subscribers.find(
+				( potentialNewlyInvitedUser ) =>
+					potentialNewlyInvitedUser.id === userID
+			);
 			if ( user ) {
 				user.invited = true;
 			}

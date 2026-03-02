@@ -41,10 +41,10 @@ function EmptyMessage( { text } ) {
 
 export default function InviteUserList( {
 	users,
-	searchTerm,
-	inviteResults,
+	searchTerm = '',
+	inviteResults = {},
 	onInviteResult,
-	isLoading,
+	isLoading = false,
 } ) {
 	const filteredUsers = useMemo( () => {
 		if ( ! searchTerm ) {
@@ -123,10 +123,4 @@ InviteUserList.propTypes = {
 	),
 	onInviteResult: PropTypes.func.isRequired,
 	isLoading: PropTypes.bool,
-};
-
-InviteUserList.defaultProps = {
-	searchTerm: '',
-	inviteResults: {},
-	isLoading: false,
 };

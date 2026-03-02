@@ -148,7 +148,7 @@ describe( 'InviteOthersToSubscribe', () => {
 
 		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
 		expect(
-			queryByLabelText( 'Search user name, role or email' )
+			queryByLabelText( 'Search user name, role, or email' )
 		).not.toBeInTheDocument();
 	} );
 
@@ -207,7 +207,7 @@ describe( 'InviteOthersToSubscribe', () => {
 		await waitForRegistry();
 
 		expect(
-			getByLabelText( 'Search user name, role or email' )
+			getByLabelText( 'Search user name, role, or email' )
 		).toBeInTheDocument();
 	} );
 

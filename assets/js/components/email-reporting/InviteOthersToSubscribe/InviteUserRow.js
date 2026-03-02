@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { createInterpolateElement, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,7 +39,7 @@ import TickIcon from '@/svg/icons/tick.svg';
 
 export default function InviteUserRow( {
 	user,
-	inviteResult,
+	inviteResult = null,
 	onInviteResult,
 } ) {
 	const { id, name, email, role } = user;
@@ -73,10 +73,23 @@ export default function InviteUserRow( {
 		if ( inviteResult?.status === 'error' ) {
 			return (
 				<span className="googlesitekit-invite-user-row__error">
-					{ __( 'Failed to send invite.', 'google-site-kit' ) }{ ' ' }
-					<Link onClick={ handleInvite }>
-						{ __( 'Retry', 'google-site-kit' ) }
-					</Link>
+					{ createInterpolateElement(
+						__(
+							'Failed to send invite. <RetryLink>Retry</RetryLink>',
+							'google-site-kit'
+						),
+						{
+							RetryLink: (
+								<Link
+									aria-label={ __(
+										'Retry sending email subscription invite',
+										'google-site-kit'
+									) }
+									onClick={ handleInvite }
+								/>
+							),
+						}
+					) }
 				</span>
 			);
 		}
@@ -128,8 +141,4 @@ InviteUserRow.propTypes = {
 		message: PropTypes.string,
 	} ),
 	onInviteResult: PropTypes.func.isRequired,
-};
-
-InviteUserRow.defaultProps = {
-	inviteResult: null,
 };

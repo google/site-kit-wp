@@ -147,7 +147,7 @@
 		display: flex;
 		font-size: $fs-body-md;
 		gap: 4px;
-		padding: 8px 16px;
+		padding: 8px $grid-gap-phone;
 
 		svg {
 			stroke: currentColor;

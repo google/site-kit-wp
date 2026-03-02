@@ -91,8 +91,8 @@ export default function InviteOthersToSubscribe() {
 	}, [ isSelectionPanelOpen, hasManageOptionsCapability ] );
 
 	const handleInviteResult = useCallback( ( userID, result ) => {
-		setInviteResults( ( prev ) => ( {
-			...prev,
+		setInviteResults( ( previousResults ) => ( {
+			...previousResults,
 			[ userID ]: result,
 		} ) );
 	}, [] );
@@ -127,11 +127,12 @@ export default function InviteOthersToSubscribe() {
 				<InfoTooltip title={ tooltipContent } />
 			</div>
 
-			<InviteSearchInput
-				show={ showSearch }
-				value={ searchTerm }
-				onChange={ setSearchTerm }
-			/>
+			{ showSearch && (
+				<InviteSearchInput
+					value={ searchTerm }
+					onChange={ setSearchTerm }
+				/>
+			) }
 
 			<InviteUserList
 				users={ invitableUsers }

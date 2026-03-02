@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
 import { useCallback, useState, useEffect } from '@wordpress/element';
 
@@ -31,9 +32,11 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDebounce } from '@/js/hooks/useDebounce';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import CloseIcon from '@/svg/icons/close.svg';
 
-export default function InviteSearchInput( { show = true, value, onChange } ) {
+export default function InviteSearchInput( { value = '', onChange } ) {
+	const instanceID = useInstanceId( InviteSearchInput, 'InviteSearchInput' );
 	const [ inputValue, setInputValue ] = useState( value );
 	const debouncedOnChange = useDebounce( onChange, 300 );
 
@@ -56,21 +59,22 @@ export default function InviteSearchInput( { show = true, value, onChange } ) {
 		onChange( '' );
 	}, [ debouncedOnChange, onChange ] );
 
-	if ( ! show ) {
-		return null;
-	}
-
 	return (
 		<div className="googlesitekit-invite-search-input">
+			<VisuallyHidden>
+				<label htmlFor={ instanceID }>
+					{ __(
+						'Search user name, role, or email',
+						'google-site-kit'
+					) }
+				</label>
+			</VisuallyHidden>
 			<input
+				id={ instanceID }
 				type="text"
 				className="googlesitekit-invite-search-input__input"
 				placeholder={ __(
-					'Search user name, role or email',
-					'google-site-kit'
-				) }
-				aria-label={ __(
-					'Search user name, role or email',
+					'Search user name, role, or email',
 					'google-site-kit'
 				) }
 				value={ inputValue }
@@ -98,11 +102,6 @@ export default function InviteSearchInput( { show = true, value, onChange } ) {
 }
 
 InviteSearchInput.propTypes = {
-	show: PropTypes.bool,
 	value: PropTypes.string,
 	onChange: PropTypes.func.isRequired,
-};
-
-InviteSearchInput.defaultProps = {
-	value: '',
 };
