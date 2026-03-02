@@ -25,7 +25,6 @@ use WP_User_Query;
  */
 class Eligible_Subscribers_Query {
 
-	const QUERY_LIMIT  = 1000;
 	const PER_PAGE     = 20;
 	const MAX_PER_PAGE = 100;
 
@@ -220,7 +219,6 @@ class Eligible_Subscribers_Query {
 		$args     = array(
 			'role'        => 'administrator',
 			'fields'      => 'ID',
-			'number'      => self::QUERY_LIMIT,
 			'count_total' => false,
 			'exclude'     => $excluded_user_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excluding the requesting user from eligibility results.
 			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Limit to Site Kit authenticated administrators.
@@ -261,7 +259,6 @@ class Eligible_Subscribers_Query {
 		$args = array(
 			'role__in'    => array_values( array_unique( $shared_roles ) ),
 			'fields'      => 'ID',
-			'number'      => self::QUERY_LIMIT,
 			'count_total' => false,
 			'exclude'     => $excluded_user_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excluding the requesting user from eligibility results.
 		);
