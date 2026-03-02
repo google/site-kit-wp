@@ -33,6 +33,7 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { stringifyObject } from '@/js/util';
@@ -166,16 +167,25 @@ const fetchInviteUserStore = createFetchStore( {
 	// state on panel re-open. The transient handles persistent
 	// state for 24 hours on app refresh.
 	reducerCallback: createReducer( ( state, response, { userID } ) => {
-		const subscribers = state.emailReporting.eligibleSubscribers;
-		if ( Array.isArray( subscribers ) ) {
-			const user = subscribers.find(
-				( potentialNewlyInvitedUser ) =>
-					potentialNewlyInvitedUser.id === userID
-			);
-			if ( user ) {
-				user.invited = true;
+		Object.values( state.emailReporting.eligibleSubscribers ).forEach(
+			( cachedResult ) => {
+				if ( ! isPlainObject( cachedResult ) ) {
+					return;
+				}
+
+				const users = sanitizeEligibleSubscribersUsers(
+					cachedResult.users
+				);
+				const user = users.find(
+					( potentialNewlyInvitedUser ) =>
+						potentialNewlyInvitedUser.id === userID
+				);
+
+				if ( user ) {
+					user.invited = true;
+				}
 			}
-		}
+		);
 	} ),
 	argsToParams: ( userID ) => ( { userID } ),
 	validateParams: ( { userID } = {} ) => {
@@ -460,7 +470,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Eligible subscribers data; `undefined` if not loaded.
 	 */
 	getEligibleSubscribers: createRegistrySelector(
-		() =>
+		( select ) =>
 			( state, eligibleSubscribersArgs = {} ) => {
 				const normalizedArgs = normalizeEligibleSubscribersArgs(
 					eligibleSubscribersArgs
@@ -474,17 +484,24 @@ const baseSelectors = {
 					return undefined;
 				}
 
+				const currentUserID = select( CORE_USER ).getID();
+
 				return {
 					users: sanitizeEligibleSubscribersUsers(
 						eligibleSubscribers.users
-					).map( ( user ) => ( {
-						id: user.id,
-						name: user.displayName || user.name,
-						email: user.email,
-						role: user.role,
-						subscribed: user.subscribed,
-						invited: user.invited,
-					} ) ),
+					)
+						.filter(
+							( user ) =>
+								Number( user.id ) !== Number( currentUserID )
+						)
+						.map( ( user ) => ( {
+							id: user.id,
+							name: user.displayName || user.name,
+							email: user.email,
+							role: user.role,
+							subscribed: user.subscribed,
+							invited: user.invited,
+						} ) ),
 					total: sanitizeEligibleSubscribersTotal(
 						eligibleSubscribers.total
 					),
