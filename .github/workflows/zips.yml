@@ -166,7 +166,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: zips
           section-content: |
-            📦 **Build files for ${{ github.event.pull_request.head.sha }}:**
+            📦 **Build files:**
             - Download [development build](${{ steps.upload.outputs.public-url }}/google-site-kit-dev.zip?${{ github.sha }})
             - Download [production build](${{ steps.upload.outputs.public-url }}/google-site-kit.zip?${{ github.sha }})
 
@@ -190,7 +190,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: zips
           section-content: |
-            📦 **Build files for ${{ github.event.pull_request.head.sha }}:**
+            📦 **Build files:**
             - Build files have been deleted.
 
   dryrun-publish-to-wporg:

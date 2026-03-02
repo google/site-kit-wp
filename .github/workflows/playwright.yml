@@ -215,6 +215,8 @@ jobs:
 
       - name: Run tests
         run: npm run test:playwright
+        env:
+          PLAYWRIGHT_HTML_TITLE: "WordPress ${{ matrix.wp_version }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
