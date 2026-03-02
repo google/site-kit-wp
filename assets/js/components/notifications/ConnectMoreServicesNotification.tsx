@@ -65,10 +65,6 @@ const ConnectMoreServicesNotification: FC<
 		select( CORE_LOCATION ).isNavigatingTo( connectMoreServicesURL )
 	);
 
-	function onConnectServices() {
-		navigateTo( connectMoreServicesURL );
-	}
-
 	return (
 		<Notification>
 			{ /* @ts-expect-error - The `BannerNotification` component is not typed yet. */ }
@@ -84,7 +80,7 @@ const ConnectMoreServicesNotification: FC<
 				) }
 				ctaButton={ {
 					label: __( 'Connect more services', 'google-site-kit' ),
-					onClick: onConnectServices,
+					onClick: () => navigateTo( connectMoreServicesURL ),
 					disabled: isNavigatingToConnectMoreServices,
 					inProgress: isNavigatingToConnectMoreServices,
 					dismissOnClick: true,

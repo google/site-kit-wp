@@ -31,6 +31,7 @@ import {
 	provideUserAuthentication,
 	fireEvent,
 	provideSiteInfo,
+	muteFetch,
 } from '../../../../tests/js/test-utils';
 import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -63,9 +64,12 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
 		provideUserAuthentication( registry );
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification(
@@ -97,16 +101,9 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 			expect( container ).toMatchSnapshot();
 
-			// Accept both straight and curly apostrophe for robustness.
 			expect(
 				getByText(
-					( content ) =>
-						content.includes(
-							"Boost your site's performance by enhancing your dashboard"
-						) ||
-						content.includes(
-							'Boost your site’s performance by enhancing your dashboard'
-						)
+					'Boost your site’s performance by enhancing your dashboard'
 				)
 			).toBeInTheDocument();
 
@@ -153,7 +150,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 			} );
 		} );
 
-		it( 'should redirect to the "connect more services" URL dismiss the notification dismissed when the "Connect more services" button is clicked.', async () => {
+		it( 'should redirect to the "connect more services" URL when the "Connect more services" button is clicked and dismiss the notification', () => {
 			provideGatheringDataState( registry, {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
@@ -172,7 +169,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 				connectMoreServicesURL: 'https://example.com/connect',
 			} );
 
-			const { getByRole, waitForRegistry } = render(
+			const { getByRole } = render(
 				<ConnectMoreServicesNotificationComponent />,
 				{ registry }
 			);
@@ -180,8 +177,6 @@ describe( 'ConnectMoreServicesNotification', () => {
 			fireEvent.click(
 				getByRole( 'button', { name: 'Connect more services' } )
 			);
-
-			await waitForRegistry();
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connect-more-services'
@@ -191,18 +186,15 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		beforeEach( () => {
-			fetchMock.post(
+			muteFetch(
 				new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/data-available'
-				),
-				{ body: { dataAvailable: false } }
+				)
 			);
-
-			fetchMock.post(
+			muteFetch(
 				new RegExp(
 					'^/google-site-kit/v1/modules/search-console/data/data-available'
-				),
-				{ body: { dataAvailable: false } }
+				)
 			);
 		} );
 
@@ -217,7 +209,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'Is not active when Search console module is not in gathering data state and the Analytics module is in the gathering data state and user is authenticated', async () => {
+		it( 'is not active when the Search console module is not in the gathering data state and the Analytics module is in the gathering data state and the user is authenticated', async () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveIsGatheringData( true );
@@ -268,7 +260,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'Is not active when Search console module is in gathering data state and user is not authenticated', async () => {
+		it( 'is not active when the Search Console module is in the gathering data state and the Analytics module is not in the gathering data state and the user is not authenticated', async () => {
 			provideGatheringDataState( registry, {
 				[ MODULE_SLUG_ANALYTICS_4 ]: false,
 				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
