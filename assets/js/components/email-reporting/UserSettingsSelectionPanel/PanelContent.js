@@ -34,7 +34,6 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import UserSettingsLoadingPanel from './UserSettingsLoadingPanel';
 import Header from './Header';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import P from '@/js/components/Typography/P';
@@ -44,6 +43,7 @@ import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelect
 import Notices from './Notices';
 import { TYPES } from '@/js/components/Notice/constants';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
+import PreviewBlock from '@/js/components/PreviewBlock';
 
 export default function PanelContent( {
 	notice,
@@ -80,47 +80,49 @@ export default function PanelContent( {
 		modules,
 	].some( ( value ) => value === undefined );
 
-	if ( isLoading ) {
-		return <UserSettingsLoadingPanel />;
-	}
-
 	return (
 		<Fragment>
-			<Header closePanel={ closePanel } />
+			<Header closePanel={ closePanel } isLoading={ isLoading } />
 			<div className="googlesitekit-user-settings-selection__panel-content">
-				<Notices />
+				<Notices isLoading={ isLoading } />
 
-				{ isEmailReportingEnabled && (
-					<Fragment>
-						<div className="googlesitekit-user-settings-selection__panel-description">
-							<P type="body" size="small">
-								{ __(
-									'You’ll receive the report to your WordPress user email',
-									'google-site-kit'
-								) }
-								{ email && (
-									<Typography type="body" size="medium">
-										{ email }
-									</Typography>
-								) }
-							</P>
-						</div>
+				<div className="googlesitekit-user-settings-selection__panel-description">
+					{ isLoading && (
+						<Fragment>
+							<PreviewBlock width="100%" height="16px" />
+							<PreviewBlock width="60%" height="16px" />
+						</Fragment>
+					) }
+					{ ! isLoading && isEmailReportingEnabled && (
+						<P type="body" size="small">
+							{ __(
+								'You’ll receive the report to your WordPress user email',
+								'google-site-kit'
+							) }
+							{ email && (
+								<Typography type="body" size="medium">
+									{ email }
+								</Typography>
+							) }
+						</P>
+					) }
+				</div>
 
-						<FrequencySelector
-							isUserSubscribed={ isUserSubscribed }
-						/>
+				<FrequencySelector
+					isUserSubscribed={ isUserSubscribed }
+					isLoading={ isLoading }
+				/>
 
-						<SubscribeActions
-							onSubscribe={ onSubscribe }
-							onUnsubscribe={ onUnsubscribe }
-							updateSettings={ onSaveCallback }
-							isSubscribed={ isUserSubscribed }
-							isLoading={ isSavingSettings }
-						/>
+				<SubscribeActions
+					onSubscribe={ onSubscribe }
+					onUnsubscribe={ onUnsubscribe }
+					updateSettings={ onSaveCallback }
+					isSubscribed={ isUserSubscribed }
+					isSavingSettings={ isSavingSettings }
+					isLoading={ isLoading }
+				/>
 
-						<InviteOthersToSubscribe />
-					</Fragment>
-				) }
+				{ isEmailReportingEnabled && <InviteOthersToSubscribe /> }
 			</div>
 
 			{ isEmailReportingEnabled && (
