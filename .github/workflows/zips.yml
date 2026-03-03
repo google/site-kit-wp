@@ -121,21 +121,21 @@ jobs:
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p "${GITHUB_REF}"
+          mkdir -p "${{ github.ref }}"
           sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv ./*.zip "${GITHUB_REF}/google-site-kit-dev.zip"
+          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv ./*.zip "${GITHUB_REF}/google-site-kit.zip"
+          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
           name: zip-files
-          path: ${GITHUB_REF}
+          path: ${{ github.ref }}
 
   upload-to-cloud-storage:
     name: Upload to GCS
@@ -151,14 +151,14 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           name: zip-files
-          path: ${GITHUB_REF}
+          path: ${{ github.ref }}
 
       - uses: ./.github/actions/upload-to-gcs
         id: upload
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
-          path: ${GITHUB_REF}
-          destination: ${{ env.GCS_ROOT_PATH }}/${GITHUB_REF}
+          path: ${{ github.ref }}
+          destination: ${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
 
       - uses: ./.github/actions/update-pr-comment
         if: github.event_name == 'pull_request'
