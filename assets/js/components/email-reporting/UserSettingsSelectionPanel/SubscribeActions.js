@@ -31,6 +31,9 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
+import PreviewBlocks from '@/js/components/PreviewBlocks';
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const ACTION_TYPE = {
 	SUBSCRIBE: 'subscribe',
@@ -44,8 +47,13 @@ export default function SubscribeActions( {
 	onUnsubscribe,
 	updateSettings,
 	isSavingSettings,
+	isLoading,
 } ) {
 	const [ actionType, setActionType ] = useState( '' );
+
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
 
 	function handleClick( action ) {
 		setActionType( action );
@@ -63,6 +71,18 @@ export default function SubscribeActions( {
 			default:
 				break;
 		}
+	}
+
+	if ( isLoading ) {
+		return (
+			<div className="googlesitekit-selection-panel-subscribe-actions">
+				<PreviewBlocks width="140px" height="42px" count={ 2 } />
+			</div>
+		);
+	}
+
+	if ( false === isEmailReportingEnabled ) {
+		return null;
 	}
 
 	return (
@@ -107,4 +127,5 @@ SubscribeActions.propTypes = {
 	onUnsubscribe: PropTypes.func.isRequired,
 	updateSettings: PropTypes.func.isRequired,
 	isSavingSettings: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };
