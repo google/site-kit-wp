@@ -32,13 +32,18 @@ import { FC, ElementType } from 'react';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '@/js/components/Notice/constants';
 
+export type PolicyViolationType =
+	| 'PENDING_POLICY_VIOLATION'
+	| 'ACTIVE_POLICY_VIOLATION'
+	| 'EXTREME_POLICY_VIOLATION';
+
 interface PolicyViolationProps {
 	id: string;
 	Notification: ElementType;
 	gaTrackingEventArgs: Record< string, string >;
 	dismissNotice: () => void;
 	onCTAClick: () => void;
-	policyViolationType: 'PENDING_POLICY_VIOLATION' | 'ACTIVE_POLICY_VIOLATION';
+	policyViolationType: PolicyViolationType;
 }
 
 const PolicyViolation: FC< PolicyViolationProps > = ( {
@@ -49,6 +54,8 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 	onCTAClick,
 	policyViolationType,
 } ) => {
+	const isExtreme = policyViolationType === 'EXTREME_POLICY_VIOLATION';
+
 	const description =
 		policyViolationType === 'PENDING_POLICY_VIOLATION'
 			? __(
@@ -64,7 +71,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
-				type={ TYPES.WARNING }
+				type={ isExtreme ? TYPES.ERROR : TYPES.WARNING }
 				notificationID={ id }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(
@@ -76,7 +83,9 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 					onClick: dismissNotice,
 				} }
 				ctaButton={ {
-					label: __( 'View violations', 'google-site-kit' ),
+					label: isExtreme
+						? __( 'Learn more', 'google-site-kit' )
+						: __( 'View violations', 'google-site-kit' ),
 					onClick: onCTAClick,
 					external: true,
 				} }
