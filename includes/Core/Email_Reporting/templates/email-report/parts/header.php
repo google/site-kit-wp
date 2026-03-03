@@ -22,12 +22,12 @@ $shooting_stars_url = $get_asset_url( 'shooting-stars-graphic' );
 			<table role="presentation" width="100%">
 				<tr>
 					<td style="vertical-align:top;" width="79">
-						<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr__( 'Site Kit by Google', 'google-site-kit' ); ?>" width="79" height="22" style="display:block; margin-top: 12px;" />
+						<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr__( 'Site Kit by Google', 'google-site-kit' ); ?>" width="79" height="22" style="display:block; margin-top: 8px;" />
 					</td>
 					<?php /* Extra centering for Outlook. */ ?>
 					<td style="vertical-align:top; text-align:center;" align="center">
 						<center>
-							<img src="<?php echo esc_url( $shooting_stars_url ); ?>" alt="" width="107" height="56" style="display:block; margin: 24px auto 0 auto;" align="center" />
+							<img src="<?php echo esc_url( $shooting_stars_url ); ?>" alt="" width="107" height="56" style="display:block; margin: 12px auto 0 auto;" align="center" />
 						</center>
 					</td>
 					<td width="79">&nbsp;</td>
