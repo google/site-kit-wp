@@ -28,10 +28,10 @@
 				</tr>
 				<tr>
 					<td style="vertical-align:top;">
-					<div class="dm-text-primary" style="font-size:18px; line-height:24px; font-weight:500;">
+					<div class="text-primary" style="font-size:18px; line-height:24px; font-weight:500;">
 						<?php echo esc_html( $title ); ?>
 					</div>
-						<div class="dm-text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
+						<div class="text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
 							<?php echo esc_html( $subtitle ); ?>
 						</div>
 					</td>

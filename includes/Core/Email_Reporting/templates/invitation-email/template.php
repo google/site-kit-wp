@@ -30,7 +30,7 @@ $render_shared_part = $data['render_shared_part'];
 $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 
 // Build the title with mailto link for the inviter email.
-$inviter_email_link = '<a class="dm-text-primary" href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
+$inviter_email_link = '<a class="text-primary" href="mailto:' . esc_attr( $inviter_email ) . '" style="color: #161B18; text-decoration: none; font-weight: 500;">' . esc_html( $inviter_email ) . '</a>';
 $email_title        = sprintf( $email_title, $inviter_email_link );
 ?>
 <!doctype html>
@@ -125,37 +125,37 @@ $email_title        = sprintf( $email_title, $inviter_email_link );
 				box-shadow: inset 0 0 0 9999px #232824 !important;
 			}
 
-			.dm-card {
+			.card {
 				background-color: #161B18 !important;
 				box-shadow: inset 0 0 0 9999px #161B18 !important;
 			}
 
-			/* Force card descendants transparent so parent box-shadow shows through */
-			.dm-card table,
-			.dm-card tr,
-			.dm-card td,
-			.dm-card div,
-			.dm-card p,
-			.dm-card h1,
-			.dm-card h2,
-			.dm-card h3 {
+			/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
+			.card table,
+			.card tr,
+			.card td,
+			.card div,
+			.card p,
+			.card h1,
+			.card h2,
+			.card h3 {
 				background-color: transparent !important;
 				box-shadow: none !important;
 			}
 
-			.dm-text-primary {
+			.text-primary {
 				color: #EBEEF0 !important;
 			}
 
-			.dm-text-secondary {
+			.text-secondary {
 				color: #999F9B !important;
 			}
 
-			.dm-link {
+			.link {
 				color: #93C9A8 !important;
 			}
 
-			.dm-button {
+			.button {
 				background-color: #93C9A8 !important;
 				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 				color: #161B18 !important;
@@ -169,37 +169,37 @@ $email_title        = sprintf( $email_title, $inviter_email_link );
 			box-shadow: inset 0 0 0 9999px #232824 !important;
 		}
 
-		[data-ogsc] .dm-card {
+		[data-ogsc] .card {
 			background-color: #161B18 !important;
 			box-shadow: inset 0 0 0 9999px #161B18 !important;
 		}
 
-		/* Force card descendants transparent so parent box-shadow shows through */
-		[data-ogsc] .dm-card table,
-		[data-ogsc] .dm-card tr,
-		[data-ogsc] .dm-card td,
-		[data-ogsc] .dm-card div,
-		[data-ogsc] .dm-card p,
-		[data-ogsc] .dm-card h1,
-		[data-ogsc] .dm-card h2,
-		[data-ogsc] .dm-card h3 {
+		/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
+		[data-ogsc] .card table,
+		[data-ogsc] .card tr,
+		[data-ogsc] .card td,
+		[data-ogsc] .card div,
+		[data-ogsc] .card p,
+		[data-ogsc] .card h1,
+		[data-ogsc] .card h2,
+		[data-ogsc] .card h3 {
 			background-color: transparent !important;
 			box-shadow: none !important;
 		}
 
-		[data-ogsc] .dm-text-primary {
+		[data-ogsc] .text-primary {
 			color: #EBEEF0 !important;
 		}
 
-		[data-ogsc] .dm-text-secondary {
+		[data-ogsc] .text-secondary {
 			color: #999F9B !important;
 		}
 
-		[data-ogsc] .dm-link {
+		[data-ogsc] .link {
 			color: #93C9A8 !important;
 		}
 
-		[data-ogsc] .dm-button {
+		[data-ogsc] .button {
 			background-color: #93C9A8 !important;
 			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 			color: #161B18 !important;
@@ -232,14 +232,14 @@ $email_title        = sprintf( $email_title, $inviter_email_link );
 							?>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 								<tr>
-									<td class="dm-card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
+									<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
 										<?php /* Site domain. */ ?>
-										<p class="dm-text-secondary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-											<a class="dm-text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
+											<a class="text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Title from Content_Map with inviter email link. */ ?>
-										<h1 class="dm-text-primary" style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+										<h1 class="text-primary" style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
 											echo $email_title;
@@ -248,10 +248,10 @@ $email_title        = sprintf( $email_title, $inviter_email_link );
 
 										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
-										<p class="dm-text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+										<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php echo esc_html( $paragraph ); ?>
 											<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
-											<a class="dm-link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+											<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 											<?php endif; ?>
 										</p>
 										<?php endforeach; ?>
@@ -289,7 +289,7 @@ $email_title        = sprintf( $email_title, $inviter_email_link );
 							<table role="presentation" width="100%" style="margin-top: 24px;">
 								<tr>
 									<td style="text-align: left;">
-										<p class="dm-text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
+										<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
 											<?php echo esc_html( $footer_copy ); ?>
 										</p>
 									</td>

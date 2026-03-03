@@ -26,7 +26,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
-		<td class="dm-card" style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
+		<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
 			<?php
 			// Render section header.
 			$icon_url = $get_asset_url( 'icon-' . esc_html( $section_icon ) );
@@ -43,7 +43,7 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 			<table role="presentation" width="100%" style="margin-bottom:12px;">
 				<tr>
 					<td>&nbsp;</td>
-					<td class="dm-text-secondary subtitle" width="110"
+					<td class="text-secondary subtitle" width="110"
 						style="text-align: right; font-size:12px; line-height:16px; font-weight:500; color:#6C726E; width: 110px;">
 						<?php echo esc_html( $subtitle ); ?>
 					</td>
@@ -64,17 +64,17 @@ $subtitle   = $first_part['data']['change_context'] ?? '';
 					}
 					?>
 				<tr>
-					<td class="dm-border"
+					<td class="border"
 						style="vertical-align: top; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
-						<div class="dm-text-secondary"
+						<div class="text-secondary"
 							style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom:4px;">
 							<?php echo esc_html( $data['label'] ); ?>
 						</div>
-						<div class="dm-text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
+						<div class="text-primary" style="font-size:14px; line-height:20px; font-weight:500;">
 							<?php echo esc_html( $data['value'] ); ?>
 						</div>
 					</td>
-					<td class="dm-border"
+					<td class="border"
 						style="text-align: right; vertical-align: middle; border-bottom: <?php echo esc_attr( $border_style ); ?>; padding: 12px 0;">
 						<?php
 							$render_shared_part(

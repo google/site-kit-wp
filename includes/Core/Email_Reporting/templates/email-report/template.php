@@ -123,60 +123,60 @@ $render_shared_part = $data['render_shared_part'];
 			}
 
 			/* Content card/section backgrounds */
-			.dm-card {
+			.card {
 				background-color: #161B18 !important;
 				box-shadow: inset 0 0 0 9999px #161B18 !important;
 			}
 
-			/* Force card descendants transparent so parent box-shadow shows through */
-			.dm-card table,
-			.dm-card tr,
-			.dm-card td,
-			.dm-card div,
-			.dm-card p,
-			.dm-card h1,
-			.dm-card h2,
-			.dm-card h3 {
+			/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
+			.card table,
+			.card tr,
+			.card td,
+			.card div,
+			.card p,
+			.card h1,
+			.card h2,
+			.card h3 {
 				background-color: transparent !important;
 				box-shadow: none !important;
 			}
 
 			/* Text colors */
-			.dm-text-primary {
+			.text-primary {
 				color: #EBEEF0 !important;
 			}
 
-			.dm-text-secondary {
+			.text-secondary {
 				color: #999F9B !important;
 			}
 
 			/* Link colors */
-			.dm-link {
+			.link {
 				color: #93C9A8 !important;
 			}
 
 			/* Button colors */
-			.dm-button {
+			.button {
 				background-color: #93C9A8 !important;
 				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 				color: #161B18 !important;
 			}
 
 			/* Badge adjustments for dark mode - inverted colors for contrast */
-			.dm-badge-positive {
+			.badge-positive {
 				background-color: #1F4C04 !important;
 				box-shadow: inset 0 0 0 9999px #1F4C04 !important;
 				color: #D8FFC0 !important;
 			}
 
-			.dm-badge-negative {
+			.badge-negative {
 				background-color: #7A1E00 !important;
 				box-shadow: inset 0 0 0 9999px #7A1E00 !important;
 				color: #FFDED3 !important;
 			}
 
 			/* Border color */
-			.dm-border {
+			.border {
 				border-color: #2D332F !important;
 			}
 		}
@@ -188,55 +188,55 @@ $render_shared_part = $data['render_shared_part'];
 			box-shadow: inset 0 0 0 9999px #232824 !important;
 		}
 
-		[data-ogsc] .dm-card {
+		[data-ogsc] .card {
 			background-color: #161B18 !important;
 			box-shadow: inset 0 0 0 9999px #161B18 !important;
 		}
 
-		/* Force card descendants transparent so parent box-shadow shows through */
-		[data-ogsc] .dm-card table,
-		[data-ogsc] .dm-card tr,
-		[data-ogsc] .dm-card td,
-		[data-ogsc] .dm-card div,
-		[data-ogsc] .dm-card p,
-		[data-ogsc] .dm-card h1,
-		[data-ogsc] .dm-card h2,
-		[data-ogsc] .dm-card h3 {
+		/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
+		[data-ogsc] .card table,
+		[data-ogsc] .card tr,
+		[data-ogsc] .card td,
+		[data-ogsc] .card div,
+		[data-ogsc] .card p,
+		[data-ogsc] .card h1,
+		[data-ogsc] .card h2,
+		[data-ogsc] .card h3 {
 			background-color: transparent !important;
 			box-shadow: none !important;
 		}
 
-		[data-ogsc] .dm-text-primary {
+		[data-ogsc] .text-primary {
 			color: #EBEEF0 !important;
 		}
 
-		[data-ogsc] .dm-text-secondary {
+		[data-ogsc] .text-secondary {
 			color: #999F9B !important;
 		}
 
-		[data-ogsc] .dm-link {
+		[data-ogsc] .link {
 			color: #93C9A8 !important;
 		}
 
-		[data-ogsc] .dm-button {
+		[data-ogsc] .button {
 			background-color: #93C9A8 !important;
 			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 			color: #161B18 !important;
 		}
 
-		[data-ogsc] .dm-badge-positive {
+		[data-ogsc] .badge-positive {
 			background-color: #1F4C04 !important;
 			box-shadow: inset 0 0 0 9999px #1F4C04 !important;
 			color: #D8FFC0 !important;
 		}
 
-		[data-ogsc] .dm-badge-negative {
+		[data-ogsc] .badge-negative {
 			background-color: #7A1E00 !important;
 			box-shadow: inset 0 0 0 9999px #7A1E00 !important;
 			color: #FFDED3 !important;
 		}
 
-		[data-ogsc] .dm-border {
+		[data-ogsc] .border {
 			border-color: #2D332F !important;
 		}
 		@media (min-width: 481px) {

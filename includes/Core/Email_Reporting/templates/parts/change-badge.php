@@ -13,12 +13,12 @@
 $change_value = (float) $value;
 $color        = '#1F4C04';
 $background   = '#D8FFC0';
-$badge_class  = 'dm-badge-positive';
+$badge_class  = 'badge-positive';
 
 if ( $change_value < 0 ) {
 	$color       = '#7A1E00';
 	$background  = '#FFDED3';
-	$badge_class = 'dm-badge-negative';
+	$badge_class = 'badge-negative';
 }
 
 $prefix        = $change_value > 0 ? '+' : '';
