@@ -68,15 +68,11 @@
 			color: $c-surfaces-on-surface-variant;
 		}
 
-		&:hover,
 		&:focus {
-			border-color: $c-utility-outline;
+			border-color: $c-content-primary;
+			border-width: 2px;
 			box-shadow: none;
-		}
-
-		&:focus-visible {
-			outline: 1px dotted $c-interactive-focus;
-			outline-offset: 2px;
+			outline: none;
 		}
 	}
 
@@ -192,11 +188,6 @@
 
 		&:hover svg {
 			fill: $c-surfaces-on-surface;
-		}
-
-		&:focus-visible {
-			outline: 1px dotted $c-interactive-focus;
-			outline-offset: 2px;
 		}
 	}
 }
