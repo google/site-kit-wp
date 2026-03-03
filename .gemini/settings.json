@@ -1,6 +1,15 @@
 {
+	"$schema": "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/schemas/settings.schema.json",
 	"context": {
 		"fileName": [ "AGENTS.md" ]
+	},
+	"ide": {
+		"enabled": false
+	},
+	"security": {
+		"environmentVariableRedaction": {
+			"enabled": true
+		}
 	},
 	"mcpServers": {
 		"github": {
