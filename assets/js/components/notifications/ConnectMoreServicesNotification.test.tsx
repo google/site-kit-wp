@@ -71,6 +71,9 @@ describe( 'ConnectMoreServicesNotification', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
+		provideSiteInfo( registry, {
+			connectMoreServicesURL: 'https://example.com/connect',
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -81,10 +84,6 @@ describe( 'ConnectMoreServicesNotification', () => {
 				CONNECT_MORE_SERVICES_NOTIFICATION_SLUG,
 				notification
 			);
-
-		provideSiteInfo( registry, {
-			connectMoreServicesURL: 'https://example.com/connect',
-		} );
 	} );
 
 	afterEach( () => {
@@ -292,14 +291,15 @@ describe( 'ConnectMoreServicesNotification', () => {
 				);
 			freezeFetch( dismissItemEndpoint );
 		} );
+
 		it( 'should track the `view_notification` event when viewed', () => {
 			render( <ConnectMoreServicesNotificationComponent />, {
 				registry,
 				viewContext: 'test-context',
 			} );
 
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'test-context_connect-more-services-notification',
 				'view_notification',
 				undefined,
@@ -322,8 +322,8 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 			await waitForRegistry();
 
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'test-context_connect-more-services-notification',
 				'dismiss_notification',
 				undefined,
@@ -331,8 +331,8 @@ describe( 'ConnectMoreServicesNotification', () => {
 			);
 		} );
 
-		it( 'should track the `confirm_notification` event when `Connect more services` is clicked', async () => {
-			const { waitForRegistry, getByRole } = render(
+		it( 'should track the `confirm_notification` event when `Connect more services` is clicked', () => {
+			const { getByRole } = render(
 				<ConnectMoreServicesNotificationComponent />,
 				{
 					registry,
@@ -346,10 +346,8 @@ describe( 'ConnectMoreServicesNotification', () => {
 				getByRole( 'button', { name: 'Connect more services' } )
 			);
 
-			await waitForRegistry();
-
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
-				1,
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'test-context_connect-more-services-notification',
 				'confirm_notification',
 				undefined,
