@@ -33,9 +33,17 @@ export default function DismissButton( {
 	label = __( 'Got it', 'google-site-kit' ),
 	onClick,
 	disabled,
+	href,
+	external = false,
 } ) {
 	return (
-		<Button onClick={ onClick } disabled={ disabled } tertiary>
+		<Button
+			onClick={ onClick }
+			disabled={ disabled }
+			href={ href }
+			target={ external ? '_blank' : undefined }
+			tertiary
+		>
 			{ label }
 		</Button>
 	);
@@ -45,4 +53,6 @@ DismissButton.propTypes = {
 	label: PropTypes.string,
 	onClick: PropTypes.func.isRequired,
 	disabled: PropTypes.bool,
+	href: PropTypes.string,
+	external: PropTypes.bool,
 };

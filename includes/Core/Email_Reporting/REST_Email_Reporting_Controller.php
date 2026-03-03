@@ -394,6 +394,7 @@ class REST_Email_Reporting_Controller {
 			'email'       => $user->user_email,
 			'role'        => $this->get_primary_role( $user ),
 			'subscribed'  => is_array( $settings ) && ! empty( $settings['subscribed'] ),
+			'invited'     => $this->is_invite_rate_limited( $user->ID ),
 		);
 	}
 
@@ -521,7 +522,7 @@ class REST_Email_Reporting_Controller {
 				'domain' => $site_domain,
 				'url'    => home_url( '/' ),
 			),
-			'title'                  => Content_Map::get_title( 'invitation-email' ),
+			'title'                  => Content_Map::get_title_with_args( 'invitation-email', array( $inviter_email ) ),
 			'body'                   => Content_Map::get_body( 'invitation-email' ),
 			'inviter_email'          => $inviter_email,
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',

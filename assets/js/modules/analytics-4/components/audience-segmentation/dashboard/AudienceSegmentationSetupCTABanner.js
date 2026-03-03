@@ -56,6 +56,7 @@ import AudienceSegmentationSetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './AudienceSegmentationSetupSuccessSubtleNotification';
 import useFormValue from '@/js/hooks/useFormValue';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -86,6 +87,10 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
+
+	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
+		isDismissalFinal,
+	} );
 
 	const autoSubmit = useFormValue(
 		AUDIENCE_SEGMENTATION_SETUP_FORM,
@@ -174,9 +179,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 						inProgress: isSaving,
 					} }
 					dismissButton={ {
-						label: isDismissalFinal
-							? __( 'Don’t show again', 'google-site-kit' )
-							: __( 'Maybe later', 'google-site-kit' ),
+						label: dismissLabel,
 						onClick: showTooltip,
 						disabled: isSaving,
 						dismissOptions: {

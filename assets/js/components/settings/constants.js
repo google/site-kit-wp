@@ -16,15 +16,9 @@
  * limitations under the License.
  */
 
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
-export const NEW_MODULES = [
-	MODULE_SLUG_ADS,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-	MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-];
+export const NEW_MODULES = [];
 
 export const BETA_MODULES = [ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ];
 
