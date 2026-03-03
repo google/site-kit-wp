@@ -85,6 +85,8 @@ const Notice = forwardRef(
 									label={ dismissButton.label }
 									onClick={ dismissButton.onClick }
 									disabled={ dismissButton.disabled }
+									href={ dismissButton.href }
+									external={ dismissButton.external }
 								/>
 							) }
 							{ ctaButton?.label &&

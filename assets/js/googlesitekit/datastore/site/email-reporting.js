@@ -89,7 +89,15 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 const fetchGetEligibleSubscribersStore = createFetchStore( {
 	baseName: 'getEligibleSubscribers',
 	controlCallback: () =>
-		get( 'core', 'site', 'email-reporting-eligible-subscribers' ),
+		get(
+			'core',
+			'site',
+			'email-reporting-eligible-subscribers',
+			undefined,
+			{
+				useCache: false,
+			}
+		),
 	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
 		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
 	} ),
@@ -112,6 +120,21 @@ const fetchInviteUserStore = createFetchStore( {
 		set( 'core', 'site', 'email-reporting-invite-user', {
 			userID,
 		} ),
+	// Mark invited subscriber in local state to persist invited
+	// state on panel re-open. The transient handles persistent
+	// state for 24 hours on app refresh.
+	reducerCallback: createReducer( ( state, response, { userID } ) => {
+		const subscribers = state.emailReporting.eligibleSubscribers;
+		if ( Array.isArray( subscribers ) ) {
+			const user = subscribers.find(
+				( potentialNewlyInvitedUser ) =>
+					potentialNewlyInvitedUser.id === userID
+			);
+			if ( user ) {
+				user.invited = true;
+			}
+		}
+	} ),
 	argsToParams: ( userID ) => ( { userID } ),
 	validateParams: ( { userID } = {} ) => {
 		invariant(
@@ -165,9 +188,12 @@ const baseActions = {
 			registry.dispatch( CORE_SITE ).startInvitingUser( userID );
 
 			try {
-				return yield fetchInviteUserStore.actions.fetchInviteUser(
-					userID
-				);
+				const result =
+					yield fetchInviteUserStore.actions.fetchInviteUser(
+						userID
+					);
+
+				return result;
 			} finally {
 				registry.dispatch( CORE_SITE ).finishInvitingUser( userID );
 			}
@@ -343,6 +369,7 @@ const baseSelectors = {
 				email: user.email,
 				role: user.role,
 				subscribed: user.subscribed,
+				invited: user.invited,
 			} ) );
 	} ),
 
@@ -359,32 +386,29 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the category ID of the latest email reporting error.
+	 * Gets the latest email reporting error.
 	 *
-	 * @since 1.172.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} Category ID of the latest email reporting error; `undefined` if not loaded; null if no errors or category ID is not present for the latest error.
+	 * @return {(Object|null|undefined)} The latest email reporting error; `undefined` if not loaded; null if no errors.
 	 */
-	getLatestEmailReportingErrorCategoryID: createRegistrySelector(
-		( select ) => () => {
-			const { errors, error_data: errorData } =
-				select( CORE_SITE ).getEmailReportingErrors() || {};
+	getLatestEmailReportingError: createRegistrySelector( ( select ) => () => {
+		const { errors, error_data: errorData } =
+			select( CORE_SITE ).getEmailReportingErrors() || {};
 
-			if ( errors === undefined ) {
-				return undefined;
-			}
-
-			const categoryID =
-				errorData?.[ Object.keys( errors )[ 0 ] ]?.category_id;
-
-			if ( categoryID === undefined ) {
-				return null;
-			}
-
-			return categoryID;
+		if ( errors === undefined ) {
+			return undefined;
 		}
-	),
+
+		const error = errorData?.[ Object.keys( errors )[ 0 ] ];
+
+		if ( error === undefined ) {
+			return null;
+		}
+
+		return error;
+	} ),
 
 	/**
 	 * Checks whether an invitation is in progress for a given user.

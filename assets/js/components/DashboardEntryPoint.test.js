@@ -33,6 +33,9 @@ jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );
 jest.mock( './DashboardMainApp', () =>
 	mockCreateComponent( 'DashboardMainApp' )
 );
+jest.mock( './CoreModuleSetupEffects', () =>
+	mockCreateComponent( 'CoreModuleSetupEffects' )
+);
 jest.mock( './email-reporting/UserSettingsSelectionPanel', () =>
 	mockCreateComponent( 'UserSettingsSelectionPanel' )
 );
@@ -71,7 +74,8 @@ describe( 'DashboardEntryPoint', () => {
 			}
 		);
 
-		expect( getByText( /ModuleSetup/ ) ).toBeInTheDocument();
+		expect( getByText( /CoreModuleSetupEffects/ ) ).toBeInTheDocument();
+		expect( getByText( /^ModuleSetup/ ) ).toBeInTheDocument();
 		expect( getByText( /UserSettingsSelectionPanel/ ) ).toBeInTheDocument();
 	} );
 } );

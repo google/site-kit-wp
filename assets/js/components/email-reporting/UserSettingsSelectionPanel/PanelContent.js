@@ -43,6 +43,7 @@ import FrequencySelector from '@/js/components/email-reporting/FrequencySelector
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import Notices from './Notices';
 import { TYPES } from '@/js/components/Notice/constants';
+import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
 
 export default function PanelContent( {
 	notice,
@@ -116,6 +117,8 @@ export default function PanelContent( {
 							isSubscribed={ isUserSubscribed }
 							isLoading={ isSavingSettings }
 						/>
+
+						<InviteOthersToSubscribe />
 					</Fragment>
 				) }
 			</div>
@@ -137,7 +140,10 @@ PanelContent.propTypes = {
 		text: PropTypes.string,
 		type: PropTypes.oneOf( Object.values( TYPES ) ),
 	} ),
+	isUserSubscribed: PropTypes.bool,
+	isSavingSettings: PropTypes.bool,
 	onSaveCallback: PropTypes.func,
+	onSubscribe: PropTypes.func,
 	onUnsubscribe: PropTypes.func,
 	onNoticeDismiss: PropTypes.func,
 	closePanel: PropTypes.func,
