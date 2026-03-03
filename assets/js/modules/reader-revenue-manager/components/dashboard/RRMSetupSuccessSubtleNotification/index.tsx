@@ -36,6 +36,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
+	CONTENT_POLICY_STATES,
 	MODULES_READER_REVENUE_MANAGER,
 	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
@@ -47,7 +48,9 @@ import useFormValue from '@/js/hooks/useFormValue';
 import PendingVerification from './PendingVerification';
 import OnboardingActionRequired from './OnboardingActionRequired';
 import OnboardingComplete from './OnboardingComplete';
-import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
+import PolicyViolation, {
+	type PolicyViolationType,
+} from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -193,11 +196,20 @@ const RRMSetupSuccessSubtleNotification: FC<
 		( PENDING_POLICY_VIOLATION_STATES.includes( contentPolicyState ) ||
 			ACTIVE_POLICY_VIOLATION_STATES.includes( contentPolicyState ) )
 	) {
-		const policyViolationType = PENDING_POLICY_VIOLATION_STATES.includes(
-			contentPolicyState
-		)
-			? 'PENDING_POLICY_VIOLATION'
-			: 'ACTIVE_POLICY_VIOLATION';
+		let policyViolationType: PolicyViolationType;
+
+		if (
+			contentPolicyState ===
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+		) {
+			policyViolationType = 'EXTREME_POLICY_VIOLATION';
+		} else if (
+			PENDING_POLICY_VIOLATION_STATES.includes( contentPolicyState )
+		) {
+			policyViolationType = 'PENDING_POLICY_VIOLATION';
+		} else {
+			policyViolationType = 'ACTIVE_POLICY_VIOLATION';
+		}
 
 		return (
 			<PolicyViolation
