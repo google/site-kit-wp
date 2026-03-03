@@ -43,7 +43,7 @@ export default function SubscribeActions( {
 	onSubscribe,
 	onUnsubscribe,
 	updateSettings,
-	isLoading,
+	isSavingSettings,
 } ) {
 	const [ actionType, setActionType ] = useState( '' );
 
@@ -71,9 +71,10 @@ export default function SubscribeActions( {
 				<SpinnerButton
 					onClick={ () => handleClick( ACTION_TYPE.UNSUBSCRIBE ) }
 					isSaving={
-						isLoading && actionType === ACTION_TYPE.UNSUBSCRIBE
+						isSavingSettings &&
+						actionType === ACTION_TYPE.UNSUBSCRIBE
 					}
-					disabled={ isLoading }
+					disabled={ isSavingSettings }
 					tertiary
 				>
 					{ __( 'Unsubscribe', 'google-site-kit' ) }
@@ -87,8 +88,10 @@ export default function SubscribeActions( {
 							: ACTION_TYPE.SUBSCRIBE
 					)
 				}
-				isSaving={ isLoading && actionType !== ACTION_TYPE.UNSUBSCRIBE }
-				disabled={ isLoading }
+				isSaving={
+					isSavingSettings && actionType !== ACTION_TYPE.UNSUBSCRIBE
+				}
+				disabled={ isSavingSettings }
 			>
 				{ isSubscribed
 					? __( 'Update Settings', 'google-site-kit' )
@@ -103,5 +106,5 @@ SubscribeActions.propTypes = {
 	onSubscribe: PropTypes.func.isRequired,
 	onUnsubscribe: PropTypes.func.isRequired,
 	updateSettings: PropTypes.func.isRequired,
-	isLoading: PropTypes.bool,
+	isSavingSettings: PropTypes.bool,
 };
