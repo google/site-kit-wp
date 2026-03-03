@@ -106,8 +106,8 @@ class Content_Map {
 	 */
 	protected static function get_all_titles() {
 		return array(
-			/* translators: %s: Email address of the person who sent the invitation */
-			'invitation-email'          => __( '%s invited you to receive periodic performance reports', 'google-site-kit' ),
+			/* translators: %1$s: Email address of the person who sent the invitation */
+			'invitation-email'          => __( '<a href="mailto:%1$s" style="color: #161B18; text-decoration: none; font-weight: 500;">%1$s</a> invited you to receive periodic performance reports', 'google-site-kit' ),
 			'subscription-confirmation' => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
 			// Note: Error email titles can be overridden for specific error titles directly when calling Email_Template_Renderer::render().
 			'error-email'               => __( 'We’ve detected an issue with your Site Kit email reports', 'google-site-kit' ),

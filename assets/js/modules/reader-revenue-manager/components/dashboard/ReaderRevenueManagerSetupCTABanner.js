@@ -40,6 +40,7 @@ import { WEEK_IN_SECONDS } from '@/js/util';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-mobile.svg?url';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
@@ -71,6 +72,9 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
+	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
+		isDismissalFinal,
+	} );
 
 	useEffect( () => {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
@@ -101,9 +105,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 					},
 				} }
 				dismissButton={ {
-					label: isDismissalFinal
-						? __( 'Don’t show again', 'google-site-kit' )
-						: __( 'Maybe later', 'google-site-kit' ),
+					label: dismissLabel,
 					onClick: showTooltip,
 					dismissOptions: {
 						expiresInSeconds: isDismissalFinal

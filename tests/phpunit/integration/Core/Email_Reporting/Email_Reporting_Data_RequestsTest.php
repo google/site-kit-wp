@@ -298,6 +298,34 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
 	}
 
+	public function test_categorize_error() {
+		$permissions_error = new WP_Error(
+			'403',
+			'User does not have sufficient permissions for this property.',
+			array(
+				'status' => 403,
+				'reason' => 'forbidden',
+			)
+		);
+		$categorized_error = $this->create_data_requests()->categorize_error( $permissions_error, Analytics_4::MODULE_SLUG );
+
+		$this->assertEquals( 'permissions_error', $categorized_error->get_error_data()['category_id'], '403 forbidden errors should be categorized as permissions issues.' );
+		$this->assertEquals( Analytics_4::MODULE_SLUG, $categorized_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
+
+		$other_error             = new WP_Error(
+			'500',
+			'Internal Server Error',
+			array(
+				'status' => 500,
+				'reason' => 'internalError',
+			)
+		);
+		$categorized_other_error = $this->create_data_requests()->categorize_error( $other_error, Search_Console::MODULE_SLUG );
+
+		$this->assertEquals( 'report_error', $categorized_other_error->get_error_data()['category_id'], 'Other errors should be categorized as report_error.' );
+		$this->assertEquals( Search_Console::MODULE_SLUG, $categorized_other_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
+	}
+
 	private function create_data_requests( Conversion_Tracking $conversion_tracking = null ) {
 		if ( null === $conversion_tracking ) {
 			$conversion_tracking = $this->createMock( Conversion_Tracking::class );
