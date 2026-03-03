@@ -74,6 +74,22 @@ describe( 'HelpMenu', () => {
 			expect( getByText( 'Get help with AdSense' ) ).toBeInTheDocument();
 		} );
 
+		it( 'should track the `open_helpmenu` event when the help menu is opened', () => {
+			const { getByRole } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
+				'open_helpmenu'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+
 		it.each( [
 			[ 'Browse documentation', 'browse_documentation' ],
 			[ 'Get free support', 'get_support' ],
@@ -82,13 +98,11 @@ describe( 'HelpMenu', () => {
 		] )(
 			'should track the `click_menu_item` event when clicking the "%s" button, with the label set to `%s`',
 			( linkText, expectedLabel ) => {
-				const { getByText, getByRole } = render( <HelpMenu />, {
+				const { getByText } = render( <HelpMenu />, {
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'setupFlowRefresh' ],
 				} );
-
-				fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
 
 				fireEvent.click( getByText( linkText ) );
 
@@ -97,19 +111,18 @@ describe( 'HelpMenu', () => {
 					'click_menu_item',
 					expectedLabel
 				);
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			}
 		);
 
 		it( 'should track the `click_menu_item` event for the "Get help with AdSense" menu item when AdSense is active', () => {
 			provideModules( registry, [ { slug: 'adsense', active: true } ] );
 
-			const { getByText, getByRole } = render( <HelpMenu />, {
+			const { getByText } = render( <HelpMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],
 			} );
-
-			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
 
 			fireEvent.click( getByText( 'Get help with AdSense' ) );
 
@@ -118,17 +131,16 @@ describe( 'HelpMenu', () => {
 				'click_menu_item',
 				'get_adsense_help'
 			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 
 	describe( 'without the `setupFlowRefresh` feature flag', () => {
 		it( 'should track the `click_outgoing_link` event for legacy menu items', () => {
-			const { getByText, getByRole } = render( <HelpMenu />, {
+			const { getByText } = render( <HelpMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} );
-
-			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
 
 			fireEvent.click( getByText( 'Read help docs' ) );
 
@@ -137,6 +149,7 @@ describe( 'HelpMenu', () => {
 				'click_outgoing_link',
 				'documentation'
 			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );
