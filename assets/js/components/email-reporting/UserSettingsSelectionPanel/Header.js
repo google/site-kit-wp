@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,8 +38,9 @@ import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
 import useViewContext from '@/js/hooks/useViewContext';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 
-export default function Header( { closePanel } ) {
+export default function Header( { closePanel, isLoading } ) {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
@@ -60,7 +65,13 @@ export default function Header( { closePanel } ) {
 			title={ __( 'Email reports subscription', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
 		>
-			{ ! isViewOnly && isEmailReportingEnabled && (
+			{ isLoading && (
+				<Fragment>
+					<PreviewBlock width="100%" height="16px" />
+					<br />
+				</Fragment>
+			) }
+			{ ! isLoading && ! isViewOnly && isEmailReportingEnabled && (
 				<P type="body" size="small">
 					{ createInterpolateElement(
 						__(
