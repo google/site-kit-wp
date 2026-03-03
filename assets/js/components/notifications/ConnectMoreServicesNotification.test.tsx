@@ -32,6 +32,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	muteFetch,
+	freezeFetch,
 } from '../../../../tests/js/test-utils';
 import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -45,6 +46,10 @@ import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
 import { mockLocation } from 'tests/js/mock-browser-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const CONNECT_MORE_SERVICES_NOTIFICATION_SLUG =
 	'connect-more-services-notification';
@@ -76,6 +81,14 @@ describe( 'ConnectMoreServicesNotification', () => {
 				CONNECT_MORE_SERVICES_NOTIFICATION_SLUG,
 				notification
 			);
+
+		provideSiteInfo( registry, {
+			connectMoreServicesURL: 'https://example.com/connect',
+		} );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	describe( 'component behaviour', () => {
@@ -163,10 +176,6 @@ describe( 'ConnectMoreServicesNotification', () => {
 						count: 1,
 					},
 				},
-			} );
-
-			provideSiteInfo( registry, {
-				connectMoreServicesURL: 'https://example.com/connect',
 			} );
 
 			const { getByRole } = render(
@@ -270,6 +279,82 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 			const isActive = await notification.checkRequirements( registry );
 			expect( isActive ).toBe( false );
+		} );
+	} );
+
+	describe( 'GA event tracking', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue(
+					'notification/connect-more-services-notification/viewed',
+					true
+				);
+			freezeFetch( dismissItemEndpoint );
+		} );
+		it( 'should track the `view_notification` event when viewed', () => {
+			render( <ConnectMoreServicesNotificationComponent />, {
+				registry,
+				viewContext: 'test-context',
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'test-context_connect-more-services-notification',
+				'view_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track the `dismiss_notification` event when `Maybe later` is clicked', async () => {
+			const { waitForRegistry, getByRole } = render(
+				<ConnectMoreServicesNotificationComponent />,
+				{
+					registry,
+					viewContext: 'test-context',
+				}
+			);
+
+			mockTrackEvent.mockClear();
+
+			fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'test-context_connect-more-services-notification',
+				'dismiss_notification',
+				undefined,
+				undefined
+			);
+		} );
+
+		it( 'should track the `confirm_notification` event when `Connect more services` is clicked', async () => {
+			const { waitForRegistry, getByRole } = render(
+				<ConnectMoreServicesNotificationComponent />,
+				{
+					registry,
+					viewContext: 'test-context',
+				}
+			);
+
+			mockTrackEvent.mockClear();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Connect more services' } )
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				'test-context_connect-more-services-notification',
+				'confirm_notification',
+				undefined,
+				undefined
+			);
 		} );
 	} );
 } );
