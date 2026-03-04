@@ -276,7 +276,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 */
 	public function register() {
 		$this->golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
-		$this->golinks->register_handler( Email_Notices::GOLINK_NOTICE, new Email_Notice_Golink_Handler( $this->email_notices, $this->modules ) );
+		$this->golinks->register_handler( Email_Notices::GOLINK_NOTICE, new Email_Notice_Golink_Handler( $this->email_notices, $this->modules, $this->authentication ) );
 		$this->settings->register();
 		$this->rest_controller->register();
 		$this->register_feature_metrics();
