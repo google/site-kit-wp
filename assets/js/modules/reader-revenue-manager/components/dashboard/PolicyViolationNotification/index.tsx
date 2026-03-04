@@ -65,7 +65,6 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 		CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 			? {}
 			: {
-					skipExpiryCheck: true,
 					expiresInSeconds: HOUR_IN_SECONDS,
 			  };
 
