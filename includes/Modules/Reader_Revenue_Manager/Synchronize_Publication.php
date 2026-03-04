@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
@@ -127,12 +126,10 @@ class Synchronize_Publication {
 				'paymentOption'              => $this->get_payment_option( $publication ),
 			);
 
-			if ( Feature_Flags::enabled( 'rrmPolicyViolations' ) ) {
-				$content_policy_status = $publication->getContentPolicyStatus();
+			$content_policy_status = $publication->getContentPolicyStatus();
 
-				if ( $content_policy_status ) {
-					$new_settings['contentPolicyStatus'] = (array) $content_policy_status->toSimpleObject();
-				}
+			if ( $content_policy_status ) {
+				$new_settings['contentPolicyStatus'] = (array) $content_policy_status->toSimpleObject();
 			}
 
 			// Let the client know if the onboarding state has changed.
