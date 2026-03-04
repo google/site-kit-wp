@@ -31,7 +31,7 @@ class Dashboard_Golink_Handler implements Golink_Handler_Interface {
 	 */
 	public function handle( Context $context ) {
 		$dashboard_url = $context->admin_url( 'dashboard' );
-		$permalink     = $context->input()->filter( INPUT_GET, 'permaLink', FILTER_DEFAULT );
+		$permalink     = (string) $context->input()->filter( INPUT_GET, 'permaLink', FILTER_DEFAULT );
 		$slug          = sanitize_key(
 			(string) $context->input()->filter( INPUT_GET, 'slug', FILTER_DEFAULT )
 		);
