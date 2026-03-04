@@ -15,7 +15,10 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
@@ -298,6 +301,59 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
 	}
 
+	public function test_secondary_admin_without_service_entity_access_gets_no_module_payload_and_no_error() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				Analytics_4::MODULE_SLUG    => false,
+				Search_Console::MODULE_SLUG => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertIsArray( $payload, 'Secondary admin with no service-entity access should not fail the request.' );
+		$this->assertSame( array(), $payload, 'Modules without service-entity access should be excluded from payload.' );
+	}
+
+	public function test_secondary_admin_with_partial_service_entity_access_gets_only_accessible_modules() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				Analytics_4::MODULE_SLUG    => true,
+				Search_Console::MODULE_SLUG => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				Analytics_4::MODULE_SLUG    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				Search_Console::MODULE_SLUG => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertIsArray( $payload, 'Partial service-entity access should not fail the request.' );
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Accessible module should remain in payload.' );
+		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Inaccessible module should be excluded from payload.' );
+	}
+
 	public function test_categorize_error() {
 		$permissions_error = new WP_Error(
 			'403',
@@ -339,6 +395,92 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$this->transients,
 			$this->user_options
 		);
+	}
+
+	private function create_data_requests_with_modules( Modules $modules, Conversion_Tracking $conversion_tracking = null ) {
+		if ( null === $conversion_tracking ) {
+			$conversion_tracking = $this->createMock( Conversion_Tracking::class );
+			$conversion_tracking->method( 'get_supported_conversion_events' )->willReturn( array() );
+		}
+
+		return new Email_Reporting_Data_Requests(
+			$this->context,
+			$modules,
+			$conversion_tracking,
+			$this->transients,
+			$this->user_options
+		);
+	}
+
+	private function create_service_entity_module( $slug, $owner_id, $access ) {
+		return new class( $this->context, $this->options, $this->user_options, $this->authentication, $slug, (int) $owner_id, $access ) extends Module implements Module_With_Service_Entity, Module_With_Owner {
+			private $owner_id;
+			private $access;
+			private $module_slug;
+
+			public function __construct( Context $context, Options $options, User_Options $user_options, Authentication $authentication, $slug, $owner_id, $access ) {
+				$this->module_slug = $slug;
+				$this->owner_id    = (int) $owner_id;
+				$this->access      = $access;
+				parent::__construct( $context, $options, $user_options, $authentication );
+			}
+
+			public function register() {
+			}
+
+			protected function setup_info() {
+				return array(
+					'slug'        => $this->module_slug,
+					'name'        => 'Fake Module',
+					'description' => 'Fake Module',
+					'order'       => 0,
+					'homepage'    => 'https://example.com',
+				);
+			}
+
+			public function check_service_entity_access() {
+				return $this->access;
+			}
+
+			public function get_owner_id() {
+				return $this->owner_id;
+			}
+
+			public function get_owner_oauth_client() {
+				return $this->authentication->get_oauth_client();
+			}
+
+			public function is_connected() {
+				return true;
+			}
+
+			public function is_recoverable() {
+				return false;
+			}
+		};
+	}
+
+	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id ) {
+		$modules_instance = new Modules(
+			$this->context,
+			$this->options,
+			$this->user_options,
+			$this->authentication
+		);
+
+		$module_objects = array();
+
+		foreach ( $access_map as $slug => $access ) {
+			$module_objects[ $slug ] = $this->create_service_entity_module( $slug, $owner_id, $access );
+		}
+
+		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
+		$modules_property->setAccessible( true );
+		$modules_property->setValue( $modules_instance, $module_objects );
+
+		$this->set_active_modules( array_keys( $access_map ) );
+
+		return $modules_instance;
 	}
 
 	private function set_analytics_settings_connected( array $overrides = array() ) {
