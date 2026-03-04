@@ -495,7 +495,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 	describe.each( policyViolationStatesData )(
 		'for a publication with content policy state %s',
-		( contentPolicyState, expectedCTAText, expectedMessage ) => {
+		( contentPolicyState, expectedCTALabel, expectedMessage ) => {
 			beforeEach( () => {
 				muteFetch( dismissItemEndpoint );
 			} );
@@ -531,7 +531,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 				expect(
 					getByRole( 'button', {
-						name: new RegExp( expectedCTAText ),
+						name: new RegExp( expectedCTALabel ),
 					} )
 				).toBeInTheDocument();
 			} );
@@ -644,7 +644,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				);
 			} );
 
-			it( `should open the policy info URL when the "${ expectedCTAText }" CTA is clicked`, () => {
+			it( `should open the policy info URL when the "${ expectedCTALabel }" CTA is clicked`, () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -667,7 +667,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 				fireEvent.click(
 					getByRole( 'button', {
-						name: new RegExp( expectedCTAText ),
+						name: new RegExp( expectedCTALabel ),
 					} )
 				);
 
