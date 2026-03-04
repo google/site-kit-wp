@@ -47,122 +47,10 @@ $render_shared_part = $data['render_shared_part'];
 	<![endif]-->
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
-		:root {
-			color-scheme: light dark;
-		}
+		<?php $render_shared_part( 'styles' ); ?>
 
-		body {
-			background-color: #F3F5F7;
-			margin: 0;
-			padding: 0;
-			font-family: 'Google Sans', Roboto, Arial, sans-serif;
-			font-size: 14px;
-			line-height: 1.4;
-			color: #202124;
-		}
-
-		table {
-			border-spacing: 0;
-			border-collapse: separate;
-			width: 100%;
-		}
-
-		img {
-			border: 0;
-			max-width: 100%;
-			height: auto;
-			line-height: 100%;
-		}
-
-		.body {
-			width: 100%;
-			<?php /* Outlook only allows max-width when set on table elements. */ ?>
-			max-width: 520px;
-			background-color: #F3F5F7;
-		}
-
-		.container {
-			max-width: 520px;
-			margin: 0 auto;
-			padding: 0;
-			width: 100%;
-			box-sizing: border-box;
-		}
-
-		.main {
-			width: 100%;
-			max-width: 520px;
-			margin: 0 auto;
-		}
-
-		.wrapper {
-			box-sizing: border-box;
-			padding: 0 16px 40px 16px;
-		}
-
-		.preheader {
-			display: none !important;
-			visibility: hidden;
-			mso-hide: all;
-			font-size: 1px;
-			color: #F3F5F7;
-			line-height: 1px;
-			max-height: 0;
-			max-width: 0;
-			opacity: 0;
-			overflow: hidden;
-		}
-
-		/* Dark mode styles for email clients that support prefers-color-scheme */
+		/* Badge adjustments for dark mode - inverted colors for contrast */
 		@media (prefers-color-scheme: dark) {
-			/* Body and container backgrounds */
-			body,
-			.body {
-				background-color: #232824 !important;
-				box-shadow: inset 0 0 0 9999px #232824 !important;
-			}
-
-			/* Content card/section backgrounds */
-			.card {
-				background-color: #161B18 !important;
-				box-shadow: inset 0 0 0 9999px #161B18 !important;
-			}
-
-			/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
-			.card table,
-			.card tr,
-			.card td,
-			.card div,
-			.card p,
-			.card h1,
-			.card h2,
-			.card h3 {
-				background-color: transparent !important;
-				box-shadow: none !important;
-			}
-
-			/* Text colors */
-			.text-primary {
-				color: #EBEEF0 !important;
-			}
-
-			.text-secondary {
-				color: #999F9B !important;
-			}
-
-			/* Link colors */
-			.link {
-				color: #93C9A8 !important;
-			}
-
-			/* Button colors */
-			.button {
-				background-color: #93C9A8 !important;
-				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
-				color: #161B18 !important;
-			}
-
-			/* Badge adjustments for dark mode - inverted colors for contrast */
 			.badge-positive {
 				background-color: #1F4C04 !important;
 				box-shadow: inset 0 0 0 9999px #1F4C04 !important;
@@ -181,49 +69,6 @@ $render_shared_part = $data['render_shared_part'];
 			}
 		}
 
-		/* Outlook app dark mode targeting via data-ogsc attribute */
-		[data-ogsc] body,
-		[data-ogsc] .body {
-			background-color: #232824 !important;
-			box-shadow: inset 0 0 0 9999px #232824 !important;
-		}
-
-		[data-ogsc] .card {
-			background-color: #161B18 !important;
-			box-shadow: inset 0 0 0 9999px #161B18 !important;
-		}
-
-		/* Force card descendants to have transparent backgrounds so the parents' `box-shadow` shows through */
-		[data-ogsc] .card table,
-		[data-ogsc] .card tr,
-		[data-ogsc] .card td,
-		[data-ogsc] .card div,
-		[data-ogsc] .card p,
-		[data-ogsc] .card h1,
-		[data-ogsc] .card h2,
-		[data-ogsc] .card h3 {
-			background-color: transparent !important;
-			box-shadow: none !important;
-		}
-
-		[data-ogsc] .text-primary {
-			color: #EBEEF0 !important;
-		}
-
-		[data-ogsc] .text-secondary {
-			color: #999F9B !important;
-		}
-
-		[data-ogsc] .link {
-			color: #93C9A8 !important;
-		}
-
-		[data-ogsc] .button {
-			background-color: #93C9A8 !important;
-			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
-			color: #161B18 !important;
-		}
-
 		[data-ogsc] .badge-positive {
 			background-color: #1F4C04 !important;
 			box-shadow: inset 0 0 0 9999px #1F4C04 !important;
@@ -239,6 +84,7 @@ $render_shared_part = $data['render_shared_part'];
 		[data-ogsc] .border {
 			border-color: #2D332F !important;
 		}
+
 		@media (min-width: 481px) {
 			.subtitle {
 				/* `!important` used to override inline styles in the element. */
