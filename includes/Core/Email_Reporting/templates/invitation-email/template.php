@@ -80,14 +80,14 @@ $email_title = sprintf( $email_title, esc_attr( $inviter_email ) );
 							?>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 								<tr>
-									<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 24px 0 24px;">
+									<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 0 16px;">
 										<?php /* Site domain. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
 											<a class="text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Title from Content_Map with inviter email link. */ ?>
-										<h1 class="text-primary" style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+										<h1 class="text-primary" style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
 											echo $email_title;
@@ -105,7 +105,7 @@ $email_title = sprintf( $email_title, esc_attr( $inviter_email ) );
 										<?php endforeach; ?>
 
 										<?php /* CTA Button. */ ?>
-										<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+										<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px; margin-bottom: 12px;">
 											<tr>
 												<td>
 													<?php
