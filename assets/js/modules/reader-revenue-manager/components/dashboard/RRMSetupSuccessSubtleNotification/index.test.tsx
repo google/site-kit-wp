@@ -29,6 +29,7 @@ import {
 	act,
 	createTestRegistry,
 	fireEvent,
+	muteFetch,
 	provideModules,
 	provideUserInfo,
 	render,
@@ -48,13 +49,19 @@ import {
 	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 
 jest.mock( '../../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -489,6 +496,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	describe.each( policyViolationStatesData )(
 		'for a publication with content policy state %s',
 		( contentPolicyState, expectedCTAText, expectedMessage ) => {
+			beforeEach( () => {
+				muteFetch( dismissItemEndpoint );
+			} );
+
 			it( 'should render the correct notification', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -570,6 +581,67 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 				expect( setValueMock ).toHaveBeenCalledTimes( 2 );
 				expect( setValueMock ).toHaveBeenCalledWith( undefined );
+			} );
+
+			it( 'should proactively dismiss the respective policy violation notification when dismiss button is clicked', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus: {
+							contentPolicyState,
+							policyInfoLink: 'https://example.com/policy',
+						},
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( id, {
+						Component: NotificationWithComponentProps,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications(
+						[ { id } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
+
+				const dismissItemSpy = jest.spyOn(
+					registry.dispatch( CORE_USER ),
+					'dismissItem'
+				);
+
+				const { getByRole } = render(
+					<NotificationWithComponentProps />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				);
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: 'Got it',
+					} )
+				);
+
+				const expectedNotificationID =
+					contentPolicyState ===
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+						? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+						: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID;
+
+				expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
+				expect( dismissItemSpy ).toHaveBeenCalledWith(
+					expectedNotificationID,
+					{ expiresInSeconds: DAY_IN_SECONDS }
+				);
 			} );
 
 			it( `should open the policy info URL when the "${ expectedCTAText }" CTA is clicked`, () => {
@@ -671,6 +743,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			registry
 				.dispatch( CORE_UI )
 				.setValue( `notification/${ id }/viewed`, true );
+
+			muteFetch( dismissItemEndpoint );
 		} );
 
 		describe.each( [

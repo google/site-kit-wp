@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,7 +30,18 @@ import { FC, ElementType } from 'react';
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect, type Select } from '@/js/googlesitekit-data';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import {
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
 import { TYPES } from '@/js/components/Notice/constants';
 
 export type PolicyViolationType =
@@ -56,6 +68,27 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 } ) => {
 	const isExtreme = policyViolationType === 'EXTREME_POLICY_VIOLATION';
 
+	const contentPolicyState = useSelect( ( select: Select ) =>
+		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const onDismiss = useCallback( () => {
+		dismissNotice();
+
+		// Proactively dismiss the policy violation notification for the next 24 hours.
+		dismissItem(
+			contentPolicyState ===
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+				? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+				: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+			{
+				expiresInSeconds: DAY_IN_SECONDS,
+			}
+		);
+	}, [ contentPolicyState, dismissItem, dismissNotice ] );
+
 	const description =
 		policyViolationType === 'PENDING_POLICY_VIOLATION'
 			? __(
@@ -80,7 +113,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 				) }
 				description={ description }
 				dismissButton={ {
-					onClick: dismissNotice,
+					onClick: onDismiss,
 				} }
 				ctaButton={ {
 					label: isExtreme

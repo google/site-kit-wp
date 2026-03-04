@@ -406,6 +406,7 @@ export const NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		featureFlag: 'rrmPolicyViolations',
 		isDismissible: true,
+		dismissRetries: 5,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			async ( { select, resolveSelect } ) => {
