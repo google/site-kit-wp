@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email_Reporting\Email_Notice_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Notices;
 use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Disconnected_Modules;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -33,6 +34,7 @@ use Google\Site_Kit\Tests\TestCase;
 class Email_NoticesTest extends TestCase {
 
 	private $context;
+	private $authentication;
 	private $modules;
 	private $golinks;
 	private $email_notices;
@@ -43,12 +45,12 @@ class Email_NoticesTest extends TestCase {
 
 		remove_all_actions( 'admin_action_' . Golinks::ACTION_GO );
 
-		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$options        = new Options( $this->context );
-		$user_options   = new User_Options( $this->context );
-		$authentication = new Authentication( $this->context, $options, $user_options );
+		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$options              = new Options( $this->context );
+		$user_options         = new User_Options( $this->context );
+		$this->authentication = new Authentication( $this->context, $options, $user_options );
 
-		$this->modules       = new Modules( $this->context, $options, $user_options, $authentication );
+		$this->modules       = new Modules( $this->context, $options, $user_options, $this->authentication );
 		$this->golinks       = new Golinks( $this->context );
 		$this->email_notices = new Email_Notices(
 			$this->context,
@@ -180,11 +182,28 @@ class Email_NoticesTest extends TestCase {
 	public function test_email_notice_golink_handler__dismisses_notice_and_redirects_to_analytics_setup() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
+		$this->authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'test-token',
+				'expires_in'   => HOUR_IN_SECONDS,
+				'created'      => time(),
+			)
+		);
+		( new User_Options( $this->context, $user_id ) )->set(
+			OAuth_Client_Base::OPTION_AUTH_SCOPES,
+			array(
+				'openid',
+				'https://www.googleapis.com/auth/userinfo.profile',
+				'https://www.googleapis.com/auth/userinfo.email',
+				Analytics_4::READONLY_SCOPE,
+				Analytics_4::EDIT_SCOPE,
+			)
+		);
 
 		$this->golinks->register();
 		$this->golinks->register_handler(
 			Email_Notices::GOLINK_NOTICE,
-			new Email_Notice_Golink_Handler( $this->email_notices, $this->modules )
+			new Email_Notice_Golink_Handler( $this->email_notices, $this->modules, $this->authentication )
 		);
 
 		$_GET['to']        = Email_Notices::GOLINK_NOTICE;
@@ -197,15 +216,77 @@ class Email_NoticesTest extends TestCase {
 			$query = wp_parse_url( $exception->get_location(), PHP_URL_QUERY );
 			parse_str( is_string( $query ) ? $query : '', $query_args );
 
-			$this->assertSame( Golinks::ACTION_GO, $query_args['action'], 'Expected redirect to dashboard golink action.' );
-			$this->assertSame( 'dashboard', $query_args['to'], 'Expected redirect to dashboard golink.' );
-			$this->assertSame( Analytics_4::MODULE_SLUG, $query_args['slug'], 'Expected redirect to Analytics setup flow.' );
-			$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth parameter in redirect URL.' );
+			if ( Authentication::ACTION_CONNECT === $query_args['action'] ) {
+				$this->assertArrayHasKey( 'redirect', $query_args, 'Expected connect URL to include redirect destination.' );
+
+				$redirect_destination = rawurldecode( (string) $query_args['redirect'] );
+				$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to go through dashboard golink.' );
+				$this->assertStringContainsString( 'to=dashboard', $redirect_destination, 'Expected redirect destination to use dashboard golink.' );
+				$this->assertStringContainsString( 'slug=' . Analytics_4::MODULE_SLUG, $redirect_destination, 'Expected redirect destination to include Analytics module slug.' );
+				$this->assertStringContainsString( 'reAuth=true', $redirect_destination, 'Expected redirect destination to include reAuth=true.' );
+			} else {
+				$this->assertSame( Golinks::ACTION_GO, $query_args['action'], 'Expected redirect to dashboard golink action.' );
+				$this->assertSame( 'dashboard', $query_args['to'], 'Expected redirect to dashboard golink.' );
+				$this->assertSame( Analytics_4::MODULE_SLUG, $query_args['slug'], 'Expected redirect to Analytics setup flow.' );
+				$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth parameter in redirect URL.' );
+			}
 		}
 
 		$state = $this->get_notice_prompt_state( $user_id );
 		$this->assertSame( 0, (int) $state['expires'], 'Expected notice to be dismissed permanently on CTA click.' );
 		$this->assertTrue( $this->modules->is_module_active( Analytics_4::MODULE_SLUG ), 'Expected Analytics module to be activated before redirecting to setup.' );
+	}
+
+	public function test_email_notice_golink_handler__routes_through_connect_when_reauthentication_is_required() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$authentication = new Authentication(
+			$this->context,
+			new Options( $this->context ),
+			new User_Options( $this->context, $user_id )
+		);
+
+		$authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'test-token',
+				'expires_in'   => HOUR_IN_SECONDS,
+				'created'      => time(),
+			)
+		);
+		$authentication->get_oauth_client()->set_granted_scopes( array() );
+
+		$this->golinks->register();
+		$this->golinks->register_handler(
+			Email_Notices::GOLINK_NOTICE,
+			new Email_Notice_Golink_Handler( $this->email_notices, $this->modules, $authentication )
+		);
+
+		$_GET['to']        = Email_Notices::GOLINK_NOTICE;
+		$_GET['notice_id'] = Analytics_Setup_Email_Notice::ID;
+
+		try {
+			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected RedirectException!' );
+		} catch ( RedirectException $exception ) {
+			$location = $exception->get_location();
+			$query    = wp_parse_url( $location, PHP_URL_QUERY );
+			parse_str( is_string( $query ) ? $query : '', $query_args );
+
+			$this->assertSame( Authentication::ACTION_CONNECT, $query_args['action'], 'Expected redirect to connect action when reauthentication is required.' );
+			$this->assertSame( 'true', $query_args['status'], 'Expected status=true in connect URL.' );
+			$this->assertArrayHasKey( 'redirect', $query_args, 'Expected connect URL to include redirect destination.' );
+
+			$redirect_destination = rawurldecode( (string) $query_args['redirect'] );
+			$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to use dashboard golink action.' );
+			$this->assertStringContainsString( 'to=dashboard', $redirect_destination, 'Expected redirect destination to use dashboard golink.' );
+			$this->assertStringContainsString( 'slug=' . Analytics_4::MODULE_SLUG, $redirect_destination, 'Expected redirect destination to include Analytics module slug.' );
+			$this->assertStringContainsString( 'reAuth=true', $redirect_destination, 'Expected redirect destination to include reAuth=true.' );
+		}
+
+		$state = $this->get_notice_prompt_state( $user_id );
+		$this->assertSame( 0, (int) $state['expires'], 'Expected notice to be dismissed permanently on CTA click.' );
+		$this->assertTrue( $this->modules->is_module_active( Analytics_4::MODULE_SLUG ), 'Expected Analytics module to be activated before redirecting to connect flow.' );
 	}
 
 	/**
