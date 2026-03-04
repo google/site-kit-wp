@@ -665,6 +665,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -727,6 +728,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
