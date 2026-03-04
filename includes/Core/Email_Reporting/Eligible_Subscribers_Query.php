@@ -122,7 +122,14 @@ class Eligible_Subscribers_Query {
 	 * @return \WP_User[] List of users with shared roles.
 	 */
 	private function query_shared_roles( $excluded_user_ids ) {
-		$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
+		$sharing_settings = $this->modules->get_module_sharing_settings();
+
+		$shared_roles = array_unique(
+			array_merge(
+				$sharing_settings->get_shared_roles( 'analytics-4' ),
+				$sharing_settings->get_shared_roles( 'search-console' )
+			)
+		);
 
 		if ( empty( $shared_roles ) ) {
 			return array();
@@ -130,7 +137,7 @@ class Eligible_Subscribers_Query {
 
 		$query = new WP_User_Query(
 			array(
-				'role__in'    => array_values( array_unique( $shared_roles ) ),
+				'role__in'    => array_values( $shared_roles ),
 				'number'      => self::QUERY_LIMIT,
 				'count_total' => false,
 				'exclude'     => $excluded_user_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excluding the requesting user from eligibility results.
