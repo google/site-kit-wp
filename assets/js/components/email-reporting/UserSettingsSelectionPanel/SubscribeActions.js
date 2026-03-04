@@ -73,21 +73,17 @@ export default function SubscribeActions( {
 		}
 	}
 
-	if ( isLoading ) {
-		return (
-			<div className="googlesitekit-selection-panel-subscribe-actions">
-				<PreviewBlocks width="140px" height="42px" count={ 2 } />
-			</div>
-		);
-	}
-
 	if ( false === isEmailReportingEnabled ) {
 		return null;
 	}
 
 	return (
 		<div className="googlesitekit-selection-panel-subscribe-actions">
-			{ isSubscribed && (
+			{ isLoading && (
+				<PreviewBlocks width="140px" height="42px" count={ 2 } />
+			) }
+
+			{ ! isLoading && isSubscribed && (
 				<SpinnerButton
 					onClick={ () => handleClick( ACTION_TYPE.UNSUBSCRIBE ) }
 					isSaving={
@@ -100,23 +96,26 @@ export default function SubscribeActions( {
 					{ __( 'Unsubscribe', 'google-site-kit' ) }
 				</SpinnerButton>
 			) }
-			<SpinnerButton
-				onClick={ () =>
-					handleClick(
-						isSubscribed
-							? ACTION_TYPE.UPDATE_SETTINGS
-							: ACTION_TYPE.SUBSCRIBE
-					)
-				}
-				isSaving={
-					isSavingSettings && actionType !== ACTION_TYPE.UNSUBSCRIBE
-				}
-				disabled={ isSavingSettings }
-			>
-				{ isSubscribed
-					? __( 'Update Settings', 'google-site-kit' )
-					: __( 'Subscribe', 'google-site-kit' ) }
-			</SpinnerButton>
+			{ ! isLoading && (
+				<SpinnerButton
+					onClick={ () =>
+						handleClick(
+							isSubscribed
+								? ACTION_TYPE.UPDATE_SETTINGS
+								: ACTION_TYPE.SUBSCRIBE
+						)
+					}
+					isSaving={
+						isSavingSettings &&
+						actionType !== ACTION_TYPE.UNSUBSCRIBE
+					}
+					disabled={ isSavingSettings }
+				>
+					{ isSubscribed
+						? __( 'Update Settings', 'google-site-kit' )
+						: __( 'Subscribe', 'google-site-kit' ) }
+				</SpinnerButton>
+			) }
 		</div>
 	);
 }
