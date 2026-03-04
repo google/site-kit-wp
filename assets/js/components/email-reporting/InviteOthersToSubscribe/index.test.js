@@ -88,6 +88,45 @@ describe( 'InviteOthersToSubscribe', () => {
 		await act( waitForDefaultTimeouts );
 	} );
 
+	it( 'does not make duplicate requests when search term is empty', async () => {
+		fetchMock.getOnce( eligibleSubscribersEndpoint, {
+			body: createSubscribersResponse(
+				[
+					{
+						id: 2,
+						displayName: 'Eligible User',
+						email: 'eligible@example.com',
+						role: 'editor',
+						subscribed: false,
+						invited: false,
+					},
+				],
+				{ total: 7, totalPages: 1 }
+			),
+			status: 200,
+		} );
+
+		const { findByText, findByLabelText } = render(
+			<InviteOthersToSubscribe />,
+			{
+				registry,
+			}
+		);
+
+		await findByText( 'Eligible User' );
+		expect(
+			await findByLabelText( /Search user name, role, or email/i )
+		).toBeInTheDocument();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( fetchMock ).toHaveFetched( eligibleSubscribersEndpoint, {
+			queryParams: {
+				page: 1,
+				search: '',
+			},
+		} );
+	} );
+
 	it( 'shows empty state when no eligible users exist', async () => {
 		fetchMock.getOnce( eligibleSubscribersEndpoint, {
 			body: createSubscribersResponse( [], { total: 0, totalPages: 0 } ),
