@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -89,3 +94,8 @@ export default function Header( { closePanel, isLoading } ) {
 		</SelectionPanelHeader>
 	);
 }
+
+Header.propTypes = {
+	closePanel: PropTypes.func.isRequired,
+	isLoading: PropTypes.bool,
+};
