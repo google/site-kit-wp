@@ -468,29 +468,34 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const policyViolationStatesData = [
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+			'View violations',
 			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
+			'View violations',
 			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+			'View violations',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
+			'View violations',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+			'Learn more',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 	];
 
 	describe.each( policyViolationStatesData )(
 		'for a publication with content policy state %s',
-		( contentPolicyState, expectedMessage ) => {
+		( contentPolicyState, expectedCTALabel, expectedMessage ) => {
 			beforeEach( () => {
 				muteFetch( dismissItemEndpoint );
 			} );
@@ -525,7 +530,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				expect( getByText( expectedMessage ) ).toBeInTheDocument();
 
 				expect(
-					getByRole( 'button', { name: /View violations/ } )
+					getByRole( 'button', {
+						name: new RegExp( expectedCTALabel ),
+					} )
 				).toBeInTheDocument();
 			} );
 
@@ -637,7 +644,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				);
 			} );
 
-			it( 'should open the policy info URL when the "View violations" CTA is clicked', () => {
+			it( `should open the policy info URL when the "${ expectedCTALabel }" CTA is clicked`, () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -660,7 +667,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 				fireEvent.click(
 					getByRole( 'button', {
-						name: /View violations/,
+						name: new RegExp( expectedCTALabel ),
 					} )
 				);
 
@@ -764,6 +771,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						contentPolicyState
 					) );
 
+			const isExtremePolicyViolation =
+				contentPolicyState ===
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE;
+
 			it( 'should track the events when the notification is dismissed', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -839,9 +850,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				);
 
 				// CTA button should be present.
-				const ctaButton = hasPolicyViolation
-					? getByText( 'View violations' )
-					: getByText( 'Get started' );
+				let ctaButton;
+				if ( isExtremePolicyViolation ) {
+					ctaButton = getByText( 'Learn more' );
+				} else if ( hasPolicyViolation ) {
+					ctaButton = getByText( 'View violations' );
+				} else {
+					ctaButton = getByText( 'Get started' );
+				}
 
 				expect( ctaButton ).toBeInTheDocument();
 
