@@ -88,6 +88,13 @@ final class Email_Log {
 	const META_TEMPLATE_TYPE = '_template_type';
 
 	/**
+	 * Admin notified meta key.
+	 *
+	 * @since n.e.x.t
+	 */
+	const META_ADMIN_NOTIFIED = '_admin_notified';
+
+	/**
 	 * Email log post statuses.
 	 *
 	 * Slugs must stay within the posts table varchar(20) limit.
@@ -378,6 +385,17 @@ final class Email_Log {
 				'sanitize_callback' => array( __CLASS__, 'sanitize_template_type' ),
 			)
 		);
+
+		register_post_meta(
+			self::POST_TYPE,
+			self::META_ADMIN_NOTIFIED,
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'auth_callback'     => $auth_callback,
+				'sanitize_callback' => array( __CLASS__, 'sanitize_admin_notified' ),
+			)
+		);
 	}
 
 	/**
@@ -531,6 +549,18 @@ final class Email_Log {
 		}
 
 		return self::TEMPLATE_TYPE_EMAIL_REPORT;
+	}
+
+	/**
+	 * Sanitizes the admin notified meta value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value Meta value.
+	 * @return string Sanitized value: '1' if truthy, empty string otherwise.
+	 */
+	public static function sanitize_admin_notified( $value ) {
+		return $value ? '1' : '';
 	}
 
 	/**

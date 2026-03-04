@@ -130,7 +130,7 @@ class Content_MapTest extends TestCase {
 		$body  = Content_Map::get_body( 'error-email' );
 
 		$this->assertNotEmpty( $title, 'Error email should have a title.' );
-		$this->assertStringContainsString( 'issue', $title, 'Error email title should mention issue.' );
+		$this->assertStringContainsString( 'report', $title, 'Error email title should mention report.' );
 		$this->assertNotEmpty( $body, 'Error email should have body content.' );
 	}
 }

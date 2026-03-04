@@ -357,4 +357,54 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
 	}
+
+	public function test_convert_links_to_text__converts_anchor_tags() {
+		$html = 'Contact your administrator or <a href="https://example.com/help">get help</a>.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( 'Contact your administrator or get help (https://example.com/help).', $result, 'Anchor tag should be converted to text with URL in parentheses' );
+	}
+
+	public function test_convert_links_to_text__converts_multiple_links() {
+		$html = 'Go to <a href="https://example.com/settings">Settings</a> or <a href="https://example.com/help">get help</a>.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( 'Go to Settings (https://example.com/settings) or get help (https://example.com/help).', $result, 'Multiple anchor tags should each be converted to text with URLs in parentheses' );
+	}
+
+	public function test_convert_links_to_text__preserves_non_link_html() {
+		$html = 'This is <strong>important</strong> text without links.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( $html, $result, 'Non-link HTML should be preserved.' );
+	}
+
+	public function test_convert_links_to_text__handles_string_without_html() {
+		$text = 'Plain text with no HTML.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $text );
+
+		$this->assertSame( $text, $result, 'Plain text should pass through unchanged.' );
+	}
+
+	public function test_format_simple_email_body_converts_links_to_text() {
+		$data = array(
+			'site'                   => array( 'domain' => 'example.com' ),
+			'title'                  => 'Test',
+			'body'                   => array(
+				'Go to <a href="https://example.com/settings">Settings</a> or <a href="https://example.com/help">get help</a>.',
+			),
+			'primary_call_to_action' => array(),
+			'footer'                 => array( 'copy' => '' ),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'Settings (https://example.com/settings)', $result, 'Body links should be converted to text format.' );
+		$this->assertStringContainsString( 'get help (https://example.com/help)', $result, 'Multiple body links should be converted.' );
+		$this->assertStringNotContainsString( '<a ', $result, 'No HTML anchor tags should remain in plain text.' );
+	}
 }

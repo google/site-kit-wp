@@ -72,10 +72,11 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Body paragraphs (strip any HTML tags for plain text output).
+		// Body paragraphs (convert links to text, then strip remaining HTML).
 		foreach ( (array) $body as $paragraph ) {
-			$lines[] = wp_strip_all_tags( $paragraph );
-			$lines[] = '';
+			$paragraph = self::convert_links_to_text( $paragraph );
+			$lines[]   = wp_strip_all_tags( $paragraph );
+			$lines[]   = '';
 		}
 
 		// Learn more link (optional).
@@ -97,9 +98,28 @@ class Plain_Text_Formatter {
 		$lines[] = str_repeat( '-', 50 );
 		$lines[] = '';
 
-		// Footer copy.
+		// Footer copy with optional unsubscribe link.
 		if ( ! empty( $footer_copy ) ) {
+			$unsubscribe_url = $data['footer']['unsubscribe_url'] ?? '';
+			if ( ! empty( $unsubscribe_url ) ) {
+				$footer_copy .= ' ' . sprintf(
+					/* translators: %s: Unsubscribe URL */
+					__( 'here: %s', 'google-site-kit' ),
+					$unsubscribe_url
+				);
+			}
 			$lines[] = $footer_copy;
+			$lines[] = '';
+		}
+
+		// Footer links.
+		$footer_links = $data['footer']['links'] ?? array();
+		if ( ! empty( $footer_links ) && is_array( $footer_links ) ) {
+			foreach ( $footer_links as $link ) {
+				if ( ! empty( $link['label'] ) && ! empty( $link['url'] ) ) {
+					$lines[] = self::format_link( $link['label'], $link['url'] );
+				}
+			}
 		}
 
 		return implode( "\n", $lines );
@@ -200,6 +220,25 @@ class Plain_Text_Formatter {
 	 */
 	public static function format_link( $label, $url ) {
 		return sprintf( '%s: %s', $label, $url );
+	}
+
+	/**
+	 * Converts HTML anchor tags to plain text format.
+	 *
+	 * Replaces `<a href="url">text</a>` with `text (url)` so that
+	 * link destinations are preserved in plain text emails.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $html HTML string that may contain anchor tags.
+	 * @return string String with anchors converted to text format.
+	 */
+	public static function convert_links_to_text( $html ) {
+		return preg_replace(
+			'/<a\s+[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)<\/a>/i',
+			'$2 ($1)',
+			$html
+		);
 	}
 
 	/**
