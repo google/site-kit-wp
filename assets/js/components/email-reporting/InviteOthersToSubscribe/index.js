@@ -75,7 +75,7 @@ export default function InviteOthersToSubscribe() {
 	const eligibleSubscribers = useInViewSelect(
 		( select ) => {
 			if ( ! hasOpenedSelectionPanel ) {
-				return undefined;
+				return null;
 			}
 
 			return select( CORE_SITE ).getEligibleSubscribers( {
@@ -88,19 +88,14 @@ export default function InviteOthersToSubscribe() {
 	const allEligibleSubscribers = useInViewSelect(
 		( select ) => {
 			if ( ! hasOpenedSelectionPanel ) {
-				return undefined;
-			}
-
-			// Reuse the current selector result when search is empty to avoid duplicate requests.
-			if ( debouncedSearchTerm === '' ) {
-				return undefined;
+				return null;
 			}
 
 			return select( CORE_SITE ).getEligibleSubscribers( {
 				search: '',
 			} );
 		},
-		[ debouncedSearchTerm, hasOpenedSelectionPanel ]
+		[ hasOpenedSelectionPanel ]
 	);
 
 	const isLoading = useInViewSelect(
@@ -159,15 +154,8 @@ export default function InviteOthersToSubscribe() {
 	}
 
 	const users = eligibleSubscribers?.users || [];
-	// Show search only when the unfiltered eligible-user total is above the threshold.
-	// If current search is already empty, reuse that same response instead of fetching search:'' again.
-	const eligibleSubscribersForSearchThreshold =
-		debouncedSearchTerm === ''
-			? eligibleSubscribers
-			: allEligibleSubscribers;
 	const showSearch =
-		( eligibleSubscribersForSearchThreshold?.total || 0 ) >
-		SEARCH_THRESHOLD;
+		( allEligibleSubscribers?.total || 0 ) > SEARCH_THRESHOLD;
 
 	const tooltipContent = createInterpolateElement(
 		__(
