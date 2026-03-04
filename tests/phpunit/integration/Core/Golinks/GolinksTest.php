@@ -103,7 +103,7 @@ class GolinksTest extends TestCase {
 			$this->fail( 'Expected RedirectException!' );
 		} catch ( RedirectException $redirect_exception ) {
 			$query = wp_parse_url( $redirect_exception->get_location(), PHP_URL_QUERY );
-			parse_str( $query, $query_args );
+			parse_str( is_string( $query ) ? $query : '', $query_args );
 
 			$this->assertSame( 'googlesitekit-dashboard', $query_args['page'], 'Expected redirect to dashboard page.' );
 			$this->assertSame( 'analytics-4', $query_args['slug'], 'Expected slug query arg to be forwarded.' );
