@@ -176,10 +176,6 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 			return $this->golinks->get_url( 'dashboard' );
 		}
 
-		if ( ! $this->modules->is_module_active( Analytics_4::MODULE_SLUG ) ) {
-			$this->modules->activate_module( Analytics_4::MODULE_SLUG );
-		}
-
 		return add_query_arg(
 			array(
 				'slug'   => Analytics_4::MODULE_SLUG,

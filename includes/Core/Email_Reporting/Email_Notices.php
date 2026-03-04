@@ -73,6 +73,14 @@ class Email_Notices {
 	private $notices = array();
 
 	/**
+	 * Cached dismissed prompts instances keyed by user ID.
+	 *
+	 * @since n.e.x.t
+	 * @var array<int, Dismissed_Prompts>
+	 */
+	private $dismissed_prompts_instances = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -289,11 +297,11 @@ class Email_Notices {
 	private function is_prompt_dismissed( array $prompt_state ) {
 		$expires = isset( $prompt_state['expires'] ) ? (int) $prompt_state['expires'] : 0;
 
-		if ( 0 === $expires && ! empty( $prompt_state ) ) {
-			return true;
+		if ( 0 === $expires ) {
+			return ! empty( $prompt_state );
 		}
 
-		return false;
+		return $expires > time();
 	}
 
 	/**
@@ -319,6 +327,14 @@ class Email_Notices {
 	 * @return Dismissed_Prompts Dismissed prompts instance.
 	 */
 	private function get_dismissed_prompts( $user_id ) {
-		return new Dismissed_Prompts( new User_Options( $this->context, (int) $user_id ) );
+		$user_id = (int) $user_id;
+
+		if ( ! isset( $this->dismissed_prompts_instances[ $user_id ] ) ) {
+			$this->dismissed_prompts_instances[ $user_id ] = new Dismissed_Prompts(
+				new User_Options( $this->context, $user_id )
+			);
+		}
+
+		return $this->dismissed_prompts_instances[ $user_id ];
 	}
 }

@@ -149,12 +149,27 @@ class Email_NoticesTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$user    = get_user_by( 'id', $user_id );
 
-		$first_impression  = $this->email_notices->get_header_notices( $user );
+		$first_impression = $this->email_notices->get_header_notices( $user );
+
+		$this->assertCount( 1, $first_impression, 'Expected notice on first impression.' );
+
+		$hidden_while_unexpired = $this->email_notices->get_header_notices( $user );
+		$this->assertSame( array(), $hidden_while_unexpired, 'Expected notice to be hidden while temporary dismissal is unexpired.' );
+
+		$dismissed_prompts = new Dismissed_Prompts( new User_Options( $this->context, $user_id ) );
+		$dismissed_prompts->set(
+			array(
+				Analytics_Setup_Email_Notice::DISMISSAL_SLUG => array(
+					'expires' => time() - 10,
+					'count'   => 1,
+				),
+			)
+		);
+
 		$second_impression = $this->email_notices->get_header_notices( $user );
 		$third_impression  = $this->email_notices->get_header_notices( $user );
 
-		$this->assertCount( 1, $first_impression, 'Expected notice on first impression.' );
-		$this->assertCount( 1, $second_impression, 'Expected notice on second impression.' );
+		$this->assertCount( 1, $second_impression, 'Expected notice on second impression after temporary dismissal expires.' );
 		$this->assertSame( array(), $third_impression, 'Expected notice to be hidden on third impression.' );
 
 		$state = $this->get_notice_prompt_state( $user_id );
@@ -169,7 +184,7 @@ class Email_NoticesTest extends TestCase {
 		$this->golinks->register();
 		$this->golinks->register_handler(
 			Email_Notices::GOLINK_NOTICE,
-			new Email_Notice_Golink_Handler( $this->email_notices )
+			new Email_Notice_Golink_Handler( $this->email_notices, $this->modules )
 		);
 
 		$_GET['to']        = Email_Notices::GOLINK_NOTICE;
@@ -180,7 +195,7 @@ class Email_NoticesTest extends TestCase {
 			$this->fail( 'Expected RedirectException!' );
 		} catch ( RedirectException $exception ) {
 			$query = wp_parse_url( $exception->get_location(), PHP_URL_QUERY );
-			parse_str( $query, $query_args );
+			parse_str( is_string( $query ) ? $query : '', $query_args );
 
 			$this->assertSame( Golinks::ACTION_GO, $query_args['action'], 'Expected redirect to dashboard golink action.' );
 			$this->assertSame( 'dashboard', $query_args['to'], 'Expected redirect to dashboard golink.' );
