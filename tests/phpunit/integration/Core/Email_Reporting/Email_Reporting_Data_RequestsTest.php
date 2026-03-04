@@ -15,9 +15,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
@@ -28,6 +26,7 @@ use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Core\Modules\FakeModule;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -413,19 +412,15 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	private function create_service_entity_module( $slug, $owner_id, $access ) {
-		return new class( $this->context, $this->options, $this->user_options, $this->authentication, $slug, (int) $owner_id, $access ) extends Module implements Module_With_Service_Entity, Module_With_Owner {
-			private $owner_id;
+		return new class( $this->context, $this->options, $this->user_options, $this->authentication, $slug, (int) $owner_id, $access ) extends FakeModule implements Module_With_Service_Entity {
 			private $access;
 			private $module_slug;
 
 			public function __construct( Context $context, Options $options, User_Options $user_options, Authentication $authentication, $slug, $owner_id, $access ) {
 				$this->module_slug = $slug;
-				$this->owner_id    = (int) $owner_id;
 				$this->access      = $access;
 				parent::__construct( $context, $options, $user_options, $authentication );
-			}
-
-			public function register() {
+				$this->owner_id = (int) $owner_id;
 			}
 
 			protected function setup_info() {
@@ -440,22 +435,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 			public function check_service_entity_access() {
 				return $this->access;
-			}
-
-			public function get_owner_id() {
-				return $this->owner_id;
-			}
-
-			public function get_owner_oauth_client() {
-				return $this->authentication->get_oauth_client();
-			}
-
-			public function is_connected() {
-				return true;
-			}
-
-			public function is_recoverable() {
-				return false;
 			}
 		};
 	}
