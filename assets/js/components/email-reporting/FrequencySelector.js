@@ -271,4 +271,5 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 
 FrequencySelector.propTypes = {
 	isUserSubscribed: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };
