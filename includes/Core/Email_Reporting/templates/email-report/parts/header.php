@@ -24,22 +24,19 @@ $icon_star_url      = $get_asset_url( 'icon-star' );
 		<td style="padding-bottom:16px;">
 			<table role="presentation" width="100%">
 				<tr>
-					<td style="vertical-align:top; text-align:center;" align="center">
-						<center>
-							<img src="<?php echo esc_url( $logo_url ); ?>"
-								alt="<?php echo esc_attr__( 'Site Kit by Google', 'google-site-kit' ); ?>" width="79"
-								height="22" style="display:block; margin-top: 12px;" />
-						</center>
+					<td style="vertical-align:top;" width="79">
+						<img src="<?php echo esc_url( $logo_url ); ?>"
+							alt="<?php echo esc_attr__( 'Site Kit by Google', 'google-site-kit' ); ?>" width="79"
+							height="22" style="display:block; margin-top: 8px;" />
 					</td>
-				</tr>
-				<tr>
 					<?php /* Extra centering for Outlook. */ ?>
 					<td style="vertical-align:top; text-align:center;" align="center">
 						<center>
 							<img src="<?php echo esc_url( $shooting_stars_url ); ?>" alt="" width="107" height="56"
-								style="display:block; margin: 24px auto 0 auto;" align="center" />
+								style="display:block; margin: 12px auto 0 auto;" align="center" />
 						</center>
 					</td>
+					<td width="79">&nbsp;</td>
 				</tr>
 				<tr>
 					<td style="text-align:center; vertical-align:middle; font-size:13px; color: #161B18;" colspan="3">
@@ -69,5 +66,5 @@ $icon_star_url      = $get_asset_url( 'icon-star' );
 			)
 		);
 		?>
-	<?php endforeach; ?>
+<?php endforeach; ?>
 <?php endif; ?>
