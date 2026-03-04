@@ -61,9 +61,16 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 	onCTAClick,
 	policyViolationType,
 } ) => {
-	const contentPolicyState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
-	);
+	const isExtremeViolation = useSelect( ( select: Select ) => {
+		const contentPolicyState = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getContentPolicyState();
+
+		return (
+			contentPolicyState ===
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+		);
+	} );
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
@@ -72,15 +79,14 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 
 		// Proactively dismiss the policy violation notification for the next 24 hours.
 		dismissItem(
-			contentPolicyState ===
-				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			isExtremeViolation
 				? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
 				: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 			{
 				expiresInSeconds: DAY_IN_SECONDS,
 			}
 		);
-	}, [ contentPolicyState, dismissItem, dismissNotice ] );
+	}, [ dismissItem, dismissNotice, isExtremeViolation ] );
 
 	const description =
 		policyViolationType === 'PENDING_POLICY_VIOLATION'
@@ -97,7 +103,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
-				type={ TYPES.WARNING }
+				type={ isExtremeViolation ? TYPES.ERROR : TYPES.WARNING }
 				notificationID={ id }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(
@@ -109,7 +115,9 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 					onClick: onDismiss,
 				} }
 				ctaButton={ {
-					label: __( 'View violations', 'google-site-kit' ),
+					label: isExtremeViolation
+						? __( 'Learn more', 'google-site-kit' )
+						: __( 'View violations', 'google-site-kit' ),
 					onClick: onCTAClick,
 					external: true,
 				} }
