@@ -376,7 +376,12 @@ class Worker_TaskTest extends TestCase {
 
 		$this->template_formatter->expects( $this->once() )
 			->method( 'build_template_payload' )
-			->with( array( $section ), Email_Reporting_Settings::FREQUENCY_WEEKLY, $this->arrayHasKey( 'startDate' ) )
+			->with(
+				array( $section ),
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$this->arrayHasKey( 'startDate' ),
+				$this->isInstanceOf( \WP_User::class )
+			)
 			->willReturn(
 				array(
 					'sections_payload' => array( 'total_conversion_events' => array( 'value' => '10' ) ),
