@@ -409,6 +409,20 @@ export const NOTIFICATIONS = {
 					return false;
 				}
 
+				await resolveSelect( CORE_USER ).getDismissedItems();
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+				);
+
+				// Due to the addition of the `dismissRetries` property, the notification dismissal
+				// logic uses prompts instead of items to track the dismissal status.
+				// However, it is possible that the notification is dismissed using dismissed items
+				// at the setup success notification stage.
+				if ( isItemDismissed ) {
+					return false;
+				}
+
 				await resolveSelect(
 					MODULES_READER_REVENUE_MANAGER
 				).getSettings();

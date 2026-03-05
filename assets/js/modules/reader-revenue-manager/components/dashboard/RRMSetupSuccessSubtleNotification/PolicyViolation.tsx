@@ -74,10 +74,8 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const onDismiss = useCallback( () => {
-		dismissNotice();
-
-		// Proactively dismiss the policy violation notification for the next 24 hours.
+	// Proactively dismiss the policy violation notification for the next 24 hours.
+	const onView = useCallback( () => {
 		dismissItem(
 			isExtremeViolation
 				? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
@@ -86,7 +84,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 				expiresInSeconds: DAY_IN_SECONDS,
 			}
 		);
-	}, [ dismissItem, dismissNotice, isExtremeViolation ] );
+	}, [ dismissItem, isExtremeViolation ] );
 
 	const description =
 		policyViolationType === 'PENDING_POLICY_VIOLATION'
@@ -100,7 +98,10 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			  );
 
 	return (
-		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+		<Notification
+			gaTrackingEventArgs={ gaTrackingEventArgs }
+			onView={ onView }
+		>
 			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ isExtremeViolation ? TYPES.ERROR : TYPES.WARNING }
@@ -112,7 +113,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 				) }
 				description={ description }
 				dismissButton={ {
-					onClick: onDismiss,
+					onClick: dismissNotice,
 				} }
 				ctaButton={ {
 					label: isExtremeViolation
