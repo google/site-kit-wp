@@ -119,6 +119,24 @@
 				box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 				color: #161B18 !important;
 			}
+
+			/* Badge adjustments for dark mode - inverted colors for contrast */
+			.badge-positive {
+				background-color: #1F4C04 !important;
+				box-shadow: inset 0 0 0 9999px #1F4C04 !important;
+				color: #D8FFC0 !important;
+			}
+
+			.badge-negative {
+				background-color: #7A1E00 !important;
+				box-shadow: inset 0 0 0 9999px #7A1E00 !important;
+				color: #FFDED3 !important;
+			}
+
+			/* Border color */
+			.border {
+				border-color: #2D332F !important;
+			}
 		}
 
 		/* Outlook app dark mode targeting via data-ogsc attribute */
@@ -162,4 +180,27 @@
 			background-color: #93C9A8 !important;
 			box-shadow: inset 0 0 0 9999px #93C9A8 !important;
 			color: #161B18 !important;
+		}
+
+		[data-ogsc] .badge-positive {
+			background-color: #1F4C04 !important;
+			box-shadow: inset 0 0 0 9999px #1F4C04 !important;
+			color: #D8FFC0 !important;
+		}
+
+		[data-ogsc] .badge-negative {
+			background-color: #7A1E00 !important;
+			box-shadow: inset 0 0 0 9999px #7A1E00 !important;
+			color: #FFDED3 !important;
+		}
+
+		[data-ogsc] .border {
+			border-color: #2D332F !important;
+		}
+
+		@media (min-width: 481px) {
+			.subtitle {
+				/* `!important` used to override inline styles in the element. */
+				width: auto !important;
+			}
 		}
