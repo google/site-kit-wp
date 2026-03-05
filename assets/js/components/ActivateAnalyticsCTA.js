@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useMount } from 'react-use';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,6 +28,7 @@ import { useMount } from 'react-use';
 import {
 	createInterpolateElement,
 	useEffect,
+	useRef,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -56,6 +57,7 @@ export default function ActivateAnalyticsCTA( {
 	dismissedItemSlug,
 	analyticsEventLabel,
 } ) {
+	const trackingRef = useRef();
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const trackEvents = useNotificationEvents( {
@@ -143,19 +145,24 @@ export default function ActivateAnalyticsCTA( {
 		}
 	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
 
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			trackEvents.view( analyticsEventLabel );
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, hasBeenInView, trackEvents, analyticsEventLabel ] );
+
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const trackEventArgs =
-		analyticsEventLabel !== undefined
-			? { label: analyticsEventLabel }
-			: undefined;
-
-	useMount( () => {
-		trackEvents.view( trackEventArgs );
-	} );
-
 	function handleDismiss() {
-		trackEvents.dismiss( trackEventArgs );
+		trackEvents.dismiss( analyticsEventLabel );
 		dismissItem( dismissedItemSlug );
 	}
 
@@ -185,7 +192,10 @@ export default function ActivateAnalyticsCTA( {
 						) }
 					</p>
 					<SpinnerButton
-						onClick={ onClickCallback }
+						onClick={ () => {
+							onClickCallback();
+							trackEvents.confirm( analyticsEventLabel );
+						} }
 						isSaving={ inProgress }
 						disabled={ inProgress }
 					>
@@ -219,7 +229,7 @@ export default function ActivateAnalyticsCTA( {
 									href={ documentationURL }
 									onClick={ () => {
 										trackEvents.clickLearnMore(
-											trackEventArgs
+											analyticsEventLabel
 										);
 									} }
 									external
