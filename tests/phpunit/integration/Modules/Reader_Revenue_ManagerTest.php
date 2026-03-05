@@ -737,7 +737,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_debug_fields__content_policy_state() {
 		$this->reader_revenue_manager->get_settings()->register();
 
-		// Test that the content policy state debug field is included with default contentPolicyStatus.
+		// Test that the content policy state debug field is included with default `contentPolicyStatus`.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID' => 'test-publication-id',
