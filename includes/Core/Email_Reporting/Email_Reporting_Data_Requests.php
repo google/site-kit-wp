@@ -191,7 +191,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Categorizes a WP_Error based on its status and reason for better messaging in the front end.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param WP_Error $error       The error to categorize.
 	 * @param string   $module_slug The module slug related to the error.

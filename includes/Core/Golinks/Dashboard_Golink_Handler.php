@@ -15,7 +15,7 @@ use Google\Site_Kit\Context;
 /**
  * Golink handler for the Site Kit dashboard URL.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Dashboard_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Builds the dashboard destination URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string Destination URL.

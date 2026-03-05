@@ -34,7 +34,7 @@ class Email_Template_Renderer_Factory {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @var Golinks
 	 */
@@ -44,7 +44,7 @@ class Email_Template_Renderer_Factory {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Golinks $golinks Golinks instance.

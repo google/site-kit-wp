@@ -99,7 +99,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Golinks
 	 */
 	private $golinks;
@@ -110,7 +110,7 @@ class REST_Email_Reporting_Controller {
 	 * @since 1.162.0
 	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
 	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.

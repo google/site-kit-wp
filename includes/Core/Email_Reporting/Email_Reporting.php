@@ -68,7 +68,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Golinks
 	 */
 	protected $golinks;
@@ -198,7 +198,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.162.0
 	 * @since 1.168.0 Added authentication dependency.
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context                       $context       Plugin context.
 	 * @param Modules                       $modules       Modules instance.

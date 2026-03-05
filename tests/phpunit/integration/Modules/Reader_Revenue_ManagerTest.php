@@ -134,8 +134,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	}
 
 	public function test_register__reset_policy_violation_notification_dismissals_on_publication_change() {
-		$this->enable_feature( 'rrmPolicyViolations' );
-
 		$this->reader_revenue_manager->register();
 		$this->reader_revenue_manager->get_settings()->register();
 
@@ -667,6 +665,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -729,6 +728,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -737,27 +737,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_debug_fields__content_policy_state() {
 		$this->reader_revenue_manager->get_settings()->register();
 
-		// Test that the content policy state field is not included when feature flag is disabled.
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID'       => 'test-publication-id',
-				'contentPolicyStatus' => array(
-					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
-				),
-			)
-		);
-
-		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
-		$this->assertArrayNotHasKey(
-			'reader_revenue_manager_content_policy_state',
-			$debug_fields,
-			'Content policy state field should not be included when feature flag is disabled'
-		);
-
-		// Test that the content policy state field is included when feature flag is enabled, even if `contentPolicyStatus` is just the default value.
-		$this->enable_feature( 'rrmPolicyViolations' );
-
-		// Reset settings - `contentPolicyStatus` will be default value when feature flag is enabled.
+		// Test that the content policy state debug field is included with default `contentPolicyStatus`.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID' => 'test-publication-id',
@@ -768,16 +748,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertArrayHasKey(
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
-			'Content policy state field should be included when feature flag is enabled, even with default contentPolicyStatus'
+			'Content policy state debug field should be included.'
 		);
 
 		$this->assertEquals(
 			'',
 			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
-			'Content policy state field should have empty value when contentPolicyStatus is default'
+			'Content policy state value should be empty when contentPolicyStatus is default.'
 		);
 
-		// Test that the content policy state field is added with correct values when feature flag is enabled and `contentPolicyStatus` contains `contentPolicyState`.
+		// Test that the content policy state debug field has correct values when `contentPolicyStatus` contains `contentPolicyState`.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID'       => 'test-publication-id',
@@ -791,7 +771,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertArrayHasKey(
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
-			'Content policy state field should be included when feature flag is enabled and contentPolicyStatus is present'
+			'Content policy state debug field should be included when contentPolicyStatus is set.'
 		);
 
 		$this->assertEquals(
