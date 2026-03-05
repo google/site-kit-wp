@@ -54,19 +54,31 @@ class Email_Template_Formatter {
 	private $golinks;
 
 	/**
+	 * Email notices resolver.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Email_Notices
+	 */
+	private $email_notices;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.170.0
 	 * @since n.e.x.t Added golinks dependency.
+	 * @since n.e.x.t Added email notices dependency.
 	 *
 	 * @param Context                      $context         Plugin context.
 	 * @param Email_Report_Section_Builder $section_builder Section builder instance.
 	 * @param Golinks                      $golinks         Golinks instance.
+	 * @param Email_Notices                $email_notices   Email notices resolver.
 	 */
-	public function __construct( Context $context, Email_Report_Section_Builder $section_builder, Golinks $golinks ) {
+	public function __construct( Context $context, Email_Report_Section_Builder $section_builder, Golinks $golinks, Email_Notices $email_notices ) {
 		$this->context         = $context;
 		$this->section_builder = $section_builder;
 		$this->golinks         = $golinks;
+		$this->email_notices   = $email_notices;
 	}
 
 	/**
@@ -120,12 +132,13 @@ class Email_Template_Formatter {
 	 *
 	 * @since 1.170.0
 	 *
-	 * @param array  $sections   Sections.
-	 * @param string $frequency  Frequency slug.
-	 * @param array  $date_range Date range.
+	 * @param array   $sections   Sections.
+	 * @param string  $frequency  Frequency slug.
+	 * @param array   $date_range Date range.
+	 * @param WP_User $user      User receiving the report.
 	 * @return array|WP_Error Template payload or WP_Error.
 	 */
-	public function build_template_payload( $sections, $frequency, $date_range ) {
+	public function build_template_payload( $sections, $frequency, $date_range, WP_User $user ) {
 		$sections_payload = $this->prepare_sections_payload( $sections, $date_range );
 
 		if ( empty( $sections_payload ) ) {
@@ -145,7 +158,7 @@ class Email_Template_Formatter {
 
 		return array(
 			'sections_payload' => $sections_payload,
-			'template_data'    => $this->prepare_template_data( $frequency, $date_range ),
+			'template_data'    => $this->prepare_template_data( $frequency, $date_range, $user ),
 		);
 	}
 
@@ -417,11 +430,12 @@ class Email_Template_Formatter {
 	 *
 	 * @since 1.170.0
 	 *
-	 * @param string $frequency  Frequency slug.
-	 * @param array  $date_range Date range.
+	 * @param string  $frequency  Frequency slug.
+	 * @param array   $date_range Date range.
+	 * @param WP_User $user      User receiving the report.
 	 * @return array Template data.
 	 */
-	private function prepare_template_data( $frequency, $date_range ) {
+	private function prepare_template_data( $frequency, $date_range, WP_User $user ) {
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
 		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
@@ -437,6 +451,7 @@ class Email_Template_Formatter {
 				'label'   => $this->build_date_label( $date_range ),
 				'context' => $this->get_change_context_label( $date_range ),
 			),
+			'header_notices'         => $this->email_notices->get_header_notices( $user ),
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,

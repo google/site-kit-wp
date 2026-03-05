@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Golinks;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Golink_Handler_Interface;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -88,6 +89,25 @@ class GolinksTest extends TestCase {
 		} catch ( RedirectException $redirect_exception ) {
 			$this->assertSame( $destination_url, $redirect_exception->get_location(), 'Expected redirect to handler destination URL.' );
 			$this->assertSame( 302, $redirect_exception->get_status(), 'Expected default redirect status code.' );
+		}
+	}
+
+	public function test_handle_go__dashboard_handler_forwards_deeplink_args() {
+		$this->golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+		$_GET['to']     = 'dashboard';
+		$_GET['slug']   = 'analytics-4';
+		$_GET['reAuth'] = 'true';
+
+		try {
+			do_action( 'admin_action_' . Golinks::ACTION_GO );
+			$this->fail( 'Expected RedirectException!' );
+		} catch ( RedirectException $redirect_exception ) {
+			$query = wp_parse_url( $redirect_exception->get_location(), PHP_URL_QUERY );
+			parse_str( is_string( $query ) ? $query : '', $query_args );
+
+			$this->assertSame( 'googlesitekit-dashboard', $query_args['page'], 'Expected redirect to dashboard page.' );
+			$this->assertSame( 'analytics-4', $query_args['slug'], 'Expected slug query arg to be forwarded.' );
+			$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth query arg to be forwarded.' );
 		}
 	}
 
