@@ -22,6 +22,8 @@
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import PermissionsErrorNotice from '@/js/components/email-reporting/notices/errors/PermissionsErrorNotice';
+import ReportErrorNotice from '@/js/components/email-reporting/notices/errors/ReportErrorNotice';
 import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
@@ -38,20 +40,32 @@ export default function EmailReportingErrorNotices() {
 		select( CORE_SITE ).getEmailReportingErrors()
 	);
 
-	const latestEmailReportingErrorCategoryID = useSelect( ( select ) =>
-		select( CORE_SITE ).getLatestEmailReportingErrorCategoryID()
+	const latestEmailReportingError = useSelect( ( select ) =>
+		select( CORE_SITE ).getLatestEmailReportingError()
 	);
 
 	if (
 		! isEmailReportingEnabled ||
 		isViewOnly ||
 		emailReportingErrors?.length === 0 ||
-		latestEmailReportingErrorCategoryID === undefined
+		latestEmailReportingError === undefined
 	) {
 		return null;
 	}
 
-	switch ( latestEmailReportingErrorCategoryID ) {
+	switch ( latestEmailReportingError?.category_id ) {
+		case 'permissions_error':
+			return (
+				<PermissionsErrorNotice
+					moduleSlug={ latestEmailReportingError.module_slug }
+				/>
+			);
+		case 'report_error':
+			return (
+				<ReportErrorNotice
+					moduleSlug={ latestEmailReportingError.module_slug }
+				/>
+			);
 		case 'sending_error':
 			return <SendingErrorNotice />;
 		default:

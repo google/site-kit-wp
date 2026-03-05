@@ -29,17 +29,18 @@
 
 		.googlesitekit-user-settings-selection__panel-content {
 			display: flex;
+			flex: 1 1 0;
 			flex-direction: column;
-			overflow: auto;
-			padding: 0  $grid-gap-phone $grid-gap-phone;
+			min-height: 200px;
+			overflow: hidden;
+			padding: 0 $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
-				padding: 0 $grid-gap-desktop $grid-gap-desktop;
+				padding: 0 $grid-gap-desktop;
 			}
 		}
 
 		.googlesitekit-user-settings-selection__panel-description {
-
 			span {
 				color: $c-surfaces-on-surface;
 				display: block;
@@ -76,7 +77,6 @@
 		.googlesitekit-selection-panel-footer {
 			background: transparent;
 			border-top: 1px solid $c-utility-divider;
-			margin-top: auto;
 			padding: 0;
 
 			p {

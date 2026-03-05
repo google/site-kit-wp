@@ -98,15 +98,17 @@ class Content_MapTest extends TestCase {
 	public function test_get_title_returns_placeholder_for_invitation_email() {
 		$title = Content_Map::get_title( 'invitation-email' );
 
-		$this->assertStringContainsString( '%s', $title, 'Invitation email title should contain placeholder.' );
+		$this->assertStringContainsString( '%1$s', $title, 'Invitation email title should contain placeholder.' );
 		$this->assertStringContainsString( 'invited', $title, 'Invitation email title should contain "invited".' );
+		$this->assertStringContainsString( 'mailto:%1$s', $title, 'Invitation email title should contain mailto link template.' );
 	}
 
 	public function test_get_title_with_args_substitutes_placeholder() {
 		$title = Content_Map::get_title_with_args( 'invitation-email', array( 'admin@example.com' ) );
 
 		$this->assertStringContainsString( 'admin@example.com', $title, 'Title should contain substituted email.' );
-		$this->assertStringNotContainsString( '%s', $title, 'Title should not contain unresolved placeholder.' );
+		$this->assertStringNotContainsString( '%1$s', $title, 'Title should not contain unresolved placeholder.' );
+		$this->assertStringContainsString( 'mailto:admin@example.com', $title, 'Title should contain mailto link.' );
 	}
 
 	public function test_get_title_with_args_returns_unmodified_title_with_empty_args() {

@@ -27,7 +27,7 @@ import { FC, ElementType } from 'react';
 import { useSelect, type Select } from 'googlesitekit-data';
 import useViewContext from '@/js/hooks/useViewContext';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { HOUR_IN_SECONDS } from '@/js/util/dates';
+import { DAY_IN_SECONDS, HOUR_IN_SECONDS } from '@/js/util/dates';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	CONTENT_POLICY_STATES,
@@ -60,14 +60,13 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 	const { title, description, ctaLabel, type } =
 		getPolicyViolationNotificationCopy( contentPolicyState );
 
-	const dismissOptions =
-		contentPolicyState ===
-		CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-			? {}
-			: {
-					skipExpiryCheck: true,
-					expiresInSeconds: HOUR_IN_SECONDS,
-			  };
+	const dismissOptions = {
+		expiresInSeconds:
+			contentPolicyState ===
+			CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+				? DAY_IN_SECONDS
+				: HOUR_IN_SECONDS,
+	};
 
 	const gaTrackingEventArgs = {
 		category: `${ viewContext }_${ RRM_POLICY_VIOLATION_NOTIFICATION_ID }`,

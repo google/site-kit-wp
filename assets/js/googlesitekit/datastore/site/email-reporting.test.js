@@ -234,6 +234,100 @@ describe( 'core/site Email Reporting', () => {
 				expect( console ).toHaveErrored();
 			} );
 
+			it( 'marks user as invited in eligible subscribers after successful invite', async () => {
+				const userID = 123;
+
+				// First, resolve eligible subscribers with the user not yet invited.
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: [
+						{
+							id: userID,
+							displayName: 'Test User',
+							email: 'test@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					],
+					status: 200,
+				} );
+
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers();
+
+				const subscribersBefore = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers();
+				expect( subscribersBefore[ 0 ].invited ).toBe( false );
+
+				// Now invite the user successfully.
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry.dispatch( CORE_SITE ).inviteUser( userID );
+
+				// The user should now be marked as invited in the store.
+				const subscribersAfter = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers();
+				expect( subscribersAfter[ 0 ].invited ).toBe( true );
+			} );
+
+			it( 'does not mark user as invited after failed invite', async () => {
+				const userID = 321;
+
+				// First, resolve eligible subscribers with the user not yet invited.
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: [
+						{
+							id: userID,
+							displayName: 'Test User',
+							email: 'test@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					],
+					status: 200,
+				} );
+
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers();
+
+				// Now invite a user that fails.
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: {
+						code: 'email_reporting_ineligible_user',
+						message:
+							'The provided user is not eligible for invitation.',
+						data: { status: 400 },
+					},
+					status: 400,
+				} );
+
+				await registry.dispatch( CORE_SITE ).inviteUser( userID );
+
+				// The user should still NOT be marked as invited.
+				const subscribersAfter = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers();
+				expect( subscribersAfter[ 0 ].invited ).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
+
 			it( 'validates userID as a positive integer', () => {
 				expect( () => {
 					registry.dispatch( CORE_SITE ).inviteUser();

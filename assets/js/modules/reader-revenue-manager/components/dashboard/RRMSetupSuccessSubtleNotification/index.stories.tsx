@@ -229,6 +229,20 @@ PolicyViolationActive.parameters = {
 };
 PolicyViolationActive.scenario = {};
 
+export const PolicyViolationExtreme = Template.bind( {} );
+PolicyViolationExtreme.storyName = 'Policy Violation - Extreme';
+PolicyViolationExtreme.parameters = {
+	query: {
+		notification: 'authentication_success',
+		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+	},
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+};
+PolicyViolationExtreme.scenario = {};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Components/Dashboard/RRMSetupSuccessSubtleNotification',
 	component: RRMSetupSuccessSubtleNotification,

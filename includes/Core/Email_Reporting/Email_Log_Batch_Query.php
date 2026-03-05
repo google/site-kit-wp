@@ -309,6 +309,7 @@ class Email_Log_Batch_Query {
 			}
 		}
 
-		return get_post_meta( $batch_post_ids[0], Email_Log::META_ERROR_DETAILS, true );
+		$first_post_id = min( $batch_post_ids );
+		return get_post_meta( $first_post_id, Email_Log::META_ERROR_DETAILS, true );
 	}
 }
