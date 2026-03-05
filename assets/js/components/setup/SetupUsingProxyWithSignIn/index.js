@@ -136,8 +136,15 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 
 			if ( moduleReauthURL && proxySetupURL ) {
+				const moduleReauthURLWithParams = addQueryArgs(
+					moduleReauthURL,
+					forwardableParams
+				);
+
 				navigateTo(
-					addQueryArgs( proxySetupURL, { redirect: moduleReauthURL } )
+					addQueryArgs( proxySetupURL, {
+						redirect: moduleReauthURLWithParams,
+					} )
 				);
 			} else if (
 				proxySetupURL &&

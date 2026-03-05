@@ -1,7 +1,7 @@
 /**
- * Settings constants.
+ * CoreModuleSetupEffects component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+/**
+ * Internal dependencies
+ */
+import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
 
-export const NEW_MODULES = [];
+export default function CoreModuleSetupEffects() {
+	useOpenEmailReportingSelectionPanelEffect();
 
-export const BETA_MODULES = [ MODULE_SLUG_SIGN_IN_WITH_GOOGLE ];
-
-export const EXPERIMENTAL_MODULES = [];
+	return null;
+}

@@ -98,6 +98,53 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 		$this->assertEqualSets( array( $other_admin, $editor ), wp_list_pluck( $results, 'ID' ) );
 	}
 
+	public function test_get_eligible_users_excludes_pagespeed_insights_only_users() {
+		$current_admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$editor        = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$contributor   = self::factory()->user->create( array( 'role' => 'contributor' ) );
+
+		$this->set_user_access_token( $current_admin );
+		wp_set_current_user( $current_admin );
+
+		$this->modules->get_module_sharing_settings()->set(
+			array(
+				'analytics-4'        => array(
+					'sharedRoles' => array( 'editor' ),
+				),
+				'pagespeed-insights' => array(
+					'sharedRoles' => array( 'contributor' ),
+				),
+			)
+		);
+
+		$results    = $this->query->get_eligible_users( $current_admin );
+		$result_ids = wp_list_pluck( $results, 'ID' );
+
+		$this->assertContains( $editor, $result_ids, 'Editor with analytics-4 access should be eligible.' );
+		$this->assertNotContains( $contributor, $result_ids, 'Contributor with only pagespeed-insights access should NOT be eligible.' );
+	}
+
+	public function test_get_eligible_users_includes_search_console_shared_roles() {
+		$current_admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$author        = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->set_user_access_token( $current_admin );
+		wp_set_current_user( $current_admin );
+
+		$this->modules->get_module_sharing_settings()->set(
+			array(
+				'search-console' => array(
+					'sharedRoles' => array( 'author' ),
+				),
+			)
+		);
+
+		$results    = $this->query->get_eligible_users( $current_admin );
+		$result_ids = wp_list_pluck( $results, 'ID' );
+
+		$this->assertContains( $author, $result_ids, 'Author with search-console access should be eligible.' );
+	}
+
 	public function test_get_eligible_users_returns_empty_when_none() {
 		$current_admin = $this->create_admin_with_token();
 		wp_set_current_user( $current_admin );
