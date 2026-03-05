@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_CONTENT_POLICY_STATUS,
@@ -35,7 +36,6 @@ import {
 
 describe( 'modules/reader-revenue-manager settings', () => {
 	let registry;
-	let createTestRegistry;
 
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -60,14 +60,11 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		setUsingCache( true );
 	} );
 
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
 	describe( 'validateCanSubmitChanges', () => {
-		beforeEach( () => {
-			createTestRegistry =
-				require( '../../../../../tests/js/utils' ).createTestRegistry;
-
-			registry = createTestRegistry();
-		} );
-
 		it( 'should throw invariant error for invalid publication ID of type number', () => {
 			const settings = {
 				...validSettings,
@@ -266,13 +263,6 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'submitChanges', () => {
-		beforeEach( () => {
-			createTestRegistry =
-				require( '../../../../../tests/js/utils' ).createTestRegistry;
-
-			registry = createTestRegistry();
-		} );
-
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
