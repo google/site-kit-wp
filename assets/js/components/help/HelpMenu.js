@@ -147,21 +147,25 @@ export default function HelpMenu( { children } ) {
 
 	const setupFlowRefreshMenuItems = [
 		{
+			gaEventLabel: 'browse_documentation',
 			href: 'https://sitekit.withgoogle.com/documentation/',
 			icon: <DocumentationIcon width={ 24 } height={ 24 } />,
 			children: __( 'Browse documentation', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'get_support',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/',
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'start_tour',
 			onClick: handleStartFeatureTour,
 			icon: <CompassIcon width={ 24 } height={ 24 } />,
 			children: __( 'Start a feature tour', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'send_feedback',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
 			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
 			children: __( 'Send feedback', 'google-site-kit' ),
@@ -169,6 +173,7 @@ export default function HelpMenu( { children } ) {
 		...( adSenseModuleActive
 			? [
 					{
+						gaEventLabel: 'get_adsense_help',
 						href: 'https://support.google.com/adsense/',
 						icon: <AdsenseHelpIcon width={ 24 } height={ 24 } />,
 						children: __(

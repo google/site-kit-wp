@@ -113,8 +113,20 @@ export default function InviteOthersToSubscribe() {
 			'google-site-kit'
 		),
 		{
-			sharingLink: <Link href={ dashboardSharingDocumentationURL } />,
-			learnMoreLink: <Link href={ emailReportingDocumentationURL } />,
+			sharingLink: (
+				<Link
+					href={ dashboardSharingDocumentationURL }
+					external
+					hideExternalIndicator
+				/>
+			),
+			learnMoreLink: (
+				<Link
+					href={ emailReportingDocumentationURL }
+					external
+					hideExternalIndicator
+				/>
+			),
 		}
 	);
 

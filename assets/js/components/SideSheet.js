@@ -66,7 +66,25 @@ export default function SideSheet( {
 		}
 	}, [ isOpen, onOpen ] );
 
-	useClickAway( sideSheetRef, closeSheet );
+	function handleClickAway( event ) {
+		// Prevent closing side sheet when a link inside of a tooltip is clicked.
+		if ( event.target.closest?.( '.googlesitekit-tooltip-popper' ) ) {
+			return;
+		}
+
+		closeSheet();
+	}
+
+	function allowOutsideClick( event ) {
+		// Allow clicks within a tooltip popup inside of the SideSheet.
+		if ( event.target.closest?.( '.googlesitekit-tooltip-popper' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	useClickAway( sideSheetRef, handleClickAway );
 
 	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeSheet );
 
@@ -76,6 +94,7 @@ export default function SideSheet( {
 				active={ !! isOpen && ! isLoading }
 				focusTrapOptions={ {
 					fallbackFocus: 'body',
+					allowOutsideClick,
 					...focusTrapOptions,
 				} }
 			>
