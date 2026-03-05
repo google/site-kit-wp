@@ -388,7 +388,7 @@ const baseSelectors = {
 	/**
 	 * Gets the latest email reporting error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null|undefined)} The latest email reporting error; `undefined` if not loaded; null if no errors.

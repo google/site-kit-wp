@@ -47,7 +47,7 @@ class Email_Template_Formatter {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @var Golinks
 	 */
@@ -57,7 +57,7 @@ class Email_Template_Formatter {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context                      $context         Plugin context.
 	 * @param Email_Report_Section_Builder $section_builder Section builder instance.
@@ -354,7 +354,7 @@ class Email_Template_Formatter {
 	/**
 	 * Builds template data for the subscription confirmation email.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return array Template data.

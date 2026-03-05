@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Golink handler for Email Reporting management links.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Email_Reporting_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Builds the destination URL for email reporting management.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string Destination URL.
