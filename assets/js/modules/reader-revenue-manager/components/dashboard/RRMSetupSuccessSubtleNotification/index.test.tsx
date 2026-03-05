@@ -583,7 +583,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				expect( setValueMock ).toHaveBeenCalledWith( undefined );
 			} );
 
-			it( 'should proactively dismiss the respective policy violation notification when dismiss button is clicked', async () => {
+			it( 'should proactively dismiss the respective policy violation notification when the notification is viewed', async () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -617,31 +617,29 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					'dismissItem'
 				);
 
-				const { getByRole } = render(
-					<NotificationWithComponentProps />,
-					{
-						registry,
-						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					}
-				);
+				// Mark the notification as viewed so the Notification component invokes onView on mount.
+				registry
+					.dispatch( CORE_UI )
+					.setValue( `notification/${ id }/viewed`, true );
 
-				fireEvent.click(
-					getByRole( 'button', {
-						name: 'Got it',
-					} )
-				);
+				render( <NotificationWithComponentProps />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				} );
 
-				const expectedNotificationID =
-					contentPolicyState ===
-					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-						? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
-						: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID;
+				await waitFor( () => {
+					const expectedNotificationID =
+						contentPolicyState ===
+						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+							? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+							: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID;
 
-				expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
-				expect( dismissItemSpy ).toHaveBeenCalledWith(
-					expectedNotificationID,
-					{ expiresInSeconds: DAY_IN_SECONDS }
-				);
+					expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
+					expect( dismissItemSpy ).toHaveBeenCalledWith(
+						expectedNotificationID,
+						{ expiresInSeconds: DAY_IN_SECONDS }
+					);
+				} );
 			} );
 
 			it( `should open the policy info URL when the "${ expectedCTALabel }" CTA is clicked`, () => {
