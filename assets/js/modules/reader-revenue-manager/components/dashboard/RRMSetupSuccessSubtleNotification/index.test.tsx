@@ -29,6 +29,7 @@ import {
 	act,
 	createTestRegistry,
 	fireEvent,
+	muteFetch,
 	provideModules,
 	provideUserInfo,
 	render,
@@ -48,13 +49,19 @@ import {
 	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 
 jest.mock( '../../../../../hooks/useQueryArg' );
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -461,29 +468,38 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 	const policyViolationStatesData = [
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+			'View violations',
 			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_GRACE_PERIOD,
+			'View violations',
 			'Your account is linked, but your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+			'View violations',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE,
+			'View violations',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 		[
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+			'Learn more',
 			'Your account is connected but currently restricted because your site has content that doesn’t follow the rules for Reader Revenue Manager. To keep your Reader Revenue Manager account active and CTAs public, you must resolve all policy violations.',
 		],
 	];
 
 	describe.each( policyViolationStatesData )(
 		'for a publication with content policy state %s',
-		( contentPolicyState, expectedMessage ) => {
+		( contentPolicyState, expectedCTALabel, expectedMessage ) => {
+			beforeEach( () => {
+				muteFetch( dismissItemEndpoint );
+			} );
+
 			it( 'should render the correct notification', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -514,7 +530,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				expect( getByText( expectedMessage ) ).toBeInTheDocument();
 
 				expect(
-					getByRole( 'button', { name: /View violations/ } )
+					getByRole( 'button', {
+						name: new RegExp( expectedCTALabel ),
+					} )
 				).toBeInTheDocument();
 			} );
 
@@ -565,7 +583,66 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				expect( setValueMock ).toHaveBeenCalledWith( undefined );
 			} );
 
-			it( 'should open the policy info URL when the "View violations" CTA is clicked', () => {
+			it( 'should proactively dismiss the respective policy violation notification when the notification is viewed', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						publicationOnboardingState: ONBOARDING_COMPLETE,
+						paymentOption: 'subscriptions',
+						productID: 'basic',
+						contentPolicyStatus: {
+							contentPolicyState,
+							policyInfoLink: 'https://example.com/policy',
+						},
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.registerNotification( id, {
+						Component: NotificationWithComponentProps,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+						viewContexts: [ 'mainDashboard' ],
+						isDismissible: false,
+					} );
+
+				await registry
+					.dispatch( CORE_NOTIFICATIONS )
+					.receiveQueuedNotifications(
+						[ { id } ],
+						NOTIFICATION_GROUPS.DEFAULT
+					);
+
+				const dismissItemSpy = jest.spyOn(
+					registry.dispatch( CORE_USER ),
+					'dismissItem'
+				);
+
+				// Mark the notification as viewed so the Notification component invokes onView on mount.
+				registry
+					.dispatch( CORE_UI )
+					.setValue( `notification/${ id }/viewed`, true );
+
+				render( <NotificationWithComponentProps />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				} );
+
+				await waitFor( () => {
+					const expectedNotificationID =
+						contentPolicyState ===
+						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+							? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+							: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID;
+
+					expect( dismissItemSpy ).toHaveBeenCalledTimes( 1 );
+					expect( dismissItemSpy ).toHaveBeenCalledWith(
+						expectedNotificationID,
+						{ expiresInSeconds: DAY_IN_SECONDS }
+					);
+				} );
+			} );
+
+			it( `should open the policy info URL when the "${ expectedCTALabel }" CTA is clicked`, () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -588,7 +665,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 
 				fireEvent.click(
 					getByRole( 'button', {
-						name: /View violations/,
+						name: new RegExp( expectedCTALabel ),
 					} )
 				);
 
@@ -664,6 +741,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			registry
 				.dispatch( CORE_UI )
 				.setValue( `notification/${ id }/viewed`, true );
+
+			muteFetch( dismissItemEndpoint );
 		} );
 
 		describe.each( [
@@ -689,6 +768,10 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					ACTIVE_POLICY_VIOLATION_STATES.includes(
 						contentPolicyState
 					) );
+
+			const isExtremePolicyViolation =
+				contentPolicyState ===
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE;
 
 			it( 'should track the events when the notification is dismissed', async () => {
 				registry
@@ -765,9 +848,14 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				);
 
 				// CTA button should be present.
-				const ctaButton = hasPolicyViolation
-					? getByText( 'View violations' )
-					: getByText( 'Get started' );
+				let ctaButton;
+				if ( isExtremePolicyViolation ) {
+					ctaButton = getByText( 'Learn more' );
+				} else if ( hasPolicyViolation ) {
+					ctaButton = getByText( 'View violations' );
+				} else {
+					ctaButton = getByText( 'Get started' );
+				}
 
 				expect( ctaButton ).toBeInTheDocument();
 

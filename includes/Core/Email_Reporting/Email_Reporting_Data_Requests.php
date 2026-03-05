@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
@@ -163,12 +164,6 @@ class Email_Reporting_Data_Requests {
 			$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
 		}
 
-		$available_modules = $this->filter_modules_for_user( $active_modules, $user );
-
-		if ( empty( $available_modules ) ) {
-			return array();
-		}
-
 		$previous_user_id     = get_current_user_id();
 		$restore_user_options = $this->user_options->switch_user( $user_id );
 
@@ -177,6 +172,12 @@ class Email_Reporting_Data_Requests {
 		// Collect payloads while impersonating the target user. Finally executes even
 		// when returning, so we restore user context on both success and unexpected throws.
 		try {
+			$available_modules = $this->filter_modules_for_user( $active_modules, $user );
+
+			if ( empty( $available_modules ) ) {
+				return array();
+			}
+
 			return $this->collect_payloads( $available_modules, $date_range, $shared_payloads );
 		} finally {
 			if ( is_callable( $restore_user_options ) ) {
@@ -190,7 +191,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Categorizes a WP_Error based on its status and reason for better messaging in the front end.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param WP_Error $error       The error to categorize.
 	 * @param string   $module_slug The module slug related to the error.
@@ -365,6 +366,17 @@ class Email_Reporting_Data_Requests {
 			}
 
 			if ( user_can( $user, Permissions::MANAGE_OPTIONS ) ) {
+				if (
+					$module instanceof Module_With_Service_Entity
+					&& $user->ID !== $this->get_module_owner_id( $slug )
+				) {
+					$access = $module->check_service_entity_access();
+
+					if ( true !== $access ) {
+						continue;
+					}
+				}
+
 				$allowed[ $slug ] = $module;
 				continue;
 			}

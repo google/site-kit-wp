@@ -113,9 +113,6 @@ WithoutModuleAccess.scenario = {};
 
 export const WithPolicyViolationPending = Template.bind( {} );
 WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
-WithPolicyViolationPending.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationPending.args = {
 	contentPolicyState:
 		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
@@ -124,9 +121,6 @@ WithPolicyViolationPending.scenario = {};
 
 export const WithPolicyViolationActive = Template.bind( {} );
 WithPolicyViolationActive.storyName = 'With Policy Violation (Active)';
-WithPolicyViolationActive.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationActive.args = {
 	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
 };
@@ -134,9 +128,6 @@ WithPolicyViolationActive.scenario = {};
 
 export const WithPolicyViolationExtreme = Template.bind( {} );
 WithPolicyViolationExtreme.storyName = 'With Policy Violation (Extreme)';
-WithPolicyViolationExtreme.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationExtreme.args = {
 	contentPolicyState:
 		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,

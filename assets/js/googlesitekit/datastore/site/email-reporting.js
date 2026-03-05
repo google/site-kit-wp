@@ -36,15 +36,42 @@ import { CORE_SITE } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { stringifyObject } from '@/js/util';
 
 const START_INVITING_USER = 'START_INVITING_USER';
 const FINISH_INVITING_USER = 'FINISH_INVITING_USER';
+const DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS = {
+	page: 1,
+	search: '',
+};
+
+function normalizeEligibleSubscribersArgs( args = {} ) {
+	const normalizedArgs = isPlainObject( args ) ? args : {};
+	const page = Number.parseInt( normalizedArgs.page, 10 );
+
+	return {
+		page:
+			Number.isInteger( page ) && page > 0
+				? page
+				: DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.page,
+		search:
+			typeof normalizedArgs.search === 'string'
+				? normalizedArgs.search
+				: DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.search,
+	};
+}
+
+function getEligibleSubscribersCacheKey( args = {} ) {
+	// Normalize args first so equivalent requests share one key (e.g. {} and { page: 1, search: '' }).
+	// This lets the selector/resolver reuse previously fetched results and prevents mixing results across different page/search queries.
+	return stringifyObject( normalizeEligibleSubscribersArgs( args ) );
+}
 
 const baseInitialState = {
 	emailReporting: {
 		settings: undefined,
 		savedSettings: undefined,
-		eligibleSubscribers: undefined,
+		eligibleSubscribers: {},
 		errors: undefined,
 		invitingUsers: {},
 	},
@@ -88,19 +115,35 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 
 const fetchGetEligibleSubscribersStore = createFetchStore( {
 	baseName: 'getEligibleSubscribers',
-	controlCallback: () =>
-		get(
-			'core',
-			'site',
-			'email-reporting-eligible-subscribers',
-			undefined,
-			{
-				useCache: false,
-			}
-		),
-	reducerCallback: createReducer( ( state, eligibleSubscribers ) => {
-		state.emailReporting.eligibleSubscribers = eligibleSubscribers;
-	} ),
+	controlCallback: ( params ) =>
+		get( 'core', 'site', 'email-reporting-eligible-subscribers', params, {
+			useCache: false,
+		} ),
+	reducerCallback: createReducer(
+		( state, eligibleSubscribers, eligibleSubscribersArgs ) => {
+			const cacheKey = getEligibleSubscribersCacheKey(
+				eligibleSubscribersArgs
+			);
+			// Persist the response under its query key so future identical requests can be served from store state.
+			state.emailReporting.eligibleSubscribers[ cacheKey ] =
+				eligibleSubscribers;
+		}
+	),
+	argsToParams: ( eligibleSubscribersArgs ) => {
+		invariant(
+			isPlainObject( eligibleSubscribersArgs ),
+			'eligibleSubscribersArgs should be an object.'
+		);
+
+		return normalizeEligibleSubscribersArgs( eligibleSubscribersArgs );
+	},
+	validateParams: ( { page, search } = {} ) => {
+		invariant(
+			Number.isInteger( page ) && page > 0,
+			'page should be a positive integer.'
+		);
+		invariant( typeof search === 'string', 'search should be a string.' );
+	},
 } );
 
 const fetchGetEmailReportingErrorsStore = createFetchStore( {
@@ -124,16 +167,25 @@ const fetchInviteUserStore = createFetchStore( {
 	// state on panel re-open. The transient handles persistent
 	// state for 24 hours on app refresh.
 	reducerCallback: createReducer( ( state, response, { userID } ) => {
-		const subscribers = state.emailReporting.eligibleSubscribers;
-		if ( Array.isArray( subscribers ) ) {
-			const user = subscribers.find(
-				( potentialNewlyInvitedUser ) =>
-					potentialNewlyInvitedUser.id === userID
-			);
-			if ( user ) {
-				user.invited = true;
+		Object.values( state.emailReporting.eligibleSubscribers ).forEach(
+			( cachedResult ) => {
+				if ( ! isPlainObject( cachedResult ) ) {
+					return;
+				}
+
+				const users = sanitizeEligibleSubscribersUsers(
+					cachedResult.users
+				);
+				const user = users.find(
+					( potentialNewlyInvitedUser ) =>
+						potentialNewlyInvitedUser.id === userID
+				);
+
+				if ( user ) {
+					user.invited = true;
+				}
 			}
-		}
+		);
 	} ),
 	argsToParams: ( userID ) => ( { userID } ),
 	validateParams: ( { userID } = {} ) => {
@@ -276,6 +328,18 @@ export const baseReducer = createReducer( ( state, action ) => {
 	}
 } );
 
+function sanitizeEligibleSubscribersUsers( users ) {
+	return Array.isArray( users ) ? users : [];
+}
+
+function sanitizeEligibleSubscribersTotal( total ) {
+	return Number.isInteger( total ) && total >= 0 ? total : 0;
+}
+
+function sanitizeEligibleSubscribersTotalPages( totalPages ) {
+	return Number.isInteger( totalPages ) && totalPages >= 0 ? totalPages : 0;
+}
+
 const baseResolvers = {
 	*getEmailReportingSettings() {
 		const registry = yield commonActions.getRegistry();
@@ -288,15 +352,73 @@ const baseResolvers = {
 			yield fetchGetEmailReportingSettingsStore.actions.fetchGetEmailReportingSettings();
 		}
 	},
-	*getEligibleSubscribers() {
+	*getEligibleSubscribers( eligibleSubscribersArgs = {} ) {
 		const registry = yield commonActions.getRegistry();
+		const normalizedArgs = normalizeEligibleSubscribersArgs(
+			eligibleSubscribersArgs
+		);
+		const isFetchingGetEligibleSubscribers = registry
+			.select( CORE_SITE )
+			.isFetchingGetEligibleSubscribers( normalizedArgs );
+
+		if ( isFetchingGetEligibleSubscribers ) {
+			return;
+		}
 
 		const eligibleSubscribers = registry
 			.select( CORE_SITE )
-			.getEligibleSubscribers();
+			.getEligibleSubscribers( normalizedArgs );
 
-		if ( eligibleSubscribers === undefined ) {
-			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers();
+		if ( eligibleSubscribers !== undefined ) {
+			return;
+		}
+
+		const { response: firstPageResponse } =
+			yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers(
+				normalizedArgs
+			);
+
+		if ( ! firstPageResponse ) {
+			return;
+		}
+
+		const totalPages = sanitizeEligibleSubscribersTotalPages(
+			firstPageResponse.totalPages
+		);
+		const shouldFetchAllPages =
+			normalizedArgs.page === DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS.page;
+
+		if ( ! shouldFetchAllPages || totalPages <= normalizedArgs.page ) {
+			return;
+		}
+
+		let users = sanitizeEligibleSubscribersUsers( firstPageResponse.users );
+
+		for ( let page = normalizedArgs.page + 1; page <= totalPages; page++ ) {
+			const { response } =
+				yield fetchGetEligibleSubscribersStore.actions.fetchGetEligibleSubscribers(
+					{
+						...normalizedArgs,
+						page,
+					}
+				);
+
+			users = users.concat(
+				sanitizeEligibleSubscribersUsers( response?.users )
+			);
+		}
+
+		if ( totalPages > normalizedArgs.page ) {
+			yield fetchGetEligibleSubscribersStore.actions.receiveGetEligibleSubscribers(
+				{
+					users,
+					total: sanitizeEligibleSubscribersTotal(
+						firstPageResponse.total
+					),
+					totalPages,
+				},
+				normalizedArgs
+			);
 		}
 	},
 	*getEmailReportingErrors() {
@@ -343,35 +465,52 @@ const baseSelectors = {
 	 *
 	 * @since 1.172.0
 	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Eligible subscribers list; `undefined` if not loaded.
+	 * @param {Object} state                     Data store's state.
+	 * @param {Object} [eligibleSubscribersArgs] Query args.
+	 * @return {(Object|undefined)} Eligible subscribers data; `undefined` if not loaded.
 	 */
-	getEligibleSubscribers: createRegistrySelector( ( select ) => ( state ) => {
-		const eligibleSubscribers = state.emailReporting?.eligibleSubscribers;
-		const currentUserID = select( CORE_USER ).getID();
+	getEligibleSubscribers: createRegistrySelector(
+		( select ) =>
+			( state, eligibleSubscribersArgs = {} ) => {
+				const normalizedArgs = normalizeEligibleSubscribersArgs(
+					eligibleSubscribersArgs
+				);
+				const eligibleSubscribers =
+					state.emailReporting?.eligibleSubscribers?.[
+						getEligibleSubscribersCacheKey( normalizedArgs )
+					];
 
-		if (
-			eligibleSubscribers === undefined ||
-			currentUserID === undefined
-		) {
-			return undefined;
-		}
+				if ( eligibleSubscribers === undefined ) {
+					return undefined;
+				}
 
-		if ( ! Array.isArray( eligibleSubscribers ) ) {
-			return [];
-		}
+				const currentUserID = select( CORE_USER ).getID();
 
-		return eligibleSubscribers
-			.filter( ( user ) => user.id !== currentUserID )
-			.map( ( user ) => ( {
-				id: user.id,
-				name: user.displayName || user.name,
-				email: user.email,
-				role: user.role,
-				subscribed: user.subscribed,
-				invited: user.invited,
-			} ) );
-	} ),
+				return {
+					users: sanitizeEligibleSubscribersUsers(
+						eligibleSubscribers.users
+					)
+						.filter(
+							( user ) =>
+								Number( user.id ) !== Number( currentUserID )
+						)
+						.map( ( user ) => ( {
+							id: user.id,
+							name: user.displayName || user.name,
+							email: user.email,
+							role: user.role,
+							subscribed: user.subscribed,
+							invited: user.invited,
+						} ) ),
+					total: sanitizeEligibleSubscribersTotal(
+						eligibleSubscribers.total
+					),
+					totalPages: sanitizeEligibleSubscribersTotalPages(
+						eligibleSubscribers.totalPages
+					),
+				};
+			}
+	),
 
 	/**
 	 * Gets the email reporting errors.
@@ -388,7 +527,7 @@ const baseSelectors = {
 	/**
 	 * Gets the latest email reporting error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null|undefined)} The latest email reporting error; `undefined` if not loaded; null if no errors.

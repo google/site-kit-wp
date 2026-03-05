@@ -46,6 +46,7 @@ describe( 'SetupForm', () => {
 			.receiveGetSettings( {
 				snippetMode: 'post_types',
 				postTypes: [ 'post' ],
+				contentPolicyStatus: {},
 			} );
 	} );
 
