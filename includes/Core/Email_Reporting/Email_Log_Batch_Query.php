@@ -2,6 +2,13 @@
 /**
  * Class Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query
  *
+ * Throughout this file, we use a 10,000 post limit to avoid pagination.
+ *
+ * We're assuming that more than 10,000 users won't be invited to/subscribe to
+ * the same PUE email report frequency.
+ *
+ * See: https://github.com/google/site-kit-wp/pull/12273#discussion_r2886482987
+ *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
