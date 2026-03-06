@@ -69,6 +69,16 @@ const mockEligibleSubscribers = [
 	},
 ];
 
+const defaultQueryArgs = { search: '' };
+
+function createEligibleSubscribersResponse( users ) {
+	return {
+		users,
+		total: users.length,
+		totalPages: 1,
+	};
+}
+
 function Template( { viewContext } ) {
 	return (
 		<ViewContextProvider
@@ -87,10 +97,13 @@ Default.args = {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -211,10 +224,13 @@ WithoutManagePermission.args = {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 

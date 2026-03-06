@@ -151,7 +151,7 @@ class Email_Log_Processor {
 	/**
 	 * Processes a subscription confirmation log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param int     $post_id   Email log post ID.
 	 * @param WP_User $user      Recipient user.
@@ -200,7 +200,7 @@ class Email_Log_Processor {
 	/**
 	 * Gets the template type for an email log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param WP_Post $email_log Email log post.
 	 * @return string Template type.

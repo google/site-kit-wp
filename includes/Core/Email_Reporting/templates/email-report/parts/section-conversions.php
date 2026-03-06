@@ -28,7 +28,7 @@ $has_metrics     = ! empty( $section_parts );
 ?>
 <table role="presentation" width="100%" style="margin-bottom:24px;">
 	<tr>
-		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
+		<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 16px;">
 			<?php
 			$icon_star_url = $get_asset_url( 'icon-star' );
 
@@ -63,7 +63,8 @@ $has_metrics     = ! empty( $section_parts );
 					<td style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E;">
 						<?php echo esc_html( $total_events['label'] ); ?>
 					</td>
-					<td class="subtitle" width="110" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right; width: 110px;">
+					<td class="subtitle" width="110"
+						style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; text-align: right; width: 110px;">
 						<?php echo esc_html( $total_events['change_context'] ); ?>
 					</td>
 				</tr>

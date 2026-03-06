@@ -26,38 +26,25 @@ import PropTypes from 'prop-types';
  */
 import { useInstanceId } from '@wordpress/compose';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDebounce } from '@/js/hooks/useDebounce';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export default function InviteSearchInput( { value = '', onChange } ) {
 	const instanceID = useInstanceId( InviteSearchInput, 'InviteSearchInput' );
-	const [ inputValue, setInputValue ] = useState( value );
-	const debouncedOnChange = useDebounce( onChange, 300 );
-
-	// Sync external value changes (e.g., when panel resets).
-	useEffect( () => {
-		setInputValue( value );
-	}, [ value ] );
 
 	const handleChange = useCallback(
-		( event ) => {
-			setInputValue( event.target.value );
-			debouncedOnChange( event.target.value );
-		},
-		[ debouncedOnChange ]
+		( event ) => onChange( event.target.value ),
+		[ onChange ]
 	);
 
 	const handleClear = useCallback( () => {
-		setInputValue( '' );
-		debouncedOnChange.cancel();
 		onChange( '' );
-	}, [ debouncedOnChange, onChange ] );
+	}, [ onChange ] );
 
 	return (
 		<div className="googlesitekit-invite-search-input">
@@ -77,10 +64,10 @@ export default function InviteSearchInput( { value = '', onChange } ) {
 					'Search user name, role, or email',
 					'google-site-kit'
 				) }
-				value={ inputValue }
+				value={ value }
 				onChange={ handleChange }
 			/>
-			{ inputValue && (
+			{ value && (
 				<span
 					className="googlesitekit-invite-search-input__clear"
 					onClick={ handleClear }
