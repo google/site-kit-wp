@@ -1,13 +1,13 @@
 <?php
 /**
- * Header notice block for the email-report template.
+ * In-email notice block for the email-report template.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array  $notice        Header notice payload.
+ * @var array  $notice        Notice payload.
  * @var string $icon_star_url Star icon URL.
  */
 
