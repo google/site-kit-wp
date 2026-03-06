@@ -16,7 +16,7 @@ use WP_Error;
 /**
  * Interface for golink handlers.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ interface Golink_Handler_Interface {
 	/**
 	 * Builds the destination URL for a golink request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string|WP_Error Destination URL or error.

@@ -41,12 +41,9 @@ import {
 	PolicyViolationSettingsNotice,
 	PublicationOnboardingStateNotice,
 } from '@/js/modules/reader-revenue-manager/components/common';
-import { useFeature } from '@/js/hooks/useFeature';
 import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
-	const rrmPolicyViolationsEnabled = useFeature( 'rrmPolicyViolations' );
-
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
@@ -138,9 +135,7 @@ export default function SettingsView() {
 			</div>
 
 			{ hasModuleAccess && <PublicationOnboardingStateNotice /> }
-			{ hasModuleAccess && rrmPolicyViolationsEnabled && (
-				<PolicyViolationSettingsNotice />
-			) }
+			{ hasModuleAccess && <PolicyViolationSettingsNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

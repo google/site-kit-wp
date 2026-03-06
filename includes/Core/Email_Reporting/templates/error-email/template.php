@@ -30,6 +30,9 @@ $render_shared_part = $data['render_shared_part'];
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -41,70 +44,7 @@ $render_shared_part = $data['render_shared_part'];
 	<![endif]-->
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
-		:root {
-			color-scheme: light;
-		}
-
-		body {
-			background-color: #F3F5F7;
-			margin: 0;
-			padding: 0;
-			font-family: 'Google Sans', Roboto, Arial, sans-serif;
-			font-size: 14px;
-			line-height: 1.4;
-			color: #202124;
-		}
-
-		table {
-			border-spacing: 0;
-			border-collapse: separate;
-			width: 100%;
-		}
-
-		img {
-			border: 0;
-			max-width: 100%;
-			height: auto;
-			line-height: 100%;
-		}
-
-		.body {
-			width: 100%;
-			max-width: 520px;
-			background-color: #F3F5F7;
-		}
-
-		.container {
-			max-width: 520px;
-			margin: 0 auto;
-			padding: 0;
-			width: 100%;
-			box-sizing: border-box;
-		}
-
-		.main {
-			width: 100%;
-			max-width: 520px;
-			margin: 0 auto;
-		}
-
-		.wrapper {
-			box-sizing: border-box;
-			padding: 0 16px 40px 16px;
-		}
-
-		.preheader {
-			display: none !important;
-			visibility: hidden;
-			mso-hide: all;
-			font-size: 1px;
-			color: #F3F5F7;
-			line-height: 1px;
-			max-height: 0;
-			max-width: 0;
-			opacity: 0;
-			overflow: hidden;
-		}
+		<?php $render_shared_part( 'styles' ); ?>
 	</style>
 </head>
 <body>

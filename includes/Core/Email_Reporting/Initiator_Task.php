@@ -94,7 +94,7 @@ class Initiator_Task {
 	 * Builds the report reference dates for a batch.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Made method static.
+	 * @since 1.174.0 Made method static.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp.
