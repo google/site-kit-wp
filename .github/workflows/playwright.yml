@@ -76,7 +76,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GCS_BUCKET: site-kit-github-artifacts
   GCS_ROOT_PATH: playwright
   FORBID_ONLY: true
   RETRIES: 2
@@ -237,11 +236,25 @@ jobs:
           fi
 
       - uses: ./.github/actions/upload-to-gcs
+        id: upload-to-gcs
         if: always()
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
           path: tests/playwright/artifacts
           destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
+
+      - name: Save report URL
+        if: always()
+        run: |
+          mkdir -p /tmp/artifact-url
+          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+
+      - name: Upload report URL
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: artifact-url-wp-${{ matrix.wp_version }}
+          path: /tmp/artifact-url/url.md
 
   add-comment-to-pr:
     name: Add comment to PR
@@ -254,15 +267,28 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Download artifact URLs
+        uses: actions/download-artifact@v6
+        with:
+          pattern: artifact-url-wp-*
+          merge-multiple: false
+          path: /tmp/artifact-urls/
+
+      - name: Build comment body
+        id: build-comment
+        run: |
+          {
+            echo 'body<<EOF'
+            echo '🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**'
+            find /tmp/artifact-urls -name 'url.md' | sort | xargs cat
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
       - uses: ./.github/actions/update-pr-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
           section-id: playwright
-          section-content: |
-            🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
-            - [WordPress latest](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-latest/playwright-html/index.html)
-            - [WordPress nightly](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-nightly/playwright-html/index.html)
-            - [WordPress 5.2.21](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}/wp-5.2.21/playwright-html/index.html)
+          section-content: ${{ steps.build-comment.outputs.body }}
 
   remove-playwright-reports:
     name: Remove Playwright reports
