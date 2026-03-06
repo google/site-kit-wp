@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use WP_Error;
 use WP_Post;
@@ -140,6 +141,11 @@ class Email_Template_Formatter {
 	 */
 	public function build_template_payload( $sections, $frequency, $date_range, WP_User $user ) {
 		$sections_payload = $this->prepare_sections_payload( $sections, $date_range );
+		$section_notices  = $this->prepare_section_notices( $user );
+
+		if ( ! empty( $section_notices[ Enable_Conversion_Events_Email_Notice::SECTION_KEY ] ) ) {
+			$sections_payload[ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ] = true;
+		}
 
 		if ( empty( $sections_payload ) ) {
 			return new WP_Error(
@@ -158,7 +164,12 @@ class Email_Template_Formatter {
 
 		return array(
 			'sections_payload' => $sections_payload,
-			'template_data'    => $this->prepare_template_data( $frequency, $date_range, $user ),
+			'template_data'    => $this->prepare_template_data(
+				$frequency,
+				$date_range,
+				$user,
+				$section_notices
+			),
 		);
 	}
 
@@ -430,12 +441,13 @@ class Email_Template_Formatter {
 	 *
 	 * @since 1.170.0
 	 *
-	 * @param string  $frequency  Frequency slug.
-	 * @param array   $date_range Date range.
-	 * @param WP_User $user      User receiving the report.
+	 * @param string  $frequency       Frequency slug.
+	 * @param array   $date_range      Date range.
+	 * @param WP_User $user            User receiving the report.
+	 * @param array   $section_notices Section notices keyed by section key.
 	 * @return array Template data.
 	 */
-	private function prepare_template_data( $frequency, $date_range, WP_User $user ) {
+	private function prepare_template_data( $frequency, $date_range, WP_User $user, array $section_notices ) {
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
 		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
@@ -452,6 +464,7 @@ class Email_Template_Formatter {
 				'context' => $this->get_change_context_label( $date_range ),
 			),
 			'header_notices'         => $this->email_notices->get_header_notices( $user ),
+			'section_notices'        => $section_notices,
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
@@ -475,6 +488,33 @@ class Email_Template_Formatter {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Resolves section notices keyed by section slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user User receiving the report.
+	 * @return array Section notices map.
+	 */
+	private function prepare_section_notices( WP_User $user ) {
+		$section_notices = array();
+		$section_keys    = $this->email_notices->get_section_notice_keys();
+
+		foreach ( $section_keys as $section_key ) {
+			$section_key = sanitize_key( (string) $section_key );
+			if ( '' === $section_key ) {
+				continue;
+			}
+
+			$notices = $this->email_notices->get_section_notices( $user, $section_key );
+			if ( ! empty( $notices ) ) {
+				$section_notices[ $section_key ] = $notices;
+			}
+		}
+
+		return $section_notices;
 	}
 
 	/**
