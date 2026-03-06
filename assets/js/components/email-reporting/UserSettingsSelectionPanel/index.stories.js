@@ -26,7 +26,7 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserCapabilities,
-	createTestRegistry,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -84,14 +84,24 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.scenario = {};
 Loading.args = {
-	setupRegistry: ( registry ) => {
-		// Reset registry to not have any data loaded, to show loading state.
-		registry = createTestRegistry();
-		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/core/site/data/email-reporting-errors'
+			)
+		);
 	},
 };
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
@@ -266,10 +276,6 @@ export default {
 					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 					} );
-
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetEmailReportingErrors( [] );
 
 				registry
 					.dispatch( CORE_UI )
