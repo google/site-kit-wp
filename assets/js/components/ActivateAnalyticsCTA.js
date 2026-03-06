@@ -192,10 +192,7 @@ export default function ActivateAnalyticsCTA( {
 						) }
 					</p>
 					<SpinnerButton
-						onClick={ () => {
-							onClickCallback();
-							trackEvents.confirm( analyticsEventLabel );
-						} }
+						onClick={ onClickCallback }
 						isSaving={ inProgress }
 						disabled={ inProgress }
 					>
@@ -249,7 +246,10 @@ export default function ActivateAnalyticsCTA( {
 				</Button>
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
-					onClick={ onClickCallback }
+					onClick={ () => {
+						onClickCallback();
+						trackEvents.confirm( analyticsEventLabel );
+					} }
 					isSaving={ inProgress }
 					disabled={ inProgress }
 				>
