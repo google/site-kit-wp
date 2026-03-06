@@ -20,6 +20,13 @@
 import { TestDetailsAnnotation } from '@playwright/test';
 
 /**
+ * Separator for plugin file paths.
+ *
+ * @since n.e.x.t
+ */
+export const PLUGINS_SEPARATOR = ',';
+
+/**
  * Sets the plugins to activate for the test.
  *
  * @since n.e.x.t
@@ -32,7 +39,7 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 		type: '_wp:plugin',
 		description: plugins
 			.map( ( plugin ) => `google-site-kit-test-plugins/${ plugin }` )
-			.join( ';' ),
+			.join( PLUGINS_SEPARATOR ),
 	};
 }
 
