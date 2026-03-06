@@ -40,6 +40,17 @@ interface Email_Notice_Interface {
 	public function get_placement();
 
 	/**
+	 * Gets the target section key for section placement notices.
+	 *
+	 * Header notices should return an empty string.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Section key.
+	 */
+	public function get_section_key();
+
+	/**
 	 * Gets the dismissal slug used for prompt storage.
 	 *
 	 * @since n.e.x.t
