@@ -47,22 +47,35 @@ class Fallback_Task {
 	private $worker_task;
 
 	/**
+	 * Batch error notifier.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Batch_Error_Notifier
+	 */
+	private $notifier;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Added $notifier parameter.
 	 *
 	 * @param Email_Log_Batch_Query     $batch_query Batch query helper.
 	 * @param Email_Reporting_Scheduler $scheduler   Scheduler instance.
 	 * @param Worker_Task               $worker_task Worker task instance.
+	 * @param Batch_Error_Notifier      $notifier    Batch error notifier.
 	 */
 	public function __construct(
 		Email_Log_Batch_Query $batch_query,
 		Email_Reporting_Scheduler $scheduler,
-		Worker_Task $worker_task
+		Worker_Task $worker_task,
+		Batch_Error_Notifier $notifier
 	) {
 		$this->batch_query = $batch_query;
 		$this->scheduler   = $scheduler;
 		$this->worker_task = $worker_task;
+		$this->notifier    = $notifier;
 	}
 
 	/**
@@ -81,6 +94,7 @@ class Fallback_Task {
 		}
 
 		if ( $this->batch_query->is_complete( $batch_id ) ) {
+			$this->notifier->maybe_notify( $batch_id );
 			return;
 		}
 
