@@ -26,7 +26,7 @@ class Content_Map {
 	/**
 	 * Gets the title for a template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param string $template_name The template name.
 	 * @return string The title string (may contain sprintf placeholders).
@@ -40,7 +40,7 @@ class Content_Map {
 	/**
 	 * Gets title with format arguments applied.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param string $template_name The template name.
 	 * @param array  $args          Format arguments for sprintf substitution.
@@ -100,7 +100,7 @@ class Content_Map {
 	/**
 	 * Gets all template title mappings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return array Mapping of template names to title strings.
 	 */

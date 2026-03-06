@@ -176,7 +176,7 @@ export function requireModuleGatheringData( datastoreSlug ) {
 /**
  * Returns a function that checks if the current user is authenticated.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user is authenticated or not.
  */

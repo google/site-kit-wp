@@ -337,4 +337,20 @@ describe( 'PolicyViolationNotification', () => {
 
 		expect( isActive ).toBe( false );
 	} );
+
+	it( 'extremeNotification.checkRequirements should return false when the extreme notification is in the dismissed items list', async () => {
+		setupRegistry( CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+			] );
+
+		const isActive = await extremeNotification.checkRequirements(
+			registry
+		);
+
+		expect( isActive ).toBe( false );
+	} );
 } );

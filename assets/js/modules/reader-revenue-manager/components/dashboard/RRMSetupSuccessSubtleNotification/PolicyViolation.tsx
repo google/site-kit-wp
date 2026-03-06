@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,7 +30,18 @@ import { FC, ElementType } from 'react';
 /**
  * Internal dependencies
  */
+import { useDispatch, useSelect, type Select } from '@/js/googlesitekit-data';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DAY_IN_SECONDS } from '@/js/util';
+import {
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
 import { TYPES } from '@/js/components/Notice/constants';
 
 interface PolicyViolationProps {
@@ -49,6 +61,31 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 	onCTAClick,
 	policyViolationType,
 } ) => {
+	const isExtremeViolation = useSelect( ( select: Select ) => {
+		const contentPolicyState = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getContentPolicyState();
+
+		return (
+			contentPolicyState ===
+			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+		);
+	} );
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	// Proactively dismiss the policy violation notification for the next 24 hours.
+	const onView = useCallback( () => {
+		dismissItem(
+			isExtremeViolation
+				? RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+				: RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+			{
+				expiresInSeconds: DAY_IN_SECONDS,
+			}
+		);
+	}, [ dismissItem, isExtremeViolation ] );
+
 	const description =
 		policyViolationType === 'PENDING_POLICY_VIOLATION'
 			? __(
@@ -61,10 +98,13 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			  );
 
 	return (
-		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
+		<Notification
+			gaTrackingEventArgs={ gaTrackingEventArgs }
+			onView={ onView }
+		>
 			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
-				type={ TYPES.WARNING }
+				type={ isExtremeViolation ? TYPES.ERROR : TYPES.WARNING }
 				notificationID={ id }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(
@@ -76,7 +116,9 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 					onClick: dismissNotice,
 				} }
 				ctaButton={ {
-					label: __( 'View violations', 'google-site-kit' ),
+					label: isExtremeViolation
+						? __( 'Learn more', 'google-site-kit' )
+						: __( 'View violations', 'google-site-kit' ),
 					onClick: onCTAClick,
 					external: true,
 				} }
