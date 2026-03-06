@@ -118,24 +118,28 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
+
       - name: Prepare plugin
         run: |
           npm ci --workspaces --include-workspace-root
           npm run dev-zip
-          npm run -w tests/playwright setup
           unzip -q google-site-kit.v*.zip -d plugin/
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npm run -w tests/playwright setup
 
       - name: Upload plugin artifact
         uses: actions/upload-artifact@v6
         with:
           name: plugin
           path: plugin/google-site-kit
-
-      - name: Upload Playwright browsers artifact
-        uses: actions/upload-artifact@v6
-        with:
-          name: playwright-browsers
-          path: ~/.cache/ms-playwright
 
   playwright-tests:
     name: WordPress ${{ matrix.wp_version }}
@@ -174,14 +178,11 @@ jobs:
           name: plugin
           path: plugin/google-site-kit
 
-      - name: Download Playwright browsers artifact
-        uses: actions/download-artifact@v6
+      - name: Restore Playwright browsers cache
+        uses: actions/cache/restore@v5
         with:
-          name: playwright-browsers
           path: ~/.cache/ms-playwright
-
-      - name: Restore Playwright browser permissions
-        run: chmod -R +x ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
 
       - name: Cache Docker images
         id: docker-cache
