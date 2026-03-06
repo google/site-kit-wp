@@ -324,24 +324,37 @@ class Batch_Error_Notifier {
 	 * @return array Ordered sprintf arguments for the body paragraphs.
 	 */
 	private function get_body_args( $content_key ) {
-		$help_url = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
+		$link_style = 'color:#108080;';
+		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
 
+		// URLs are internally generated (golinks, add_query_arg) and safe.
+		// Escaping is handled by wp_kses() in the HTML template and
+		// wp_strip_all_tags() in the plain text renderer.
 		switch ( $content_key ) {
 			case 'error-email-report-search-console':
+				$settings_url = add_query_arg( 'module', 'search-console', $this->golinks->get_url( 'settings' ) );
 				return array(
-					add_query_arg( 'module', 'search-console', $this->golinks->get_url( 'settings' ) ),
-					$help_url,
+					'<a href="' . $settings_url . '" style="' . $link_style . '">',
+					'</a>',
+					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
 				);
 
 			case 'error-email-report-analytics-4':
+				$settings_url = add_query_arg( 'module', 'analytics-4', $this->golinks->get_url( 'settings' ) );
 				return array(
-					add_query_arg( 'module', 'analytics-4', $this->golinks->get_url( 'settings' ) ),
-					$help_url,
+					'<a href="' . $settings_url . '" style="' . $link_style . '">',
+					'</a>',
+					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
 				);
 
 			case 'error-email-permissions-search-console':
 			case 'error-email-permissions-analytics-4':
-				return array( $help_url );
+				return array(
+					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
+				);
 
 			default:
 				return array();

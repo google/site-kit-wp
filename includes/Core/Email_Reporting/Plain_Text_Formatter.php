@@ -52,12 +52,13 @@ class Plain_Text_Formatter {
 	 * @return string Formatted plain text email.
 	 */
 	public static function format_simple_email( $data ) {
-		$site_domain    = $data['site']['domain'] ?? '';
-		$title          = wp_strip_all_tags( $data['title'] ?? '' );
-		$learn_more_url = $data['learn_more_url'] ?? '';
-		$cta            = $data['primary_call_to_action'] ?? array();
-		$footer_copy    = $data['footer']['copy'] ?? '';
-		$body           = $data['body'] ?? array();
+		$site_domain     = $data['site']['domain'] ?? '';
+		$title           = wp_strip_all_tags( $data['title'] ?? '' );
+		$learn_more_url  = $data['learn_more_url'] ?? '';
+		$cta             = $data['primary_call_to_action'] ?? array();
+		$footer_copy     = $data['footer']['copy'] ?? '';
+		$body            = $data['body'] ?? array();
+		$unsubscribe_url = $data['footer']['unsubscribe_url'] ?? '';
 
 		$lines = array(
 			__( 'Site Kit by Google', 'google-site-kit' ),
@@ -98,17 +99,15 @@ class Plain_Text_Formatter {
 		$lines[] = str_repeat( '-', 50 );
 		$lines[] = '';
 
-		// Footer copy with optional unsubscribe link.
+		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
-			$unsubscribe_url = $data['footer']['unsubscribe_url'] ?? '';
-			if ( ! empty( $unsubscribe_url ) ) {
-				$footer_copy .= ' ' . sprintf(
-					/* translators: %s: Unsubscribe URL */
-					__( 'here: %s', 'google-site-kit' ),
-					$unsubscribe_url
-				);
-			}
 			$lines[] = $footer_copy;
+			$lines[] = '';
+		}
+
+		// Unsubscribe link.
+		if ( ! empty( $unsubscribe_url ) ) {
+			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $unsubscribe_url );
 			$lines[] = '';
 		}
 
@@ -226,7 +225,8 @@ class Plain_Text_Formatter {
 	 * Converts HTML anchor tags to plain text format.
 	 *
 	 * Replaces `<a href="url">text</a>` with `text (url)` so that
-	 * link destinations are preserved in plain text emails.
+	 * link destinations are preserved in plain text emails. The input
+	 * is controlled (Content_Map strings), not arbitrary user HTML.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -263,17 +263,15 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Footer copy with unsubscribe link.
+		// Footer copy.
 		if ( ! empty( $footer['copy'] ) ) {
-			$copy = $footer['copy'];
-			if ( ! empty( $footer['unsubscribe_url'] ) ) {
-				$copy .= ' ' . sprintf(
-					/* translators: %s: Unsubscribe URL */
-					__( 'Unsubscribe here: %s', 'google-site-kit' ),
-					$footer['unsubscribe_url']
-				);
-			}
-			$lines[] = $copy;
+			$lines[] = $footer['copy'];
+			$lines[] = '';
+		}
+
+		// Unsubscribe link.
+		if ( ! empty( $footer['unsubscribe_url'] ) ) {
+			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $footer['unsubscribe_url'] );
 			$lines[] = '';
 		}
 

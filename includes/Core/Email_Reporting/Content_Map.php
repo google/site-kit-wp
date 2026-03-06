@@ -106,8 +106,8 @@ class Content_Map {
 	 */
 	protected static function get_all_titles() {
 		return array(
-			/* translators: %1$s: Email address of the person who sent the invitation */
-			'invitation-email'          => __( '<a href="mailto:%1$s" style="color: #161B18; text-decoration: none; font-weight: 500;">%1$s</a> invited you to receive periodic performance reports', 'google-site-kit' ),
+			/* translators: 1: opening anchor tag with mailto link, 2: inviter email address, 3: closing anchor tag */
+			'invitation-email'          => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
 			'subscription-confirmation' => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
 			'error-email'               => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
 		);
@@ -135,26 +135,27 @@ class Content_Map {
 			'error-email'                            => array(
 				__( 'We were unable to generate your report due to a server error. To fix this, contact your host. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
-			// Inline color styles are required on <a> tags because many email clients
-			// strip or ignore CSS styles.
+			// Opening/closing tag placeholders keep inline styles and HTML
+			// out of translation strings. Inline color styles are required
+			// because many email clients strip or ignore CSS classes.
 			'error-email-permissions-search-console' => array(
-				/* translators: %s: URL for the email reporting documentation page */
-				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or <a href="%s" style="color:#108080;">get help</a>.', 'google-site-kit' ),
+				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
+				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-permissions-analytics-4'    => array(
-				/* translators: %s: URL for the email reporting documentation page */
-				__( 'We were unable to generate your reports due to insufficient permissions in Analytics. To fix this, contact your administrator or <a href="%s" style="color:#108080;">get help</a>.', 'google-site-kit' ),
+				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
+				__( 'We were unable to generate your reports due to insufficient permissions in Analytics. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-report-search-console'      => array(
-				/* translators: %1$s: URL for Search Console settings page, %2$s: URL for the email reporting documentation page */
-				__( 'We were unable to generate your report because data loading failed for Search Console. To fix this, go to <a href="%1$s" style="color:#108080;">Search Console settings</a> in Site Kit or <a href="%2$s" style="color:#108080;">get help</a>.', 'google-site-kit' ),
+				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
+				__( 'We were unable to generate your report because data loading failed for Search Console. To fix this, go to %1$sSearch Console settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-report-analytics-4'         => array(
-				/* translators: %1$s: URL for Analytics settings page, %2$s: URL for the email reporting documentation page */
-				__( 'We were unable to generate your report because data loading failed for Analytics. To fix this, go to <a href="%1$s" style="color:#108080;">Analytics settings</a> in Site Kit or <a href="%2$s" style="color:#108080;">get help</a>.', 'google-site-kit' ),
+				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
+				__( 'We were unable to generate your report because data loading failed for Analytics. To fix this, go to %1$sAnalytics settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 		);

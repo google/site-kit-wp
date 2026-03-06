@@ -152,7 +152,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( str_repeat( '-', 50 ), $result, 'Footer should contain separator line.' );
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
-		$this->assertStringContainsString( 'https://example.com/unsubscribe', $result, 'Footer should contain unsubscribe URL.' );
+		$this->assertStringContainsString( 'Unsubscribe: https://example.com/unsubscribe', $result, 'Footer should contain unsubscribe link as separate line.' );
 		$this->assertStringContainsString( 'Help center: https://example.com/help', $result, 'Footer should contain help center link.' );
 		$this->assertStringContainsString( 'Privacy Policy: https://example.com/privacy', $result, 'Footer should contain privacy policy link.' );
 	}
@@ -388,6 +388,30 @@ class Plain_Text_FormatterTest extends TestCase {
 		$result = Plain_Text_Formatter::convert_links_to_text( $text );
 
 		$this->assertSame( $text, $result, 'Plain text should pass through unchanged.' );
+	}
+
+	public function test_convert_links_to_text__handles_style_attribute() {
+		$html = 'Contact us or <a href="https://example.com/help" style="color:#108080;">get help</a>.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( 'Contact us or get help (https://example.com/help).', $result, 'Anchor with style attribute should be converted correctly.' );
+	}
+
+	public function test_convert_links_to_text__handles_class_attribute() {
+		$html = 'Visit <a class="link" href="https://example.com/">our site</a> for more.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( 'Visit our site (https://example.com/) for more.', $result, 'Anchor with class attribute should be converted correctly.' );
+	}
+
+	public function test_convert_links_to_text__handles_multiple_attributes() {
+		$html = 'Go to <a class="cta" href="https://example.com/settings" style="color:#108080; font-weight:500;" target="_blank">Settings</a> in Site Kit.';
+
+		$result = Plain_Text_Formatter::convert_links_to_text( $html );
+
+		$this->assertSame( 'Go to Settings (https://example.com/settings) in Site Kit.', $result, 'Anchor with multiple attributes should be converted correctly.' );
 	}
 
 	public function test_format_simple_email_body_converts_links_to_text() {
