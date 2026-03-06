@@ -234,6 +234,13 @@ class Plain_Text_Formatter {
 	 * @return string String with anchors converted to text format.
 	 */
 	public static function convert_links_to_text( $html ) {
+		// We use a regex here instead of DOMDocument because DOMDocument
+		// is pretty messy to use and shifts fragility to other factors like
+		// Latin-1/UTF-8 encoding issues.
+		//
+		// WP Core uses REGEX heavily internally for clean HTML tag filtering.
+		//
+		// See: https://github.com/google/site-kit-wp/pull/12273#discussion_r2886510325.
 		return preg_replace(
 			'/<a\s+[^>]*href=["\']([^"\']*)["\'][^>]*>(.*?)<\/a>/i',
 			'$2 ($1)',
