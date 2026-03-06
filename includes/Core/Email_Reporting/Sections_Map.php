@@ -19,6 +19,12 @@ use Google\Site_Kit\Core\Golinks\Golinks;
  * @since 1.168.0
  */
 class Sections_Map {
+	/**
+	 * Payload flag for rendering conversions section without metric data.
+	 *
+	 * @since n.e.x.t
+	 */
+	const CONVERSIONS_NOTICE_ONLY_FLAG = '__show_conversion_notice_only';
 
 	/**
 	 * Plugin context.
@@ -169,7 +175,10 @@ class Sections_Map {
 		}
 
 		$section_parts = $this->filter_section_parts( $section_parts );
-		if ( empty( $section_parts ) ) {
+		if (
+			empty( $section_parts )
+			&& empty( $this->payload[ self::CONVERSIONS_NOTICE_ONLY_FLAG ] )
+		) {
 			return array();
 		}
 
