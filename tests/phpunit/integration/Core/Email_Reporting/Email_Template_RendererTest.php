@@ -177,7 +177,9 @@ class Email_Template_RendererTest extends TestCase {
 		$template_data['header_notices'] = array();
 		$html_output_without_notice      = $renderer->render( 'email-report', $template_data );
 
-		$this->assertStringNotContainsString( 'googlesitekit-email-report-notice', $html_output_without_notice, 'Expected notice markup to be absent when no header notices are provided.' );
+		$this->assertStringNotContainsString( 'class="googlesitekit-email-report-notice"', $html_output_without_notice, 'Expected notice markup to be absent when no header notices are provided.' );
+		$this->assertStringNotContainsString( 'Notice title', $html_output_without_notice, 'Expected notice title to be absent when no header notices are provided.' );
+		$this->assertStringNotContainsString( 'https://example.com/notice-cta', $html_output_without_notice, 'Expected notice CTA URL to be absent when no header notices are provided.' );
 	}
 
 	public function test_email_report_conversions_section_notice_renders_only_when_present() {
