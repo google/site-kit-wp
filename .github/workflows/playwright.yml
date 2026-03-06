@@ -121,12 +121,10 @@ jobs:
 
       - name: Prepare plugin
         run: |
-          npm ci -w tests/playwright --include-workspace-root
+          npm ci --workspaces --include-workspace-root
           npm run dev-zip
           npm run -w tests/playwright setup
           unzip -q google-site-kit.v*.zip -d plugin/
-        env:
-          SKIP_PATCH_PACKAGE: '1'
 
       - name: Upload plugin artifact
         uses: actions/upload-artifact@v6
