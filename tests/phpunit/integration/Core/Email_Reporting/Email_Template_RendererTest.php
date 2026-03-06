@@ -179,4 +179,119 @@ class Email_Template_RendererTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'googlesitekit-email-report-notice', $html_output_without_notice, 'Expected notice markup to be absent when no header notices are provided.' );
 	}
+
+	public function test_email_report_conversions_section_notice_renders_only_when_present() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			'total_conversion_events' => array(
+				'label'          => 'Total conversions',
+				'value'          => '120',
+				'change'         => 20,
+				'change_context' => 'Compared to previous 7 days',
+			),
+		);
+
+		$sections_map = new Sections_Map( $context, $payload, $golinks );
+		$renderer     = new Email_Template_Renderer( $sections_map );
+
+		$template_data = array(
+			'subject'                => 'Test subject',
+			'preheader'              => 'Test preheader',
+			'site'                   => array(
+				'domain' => 'example.com',
+				'url'    => 'https://example.com',
+			),
+			'date_range'             => array(
+				'label'   => 'Jan 1 – Jan 7',
+				'context' => 'Compared to previous 7 days',
+			),
+			'section_notices'        => array(
+				'is_my_site_helping_my_business_grow' => array(
+					array(
+						'id'        => 'enable-conversion-events',
+						'title'     => 'Enable conversion events',
+						'body'      => 'Track meaningful actions on your site.',
+						'cta_label' => 'Enable now',
+						'cta_url'   => 'https://example.com/enable',
+					),
+				),
+			),
+			'primary_call_to_action' => array(
+				'label' => 'View dashboard',
+				'url'   => 'https://example.com/dashboard',
+			),
+			'footer'                 => array(
+				'copy'            => 'Footer text',
+				'unsubscribe_url' => 'https://example.com/unsubscribe',
+				'links'           => array(),
+			),
+		);
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( 'Enable conversion events', $html_output, 'Expected conversion section notice title in rendered email.' );
+		$this->assertStringContainsString( 'Track meaningful actions on your site.', $html_output, 'Expected conversion section notice body in rendered email.' );
+		$this->assertStringContainsString( 'https://example.com/enable', $html_output, 'Expected conversion section notice CTA URL in rendered email.' );
+
+		$template_data['section_notices'] = array();
+		$html_output_without_notice       = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringNotContainsString( 'Enable conversion events', $html_output_without_notice, 'Expected conversion section notice title to be absent when no section notices are provided.' );
+	}
+
+	public function test_email_report_conversions_section_renders_notice_only_when_no_conversion_metrics_exist() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+
+		$payload = array(
+			Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG => true,
+		);
+
+		$sections_map = new Sections_Map( $context, $payload, $golinks );
+		$renderer     = new Email_Template_Renderer( $sections_map );
+
+		$template_data = array(
+			'subject'                => 'Test subject',
+			'preheader'              => 'Test preheader',
+			'site'                   => array(
+				'domain' => 'example.com',
+				'url'    => 'https://example.com',
+			),
+			'date_range'             => array(
+				'label'   => 'Jan 1 – Jan 7',
+				'context' => 'Compared to previous 7 days',
+			),
+			'section_notices'        => array(
+				'is_my_site_helping_my_business_grow' => array(
+					array(
+						'id'        => 'enable-conversion-events',
+						'title'     => 'Enable conversion events',
+						'body'      => 'Track meaningful actions on your site.',
+						'cta_label' => 'Enable now',
+						'cta_url'   => 'https://example.com/enable',
+					),
+				),
+			),
+			'primary_call_to_action' => array(
+				'label' => 'View dashboard',
+				'url'   => 'https://example.com/dashboard',
+			),
+			'footer'                 => array(
+				'copy'            => 'Footer text',
+				'unsubscribe_url' => 'https://example.com/unsubscribe',
+				'links'           => array(),
+			),
+		);
+
+		$html_output = $renderer->render( 'email-report', $template_data );
+
+		$this->assertStringContainsString( 'Is my site helping my business grow?', $html_output, 'Expected conversions section heading in notice-only rendering.' );
+		$this->assertStringContainsString( 'Enable conversion events', $html_output, 'Expected conversion section notice title in notice-only rendering.' );
+		$this->assertStringNotContainsString( 'Total conversions', $html_output, 'Expected no conversion metric rows when conversions section is rendered as notice-only.' );
+		$this->assertStringNotContainsString( 'View more in dashboard', $html_output, 'Expected section footer CTA to be hidden when conversions section is rendered as notice-only.' );
+	}
 }
