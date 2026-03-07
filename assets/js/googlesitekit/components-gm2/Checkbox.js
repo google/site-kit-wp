@@ -77,6 +77,7 @@ export default function Checkbox( props ) {
 							name={ name }
 							value={ value }
 							checked={ checked }
+							aria-checked={ checked }
 							disabled={ disabled }
 							onChange={ onChange }
 							tabIndex={ tabIndex }
