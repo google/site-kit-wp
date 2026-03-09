@@ -72,7 +72,7 @@ export default function SideSheet( {
 
 	useEffect( () => {
 		if ( isOpen ) {
-			// Compute once when opening. While the side sheet is open, body scrolling
+			// Compute once when opening. Once the side sheet is open, scrolling
 			// is locked so the admin bar visibility won't change until it is closed.
 			setSideSheetTopOffset( getSideSheetTopOffset() );
 			onOpen();
