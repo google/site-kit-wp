@@ -131,4 +131,29 @@ describe( 'useChangeMetricsFeatureTourEffect', () => {
 		expect( triggerOnDemandTourSpy ).not.toHaveBeenCalled();
 		expect( dismissTourSpy ).toHaveBeenCalledWith( 'mocked-tour' );
 	} );
+
+	it( 'should not call dismissTour when welcome modal is present and tour is already dismissed', () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedTours( [ 'mocked-tour' ] );
+		provideUserInfo( registry, {
+			id: 2,
+		} );
+		provideSiteInfo( registry, {
+			keyMetricsSetupCompletedBy: 1,
+		} );
+		global.location.href =
+			'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
+
+		renderHook(
+			() =>
+				useChangeMetricsFeatureTourEffect( {
+					renderChangeMetricLink: true,
+				} ),
+			{ registry, features: [ 'setupFlowRefresh' ] }
+		);
+
+		expect( triggerOnDemandTourSpy ).not.toHaveBeenCalled();
+		expect( dismissTourSpy ).not.toHaveBeenCalled();
+	} );
 } );

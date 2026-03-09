@@ -63,7 +63,7 @@ export function useChangeMetricsFeatureTourEffect( {
 
 	useEffect( () => {
 		if ( setupFlowRefreshEnabled && isInitialWelcomeModalActive() ) {
-			if ( ! isTourDismissed ) {
+			if ( isTourDismissed === false ) {
 				dismissTour( sharedKeyMetrics.slug );
 			}
 			return;
