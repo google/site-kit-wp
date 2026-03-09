@@ -68,28 +68,41 @@ class Worker_Task {
 	private $max_execution_limiter;
 
 	/**
+	 * Batch error notifier.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Batch_Error_Notifier
+	 */
+	private $notifier;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.167.0
+	 * @since n.e.x.t Added $notifier parameter.
 	 *
 	 * @param Max_Execution_Limiter         $max_execution_limiter Execution limiter instance.
 	 * @param Email_Log_Batch_Query         $batch_query           Batch query helper.
 	 * @param Email_Reporting_Scheduler     $scheduler             Scheduler instance.
 	 * @param Email_Log_Processor           $log_processor         Log processor instance.
 	 * @param Email_Reporting_Data_Requests $data_requests         Data requests helper.
+	 * @param Batch_Error_Notifier          $notifier              Batch error notifier.
 	 */
 	public function __construct(
 		Max_Execution_Limiter $max_execution_limiter,
 		Email_Log_Batch_Query $batch_query,
 		Email_Reporting_Scheduler $scheduler,
 		Email_Log_Processor $log_processor,
-		Email_Reporting_Data_Requests $data_requests
+		Email_Reporting_Data_Requests $data_requests,
+		Batch_Error_Notifier $notifier
 	) {
 		$this->max_execution_limiter = $max_execution_limiter;
 		$this->batch_query           = $batch_query;
 		$this->scheduler             = $scheduler;
 		$this->log_processor         = $log_processor;
 		$this->data_requests         = $data_requests;
+		$this->notifier              = $notifier;
 	}
 
 	/**
@@ -138,6 +151,8 @@ class Worker_Task {
 			}
 
 			$this->process_pending_logs( $pending_ids, $frequency, $initiator_timestamp );
+
+			$this->notifier->maybe_notify( $batch_id );
 		} finally {
 			if ( $switched ) {
 				restore_current_blog();

@@ -52,7 +52,18 @@ $warning_icon_url = $get_asset_url( 'warning-icon' );
 			?>
 			<?php foreach ( $body as $paragraph ) : ?>
 			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
-				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
+				<?php
+				echo wp_kses(
+					$paragraph,
+					array(
+						'strong' => array(),
+						'a'      => array(
+							'href'  => array(),
+							'style' => array(),
+						),
+					)
+				);
+				?>
 			</p>
 			<?php endforeach; ?>
 
