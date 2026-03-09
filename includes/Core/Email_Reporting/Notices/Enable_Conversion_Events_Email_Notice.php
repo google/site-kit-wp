@@ -95,9 +95,9 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context                      $context                     Plugin context.
-	 * @param Modules                      $modules                     Modules service.
-	 * @param Golinks                      $golinks                     Golinks service.
+	 * @param Context                      $context                      Plugin context.
+	 * @param Modules                      $modules                      Modules service.
+	 * @param Golinks                      $golinks                      Golinks service.
 	 * @param Conversion_Tracking_Settings $conversion_tracking_settings Conversion tracking settings.
 	 * @param Conversion_Tracking          $conversion_tracking          Conversion tracking service.
 	 */
