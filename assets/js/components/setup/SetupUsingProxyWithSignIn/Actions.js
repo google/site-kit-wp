@@ -47,6 +47,7 @@ import { trackEvent } from '@/js/util';
 export default function Actions( {
 	proxySetupURL,
 	onButtonClick,
+	forwardableParams = {},
 	complete,
 	inProgressFeedback,
 	ctaFeedback,
@@ -70,7 +71,10 @@ export default function Actions( {
 		select( CORE_SITE ).isResettable()
 	);
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			forwardableParams
+		)
 	);
 
 	const goToSharedDashboard = useCallback( () => {
@@ -85,7 +89,9 @@ export default function Actions( {
 		] ).finally( () => {
 			const redirectURL = setupFlowRefreshEnabled
 				? addQueryArgs( dashboardURL, {
-						notification: 'initial_setup_success',
+						notification:
+							forwardableParams.notification ||
+							'initial_setup_success',
 				  } )
 				: dashboardURL;
 
@@ -93,6 +99,7 @@ export default function Actions( {
 		} );
 	}, [
 		dashboardURL,
+		forwardableParams.notification,
 		dismissItem,
 		navigateTo,
 		setupFlowRefreshEnabled,

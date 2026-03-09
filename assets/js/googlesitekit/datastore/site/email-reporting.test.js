@@ -35,9 +35,8 @@ describe( 'core/site Email Reporting', () => {
 	const emailReportingSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting'
 	);
-	const eligibleSubscribersEndpointRegExp = new RegExp(
-		'^/google-site-kit/v1/core/site/data/email-reporting-eligible-subscribers'
-	);
+	const eligibleSubscribersEndpointRegExp =
+		/email-reporting-eligible-subscribers/;
 
 	const emailReportingErrorsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/site/data/email-reporting-errors'
@@ -46,12 +45,31 @@ describe( 'core/site Email Reporting', () => {
 		'^/google-site-kit/v1/core/site/data/email-reporting-invite-user'
 	);
 	const USER_ID_PARAM = 'userID';
+	const defaultEligibleSubscribersArgs = { search: '' };
+
+	function createEligibleSubscribersResponse( users, args = {} ) {
+		const page = Number.isInteger( args.page ) ? args.page : 1;
+		const total = Number.isInteger( args.total )
+			? args.total
+			: users.length;
+		const totalPages = Number.isInteger( args.totalPages )
+			? args.totalPages
+			: 1;
+
+		return {
+			page,
+			total,
+			totalPages,
+			users,
+		};
+	}
 
 	beforeAll( () => {
 		setUsingCache( false );
 	} );
 
 	beforeEach( () => {
+		fetchMock.reset();
 		registry = createTestRegistry();
 	} );
 
@@ -234,6 +252,104 @@ describe( 'core/site Email Reporting', () => {
 				expect( console ).toHaveErrored();
 			} );
 
+			it( 'marks user as invited in eligible subscribers after successful invite', async () => {
+				const userID = 123;
+
+				// First, resolve eligible subscribers with the user not yet invited.
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: userID,
+							displayName: 'Test User',
+							email: 'test@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				provideUserInfo( registry, { id: 1 } );
+
+				registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+
+				const subscribersBefore = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				expect( subscribersBefore.users[ 0 ].invited ).toBe( false );
+
+				// Now invite the user successfully.
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: { success: true },
+					status: 200,
+				} );
+
+				await registry.dispatch( CORE_SITE ).inviteUser( userID );
+
+				// The user should now be marked as invited in the store.
+				const subscribersAfter = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				expect( subscribersAfter.users[ 0 ].invited ).toBe( true );
+			} );
+
+			it( 'does not mark user as invited after failed invite', async () => {
+				const userID = 321;
+
+				// First, resolve eligible subscribers with the user not yet invited.
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: userID,
+							displayName: 'Test User',
+							email: 'test@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				provideUserInfo( registry, { id: 1 } );
+
+				registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+
+				// Now invite a user that fails.
+				fetchMock.postOnce( inviteUserEndpointRegExp, {
+					body: {
+						code: 'email_reporting_ineligible_user',
+						message:
+							'The provided user is not eligible for invitation.',
+						data: { status: 400 },
+					},
+					status: 400,
+				} );
+
+				await registry.dispatch( CORE_SITE ).inviteUser( userID );
+
+				// The user should still NOT be marked as invited.
+				const subscribersAfter = registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				expect( subscribersAfter.users[ 0 ].invited ).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
+
 			it( 'validates userID as a positive integer', () => {
 				expect( () => {
 					registry.dispatch( CORE_SITE ).inviteUser();
@@ -359,94 +475,277 @@ describe( 'core/site Email Reporting', () => {
 		} );
 
 		describe( 'getEligibleSubscribers', () => {
-			it( 'uses a resolver to fetch eligible subscribers', async () => {
+			it( 'returns cached data for matching params', () => {
 				provideUserInfo( registry, { id: 1 } );
 
-				const response = [
-					{
-						id: 1,
-						displayName: 'Current User',
-						email: 'current@example.com',
-						role: 'administrator',
-						subscribed: true,
-					},
-					{
-						id: 2,
-						displayName: 'Eligible User',
-						email: 'eligible@example.com',
-						role: 'editor',
-						subscribed: false,
-					},
-				];
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
+					createEligibleSubscribersResponse( [
+						{
+							id: 1,
+							displayName: 'Current User',
+							email: 'current@example.com',
+							role: 'administrator',
+							subscribed: false,
+							invited: false,
+						},
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					{ page: 1, search: '' }
+				);
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toEqual( {
+					users: [
+						{
+							id: 2,
+							name: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					],
+					total: 2,
+					totalPages: 1,
+				} );
+			} );
+
+			it( 'resolver fetches with correct params on cache miss', async () => {
+				provideUserInfo( registry, { id: 1 } );
 
 				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
-					body: response,
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Search User',
+							email: 'search@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
 					status: 200,
 				} );
 
 				expect(
-					registry.select( CORE_SITE ).getEligibleSubscribers()
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: 'search',
+					} )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers();
-
-				expect(
-					registry.select( CORE_SITE ).getEligibleSubscribers()
-				).toEqual( [
-					{
-						id: 2,
-						name: 'Eligible User',
-						email: 'eligible@example.com',
-						role: 'editor',
-						subscribed: false,
-					},
-				] );
+				).getEligibleSubscribers( { search: 'search' } );
 
 				expect( fetchMock ).toHaveFetched(
-					eligibleSubscribersEndpointRegExp
+					eligibleSubscribersEndpointRegExp,
+					{
+						queryParams: {
+							page: 1,
+							search: 'search',
+						},
+					}
 				);
 			} );
 
-			it( 'returns an empty array when only current user is returned', () => {
+			it( 'caches different param combinations independently', async () => {
 				provideUserInfo( registry, { id: 1 } );
 
-				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers( [
-					{
-						id: 1,
-						displayName: 'Current User',
-						email: 'current@example.com',
-						role: 'administrator',
-						subscribed: true,
-					},
-				] );
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Alpha User',
+							email: 'alpha@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 3,
+							displayName: 'Beta User',
+							email: 'beta@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					search: 'alpha',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { search: 'alpha' } );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					search: 'beta',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { search: 'beta' } );
 
 				expect(
-					registry.select( CORE_SITE ).getEligibleSubscribers()
-				).toEqual( [] );
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: 'alpha',
+					} ).users
+				).toHaveLength( 1 );
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: 'alpha',
+					} ).users[ 0 ].name
+				).toBe( 'Alpha User' );
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: 'beta',
+					} ).users[ 0 ].name
+				).toBe( 'Beta User' );
+			} );
+
+			it( 'fetches all pages when totalPages is greater than 1', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse(
+						[
+							{
+								id: 2,
+								displayName: 'Page 1 User',
+								email: 'page1@example.com',
+								role: 'editor',
+								subscribed: false,
+								invited: false,
+							},
+						],
+						{ page: 1, total: 2, totalPages: 2 }
+					),
+					status: 200,
+				} );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse(
+						[
+							{
+								id: 3,
+								displayName: 'Page 2 User',
+								email: 'page2@example.com',
+								role: 'editor',
+								subscribed: false,
+								invited: false,
+							},
+						],
+						{ page: 2, total: 2, totalPages: 2 }
+					),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					search: '',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { search: '' } );
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} ).users
+				).toHaveLength( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+
+			it( 'does not auto-fetch additional pages when requesting a page greater than 1', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse(
+						[
+							{
+								id: 3,
+								displayName: 'Page 2 User',
+								email: 'page2@example.com',
+								role: 'editor',
+								subscribed: false,
+								invited: false,
+							},
+						],
+						{ page: 2, total: 2, totalPages: 2 }
+					),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					page: 2,
+					search: '',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { page: 2, search: '' } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched(
+					eligibleSubscribersEndpointRegExp,
+					{
+						queryParams: {
+							page: 2,
+							search: '',
+						},
+					}
+				);
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						page: 2,
+						search: '',
+					} ).users
+				).toHaveLength( 1 );
 			} );
 
 			it( 'returns undefined if the request fails', async () => {
 				provideUserInfo( registry, { id: 1 } );
 
-				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+				fetchMock.get( /.*/, {
 					body: { error: 'something went wrong' },
 					status: 500,
 				} );
 
 				expect(
-					registry.select( CORE_SITE ).getEligibleSubscribers()
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
 				).toBeUndefined();
 
 				await untilResolved(
 					registry,
 					CORE_SITE
-				).getEligibleSubscribers();
+				).getEligibleSubscribers( { search: '' } );
 
 				expect(
-					registry.select( CORE_SITE ).getEligibleSubscribers()
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
 				).toBeUndefined();
 
 				await waitForDefaultTimeouts();

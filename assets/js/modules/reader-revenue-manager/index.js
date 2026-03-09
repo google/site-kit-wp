@@ -74,7 +74,6 @@ import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './components/dashboard/RRMIntroductoryOverlayNotification';
 import { asyncRequireAll } from '@/js/util/async';
-import { isFeatureEnabled } from '@/js/features';
 import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
 
 export { registerStore } from './datastore';
@@ -100,9 +99,7 @@ export function registerModule( modules ) {
 		storeName: MODULES_READER_REVENUE_MANAGER,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
-		...( isFeatureEnabled( 'rrmPolicyViolations' ) && {
-			SettingsStatusComponent: SettingsStatus,
-		} ),
+		SettingsStatusComponent: SettingsStatus,
 		SetupComponent: SetupMain,
 		Icon: ReaderRevenueManagerIcon,
 		features: [
@@ -368,7 +365,6 @@ export const NOTIFICATIONS = {
 		priority: PRIORITY.ERROR_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		featureFlag: 'rrmPolicyViolations',
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
@@ -404,12 +400,26 @@ export const NOTIFICATIONS = {
 		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		featureFlag: 'rrmPolicyViolations',
 		isDismissible: true,
+		dismissRetries: 5,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			async ( { select, resolveSelect } ) => {
 				if ( isShowingSuccessNotification() ) {
+					return false;
+				}
+
+				await resolveSelect( CORE_USER ).getDismissedItems();
+
+				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+					RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
+				);
+
+				// Due to the addition of the `dismissRetries` property, the notification dismissal
+				// logic uses prompts instead of items to track the dismissal status.
+				// However, it is possible that the notification is dismissed using dismissed items
+				// at the setup success notification stage.
+				if ( isItemDismissed ) {
 					return false;
 				}
 

@@ -35,6 +35,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
@@ -100,22 +101,26 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	};
 	const showTooltip = useShowTooltip( tooltipSettings );
 	const { dismissItem } = useDispatch( CORE_USER );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const handleDismiss = useCallback( async () => {
 		await trackEvent( trackEventCategory, 'dismiss_notification' );
 		showTooltip();
+		setValue( 'keepKeyMetricsSetupCTAWidgetVisible', false );
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
-	}, [ trackEventCategory, showTooltip, dismissItem ] );
+	}, [ trackEventCategory, showTooltip, setValue, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const openMetricsSelectionPanel = useCallback( async () => {
 		await trackEvent( trackEventCategory, 'confirm_pick_own_metrics' );
 
+		setValue( 'keepKeyMetricsSetupCTAWidgetVisible', true );
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 
 		navigateTo( fullScreenSelectionLink );
 	}, [
 		trackEventCategory,
+		setValue,
 		dismissItem,
 		navigateTo,
 		fullScreenSelectionLink,
@@ -124,10 +129,11 @@ function KeyMetricsSetupCTAWidget( { Widget, WidgetNull } ) {
 	const onGetTailoredMetricsClick = useCallback( async () => {
 		await trackEvent( trackEventCategory, 'confirm_get_tailored_metrics' );
 
+		setValue( 'keepKeyMetricsSetupCTAWidgetVisible', true );
 		await dismissItem( KEY_METRICS_SETUP_CTA_WIDGET_SLUG );
 
 		navigateTo( ctaLink );
-	}, [ trackEventCategory, dismissItem, navigateTo, ctaLink ] );
+	}, [ trackEventCategory, setValue, dismissItem, navigateTo, ctaLink ] );
 
 	if ( ! displayCTAWidget ) {
 		return <WidgetNull />;

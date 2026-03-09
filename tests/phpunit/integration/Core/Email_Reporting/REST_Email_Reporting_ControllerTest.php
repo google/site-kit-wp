@@ -13,11 +13,13 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
 use Google\Site_Kit\Core\Email_Reporting\REST_Email_Reporting_Controller;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -117,12 +119,16 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->set_user_access_token( $this->primary_admin_id );
 		wp_set_current_user( $this->primary_admin_id );
 
+		$golinks = new Golinks( $this->context );
+		$golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
+
 		$this->controller              = new REST_Email_Reporting_Controller(
 			$this->settings,
 			$this->modules,
 			$this->user_settings,
 			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
-			new Email()
+			new Email(),
+			$golinks
 		);
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}
@@ -245,47 +251,16 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEquals( 403, $response->get_status(), 'Non-admin should receive 403 when requesting eligible subscribers.' );
 	}
 
-	public function test_get_eligible_subscribers_excludes_current_user() {
-		$current_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$other_admin   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+	public function test_get_eligible_subscribers_default_response_is_paginated() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$user_ids      = array();
 
-		$this->set_user_access_token( $current_admin );
-		$this->set_user_access_token( $other_admin );
+		for ( $i = 1; $i <= 25; $i++ ) {
+			$user_ids[] = $this->create_admin_with_token( sprintf( 'admin-%02d', $i ) );
+		}
+
 		$this->unset_user_access_token( $this->primary_admin_id );
-
 		wp_set_current_user( $current_admin );
-
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEqualSets( array( $other_admin ), wp_list_pluck( $response->get_data(), 'id' ), 'Current admin should be excluded from eligible subscribers.' );
-	}
-
-	public function test_get_eligible_subscribers_returns_admins_and_shared_roles() {
-		$current_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$other_admin   = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$editor        = $this->factory()->user->create( array( 'role' => 'editor' ) );
-
-		$this->set_user_access_token( $current_admin );
-		$this->set_user_access_token( $other_admin );
-		$this->unset_user_access_token( $this->primary_admin_id );
-
-		wp_set_current_user( $current_admin );
-
-		$this->modules->get_module_sharing_settings()->set(
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'editor' ),
-				),
-			)
-		);
-
-		$editor_settings = new User_Email_Reporting_Settings( new User_Options( $this->context, $editor ) );
-		$editor_settings->merge( array( 'subscribed' => true ) );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -295,26 +270,115 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
-		$this->assertEqualSets( array( $other_admin, $editor ), wp_list_pluck( $data, 'id' ) );
-
-		$editor_response = current(
-			array_filter(
-				$data,
-				function ( $user ) use ( $editor ) {
-					return (int) $user['id'] === $editor;
-				}
-			)
-		);
-
-		$this->assertTrue( $editor_response['subscribed'], 'Editor should be marked as subscribed.' );
-		$this->assertEquals( 'editor', $editor_response['role'], 'Editor role should be returned.' );
+		$this->assertEquals( 200, $response->get_status(), 'Eligible subscribers request should succeed for admins.' );
+		$this->assertArrayHasKey( 'users', $data, 'Eligible subscribers response should include a users field.' );
+		$this->assertArrayHasKey( 'total', $data, 'Eligible subscribers response should include a total field.' );
+		$this->assertArrayHasKey( 'totalPages', $data, 'Eligible subscribers response should include a totalPages field.' );
+		$this->assertSame( 25, $data['total'], 'Total should include all matching eligible users.' );
+		$this->assertSame( 2, $data['totalPages'], 'Total pages should be calculated from total and per-page values.' );
+		$this->assertCount( Eligible_Subscribers_Query::PER_PAGE, $data['users'], 'Default response should be limited to the first page size.' );
+		$this->assertSame( array_slice( $user_ids, 0, Eligible_Subscribers_Query::PER_PAGE ), wp_list_pluck( $data['users'], 'id' ), 'Default response should return first-page user IDs.' );
 	}
 
-	public function test_get_eligible_subscribers_returns_empty_array_when_no_eligible_users() {
-		$current_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$this->set_user_access_token( $current_admin );
-		$this->unset_user_access_token( $this->primary_admin_id );
+	public function test_get_eligible_subscribers_respects_page_param() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$user_ids      = array();
 
+		for ( $i = 1; $i <= 25; $i++ ) {
+			$user_ids[] = $this->create_admin_with_token( sprintf( 'admin-%02d', $i ) );
+		}
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$request->set_param( 'page', 2 );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertCount( 5, $data['users'], 'Second page should include only remaining users.' );
+		$this->assertSame( array_slice( $user_ids, Eligible_Subscribers_Query::PER_PAGE ), wp_list_pluck( $data['users'], 'id' ), 'Second page should include expected user IDs.' );
+		$this->assertSame( 25, $data['total'], 'Total should remain unchanged across pages.' );
+		$this->assertSame( 2, $data['totalPages'], 'Total pages should remain unchanged across pages.' );
+	}
+
+	public function test_get_eligible_subscribers_search_filters_results() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$alpha_user    = $this->create_admin_with_token( 'alpha-user', 'Alpha Name', 'alpha@example.com' );
+		$mail_user     = $this->create_admin_with_token( 'mail-user', 'No Match Name', 'alpha-mail@example.com' );
+
+		$this->create_admin_with_token( 'beta-user', 'Beta Name', 'beta@example.com' );
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$request->set_param( 'search', 'alpha' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 2, $data['total'], 'Search should return only matching users in total.' );
+		$this->assertSame( 1, $data['totalPages'], 'Search results should report expected total pages.' );
+		$this->assertEqualSets( array( $alpha_user, $mail_user ), wp_list_pluck( $data['users'], 'id' ), 'Search should match display names and emails.' );
+	}
+
+	public function test_get_eligible_subscribers_response_has_expected_shape() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$this->create_admin_with_token( 'admin-other' );
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		// Without rate limit transient, invited should be false.
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertArrayHasKey( 'users', $data, 'Response should include users key.' );
+		$this->assertArrayHasKey( 'total', $data, 'Response should include total key.' );
+		$this->assertArrayHasKey( 'totalPages', $data, 'Response should include totalPages key.' );
+		$this->assertIsArray( $data['users'], 'Users field should be an array.' );
+		$this->assertIsInt( $data['total'], 'Total field should be an integer.' );
+		$this->assertIsInt( $data['totalPages'], 'TotalPages field should be an integer.' );
+	}
+
+	public function test_get_eligible_subscribers_non_matching_search_returns_empty_result() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$this->create_admin_with_token( 'admin-other' );
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$request->set_param( 'search', 'this-will-not-match' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( array(), $data['users'], 'Non-matching search should return no users.' );
+		$this->assertSame( 0, $data['total'], 'Non-matching search should return total of zero.' );
+		$this->assertSame( 0, $data['totalPages'], 'Non-matching search should return zero total pages.' );
+	}
+
+	public function test_get_eligible_subscribers_includes_invited_field() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$other_admin   = $this->create_admin_with_token( 'admin-other' );
+
+		$this->unset_user_access_token( $this->primary_admin_id );
 		wp_set_current_user( $current_admin );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
@@ -323,8 +387,35 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
 		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
 
-		$this->assertSame( array(), $response->get_data(), 'No eligible users should return an empty array.' );
+		$other_admin_data = current(
+			array_filter(
+				$data['users'],
+				function ( $user ) use ( $other_admin ) {
+					return (int) $user['id'] === $other_admin;
+				}
+			)
+		);
+
+		$this->assertFalse( $other_admin_data['invited'], 'User without rate limit transient should have invited=false.' );
+
+		// Set the rate limit transient for the other admin.
+		set_transient( REST_Email_Reporting_Controller::INVITE_RATE_LIMIT_TRANSIENT_KEY_PREFIX . $other_admin, time(), HOUR_IN_SECONDS );
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$other_admin_data = current(
+			array_filter(
+				$data['users'],
+				function ( $user ) use ( $other_admin ) {
+					return (int) $user['id'] === $other_admin;
+				}
+			)
+		);
+
+		$this->assertTrue( $other_admin_data['invited'], 'User with rate limit transient should have invited=true.' );
 	}
 
 	public function test_invite_user__permission_denied_for_non_admin() {
@@ -494,6 +585,23 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			'invalid property'    => array( array( 'some-invalid-property' => 'value' ) ),
 			'non-boolean enabled' => array( array( 'enabled' => 123 ) ),
 		);
+	}
+
+	private function create_admin_with_token( $login = null, $display_name = null, $email = null ) {
+		$user_id = $this->factory()->user->create(
+			array_filter(
+				array(
+					'role'         => 'administrator',
+					'user_login'   => $login,
+					'display_name' => $display_name,
+					'user_email'   => $email,
+				)
+			)
+		);
+
+		$this->set_user_access_token( $user_id );
+
+		return $user_id;
 	}
 
 	private function set_user_access_token( $user_id ) {

@@ -115,6 +115,13 @@ add_action(
 add_action(
 	'rest_api_init',
 	function () {
+		// Only run when Site Kit is loaded.
+		//
+		// See: https://github.com/google/site-kit-wp/issues/12258
+		if ( ! class_exists( 'REST_Routes' ) ) {
+			return;
+		}
+
 		// Utility route to add notifications.
 		// JSON body should contain the new notification to add **in remote format**.
 		register_rest_route(

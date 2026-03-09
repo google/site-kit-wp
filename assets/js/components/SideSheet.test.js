@@ -62,4 +62,25 @@ describe( 'SideSheet', () => {
 			'googlesitekit-side-sheet-scroll-lock'
 		);
 	} );
+
+	it( 'should allow links within tooltips to be clicked without closing the SideSheet', () => {
+		render(
+			<SideSheet isOpen>
+				<div className="googlesitekit-tooltip-popper">
+					<a href="https://www.example.com">Tooltip Link</a>
+				</div>
+			</SideSheet>
+		);
+
+		const tooltipLink = document.querySelector(
+			'.googlesitekit-tooltip-popper a'
+		);
+		expect( tooltipLink ).toBeInTheDocument();
+
+		tooltipLink.click();
+
+		expect(
+			document.querySelector( '.googlesitekit-side-sheet' )
+		).toHaveClass( 'googlesitekit-side-sheet--open' );
+	} );
 } );

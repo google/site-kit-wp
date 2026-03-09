@@ -50,6 +50,7 @@ describe( 'ModuleSetup', () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
