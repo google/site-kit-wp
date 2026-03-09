@@ -50,7 +50,7 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
