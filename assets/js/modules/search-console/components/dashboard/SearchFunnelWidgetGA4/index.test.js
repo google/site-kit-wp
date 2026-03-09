@@ -33,10 +33,11 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-// Mutable mock for `react-use` so individual tests can override `useIntersection`.
+
 function mockUseIntersection() {
 	return { intersectionRatio: 0 };
 }
+
 jest.mock( 'react-use', () => {
 	const actual = jest.requireActual( 'react-use' );
 	return {
