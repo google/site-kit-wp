@@ -474,7 +474,7 @@ describe( 'WelcomeModal', () => {
 		expect( tooltipState ).toBeUndefined();
 	} );
 
-	it( 'should trigger the tour returned by `useWelcomeTour` when the "Start tour" button is clicked', async () => {
+	it( 'should trigger the dashboard tour when the "Start tour" button is clicked', async () => {
 		provideDataAvailableVariantData();
 
 		// Model the responses for the two POST requests to `dismiss-item`.

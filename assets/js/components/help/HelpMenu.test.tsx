@@ -171,7 +171,7 @@ describe( 'HelpMenu', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		it( 'should trigger the tour returned by `useWelcomeTour` when the "Start a feature tour" button is clicked', async () => {
+		it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
 			const { getByText, waitForRegistry } = render( <HelpMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
