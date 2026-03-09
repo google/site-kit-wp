@@ -103,7 +103,7 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertNotWPError( $payload, 'Expected template payload to be built successfully.' );
 		$this->assertArrayHasKey( 'header_notices', $payload['template_data'], 'Expected header_notices key in template data.' );
 		$this->assertCount( 1, $payload['template_data']['header_notices'], 'Expected one eligible header notice.' );
-		$this->assertSame( Analytics_Setup_Email_Notice::ID, $payload['template_data']['header_notices'][0]['id'], 'Expected analytics setup notice ID in template payload.' );
+		$this->assertSame( 'analytics-setup', $payload['template_data']['header_notices'][0]['id'], 'Expected analytics setup notice ID in template payload.' );
 	}
 
 	public function test_build_template_payload__includes_empty_header_notices_when_ineligible() {
@@ -144,9 +144,9 @@ class Email_Template_FormatterTest extends TestCase {
 
 		$this->assertNotWPError( $payload, 'Expected template payload to be built successfully.' );
 		$this->assertArrayHasKey( 'section_notices', $payload['template_data'], 'Expected section_notices key in template data.' );
-		$this->assertArrayHasKey( Enable_Conversion_Events_Email_Notice::SECTION_KEY, $payload['template_data']['section_notices'], 'Expected conversion section notices to be keyed by section slug.' );
-		$this->assertCount( 1, $payload['template_data']['section_notices'][ Enable_Conversion_Events_Email_Notice::SECTION_KEY ], 'Expected one eligible conversion section notice.' );
-		$this->assertSame( Enable_Conversion_Events_Email_Notice::ID, $payload['template_data']['section_notices'][ Enable_Conversion_Events_Email_Notice::SECTION_KEY ][0]['id'], 'Expected conversion notice ID in section notices.' );
+		$this->assertArrayHasKey( 'is_my_site_helping_my_business_grow', $payload['template_data']['section_notices'], 'Expected conversion section notices to be keyed by section slug.' );
+		$this->assertCount( 1, $payload['template_data']['section_notices']['is_my_site_helping_my_business_grow'], 'Expected one eligible conversion section notice.' );
+		$this->assertSame( 'enable-conversion-events', $payload['template_data']['section_notices']['is_my_site_helping_my_business_grow'][0]['id'], 'Expected conversion notice ID in section notices.' );
 	}
 
 	public function test_build_template_payload__includes_empty_section_notices_when_ineligible() {
@@ -184,7 +184,7 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertNotWPError( $payload, 'Expected template payload to be built successfully.' );
 		$this->assertArrayHasKey( Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG, $payload['sections_payload'], 'Expected conversions notice-only flag to be present in sections payload.' );
 		$this->assertTrue( $payload['sections_payload'][ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ], 'Expected conversions notice-only flag to be true.' );
-		$this->assertArrayHasKey( Enable_Conversion_Events_Email_Notice::SECTION_KEY, $payload['template_data']['section_notices'], 'Expected conversion section notice to be present when only non-conversion metric data exists.' );
+		$this->assertArrayHasKey( 'is_my_site_helping_my_business_grow', $payload['template_data']['section_notices'], 'Expected conversion section notice to be present when only non-conversion metric data exists.' );
 	}
 
 	/**

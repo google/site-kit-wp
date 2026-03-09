@@ -16,12 +16,14 @@
  * @var callable $get_asset_url      Function to get asset URLs.
  */
 
+use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
+
 $section_title   = $section['title'];
 $section_icon    = $section['icon'];
 $dashboard_url   = $section['dashboard_url'];
 $section_parts   = $section['section_parts'];
 $section_notices = isset( $section_notices ) && is_array( $section_notices ) ? $section_notices : array();
-$section_key     = 'is_my_site_helping_my_business_grow';
+$section_key     = Enable_Conversion_Events_Email_Notice::SECTION_KEY;
 $notices         = $section_notices[ $section_key ] ?? array();
 $total_events    = $section_parts['total_conversion_events']['data'] ?? array();
 $has_metrics     = ! empty( $section_parts );
