@@ -23,7 +23,13 @@ import {
 	provideUserCapabilities,
 	muteFetch,
 	provideUserAuthentication,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+
+jest.mock( 'react-use', () => ( {
+	useIntersection: () => ( { intersectionRatio: 1 } ),
+} ) );
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -34,6 +40,9 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
+
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -49,6 +58,8 @@ describe( 'AdminBarWidgets', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.get(
 			new RegExp(
@@ -71,6 +82,10 @@ describe( 'AdminBarWidgets', () => {
 				'^/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
@@ -149,5 +164,82 @@ describe( 'AdminBarWidgets', () => {
 		await waitForRegistry();
 
 		expect( queryByText( /total impressions/i ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'GA Event Tracking withSetupFlowRefresh Enabled', () => {
+		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
+			const { waitForRegistry } = render( <AdminBarWidgets />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.any( String ),
+				'view_cta',
+				'admin_bar'
+			);
+		} );
+
+		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+			const { getByText, waitForRegistry } = render(
+				<AdminBarWidgets />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Maybe later/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.any( String ),
+				'dismiss_cta',
+				'admin_bar'
+			);
+		} );
+
+		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+			const { getByText, waitForRegistry } = render(
+				<AdminBarWidgets />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Set up Analytics/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.any( String ),
+				'confirm_cta',
+				'admin_bar'
+			);
+		} );
+
+		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+			const { getByText, waitForRegistry } = render(
+				<AdminBarWidgets />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Learn more/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.any( String ),
+				'click_learn_more_link',
+				'admin_bar'
+			);
+		} );
 	} );
 } );

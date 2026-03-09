@@ -60,16 +60,16 @@ export default function ActivateAnalyticsCTA( {
 	const trackingRef = useRef();
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
-	const trackEvents = useNotificationEvents( {
-		id: 'activate-analytics-cta',
-		category: undefined,
-		actions: {
+	const trackEvents = useNotificationEvents(
+		'activate-analytics-cta',
+		undefined,
+		{
 			viewAction: 'view_cta',
 			confirmAction: 'confirm_cta',
 			dismissAction: 'dismiss_cta',
 			clickLearnMoreAction: 'click_learn_more_link',
-		},
-	} );
+		}
+	);
 
 	const isDismissed = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
