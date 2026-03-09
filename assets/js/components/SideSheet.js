@@ -33,13 +33,30 @@ import { useClickAway, useKey } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Portal from './Portal';
+
+function getSideSheetTopOffset() {
+	const adminBar = global.document?.getElementById( 'wpadminbar' );
+
+	if ( ! adminBar ) {
+		return 0;
+	}
+
+	const { top, bottom, height } = adminBar.getBoundingClientRect();
+
+	// The admin bar is hidden on mobile when the page is scrolled down.
+	if ( top < 0 || bottom <= 0 ) {
+		return 0;
+	}
+
+	return height;
+}
 
 export default function SideSheet( {
 	className,
@@ -51,15 +68,18 @@ export default function SideSheet( {
 	focusTrapOptions = {},
 } ) {
 	const sideSheetRef = useRef();
+	const [ sideSheetTopOffset, setSideSheetTopOffset ] = useState( 0 );
 
 	useEffect( () => {
 		if ( isOpen ) {
+			setSideSheetTopOffset( getSideSheetTopOffset() );
 			onOpen();
 
 			document.body.classList.add(
 				'googlesitekit-side-sheet-scroll-lock'
 			);
 		} else {
+			setSideSheetTopOffset( 0 );
 			document.body.classList.remove(
 				'googlesitekit-side-sheet-scroll-lock'
 			);
@@ -111,6 +131,9 @@ export default function SideSheet( {
 					aria-modal="true"
 					aria-hidden={ ! isOpen }
 					tabIndex="0"
+					style={ {
+						'--googlesitekit-side-sheet-top': `${ sideSheetTopOffset }px`,
+					} }
 				>
 					{ children }
 				</section>
