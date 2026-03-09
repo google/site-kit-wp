@@ -1,0 +1,60 @@
+/**
+ * PageSpeed Insights module notification registrations.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { getQueryArg } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import SetupSuccessNotification from '@/js/modules/pagespeed-insights/components/notifications/SetupSuccessNotification';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+
+export const NOTIFICATIONS = {
+	'setup-success-notification-psi': {
+		Component: SetupSuccessNotification,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		checkRequirements: () => {
+			const notification = getQueryArg( location.href, 'notification' );
+			const slug = getQueryArg( location.href, 'slug' );
+
+			if (
+				'authentication_success' === notification &&
+				slug === MODULE_SLUG_PAGESPEED_INSIGHTS
+			) {
+				return true;
+			}
+
+			return false;
+		},
+	},
+};
+
+export function registerNotifications( notificationsAPI ) {
+	for ( const notificationID in NOTIFICATIONS ) {
+		notificationsAPI.registerNotification(
+			notificationID,
+			NOTIFICATIONS[ notificationID ]
+		);
+	}
+}
