@@ -25,18 +25,39 @@ import {
 	provideUserAuthentication,
 	provideSiteInfo,
 	muteFetch,
+	fireEvent,
 } from '../../../../../../../tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+// Mutable mock for `react-use` so individual tests can override `useIntersection`.
+function mockUseIntersection() {
+	return { intersectionRatio: 0 };
+}
+jest.mock( 'react-use', () => {
+	const actual = jest.requireActual( 'react-use' );
+	return {
+		...actual,
+		useIntersection: ( ...args ) => mockUseIntersection( ...args ),
+		__setUseIntersection: ( fn ) => {
+			mockUseIntersection = fn;
+		},
+		useUpdateEffect: ( fn, deps ) =>
+			require( 'react' ).useEffect( fn, deps ),
+		useMount: ( fn ) => require( 'react' ).useEffect( fn, [] ),
+	};
+} );
+
 import SearchFunnelWidgetGA4 from '.';
 import {
 	getViewportWidth,
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	let registry;
@@ -57,6 +78,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			propertyID: 'http://example.com/',
 		} );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.getOnce(
 			new RegExp(
@@ -123,5 +145,107 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		expect(
 			queryByText( /Set up Google Analytics/ )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
+		let mockTrackEvent;
+		beforeAll( () => {
+			mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+			mockTrackEvent.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			jest.resetAllMocks();
+		} );
+
+		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
+			require( 'react-use' ).__setUseIntersection( () => ( {
+				intersectionRatio: 1,
+			} ) );
+
+			const { waitForRegistry } = render(
+				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'view_cta',
+				'search_funnel'
+			);
+
+			require( 'react-use' ).__setUseIntersection( () => ( {
+				intersectionRatio: 0,
+			} ) );
+		} );
+
+		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+			const { getByText, waitForRegistry } = render(
+				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Maybe later/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'dismiss_cta',
+				'search_funnel'
+			);
+		} );
+
+		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+			const { getByText, waitForRegistry } = render(
+				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Set up Analytics/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'confirm_cta',
+				'search_funnel'
+			);
+		} );
+
+		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+			const { getByText, waitForRegistry } = render(
+				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( /Learn more/ ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'click_learn_more_link',
+				'search_funnel'
+			);
+		} );
 	} );
 } );
