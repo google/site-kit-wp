@@ -171,7 +171,10 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 							}
 						) }
 						{ isAdBlockerActive && (
-							<AdBlockerWarning moduleSlug="ads" />
+							<AdBlockerWarning
+								moduleSlug="ads"
+								className="googlesitekit-banner__notice--content-width"
+							/>
 						) }
 					</Fragment>
 				}
