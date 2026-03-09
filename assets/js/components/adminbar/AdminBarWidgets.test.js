@@ -34,7 +34,10 @@ import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures_
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
@@ -166,17 +169,18 @@ describe( 'AdminBarWidgets', () => {
 		expect( queryByText( /total impressions/i ) ).not.toBeInTheDocument();
 	} );
 
-	describe( 'GA Event Tracking withSetupFlowRefresh Enabled', () => {
+	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
 		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
 			const { waitForRegistry } = render( <AdminBarWidgets />, {
 				registry,
 				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} );
 
 			await waitForRegistry();
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				expect.any( String ),
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'view_cta',
 				'admin_bar'
 			);
@@ -188,6 +192,7 @@ describe( 'AdminBarWidgets', () => {
 				{
 					registry,
 					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -196,7 +201,7 @@ describe( 'AdminBarWidgets', () => {
 			fireEvent.click( getByText( /Maybe later/ ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				expect.any( String ),
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'dismiss_cta',
 				'admin_bar'
 			);
@@ -208,6 +213,7 @@ describe( 'AdminBarWidgets', () => {
 				{
 					registry,
 					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -216,7 +222,7 @@ describe( 'AdminBarWidgets', () => {
 			fireEvent.click( getByText( /Set up Analytics/ ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				expect.any( String ),
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'confirm_cta',
 				'admin_bar'
 			);
@@ -228,6 +234,7 @@ describe( 'AdminBarWidgets', () => {
 				{
 					registry,
 					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				}
 			);
 
@@ -236,7 +243,7 @@ describe( 'AdminBarWidgets', () => {
 			fireEvent.click( getByText( /Learn more/ ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				expect.any( String ),
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'click_learn_more_link',
 				'admin_bar'
 			);
