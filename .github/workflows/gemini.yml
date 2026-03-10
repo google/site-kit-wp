@@ -73,7 +73,7 @@ jobs:
           gemini --version
       - name: Run /implement command
         run: |
-          gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
+          gemini --approval-mode=yolo --model=gemini-3-pro-preview --timeout 2700000 "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
