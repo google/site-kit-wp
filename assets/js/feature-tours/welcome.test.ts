@@ -287,7 +287,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
@@ -323,7 +322,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
@@ -359,7 +357,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
@@ -408,7 +405,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
