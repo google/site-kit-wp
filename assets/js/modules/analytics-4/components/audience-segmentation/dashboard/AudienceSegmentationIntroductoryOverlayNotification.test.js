@@ -33,6 +33,7 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
+	setEnabledFeatures,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import AudienceSegmentationIntroductoryOverlayNotification, {
@@ -52,6 +53,7 @@ import {
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { mockLocation } from 'tests/js/mock-browser-utils';
 
 const getNavigationalScrollTopSpy = jest.spyOn(
 	scrollUtils,
@@ -60,6 +62,8 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
 describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
+	mockLocation();
+
 	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
 		withNotificationComponentProps(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
@@ -303,6 +307,28 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is not active and dismisses itself when the welcome modal is present', async () => {
+			global.location.href =
+				'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
+
+			setEnabledFeatures( [ 'setupFlowRefresh' ] );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: JSON.stringify( [
+					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+				] ),
+				status: 200,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 	} );
 } );

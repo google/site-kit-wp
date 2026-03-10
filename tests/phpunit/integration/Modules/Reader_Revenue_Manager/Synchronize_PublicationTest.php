@@ -296,8 +296,6 @@ class Synchronize_PublicationTest extends TestCase {
 	}
 
 	public function test_synchronize_content_policy_status() {
-		$this->enable_feature( 'rrmPolicyViolations' );
-
 		$this->fake_sync_publication();
 
 		$this->assertTrue( $this->reader_revenue_manager->is_connected(), 'Reader Revenue Manager should be connected.' );

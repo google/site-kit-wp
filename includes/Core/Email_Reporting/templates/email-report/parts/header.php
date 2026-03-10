@@ -40,13 +40,13 @@ $icon_star_url      = $get_asset_url( 'icon-star' );
 				</tr>
 				<tr>
 					<td style="text-align:center; vertical-align:middle; font-size:13px; color: #161B18;" colspan="3">
-						<h1 style="font-weight: 400; font-size: 22px; line-height: 28px; margin: 0">
+						<h1 class="text-primary" style="color: #161B18; font-weight: 400; font-size: 22px; line-height: 28px; margin: 0">
 							<?php echo esc_html__( 'Your performance at a glance', 'google-site-kit' ); ?></h1>
-						<div style="font-weight: 500; size: 14px; line-height: 20px; margin: 0; margin-top: 2px;">
+						<div class="text-primary" style="color: #161B18; font-weight: 500; size: 14px; line-height: 20px; margin: 0; margin-top: 2px;">
 							<?php echo esc_html( $date_label ); ?></div>
 						<?php /* This domain is linked so that we can enforce our styles within email clients which otherwise detect it as a link and add their own styles. */ ?>
 						<div style="font-weight: 400; font-size: 14px; line-height: 20px; margin: 0; margin-top: 4px;">
-							<a href="<?php echo esc_url( $site_url ); ?>"
+							<a class="text-secondary" href="<?php echo esc_url( $site_url ); ?>"
 								style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 						</div>
 					</td>

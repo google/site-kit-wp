@@ -29,7 +29,7 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 /**
  * Gets splash/auth params that should be forwarded to dashboard URLs.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  *
  * @return {Object} Forwardable query params.
  */

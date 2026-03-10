@@ -35,7 +35,7 @@ import { useState } from '@wordpress/element';
  * label is computed only once, so that the label doesn't change after
  * the CTA is clicked.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  *
  * @param {Object}  options                  Options for the hook.
  * @param {boolean} options.isDismissalFinal Whether the dismissal is final or

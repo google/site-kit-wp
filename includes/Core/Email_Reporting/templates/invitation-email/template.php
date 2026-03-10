@@ -28,12 +28,18 @@ $render_part        = $data['render_part'];
 $render_shared_part = $data['render_shared_part'];
 
 $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
+
+// Replace the email placeholder in the title (the <a> tag is already in Content_Map).
+$email_title = sprintf( $email_title, esc_attr( $inviter_email ) );
 ?>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -45,70 +51,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 	<![endif]-->
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
-		:root {
-			color-scheme: light;
-		}
-
-		body {
-			background-color: #F3F5F7;
-			margin: 0;
-			padding: 0;
-			font-family: 'Google Sans', Roboto, Arial, sans-serif;
-			font-size: 14px;
-			line-height: 1.4;
-			color: #202124;
-		}
-
-		table {
-			border-spacing: 0;
-			border-collapse: separate;
-			width: 100%;
-		}
-
-		img {
-			border: 0;
-			max-width: 100%;
-			height: auto;
-			line-height: 100%;
-		}
-
-		.body {
-			width: 100%;
-			max-width: 520px;
-			background-color: #F3F5F7;
-		}
-
-		.container {
-			max-width: 520px;
-			margin: 0 auto;
-			padding: 0;
-			width: 100%;
-			box-sizing: border-box;
-		}
-
-		.main {
-			width: 100%;
-			max-width: 520px;
-			margin: 0 auto;
-		}
-
-		.wrapper {
-			box-sizing: border-box;
-			padding: 0 16px 40px 16px;
-		}
-
-		.preheader {
-			display: none !important;
-			visibility: hidden;
-			mso-hide: all;
-			font-size: 1px;
-			color: #F3F5F7;
-			line-height: 1px;
-			max-height: 0;
-			max-width: 0;
-			opacity: 0;
-			overflow: hidden;
-		}
+		<?php $render_shared_part( 'styles' ); ?>
 	</style>
 </head>
 <body>
@@ -137,14 +80,14 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 							?>
 							<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 								<tr>
-									<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 0 16px;">
+									<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 0 16px;">
 										<?php /* Site domain. */ ?>
 										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-											<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+											<a class="text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 										</p>
 
 										<?php /* Title from Content_Map with inviter email link. */ ?>
-										<h1 style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+										<h1 class="text-primary" style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 											<?php
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Contains pre-escaped mailto link.
 											echo $email_title;
@@ -153,10 +96,10 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 
 										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
-										<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+										<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 											<?php echo esc_html( $paragraph ); ?>
 											<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
-											<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+											<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 											<?php endif; ?>
 										</p>
 										<?php endforeach; ?>
@@ -194,7 +137,7 @@ $envelope_url = $get_asset_url( 'invitation-envelope-graphic' );
 							<table role="presentation" width="100%" style="margin-top: 24px;">
 								<tr>
 									<td style="text-align: left;">
-										<p style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
+										<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
 											<?php echo esc_html( $footer_copy ); ?>
 										</p>
 									</td>

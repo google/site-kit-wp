@@ -21,8 +21,11 @@
  */
 
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
+	provideModules,
+	provideUserCapabilities,
 	provideUserInfo,
 	render,
 	waitFor,
@@ -48,7 +51,9 @@ describe( 'UserSettingsSelectionPanel', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideModules( registry );
 		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
+		provideUserCapabilities( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: false,
@@ -62,6 +67,9 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
@@ -150,9 +158,11 @@ describe( 'UserSettingsSelectionPanel', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
 
 		await waitFor( () =>
 			expect(

@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 /**
  * Handles subscription confirmation email scheduling.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Subscription_Confirmation_Task {
 	/**
 	 * Frequency planner instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Frequency_Planner
 	 */
 	private $frequency_planner;
@@ -32,7 +32,7 @@ class Subscription_Confirmation_Task {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param Frequency_Planner $frequency_planner Frequency planner instance.
 	 */
@@ -43,7 +43,7 @@ class Subscription_Confirmation_Task {
 	/**
 	 * Schedules a subscription confirmation batch if this request subscribed the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param int   $user_id           User ID.
 	 * @param array $previous_settings Previous settings.
@@ -66,7 +66,7 @@ class Subscription_Confirmation_Task {
 	/**
 	 * Creates a single-user subscription confirmation batch payload and log.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param int    $user_id   User ID.
 	 * @param string $frequency Frequency slug.

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { enabledFeatures } from '@/js/features';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_CONTENT_POLICY_STATUS,
@@ -36,7 +36,6 @@ import {
 
 describe( 'modules/reader-revenue-manager settings', () => {
 	let registry;
-	let createTestRegistry;
 
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
@@ -61,228 +60,209 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		setUsingCache( true );
 	} );
 
-	describe.each( [ true, false ] )(
-		'validateCanSubmitChanges with rrmPolicyViolations feature flag enabled: %s',
-		( withRRMPolicyViolations ) => {
-			beforeEach( () => {
-				if ( withRRMPolicyViolations ) {
-					enabledFeatures.add( 'rrmPolicyViolations' );
-				}
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
 
-				createTestRegistry =
-					require( '../../../../../tests/js/utils' ).createTestRegistry;
+	describe( 'validateCanSubmitChanges', () => {
+		it( 'should throw invariant error for invalid publication ID of type number', () => {
+			const settings = {
+				...validSettings,
+				publicationID: 12345,
+			};
 
-				registry = createTestRegistry();
-			} );
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
 
-			it( 'should throw invariant error for invalid publication ID of type number', () => {
-				const settings = {
-					...validSettings,
-					publicationID: 12345,
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
-			} );
-
-			it( 'should throw invariant error for invalid publication ID with special chars', () => {
-				const settings = {
-					...validSettings,
-					publicationID: 'ABCD&*12345',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
-			} );
-
-			it( 'should throw invariant error for invalid publication onboarding state', () => {
-				const settings = {
-					...validSettings,
-					publicationOnboardingState: 'invalid_state',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE );
-			} );
-
-			it( 'should throw invariant error for invalid snippet mode', () => {
-				const settings = {
-					...validSettings,
-					snippetMode: 'invalid-mode',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_SNIPPET_MODE );
-			} );
-
-			it( 'should throw invariant error for invalid post types', () => {
-				const settings = {
-					...validSettings,
-					postTypes: 'not-an-array',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_POST_TYPES );
-			} );
-
-			it( 'should throw invariant error for post types with non-string elements', () => {
-				const settings = {
-					...validSettings,
-					postTypes: [ 'post', 123, true ],
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_POST_TYPES );
-			} );
-
-			it( 'should throw invariant error if at least 1 post type is not selected', () => {
-				const settings = {
-					...validSettings,
-					postTypes: [],
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_POST_TYPES );
-			} );
-
-			it( 'should not throw invariant error if no post types are selected and the snippet mode is different', () => {
-				const settings = {
-					...validSettings,
-					postTypes: [],
-					snippetMode: 'per_post',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).not.toThrow( INVARIANT_INVALID_POST_TYPES );
-			} );
-
-			it( 'should throw invariant error for invalid product ID', () => {
-				const settings = {
-					...validSettings,
-					productID: [ 'not-a-string' ],
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PRODUCT_ID );
-			} );
-
-			it( 'should throw invariant error for invalid product IDs', () => {
-				const settings = {
-					...validSettings,
-					productIDs: 'not-an-array',
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PRODUCT_IDS );
-			} );
-
-			it( 'should throw invariant error for product IDs with non-string elements', () => {
-				const settings = {
-					...validSettings,
-					productIDs: [ 'valid', 123, true ],
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PRODUCT_IDS );
-			} );
-
-			it( 'should throw invariant error for invalid payment option', () => {
-				const settings = {
-					...validSettings,
-					paymentOption: [ 'not-a-string' ],
-				};
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.setSettings( settings );
-
-				expect( () =>
-					validateCanSubmitChanges( registry.select )
-				).toThrow( INVARIANT_INVALID_PAYMENT_OPTION );
-			} );
-
-			if ( withRRMPolicyViolations ) {
-				it( 'should throw invariant error for invalid content policy status', () => {
-					const settings = {
-						...validSettings,
-						contentPolicyStatus: 'not-an-object',
-					};
-
-					registry
-						.dispatch( MODULES_READER_REVENUE_MANAGER )
-						.setSettings( settings );
-
-					expect( () =>
-						validateCanSubmitChanges( registry.select )
-					).toThrow( INVARIANT_INVALID_CONTENT_POLICY_STATUS );
-				} );
-			}
-		}
-	);
-
-	describe( 'submitChanges', () => {
-		beforeEach( () => {
-			createTestRegistry =
-				require( '../../../../../tests/js/utils' ).createTestRegistry;
-
-			registry = createTestRegistry();
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ID
+			);
 		} );
 
+		it( 'should throw invariant error for invalid publication ID with special chars', () => {
+			const settings = {
+				...validSettings,
+				publicationID: 'ABCD&*12345',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ID
+			);
+		} );
+
+		it( 'should throw invariant error for invalid publication onboarding state', () => {
+			const settings = {
+				...validSettings,
+				publicationOnboardingState: 'invalid_state',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PUBLICATION_ONBOARDING_STATE
+			);
+		} );
+
+		it( 'should throw invariant error for invalid snippet mode', () => {
+			const settings = {
+				...validSettings,
+				snippetMode: 'invalid-mode',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_SNIPPET_MODE
+			);
+		} );
+
+		it( 'should throw invariant error for invalid post types', () => {
+			const settings = {
+				...validSettings,
+				postTypes: 'not-an-array',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_POST_TYPES
+			);
+		} );
+
+		it( 'should throw invariant error for post types with non-string elements', () => {
+			const settings = {
+				...validSettings,
+				postTypes: [ 'post', 123, true ],
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_POST_TYPES
+			);
+		} );
+
+		it( 'should throw invariant error if at least 1 post type is not selected', () => {
+			const settings = {
+				...validSettings,
+				postTypes: [],
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_POST_TYPES
+			);
+		} );
+
+		it( 'should not throw invariant error if no post types are selected and the snippet mode is different', () => {
+			const settings = {
+				...validSettings,
+				postTypes: [],
+				snippetMode: 'per_post',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () =>
+				validateCanSubmitChanges( registry.select )
+			).not.toThrow( INVARIANT_INVALID_POST_TYPES );
+		} );
+
+		it( 'should throw invariant error for invalid product ID', () => {
+			const settings = {
+				...validSettings,
+				productID: [ 'not-a-string' ],
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PRODUCT_ID
+			);
+		} );
+
+		it( 'should throw invariant error for invalid product IDs', () => {
+			const settings = {
+				...validSettings,
+				productIDs: 'not-an-array',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PRODUCT_IDS
+			);
+		} );
+
+		it( 'should throw invariant error for product IDs with non-string elements', () => {
+			const settings = {
+				...validSettings,
+				productIDs: [ 'valid', 123, true ],
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PRODUCT_IDS
+			);
+		} );
+
+		it( 'should throw invariant error for invalid payment option', () => {
+			const settings = {
+				...validSettings,
+				paymentOption: [ 'not-a-string' ],
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_PAYMENT_OPTION
+			);
+		} );
+
+		it( 'should throw invariant error for invalid content policy status', () => {
+			const settings = {
+				...validSettings,
+				contentPolicyStatus: 'not-an-object',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_CONTENT_POLICY_STATUS
+			);
+		} );
+	} );
+
+	describe( 'submitChanges', () => {
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

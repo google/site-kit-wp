@@ -38,7 +38,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Email reporting scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Email_Reporting_Scheduler
 	 */
 	private $scheduler;

@@ -218,9 +218,6 @@ MissingProductID.args = {
 export const WithPolicyViolationPending = Template.bind( {} );
 WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
 WithPolicyViolationPending.scenario = {};
-WithPolicyViolationPending.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationPending.args = {
 	setupRegistry: ( registry ) => {
 		setupPublicationsWithProduct( registry, 0, 'product-b' );
@@ -239,9 +236,6 @@ WithPolicyViolationPending.args = {
 export const WithPolicyViolationActive = Template.bind( {} );
 WithPolicyViolationActive.storyName = 'With Policy Violation (Active)';
 WithPolicyViolationActive.scenario = {};
-WithPolicyViolationActive.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationActive.args = {
 	setupRegistry: ( registry ) => {
 		setupPublicationsWithProduct( registry, 0, 'product-b' );
@@ -259,9 +253,6 @@ WithPolicyViolationActive.args = {
 export const WithPolicyViolationExtreme = Template.bind( {} );
 WithPolicyViolationExtreme.storyName = 'With Policy Violation (Extreme)';
 WithPolicyViolationExtreme.scenario = {};
-WithPolicyViolationExtreme.parameters = {
-	features: [ 'rrmPolicyViolations' ],
-};
 WithPolicyViolationExtreme.args = {
 	setupRegistry: ( registry ) => {
 		setupPublicationsWithProduct( registry, 0, 'product-b' );
