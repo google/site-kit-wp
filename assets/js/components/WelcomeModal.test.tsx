@@ -528,6 +528,7 @@ describe( 'WelcomeModal', () => {
 						isViewOnly,
 						canAuthenticate,
 						isAnalyticsConnected: true,
+						windowHeight: global.innerHeight,
 					} )
 				)
 			);
@@ -613,6 +614,7 @@ describe( 'WelcomeModal', () => {
 						isViewOnly,
 						canAuthenticate,
 						isAnalyticsConnected: false,
+						windowHeight: global.innerHeight,
 					} )
 				)
 			);
