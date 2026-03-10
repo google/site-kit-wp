@@ -46,6 +46,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { useWindowHeight } from '@/js/hooks/useWindowSize';
 import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -100,11 +101,14 @@ export default function HelpMenu( { children } ) {
 
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
+	const windowHeight = useWindowHeight();
+
 	const handleStartFeatureTour = useCallback( () => {
 		const tour = getWelcomeTour( {
 			isViewOnly,
 			canAuthenticate,
 			isAnalyticsConnected,
+			windowHeight,
 		} );
 
 		triggerOnDemandTour( tour );
@@ -112,6 +116,7 @@ export default function HelpMenu( { children } ) {
 		isViewOnly,
 		canAuthenticate,
 		isAnalyticsConnected,
+		windowHeight,
 		triggerOnDemandTour,
 	] );
 

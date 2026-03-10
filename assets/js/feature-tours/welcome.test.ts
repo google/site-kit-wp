@@ -135,6 +135,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -172,6 +173,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -206,6 +208,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: false,
 				isAnalyticsConnected: true,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -242,6 +245,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -294,6 +298,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -329,6 +334,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: false,
 				isAnalyticsConnected: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -364,6 +370,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -387,6 +394,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -396,6 +404,19 @@ describe( 'getWelcomeTour', () => {
 				( step ) => 'slug' in step && step.slug === 'activate-analytics'
 			);
 			expect( activateAnalyticsStep ).toBeUndefined();
+		} );
+
+		it( 'should use the chart as the floater target when window height is less than 930 for SC-only tours', () => {
+			const smallTour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+				windowHeight: 768,
+			} );
+
+			expect( smallTour.steps[ 0 ].floaterProps ).toEqual( {
+				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart',
+			} );
 		} );
 	} );
 } );

@@ -57,6 +57,7 @@ import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { useWindowHeight } from '@/js/hooks/useWindowSize';
 import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
@@ -91,6 +92,8 @@ export default function WelcomeModal() {
 	const analyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
+
+	const windowHeight = useWindowHeight();
 
 	const analyticsGatheringData = useSelect( ( select: Select ) => {
 		if ( ! analyticsConnected ) {
@@ -172,6 +175,7 @@ export default function WelcomeModal() {
 				isViewOnly,
 				canAuthenticate,
 				isAnalyticsConnected: !! analyticsConnected,
+				windowHeight,
 			} )
 		);
 	}, [
@@ -180,6 +184,7 @@ export default function WelcomeModal() {
 		closeAndDismissModal,
 		isViewOnly,
 		triggerOnDemandTour,
+		windowHeight,
 	] );
 
 	const intersectionRef = useRef( null );
