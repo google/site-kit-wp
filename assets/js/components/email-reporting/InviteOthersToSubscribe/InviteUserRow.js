@@ -36,12 +36,16 @@ import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import MailIcon from '@/svg/icons/manage-email-reports.svg';
 import TickIcon from '@/svg/icons/tick.svg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function InviteUserRow( {
 	user,
 	inviteResult = null,
 	onInviteResult,
 } ) {
+	const viewContext = useViewContext();
+
 	const { id, name, email, role } = user;
 
 	const { inviteUser } = useDispatch( CORE_SITE );
@@ -51,6 +55,11 @@ export default function InviteUserRow( {
 	);
 
 	const handleInvite = useCallback( async () => {
+		trackEvent(
+			`${ viewContext }_email_reports_invite_user`,
+			'send_invite'
+		);
+
 		const { error } = await inviteUser( id );
 
 		if ( error ) {
@@ -58,7 +67,7 @@ export default function InviteUserRow( {
 		} else {
 			onInviteResult( id, { status: 'success' } );
 		}
-	}, [ id, inviteUser, onInviteResult ] );
+	}, [ viewContext, id, inviteUser, onInviteResult ] );
 
 	function renderAction() {
 		if ( inviteResult?.status === 'success' || user.invited ) {
