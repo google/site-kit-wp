@@ -92,6 +92,10 @@ export default function KeyMetricsSetupApp() {
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
+	const areGA4SettingsLoaded = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
+	);
+
 	const error = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
 	);
@@ -189,9 +193,17 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
+		if ( ! areGA4SettingsLoaded ) {
+			return;
+		}
+
 		syncAvailableAudiences();
 		fetchSyncAvailableCustomDimensions();
-	}, [ syncAvailableAudiences, fetchSyncAvailableCustomDimensions ] );
+	}, [
+		areGA4SettingsLoaded,
+		syncAvailableAudiences,
+		fetchSyncAvailableCustomDimensions,
+	] );
 
 	const onSaveClick = useCallback( () => {
 		if ( isBusy || isSyncing ) {
