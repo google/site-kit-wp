@@ -24,7 +24,7 @@
 		overflow: hidden;
 		position: fixed;
 		right: 0;
-		top: 0;
+		top: var(--googlesitekit-side-sheet-top, 0);
 		transform: translateX(100%);
 		transition: transform $t-speed-3;
 		width: 100%;
@@ -32,14 +32,6 @@
 
 		@media (min-width: $bp-nonMobile) {
 			width: 530px;
-		}
-
-		body.admin-bar & {
-			top: 46px;
-
-			@media (min-width: $bp-wpAdminBarTablet) {
-				top: 32px;
-			}
 		}
 	}
 

@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
 use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -257,14 +258,16 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->email_log         = new Email_Log();
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );
+		$notifier                = new Batch_Error_Notifier( $this->email_log_batch_query, $email_sender, $this->context, $this->golinks );
 		$this->worker_task       = new Worker_Task(
 			$max_execution_limiter,
 			$this->email_log_batch_query,
 			$this->scheduler,
 			$log_processor,
-			$this->data_requests
+			$this->data_requests,
+			$notifier
 		);
-		$this->fallback_task     = new Fallback_Task( $this->email_log_batch_query, $this->scheduler, $this->worker_task );
+		$this->fallback_task     = new Fallback_Task( $this->email_log_batch_query, $this->scheduler, $this->worker_task, $notifier );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
 		$this->email_log_cleanup = new Email_Log_Cleanup( $this->settings );
 	}
@@ -276,6 +279,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 */
 	public function register() {
 		$this->golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
+		$this->golinks->register_handler( 'settings', new Settings_Golink_Handler() );
 		$this->golinks->register_handler( Email_Notices::GOLINK_NOTICE, new Email_Notice_Golink_Handler( $this->email_notices, $this->modules, $this->authentication ) );
 		$this->settings->register();
 		$this->rest_controller->register();

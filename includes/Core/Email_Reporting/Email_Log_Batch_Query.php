@@ -2,6 +2,13 @@
 /**
  * Class Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query
  *
+ * Throughout this file, we use a 10,000 post limit to avoid pagination.
+ *
+ * We're assuming that more than 10,000 users won't be invited to/subscribe to
+ * the same PUE email report frequency.
+ *
+ * See: https://github.com/google/site-kit-wp/pull/12273#discussion_r2886482987
+ *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2025 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
@@ -311,5 +318,124 @@ class Email_Log_Batch_Query {
 
 		$first_post_id = min( $batch_post_ids );
 		return get_post_meta( $first_post_id, Email_Log::META_ERROR_DETAILS, true );
+	}
+
+	/**
+	 * Checks if all logs in a batch have failed after maximum attempts.
+	 *
+	 * Returns true only when every log has email_failed status and
+	 * send attempts >= MAX_ATTEMPTS, with no email_sent logs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $batch_id Batch identifier.
+	 * @return bool True if all logs in the batch have exhausted retries.
+	 */
+	public function is_batch_all_failed( $batch_id ) {
+		$post_ids = $this->get_batch_post_ids( $batch_id );
+
+		if ( empty( $post_ids ) ) {
+			return false;
+		}
+
+		foreach ( $post_ids as $post_id ) {
+			$status   = get_post_status( $post_id );
+			$attempts = (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true );
+
+			if ( Email_Log::STATUS_FAILED !== $status || $attempts < self::MAX_ATTEMPTS ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks if admin notification has already been sent for a batch.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $batch_id Batch identifier.
+	 * @return bool True if the batch has already been admin-notified.
+	 */
+	public function is_batch_admin_notified( $batch_id ) {
+		$post_ids = $this->get_batch_post_ids( $batch_id );
+
+		if ( empty( $post_ids ) ) {
+			return false;
+		}
+
+		return (bool) get_post_meta( $post_ids[0], Email_Log::META_ADMIN_NOTIFIED, true );
+	}
+
+	/**
+	 * Marks a batch as admin-notified to prevent duplicate sends.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $batch_id Batch identifier.
+	 */
+	public function mark_batch_admin_notified( $batch_id ) {
+		$post_ids = $this->get_batch_post_ids( $batch_id );
+
+		if ( empty( $post_ids ) ) {
+			return;
+		}
+
+		update_post_meta( $post_ids[0], Email_Log::META_ADMIN_NOTIFIED, '1' );
+	}
+
+	/**
+	 * Gets the error details from the first log in a batch.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $batch_id Batch identifier.
+	 * @return string|null Error details JSON string or null.
+	 */
+	public function get_batch_error_details( $batch_id ) {
+		$post_ids = $this->get_batch_post_ids( $batch_id );
+
+		if ( empty( $post_ids ) ) {
+			return null;
+		}
+
+		$error_details = get_post_meta( $post_ids[0], Email_Log::META_ERROR_DETAILS, true );
+
+		return ! empty( $error_details ) ? $error_details : null;
+	}
+
+	/**
+	 * Gets post IDs for a specific batch with deterministic ordering.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $batch_id Batch identifier.
+	 * @return array<int> Post IDs ordered by ID ascending.
+	 */
+	private function get_batch_post_ids( $batch_id ) {
+		$query = new WP_Query(
+			array(
+				'post_type'              => Email_Log::POST_TYPE,
+				'post_status'            => self::EMAIL_LOG_STATUSES,
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page'         => 10000,
+				'fields'                 => 'ids',
+				'orderby'                => 'ID',
+				'order'                  => 'ASC',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query'             => array(
+					array(
+						'key'   => Email_Log::META_BATCH_ID,
+						'value' => (string) $batch_id,
+					),
+				),
+			)
+		);
+
+		return array_map( 'intval', $query->posts );
 	}
 }

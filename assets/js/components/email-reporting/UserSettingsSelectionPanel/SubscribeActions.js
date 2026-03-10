@@ -31,6 +31,9 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
+import PreviewBlocks from '@/js/components/PreviewBlocks';
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const ACTION_TYPE = {
 	SUBSCRIBE: 'subscribe',
@@ -43,9 +46,14 @@ export default function SubscribeActions( {
 	onSubscribe,
 	onUnsubscribe,
 	updateSettings,
+	isSavingSettings,
 	isLoading,
 } ) {
 	const [ actionType, setActionType ] = useState( '' );
+
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
 
 	function handleClick( action ) {
 		setActionType( action );
@@ -65,35 +73,49 @@ export default function SubscribeActions( {
 		}
 	}
 
+	if ( false === isEmailReportingEnabled ) {
+		return null;
+	}
+
 	return (
 		<div className="googlesitekit-selection-panel-subscribe-actions">
-			{ isSubscribed && (
+			{ isLoading && (
+				<PreviewBlocks width="140px" height="42px" count={ 2 } />
+			) }
+
+			{ ! isLoading && isSubscribed && (
 				<SpinnerButton
 					onClick={ () => handleClick( ACTION_TYPE.UNSUBSCRIBE ) }
 					isSaving={
-						isLoading && actionType === ACTION_TYPE.UNSUBSCRIBE
+						isSavingSettings &&
+						actionType === ACTION_TYPE.UNSUBSCRIBE
 					}
-					disabled={ isLoading }
+					disabled={ isSavingSettings }
 					tertiary
 				>
 					{ __( 'Unsubscribe', 'google-site-kit' ) }
 				</SpinnerButton>
 			) }
-			<SpinnerButton
-				onClick={ () =>
-					handleClick(
-						isSubscribed
-							? ACTION_TYPE.UPDATE_SETTINGS
-							: ACTION_TYPE.SUBSCRIBE
-					)
-				}
-				isSaving={ isLoading && actionType !== ACTION_TYPE.UNSUBSCRIBE }
-				disabled={ isLoading }
-			>
-				{ isSubscribed
-					? __( 'Update Settings', 'google-site-kit' )
-					: __( 'Subscribe', 'google-site-kit' ) }
-			</SpinnerButton>
+			{ ! isLoading && (
+				<SpinnerButton
+					onClick={ () =>
+						handleClick(
+							isSubscribed
+								? ACTION_TYPE.UPDATE_SETTINGS
+								: ACTION_TYPE.SUBSCRIBE
+						)
+					}
+					isSaving={
+						isSavingSettings &&
+						actionType !== ACTION_TYPE.UNSUBSCRIBE
+					}
+					disabled={ isSavingSettings }
+				>
+					{ isSubscribed
+						? __( 'Update Settings', 'google-site-kit' )
+						: __( 'Subscribe', 'google-site-kit' ) }
+				</SpinnerButton>
+			) }
 		</div>
 	);
 }
@@ -103,5 +125,6 @@ SubscribeActions.propTypes = {
 	onSubscribe: PropTypes.func.isRequired,
 	onUnsubscribe: PropTypes.func.isRequired,
 	updateSettings: PropTypes.func.isRequired,
+	isSavingSettings: PropTypes.bool,
 	isLoading: PropTypes.bool,
 };

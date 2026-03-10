@@ -25,6 +25,7 @@ import {
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
+	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 } from '@/js/googlesitekit/datastore/user/constants';
@@ -51,6 +52,7 @@ export default {
 						KM_ANALYTICS_RETURNING_VISITORS,
 					],
 				} );
+				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 			}
 
 			return (
