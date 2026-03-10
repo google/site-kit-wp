@@ -148,8 +148,6 @@ export function getWelcomeTour( {
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
-					// Use the chart as the floater target on short viewports so
-					// the tooltip stays visible on screen.
 					target:
 						typeof windowHeight === 'number' && windowHeight < 930
 							? '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart'
