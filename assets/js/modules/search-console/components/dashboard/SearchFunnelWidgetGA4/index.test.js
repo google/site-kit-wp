@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { useIntersection as mockUseIntersection } from 'react-use';
+
 import {
 	render,
 	createTestRegistry,
@@ -26,6 +28,8 @@ import {
 	provideSiteInfo,
 	muteFetch,
 	fireEvent,
+	waitFor,
+	provideModuleRegistrations,
 } from '../../../../../../../tests/js/test-utils';
 import * as tracking from '@/js/util/tracking';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
@@ -34,23 +38,15 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
-function mockUseIntersection() {
-	return { intersectionRatio: 0 };
-}
+import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
 
-jest.mock( 'react-use', () => {
-	const actual = jest.requireActual( 'react-use' );
-	return {
-		...actual,
-		useIntersection: ( ...args ) => mockUseIntersection( ...args ),
-		__setUseIntersection: ( fn ) => {
-			mockUseIntersection = fn;
-		},
-		useUpdateEffect: ( fn, deps ) =>
-			require( 'react' ).useEffect( fn, deps ),
-		useMount: ( fn ) => require( 'react' ).useEffect( fn, [] ),
-	};
-} );
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 import SearchFunnelWidgetGA4 from '.';
 import {
@@ -61,12 +57,18 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'SearchFunnelWidgetGA4', () => {
+	mockLocation();
 	let registry;
 	let originalViewport;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
 
 	beforeEach( () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
+
 		registry = createTestRegistry();
 
 		provideModules( registry );
@@ -149,21 +151,48 @@ describe( 'SearchFunnelWidgetGA4', () => {
 	} );
 
 	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
-		let mockTrackEvent;
-		beforeAll( () => {
-			mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-			mockTrackEvent.mockImplementation( () => Promise.resolve() );
-		} );
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
 
-		afterEach( () => {
-			jest.resetAllMocks();
-		} );
+		const moduleActivationEndpoint = RegExp(
+			'google-site-kit/v1/core/modules/data/activation'
+		);
 
-		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
-			require( 'react-use' ).__setUseIntersection( () => ( {
+		const userAuthenticationEndpoint = RegExp(
+			'^/google-site-kit/v1/core/user/data/authentication'
+		);
+
+		beforeEach( () => {
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
 				intersectionRatio: 1,
 			} ) );
 
+			provideModules( registry, [
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: [ 'analytics-setup-cta-search-funnel' ],
+				status: 200,
+			} );
+
+			fetchMock.postOnce( moduleActivationEndpoint, {
+				body: { success: true },
+			} );
+
+			fetchMock.getOnce( userAuthenticationEndpoint, {
+				body: { needsReauthentication: false },
+			} );
+		} );
+
+		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
 			const { waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 				{
@@ -180,10 +209,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				'view_cta',
 				'search_funnel'
 			);
-
-			require( 'react-use' ).__setUseIntersection( () => ( {
-				intersectionRatio: 0,
-			} ) );
 		} );
 
 		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
@@ -200,11 +225,13 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 			fireEvent.click( getByText( /Maybe later/ ) );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'dismiss_cta',
-				'search_funnel'
-			);
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+					'dismiss_cta',
+					'search_funnel'
+				);
+			} );
 		} );
 
 		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
@@ -219,13 +246,15 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 			await waitForRegistry();
 
-			fireEvent.click( getByText( /Set up Analytics/ ) );
+			fireEvent.click( getByText( /Complete setup/ ) );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'confirm_cta',
-				'search_funnel'
-			);
+			await waitFor( () => {
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+					'confirm_cta',
+					'search_funnel'
+				);
+			} );
 		} );
 
 		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {

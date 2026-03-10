@@ -1,6 +1,9 @@
 /**
  * WPDashboardWidgets component tests.
  */
+
+import { useIntersection as mockUseIntersection } from 'react-use';
+
 import {
 	render,
 	createTestRegistry,
@@ -20,29 +23,16 @@ import WPDashboardWidgets from './WPDashboardWidgets';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
-function mockUseIntersection() {
-	return { intersectionRatio: 0 };
-}
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
 
-jest.mock( 'react-use', () => {
-	const actual = jest.requireActual( 'react-use' );
-	return {
-		...actual,
-		useIntersection: ( ...args ) => mockUseIntersection( ...args ),
-		__setUseIntersection: ( fn ) => {
-			mockUseIntersection = fn;
-		},
-		useUpdateEffect: ( fn, deps ) =>
-			require( 'react' ).useEffect( fn, deps ),
-		useMount: ( fn ) => require( 'react' ).useEffect( fn, [] ),
-	};
-} );
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'WPDashboardWidgets', () => {
 	let registry;
-
-	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -79,11 +69,14 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
-		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
-			require( 'react-use' ).__setUseIntersection( () => ( {
+		beforeEach( () => {
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
 				intersectionRatio: 1,
 			} ) );
+		} );
 
+		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
 			const { waitForRegistry } = render( <WPDashboardWidgets />, {
 				registry,
 				features: [ 'setupFlowRefresh' ],
@@ -97,10 +90,6 @@ describe( 'WPDashboardWidgets', () => {
 				'view_cta',
 				'wp_dashboard'
 			);
-
-			require( 'react-use' ).__setUseIntersection( () => ( {
-				intersectionRatio: 0,
-			} ) );
 		} );
 
 		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {

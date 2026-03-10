@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { useIntersection as mockUseIntersection } from 'react-use';
+
 import {
 	render,
 	createTestRegistry,
@@ -26,10 +28,6 @@ import {
 	fireEvent,
 } from '../../../../tests/js/test-utils';
 import * as tracking from '@/js/util/tracking';
-
-jest.mock( 'react-use', () => ( {
-	useIntersection: () => ( { intersectionRatio: 1 } ),
-} ) );
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -41,11 +39,16 @@ import {
 import AdminBarWidgets from './AdminBarWidgets';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 describe( 'AdminBarWidgets', () => {
 	let registry;
-
-	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -170,6 +173,13 @@ describe( 'AdminBarWidgets', () => {
 	} );
 
 	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
+		beforeEach( () => {
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+		} );
+
 		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
 			const { waitForRegistry } = render( <AdminBarWidgets />, {
 				registry,
