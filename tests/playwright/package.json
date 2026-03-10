@@ -1,5 +1,6 @@
 {
 	"scripts": {
+		"pretest": "docker compose ps --services --filter status=running | grep -q wp || npm run start --silent",
 		"test": "playwright test --config=playwright.config.ts",
 		"test:ui": "npm run test --silent -- --ui",
 		"start": "docker compose up -d",

@@ -21,6 +21,11 @@ import { test, type TestInfo } from '@playwright/test';
 import { type Connection, type RowDataPacket } from 'mysql2/promise';
 
 /**
+ * Internal dependencies
+ */
+import { PLUGINS_SEPARATOR } from './options';
+
+/**
  * Serializes a string array to a PHP serialized format.
  *
  * @since n.e.x.t
@@ -178,11 +183,15 @@ export class WordPressPlugins {
 		const pluginFiles: string[] = [];
 
 		this.testInfo.annotations.forEach( ( { type, description = '' } ) => {
-			if ( type === '_wp:plugin' ) {
-				description.split( ';' ).forEach( ( pluginFile: string ) => {
+			if ( type !== '_wp:plugin' ) {
+				return;
+			}
+
+			description
+				.split( PLUGINS_SEPARATOR )
+				.forEach( ( pluginFile: string ) => {
 					pluginFiles.push( pluginFile );
 				} );
-			}
 		} );
 
 		for ( const pluginFile of pluginFiles ) {

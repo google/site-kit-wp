@@ -165,7 +165,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Schedules subscription confirmation delivery via existing worker and fallback pipeline.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param int   $user_id           User ID.
 	 * @param array $previous_settings Previous settings.

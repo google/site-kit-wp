@@ -23,7 +23,7 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 ?>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tr>
-		<td style="background-color: #FFFFFF; border-radius: 16px; padding: 24px;">
+		<td class="card" style="background-color: #FFFFFF; border-radius: 16px; padding: 24px 16px 12px 16px;">
 			<?php /* Envelope illustration at top, centered. */ ?>
 			<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 				<tr>
@@ -35,23 +35,23 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 
 			<?php /* Site domain. */ ?>
 			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #6C726E; margin: 0 0 8px 0;">
-				<a href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
+				<a class="text-secondary" href="<?php echo esc_url( $site_url ); ?>" style="color: #6C726E; text-decoration: none;"><?php echo esc_html( $site_domain ); ?></a>
 			</p>
 
 			<?php /* Title from Content_Map. */ ?>
-			<h1 style="font-size: 22px; line-height: 28px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
+			<h1 class="text-primary" style="font-size: 16px; line-height: 24px; font-weight: 500; color: #161B18; margin: 0 0 16px 0;">
 				<?php echo esc_html( $title ); ?>
 			</h1>
 
 			<?php /* Body paragraphs from Content_Map. */ ?>
 			<?php foreach ( $body as $paragraph ) : ?>
-			<p style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
 				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
 			</p>
 			<?php endforeach; ?>
 
 			<?php /* CTA Button. */ ?>
-			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+			<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px;">
 				<tr>
 					<td>
 						<?php

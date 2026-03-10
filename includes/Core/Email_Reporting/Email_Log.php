@@ -83,7 +83,7 @@ final class Email_Log {
 	/**
 	 * Template type meta key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 */
 	const META_TEMPLATE_TYPE = '_template_type';
 
@@ -101,7 +101,7 @@ final class Email_Log {
 	/**
 	 * Email template types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 */
 	const TEMPLATE_TYPE_EMAIL_REPORT      = 'email-report';
 	const TEMPLATE_TYPE_SUBSCRIBE_SUCCESS = 'subscribe-success';
@@ -513,7 +513,7 @@ final class Email_Log {
 	/**
 	 * Sanitizes the template type meta value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized template type.

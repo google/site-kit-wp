@@ -45,7 +45,7 @@ runs:
       if: inputs.skip-if-exists-tag != ''
       shell: bash
       run: |
-        if docker manifest inspect ${{ inputs.skip-if-exists-tag }} > /dev/null 2>&1; then
+        if docker buildx imagetools inspect ${{ inputs.skip-if-exists-tag }} > /dev/null 2>&1; then
           echo "exists=true" >> "$GITHUB_OUTPUT"
           echo "Image ${{ inputs.skip-if-exists-tag }} already exists, skipping build."
         else

@@ -72,7 +72,7 @@ class Sections_Map {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Golinks
 	 */
 	protected $golinks;
@@ -81,7 +81,7 @@ class Sections_Map {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context $context Plugin context.
 	 * @param array   $payload The payload data to be used in sections.
@@ -96,7 +96,7 @@ class Sections_Map {
 	/**
 	 * Gets the dashboard golink URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return string Dashboard URL.
 	 */
