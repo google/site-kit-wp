@@ -95,16 +95,24 @@ class Content_MapTest extends TestCase {
 		$this->assertEmpty( $title, 'Title should be empty for unknown template.' );
 	}
 
-	public function test_get_title_returns_placeholder_for_invitation_email() {
+	public function test_get_title_returns_placeholders_for_invitation_email() {
 		$title = Content_Map::get_title( 'invitation-email' );
 
-		$this->assertStringContainsString( '%1$s', $title, 'Invitation email title should contain placeholder.' );
+		$this->assertStringContainsString( '%1$s', $title, 'Invitation email title should contain opening tag placeholder.' );
+		$this->assertStringContainsString( '%2$s', $title, 'Invitation email title should contain email placeholder.' );
+		$this->assertStringContainsString( '%3$s', $title, 'Invitation email title should contain closing tag placeholder.' );
 		$this->assertStringContainsString( 'invited', $title, 'Invitation email title should contain "invited".' );
-		$this->assertStringContainsString( 'mailto:%1$s', $title, 'Invitation email title should contain mailto link template.' );
 	}
 
 	public function test_get_title_with_args_substitutes_placeholder() {
-		$title = Content_Map::get_title_with_args( 'invitation-email', array( 'admin@example.com' ) );
+		$title = Content_Map::get_title_with_args(
+			'invitation-email',
+			array(
+				'<a href="mailto:admin@example.com" style="color: #161B18;">',
+				'admin@example.com',
+				'</a>',
+			)
+		);
 
 		$this->assertStringContainsString( 'admin@example.com', $title, 'Title should contain substituted email.' );
 		$this->assertStringNotContainsString( '%1$s', $title, 'Title should not contain unresolved placeholder.' );
@@ -130,7 +138,7 @@ class Content_MapTest extends TestCase {
 		$body  = Content_Map::get_body( 'error-email' );
 
 		$this->assertNotEmpty( $title, 'Error email should have a title.' );
-		$this->assertStringContainsString( 'issue', $title, 'Error email title should mention issue.' );
+		$this->assertStringContainsString( 'report', $title, 'Error email title should mention report.' );
 		$this->assertNotEmpty( $body, 'Error email should have body content.' );
 	}
 }

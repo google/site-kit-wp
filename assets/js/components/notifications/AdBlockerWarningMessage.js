@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -35,6 +36,7 @@ import ExternalIcon from '@/svg/icons/external-rounded.svg';
 import Notice from '@/js/components/Notice';
 
 export default function AdBlockerWarningMessage( {
+	className,
 	getHelpLink = '',
 	warningMessage = null,
 } ) {
@@ -44,7 +46,7 @@ export default function AdBlockerWarningMessage( {
 
 	return (
 		<Notice
-			className="googlesitekit-notice--small"
+			className={ classnames( 'googlesitekit-notice--small', className ) }
 			type={ Notice.TYPES.WARNING }
 			description={ createInterpolateElement(
 				sprintf(
@@ -76,6 +78,7 @@ export default function AdBlockerWarningMessage( {
 }
 
 AdBlockerWarningMessage.propTypes = {
+	className: PropTypes.string,
 	getHelpLink: PropTypes.string,
 	warningMessage: PropTypes.string,
 };

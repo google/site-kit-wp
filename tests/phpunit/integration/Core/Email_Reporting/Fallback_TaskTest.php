@@ -7,6 +7,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Email_Reporting\Batch_Error_Notifier;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Email_Reporting\Fallback_Task;
@@ -31,12 +32,18 @@ class Fallback_TaskTest extends TestCase {
 	 */
 	private $worker;
 
+	/**
+	 * @var Batch_Error_Notifier|\PHPUnit_Framework_MockObject_MockObject
+	 */
+	private $notifier;
+
 	public function set_up() {
 		parent::set_up();
 
 		$this->batch_query = $this->createMock( Email_Log_Batch_Query::class );
 		$this->scheduler   = $this->createMock( Email_Reporting_Scheduler::class );
 		$this->worker      = $this->createMock( Worker_Task::class );
+		$this->notifier    = $this->createMock( Batch_Error_Notifier::class );
 	}
 
 	public function tear_down() {
@@ -48,7 +55,7 @@ class Fallback_TaskTest extends TestCase {
 	}
 
 	public function test_reschedules_when_worker_is_locked() {
-		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker );
+		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker, $this->notifier );
 		$frequency           = Email_Reporting_Settings::FREQUENCY_WEEKLY;
 		$transient_name      = sprintf( 'googlesitekit_email_reporting_worker_lock_%s', $frequency );
 		$batch_id            = 'batch-locked';
@@ -76,7 +83,7 @@ class Fallback_TaskTest extends TestCase {
 	}
 
 	public function test_bails_when_batch_is_complete() {
-		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker );
+		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker, $this->notifier );
 		$batch_id            = 'batch-complete';
 		$frequency           = Email_Reporting_Settings::FREQUENCY_MONTHLY;
 		$initiator_timestamp = time();
@@ -86,6 +93,10 @@ class Fallback_TaskTest extends TestCase {
 			->with( $batch_id )
 			->willReturn( true );
 
+		$this->notifier->expects( $this->once() )
+			->method( 'maybe_notify' )
+			->with( $batch_id );
+
 		$this->scheduler->expects( $this->never() )->method( 'schedule_fallback' );
 		$this->worker->expects( $this->never() )->method( 'handle_callback_action' );
 
@@ -93,7 +104,7 @@ class Fallback_TaskTest extends TestCase {
 	}
 
 	public function test_reschedules_and_triggers_worker_when_incomplete() {
-		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker );
+		$task                = new Fallback_Task( $this->batch_query, $this->scheduler, $this->worker, $this->notifier );
 		$batch_id            = 'batch-pending';
 		$frequency           = Email_Reporting_Settings::FREQUENCY_QUARTERLY;
 		$initiator_timestamp = time();

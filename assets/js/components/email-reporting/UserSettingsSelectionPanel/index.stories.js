@@ -26,6 +26,7 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserCapabilities,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -88,6 +89,29 @@ function Template( { viewContext } ) {
 		</ViewContextProvider>
 	);
 }
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.scenario = {};
+Loading.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/core/site/data/email-reporting-errors'
+			)
+		);
+	},
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
@@ -268,10 +292,6 @@ export default {
 					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 					} );
-
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetEmailReportingErrors( [] );
 
 				registry
 					.dispatch( CORE_UI )
