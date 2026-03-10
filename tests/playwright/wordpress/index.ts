@@ -15,5 +15,6 @@
  */
 
 export * from './args';
+export * from './mailpit';
 export * from './options';
 export * from './wordpress';

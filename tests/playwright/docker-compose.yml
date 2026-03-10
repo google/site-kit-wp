@@ -52,6 +52,7 @@ services:
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
         define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
         define( 'WP_AUTO_UPDATE_CORE', false );
+      PLAYWRIGHT_MAILPIT_URL: http://mailpit:8025
     depends_on:
       mysql:
         condition: service_healthy
