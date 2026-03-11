@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { useIntersection as mockUseIntersection } from 'react-use';
 
+/**
+ * Internal dependencies
+ */
 import {
 	render,
 	createTestRegistry,
@@ -31,14 +37,13 @@ import {
 	waitFor,
 	provideModuleRegistrations,
 } from '../../../../../../../tests/js/test-utils';
+import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
 import * as tracking from '@/js/util/tracking';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),
@@ -62,6 +67,10 @@ describe( 'SearchFunnelWidgetGA4', () => {
 	let originalViewport;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
+
+	const dismissItemEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismiss-item'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -94,6 +103,11 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				],
 			}
 		);
+
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-search-funnel' ],
+			status: 200,
+		} );
 
 		muteFetch(
 			new RegExp(
@@ -146,24 +160,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 	} );
 
 	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
-		const dismissItemEndpoint = new RegExp(
-			'^/google-site-kit/v1/core/user/data/dismiss-item'
-		);
-
-		const moduleActivationEndpoint = RegExp(
-			'google-site-kit/v1/core/modules/data/activation'
-		);
-
-		const userAuthenticationEndpoint = RegExp(
-			'^/google-site-kit/v1/core/user/data/authentication'
-		);
-
 		beforeEach( () => {
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
 			provideModules( registry, [
 				{
 					slug: 'analytics-4',
@@ -177,17 +174,14 @@ describe( 'SearchFunnelWidgetGA4', () => {
 				body: [ 'analytics-setup-cta-search-funnel' ],
 				status: 200,
 			} );
-
-			fetchMock.postOnce( moduleActivationEndpoint, {
-				body: { success: true },
-			} );
-
-			fetchMock.getOnce( userAuthenticationEndpoint, {
-				body: { needsReauthentication: false },
-			} );
 		} );
 
-		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
+		it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+			mockUseIntersection.mockImplementation( () => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} ) );
+
 			const { waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 				{
@@ -207,7 +201,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 
 		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
-			const { getByText, waitForRegistry } = render(
+			const { getByRole, waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 				{
 					registry,
@@ -218,7 +212,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 			await waitForRegistry();
 
-			fireEvent.click( getByText( /Maybe later/ ) );
+			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 
 			await waitFor( () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -230,7 +224,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 
 		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
-			const { getByText, waitForRegistry } = render(
+			const { getByRole, waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 				{
 					registry,
@@ -241,7 +235,9 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 			await waitForRegistry();
 
-			fireEvent.click( getByText( /Complete setup/ ) );
+			fireEvent.click(
+				getByRole( 'button', { name: /Complete setup/i } )
+			);
 
 			await waitFor( () => {
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -253,7 +249,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 
 		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
-			const { getByText, waitForRegistry } = render(
+			const { getByRole, waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 				{
 					registry,
@@ -264,7 +260,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 			await waitForRegistry();
 
-			fireEvent.click( getByText( /Learn more/ ) );
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,

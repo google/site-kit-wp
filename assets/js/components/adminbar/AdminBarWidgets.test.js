@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { useIntersection as mockUseIntersection } from 'react-use';
 
+/**
+ * Internal dependencies
+ */
 import {
 	render,
 	createTestRegistry,
@@ -52,6 +58,11 @@ describe( 'AdminBarWidgets', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
 
 		provideModules( registry );
 		provideUserCapabilities( registry );
@@ -172,91 +183,78 @@ describe( 'AdminBarWidgets', () => {
 		expect( queryByText( /total impressions/i ) ).not.toBeInTheDocument();
 	} );
 
-	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
-		beforeEach( () => {
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
+	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: true,
+			intersectionRatio: 1,
+		} ) );
+
+		const { waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should track view event when Activate Analytics CTA is rendered', async () => {
-			const { waitForRegistry } = render( <AdminBarWidgets />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+		await waitForRegistry();
 
-			await waitForRegistry();
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'admin_bar'
+		);
+	} );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'view_cta',
-				'admin_bar'
-			);
+	it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
-			const { getByText, waitForRegistry } = render(
-				<AdminBarWidgets />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+		await waitForRegistry();
 
-			await waitForRegistry();
+		fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 
-			fireEvent.click( getByText( /Maybe later/ ) );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'dismiss_cta',
+			'admin_bar'
+		);
+	} );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'dismiss_cta',
-				'admin_bar'
-			);
+	it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
-			const { getByText, waitForRegistry } = render(
-				<AdminBarWidgets />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+		await waitForRegistry();
 
-			await waitForRegistry();
+		fireEvent.click( getByRole( 'button', { name: /Set up Analytics/i } ) );
 
-			fireEvent.click( getByText( /Set up Analytics/ ) );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'confirm_cta',
+			'admin_bar'
+		);
+	} );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'confirm_cta',
-				'admin_bar'
-			);
+	it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
-			const { getByText, waitForRegistry } = render(
-				<AdminBarWidgets />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+		await waitForRegistry();
 
-			await waitForRegistry();
+		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
 
-			fireEvent.click( getByText( /Learn more/ ) );
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'click_learn_more_link',
-				'admin_bar'
-			);
-		} );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'click_learn_more_link',
+			'admin_bar'
+		);
 	} );
 } );
