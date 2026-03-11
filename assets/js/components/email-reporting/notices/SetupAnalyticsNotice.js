@@ -47,7 +47,7 @@ export const EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM =
 	'email-reporting-setup-analytics-notice';
 
 export const EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG =
-	'email_reports_setup_analytics_notice';
+	'email_reports_user_settings_setup_analytics_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
