@@ -28,6 +28,7 @@ import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import SetupSuccessNotification from '@/js/modules/pagespeed-insights/components/notifications/SetupSuccessNotification';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
@@ -51,10 +52,5 @@ export const NOTIFICATIONS = {
 };
 
 export function registerNotifications( notificationsAPI ) {
-	for ( const notificationID in NOTIFICATIONS ) {
-		notificationsAPI.registerNotification(
-			notificationID,
-			NOTIFICATIONS[ notificationID ]
-		);
-	}
+	createRegisterNotifications( notificationsAPI, NOTIFICATIONS );
 }

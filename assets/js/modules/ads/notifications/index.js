@@ -43,6 +43,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
@@ -172,10 +173,5 @@ export const ADS_NOTIFICATIONS = {
 };
 
 export function registerNotifications( notifications ) {
-	for ( const notificationID in ADS_NOTIFICATIONS ) {
-		notifications.registerNotification(
-			notificationID,
-			ADS_NOTIFICATIONS[ notificationID ]
-		);
-	}
+	createRegisterNotifications( notifications, ADS_NOTIFICATIONS );
 }

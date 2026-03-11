@@ -64,6 +64,7 @@ import RRMIntroductoryOverlayNotification, {
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 import { asyncRequireAll } from '@/js/util/async';
 import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 /**
  * Checks if the setup success notification is currently being shown.
@@ -393,10 +394,5 @@ export const NOTIFICATIONS = {
 };
 
 export function registerNotifications( notificationsAPI ) {
-	for ( const notificationID in NOTIFICATIONS ) {
-		notificationsAPI.registerNotification(
-			notificationID,
-			NOTIFICATIONS[ notificationID ]
-		);
-	}
+	createRegisterNotifications( notificationsAPI, NOTIFICATIONS );
 }

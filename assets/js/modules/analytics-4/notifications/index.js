@@ -71,6 +71,7 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
@@ -182,10 +183,5 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 };
 
 export function registerNotifications( notifications ) {
-	for ( const notificationID in ANALYTICS_4_NOTIFICATIONS ) {
-		notifications.registerNotification(
-			notificationID,
-			ANALYTICS_4_NOTIFICATIONS[ notificationID ]
-		);
-	}
+	createRegisterNotifications( notifications, ANALYTICS_4_NOTIFICATIONS );
 }

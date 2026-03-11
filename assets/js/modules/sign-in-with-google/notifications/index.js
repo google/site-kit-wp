@@ -42,6 +42,7 @@ import {
 import SetupSuccessSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import CompatibilityWarningSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/CompatibilityWarningSubtleNotification';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 	'sign-in-with-google-setup-cta': {
@@ -127,12 +128,8 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 };
 
 export function registerNotifications( notifications ) {
-	for ( const [ notificationID, notificationSettings ] of Object.entries(
+	createRegisterNotifications(
+		notifications,
 		SIGN_IN_WITH_GOOGLE_NOTIFICATIONS
-	) ) {
-		notifications.registerNotification(
-			notificationID,
-			notificationSettings
-		);
-	}
+	);
 }

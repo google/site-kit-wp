@@ -53,6 +53,7 @@ import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from '@/js/components/OverlayNotification/LinkAnalyticsAndAdSenseAccountsOverlayNotification';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
@@ -215,10 +216,5 @@ export const ADSENSE_NOTIFICATIONS = {
 };
 
 export function registerNotifications( notifications ) {
-	for ( const notificationID in ADSENSE_NOTIFICATIONS ) {
-		notifications.registerNotification(
-			notificationID,
-			ADSENSE_NOTIFICATIONS[ notificationID ]
-		);
-	}
+	createRegisterNotifications( notifications, ADSENSE_NOTIFICATIONS );
 }
