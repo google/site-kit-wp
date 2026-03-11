@@ -55,10 +55,15 @@ class Initiator_Task {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param string $frequency Frequency slug.
+	 * @param string   $frequency           Frequency slug.
+	 * @param int|null $scheduled_timestamp Scheduled initiator timestamp.
 	 */
-	public function handle_callback_action( $frequency ) {
-		$timestamp = time();
+	public function handle_callback_action( $frequency, $scheduled_timestamp = null ) {
+		$timestamp = (int) $scheduled_timestamp;
+
+		if ( $timestamp <= 0 ) {
+			$timestamp = time();
+		}
 
 		$this->scheduler->schedule_next_initiator( $frequency, $timestamp );
 
