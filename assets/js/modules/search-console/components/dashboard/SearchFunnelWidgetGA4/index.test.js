@@ -64,11 +64,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
-
 		registry = createTestRegistry();
 
 		provideModules( registry );
