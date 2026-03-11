@@ -1,7 +1,7 @@
 /**
  * SearchFunnelWidgetGA4 component tests.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import fetchMock from 'fetch-mock';
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
@@ -46,7 +47,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
+	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
 	useIntersection: jest.fn(),
 } ) );
 
@@ -63,8 +64,8 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	mockLocation();
-	let registry;
-	let originalViewport;
+	let registry: ReturnType< typeof createTestRegistry >;
+	let originalViewport: number;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
 
@@ -141,7 +142,8 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
 				coreModulesFixture.filter(
-					( { slug } ) => slug !== MODULE_SLUG_ANALYTICS_4
+					( { slug }: { slug: string } ) =>
+						slug !== MODULE_SLUG_ANALYTICS_4
 				)
 			);
 
@@ -177,10 +179,12 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 
 		it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
+			( mockUseIntersection as unknown as jest.Mock ).mockImplementation(
+				() => ( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} )
+			);
 
 			const { waitForRegistry } = render(
 				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
