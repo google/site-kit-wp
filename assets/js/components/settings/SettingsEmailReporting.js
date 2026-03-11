@@ -89,7 +89,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 		}
 
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports`,
 			'activate_periodic_email_reports'
 		);
 
@@ -104,7 +104,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const handleDisableConfirm = useCallback( async () => {
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports`,
 			'deactivate_periodic_email_reports'
 		);
 		setIsDisableDialogOpen( false );
@@ -122,7 +122,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const handleManageClickFromCardNotice = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports`,
 			'manage_email_reports_subscription'
 		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
