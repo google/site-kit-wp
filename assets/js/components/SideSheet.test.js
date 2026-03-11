@@ -23,6 +23,21 @@ import { render } from '../../../tests/js/test-utils';
 import SideSheet from './SideSheet';
 
 describe( 'SideSheet', () => {
+	afterEach( () => {
+		document.getElementById( 'wpadminbar' )?.remove();
+	} );
+
+	function createAdminBar( { top, bottom, height } ) {
+		const adminBar = document.createElement( 'div' );
+		adminBar.id = 'wpadminbar';
+		adminBar.getBoundingClientRect = jest.fn().mockReturnValue( {
+			top,
+			bottom,
+			height,
+		} );
+		document.body.appendChild( adminBar );
+	}
+
 	it( 'should not have an --open class by default', () => {
 		render( <SideSheet>Side Sheet content</SideSheet> );
 
@@ -67,7 +82,7 @@ describe( 'SideSheet', () => {
 		render(
 			<SideSheet isOpen>
 				<div className="googlesitekit-tooltip-popper">
-					<a href="https://www.example.com">Tooltip Link</a>
+					<a href="#tooltip-link">Tooltip Link</a>
 				</div>
 			</SideSheet>
 		);
@@ -82,5 +97,29 @@ describe( 'SideSheet', () => {
 		expect(
 			document.querySelector( '.googlesitekit-side-sheet' )
 		).toHaveClass( 'googlesitekit-side-sheet--open' );
+	} );
+
+	it( 'should apply a zero top offset when wp admin bar is hidden', () => {
+		createAdminBar( { top: -46, bottom: 0, height: 46 } );
+
+		render( <SideSheet isOpen>Side Sheet content</SideSheet> );
+
+		expect(
+			document
+				.querySelector( '.googlesitekit-side-sheet' )
+				.style.getPropertyValue( '--googlesitekit-side-sheet-top' )
+		).toBe( '0px' );
+	} );
+
+	it( 'should apply a non-zero top offset when wp admin bar is visible', () => {
+		createAdminBar( { top: 0, bottom: 46, height: 46 } );
+
+		render( <SideSheet isOpen>Side Sheet content</SideSheet> );
+
+		expect(
+			document
+				.querySelector( '.googlesitekit-side-sheet' )
+				.style.getPropertyValue( '--googlesitekit-side-sheet-top' )
+		).toBe( '46px' );
 	} );
 } );
