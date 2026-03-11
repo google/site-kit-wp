@@ -71,10 +71,15 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->scheduler->schedule_initiator_events();
 
 		foreach ( $this->offsets as $frequency => $offset ) {
-			$scheduled = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
+			$scheduled = $this->scheduler->get_initiator_timestamp( $frequency );
 			$this->assertNotFalse( $scheduled, 'Expected initiator event to be scheduled for frequency "' . $frequency . '".' );
 			$this->assertLessThanOrEqual( $before + $offset + 2, $scheduled, 'Initiator for frequency "' . $frequency . '" should not exceed expected offset.' );
 			$this->assertGreaterThanOrEqual( $before + $offset, $scheduled, 'Initiator for frequency "' . $frequency . '" should meet minimum offset.' );
+
+			$this->assertNotFalse(
+				wp_get_scheduled_event( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $scheduled ), $scheduled ),
+				'Expected initiator event args to include frequency and scheduled timestamp.'
+			);
 		}
 	}
 
@@ -82,10 +87,10 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$frequency = Email_Reporting_Settings::FREQUENCY_WEEKLY;
 
 		$this->scheduler->schedule_initiator_once( $frequency );
-		$first = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
+		$first = $this->scheduler->get_initiator_timestamp( $frequency );
 
 		$this->scheduler->schedule_initiator_once( $frequency );
-		$second = wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
+		$second = $this->scheduler->get_initiator_timestamp( $frequency );
 
 		$this->assertSame( $first, $second, 'Scheduling initiator twice should not change the event timestamp for frequency "' . $frequency . '".' );
 	}
@@ -98,7 +103,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->scheduler->schedule_next_initiator( $frequency, $base );
 
 		$this->assertNotFalse(
-			wp_get_scheduled_event( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ), $expected ),
+			wp_get_scheduled_event( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $expected ), $expected ),
 			'Expected initiator event for frequency "' . $frequency . '" to exist at the calculated timestamp.'
 		);
 	}
@@ -179,7 +184,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->scheduler->unschedule_all();
 
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator hook should be unscheduled for weekly frequency.' );
+		$this->assertFalse( $this->scheduler->get_initiator_timestamp( Email_Reporting_Settings::FREQUENCY_WEEKLY ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup hook should be unscheduled.' );
