@@ -64,6 +64,8 @@ class Initiator_TaskTest extends TestCase {
 			self::factory()->user->create(),
 		);
 
+		$scheduled_timestamp = 1_700_010_000;
+
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
 			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY )
@@ -76,7 +78,7 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_next_initiator' )
-			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY, $this->isType( 'int' ) );
+			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY, $scheduled_timestamp );
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_worker' )
@@ -89,9 +91,9 @@ class Initiator_TaskTest extends TestCase {
 				),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 				$this->callback(
-					function ( $timestamp ) use ( &$captured_worker_timestamp ) {
+					function ( $timestamp ) use ( &$captured_worker_timestamp, $scheduled_timestamp ) {
 						$captured_worker_timestamp = $timestamp;
-						return is_int( $timestamp );
+						return is_int( $timestamp ) && $scheduled_timestamp === $timestamp;
 					}
 				)
 			);
@@ -107,14 +109,14 @@ class Initiator_TaskTest extends TestCase {
 				),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 				$this->callback(
-					function ( $timestamp ) use ( &$captured_fallback_timestamp ) {
+					function ( $timestamp ) use ( &$captured_fallback_timestamp, $scheduled_timestamp ) {
 						$captured_fallback_timestamp = $timestamp;
-						return is_int( $timestamp );
+						return is_int( $timestamp ) && $scheduled_timestamp === $timestamp;
 					}
 				)
 			);
 
-		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_WEEKLY, $scheduled_timestamp );
 
 		$this->assertNotNull( $captured_batch_id, 'Batch ID should be generated during callback handling.' );
 		$this->assertSame( $captured_batch_id, $captured_fallback_batch_id, 'Fallback should be scheduled with the same batch ID.' );
@@ -156,6 +158,8 @@ class Initiator_TaskTest extends TestCase {
 	}
 
 	public function test_handle_callback_action_without_subscribers_still_schedules_follow_up_events() {
+		$scheduled_timestamp = 1_700_020_000;
+
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
 			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY )
@@ -163,14 +167,14 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_next_initiator' )
-			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY, $this->isType( 'int' ) );
+			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY, $scheduled_timestamp );
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_worker' )
 			->with(
 				$this->isType( 'string' ),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ),
-				$this->isType( 'int' )
+				$scheduled_timestamp
 			);
 
 		$this->scheduler->expects( $this->once() )
@@ -178,10 +182,10 @@ class Initiator_TaskTest extends TestCase {
 			->with(
 				$this->isType( 'string' ),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ),
-				$this->isType( 'int' )
+				$scheduled_timestamp
 			);
 
-		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_MONTHLY );
+		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_MONTHLY, $scheduled_timestamp );
 
 		$posts = get_posts(
 			array(
