@@ -43,7 +43,7 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG =
+export const EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE =
 	'email_reports_user_settings_setup_analytics_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
@@ -52,7 +52,7 @@ export default function SetupAnalyticsNotice() {
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG
+		EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE
 	);
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
@@ -75,7 +75,7 @@ export default function SetupAnalyticsNotice() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG
+			EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE
 		)
 	);
 
@@ -106,7 +106,7 @@ export default function SetupAnalyticsNotice() {
 
 	const handleDismiss = useCallback( async () => {
 		trackEvents.dismiss();
-		await dismissItem( EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG );
+		await dismissItem( EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE );
 	}, [ dismissItem, trackEvents ] );
 
 	const learnMoreLink = useSelect( ( select ) =>
@@ -142,7 +142,7 @@ export default function SetupAnalyticsNotice() {
 				{
 					a: (
 						<LearnMoreLink
-							id={ EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE_SLUG }
+							id={ EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE }
 							label={ __( 'Learn more', 'google-site-kit' ) }
 							url={ learnMoreLink }
 						/>
