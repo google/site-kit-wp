@@ -155,7 +155,7 @@ class Email_ReportingTest extends TestCase {
 
 		foreach ( array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, User_Email_Reporting_Settings::FREQUENCY_MONTHLY, User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) as $frequency ) {
 			$this->assertNotFalse(
-				wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) ),
+				$this->get_initiator_scheduled_timestamp( $frequency ),
 				sprintf( 'Expected initiator to be scheduled for frequency %s.', $frequency )
 			);
 		}
@@ -179,7 +179,7 @@ class Email_ReportingTest extends TestCase {
 
 		foreach ( array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, User_Email_Reporting_Settings::FREQUENCY_MONTHLY, User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) as $frequency ) {
 			$this->assertFalse(
-				wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) ),
+				$this->get_initiator_scheduled_timestamp( $frequency ),
 				sprintf( 'Initiator should be unscheduled for frequency %s when reporting disabled.', $frequency )
 			);
 		}
@@ -198,7 +198,8 @@ class Email_ReportingTest extends TestCase {
 		$settings = new Email_Reporting_Settings( $this->options );
 		$settings->set( array( 'enabled' => false ) );
 
-		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+		$initiator_timestamp = time() + 50;
+		wp_schedule_single_event( $initiator_timestamp, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $initiator_timestamp ) );
 		$worker_timestamp = time();
 		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) );
 		$fallback_timestamp = time();
@@ -209,7 +210,7 @@ class Email_ReportingTest extends TestCase {
 		$email_reporting = $this->create_email_reporting();
 		$email_reporting->register();
 
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator event should be cleared when reporting is disabled.' );
+		$this->assertFalse( $this->get_initiator_scheduled_timestamp( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ), 'Initiator event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( 'batch', User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp ) ), 'Fallback event should be cleared when reporting is disabled.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor event should be cleared when reporting is disabled.' );
@@ -221,16 +222,17 @@ class Email_ReportingTest extends TestCase {
 		remove_filter( 'googlesitekit_setup_complete', '__return_true' );
 		delete_option( Credentials::OPTION );
 
-		wp_schedule_single_event( time() + 50, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
+		$initiator_timestamp = time() + 50;
+		wp_schedule_single_event( $initiator_timestamp, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, $initiator_timestamp ) );
 		wp_schedule_event( time() + 50, 'daily', Email_Reporting_Scheduler::ACTION_MONITOR );
 		wp_schedule_event( time() + 50, 'daily', Email_Reporting_Scheduler::ACTION_CLEANUP );
 
 		$email_reporting = $this->create_email_reporting();
 		$email_reporting->register();
 
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) ), 'Initiator should be unscheduled when setup is incomplete.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_MONTHLY ) ), 'Monthly initiator should not be scheduled when setup is incomplete.' );
-		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) ), 'Quarterly initiator should not be scheduled when setup is incomplete.' );
+		$this->assertFalse( $this->get_initiator_scheduled_timestamp( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ), 'Initiator should be unscheduled when setup is incomplete.' );
+		$this->assertFalse( $this->get_initiator_scheduled_timestamp( User_Email_Reporting_Settings::FREQUENCY_MONTHLY ), 'Monthly initiator should not be scheduled when setup is incomplete.' );
+		$this->assertFalse( $this->get_initiator_scheduled_timestamp( User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ), 'Quarterly initiator should not be scheduled when setup is incomplete.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor should not be scheduled when setup is incomplete.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup should not be scheduled when setup is incomplete.' );
 	}
@@ -256,6 +258,32 @@ class Email_ReportingTest extends TestCase {
 			$this->options,
 			$this->user_options
 		);
+	}
+
+	private function get_initiator_scheduled_timestamp( $frequency ) {
+		$cron = _get_cron_array();
+
+		if ( ! is_array( $cron ) ) {
+			return false;
+		}
+
+		foreach ( $cron as $timestamp => $hooks ) {
+			if ( empty( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) || ! is_array( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) ) {
+				continue;
+			}
+
+			foreach ( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] as $event ) {
+				$args = isset( $event['args'] ) && is_array( $event['args'] )
+					? $event['args']
+					: array();
+
+				if ( isset( $args[0] ) && $frequency === $args[0] ) {
+					return (int) $timestamp;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private function clear_scheduled_events() {
