@@ -37,7 +37,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE =
+export const EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE =
 	'email_reports_analytics_disconnected_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
@@ -48,7 +48,7 @@ export default function AnalyticsDisconnectedNotice() {
 	const [ inProgress, setInProgress ] = useState( false );
 
 	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
+		EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE
 	);
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
@@ -65,7 +65,7 @@ export default function AnalyticsDisconnectedNotice() {
 
 	const isDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE
+			EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE
 		)
 	);
 
@@ -83,7 +83,7 @@ export default function AnalyticsDisconnectedNotice() {
 
 	const handleDismiss = useCallback( async () => {
 		trackEvents.dismiss();
-		await dismissItem( EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE );
+		await dismissItem( EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE );
 	}, [ dismissItem, trackEvents ] );
 
 	if (
