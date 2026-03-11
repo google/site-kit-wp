@@ -56,7 +56,7 @@ export default function InviteUserRow( {
 
 	const handleInvite = useCallback( async () => {
 		trackEvent(
-			`${ viewContext }_email_reports_invite_user`,
+			`${ viewContext }_email_reports_user_settings-sidebar`,
 			'send_invite'
 		);
 

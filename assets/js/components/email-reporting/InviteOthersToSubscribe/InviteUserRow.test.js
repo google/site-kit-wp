@@ -154,7 +154,7 @@ describe( 'InviteUserRow', () => {
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
-			'mainDashboard_email_reports_invite_user',
+			'mainDashboard_email_reports_user_settings-sidebar',
 			'send_invite'
 		);
 	} );
