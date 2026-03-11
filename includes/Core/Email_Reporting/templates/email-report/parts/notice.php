@@ -1,13 +1,13 @@
 <?php
 /**
- * Header notice block for the email-report template.
+ * In-email notice block for the email-report template.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var array  $notice        Header notice payload.
+ * @var array  $notice        Notice payload.
  * @var string $icon_star_url Star icon URL.
  */
 
@@ -24,7 +24,7 @@ if ( empty( $notice_title ) && empty( $notice_body ) ) {
 ?>
 <table role="presentation" width="100%" class="googlesitekit-email-report-notice" style="margin-bottom:24px;">
 	<tr>
-		<td style="background-color:#D3C2ED; border-radius:24px; padding:20px 20px 18px 20px;">
+		<td class="googlesitekit-email-report-notice-surface" style="background-color:#D3C2ED; border-radius:24px; padding:20px 20px 18px 20px;">
 			<div style="margin-bottom:6px;">
 				<img src="<?php echo esc_url( $icon_star_url ); ?>" alt="" width="24" height="24" style="display:block; width:24px; height:24px;" />
 			</div>
