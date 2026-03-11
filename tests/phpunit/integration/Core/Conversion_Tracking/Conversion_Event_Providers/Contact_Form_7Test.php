@@ -29,16 +29,11 @@ class Contact_Form_7Test extends TestCase {
 		$this->contactform = new Contact_Form_7( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'WPCF7_VERSION' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'WPCF7_VERSION' );
-		}
-	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->contactform->is_active() );
 		define( 'WPCF7_VERSION', 1 );

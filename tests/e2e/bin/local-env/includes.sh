@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Common variables.
-DOCKER_COMPOSE_FILE_OPTIONS="-f $(dirname "$0")/docker-compose.yml"
 # These are the containers and values for the development site.
 CLI='cli'
 CONTAINER='wordpress'
@@ -158,7 +157,10 @@ command_exists() {
 # Calls `docker compose` with common options.
 ##
 dc() {
-	docker compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
+	local script_dir
+	# Get the absolute directory of the includes.sh script
+	script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+	docker compose -f "${script_dir}/docker-compose.yml" "$@"
 }
 
 ##

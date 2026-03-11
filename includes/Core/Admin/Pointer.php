@@ -52,6 +52,7 @@ final class Pointer {
 	 *     @type callable     $active_callback Optional. Callback function to determine whether the pointer is active in
 	 *                                         the current context. The current admin screen's hook suffix is passed to
 	 *                                         the callback. Default is that the pointer is active unconditionally.
+	 *     @type array        $tracking        Optional. Tracking config for view, dismiss, and click events.
 	 * }
 	 */
 	public function __construct( $slug, array $args ) {
@@ -66,6 +67,7 @@ final class Pointer {
 				'active_callback' => null,
 				'buttons'         => null,
 				'class'           => '',
+				'tracking'        => array(),
 			)
 		);
 	}
@@ -112,6 +114,17 @@ final class Pointer {
 	 */
 	public function get_class() {
 		return $this->args['class'];
+	}
+
+	/**
+	 * Gets the pointer tracking data.
+	 *
+	 * @since 1.172.0
+	 *
+	 * @return array Pointer tracking config.
+	 */
+	public function get_tracking() {
+		return $this->args['tracking'];
 	}
 
 	/**

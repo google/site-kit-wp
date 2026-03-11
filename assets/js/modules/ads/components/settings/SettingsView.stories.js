@@ -121,7 +121,7 @@ export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {};
 PaxConnected.parameters = {
-	features: [ 'adsPax', 'googleTagGateway' ],
+	features: [ 'googleTagGateway' ],
 };
 PaxConnected.decorators = [
 	( Story ) => {

@@ -200,7 +200,7 @@ export const widgetDecorators = [
 ];
 
 export function setupSearchConsoleMockReports( registry, data ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	adminbarSearchConsoleOptions.forEach( ( options ) => {
 		if ( data ) {
@@ -219,7 +219,7 @@ export function setupAnalytics4MockReports(
 	registry,
 	mockOptions = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 	mockOptions.forEach( ( options ) => {
 		registry
@@ -234,7 +234,7 @@ export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 	registry,
 	mockOptions = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 	mockOptions.forEach( ( options ) =>
 		provideAnalyticsReportWithoutDateRangeData( registry, options )
@@ -242,7 +242,7 @@ export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 }
 
 export function setupSearchConsoleGatheringData( registry ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
 		options: adminbarSearchConsoleOptions,
 	} );
@@ -252,7 +252,7 @@ export function setupAnalytics4GatheringData(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	const propertyID = properties[ 0 ]._id;
 	// Set the property creation timestamp to one and a half days ago, so that
@@ -306,7 +306,7 @@ export function setupAnalytics4ZeroData(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 
 	mockOptionSets.forEach( ( options ) => {
@@ -328,7 +328,7 @@ export function setupAnalytics4Loading(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	mockOptionSets.forEach( ( options ) => {
 		registry
@@ -341,7 +341,7 @@ export function setupAnalytics4Error(
 	registry,
 	mockOptionSets = adminbarAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1000' );
 
 	const error = {

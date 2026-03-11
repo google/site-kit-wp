@@ -197,8 +197,10 @@
 			},
 			"rules": {
 				"@typescript-eslint/ban-ts-comment": "off",
+				"@typescript-eslint/no-shadow": "error",
 				"jsdoc/require-param-type": "off",
 				"jsdoc/require-returns-type": "off",
+				"no-shadow": "off",
 				"react/function-component-definition": "off",
 				"valid-jsdoc": [
 					"error",

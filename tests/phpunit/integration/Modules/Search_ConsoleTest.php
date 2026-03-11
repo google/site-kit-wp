@@ -186,6 +186,7 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
+				'searchanalytics-batch',
 				'site',
 				'sites',
 				'matched-sites',

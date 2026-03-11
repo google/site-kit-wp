@@ -25,7 +25,7 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_CARD_NOTICE,
 } from './EmailReportingCardNotice';
 import {
 	createTestRegistry,
@@ -100,7 +100,7 @@ describe( 'EmailReportingCardNotice', () => {
 		// Mock dismissed item POST.
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [ EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM ],
+			body: [ EMAIL_REPORTING_CARD_NOTICE ],
 		} );
 
 		registry
@@ -135,9 +135,7 @@ describe( 'EmailReportingCardNotice', () => {
 	it( 'does not render when notice is dismissed', () => {
 		registry
 			.dispatch( CORE_USER )
-			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
-			] );
+			.receiveGetDismissedItems( [ EMAIL_REPORTING_CARD_NOTICE ] );
 
 		registry
 			.dispatch( CORE_USER )

@@ -28,9 +28,6 @@ function Template() {
 export const Default = Template.bind( null );
 Default.storyName = 'Default';
 Default.scenario = {};
-Default.parameters = {
-	features: [ 'adsPax' ],
-};
 
 export default {
 	title: 'Modules/Ads/WooCommerceRedirectModal',

@@ -107,6 +107,23 @@ describe( 'useGlobalTrackingEffect', () => {
 		expect( mockTrackEvent ).toHaveBeenCalled();
 	} );
 
+	it( 'should not track legacy events when the setupFlowRefresh feature flag is enabled', async () => {
+		await setItem( 'start_user_setup', true );
+		await setItem( 'start_site_setup', true );
+
+		renderHook( () => useGlobalTrackingEffect(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			features: [ 'setupFlowRefresh' ],
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( storage.getItem ).not.toHaveBeenCalled();
+		expect( storage.removeItem ).not.toHaveBeenCalled();
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
 	it( 'should track complete_user_setup event with correct data', async () => {
 		await setItem( 'start_user_setup', true );
 

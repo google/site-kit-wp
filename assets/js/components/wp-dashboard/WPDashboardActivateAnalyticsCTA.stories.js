@@ -21,7 +21,6 @@
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { widgetDecorators } from './common-GA4-stories';
 import {
@@ -55,9 +54,6 @@ Ready.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			adminURL: 'http://example.com/wp-admin/',
-		} );
 	},
 };
 
@@ -76,11 +72,53 @@ CompleteActivation.args = {
 				slug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			adminURL: 'http://example.com/wp-admin/',
-		} );
 		provideModuleRegistrations( registry );
 	},
+};
+
+export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
+WithSetupFlowRefreshSetUpAnalytics.storyName =
+	'Setup Flow Refresh - Set up Analytics CTA';
+WithSetupFlowRefreshSetUpAnalytics.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
+		provideModules( registry, [
+			{
+				active: false,
+				connected: false,
+				slug: MODULE_SLUG_ANALYTICS_4,
+			},
+		] );
+	},
+};
+WithSetupFlowRefreshSetUpAnalytics.parameters = {
+	features: [ 'setupFlowRefresh' ],
+};
+
+export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
+WithSetupFlowRefreshCompleteSetup.storyName =
+	'Setup Flow Refresh - Complete Setup CTA';
+WithSetupFlowRefreshCompleteSetup.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: true,
+		} );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: MODULE_SLUG_ANALYTICS_4,
+			},
+		] );
+		provideModuleRegistrations( registry );
+	},
+};
+WithSetupFlowRefreshCompleteSetup.parameters = {
+	features: [ 'setupFlowRefresh' ],
 };
 
 export default {

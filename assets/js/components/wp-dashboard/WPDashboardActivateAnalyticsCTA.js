@@ -28,10 +28,19 @@ import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
 import MostPopularContent from '@/svg/graphics/cta-most-popular-content.svg';
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import PreviewGraph from '@/js/components/PreviewGraph';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function WPDashboardActivateAnalyticsCTA() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	if ( setupFlowRefreshEnabled ) {
+		return (
+			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-wp-dashboard" />
+		);
+	}
+
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-wp-dashboard">
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }

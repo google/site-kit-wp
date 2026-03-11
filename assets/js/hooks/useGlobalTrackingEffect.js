@@ -29,6 +29,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from './useViewContext';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
+import { useFeature } from './useFeature';
 
 /**
  * Tracks the successful user and site setup.
@@ -46,7 +47,13 @@ export function useGlobalTrackingEffect() {
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
 
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	useEffect( () => {
+		if ( setupFlowRefreshEnabled ) {
+			return;
+		}
+
 		async function trackEvents() {
 			const startUserSetup = await getItem( 'start_user_setup' );
 			const startSiteSetup = await getItem( 'start_site_setup' );
@@ -73,5 +80,10 @@ export function useGlobalTrackingEffect() {
 		if ( ! setupErrorMessage && isUsingProxy !== undefined ) {
 			trackEvents();
 		}
-	}, [ viewContext, isUsingProxy, setupErrorMessage ] );
+	}, [
+		setupFlowRefreshEnabled,
+		viewContext,
+		isUsingProxy,
+		setupErrorMessage,
+	] );
 }

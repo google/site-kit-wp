@@ -29,16 +29,11 @@ class Ninja_FormsTest extends TestCase {
 		$this->ninjaform = new Ninja_Forms( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'NF_PLUGIN_URL' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'NF_PLUGIN_URL' );
-		}
-	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->ninjaform->is_active() );
 		define( 'NF_PLUGIN_URL', 1 );

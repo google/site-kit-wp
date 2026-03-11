@@ -21,6 +21,8 @@ exports[`PopularProductsWidget should render correctly with the expected metrics
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
           >
             <svg />
           </span>
@@ -144,6 +146,8 @@ exports[`PopularProductsWidget should render the custom dimension error when the
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Products that brought in the most visitors"
         >
           <svg />
@@ -221,6 +225,8 @@ exports[`PopularProductsWidget should render the generic error variant when the 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
         >
           <svg />
         </span>
@@ -282,6 +288,8 @@ exports[`PopularProductsWidget should render the insufficient permissions error 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
         >
           <svg />
         </span>
@@ -350,6 +358,8 @@ exports[`PopularProductsWidget should render the loading state while resolving t
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
             >
               <svg />
             </span>
@@ -403,6 +413,8 @@ exports[`PopularProductsWidget should render the missing custom dimension error 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Products that brought in the most visitors"
         >
           <svg />

@@ -106,19 +106,98 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Update status should persist new post status.' );
 	}
 
-	private function create_log_post( $batch_id, $status, $attempts ) {
-		$post_id = wp_insert_post(
+	public function test_get_latest_batch_error__all_logs_failed() {
+		$batch_id   = 'batch-error';
+		$test_error = '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $test_error );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertSame( $test_error, $latest_error, 'Latest batch error should return the most recent error details.' );
+	}
+
+	public function test_get_latest_batch_error__not_all_logs_failed() {
+		$batch_id = 'batch-no-error';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_SENT, 1 );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have failed.' );
+	}
+
+	public function test_get_latest_batch_error__number_of_attempts_not_exceeded() {
+		$batch_id = 'batch-attempts-not-exceeded';
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 1, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+
+		$latest_error = $this->query->get_latest_batch_error();
+		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have exceeded max attempts.' );
+	}
+
+	public function test_get_total_count_by_status__returns_zero_when_no_logs() {
+		$this->assertSame( 0, $this->query->get_total_count_by_status( Email_Log::STATUS_SENT ), 'Expected zero sent logs when none exist.' );
+	}
+
+	public function test_get_total_count_by_status__counts_only_matching_status() {
+		$this->create_log_post( 'batch-sent', Email_Log::STATUS_SENT, 1 );
+		$this->create_log_post( 'batch-sent', Email_Log::STATUS_SENT, 1 );
+		$this->create_log_post( 'batch-failed', Email_Log::STATUS_FAILED, 1 );
+
+		$this->assertSame( 2, $this->query->get_total_count_by_status( Email_Log::STATUS_SENT ), 'Expected sent status count to match created logs.' );
+		$this->assertSame( 1, $this->query->get_total_count_by_status( Email_Log::STATUS_FAILED ), 'Expected failed status count to match created logs.' );
+	}
+
+	public function test_get_batch_counts_returns_zero_for_empty_input() {
+		$counts = $this->query->get_batch_counts( array() );
+
+		$this->assertSame( 0, $counts['sent'], 'Expected zero sent count for empty batch.' );
+		$this->assertSame( 0, $counts['failed'], 'Expected zero failed count for empty batch.' );
+	}
+
+	public function test_get_batch_counts__returns_zero_when_batch_has_scheduled() {
+		$post_ids = array(
+			$this->create_log_post( 'batch-scheduled', Email_Log::STATUS_SENT, 1 ),
+			$this->create_log_post( 'batch-scheduled', Email_Log::STATUS_SCHEDULED, 0 ),
+		);
+
+		$counts = $this->query->get_batch_counts( $post_ids );
+
+		$this->assertSame( 0, $counts['sent'], 'Expected zero sent count for incomplete batch.' );
+		$this->assertSame( 0, $counts['failed'], 'Expected zero failed count for incomplete batch.' );
+	}
+
+	public function test_get_batch_counts__counts_completed_batch_correctly() {
+		$post_ids = array(
+			$this->create_log_post( 'batch-complete', Email_Log::STATUS_SENT, 1 ),
+			$this->create_log_post( 'batch-complete', Email_Log::STATUS_SENT, 1 ),
+			$this->create_log_post( 'batch-complete', Email_Log::STATUS_FAILED, 1 ),
+		);
+
+		$counts = $this->query->get_batch_counts( $post_ids );
+
+		$this->assertSame( 2, $counts['sent'], 'Expected sent count to match completed batch.' );
+		$this->assertSame( 1, $counts['failed'], 'Expected failed count to match completed batch.' );
+	}
+
+	private function create_log_post( $batch_id, $status, $attempts, $errors = '' ) {
+		$post_id = $this->factory()->post->create(
 			array(
 				'post_type'   => Email_Log::POST_TYPE,
 				'post_status' => $status,
 				'post_title'  => 'Log ' . uniqid(),
-				'meta_input'  => array(
-					Email_Log::META_BATCH_ID         => $batch_id,
-					Email_Log::META_REPORT_FREQUENCY => Email_Reporting_Settings::FREQUENCY_WEEKLY,
-					Email_Log::META_SEND_ATTEMPTS    => $attempts,
-				),
 			)
 		);
+
+		update_post_meta( $post_id, Email_Log::META_BATCH_ID, $batch_id );
+		update_post_meta( $post_id, Email_Log::META_REPORT_FREQUENCY, Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		update_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, $attempts );
+
+		if ( ! empty( $errors ) ) {
+			update_post_meta( $post_id, Email_Log::META_ERROR_DETAILS, $errors );
+		}
 
 		$this->created_post_ids[] = $post_id;
 

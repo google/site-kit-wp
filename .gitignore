@@ -3,6 +3,8 @@
 !.gemini/
 .gemini/*
 !.gemini/settings.json
+!.gemini/commands/
+!.gemini/commands/**
 !.github
 !.vscode
 .vscode/*
@@ -39,6 +41,8 @@ npm-debug.log
 /storybook-static
 google-site-kit*.zip
 .phpunit.result.cache
+/packages/apiclient-services-*.v*
+/*.patch
 
 # Editors
 *.esproj

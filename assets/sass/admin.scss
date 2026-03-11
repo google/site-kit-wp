@@ -93,6 +93,7 @@
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-dashboard-navigation";
+@import "components/global/googlesitekit-dashboard-tour";
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-dialog";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
@@ -178,6 +179,7 @@
 // Email Reporting
 @import "components/email-reporting/googlesitekit-user-settings-selection-panel";
 @import "components/email-reporting/googlesitekit-frequency-selector";
+@import "components/email-reporting/googlesitekit-invite-others-to-subscribe";
 
 // Setup
 @import "components/setup/googlesitekit-setup";

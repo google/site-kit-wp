@@ -30,6 +30,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	PolicyViolationSettingsNotice,
 	PostTypesSelect,
 	PublicationOnboardingStateNotice,
 	PublicationSelect,
@@ -158,9 +159,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				{ hasModuleAccess && publicationAvailable && (
 					<PublicationOnboardingStateNotice />
 				) }
+				{ hasModuleAccess && publicationAvailable && (
+					<PolicyViolationSettingsNotice />
+				) }
 				{ ! hasModuleAccess && (
 					<Notice
-						className="googlesitekit-notice--bottom-margin"
+						className="googlesitekit-moduleaccess-warning-notice"
 						type={ Notice.TYPES.WARNING }
 						description={ createInterpolateElement(
 							sprintf(

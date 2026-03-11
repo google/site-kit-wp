@@ -29,16 +29,11 @@ class PopupMakerTest extends TestCase {
 		$this->popupmaker = new PopupMaker( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function tear_down_after_class() {
-		parent::tear_down_after_class();
 
-		if ( function_exists( 'runkit7_constant_remove' ) ) {
-			runkit7_constant_remove( 'POPMAKE_VERSION' );
-		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
-			runkit_constant_remove( 'POPMAKE_VERSION' );
-		}
-	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_is_active() {
 		$this->assertFalse( $this->popupmaker->is_active() );
 		define( 'POPMAKE_VERSION', 1 );

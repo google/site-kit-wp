@@ -168,7 +168,7 @@ exports[`SearchFunnelWidgetGA4 should not render the Activate Analytics CTA when
         <a
           aria-label="Search Console (opens in a new tab)"
           class="googlesitekit-cta-link"
-          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20210101%26end_date%3D20210128%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -440,7 +440,7 @@ exports[`SearchFunnelWidgetGA4 should render the Search Funnel Widget, including
         <a
           aria-label="Search Console (opens in a new tab)"
           class="googlesitekit-cta-link"
-          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20201231%26end_date%3D20210127%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fsearch.google.com%2Fsearch-console%2Fperformance%2Fsearch-analytics%3Fresource_id%3Dhttp%253A%252F%252Fexample.com%252F%26metrics%3Dimpressions%26start_date%3D20210101%26end_date%3D20210128%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
           rel="noopener noreferrer"
           target="_blank"
         >

@@ -48,12 +48,16 @@ describe( 'ChangeMetricsLink', () => {
 	const coreUserInputSettingsEndpointRegExp = new RegExp(
 		'^/google-site-kit/v1/core/user/data/user-input-settings'
 	);
+	const dismissedToursEndpointRegExp = new RegExp(
+		'^/google-site-kit/v1/core/user/data/dismissed-tours'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 
 		freezeFetch( coreKeyMetricsEndpointRegExp );
 		freezeFetch( coreUserInputSettingsEndpointRegExp );
+		freezeFetch( dismissedToursEndpointRegExp );
 
 		provideUserAuthentication( registry );
 	} );

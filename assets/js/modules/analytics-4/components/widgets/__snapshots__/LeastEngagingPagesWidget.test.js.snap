@@ -21,6 +21,8 @@ exports[`LeastEngagingPagesWidget should render correctly with the expected metr
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Percentage of visitors that left without engagement with your site"
           >
             <svg />
@@ -145,6 +147,8 @@ exports[`LeastEngagingPagesWidget should render the generic error variant when t
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Percentage of visitors that left without engagement with your site"
         >
           <svg />
@@ -207,6 +211,8 @@ exports[`LeastEngagingPagesWidget should render the insufficient permissions err
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Percentage of visitors that left without engagement with your site"
         >
           <svg />
@@ -276,6 +282,8 @@ exports[`LeastEngagingPagesWidget should render the loading state while resolvin
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Percentage of visitors that left without engagement with your site"
             >
               <svg />

@@ -30,16 +30,15 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 
 export default function useOpenEmailReportingSelectionPanelEffect() {
-	const [ emailReportingPanelOpen, setEmailReportingPanelOpen ] = useQueryArg(
-		'email-reporting-panel'
-	);
+	const [ panel, setPanel ] = useQueryArg( 'panel' );
 	const { setValue: setUIValue } = useDispatch( CORE_UI );
 
 	useMount( () => {
 		// If redirected from a pointer CTA or following link from email footer, open the Email Reporting selection panel.
-		if ( emailReportingPanelOpen !== undefined ) {
+		if ( panel === 'email-reporting' ) {
 			setUIValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-			setEmailReportingPanelOpen( undefined );
+			setUIValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
+			setPanel( undefined );
 		}
 	} );
 }

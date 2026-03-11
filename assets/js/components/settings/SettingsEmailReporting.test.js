@@ -26,27 +26,35 @@ import {
 	freezeFetch,
 	provideUserCapabilities,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../tests/js/utils';
+import * as tracking from '@/js/util/tracking';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import SettingsEmailReporting from './SettingsEmailReporting';
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsEmailReporting', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry );
 
 		// Prevent network request/resolver from running to avoid console errors.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
+
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should render the toggle with correct label', () => {
@@ -62,6 +70,26 @@ describe( 'SettingsEmailReporting', () => {
 		} );
 
 		expect( getByText( 'Enable email reports' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the learn more link with the documentation URL', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: false,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		const { getByRole } = render( <SettingsEmailReporting />, {
+			registry,
+		} );
+
+		const link = getByRole( 'link', { name: /learn more/i } );
+
+		expect( link ).toHaveAttribute(
+			'href',
+			'https://sitekit.withgoogle.com/support/?doc=email-reporting'
+		);
 	} );
 
 	it( 'should return null when loading prop is true', () => {
@@ -89,7 +117,7 @@ describe( 'SettingsEmailReporting', () => {
 		expect( container.firstChild ).toBeNull();
 	} );
 
-	it( 'should toggle enabled state when switch is clicked', async () => {
+	it( 'should enable email reporting when switch is clicked while disabled', async () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
 		} );
@@ -104,6 +132,7 @@ describe( 'SettingsEmailReporting', () => {
 
 		const { getAllByRole } = render( <SettingsEmailReporting />, {
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		// The interactive control is the wrapper element with role="switch" (first match).
@@ -126,6 +155,160 @@ describe( 'SettingsEmailReporting', () => {
 		await waitFor( () => {
 			expect( toggle ).toHaveAttribute( 'aria-checked', 'true' );
 		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'activate_periodic_email_reports'
+		);
+	} );
+
+	it( 'should open disable confirmation modal when enabled toggle is clicked', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		const { getAllByRole, getByText } = render(
+			<SettingsEmailReporting />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
+
+		const [ toggle ] = getAllByRole( 'switch', {
+			name: /Enable email reports/i,
+		} );
+
+		toggle.click();
+
+		expect(
+			getByText( 'Are you sure you want to disable email reports?' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should close modal and keep enabled when cancel is clicked', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		const { getAllByRole, getByText, queryByText } = render(
+			<SettingsEmailReporting />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
+
+		const [ toggle ] = getAllByRole( 'switch', {
+			name: /Enable email reports/i,
+		} );
+
+		toggle.click();
+
+		const cancelButton = getByText( 'Cancel' );
+		cancelButton.click();
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Are you sure you want to disable email reports?' )
+			).not.toBeInTheDocument();
+		} );
+
+		expect( toggle ).toHaveAttribute( 'aria-checked', 'true' );
+	} );
+
+	it( 'should disable and save settings when confirm is clicked', async () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		// Prevent any GET to email-reporting from triggering in the background.
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/site/data/email-reporting' )
+		);
+
+		const { getAllByRole, getByText, queryByText } = render(
+			<SettingsEmailReporting />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
+
+		const [ toggle ] = getAllByRole( 'switch', {
+			name: /Enable email reports/i,
+		} );
+
+		toggle.click();
+
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/site/data/email-reporting' ),
+			{
+				body: { enabled: false },
+				status: 200,
+			}
+		);
+
+		const disableButton = getByText( 'Disable' );
+		disableButton.click();
+
+		await waitFor( () => {
+			expect( toggle ).toHaveAttribute( 'aria-checked', 'false' );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'deactivate_periodic_email_reports'
+		);
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Are you sure you want to disable email reports?' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should open the selection panel from the modal link', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+		} );
+
+		const { getAllByRole, getByRole } = render(
+			<SettingsEmailReporting />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			}
+		);
+
+		const [ toggle ] = getAllByRole( 'switch', {
+			name: /Enable email reports/i,
+		} );
+
+		toggle.click();
+
+		const settingsLink = getByRole( 'button', {
+			name: /email report settings/i,
+		} );
+		settingsLink.click();
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
 	} );
 
 	it( 'should show "Manage email reports" link when enabled and subscribed', () => {
@@ -172,6 +355,7 @@ describe( 'SettingsEmailReporting', () => {
 
 		const { getByText } = render( <SettingsEmailReporting />, {
 			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		const manageLink = getByText( 'Manage email reports subscription' );
@@ -182,5 +366,10 @@ describe( 'SettingsEmailReporting', () => {
 				.select( CORE_UI )
 				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 		).toBe( true );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'settings_email_reports_settings',
+			'manage_email_reports_subscription'
+		);
 	} );
 } );

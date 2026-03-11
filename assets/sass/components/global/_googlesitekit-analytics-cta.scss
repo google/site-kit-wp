@@ -106,4 +106,90 @@
 			}
 		}
 	}
+
+	// Setup Flow Refresh styles
+	.googlesitekit-activate-analytics-cta {
+		align-items: flex-start;
+		background-color: $c-surfaces-background;
+		border-radius: $br-sm;
+		display: flex;
+		flex-direction: column;
+		gap: $grid-gap-phone;
+		padding: $grid-gap-phone $grid-gap-desktop;
+
+		.googlesitekit-activate-analytics-cta__top {
+			align-items: center;
+			display: flex;
+			gap: 14px;
+			width: 100%;
+		}
+
+		.googlesitekit-activate-analytics-cta__icon {
+			display: flex;
+			flex-shrink: 0;
+		}
+
+		.googlesitekit-activate-analytics-cta__description {
+			color: $c-surfaces-on-surface;
+			flex: 1;
+			font-family: $f-primary;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+			margin: 0;
+
+			a {
+				color: $c-surfaces-on-surface;
+				text-decoration: underline;
+			}
+		}
+
+		.googlesitekit-activate-analytics-cta__actions {
+			align-items: center;
+			display: flex;
+			flex-direction: column-reverse;
+			gap: 10px;
+			width: 100%;
+
+			@media (min-width: $bp-desktop) {
+				align-self: flex-end;
+				flex-direction: row;
+				width: auto;
+			}
+
+			.mdc-button {
+				border-radius: $br-lg;
+				margin: 0;
+				min-height: 32px;
+				padding: 6px $grid-gap-phone;
+				width: 100%;
+
+				@media (min-width: $bp-desktop) {
+					width: auto;
+				}
+			}
+
+			.googlesitekit-activate-analytics-cta__button--secondary {
+				color: $c-surfaces-on-surface;
+
+				&:not(:disabled) {
+					background-color: transparent;
+				}
+
+				&:hover:not(:disabled) {
+					background-color: $c-interactive-tertiary-hover;
+				}
+
+				&:active:not(:disabled),
+				&:focus:not(:disabled) {
+					background-color: $c-interactive-tertiary-focus;
+				}
+			}
+
+			.googlesitekit-activate-analytics-cta__button--primary {
+				@include mdc-button-filled-accessible( $c-surfaces-on-surface );
+			}
+		}
+	}
 }

@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	DATE_RANGE_OFFSET,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
@@ -37,115 +40,8 @@ import DashboardAllTrafficWidgetGA4 from '.';
 
 describe( 'DashboardAllTrafficWidgetGA4', () => {
 	let registry;
-
-	const baseOptions = {
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-		compareStartDate: '2020-11-11',
-		compareEndDate: '2020-12-08',
-		metrics: [
-			{
-				name: 'totalUsers',
-			},
-		],
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
-	};
-
-	const reportOptions = [
-		{
-			// Pie chart, with sessionDefaultChannelGrouping dimension.
-			...baseOptions,
-			dimensions: [ 'sessionDefaultChannelGrouping' ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			reportID:
-				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
-		},
-		{
-			// Pie chart, with country dimension.
-			...baseOptions,
-			dimensions: [ 'country' ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			reportID:
-				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
-		},
-		{
-			// Pie chart, with deviceCategory dimension.
-			...baseOptions,
-			dimensions: [ 'deviceCategory' ],
-			orderby: [
-				{
-					metric: {
-						metricName: 'totalUsers',
-					},
-					desc: true,
-				},
-			],
-			limit: 6,
-			reportID:
-				'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
-		},
-		// Totals.
-		baseOptions,
-		{
-			// Line chart.
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			dimensions: [ 'date' ],
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-			reportID:
-				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-		},
-		{
-			// Line chart.
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			dimensions: [ 'date' ],
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-			orderby: [
-				{
-					dimension: {
-						dimensionName: 'date',
-					},
-				},
-			],
-			reportID:
-				'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-		},
-		{
-			// Gathering data check.
-			startDate: '2020-11-11',
-			endDate: '2021-01-05',
-			dimensions: [ 'date' ],
-			metrics: [
-				{
-					name: 'totalUsers',
-				},
-			],
-		},
-	];
+	let baseOptions;
+	let reportOptions;
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
 		'analyticsAllTrafficGA4'
@@ -166,6 +62,117 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 		] );
 
 		registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		baseOptions = {
+			...dates,
+			metrics: [
+				{
+					name: 'totalUsers',
+				},
+			],
+			reportID:
+				'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
+		};
+
+		reportOptions = [
+			{
+				// Pie chart, with sessionDefaultChannelGrouping dimension.
+				...baseOptions,
+				dimensions: [ 'sessionDefaultChannelGrouping' ],
+				orderby: [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: true,
+					},
+				],
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
+			},
+			{
+				// Pie chart, with country dimension.
+				...baseOptions,
+				dimensions: [ 'country' ],
+				orderby: [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: true,
+					},
+				],
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
+			},
+			{
+				// Pie chart, with deviceCategory dimension.
+				...baseOptions,
+				dimensions: [ 'deviceCategory' ],
+				orderby: [
+					{
+						metric: {
+							metricName: 'totalUsers',
+						},
+						desc: true,
+					},
+				],
+				limit: 6,
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
+			},
+			// Totals.
+			baseOptions,
+			{
+				// Line chart.
+				startDate: dates.startDate,
+				endDate: dates.endDate,
+				dimensions: [ 'date' ],
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
+			},
+			{
+				// Line chart.
+				startDate: dates.startDate,
+				endDate: dates.endDate,
+				dimensions: [ 'date' ],
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+				orderby: [
+					{
+						dimension: {
+							dimensionName: 'date',
+						},
+					},
+				],
+				reportID:
+					'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
+			},
+			{
+				// Gathering data check.
+				startDate: dates.compareStartDate,
+				endDate: dates.endDate,
+				dimensions: [ 'date' ],
+				metrics: [
+					{
+						name: 'totalUsers',
+					},
+				],
+			},
+		];
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: '123456789',

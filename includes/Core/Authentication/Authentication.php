@@ -312,9 +312,7 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 
 				$this->set_connected_proxy_url();
-			},
-			10,
-			3
+			}
 		);
 
 		add_filter(
@@ -1144,24 +1142,57 @@ final class Authentication implements Provides_Feature_Metrics {
 						?>
 						<a
 							href="#"
-							onclick="clearSiteKitAppStorage()"
+							onclick="reauthenticateAndContinueSetup()"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
 					<?php
 					BC_Functions::wp_print_inline_script_tag(
 						sprintf(
 							"
-							function clearSiteKitAppStorage() {
-								if ( localStorage ) {
-									localStorage.clear();
+							function reauthenticateAndContinueSetup() {
+								const moduleSlug = getAbandonedModuleSlug();
+
+								if ( moduleSlug ) {
+									const redirect = '%3\$s&slug=' + moduleSlug;
+									document.location = '%2\$s&redirect=' + encodeURIComponent( redirect );
+								} else {
+									if ( localStorage ) {
+										localStorage.clear();
+									}
+									if ( sessionStorage ) {
+										sessionStorage.clear();
+									}
+									document.location = '%2\$s';
 								}
-								if ( sessionStorage ) {
-									sessionStorage.clear();
+							}
+
+							function getAbandonedModuleSlug() {
+								for ( const storage of [ localStorage, sessionStorage ] ) {
+									if ( ! storage ) {
+										continue;
+									}
+									const key = Object.keys( storage ).find( ( k ) =>
+										k.match( 'googlesitekit_%1\$s_.*_module_setup' )
+									);
+									if ( ! key ) {
+										continue;
+									}
+									try {
+										return JSON.parse( storage[ key ] )?.value;
+									} catch ( _ ) {}
 								}
-								document.location = '%s';
 							}
 							",
-							esc_url_raw( $this->get_connect_url() )
+							GOOGLESITEKIT_VERSION,
+							esc_url_raw( $this->get_connect_url() ),
+							esc_url_raw(
+								$this->context->admin_url(
+									'dashboard',
+									array(
+										'reAuth' => 'true',
+									)
+								)
+							)
 						)
 					);
 					return ob_get_clean();

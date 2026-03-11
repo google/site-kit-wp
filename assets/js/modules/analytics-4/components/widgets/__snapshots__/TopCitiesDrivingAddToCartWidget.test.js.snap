@@ -21,6 +21,8 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Cities where visitors most frequently add products to their carts"
           >
             <svg />
@@ -118,6 +120,8 @@ exports[`TopCitiesDrivingAddToCartWidget should render the generic error variant
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Cities where visitors most frequently add products to their carts"
         >
           <svg />
@@ -180,6 +184,8 @@ exports[`TopCitiesDrivingAddToCartWidget should render the insufficient permissi
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Cities where visitors most frequently add products to their carts"
         >
           <svg />
@@ -249,6 +255,8 @@ exports[`TopCitiesDrivingAddToCartWidget should render the loading state while r
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Cities where visitors most frequently add products to their carts"
             >
               <svg />

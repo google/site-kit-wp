@@ -60,6 +60,7 @@ use Google\Site_Kit\Modules\AdSense\Settings as AdSense_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Advanced_Tracking;
 use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
@@ -67,10 +68,6 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\EnhancedMeasurementSettingsModel;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAdSenseLinksService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesAudiencesService;
-use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\PropertiesEnhancedMeasurementService;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
@@ -86,12 +83,14 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Googl
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaCustomDimension;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAudience;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -150,16 +149,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
 
 	/**
-	 * Weights for audience types when sorting audiences in the selection panel
-	 * and within the dashboard widget.
-	 */
-	const AUDIENCE_TYPE_SORT_ORDER = array(
-		'USER_AUDIENCE'     => 0,
-		'SITE_KIT_AUDIENCE' => 1,
-		'DEFAULT_AUDIENCE'  => 2,
-	);
-
-	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
 	 * @since 1.113.0
@@ -193,6 +182,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected $audience_settings;
 
 	/**
+	 * Audience_Utilities instance.
+	 *
+	 * @since 1.172.0
+	 *
+	 * @var Audience_Utilities
+	 */
+	protected $audience_utilities;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.113.0
@@ -214,6 +212,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $this->transients );
 		$this->reset_audiences                  = new Reset_Audiences( $this->user_options );
 		$this->audience_settings                = new Audience_Settings( $this->options );
+		$this->audience_utilities               = new Audience_Utilities( $this->audience_settings );
 		$this->resource_data_availability_date  = new Resource_Data_Availability_Date( $this->transients, $this->get_settings(), $this->audience_settings );
 	}
 
@@ -636,7 +635,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		// Return the SITE_KIT_AUDIENCE audiences.
 		$available_audiences = $this->audience_settings->get()['availableAudiences'] ?? array();
-		$site_kit_audiences  = $this->get_site_kit_audiences( $available_audiences );
+		$site_kit_audiences  = $this->audience_utilities->get_site_kit_audiences( $available_audiences );
 
 		$debug_fields['analytics_4_site_kit_audiences'] = array(
 			'label' => __( 'Analytics: Site created audiences', 'google-site-kit' ),
@@ -684,7 +683,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'GET:account-summaries'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                              => array( 'service' => 'analyticsadmin' ),
 			'GET:ads-links'                             => array( 'service' => 'analyticsadmin' ),
-			'GET:adsense-links'                         => array( 'service' => 'analyticsadsenselinks' ),
+			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
 			'GET:container-lookup'                      => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -751,9 +750,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
 			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsenhancedmeasurement' ),
+			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsadmin-v1alpha' ),
 			'POST:enhanced-measurement-settings'        => array(
-				'service'                => 'analyticsenhancedmeasurement',
+				'service'                => 'analyticsadmin-v1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
@@ -775,7 +774,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
-				'service'                => 'analyticsaudiences',
+				'service'                => 'analyticsadmin-v1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			),
@@ -783,7 +782,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:sync-audiences'                       => array(
-				'service'   => 'analyticsaudiences',
+				'service'   => 'analyticsadmin-v1alpha',
 				'shareable' => true,
 			),
 			'GET:audience-settings'                     => array(
@@ -940,7 +939,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		 *
 		 * @since 1.1.0
 		 *
-		 * @param $disabled bool Whether to disable tracking or not.
+		 * @param bool $disabled Whether to disable tracking or not.
 		 */
 		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
@@ -1189,7 +1188,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
-				return $this->get_analyticsadsenselinks_service()->properties_adSenseLinks->listPropertiesAdSenseLinks( $parent );
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_adSenseLinks
+					->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1231,9 +1232,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-
-				return $analyticsadmin
+				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->create(
 						$property_id,
@@ -1394,10 +1393,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->getEnhancedMeasurementSettings( $name );
 			case 'POST:enhanced-measurement-settings':
 				if ( ! isset( $data['propertyID'] ) ) {
@@ -1458,12 +1455,10 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$data['propertyID']
 				) . '/dataStreams/' . $data['webDataStreamID'] . '/enhancedMeasurementSettings';
 
-				$post_body = new EnhancedMeasurementSettingsModel( $data['enhancedMeasurementSettings'] );
+				$post_body = new GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings( $data['enhancedMeasurementSettings'] );
 
-				$analyticsadmin = $this->get_analyticsenhancedmeasurements_service();
-
-				return $analyticsadmin
-					->properties_enhancedMeasurements // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				return $this->get_analyticsadminv1alpha_service()
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->updateEnhancedMeasurementSettings(
 						$name,
 						$post_body,
@@ -1603,10 +1598,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$analyticsadmin = $this->get_analyticsaudiences_service();
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
+				$property_id = self::normalize_property_id( $settings['propertyID'] );
 
-				return $analyticsadmin
+				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->listPropertiesAudiences( $property_id );
 			case 'POST:sync-custom-dimensions':
@@ -1867,7 +1861,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
 			case 'POST:sync-audiences':
-				$audiences = $this->set_available_audiences( $response->getAudiences() );
+				$audiences = $this->audience_utilities->set_available_audiences( $response->getAudiences() );
 				return $audiences;
 			case 'POST:sync-custom-dimensions':
 				if ( is_wp_error( $response ) ) {
@@ -1942,6 +1936,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	}
 
 	/**
+	 * Gets the configured Analytics Admin v1alpha service instance.
+	 *
+	 * @since 1.171.0
+	 *
+	 * @return GoogleAnalyticsAdminV1alpha
+	 */
+	protected function get_analyticsadminv1alpha_service(): GoogleAnalyticsAdminV1alpha {
+		return $this->get_service( 'analyticsadmin-v1alpha' );
+	}
+
+	/**
 	 * Gets the configured Analytics Data service object instance.
 	 *
 	 * @since 1.93.0
@@ -1950,39 +1955,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	protected function get_analyticsdata_service() {
 		return $this->get_service( 'analyticsdata' );
-	}
-
-	/**
-	 * Gets the configured Analytics Data service object instance.
-	 *
-	 * @since 1.110.0
-	 *
-	 * @return PropertiesEnhancedMeasurementService The Analytics Admin API service.
-	 */
-	protected function get_analyticsenhancedmeasurements_service() {
-		return $this->get_service( 'analyticsenhancedmeasurement' );
-	}
-
-	/**
-	 * Gets the configured Analytics Admin service object instance that includes `adSenseLinks` related methods.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAdSenseLinksService The Analytics Admin API service.
-	 */
-	protected function get_analyticsadsenselinks_service() {
-		return $this->get_service( 'analyticsadsenselinks' );
-	}
-
-	/**
-	 * Gets the configured Analytics Data service object instance.
-	 *
-	 * @since 1.120.0
-	 *
-	 * @return PropertiesAudiencesService The Analytics Admin API service.
-	 */
-	protected function get_analyticsaudiences_service() {
-		return $this->get_service( 'analyticsaudiences' );
 	}
 
 	/**
@@ -2001,13 +1973,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$google_proxy = $this->authentication->get_google_proxy();
 
 		return array(
-			'analyticsadmin'               => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsdata'                => new Google_Service_AnalyticsData( $client ),
-			'analyticsprovisioning'        => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'analyticsenhancedmeasurement' => new PropertiesEnhancedMeasurementService( $client ),
-			'analyticsaudiences'           => new PropertiesAudiencesService( $client ),
-			'analyticsadsenselinks'        => new PropertiesAdSenseLinksService( $client ),
-			'tagmanager'                   => new Google_Service_TagManager( $client ),
+			'analyticsadmin'         => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			'analyticsadmin-v1alpha' => new GoogleAnalyticsAdminV1alpha( $client ),
+			'analyticsdata'          => new Google_Service_AnalyticsData( $client ),
+			'analyticsprovisioning'  => new AccountProvisioningService( $client, $google_proxy->url() ),
+			'tagmanager'             => new Google_Service_TagManager( $client ),
 		);
 	}
 
@@ -2457,6 +2427,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'customDimensionsDataAvailable' => $this->custom_dimensions_data_available->get_data_availability(),
 			);
 		}
+		return array();
 	}
 
 	/**
@@ -2518,200 +2489,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		return $allowed;
-	}
-
-	/**
-	 * Sets and returns available audiences.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param GoogleAnalyticsAdminV1alphaAudience[] $audiences The audiences to set.
-	 * @return array The available audiences.
-	 */
-	private function set_available_audiences( $audiences ) {
-		$available_audiences = array_map(
-			function ( GoogleAnalyticsAdminV1alphaAudience $audience ) {
-				$display_name  = $audience->getDisplayName();
-				$audience_item = array(
-					'name'        => $audience->getName(),
-					'displayName' => ( 'All Users' === $display_name ) ? 'All visitors' : $display_name,
-					'description' => $audience->getDescription(),
-				);
-
-				$audience_slug = $this->get_audience_slug( $audience );
-				$audience_type = $this->get_audience_type( $audience_slug );
-
-				$audience_item['audienceType'] = $audience_type;
-				$audience_item['audienceSlug'] = $audience_slug;
-
-				return $audience_item;
-			},
-			$audiences
-		);
-
-		usort(
-			$available_audiences,
-			function ( $audience_a, $audience_b ) use ( $available_audiences ) {
-				$audience_index_a = array_search( $audience_a, $available_audiences, true );
-				$audience_index_b = array_search( $audience_b, $available_audiences, true );
-
-				if ( false === $audience_index_a || false === $audience_index_b ) {
-					return 0;
-				}
-
-				$audience_a = $available_audiences[ $audience_index_a ];
-				$audience_b = $available_audiences[ $audience_index_b ];
-
-				$audience_type_a = $audience_a['audienceType'];
-				$audience_type_b = $audience_b['audienceType'];
-
-				if ( $audience_type_a === $audience_type_b ) {
-					if ( 'SITE_KIT_AUDIENCE' === $audience_type_b ) {
-						return 'new-visitors' === $audience_a['audienceSlug'] ? -1 : 1;
-					}
-
-					return $audience_index_a - $audience_index_b;
-				}
-
-				$weight_a = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_a ];
-				$weight_b = self::AUDIENCE_TYPE_SORT_ORDER[ $audience_type_b ];
-
-				if ( $weight_a === $weight_b ) {
-					return $audience_index_a - $audience_index_b;
-				}
-
-				return $weight_a - $weight_b;
-			}
-		);
-
-		$this->audience_settings->merge(
-			array(
-				'availableAudiences'             => $available_audiences,
-				'availableAudiencesLastSyncedAt' => time(),
-			)
-		);
-
-		return $available_audiences;
-	}
-
-	/**
-	 * Gets the audience slug.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param GoogleAnalyticsAdminV1alphaAudience $audience The audience object.
-	 * @return string The audience slug.
-	 */
-	private function get_audience_slug( GoogleAnalyticsAdminV1alphaAudience $audience ) {
-		$display_name = $audience->getDisplayName();
-
-		if ( 'All Users' === $display_name ) {
-			return 'all-users';
-		}
-
-		if ( 'Purchasers' === $display_name ) {
-			return 'purchasers';
-		}
-
-		$filter_clauses = $audience->getFilterClauses();
-
-		if ( $filter_clauses ) {
-			if ( $this->has_audience_site_kit_identifier(
-				$filter_clauses,
-				'new_visitors'
-			) ) {
-				return 'new-visitors';
-			}
-
-			if ( $this->has_audience_site_kit_identifier(
-				$filter_clauses,
-				'returning_visitors'
-			) ) {
-				return 'returning-visitors';
-			}
-		}
-
-		// Return an empty string for user defined audiences.
-		return '';
-	}
-
-	/**
-	 * Gets the audience type based on the audience slug.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param string $audience_slug The audience slug.
-	 * @return string The audience type.
-	 */
-	private function get_audience_type( $audience_slug ) {
-		if ( ! $audience_slug ) {
-			return 'USER_AUDIENCE';
-		}
-
-		switch ( $audience_slug ) {
-			case 'all-users':
-			case 'purchasers':
-				return 'DEFAULT_AUDIENCE';
-			case 'new-visitors':
-			case 'returning-visitors':
-				return 'SITE_KIT_AUDIENCE';
-		}
-	}
-
-	/**
-	 * Checks if an audience Site Kit identifier
-	 * (e.g. `created_by_googlesitekit:new_visitors`) exists in a nested array or object.
-	 *
-	 * @since 1.126.0
-	 *
-	 * @param array|object $data The array or object to search.
-	 * @param mixed        $identifier The identifier to search for.
-	 * @return bool True if the value exists, false otherwise.
-	 */
-	private function has_audience_site_kit_identifier( $data, $identifier ) {
-		if ( is_array( $data ) || is_object( $data ) ) {
-			foreach ( $data as $key => $value ) {
-				if ( is_array( $value ) || is_object( $value ) ) {
-					// Recursively search the nested structure.
-					if ( $this->has_audience_site_kit_identifier( $value, $identifier ) ) {
-						return true;
-					}
-				} elseif (
-					'fieldName' === $key &&
-					'groupId' === $value &&
-					isset( $data['stringFilter'] ) &&
-					"created_by_googlesitekit:{$identifier}" === $data['stringFilter']['value']
-				) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns the Site Kit-created audience display names from the passed list of audiences.
-	 *
-	 * @since 1.129.0
-	 *
-	 * @param array $audiences List of audiences.
-	 *
-	 * @return array List of Site Kit-created audience display names.
-	 */
-	private function get_site_kit_audiences( $audiences ) {
-		// Ensure that audiences are available, otherwise return an empty array.
-		if ( empty( $audiences ) || ! is_array( $audiences ) ) {
-			return array();
-		}
-
-		$site_kit_audiences = array_filter( $audiences, fn ( $audience ) => ! empty( $audience['audienceType'] ) && ( 'SITE_KIT_AUDIENCE' === $audience['audienceType'] ) );
-
-		if ( empty( $site_kit_audiences ) ) {
-			return array();
-		}
-
-		return wp_list_pluck( $site_kit_audiences, 'displayName' );
 	}
 
 	/**

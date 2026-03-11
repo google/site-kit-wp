@@ -29,7 +29,7 @@ class Has_Multiple_Admins {
 	/**
 	 * The option_name for this transient.
 	 */
-	const OPTION = 'googlesitekit_has_multiple_admins';
+	const OPTION = 'googlesitekit_number_of_administrators';
 
 	/**
 	 * Transients instance.
@@ -70,8 +70,44 @@ class Has_Multiple_Admins {
 	 * @return boolean TRUE if the site kit has multiple admins, otherwise FALSE.
 	 */
 	public function get() {
-		$admins_count = $this->transients->get( self::OPTION );
-		if ( false === $admins_count ) {
+		$number_of_admins = $this->transients->get( self::OPTION );
+
+		// If we have a cached number of admins, use it rather than doing
+		// database queries to check on the number of admins.
+		if ( ! empty( $number_of_admins ) ) {
+			return $number_of_admins > 1;
+		}
+
+		if ( is_multisite() ) {
+			$super_admins = get_super_admins();
+			// If there are multiple super admins, we definitely have multiple admins.
+			if ( count( $super_admins ) > 1 ) {
+				$admins_count = count( $super_admins );
+				// There's no need to check local admins in this case.
+			} else {
+				// If there is 0 or 1 super admin, we need to check local admins.
+				// We exclude the super admin from the local check to avoid double counting
+				// if they are also added as a local administrator.
+				$exclude_users = array();
+				if ( ! empty( $super_admins ) ) {
+					$super_admin = get_user_by( 'login', $super_admins[0] );
+					if ( $super_admin ) {
+						$exclude_users[] = $super_admin->ID;
+					}
+				}
+
+				$user_query_args = array(
+					'number'      => 1,
+					'role__in'    => array( 'Administrator' ),
+					'count_total' => true,
+					'exclude'     => $exclude_users, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- We're excluding existing super admins from the result and caching the results of this slow query. This is a legitimate use case of the 'exclude' param.
+				);
+
+				$user_query = new WP_User_Query( $user_query_args );
+				// Add 1 if there is a super admin, plus any other local admins found.
+				$admins_count = ( ! empty( $super_admins ) ? 1 : 0 ) + $user_query->get_total();
+			}
+		} else {
 			$user_query_args = array(
 				'number'      => 1,
 				'role__in'    => array( 'Administrator' ),
@@ -80,10 +116,12 @@ class Has_Multiple_Admins {
 
 			$user_query   = new WP_User_Query( $user_query_args );
 			$admins_count = $user_query->get_total();
-
-			$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
 		}
 
+		// Set the number of admins transient for 1 week.
+		$this->transients->set( self::OPTION, $admins_count, WEEK_IN_SECONDS );
+
+		// Return whether we have multiple admins.
 		return $admins_count > 1;
 	}
 

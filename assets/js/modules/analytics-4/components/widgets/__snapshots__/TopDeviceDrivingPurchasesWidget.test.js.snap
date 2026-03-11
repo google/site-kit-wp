@@ -21,6 +21,8 @@ exports[`TopDeviceDrivingPurchasesWidget should render correctly with the expect
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Top device driving the most purchases"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`TopDeviceDrivingPurchasesWidget should render the generic error variant
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Top device driving the most purchases"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`TopDeviceDrivingPurchasesWidget should render the insufficient permissi
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Top device driving the most purchases"
         >
           <svg />

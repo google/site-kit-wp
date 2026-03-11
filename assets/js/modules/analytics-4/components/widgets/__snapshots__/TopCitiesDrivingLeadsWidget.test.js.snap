@@ -21,6 +21,8 @@ exports[`TopCitiesDrivingLeadsWidget should render correctly with the expected m
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Cities driving the most contact form submissions"
           >
             <svg />
@@ -118,6 +120,8 @@ exports[`TopCitiesDrivingLeadsWidget should render the generic error variant whe
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Cities driving the most contact form submissions"
         >
           <svg />
@@ -180,6 +184,8 @@ exports[`TopCitiesDrivingLeadsWidget should render the insufficient permissions 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Cities driving the most contact form submissions"
         >
           <svg />
@@ -249,6 +255,8 @@ exports[`TopCitiesDrivingLeadsWidget should render the loading state while resol
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Cities driving the most contact form submissions"
             >
               <svg />

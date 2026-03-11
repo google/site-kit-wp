@@ -21,6 +21,8 @@ exports[`TopRecentTrendingPagesWidget should render correctly with the expected 
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages with the most pageviews published in the last 3 days"
           >
             <svg />
@@ -145,6 +147,8 @@ exports[`TopRecentTrendingPagesWidget should render the custom dimension error w
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
@@ -222,6 +226,8 @@ exports[`TopRecentTrendingPagesWidget should render the generic error variant wh
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
@@ -284,6 +290,8 @@ exports[`TopRecentTrendingPagesWidget should render the insufficient permissions
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />
@@ -353,6 +361,8 @@ exports[`TopRecentTrendingPagesWidget should render the loading state while reso
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Pages with the most pageviews published in the last 3 days"
             >
               <svg />
@@ -407,6 +417,8 @@ exports[`TopRecentTrendingPagesWidget should render the missing custom dimension
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Pages with the most pageviews published in the last 3 days"
         >
           <svg />

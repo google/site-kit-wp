@@ -21,6 +21,9 @@ export const GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID =
 
 export const GTG_SETUP_CTA_BANNER_NOTIFICATION = 'gtg-setup-cta';
 
+export const SITE_KIT_SETUP_SUCCESS_NOTIFICATION =
+	'setup-success-notification-site-kit';
+
 export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,

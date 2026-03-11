@@ -22,6 +22,10 @@
 import WelcomeModal from './WelcomeModal';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import {
+	CORE_USER,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+} from '@/js/googlesitekit/datastore/user/constants';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;
@@ -38,16 +42,16 @@ function Template( {
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default';
-Default.args = {
+export const DataAvailable = Template.bind( {} );
+DataAvailable.storyName = 'Data Available';
+DataAvailable.args = {
 	setupRegistry: ( registry: Registry ) => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsGatheringData( false );
 	},
 };
-Default.scenario = {};
+DataAvailable.scenario = {};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
@@ -59,6 +63,23 @@ GatheringData.args = {
 	},
 };
 GatheringData.scenario = {};
+
+export const DataGatheringComplete = Template.bind( {} );
+DataGatheringComplete.storyName = 'Data Gathering Complete';
+DataGatheringComplete.args = {
+	setupRegistry: ( registry: Registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( false );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+			] );
+	},
+};
+DataGatheringComplete.scenario = {};
 
 export default {
 	title: 'Components/WelcomeModal',

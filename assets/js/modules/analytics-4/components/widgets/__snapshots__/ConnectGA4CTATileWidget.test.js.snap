@@ -21,6 +21,8 @@ exports[`ConnectGA4CTATileWidget should render a title when only a single Connec
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages that generated the most AdSense revenue"
           >
             <svg />

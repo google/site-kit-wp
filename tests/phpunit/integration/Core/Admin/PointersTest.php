@@ -183,4 +183,35 @@ class PointersTest extends TestCase {
 		$this->assertStringContainsString( 'Test pointer content.', $output, 'Pointer output should contain the content.' );
 		$this->assertStringContainsString( 'test-target', $output, 'Pointer output should contain the target ID.' );
 	}
+
+	public function test_print_pointer_script_with_tracking() {
+		add_filter(
+			'googlesitekit_admin_pointers',
+			function ( $pointers ) {
+				$pointers[] = new Pointer(
+					'test-slug-tracking',
+					array(
+						'title'           => 'Test pointer title',
+						'content'         => 'Test pointer content.',
+						'target_id'       => 'test-target',
+						'active_callback' => '__return_true',
+						'tracking'        => array(
+							'view' => array(
+								'category' => 'test-category',
+								'action'   => 'view_pointer',
+							),
+						),
+					)
+				);
+				return $pointers;
+			}
+		);
+
+		do_action( 'admin_enqueue_scripts', self::TEST_HOOK_SUFFIX );
+
+		$output = $this->capture_action( 'admin_print_footer_scripts' );
+
+		$this->assertStringContainsString( 'data-tracking', $output, 'Pointer output should include tracking data.' );
+		$this->assertStringContainsString( 'test-category', $output, 'Pointer output should include tracking category.' );
+	}
 }

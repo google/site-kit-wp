@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -27,11 +32,17 @@ import { Fragment } from '@wordpress/element';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
 import EmailReportingDisabledNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
 import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reporting/notices/EmailReportingDisabledViewOnlyNotice';
+import EmailReportingErrorNotices from '@/js/components/email-reporting/notices/EmailReportingErrorNotices';
 import SetupAnalyticsNotice from '@/js/components/email-reporting/notices/SetupAnalyticsNotice';
 
-export default function Notices() {
+export default function Notices( { isLoading } ) {
+	if ( isLoading ) {
+		return null;
+	}
+
 	return (
 		<Fragment>
+			<EmailReportingErrorNotices />
 			<AnalyticsDisconnectedNotice />
 			<SetupAnalyticsNotice />
 			<EmailReportingDisabledNotice />
@@ -39,3 +50,7 @@ export default function Notices() {
 		</Fragment>
 	);
 }
+
+Notices.propTypes = {
+	isLoading: PropTypes.bool,
+};

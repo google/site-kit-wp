@@ -21,7 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -500,9 +500,8 @@ describe( 'modules/analytics-4 report', () => {
 				[
 					'using the default report args',
 					{
+						// Don't include `startDate` and `endDate` here - they'll be calculated dynamically.
 						expectedReportQueryParams: {
-							startDate: '2024-03-06',
-							endDate: '2024-04-30',
 							'dimensions[0][name]': 'date',
 							'metrics[0][name]': 'totalUsers',
 							_locale: 'user',
@@ -535,6 +534,21 @@ describe( 'modules/analytics-4 report', () => {
 						registry
 							.dispatch( CORE_USER )
 							.setReferenceDate( '2024-05-01' );
+
+						// For the default report args case, calculate dates dynamically.
+						if ( ! reportArgs ) {
+							const dates = registry
+								.select( CORE_USER )
+								.getDateRangeDates( {
+									compare: true,
+									offsetDays: DATE_RANGE_OFFSET,
+								} );
+
+							// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+							expectedReportQueryParams.startDate =
+								dates.compareStartDate;
+							expectedReportQueryParams.endDate = dates.endDate;
+						}
 					} );
 
 					it( 'should return `undefined` if getReport has not resolved yet', async () => {
@@ -639,12 +653,19 @@ describe( 'modules/analytics-4 report', () => {
 			it( 'should return report arguments relative to the current reference date', () => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
 
+				// Calculate expected dates using the same method as `getSampleReportArgs`.
+				const dates = registry.select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
 				const args = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getSampleReportArgs();
 
-				expect( args.startDate ).toBe( '2024-03-06' );
-				expect( args.endDate ).toBe( '2024-04-30' );
+				// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+				expect( args.startDate ).toBe( dates.compareStartDate );
+				expect( args.endDate ).toBe( dates.endDate );
 				expect( args.metrics?.[ 0 ]?.name ).toBe( 'totalUsers' );
 				expect( args.dimensions?.[ 0 ] ).toBe( 'date' );
 				expect( args.url ).toBeUndefined();

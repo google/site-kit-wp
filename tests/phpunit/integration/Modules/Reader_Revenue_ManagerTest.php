@@ -133,6 +133,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		}
 	}
 
+	public function test_register__reset_policy_violation_notification_dismissals_on_publication_change() {
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		$dismissed_items = new Dismissed_Items( $this->user_options );
+
+		// Set dismissals for policy violation notifications.
+		foreach ( Reader_Revenue_Manager::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
+			$dismissed_items->add( $notification );
+
+			$this->assertTrue( $dismissed_items->is_dismissed( $notification ), 'Policy violation notification should be dismissed after adding it to dismissed items.' );
+		}
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'A1A2C4D5E6',
+			)
+		);
+
+		// Verify that the product ID notification dismissals are reset.
+		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
+			$this->assertFalse( $dismissed_items->is_dismissed( $notification ), 'Product ID notification dismissals should be reset when publication ID changes.' );
+		}
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug, 'Reader Revenue Manager module slug should be correct.' );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name, 'Reader Revenue Manager module name should be correct.' );
@@ -640,6 +665,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
 		);
@@ -702,8 +728,95 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				'reader_revenue_manager_product_id',
 				'reader_revenue_manager_available_product_ids',
 				'reader_revenue_manager_payment_option',
+				'reader_revenue_manager_content_policy_state',
 			),
 			array_keys( $this->reader_revenue_manager->get_debug_fields() )
+		);
+	}
+
+	public function test_get_debug_fields__content_policy_state() {
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Test that the content policy state debug field is included with default `contentPolicyStatus`.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID' => 'test-publication-id',
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state debug field should be included.'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state value should be empty when contentPolicyStatus is default.'
+		);
+
+		// Test that the content policy state debug field has correct values when `contentPolicyStatus` contains `contentPolicyState`.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'       => 'test-publication-id',
+				'contentPolicyStatus' => array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				),
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state debug field should be included when contentPolicyStatus is set.'
+		);
+
+		$this->assertEquals(
+			'Reader Revenue Manager: Content policy state',
+			$debug_fields['reader_revenue_manager_content_policy_state']['label'],
+			'Content policy state field should have correct label'
+		);
+
+		$this->assertEquals(
+			'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state field should have correct value'
+		);
+
+		$this->assertEquals(
+			'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
+			'Content policy state field should have correct debug value'
+		);
+
+		// Test that the content policy state field handles missing `contentPolicyState` property gracefully.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'       => 'test-publication-id',
+				'contentPolicyStatus' => array(),
+			)
+		);
+
+		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
+		$this->assertArrayHasKey(
+			'reader_revenue_manager_content_policy_state',
+			$debug_fields,
+			'Content policy state field should be included even when contentPolicyState is missing'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
+			'Content policy state field should have empty string when contentPolicyState is missing'
+		);
+
+		$this->assertEquals(
+			'',
+			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
+			'Content policy state field debug should have empty string when contentPolicyState is missing'
 		);
 	}
 

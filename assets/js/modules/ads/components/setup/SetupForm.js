@@ -1,7 +1,7 @@
 /**
  * Ads Setup form.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,9 @@ import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
+import Notice from '@/js/components/Notice';
 
-export default function SetupForm( {
-	finishSetup,
-	createAccountCTA,
-	isNavigatingToOAuthURL,
-} ) {
+export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADS ).canSubmitChanges()
 	);
@@ -55,6 +51,18 @@ export default function SetupForm( {
 	const { submitChanges } = useDispatch( MODULES_ADS );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
+
+	const currentConversionID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getConversionID()
+	);
+
+	const googleListingsAndAdsConnectedAdsID = useSelect( ( select ) =>
+		select( MODULES_ADS ).getGoogleForWooCommerceConversionID()
+	);
+
+	const isDuplicateAdsIDDetected =
+		!! currentConversionID &&
+		currentConversionID === googleListingsAndAdsConnectedAdsID;
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -77,47 +85,43 @@ export default function SetupForm( {
 	);
 
 	return (
-		<form className="googlesitekit-ads-setup__form" onSubmit={ submitForm }>
+		<div className="googlesitekit-ads-setup__form googlesitekit-ads-setup__form--pax">
 			<StoreErrorNotices moduleSlug="ads" storeName={ MODULES_ADS } />
 
 			<div className="googlesitekit-setup-module__inputs">
-				<ConversionIDTextField />
+				<ConversionIDTextField hideHeading />
 			</div>
 
-			{ createAccountCTA && (
-				<div className="googlesitekit-setup-module__create-account">
-					{ createAccountCTA }
-				</div>
+			{ isDuplicateAdsIDDetected && (
+				<Notice
+					className="googlesitekit-notice--small googlesitekit-ads-setup__ads-id-conflict-warning"
+					type={ Notice.TYPES.WARNING }
+					description={ __(
+						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
+						'google-site-kit'
+					) }
+					hideIcon
+				/>
 			) }
-
-			<SetupPluginConversionTrackingNotice
-				className="googlesitekit-margin-top-1"
-				message={ __(
-					'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. You can always disable it in settings.',
-					'google-site-kit'
-				) }
-			/>
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
-					disabled={ ! canSubmitChanges || isSaving }
+					disabled={
+						! canSubmitChanges ||
+						isSaving ||
+						isDuplicateAdsIDDetected
+					}
 					isSaving={ isSaving }
+					onClick={ submitForm }
 				>
-					{ __( 'Complete setup', 'google-site-kit' ) }
+					{ __( 'Complete manual setup', 'google-site-kit' ) }
 				</SpinnerButton>
 			</div>
-		</form>
+		</div>
 	);
 }
 
 SetupForm.propTypes = {
 	finishSetup: PropTypes.func,
-	createAccountCTA: PropTypes.node,
 	isNavigatingToOAuthURL: PropTypes.bool,
-};
-
-SetupForm.defaultProps = {
-	finishSetup: () => {},
-	createAccountCTA: null,
-	isNavigatingToOAuthURL: false,
 };

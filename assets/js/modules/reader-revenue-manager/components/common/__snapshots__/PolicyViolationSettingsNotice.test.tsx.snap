@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PolicyViolationSettingsNotice should render error notice with extreme violation copy for CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice-container"
+  >
+    <div
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-policy-violation-settings-notice"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Action needed: Your Reader Revenue Manager account is terminated
+        </p>
+        <p
+          class="googlesitekit-notice__description"
+        >
+          Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-notice__action"
+      >
+        <a
+          aria-label="Learn more (opens in a new tab)"
+          class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com%2Fpolicy-info%3Futm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Learn more
+          </span>
+          <svg />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`PolicyViolationSettingsNotice should render warning notice with pending violation copy for content policy state CONTENT_POLICY_VIOLATION_GRACE_PERIOD 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice-container"
+  >
+    <div
+      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-policy-violation-settings-notice"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Action needed: fix a policy issue with Reader Revenue Manager
+        </p>
+        <p
+          class="googlesitekit-notice__description"
+        >
+          Your site has content that breaks the rules for Reader Revenue Manager. To keep your account active and CTAs public, you must resolve all policy violations.
+        </p>
+      </div>
+      <div
+        class="googlesitekit-notice__action"
+      >
+        <a
+          aria-label="View violations (opens in a new tab)"
+          class="mdc-button googlesitekit-notice__cta googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+          href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fexample.com%2Fpolicy-info%3Futm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            View violations
+          </span>
+          <svg />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

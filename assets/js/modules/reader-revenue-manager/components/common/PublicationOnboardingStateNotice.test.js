@@ -131,7 +131,7 @@ describe( 'PublicationOnboardingStateNotice', () => {
 			).toHaveAttribute( 'href', expectedServiceURL );
 
 			expect( container.firstChild ).toHaveClass(
-				'googlesitekit-publication-onboarding-state-notice'
+				' googlesitekit-notice-container'
 			);
 
 			act( () => {

@@ -56,6 +56,7 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
+				'contentPolicyStatus'               => (object) array(),
 				'ownerID'                           => 0,
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
@@ -127,6 +128,37 @@ class SettingsTest extends SettingsTestCase {
 			'paymentOption with invalid type'              => array( 'paymentOption', array(), '' ),
 			'paymentOption with number'                    => array( 'paymentOption', 123, '' ),
 			'paymentOption with boolean'                   => array( 'paymentOption', true, '' ),
+
+			// Validate contentPolicyStatus.
+			'contentPolicyStatus with populated object'    => array(
+				'contentPolicyStatus',
+				array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				),
+				array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				),
+			),
+			'contentPolicyStatus with empty object'        => array(
+				'contentPolicyStatus',
+				(object) array(),
+				(object) array(),
+			),
+			'contentPolicyStatus with empty array'         => array(
+				'contentPolicyStatus',
+				array(),
+				(object) array(),
+			),
+			'contentPolicyStatus with number'              => array(
+				'contentPolicyStatus',
+				123,
+				(object) array(),
+			),
+			'contentPolicyStatus with boolean'             => array(
+				'contentPolicyStatus',
+				true,
+				(object) array(),
+			),
 		);
 	}
 

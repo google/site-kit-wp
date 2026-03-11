@@ -141,6 +141,14 @@ final class Modules implements Provides_Feature_Metrics {
 	private $dashboard_sharing_controller;
 
 	/**
+	 * Disconnected_Modules setting instance.
+	 *
+	 * @since 1.172.0
+	 * @var Disconnected_Modules
+	 */
+	private $disconnected_modules;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -176,12 +184,13 @@ final class Modules implements Provides_Feature_Metrics {
 		?Authentication $authentication = null,
 		?Assets $assets = null
 	) {
-		$this->context          = $context;
-		$this->options          = $options ?: new Options( $this->context );
-		$this->sharing_settings = new Module_Sharing_Settings( $this->options );
-		$this->user_options     = $user_options ?: new User_Options( $this->context );
-		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->assets           = $assets ?: new Assets( $this->context );
+		$this->context              = $context;
+		$this->options              = $options ?: new Options( $this->context );
+		$this->sharing_settings     = new Module_Sharing_Settings( $this->options );
+		$this->user_options         = $user_options ?: new User_Options( $this->context );
+		$this->authentication       = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets               = $assets ?: new Assets( $this->context );
+		$this->disconnected_modules = new Disconnected_Modules( $this->options );
 
 		$this->rest_controller              = new REST_Modules_Controller( $this );
 		$this->dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
@@ -627,6 +636,21 @@ final class Modules implements Provides_Feature_Metrics {
 	}
 
 	/**
+	 * Checks whether the module identified by the given slug is disconnected
+	 * and returns the timestamp of disconnection.
+	 *
+	 * @since 1.172.0
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return null|int Null if module is not disconnected, timestamp of disconnection otherwise.
+	 */
+	public function get_module_disconnected_at( $slug ) {
+		$disconnected_modules = $this->disconnected_modules->get();
+
+		return isset( $disconnected_modules[ $slug ] ) ? $disconnected_modules[ $slug ] : null;
+	}
+
+	/**
 	 * Checks whether the module identified by the given slug is shareable.
 	 *
 	 * @since 1.105.0
@@ -664,6 +688,8 @@ final class Modules implements Provides_Feature_Metrics {
 		$option[] = $slug;
 
 		$this->set_active_modules_option( $option );
+
+		$this->disconnected_modules->remove( $slug );
 
 		if ( $module instanceof Module_With_Activation ) {
 			$module->on_activation();
@@ -722,14 +748,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		$this->sharing_settings->unset_module( $slug );
 
-		/**
-		 * Fires when a module is deactivated.
-		 *
-		 * @since 1.168.0
-		 *
-		 * @param string $slug The slug of the deactivated module.
-		 */
-		do_action( 'googlesitekit_deactivate_module', $slug );
+		$this->disconnected_modules->add( $slug );
 
 		return true;
 	}

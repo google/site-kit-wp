@@ -25,7 +25,7 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import AnalyticsDisconnectedNotice, {
-	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
 } from './AnalyticsDisconnectedNotice';
 import {
 	createTestRegistry,
@@ -64,6 +64,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: false,
 				connected: false,
+				disconnectedAt: 1735660800,
 			},
 		] );
 		provideModuleRegistrations( registry );
@@ -72,9 +73,6 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: true } );
 	} );
 
 	it( 'renders the notice when email reporting is enabled, analytics is disconnected but was once connected and notice is not dismissed', () => {
@@ -149,9 +147,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	it( 'dismisses the notice when "Got it" is clicked', async () => {
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
-			],
+			body: [ EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE ],
 		} );
 
 		const { getByRole } = render( <AnalyticsDisconnectedNotice />, {
@@ -181,7 +177,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE_DISMISSED_ITEM,
+				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
 			] );
 
 		const { container } = render( <AnalyticsDisconnectedNotice />, {
@@ -197,6 +193,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
+				disconnectedAt: false,
 			},
 		] );
 		const { container } = render( <AnalyticsDisconnectedNotice />, {
@@ -207,9 +204,14 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	} );
 
 	it( 'does not render when analytics was never connected', () => {
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetWasAnalytics4Connected( { wasConnected: false } );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+				disconnectedAt: false,
+			},
+		] );
 
 		const { container } = render( <AnalyticsDisconnectedNotice />, {
 			registry,

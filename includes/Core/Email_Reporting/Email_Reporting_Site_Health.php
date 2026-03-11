@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
-
 /**
  * Class responsible for exposing Email Reporting data to Site Health.
  *
@@ -31,24 +28,33 @@ class Email_Reporting_Site_Health {
 	private $settings;
 
 	/**
-	 * User options instance.
+	 * Email log batch query instance.
 	 *
-	 * @since 1.166.0
-	 * @var User_Options
+	 * @since 1.172.0
+	 * @var Email_Log_Batch_Query
 	 */
-	private $user_options;
+	private $email_log_batch_query;
+
+	/**
+	 * Subscribed users query instance.
+	 *
+	 * @since 1.173.0
+	 * @var Subscribed_Users_Query
+	 */
+	private $subscribed_users_query;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 1.166.0
 	 *
-	 * @param Email_Reporting_Settings $settings     Email reporting settings.
-	 * @param User_Options             $user_options User options instance.
+	 * @param Email_Reporting_Settings $settings               Email reporting settings.
+	 * @param Subscribed_Users_Query   $subscribed_users_query Subscribed users query instance.
 	 */
-	public function __construct( Email_Reporting_Settings $settings, User_Options $user_options ) {
-		$this->settings     = $settings;
-		$this->user_options = $user_options;
+	public function __construct( Email_Reporting_Settings $settings, Subscribed_Users_Query $subscribed_users_query ) {
+		$this->settings               = $settings;
+		$this->email_log_batch_query  = new Email_Log_Batch_Query();
+		$this->subscribed_users_query = $subscribed_users_query;
 	}
 
 	/**
@@ -92,7 +98,7 @@ class Email_Reporting_Site_Health {
 			return $fields;
 		}
 
-		$subscriber_count                             = $this->get_subscriber_count();
+		$subscriber_count                             = $this->subscribed_users_query->get_subscriber_count();
 		$fields['email_reports_subscribers']['value'] = $subscriber_count;
 		$fields['email_reports_subscribers']['debug'] = $subscriber_count;
 
@@ -100,101 +106,16 @@ class Email_Reporting_Site_Health {
 			return $fields;
 		}
 
-		$batch_post_ids = $this->get_latest_batch_post_ids();
+		$batch_post_ids = $this->email_log_batch_query->get_latest_batch_post_ids();
 
 		if ( empty( $batch_post_ids ) ) {
 			return $fields;
 		}
 
-		$fields['email_reports_deliverability'] = $this->build_deliverability_field( $batch_post_ids );
-		$fields['email_reports_last_sent']      = $this->build_last_sent_field( $batch_post_ids );
+		$fields['email_reports_deliverability'] = array_merge( $fields['email_reports_deliverability'], $this->build_deliverability_field( $batch_post_ids ) );
+		$fields['email_reports_last_sent']      = array_merge( $fields['email_reports_last_sent'], $this->build_last_sent_field( $batch_post_ids ) );
 
 		return $fields;
-	}
-
-	/**
-	 * Gets the number of subscribed users.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return int
-	 */
-	private function get_subscriber_count() {
-		$meta_key = $this->user_options->get_meta_key( User_Email_Reporting_Settings::OPTION );
-
-		$user_query = new \WP_User_Query(
-			array(
-				'fields'   => 'ids',
-				'meta_key' => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'compare'  => 'EXISTS',
-			)
-		);
-
-		$subscribers = 0;
-
-		foreach ( $user_query->get_results() as $user_id ) {
-			$settings = get_user_meta( $user_id, $meta_key, true );
-
-			if ( is_array( $settings ) && ! empty( $settings['subscribed'] ) ) {
-				++$subscribers;
-			}
-		}
-
-		return $subscribers;
-	}
-
-	/**
-	 * Gets the post IDs for the latest email log batch.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return array<int>
-	 */
-	private function get_latest_batch_post_ids() {
-		$latest_post = new \WP_Query(
-			array(
-				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_relevant_log_statuses(),
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-				'no_found_rows'  => true,
-			)
-		);
-
-		if ( empty( $latest_post->posts ) ) {
-			return array();
-		}
-
-		$latest_post_id = (int) $latest_post->posts[0];
-		$batch_id       = get_post_meta( $latest_post_id, Email_Log::META_BATCH_ID, true );
-
-		if ( empty( $batch_id ) ) {
-			return array();
-		}
-
-		$batch_query = new \WP_Query(
-			array(
-				'post_type'      => Email_Log::POST_TYPE,
-				'post_status'    => $this->get_relevant_log_statuses(),
-				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-				'posts_per_page' => 10000,
-				'fields'         => 'ids',
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-				'no_found_rows'  => true,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				'meta_query'     => array(
-					array(
-						'key'   => Email_Log::META_BATCH_ID,
-						'value' => $batch_id,
-					),
-				),
-			)
-		);
-
-		return array_map( 'intval', $batch_query->posts );
 	}
 
 	/**
@@ -291,21 +212,6 @@ class Email_Reporting_Site_Health {
 		return array(
 			'value' => $iso,
 			'debug' => $iso,
-		);
-	}
-
-	/**
-	 * Gets the list of email log statuses considered for Site Health summaries.
-	 *
-	 * @since 1.166.0
-	 *
-	 * @return string[]
-	 */
-	private function get_relevant_log_statuses() {
-		return array(
-			Email_Log::STATUS_SENT,
-			Email_Log::STATUS_FAILED,
-			Email_Log::STATUS_SCHEDULED,
 		);
 	}
 }

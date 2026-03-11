@@ -239,7 +239,7 @@ class AdSenseTest extends TestCase {
 
 		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output, 'Output should contain the Google AdSense snippet.' );
 
-		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-12345678&amp;host=ca-host-pub-2644536267352236', $output, 'Output should contain the correct AdSense script URL with client ID.' );
+		$this->assertMatchesRegularExpression( '/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-12345678(&amp;|&#038;)host=ca-host-pub-2644536267352236/', $output, 'Output should contain the correct AdSense script URL with client ID.' );
 
 		if ( $enabled ) {
 			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output, 'Non-AMP output should include data-block-on-consent when enabled.' );

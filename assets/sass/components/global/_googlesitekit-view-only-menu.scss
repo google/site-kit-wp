@@ -17,13 +17,11 @@
  */
 
 .googlesitekit-plugin {
-
 	.googlesitekit-view-only-menu {
-
 		h4 {
 			font-size: $fs-body-lg;
 			letter-spacing: $ls-m;
-			margin: 15px 0;
+			margin: 17px 0 10px;
 		}
 
 		p {
@@ -33,9 +31,7 @@
 		}
 
 		.mdc-button--dropdown {
-
 			.mdc-button__icon {
-
 				margin-right: 0;
 
 				@media (min-width: $bp-tablet) {
@@ -52,29 +48,42 @@
 		}
 
 		.mdc-menu {
-
-			width: 320px;
+			width: 311px;
 		}
 
 		.mdc-list-divider {
-			margin: 8px 32px 4px;
+			margin: 8px $grid-gap-phone 4px;
 		}
 
 		.googlesitekit-view-only-menu__list-item {
-
 			@extend .mdc-list-item;
 
 			display: block;
 			height: auto;
 
-			padding: 0 32px;
+			padding: 0 $grid-gap-phone;
 
 			&:last-child {
-				margin-bottom: 5px;
+				margin-bottom: 23px;
 			}
 		}
 
+		.googlesitekit-view-only-menu__signin {
+			color: $c-surfaces-on-background-variant;
+		}
+
 		.googlesitekit-view-only-menu__description {
+			.googlesitekit-view-only-menu__badge {
+				background-color: $c-blue-b-50;
+				border-radius: 16px;
+				color: $c-blue-b-500;
+				display: inline-block;
+				font-size: $fs-body-md;
+				font-weight: $fw-medium;
+				line-height: $lh-body-md;
+				margin-bottom: 8px;
+				padding: 6px 14px;
+			}
 
 			p {
 				margin-bottom: 8px;
@@ -98,6 +107,7 @@
 
 		.googlesitekit-view-only-menu__service--icon {
 			flex: 0 0 24px;
+			height: 26px;
 		}
 
 		.googlesitekit-view-only-menu__email-reporting {
@@ -110,28 +120,25 @@
 		}
 
 		.googlesitekit-view-only-menu__email-reporting-item {
+			color: $c-surfaces-on-surface;
 			display: flex;
 			gap: 8px;
+			justify-content: flex-start;
 			margin-bottom: 0;
+			padding: 0 $grid-gap-phone;
+			width: 100%;
 
-			.mdc-button {
-				color: $c-surfaces-on-surface;
-				justify-content: flex-start;
-				padding: 0 32px;
-				width: 100%;
+			&:hover {
+				background: transparent;
+			}
 
-				&:hover {
-					background: transparent;
-				}
+			&::after,
+			&::before {
+				background-color: transparent;
+			}
 
-				&::after,
-				&::before {
-					background-color: transparent;
-				}
-
-				&.mdc-ripple-upgraded--background-focused {
-					background-color: transparent;
-				}
+			&.mdc-ripple-upgraded--background-focused {
+				background-color: transparent;
 			}
 
 			svg {
@@ -154,15 +161,15 @@
 		}
 
 		.googlesitekit-view-only-menu__service--name {
+			color: $c-surfaces-on-background-variant;
 			font-size: $fs-body-md;
 			letter-spacing: $ls-s;
 		}
 
 		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
-			flex: 1;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
 			margin-left: auto;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -171,12 +178,15 @@
 		.googlesitekit-view-only-menu__service--standard-item {
 			margin-top: 15px;
 		}
+
+		.googlesitekit-opt-in {
+			padding-top: 8px;
+		}
 	}
 
 	.googlesitekit-view-only-menu--user-can-authenticate {
-
 		.googlesitekit-view-only-menu__service--name {
-			flex: 0 0 100px;
+			flex: 1;
 			margin-right: 8px;
 		}
 	}

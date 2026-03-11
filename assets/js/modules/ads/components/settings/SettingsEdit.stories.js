@@ -97,9 +97,6 @@ export default {
 export const PaxConnected = Template.bind( null );
 PaxConnected.storyName = 'With PAX onboarding';
 PaxConnected.scenario = {};
-PaxConnected.parameters = {
-	features: [ 'adsPax' ],
-};
 PaxConnected.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -147,9 +144,6 @@ IceEnabled.decorators = [
 export const IcePaxEnabled = Template.bind( null );
 IcePaxEnabled.storyName = 'With ICE & PAX Enabled';
 IcePaxEnabled.scenario = {};
-IcePaxEnabled.parameters = {
-	features: [ 'adsPax' ],
-};
 IcePaxEnabled.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {

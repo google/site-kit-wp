@@ -156,40 +156,44 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       </a>
     </p>
     <div
-      class="googlesitekit-notice googlesitekit-notice--warning"
+      class="googlesitekit-notice-container"
     >
       <div
-        class="googlesitekit-notice__icon"
+        class="googlesitekit-notice googlesitekit-notice--warning"
       >
-        <svg />
-      </div>
-      <div
-        class="googlesitekit-notice__content"
-      >
-        <p
-          class="googlesitekit-notice__title"
+        <div
+          class="googlesitekit-notice__icon"
         >
-          Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
-          <a
-            aria-label="Learn more about Google tag gateway for advertisers server requirements (opens in a new tab)"
-            class="googlesitekit-cta-link"
-            href="undefined?doc=google-tag-gateway-server-requirements"
-            rel="noopener noreferrer"
-            target="_blank"
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-notice__content"
+        >
+          <p
+            class="googlesitekit-notice__title"
           >
-            <span
-              class="googlesitekit-cta-link__contents"
+            Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
+            <a
+              aria-label="Learn more about Google tag gateway for advertisers server requirements (opens in a new tab)"
+              class="googlesitekit-cta-link"
+              href="undefined?doc=google-tag-gateway-server-requirements"
+              rel="noopener noreferrer"
+              target="_blank"
             >
-              Learn more
-            </span>
-            <span
-              class="googlesitekit-icon-wrapper"
-              style="margin-left: 5px;"
-            >
-              <svg />
-            </span>
-          </a>
-        </p>
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                Learn more
+              </span>
+              <span
+                class="googlesitekit-icon-wrapper"
+                style="margin-left: 5px;"
+              >
+                <svg />
+              </span>
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   </div>

@@ -25,6 +25,7 @@ import {
 	createInterpolateElement,
 	Fragment,
 } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -43,18 +44,24 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { Grid, Row, Cell } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupUsingProxyViewOnly() {
 	const viewContext = useViewContext();
 
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const forwardableParams = useForwardableParams();
 
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			forwardableParams
+		)
 	);
 
 	const documentationURL = useSelect( ( select ) => {
@@ -63,14 +70,31 @@ export default function SetupUsingProxyViewOnly() {
 		);
 	} );
 
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const onButtonClick = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
 			trackEvent( viewContext, 'confirm_viewonly' ),
 		] ).finally( () => {
-			navigateTo( dashboardURL );
+			const redirectURL = setupFlowRefreshEnabled
+				? addQueryArgs( dashboardURL, {
+						notification:
+							forwardableParams.notification ||
+							'initial_setup_success',
+				  } )
+				: dashboardURL;
+
+			navigateTo( redirectURL );
 		} );
-	}, [ dashboardURL, dismissItem, navigateTo, viewContext ] );
+	}, [
+		setupFlowRefreshEnabled,
+		forwardableParams.notification,
+		dashboardURL,
+		dismissItem,
+		navigateTo,
+		viewContext,
+	] );
 
 	if ( ! dashboardURL ) {
 		return null;

@@ -97,8 +97,6 @@ class AdsTest extends TestCase {
 	public function test_is_connected__when_pax_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without paxConversionID.' );
 
-		self::enable_feature( 'adsPax' );
-
 		$this->ads->get_settings()->merge(
 			array( 'paxConversionID' => 'AW-123456789' )
 		);
@@ -109,8 +107,6 @@ class AdsTest extends TestCase {
 	public function test_is_connected__when_ext_customer_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without extCustomerID.' );
 
-		self::enable_feature( 'adsPax' );
-
 		$this->ads->get_settings()->merge(
 			array( 'extCustomerID' => '123456789' )
 		);
@@ -118,19 +114,8 @@ class AdsTest extends TestCase {
 		$this->assertTrue( $this->ads->is_connected(), 'Ads module should be connected with extCustomerID.' );
 	}
 
-	public function test_is_connected__feature_flag_is_disabled_but_pax_conversion_id_or_ext_customer_id_are_set() {
-		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and paxConversionID.' );
-
-		$this->ads->get_settings()->merge(
-			array( 'paxConversionID' => 'AW-123456789' )
-		);
-
-		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without feature flag and extCustomerID.' );
-	}
-
-	public function test_inline_modules_data__module_not_connected__with_pax() {
+	public function test_inline_modules_data__module_not_connected() {
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
-		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
 
@@ -141,22 +126,12 @@ class AdsTest extends TestCase {
 				'supportedConversionEvents' => array(),
 			),
 			$inline_modules_data['ads'],
-			'Inline modules data for Ads should include supportedConversionEvents when module not connected with adsPax.'
+			'Inline modules data for Ads should include supportedConversionEvents when module not connected.'
 		);
-	}
-
-	public function test_inline_modules_data__module_not_connected__without_pax() {
-		remove_all_filters( 'googlesitekit_inline_modules_data' );
-		$this->ads->register();
-
-		$inline_modules_data = apply_filters( 'googlesitekit_inline_modules_data', array() );
-
-		$this->assertArrayNotHasKey( 'ads', $inline_modules_data, 'Inline modules data should not include Ads when module not connected and adsPax disabled.' );
 	}
 
 	public function test_inline_modules_data__module_connected() {
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
-		self::enable_feature( 'adsPax' );
 
 		$this->ads->register();
 
@@ -187,8 +162,6 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_get_scopes__no_scope_and_no_extCustomerID() {
-		self::enable_feature( 'adsPax' );
-
 		$this->ads->register();
 
 		$required_scopes = apply_filters( 'googlesitekit_auth_scopes', array() );
@@ -197,7 +170,6 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_get_scopes__already_has_adwords_scope() {
-		self::enable_feature( 'adsPax' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		// Authentication needs to inherit current user, hence new instance here.
@@ -215,8 +187,6 @@ class AdsTest extends TestCase {
 	}
 
 	public function test_get_scopes__already_has_extCustomerID_setting() {
-		self::enable_feature( 'adsPax' );
-
 		$this->ads->get_settings()->merge( array( 'extCustomerID' => '123456789' ) );
 		$this->ads->register();
 
@@ -294,11 +264,7 @@ class AdsTest extends TestCase {
 	 *
 	 * @param array $settings
 	 */
-	public function test_template_redirect__with_pax_flag_and_pax_conversion_id_setting( $feature_flag, $settings ) {
-		if ( ! empty( $feature_flag ) ) {
-			self::enable_feature( $feature_flag );
-		}
-
+	public function test_template_redirect__with_pax_conversion_id_setting( $settings ) {
 		remove_all_actions( 'wp_enqueue_scripts' );
 		( new GTag( new Options( $this->context ) ) )->register();
 
@@ -316,17 +282,17 @@ class AdsTest extends TestCase {
 
 		$this->assertTrue( has_action( 'googlesitekit_setup_gtag' ), 'gtag setup action should be present when template_redirect runs.' );
 
-		if ( empty( $settings['paxConversionID'] ) || empty( $feature_flag ) ) {
+		if ( empty( $settings['paxConversionID'] ) ) {
 			$this->assertStringContainsString(
 				'gtag("config", "AW-123456789")',
 				$head_html,
-				'Head output should contain Ads conversion ID when paxConversionID is empty or feature flag disabled.'
+				'Head output should contain Ads conversion ID when paxConversionID is empty.'
 			);
 		} else {
 			$this->assertStringContainsString(
 				'gtag("config", "AW-987654321")',
 				$head_html,
-				'Head output should contain paxConversionID when feature flag enabled.'
+				'Head output should contain paxConversionID when it is set.'
 			);
 		}
 	}
@@ -334,11 +300,7 @@ class AdsTest extends TestCase {
 	/**
 	 * @dataProvider data_ads_measurement_connection_settings
 	 */
-	public function test_check_ads_measurement_connection( $settings_input, $pax_enabled, $expected ) {
-		if ( $pax_enabled ) {
-			$this->enable_feature( 'adsPax' );
-		}
-
+	public function test_check_ads_measurement_connection( $settings_input, $expected ) {
 		$this->ads->get_settings()->merge( $settings_input );
 
 		$this->assertSame( $expected, $this->ads->check_ads_measurement_connection(), 'Ads measurement connection check result should match expected.' );
@@ -346,33 +308,24 @@ class AdsTest extends TestCase {
 
 	public function data_ads_measurement_connection_settings() {
 		return array(
-			'connected manually'                 => array(
+			'connected manually'             => array(
 				array( 'conversionID' => 'AW-123456789' ),
-				false,
 				true,
 			),
-			'not connected'                      => array(
+			'not connected'                  => array(
 				array( 'conversionID' => '' ),
 				false,
-				false,
 			),
-			'connected manually, adsPax enabled' => array(
-				array( 'conversionID' => 'AW-123456789' ),
-				true,
-				true,
-			),
-			'connected via PAX, adsPax enabled'  => array(
+			'connected via PAX'              => array(
 				array( 'paxConversionID' => 'AW-987654321' ),
 				true,
-				true,
 			),
-			'not connected, adsPax enabled'      => array(
+			'not connected - empty settings' => array(
 				array(
 					'conversionID'    => '',
 					'paxConversionID' => '',
 					'extCustomerID'   => '',
 				),
-				true,
 				false,
 			),
 		);
@@ -397,22 +350,13 @@ class AdsTest extends TestCase {
 
 	public function template_redirect_with_pax_data_provider() {
 		return array(
-			'empty pax conversion ID, valid ads conversion ID and adsPax feature flag enabled' => array(
-				'adsPax',
+			'empty pax conversion ID, valid ads conversion ID' => array(
 				array(
 					'conversionID'    => 'AW-123456789',
 					'paxConversionID' => '',
 				),
 			),
-			'valid pax conversion ID, valid ads conversion ID and adsPax feature flag enabled' => array(
-				'adsPax',
-				array(
-					'conversionID'    => 'AW-123456789',
-					'paxConversionID' => 'AW-987654321',
-				),
-			),
-			'valid pax conversion ID, valid ads conversion ID and adsPax feature flag disabled' => array(
-				false,
+			'valid pax conversion ID, valid ads conversion ID' => array(
 				array(
 					'conversionID'    => 'AW-123456789',
 					'paxConversionID' => 'AW-987654321',
@@ -432,11 +376,7 @@ class AdsTest extends TestCase {
 	/**
 	 * @dataProvider data_get_feature_metrics
 	 */
-	public function test_get_feature_metrics( $settings, $feature_flag, $expected_feature_metrics, $message ) {
-		if ( $feature_flag ) {
-			self::enable_feature( $feature_flag );
-		}
-
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
 		if ( ! empty( $settings ) ) {
 			$this->ads->get_settings()->merge( $settings );
 		}
@@ -449,7 +389,6 @@ class AdsTest extends TestCase {
 		return array(
 			'not connected' => array(
 				array(), // settings
-				false,    // feature_flag
 				array(
 					'ads_connection' => '',
 				),
@@ -457,7 +396,6 @@ class AdsTest extends TestCase {
 			),
 			'manual'        => array(
 				array( 'conversionID' => 'AW-123456789' ),
-				false,
 				array(
 					'ads_connection' => 'manual',
 				),
@@ -465,7 +403,6 @@ class AdsTest extends TestCase {
 			),
 			'pax'           => array(
 				array( 'paxConversionID' => 'AW-123456789' ),
-				'adsPax',
 				array(
 					'ads_connection' => 'pax',
 				),

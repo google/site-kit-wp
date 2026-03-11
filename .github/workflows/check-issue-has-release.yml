@@ -35,11 +35,10 @@ jobs:
       ) &&
       github.event.review.state == 'approved'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          # Use modern Node for native fetch in script.
-          node-version: '18.x'
+          node-version-file: .nvmrc
 
       - name: Check issue for release tag
         run: ./bin/check-issue-has-release.js

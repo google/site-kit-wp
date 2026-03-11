@@ -21,6 +21,8 @@ exports[`TopConvertingTrafficSourceWidget renders correctly with no data in the 
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
           >
             <svg />
@@ -80,6 +82,8 @@ exports[`TopConvertingTrafficSourceWidget should render correctly with the expec
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
           >
             <svg />
@@ -136,6 +140,8 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
@@ -198,6 +204,8 @@ exports[`TopConvertingTrafficSourceWidget should render the insufficient permiss
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
         >
           <svg />
@@ -267,6 +275,8 @@ exports[`TopConvertingTrafficSourceWidget should render the loading state while 
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Channel (e.g. social, paid, search) that brought in visitors who generated the most key events"
             >
               <svg />

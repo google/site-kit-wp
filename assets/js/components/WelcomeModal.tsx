@@ -19,14 +19,31 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useState,
+	Fragment,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * External dependencies
+ */
+import { ReactElement, useEffect, useRef } from 'react';
+import { useIntersection } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -34,41 +51,233 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 // @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import useViewOnly from '@/js/hooks/useViewOnly';
+// @ts-expect-error - We need to add types for imported SVGs.
+import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { trackEvent } from '@/js/util';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import useViewContext from '@/js/hooks/useViewContext';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type SelectFunction = ( select: any ) => any;
+enum MODAL_VARIANT {
+	DATA_AVAILABLE,
+	GATHERING_DATA,
+	DATA_GATHERING_COMPLETE,
+}
+
+const VARIANT_TRACKING_LABELS = {
+	[ MODAL_VARIANT.DATA_AVAILABLE ]: 'default',
+	[ MODAL_VARIANT.GATHERING_DATA ]: 'gathering_data',
+	[ MODAL_VARIANT.DATA_GATHERING_COMPLETE ]: 'data_available',
+};
 
 export default function WelcomeModal() {
-	const analyticsConnected = useSelect( ( select: SelectFunction ) =>
+	const viewContext = useViewContext();
+
+	const [ isOpen, setIsOpen ] = useState( true );
+
+	const isViewOnly = useViewOnly();
+
+	const canAuthenticate = useSelect( ( select: Select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
+
+	const analyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const analyticsGatheringData = useSelect( ( select: SelectFunction ) => {
+	const analyticsGatheringData = useSelect( ( select: Select ) => {
 		if ( ! analyticsConnected ) {
 			return false;
 		}
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	const searchConsoleGatheringData = useSelect( ( select: SelectFunction ) =>
+	const searchConsoleGatheringData = useSelect( ( select: Select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
+	const isGatheringDataVariantDismissed = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isItemDismissed(
+			WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
+		)
 	);
 
 	const showGatheringDataModal = analyticsConnected
 		? analyticsGatheringData
 		: searchConsoleGatheringData;
 
+	let modalVariant: MODAL_VARIANT;
+
+	if ( showGatheringDataModal ) {
+		modalVariant = MODAL_VARIANT.GATHERING_DATA;
+	} else {
+		modalVariant = isGatheringDataVariantDismissed
+			? MODAL_VARIANT.DATA_GATHERING_COMPLETE
+			: MODAL_VARIANT.DATA_AVAILABLE;
+	}
+
+	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
+	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	const tooltipSettings = {
+		target: '.googlesitekit-help-menu__button',
+		tooltipSlug: 'welcome-modal',
+		title: __(
+			'You can always take the dashboard tour from the help menu',
+			'google-site-kit'
+		),
+		dismissLabel: __( 'Got it', 'google-site-kit' ),
+		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
+	};
+
+	const showTooltip = useShowTooltip( tooltipSettings );
+
+	const closeAndDismissModal = useCallback( async () => {
+		setIsOpen( false );
+
+		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
+			await dismissItem( WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG );
+		}
+
+		if (
+			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
+			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
+		) {
+			await dismissItem( WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG );
+		}
+
+		// Ensure the setup success notification won't be shown on page reload.
+		setNotification( undefined );
+	}, [ modalVariant, setNotification, dismissItem ] );
+
+	const closeAndDismissModalWithTooltip = useCallback( async () => {
+		await closeAndDismissModal();
+
+		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
+			showTooltip();
+		}
+	}, [ closeAndDismissModal, modalVariant, showTooltip ] );
+
+	const startTourAndClose = useCallback( () => {
+		closeAndDismissModal();
+		triggerOnDemandTour(
+			getWelcomeTour( {
+				isViewOnly,
+				canAuthenticate,
+				isAnalyticsConnected: !! analyticsConnected,
+			} )
+		);
+	}, [
+		analyticsConnected,
+		canAuthenticate,
+		closeAndDismissModal,
+		isViewOnly,
+		triggerOnDemandTour,
+	] );
+
+	const intersectionRef = useRef( null );
+
+	const intersectionEntry = useIntersection( intersectionRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( ! inView || hasBeenInView ) {
+			return;
+		}
+
+		setHasBeenInView( true );
+
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'view_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+
+		async function trackSetupEventsOnce() {
+			const startSiteSetup = await getItem( 'start_site_setup' );
+			const startUserSetup = await getItem( 'start_user_setup' );
+
+			if ( startSiteSetup.cacheHit ) {
+				await deleteItem( 'start_site_setup' );
+				trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_site_setup'
+				);
+			}
+			if ( startUserSetup.cacheHit ) {
+				await deleteItem( 'start_user_setup' );
+				trackEvent(
+					`${ viewContext }_setup`,
+					'setup_flow_v3_complete_user_setup'
+				);
+			}
+		}
+
+		trackSetupEventsOnce();
+	}, [ inView, hasBeenInView, viewContext, modalVariant ] );
+
+	const trackConfirmation = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'confirm_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+	}, [ viewContext, modalVariant ] );
+
+	const trackDismissal = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_welcome-modal`,
+			'dismiss_notice',
+			VARIANT_TRACKING_LABELS[ modalVariant ]
+		);
+	}, [ viewContext, modalVariant ] );
+
+	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
+		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	);
+
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return null;
+	}
+
 	if ( showGatheringDataModal === undefined ) {
 		// TODO: Implement a loading state when we have a design for it in phase 3 of the Setup Flow Refresh epic.
 		return null;
 	}
 
-	const description = showGatheringDataModal
-		? createInterpolateElement(
+	if ( ! isOpen ) {
+		return null;
+	}
+
+	const title =
+		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
+			? __( 'Data gathering complete!', 'google-site-kit' )
+			: __( 'Welcome to Site Kit', 'google-site-kit' );
+
+	let description: string | ReactElement;
+
+	switch ( modalVariant ) {
+		case MODAL_VARIANT.DATA_AVAILABLE:
+			description = __(
+				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
+				'google-site-kit'
+			);
+			break;
+		case MODAL_VARIANT.GATHERING_DATA:
+			description = createInterpolateElement(
 				__(
 					'Initial setup complete!<br />Site Kit is gathering data and soon metrics for your site will show on your dashboard',
 					'google-site-kit'
@@ -76,27 +285,44 @@ export default function WelcomeModal() {
 				{
 					br: <br />,
 				}
-		  )
-		: __(
-				'Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals',
+			);
+			break;
+		case MODAL_VARIANT.DATA_GATHERING_COMPLETE:
+			description = __(
+				'Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.',
 				'google-site-kit'
-		  );
+			);
+			break;
+	}
 
 	return (
 		<Dialog
-			onClose={ () => {} }
 			className="googlesitekit-dialog googlesitekit-welcome-modal"
+			onClose={ () => {
+				trackDismissal();
+				closeAndDismissModalWithTooltip();
+			} }
 			open
 		>
 			<DialogContent className="googlesitekit-welcome-modal__content">
-				<div className="googlesitekit-welcome-modal__graphic">
-					<WelcomeModalGraphic />
+				<div
+					ref={ intersectionRef }
+					className="googlesitekit-welcome-modal__graphic"
+				>
+					{ modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE ? (
+						<WelcomeModalDataGatheringCompleteGraphic />
+					) : (
+						<WelcomeModalGraphic />
+					) }
 
 					<Button
 						// @ts-expect-error - The `Button` component is not typed yet.
 						className="googlesitekit-welcome-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
-						onClick={ () => {} }
+						onClick={ () => {
+							trackDismissal();
+							closeAndDismissModalWithTooltip();
+						} }
 						aria-label={ __( 'Close', 'google-site-kit' ) }
 						hideTooltipTitle
 					/>
@@ -109,7 +335,7 @@ export default function WelcomeModal() {
 						size="large"
 						type="headline"
 					>
-						{ __( 'Welcome to Site Kit', 'google-site-kit' ) }
+						{ title }
 					</Typography>
 
 					<P
@@ -123,19 +349,35 @@ export default function WelcomeModal() {
 			</DialogContent>
 
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
-				{ showGatheringDataModal ? (
+				{ modalVariant === MODAL_VARIANT.GATHERING_DATA ? (
 					// @ts-expect-error - The `Button` component is not typed yet.
-					<Button onClick={ () => {} }>
+					<Button
+						onClick={ () => {
+							trackConfirmation();
+							closeAndDismissModal();
+						} }
+					>
 						{ __( 'Get started', 'google-site-kit' ) }
 					</Button>
 				) : (
 					<Fragment>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ () => {} } tertiary>
+						<Button
+							onClick={ () => {
+								trackDismissal();
+								closeAndDismissModalWithTooltip();
+							} }
+							tertiary
+						>
 							{ __( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button onClick={ () => {} }>
+						<Button
+							onClick={ () => {
+								trackConfirmation();
+								startTourAndClose();
+							} }
+						>
 							{ __( 'Start tour', 'google-site-kit' ) }
 						</Button>
 					</Fragment>

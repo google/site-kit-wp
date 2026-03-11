@@ -184,6 +184,10 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
 				$permissions->register();
 
+				$golinks = new Core\Golinks\Golinks( $this->context );
+				$golinks->register();
+				$golinks->register_handler( 'dashboard', new Core\Golinks\Dashboard_Golink_Handler() );
+
 				$nonces = new Core\Nonces\Nonces( $this->context );
 				$nonces->register();
 
@@ -208,7 +212,7 @@ final class Plugin {
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Pointers() )->register();
-				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
+				( new Core\Admin\Dashboard( $this->context, $assets, $modules, $dismissed_items ) )->register();
 				( new Core\Admin\Authorize_Application( $this->context, $assets ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
 				( new Core\Site_Health\Site_Health( $this->context, $options, $user_options, $authentication, $modules, $permissions ) )->register();
@@ -240,7 +244,7 @@ final class Plugin {
 						$user_options,
 					);
 
-					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $authentication, $options, $user_options ) )->register();
+					( new Core\Email_Reporting\Email_Reporting( $this->context, $modules, $data_requests, $golinks, $authentication, $options, $user_options ) )->register();
 				}
 
 				if ( Feature_Flags::enabled( 'googleTagGateway' ) ) {
@@ -317,7 +321,7 @@ final class Plugin {
 		}
 
 		if ( file_exists( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php' ) ) {
-			$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
+			$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php'; // @phpstan-ignore include.fileNotFound
 			Feature_Flags::set_features( (array) $config['features'] );
 		}
 

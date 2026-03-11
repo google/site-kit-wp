@@ -37,7 +37,10 @@ import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/constants';
 import DisplaySetting from '@/js/components/DisplaySetting';
-import { PublicationOnboardingStateNotice } from '@/js/modules/reader-revenue-manager/components/common';
+import {
+	PolicyViolationSettingsNotice,
+	PublicationOnboardingStateNotice,
+} from '@/js/modules/reader-revenue-manager/components/common';
 import Typography from '@/js/components/Typography';
 
 export default function SettingsView() {
@@ -132,6 +135,7 @@ export default function SettingsView() {
 			</div>
 
 			{ hasModuleAccess && <PublicationOnboardingStateNotice /> }
+			{ hasModuleAccess && <PolicyViolationSettingsNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

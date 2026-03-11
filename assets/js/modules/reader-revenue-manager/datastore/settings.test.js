@@ -23,6 +23,7 @@ import { setUsingCache } from 'googlesitekit-api';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
+	INVARIANT_INVALID_CONTENT_POLICY_STATUS,
 	INVARIANT_INVALID_PAYMENT_OPTION,
 	INVARIANT_INVALID_POST_TYPES,
 	INVARIANT_INVALID_PRODUCT_ID,
@@ -55,12 +56,12 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		setUsingCache( false );
 	} );
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
 	afterAll( () => {
 		setUsingCache( true );
+	} );
+
+	beforeEach( () => {
+		registry = createTestRegistry();
 	} );
 
 	describe( 'validateCanSubmitChanges', () => {
@@ -242,6 +243,21 @@ describe( 'modules/reader-revenue-manager settings', () => {
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
 				INVARIANT_INVALID_PAYMENT_OPTION
+			);
+		} );
+
+		it( 'should throw invariant error for invalid content policy status', () => {
+			const settings = {
+				...validSettings,
+				contentPolicyStatus: 'not-an-object',
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_CONTENT_POLICY_STATUS
 			);
 		} );
 	} );

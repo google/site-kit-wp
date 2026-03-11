@@ -273,6 +273,9 @@ $width-xxlarge: 1440;
 $width-xxxlarge: 1500;
 $page-content-max-width: 1366px;
 
+// Container widths (for container queries)
+$container-width-desktop: 800px;
+
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
 $bp-mobileOnly: $width-tablet - 1 + px;

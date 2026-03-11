@@ -27,28 +27,30 @@ import { __ } from '@wordpress/i18n';
  */
 import OptIn from '@/js/components/OptIn';
 import useViewContext from '@/js/hooks/useViewContext';
-import P from '@/js/components/Typography/P';
+import Link from '@/js/components/Link';
 
 export default function Tracking() {
 	const viewContext = useViewContext();
 
 	return (
-		<li className="googlesitekit-view-only-menu__list-item">
-			<P>
-				{ createInterpolateElement(
-					__(
-						'Thanks for using Site Kit!<br />Help us make it even better',
-						'google-site-kit'
+		<OptIn
+			title={ __( 'Help us improve Site Kit', 'google-site-kit' ) }
+			description={ createInterpolateElement(
+				__(
+					'Share anonymous usage data. All collected data is treated in accordance with the <a>Google Privacy Policy</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						<Link
+							href="https://policies.google.com/privacy"
+							external
+						/>
 					),
-					{
-						br: <br />,
-					}
-				) }
-			</P>
-			<OptIn
-				trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
-				alignCheckboxLeft
-			/>
-		</li>
+				}
+			) }
+			trackEventCategory={ `${ viewContext }_headerbar_viewonly` }
+			layout="stacked"
+		/>
 	);
 }

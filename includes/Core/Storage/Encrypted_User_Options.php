@@ -126,10 +126,12 @@ final class Encrypted_User_Options implements User_Options_Interface {
 	 * Switches the user that options are controlled for to the one with the given ID.
 	 *
 	 * @since 1.4.0
+	 * @since 1.174.0 Returns callable to restore previous user.
 	 *
 	 * @param int $user_id User ID.
+	 * @return callable A closure to switch back to the original user.
 	 */
 	public function switch_user( $user_id ) {
-		$this->user_options->switch_user( $user_id );
+		return $this->user_options->switch_user( $user_id );
 	}
 }

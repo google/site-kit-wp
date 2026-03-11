@@ -25,6 +25,7 @@ import {
 	useCallback,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -46,6 +47,7 @@ import { trackEvent } from '@/js/util';
 export default function Actions( {
 	proxySetupURL,
 	onButtonClick,
+	forwardableParams = {},
 	complete,
 	inProgressFeedback,
 	ctaFeedback,
@@ -69,7 +71,10 @@ export default function Actions( {
 		select( CORE_SITE ).isResettable()
 	);
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard',
+			forwardableParams
+		)
 	);
 
 	const goToSharedDashboard = useCallback( () => {
@@ -82,10 +87,19 @@ export default function Actions( {
 					: 'skip_setup_to_viewonly'
 			),
 		] ).finally( () => {
-			navigateTo( dashboardURL );
+			const redirectURL = setupFlowRefreshEnabled
+				? addQueryArgs( dashboardURL, {
+						notification:
+							forwardableParams.notification ||
+							'initial_setup_success',
+				  } )
+				: dashboardURL;
+
+			navigateTo( redirectURL );
 		} );
 	}, [
 		dashboardURL,
+		forwardableParams.notification,
 		dismissItem,
 		navigateTo,
 		setupFlowRefreshEnabled,

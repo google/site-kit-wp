@@ -21,6 +21,8 @@ exports[`TopCountriesWidget should render correctly with the expected metrics 1`
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="The countries where most of your visitors came from"
           >
             <svg />
@@ -118,6 +120,8 @@ exports[`TopCountriesWidget should render the generic error variant when the rep
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The countries where most of your visitors came from"
         >
           <svg />
@@ -180,6 +184,8 @@ exports[`TopCountriesWidget should render the insufficient permissions error var
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The countries where most of your visitors came from"
         >
           <svg />
@@ -249,6 +255,8 @@ exports[`TopCountriesWidget should render the loading state while resolving the 
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="The countries where most of your visitors came from"
             >
               <svg />

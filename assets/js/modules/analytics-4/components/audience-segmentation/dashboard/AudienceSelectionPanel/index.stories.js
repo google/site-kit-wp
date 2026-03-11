@@ -366,7 +366,7 @@ export default {
 					grantedScopes: [ EDIT_SCOPE ],
 				} );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-27' );
 
 				// Mock the sync available audiences endpoint since it is required that it's resolution is finished
 				// so items can go out of the loading state.

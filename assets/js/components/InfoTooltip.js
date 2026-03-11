@@ -47,7 +47,7 @@ export default function InfoTooltip( { onOpen, title, tooltipClassName } ) {
 			onOpen={ onOpen }
 			interactive
 		>
-			<span>
+			<span tabIndex="0" role="tooltip">
 				<InfoIcon width="16" height="16" />
 			</span>
 		</Tooltip>

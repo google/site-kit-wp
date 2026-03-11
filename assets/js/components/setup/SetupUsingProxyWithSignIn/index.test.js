@@ -70,6 +70,8 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash';
 
 		provideModules( registry );
 		provideSiteInfo( registry );
@@ -157,6 +159,42 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				proxySetupURL
+			);
+		} );
+	} );
+
+	it( 'should pass panel query arg through redirect when signing in', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&panel=email-reporting';
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
+		const dashboardURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-dashboard', {
+				panel: 'email-reporting',
+			} );
+		const expectedURL = addQueryArgs( proxySetupURL, {
+			redirect: dashboardURL,
+		} );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				expectedURL
 			);
 		} );
 	} );

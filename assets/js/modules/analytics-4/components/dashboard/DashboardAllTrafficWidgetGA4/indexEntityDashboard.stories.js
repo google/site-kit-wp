@@ -364,7 +364,7 @@ export default {
 					currentEntityURL: 'https://www.elasticpress.io/features/',
 				} );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-06' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-05' );
 
 				if ( args?.setupRegistry ) {
 					// Call story-specific setup.

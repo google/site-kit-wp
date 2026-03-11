@@ -94,6 +94,8 @@ module.exports = function ( mode, rules ) {
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.js',
+			'googlesitekit-admin-pointers-tracking':
+				'./js/googlesitekit-admin-pointers-tracking.js',
 			'googlesitekit-settings': './js/googlesitekit-settings.js',
 			'googlesitekit-main-dashboard':
 				'./js/googlesitekit-main-dashboard.js',

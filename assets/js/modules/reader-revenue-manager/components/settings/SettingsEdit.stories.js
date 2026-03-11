@@ -21,14 +21,20 @@
  */
 import {
 	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import { Grid, Row, Cell } from '@/js/material-components';
 import SettingsEdit from './SettingsEdit';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	CONTENT_POLICY_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { cloneDeep } from 'lodash';
@@ -138,6 +144,10 @@ WithoutModuleAccess.args = {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setOwnerID( 2 );
 
 		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetPublications( [] );
+
+		registry
 			.dispatch( CORE_MODULES )
 			.receiveCheckModuleAccess(
 				{ access: false },
@@ -205,6 +215,59 @@ MissingProductID.args = {
 	},
 };
 
+export const WithPolicyViolationPending = Template.bind( {} );
+WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
+WithPolicyViolationPending.scenario = {};
+WithPolicyViolationPending.args = {
+	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+};
+
+export const WithPolicyViolationActive = Template.bind( {} );
+WithPolicyViolationActive.storyName = 'With Policy Violation (Active)';
+WithPolicyViolationActive.scenario = {};
+WithPolicyViolationActive.args = {
+	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+};
+
+export const WithPolicyViolationExtreme = Template.bind( {} );
+WithPolicyViolationExtreme.storyName = 'With Policy Violation (Extreme)';
+WithPolicyViolationExtreme.scenario = {};
+WithPolicyViolationExtreme.args = {
+	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+	contentPolicyState:
+		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+};
+
 export default {
 	title: 'Modules/ReaderRevenueManager/Settings/SettingsEdit',
 	decorators: [
@@ -218,6 +281,9 @@ export default {
 					],
 				} );
 
+				provideUserAuthentication( registry );
+				provideUserInfo( registry );
+
 				const extraData = [
 					{
 						slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -226,6 +292,7 @@ export default {
 					},
 				];
 
+				provideModules( registry, extraData );
 				provideModuleRegistrations( registry, extraData );
 
 				const settings = {
@@ -239,6 +306,15 @@ export default {
 					productIDs: [ 'product-1', 'product-2' ],
 					snippetMode: 'post_types',
 				};
+
+				// Add content policy status if provided.
+				if ( args?.contentPolicyState ) {
+					settings.contentPolicyStatus = {
+						contentPolicyState: args.contentPolicyState,
+						policyInfoLink:
+							'https://publishercenter.google.com/policy',
+					};
+				}
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )

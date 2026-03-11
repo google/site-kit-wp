@@ -29,7 +29,6 @@ import {
 	resetSiteKit,
 	setupSiteKit,
 	useRequestInterception,
-	enableFeature,
 	step,
 } from '../../../utils';
 import surveyResponse from '@/js/components/surveys/__fixtures__/survey-single-question.json';
@@ -101,7 +100,6 @@ describe( 'Ads WooCommerce Redirect Modal', () => {
 
 	beforeEach( async () => {
 		await setupSiteKit();
-		await enableFeature( 'adsPax' );
 	} );
 
 	afterEach( async () => {

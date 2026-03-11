@@ -1,0 +1,187 @@
+description = "Implements a GitHub issue locally with automated review and iteration"
+
+prompt = """
+You are tasked with implementing GitHub issue #{{args}} from the google/site-kit-wp repository following a strict quality workflow.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- You MUST ACTUALLY CREATE, MODIFY, and DELETE files in the current working directory
+- DO NOT just output proposed changes or describe what should be done
+- Use your developer tools to make ACTUAL file modifications
+- This is a LOCAL implementation - DO NOT create commits, pull requests, or push to remote
+- All changes remain local for the developer to review, test, and commit manually
+
+--- WORKFLOW OVERVIEW ---
+
+6-phase workflow with quality enforcement:
+1. Fetch GitHub Issue → 2. Load Context Docs → 3. Implement → 4. Code Review (score 0–1.0) → 5. Iterate (max 3, threshold 0.85) → 6. Document (optional)
+
+### PHASE 1: FETCH GITHUB ISSUE
+
+**Objective**: Retrieve issue details and extract implementation instructions.
+
+1. Use GitHub MCP tools to fetch issue #{{args}} from `google/site-kit-wp`
+   - Fallback: `!{gh issue view {{args}} --json title,body}`
+2. Extract "Acceptance criteria" section (between `## Acceptance criteria` and `## Implementation Brief`)
+3. Extract "Implementation Brief" section (between `## Implementation Brief` and `## QA Brief`)
+
+**Error Handling**: STOP and report if: issue not found, GitHub API unavailable, body is empty, or either section marker is missing.
+
+**Output**: Store extracted sections for use in subsequent phases.
+
+### PHASE 2: REFERENCE CONTEXT DOCUMENTATION
+
+**Objective**: Load only the context docs relevant to this issue.
+
+Context docs are NOT preloaded — you must read them via file tools. Load selectively based on issue type:
+- JS-only issue → read only relevant files from `docs/context/js/`
+- PHP-only issue → read only relevant files from `docs/context/php/`
+- Full-stack issue → read from both, prioritizing files directly related to the task
+
+DO NOT read all 24 context files. Only read what applies to this specific issue.
+
+**Available files:**
+
+`docs/context/js/` (13 files): component-conventions.md, module-architecture.md, state-management.md, hooks.md, tests.md, jsdoc.md, event-tracking.md, feature-flags.md, feature-tours.md, notifications.md, widgets.md, storybook.md, utils.md
+
+`docs/context/php/` (11 files): module-architecture.md, settings-management.md, dependency-injection.md, context-pattern.md, admin-features.md, rest-api.md, asset-management.md, storage-patterns.md, prompts-and-dismissals.md, trait-composition.md, naming-conventions.md
+
+`AGENTS.md` is preloaded and covers high-level project architecture.
+
+**CRITICAL**: The context files you read define MANDATORY conventions. Any deviation is a critical violation.
+
+### PHASE 3: IMPLEMENTATION
+
+**Objective**: Implement the issue following documented principles.
+
+1. **Understand the Task** — Read the Implementation Brief and Acceptance Criteria from Phase 1. Plan your approach before writing code.
+2. **Implement Following Strict Principles** — Follow ALL conventions from context docs. Study existing similar code. Use proper naming, error handling, accessibility, and security practices.
+3. **Write Comprehensive Tests**
+   - JS: follow `docs/context/js/tests.md`
+   - PHP: follow `docs/context/php/phpunit.md`
+   - Write unit tests for ALL new functionality including edge cases. Mock external dependencies.
+4. **Document Your Code** — JS: JSDoc per `jsdoc.md`. PHP: PHPDoc per WordPress standards. Document all exports and complex logic.
+5. **Consider Integration Points** — Use event tracking, feature flags, tours, notifications, state management, widgets, REST API, etc. only if applicable per context docs read in Phase 2.
+6. **Create Supporting Files** — Storybook stories for JS UI components; test fixtures for PHP as needed.
+7. **Verify Your Implementation** (MANDATORY - DO NOT SKIP):
+   - Lint: `!{npm run lint:js}` (JS) or `!{composer run lint}` (PHP). Fix all errors before proceeding.
+   - Tests: `!{npm run test:js}` (JS) or `!{composer run test}` (PHP). ALL tests must pass.
+   - Build: `!{npm run build:dev}` if significant changes were made.
+8. **Provide Implementation Summary**:
+
+```
+IMPLEMENTATION SUMMARY
+======================
+Files Created ([n]): [paths + descriptions]
+Files Modified ([n]): [paths + descriptions]
+Files Deleted ([n]): [paths + reasons]
+Key Features: [bullet list]
+Tests: [files and edge cases covered]
+Verification: Linting [pass/fail] | JS Tests [pass/fail] | PHP Tests [pass/fail]
+NOTE: Tests MUST have been executed. If not, go back and run them.
+```
+
+### PHASE 4: CODE REVIEW
+
+**Objective**: Evaluate implementation quality and adherence to documented principles.
+
+1. **Verify Requirements Adherence** — All Acceptance Criteria points are met. No required functionality missing. Edge cases from AC are handled.
+2. **Verify Context Adherence** — Check compliance with each context file you read in Phase 2. Document ANY violation found:
+   - Which principle was violated
+   - Which context file+section defines it
+   - How the code violates it
+   - What must be fixed
+   - Which files are affected
+3. **Analyze Code Quality** — Structure, readability, error handling, security (XSS, injection, auth bypass), performance, test coverage, documentation, accessibility, compatibility.
+4. **Score (0.0–1.0)**:
+   - 0.0–0.5: Any AC unmet, any principle violated, critical security/functionality issues, tests missing/failing, or tests NOT actually executed
+   - 0.5–0.84: Works but doesn't meet quality standards; multiple issues; incomplete tests or docs
+   - 0.85–0.94: All requirements met, all principles followed, clean code, comprehensive tests ACTUALLY EXECUTED and passing, well documented
+   - 0.95–1.0: Exceeds standards — exemplary code, exceptional coverage, outstanding documentation
+5. **Provide Review Results**:
+
+```
+CODE REVIEW RESULTS
+===================
+Score: [0.0–1.0] | Status: [approved|needs_improvement] | Iteration: [1–3]
+
+REQUIREMENTS VIOLATIONS: [count]
+[Violation #n: AC Point | Details | Fix Required]
+
+CONTEXT VIOLATIONS: [count]
+[Violation #n: Principle | Context File+Section | Details | Fix Required | Affected Files]
+
+QUALITY RECOMMENDATIONS: [count]
+[Rec #n: Category | Priority | Issue | Suggestion | Affected Files]
+
+STRENGTHS: [positive aspects]
+FILES REVIEWED: [count and list]
+```
+
+### PHASE 5: ITERATION (if score < 0.85)
+
+**Rules**: Max 3 iterations. Track current number. Each iteration must address ALL violations.
+
+For each iteration:
+1. Fix ALL requirements and context violations (non-negotiable; make ACTUAL file modifications)
+2. Fix critical and high priority recommendations
+3. Re-run lint and tests (MANDATORY — must pass before re-review)
+4. Return to Phase 4 for re-review with updated score
+5. If score ≥ 0.85 → Phase 6. If score < 0.85 and iteration < 3 → next iteration. If score < 0.85 and iteration = 3 → graceful exit below.
+
+**Graceful Exit** (score < 0.85 after 3 iterations):
+
+```
+IMPLEMENTATION INCOMPLETE - MANUAL INTERVENTION REQUIRED
+=========================================================
+Final Score: [score] | Iterations: 3 | Status: Needs manual review
+
+Files Created ([n]): [paths]
+Files Modified ([n]): [paths]
+Files Deleted ([n]): [paths]
+
+REMAINING ISSUES:
+Context Violations ([n]): [list each with fix instructions]
+Quality Issues ([n]): [critical and high priority list]
+
+TOP FIXES NEEDED:
+1. [Fix description] — Files: [...] — Action: [...] — Reference: [context doc+section]
+2. [Fix description] — Files: [...] — Action: [...]
+[up to 5 items]
+
+WHAT WAS COMPLETED: [aspects that meet quality standards]
+
+NEXT STEPS: Review changes → fix violations → run tests (npm run test:js / composer run test) → lint → manual review
+```
+
+Stop after providing this summary. Do not attempt further fixes.
+
+### PHASE 6: DOCUMENTATION (optional, score ≥ 0.85 only)
+
+**When to create docs**: Only if you introduced NEW architectural patterns not covered in `docs/context/`. Skip if you only used existing patterns.
+
+**If needed**: Create a `.md` file in `docs/concepts/` with sections: Overview, Core Principles, How It Works, Usage Examples, Best Practices, Common Pitfalls, Related Concepts. Write for human developers — clear language, practical code examples, focus on WHY and HOW. Update existing `docs/concepts/` files if changes affect them.
+
+### FINAL SUMMARY
+
+**If score ≥ 0.85**:
+
+```
+IMPLEMENTATION COMPLETE ✓
+=========================
+Issue #{{args}}: [title] | Score: [score] | Iterations: [n]
+
+Files Created ([n]): [paths + descriptions]
+Files Modified ([n]): [paths + descriptions]
+Files Deleted ([n]): [paths + reasons]
+
+Highlights: [key features and notable technical decisions]
+Quality: All principles followed | Tests executed and passed | Linting passed
+
+Next steps: Review changes → npm run test:js / composer run test → npm run lint → manual test → git commit → open PR
+```
+
+**If score < 0.85 after 3 iterations**: Use the Graceful Exit summary from Phase 5.
+
+Begin with Phase 1: Fetch GitHub Issue #{{args}}
+"""

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -37,7 +38,6 @@ import {
 	isValidOnboardingState,
 	isValidSnippetMode,
 } from '@/js/modules/reader-revenue-manager/utils/validation';
-
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
@@ -58,6 +58,9 @@ export const INVARIANT_INVALID_PRODUCT_IDS =
 
 export const INVARIANT_INVALID_PAYMENT_OPTION =
 	'a valid payment option is required';
+
+export const INVARIANT_INVALID_CONTENT_POLICY_STATUS =
+	'a valid content policy status object is required';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -121,6 +124,15 @@ export function validateCanSubmitChanges( select ) {
 	invariant(
 		typeof paymentOption === 'string',
 		INVARIANT_INVALID_PAYMENT_OPTION
+	);
+
+	const contentPolicyStatus = strictSelect(
+		MODULES_READER_REVENUE_MANAGER
+	).getContentPolicyStatus();
+
+	invariant(
+		isPlainObject( contentPolicyStatus ),
+		INVARIANT_INVALID_CONTENT_POLICY_STATUS
 	);
 }
 

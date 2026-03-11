@@ -65,6 +65,7 @@ class Pointers {
 		// Dashboard styles are required where pointers are used to ensure proper styling.
 		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
 		wp_enqueue_script( 'wp-pointer' );
+		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
 
 		add_action(
 			'admin_print_footer_scripts',
@@ -121,7 +122,10 @@ class Pointers {
 			$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
 		}
 
-		$class = array( 'wp-pointer' );
+		$class      = array( 'wp-pointer' );
+		$slug_class = sanitize_html_class( $pointer->get_slug() );
+		$class[]    = $slug_class;
+
 		if ( $pointer->get_class() ) {
 			$class[] = $pointer->get_class();
 		}
@@ -156,10 +160,28 @@ class Pointers {
 			'div'    => array( 'class' => array() ),
 		);
 
+		$tracking = $pointer->get_tracking();
+
+		$data = array(
+			'data-slug'      => $pointer->get_slug(),
+			'data-class'     => implode( ' ', $class ),
+			'data-target-id' => $pointer->get_target_id(),
+			'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
+			'data-content'   => wp_kses( $content, $kses_content ),
+			'data-position'  => wp_json_encode( $pointer->get_position() ),
+		);
+
+		if ( ! empty( $tracking ) ) {
+			$data['data-tracking'] = wp_json_encode( $tracking );
+		}
+
 		BC_Functions::wp_print_inline_script_tag(
 			<<<'JS'
 			(
 				function ( $, wp, config ) {
+					const tracking = config.tracking ? JSON.parse( config.tracking ) : null;
+					let trackingHandlers = null;
+
 					function initPointer() {
 						const options = {
 							content: '<h3>' + config.title + '</h3>' + config.content,
@@ -168,6 +190,9 @@ class Pointers {
 							pointerClass: config.class,
 							close: function() {
 								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } );
+								if ( trackingHandlers && trackingHandlers.onDismiss ) {
+									trackingHandlers.onDismiss();
+								}
 							},
 							buttons: function( event, container ) {
 								container.pointer.on( 'click', '[data-action="dismiss"]', function() {
@@ -176,7 +201,19 @@ class Pointers {
 							}
 						};
 
-						$( '#' + config.targetId ).pointer( options ).pointer( 'open' );
+						const target = $( '#' + config.targetId );
+						if ( ! target.length ) {
+							return;
+						}
+
+						target.pointer( options ).pointer( 'open' );
+
+						if ( tracking && window.googlesitekitAdminPointersTracking ) {
+							trackingHandlers = window.googlesitekitAdminPointersTracking.register(
+								config.slug,
+								tracking
+							);
+						}
 					}
 
 					$( initPointer );
@@ -184,14 +221,7 @@ class Pointers {
 			)( window.jQuery, window.wp, { ...document.currentScript.dataset } );
 			JS
 			,
-			array(
-				'data-slug'      => $pointer->get_slug(),
-				'data-class'     => implode( ' ', $class ),
-				'data-target-id' => $pointer->get_target_id(),
-				'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
-				'data-content'   => wp_kses( $content, $kses_content ),
-				'data-position'  => wp_json_encode( $pointer->get_position() ),
-			)
+			$data
 		);
 	}
 }

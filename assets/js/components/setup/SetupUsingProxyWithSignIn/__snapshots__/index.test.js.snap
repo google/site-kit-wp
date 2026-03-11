@@ -309,7 +309,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                           <span>
                             All collected data is treated in accordance with the 
                             <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              aria-label="Google Privacy Policy (opens in a new tab)"
                               class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
@@ -318,7 +318,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                               <span
                                 class="googlesitekit-cta-link__contents"
                               >
-                                Google Privacy Policy.
+                                Google Privacy Policy
                               </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
@@ -724,7 +724,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                           <span>
                             All collected data is treated in accordance with the 
                             <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              aria-label="Google Privacy Policy (opens in a new tab)"
                               class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
@@ -733,7 +733,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                               <span
                                 class="googlesitekit-cta-link__contents"
                               >
-                                Google Privacy Policy.
+                                Google Privacy Policy
                               </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
@@ -1012,7 +1012,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           <span>
                             All collected data is treated in accordance with the 
                             <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              aria-label="Google Privacy Policy (opens in a new tab)"
                               class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
@@ -1021,7 +1021,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                               <span
                                 class="googlesitekit-cta-link__contents"
                               >
-                                Google Privacy Policy.
+                                Google Privacy Policy
                               </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
@@ -1059,6 +1059,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>
@@ -1388,7 +1390,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           <span>
                             All collected data is treated in accordance with the 
                             <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              aria-label="Google Privacy Policy (opens in a new tab)"
                               class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
@@ -1397,7 +1399,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                               <span
                                 class="googlesitekit-cta-link__contents"
                               >
-                                Google Privacy Policy.
+                                Google Privacy Policy
                               </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
@@ -1435,6 +1437,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>
@@ -1764,7 +1768,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                           <span>
                             All collected data is treated in accordance with the 
                             <a
-                              aria-label="Google Privacy Policy. (opens in a new tab)"
+                              aria-label="Google Privacy Policy (opens in a new tab)"
                               class="googlesitekit-cta-link"
                               href="https://policies.google.com/privacy"
                               rel="noopener noreferrer"
@@ -1773,7 +1777,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                               <span
                                 class="googlesitekit-cta-link__contents"
                               >
-                                Google Privacy Policy.
+                                Google Privacy Policy
                               </span>
                               <span
                                 class="googlesitekit-icon-wrapper"
@@ -1811,6 +1815,8 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </p>
                       <span
                         class="googlesitekit-info-tooltip"
+                        role="tooltip"
+                        tabindex="0"
                       >
                         <svg />
                       </span>

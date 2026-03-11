@@ -503,7 +503,7 @@ export default {
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
 				provideSiteInfo( registry );
-				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-12' );
 				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
 					needsReauthentication: false,
 				} );

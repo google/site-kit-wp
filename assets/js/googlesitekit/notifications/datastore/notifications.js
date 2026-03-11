@@ -580,7 +580,10 @@ export const controls = {
 							checkRequirements,
 							async check() {
 								if ( checkRequirements ) {
-									return await checkRequirements( registry );
+									return await checkRequirements(
+										registry,
+										viewContext
+									);
 								}
 								return true;
 							},

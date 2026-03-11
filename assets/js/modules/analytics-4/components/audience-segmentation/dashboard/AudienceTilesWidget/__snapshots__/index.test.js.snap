@@ -36,6 +36,8 @@ exports[`AudienceTilesWidget should not render audiences that are not available 
                   All visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -396,6 +398,8 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                   New visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -425,6 +429,8 @@ exports[`AudienceTilesWidget should render correctly when there is partial data 
                   Returning visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -937,6 +943,8 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                   All visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -966,6 +974,8 @@ exports[`AudienceTilesWidget should render when all configured audiences are mat
                   Purchasers
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -1325,6 +1335,8 @@ exports[`AudienceTilesWidget should render when configured audience is matching 
                   All visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -1685,6 +1697,8 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   All visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -1714,6 +1728,8 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   Purchasers
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -2049,6 +2065,8 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   New visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>
@@ -2078,6 +2096,8 @@ exports[`AudienceTilesWidget should render with no data in the comparison date r
                   Returning visitors
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                   >
                     <svg />
                   </span>

@@ -28,10 +28,19 @@ import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
 import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import PreviewGraph from '@/js/components/PreviewGraph';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function AdminBarActivateAnalyticsCTA() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	if ( setupFlowRefreshEnabled ) {
+		return (
+			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-admin-bar" />
+		);
+	}
+
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-admin-bar">
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }

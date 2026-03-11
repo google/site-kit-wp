@@ -50,7 +50,6 @@ import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
-import { enabledFeatures } from '@/js/features';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
@@ -65,8 +64,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 	)( AdsModuleSetupCTABanner );
 
 	beforeEach( () => {
-		enabledFeatures.add( 'adsPax' );
-
 		registry = createTestRegistry();
 
 		provideModules( registry, [

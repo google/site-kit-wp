@@ -337,7 +337,7 @@ describe( 'PAX partner services', () => {
 				it( 'should contain correct Date values', async () => {
 					registry
 						.dispatch( CORE_USER )
-						.setReferenceDate( '2020-09-08' );
+						.setReferenceDate( '2020-09-07' );
 					// Set the date range so that it selects the range we should expect:
 					// Sept 1 - Sept 7
 					registry

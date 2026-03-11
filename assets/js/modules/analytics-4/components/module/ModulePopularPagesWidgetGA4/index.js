@@ -185,6 +185,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
+			className: 'googlesitekit-table__head-item--pageviews',
 			Component( { fieldValue } ) {
 				return (
 					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>

@@ -17,37 +17,29 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import { __ } from '@wordpress/i18n';
+import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Service from './Service';
-import Typography from '@/js/components/Typography';
 
-export default function SharedServices() {
-	const viewableModules = useSelect( ( select ) =>
-		select( CORE_USER ).getViewableModules()
-	);
-
-	if ( viewableModules === undefined ) {
+export default function SharedServices( { viewableModules } ) {
+	if ( ! Array.isArray( viewableModules ) ) {
 		return null;
 	}
 
 	return (
-		<li className="googlesitekit-view-only-menu__list-item">
-			<Typography as="h4" size="large" type="title">
-				{ __( 'Shared services', 'google-site-kit' ) }
-			</Typography>
-			<ul>
-				{ viewableModules.map( ( moduleSlug ) => (
-					<Service key={ moduleSlug } module={ moduleSlug } />
-				) ) }
-			</ul>
-		</li>
+		<ul>
+			{ viewableModules.map( ( moduleSlug ) => (
+				<Service key={ moduleSlug } module={ moduleSlug } />
+			) ) }
+		</ul>
 	);
 }
+
+SharedServices.propTypes = {
+	viewableModules: PropTypes.arrayOf( PropTypes.string ),
+};

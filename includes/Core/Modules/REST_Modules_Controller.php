@@ -744,20 +744,21 @@ class REST_Modules_Controller {
 	 */
 	private function prepare_module_data_for_response( Module $module ) {
 		$module_data = array(
-			'slug'         => $module->slug,
-			'name'         => $module->name,
-			'description'  => $module->description,
-			'homepage'     => $module->homepage,
-			'internal'     => $module->internal,
-			'order'        => $module->order,
-			'forceActive'  => $module->force_active,
-			'recoverable'  => $module->is_recoverable(),
-			'shareable'    => $this->modules->is_module_shareable( $module->slug ),
-			'active'       => $this->modules->is_module_active( $module->slug ),
-			'connected'    => $this->modules->is_module_connected( $module->slug ),
-			'dependencies' => $this->modules->get_module_dependencies( $module->slug ),
-			'dependants'   => $this->modules->get_module_dependants( $module->slug ),
-			'owner'        => null,
+			'slug'           => $module->slug,
+			'name'           => $module->name,
+			'description'    => $module->description,
+			'homepage'       => $module->homepage,
+			'internal'       => $module->internal,
+			'order'          => $module->order,
+			'forceActive'    => $module->force_active,
+			'recoverable'    => $module->is_recoverable(),
+			'shareable'      => $this->modules->is_module_shareable( $module->slug ),
+			'active'         => $this->modules->is_module_active( $module->slug ),
+			'connected'      => $this->modules->is_module_connected( $module->slug ),
+			'disconnectedAt' => $this->modules->get_module_disconnected_at( $module->slug ),
+			'dependencies'   => $this->modules->get_module_dependencies( $module->slug ),
+			'dependants'     => $this->modules->get_module_dependants( $module->slug ),
+			'owner'          => null,
 		);
 
 		if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {

@@ -109,7 +109,7 @@ describe( 'Ads module setup', () => {
 			'wait for settings submission',
 			Promise.all( [
 				expect( page ).toClick( '.mdc-button', {
-					text: /complete setup/i,
+					text: /complete manual setup/i,
 				} ),
 				page.waitForNavigation(),
 			] )

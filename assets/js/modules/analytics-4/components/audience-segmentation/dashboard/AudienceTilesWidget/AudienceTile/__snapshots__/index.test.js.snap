@@ -20,6 +20,8 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
             New visitors
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="This is a tooltip"
             >
               <svg />
@@ -242,6 +244,8 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
                   Partial data
                   <span
                     class="googlesitekit-info-tooltip"
+                    role="tooltip"
+                    tabindex="0"
                     title="Still collecting full data for this timeframe, partial data is displayed for this metric"
                   >
                     <svg />
@@ -301,6 +305,8 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
             New visitors
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="This is a tooltip"
             >
               <svg />
@@ -312,6 +318,8 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
             Partial data
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Still collecting full data for this timeframe, partial data is displayed for this group"
             >
               <svg />
@@ -582,6 +590,8 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
             New visitors
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="This is a tooltip"
             >
               <svg />
@@ -855,6 +865,8 @@ exports[`AudienceTile with zero data, in the partial data state should render th
               New visitors
               <span
                 class="googlesitekit-info-tooltip"
+                role="tooltip"
+                tabindex="0"
                 title="This is a tooltip"
               >
                 <svg />

@@ -208,7 +208,7 @@ export function setupAnalytics4MockReports(
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	mockOptions.forEach( ( options ) => {
 		registry
@@ -223,7 +223,7 @@ export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 	registry,
 	mockOptions = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	mockOptions.forEach( ( options ) =>
 		provideAnalyticsReportWithoutDateRangeData( registry, options )
@@ -231,7 +231,7 @@ export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 }
 
 export function setupSearchConsoleMockReports( registry, data ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
 		if ( data ) {
@@ -247,7 +247,7 @@ export function setupSearchConsoleMockReports( registry, data ) {
 }
 
 export function setupSearchConsoleGatheringData( registry ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	wpDashboardSearchConsoleOptions.forEach( ( options ) => {
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
@@ -260,7 +260,7 @@ export function setupAnalytics4GatheringData(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
@@ -278,7 +278,7 @@ export function setupAnalytics4ZeroData(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	mockOptionSets.forEach( ( options ) => {
 		const report = getAnalytics4MockResponse( options );
@@ -296,7 +296,7 @@ export function setupAnalytics4Loading(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	mockOptionSets.forEach( ( options ) => {
 		provideAnalytics4MockReport( registry, options );
@@ -310,7 +310,7 @@ export function setupAnalytics4Error(
 	registry,
 	mockOptionSets = wpDashboardAnalytics4OptionSets
 ) {
-	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
 
 	const error = {
 		code: 'missing_required_param',

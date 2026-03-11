@@ -790,7 +790,7 @@ export default {
 				provideModuleRegistrations( registry );
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-28' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-27' );
 
 				registry
 					.dispatch( CORE_USER )

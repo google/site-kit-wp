@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
@@ -60,24 +61,36 @@ final class Dashboard {
 	private $authentication;
 
 	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @since 1.172.0
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since 1.172.0 Added Dismissed_Items instance.
 	 *
-	 * @param Context $context Plugin context.
-	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
+	 * @param Context         $context         Plugin context.
+	 * @param Assets          $assets          Optional. Assets API instance. Default is a new instance.
+	 * @param Modules         $modules         Optional. Modules instance. Default is a new instance.
+	 * @param Dismissed_Items $dismissed_items Optional. Dismissed_Items instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		?Assets $assets = null,
-		?Modules $modules = null
+		?Modules $modules = null,
+		?Dismissed_Items $dismissed_items = null
 	) {
 		$this->context = $context;
 		$this->assets  = $assets ?: new Assets( $this->context );
 		$this->modules = $modules ?: new Modules( $this->context );
 
-		$this->authentication = new Authentication( $this->context );
+		$this->authentication  = new Authentication( $this->context );
+		$this->dismissed_items = $dismissed_items;
 	}
 
 	/**
@@ -136,6 +149,11 @@ final class Dashboard {
 		$display_analytics_data         = ( ! $is_view_only && $analytics_connected ) || ( $is_view_only && $can_view_shared_analytics );
 		$display_search_console_data    = ( ! $is_view_only && $search_console_connected ) || ( $is_view_only && $can_view_shared_search_console );
 
+		$display_analytics_cta = ! $analytics_connected && ! $is_view_only;
+		if ( $display_analytics_cta && $this->dismissed_items ) {
+			$display_analytics_cta = ! $this->dismissed_items->is_dismissed( 'analytics-setup-cta-wp-dashboard' );
+		}
+
 		$class_names = array();
 
 		if ( $analytics_connected && $display_analytics_data ) {
@@ -146,7 +164,7 @@ final class Dashboard {
 			$class_names[] = 'googlesitekit-wp-dashboard-search_console_active_and_connected';
 		}
 
-		if ( ! $analytics_connected && ! $is_view_only ) {
+		if ( $display_analytics_cta ) {
 			$class_names[] = 'googlesitekit-wp-dashboard-analytics-activate-cta';
 		}
 
@@ -171,7 +189,7 @@ final class Dashboard {
 					$this->render_loading_container( 'googlesitekit-wp-dashboard-loading__search_console_active_and_connected' );
 				}
 
-				if ( ! $analytics_connected && ! $is_view_only ) {
+				if ( $display_analytics_cta ) {
 					$this->render_loading_container( 'googlesitekit-wp-dashboard-stats__cta' );
 				}
 

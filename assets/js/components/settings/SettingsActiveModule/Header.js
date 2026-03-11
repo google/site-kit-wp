@@ -28,14 +28,12 @@ import { useHistory, useParams } from 'react-router-dom';
  */
 import { useCallback, useRef } from '@wordpress/element';
 import { ESCAPE, ENTER } from '@wordpress/keycodes';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NEW_MODULES,
@@ -49,14 +47,9 @@ import Badge from '@/js/components/Badge';
 import NewBadge from '@/js/components/NewBadge';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import ConnectedIcon from '@/svg/icons/connected.svg';
-import WarningIcon from '@/svg/icons/warning-v2.svg';
 import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from '@/js/components/IconWrapper';
-import { useDispatch } from '@/js/googlesitekit-data';
 import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 
 export default function Header( { slug } ) {
 	const viewContext = useViewContext();
@@ -66,25 +59,8 @@ export default function Header( { slug } ) {
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
 
-	const storeName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( slug )
-	);
-	const adminReauthURL = useSelect( ( select ) =>
-		select( storeName )?.getAdminReauthURL?.()
-	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
-	);
-	const requirementsError = useSelect( ( select ) =>
-		select( CORE_MODULES )?.getCheckRequirementsError( slug )
-	);
-
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const isNavigatingToAdminReAuthURL = useSelect(
-		( select ) =>
-			adminReauthURL &&
-			select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 
 	const openHeader = useCallback( () => {
@@ -113,14 +89,6 @@ export default function Header( { slug } ) {
 		);
 	}, [ history, slug, viewContext, isOpen ] );
 
-	const onActionClick = useCallback(
-		( event ) => {
-			event.stopPropagation();
-			navigateTo( adminReauthURL );
-		},
-		[ navigateTo, adminReauthURL ]
-	);
-
 	useKeyCodesInside(
 		[ ENTER ],
 		headerRef,
@@ -128,32 +96,10 @@ export default function Header( { slug } ) {
 	);
 	useKeyCodesInside( [ ESCAPE ], headerRef, closeHeader );
 
-	const { name, connected } = module;
+	const { name, SettingsStatusComponent } = module;
 
 	if ( ! module ) {
 		return null;
-	}
-
-	let moduleStatus = null;
-
-	if ( connected ) {
-		moduleStatus = (
-			<P size={ SIZE_MEDIUM }>{ __( 'Connected', 'google-site-kit' ) }</P>
-		);
-	} else {
-		moduleStatus = (
-			<Button
-				onClick={ onActionClick }
-				disabled={ requirementsError || isNavigatingToAdminReAuthURL }
-				inverse
-			>
-				{ sprintf(
-					/* translators: %s: module name. */
-					__( 'Complete setup for %s', 'google-site-kit' ),
-					name
-				) }
-			</Button>
-		);
 	}
 
 	return (
@@ -226,36 +172,7 @@ export default function Header( { slug } ) {
 						alignMiddle
 						mdAlignRight
 					>
-						<div
-							className={ classnames(
-								'googlesitekit-settings-module__status',
-								{
-									'googlesitekit-settings-module__status--connected':
-										connected,
-									'googlesitekit-settings-module__status--not-connected':
-										! connected,
-								}
-							) }
-						>
-							{ moduleStatus }
-							<span
-								className={ classnames(
-									'googlesitekit-settings-module__status-icon',
-									{
-										'googlesitekit-settings-module__status-icon--connected':
-											connected,
-										'googlesitekit-settings-module__status-icon--not-connected':
-											! connected,
-									}
-								) }
-							>
-								{ connected ? (
-									<ConnectedIcon width={ 10 } height={ 8 } />
-								) : (
-									<WarningIcon width={ 19 } height={ 17 } />
-								) }
-							</span>
-						</div>
+						<SettingsStatusComponent slug={ slug } />
 					</Cell>
 				</Row>
 			</Grid>

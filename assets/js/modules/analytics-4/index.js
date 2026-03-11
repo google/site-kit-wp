@@ -159,6 +159,8 @@ import {
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
 import { isFeatureEnabled } from '@/js/features';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -209,6 +211,14 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
+				if (
+					! select( CORE_USER ).hasAccessToShareableModule(
+						MODULE_SLUG_ANALYTICS_4
+					)
+				) {
+					return false;
+				}
+
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
 				return !! configuredAudiences;
@@ -226,11 +236,18 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
+				if (
+					! select( CORE_USER ).hasAccessToShareableModule(
+						MODULE_SLUG_ANALYTICS_4
+					)
+				) {
+					return false;
+				}
+
 				const isAnalyticsConnected = select(
 					CORE_MODULES
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 
-				// If Analytics is not connected, we can return early.
 				if ( ! isAnalyticsConnected ) {
 					return false;
 				}
@@ -266,6 +283,14 @@ export function registerWidgets( widgets ) {
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
 				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
+					return false;
+				}
+
+				if (
+					! select( CORE_USER ).hasAccessToShareableModule(
+						MODULE_SLUG_ANALYTICS_4
+					)
+				) {
 					return false;
 				}
 
@@ -307,6 +332,14 @@ export function registerWidgets( widgets ) {
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			isActive: ( select ) => {
+				if (
+					! select( CORE_USER ).hasAccessToShareableModule(
+						MODULE_SLUG_ANALYTICS_4
+					)
+				) {
+					return false;
+				}
+
 				const isAnalyticsConnected = select(
 					CORE_MODULES
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
@@ -801,6 +834,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			asyncRequireAny(
+				requireIsAuthenticated(),
+				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
+			),
 			requireDataIsAvailableOnLoad(),
 			asyncRequire( false, requireAudienceSegmentationSetupCompleted() )
 		),
@@ -869,15 +906,33 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			( { select, dispatch } ) => {
+				if (
+					! isFeatureEnabled( 'setupFlowRefresh' ) ||
+					! isInitialWelcomeModalActive()
+				) {
+					return true;
+				}
+
+				const isDismissing = select( CORE_USER ).isDismissingItem(
+					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+				);
+
+				if ( ! isDismissing ) {
+					dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+					);
+				}
+
+				return false;
+			},
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			requireAudienceSegmentationSetupCompleted(),
-			asyncRequire( false, requireAudienceSegmentationWidgetHidden() ),
-			// Only show the notification to users who are authenticated or the module is shared with.
 			asyncRequireAny(
 				requireIsAuthenticated(),
 				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
 			),
-			// Only show if the current user is not the one who set up AS.
+			requireAudienceSegmentationSetupCompleted(),
+			asyncRequire( false, requireAudienceSegmentationWidgetHidden() ),
 			asyncRequire(
 				false,
 				requireAudienceSegmentationSetupCompletedByUser()

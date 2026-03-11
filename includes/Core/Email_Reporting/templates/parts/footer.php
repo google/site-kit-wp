@@ -13,11 +13,11 @@
  */
 
 ?>
-<table role="presentation" width="100%" style="margin-top:24px;">
+<table role="presentation" width="100%" style="margin-top:16px;">
 	<tr>
 		<td style="text-align:center;">
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
-				<div style="margin-bottom:60px;">
+				<div style="margin-top: 8px; margin-bottom:52px;">
 					<?php
 					$render_shared_part(
 						'dashboard-link',
@@ -30,12 +30,12 @@
 				</div>
 			<?php endif; ?>
 			<?php if ( ! empty( $footer['copy'] ) ) : ?>
-				<p style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom: 30px; text-align: left;">
+				<p class="text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom: 30px; text-align: left;">
 					<?php
 					$unsubscribe_link = '';
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
-							'<a href="%s" style="color:#108080; text-decoration:none;">%s</a>',
+							'<a class="link" href="%s" style="color:#108080; text-decoration:none;">%s</a>',
 							esc_url( $footer['unsubscribe_url'] ),
 							esc_html__( 'here', 'google-site-kit' )
 						);
@@ -54,7 +54,7 @@
 							$align = isset( $alignments[ $index ] ) ? $alignments[ $index ] : 'center';
 							?>
 							<td width="33.33%" style="text-align:<?php echo esc_attr( $align ); ?>;">
-								<a href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
+								<a class="text-secondary" href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
 									<?php echo esc_html( $footer_link['label'] ); ?>
 								</a>
 							</td>

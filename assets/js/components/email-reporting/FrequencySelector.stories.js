@@ -121,15 +121,3 @@ PreviouslySavedFrequency.args = {
 	},
 };
 PreviouslySavedFrequency.scenario = {};
-
-export const PreviouslySavedFrequencySameAsCurrent = Template.bind( {} );
-PreviouslySavedFrequencySameAsCurrent.args = {
-	isUserSubscribed: true,
-	savedSettings: {
-		frequency: 'monthly',
-	},
-	clientSettings: {
-		frequency: 'monthly',
-	},
-};
-PreviouslySavedFrequencySameAsCurrent.scenario = {};

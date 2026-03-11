@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useClickAway, useEvent } from 'react-use';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -34,11 +34,11 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
 import ModalDialog from '@/js/components/ModalDialog';
+import { MenuItem, MenuSection } from '@/js/components/HeaderMenu';
 import { trackEvent } from '@/js/util';
 import { clearCache } from '@/js/googlesitekit/api/cache';
 import Portal from '@/js/components/Portal';
 import Details from './Details';
-import Item from './Item';
 import DisconnectIcon from '@/svg/icons/disconnect.svg';
 import ManageSitesIcon from '@/svg/icons/manage-sites.svg';
 import ManageEmailReportsIcon from '@/svg/icons/manage-email-reports.svg';
@@ -76,6 +76,13 @@ export default function UserMenu() {
 		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
+	const { isTooltipVisible = false, className } = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
+				isTooltipVisible: false,
+			}
+	);
+
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -95,32 +102,26 @@ export default function UserMenu() {
 		setMenuOpen( false );
 	}, [ toggleDialog, setMenuOpen ] );
 
-	const handleEscapeKeyPress = useCallback(
-		( e ) => {
-			// Close if Escape key is pressed.
-			if ( ESCAPE === e.keyCode ) {
-				handleClose();
-			}
-		},
-		[ handleClose ]
-	);
-
-	useEvent( 'keyup', handleEscapeKeyPress );
-
+	const { setValue } = useDispatch( CORE_UI );
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_usermenu' );
+
+			if (
+				isTooltipVisible &&
+				className?.includes( 'googlesitekit-tour-tooltip--user-menu' )
+			) {
+				setValue( 'admin-screen-tooltip', undefined );
+			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext ] );
+	}, [ menuOpen, viewContext, setValue, isTooltipVisible, className ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
 		setMenuOpen( false );
 	}, [ dialogActive ] );
-
-	const { setValue } = useDispatch( CORE_UI );
 
 	const handleMenuItemSelect = useCallback(
 		async ( _index, event ) => {
@@ -269,49 +270,40 @@ export default function UserMenu() {
 					onSelected={ handleMenuItemSelect }
 					id="user-menu"
 				>
-					<li>
+					<MenuSection>
 						<Details />
-					</li>
+					</MenuSection>
 					{ emailReportingEnabled && (
-						<li
+						<MenuItem
 							id="manage-email-reports"
-							className="mdc-list-item"
-							role="menuitem"
-						>
-							<Item
-								icon={ <ManageEmailReportsIcon width="24" /> }
-								label={ __(
-									'Manage email reports',
-									'google-site-kit'
-								) }
-							/>
-						</li>
+							icon={ <ManageEmailReportsIcon width="24" /> }
+							label={ __(
+								'Manage email reports',
+								'google-site-kit'
+							) }
+							itemClassName="googlesitekit-user-menu__item"
+							iconClassName="googlesitekit-user-menu__item-icon"
+							labelClassName="googlesitekit-user-menu__item-label"
+						/>
 					) }
 					{ !! proxyPermissionsURL && (
-						<li
+						<MenuItem
 							id="manage-sites"
-							className="mdc-list-item"
-							role="menuitem"
-						>
-							<Item
-								icon={ <ManageSitesIcon width="24" /> }
-								label={ __(
-									'Manage Sites',
-									'google-site-kit'
-								) }
-							/>
-						</li>
-					) }
-					<li
-						id="disconnect"
-						className="mdc-list-item"
-						role="menuitem"
-					>
-						<Item
-							icon={ <DisconnectIcon width="24" /> }
-							label={ __( 'Disconnect', 'google-site-kit' ) }
+							icon={ <ManageSitesIcon width="24" /> }
+							label={ __( 'Manage Sites', 'google-site-kit' ) }
+							itemClassName="googlesitekit-user-menu__item"
+							iconClassName="googlesitekit-user-menu__item-icon"
+							labelClassName="googlesitekit-user-menu__item-label"
 						/>
-					</li>
+					) }
+					<MenuItem
+						id="disconnect"
+						icon={ <DisconnectIcon width="24" /> }
+						label={ __( 'Disconnect', 'google-site-kit' ) }
+						itemClassName="googlesitekit-user-menu__item"
+						iconClassName="googlesitekit-user-menu__item-icon"
+						labelClassName="googlesitekit-user-menu__item-label"
+					/>
 				</Menu>
 			</div>
 			<Portal>

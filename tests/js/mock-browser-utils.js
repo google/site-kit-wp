@@ -23,11 +23,21 @@
  */
 export function mockLocation() {
 	let oldLocation;
+	let oldHistory;
+
 	const locationAssignMock = jest.fn();
+
+	const historyReplaceStateMock = jest.fn( ( state, title, url ) => {
+		global.location.href = url;
+	} );
 
 	beforeAll( () => {
 		oldLocation = global.location;
+		oldHistory = global.history;
+
 		delete global.location;
+		delete global.history;
+
 		global.location = Object.defineProperties(
 			{},
 			{
@@ -35,16 +45,27 @@ export function mockLocation() {
 					configurable: true,
 					value: locationAssignMock,
 				},
+				href: {
+					configurable: true,
+					writable: true,
+					value: '',
+				},
 			}
 		);
+
+		global.history = {
+			replaceState: historyReplaceStateMock,
+		};
 	} );
 
 	afterAll( () => {
 		global.location = oldLocation;
+		global.history = oldHistory;
 	} );
 
 	beforeEach( () => {
 		locationAssignMock.mockReset();
+		historyReplaceStateMock.mockClear();
 	} );
 }
 

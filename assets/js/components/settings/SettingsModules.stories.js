@@ -28,10 +28,8 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -48,29 +46,6 @@ function Template( { setupRegistry, route = '/connected-services' } ) {
 		</MemoryRouter>
 	);
 }
-
-export const ConnectedServices = Template.bind( {} );
-ConnectedServices.args = {
-	setupRegistry: ( registry ) => {
-		provideModules(
-			registry,
-			[
-				MODULE_SLUG_ADS,
-				MODULE_SLUG_ADSENSE,
-				MODULE_SLUG_ANALYTICS_4,
-				MODULE_SLUG_PAGESPEED_INSIGHTS,
-				MODULE_SLUG_SEARCH_CONSOLE,
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-			].map( ( slug ) => ( {
-				slug,
-				active: true,
-				connected: true,
-			} ) )
-		);
-		provideModuleRegistrations( registry );
-	},
-};
-ConnectedServices.scenario = {};
 
 export const ConnectMoreServices = Template.bind( {} );
 ConnectMoreServices.args = {

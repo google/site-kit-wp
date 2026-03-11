@@ -31,6 +31,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
+import { getPreviousDate } from '@/js/util';
 import {
 	AUDIENCE_FILTER_CLAUSE_TYPE_ENUM,
 	AUDIENCE_FILTER_SCOPE_ENUM,
@@ -588,7 +589,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+			const startDate = getPreviousDate(
+				referenceDate,
+				90 + DATE_RANGE_OFFSET
+			);
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];
@@ -1839,7 +1843,10 @@ describe( 'modules/analytics-4 audiences', () => {
 			const testPropertyID = propertiesFixture[ 0 ]._id;
 
 			const referenceDate = '2024-05-10';
-			const startDate = '2024-02-09'; // 91 days before `referenceDate`.
+			const startDate = getPreviousDate(
+				referenceDate,
+				90 + DATE_RANGE_OFFSET
+			);
 
 			const availableNewVisitorsAudienceFixture =
 				availableAudiencesFixture[ 2 ];

@@ -435,7 +435,7 @@ export default {
 
 				provideUserAuthentication( registry );
 
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideAnalytics4MockReport( registry, gatheringReportOptions );
 

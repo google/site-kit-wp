@@ -21,6 +21,8 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="The top search queries for your site by highest clickthrough rate"
           >
             <svg />
@@ -39,7 +41,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Reiciendis (opens in a new tab)"
+                  aria-label="Recusandae quo (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -48,7 +50,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Reiciendis
+                    Recusandae quo
                   </span>
                 </a>
               </div>
@@ -67,7 +69,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Voluptas impedit (opens in a new tab)"
+                  aria-label="Enim (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -76,7 +78,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Voluptas impedit
+                    Enim
                   </span>
                 </a>
               </div>
@@ -84,7 +86,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  96% CTR
+                  94% CTR
                 </strong>
               </div>
             </div>
@@ -95,7 +97,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <a
-                  aria-label="Mollitia (opens in a new tab)"
+                  aria-label="Itaque minima (opens in a new tab)"
                   class="googlesitekit-cta-link"
                   href=""
                   rel="noopener noreferrer"
@@ -104,7 +106,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                   <span
                     class="googlesitekit-cta-link__contents"
                   >
-                    Mollitia
+                    Itaque minima
                   </span>
                 </a>
               </div>
@@ -112,7 +114,7 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
                 class="googlesitekit-table__body-item"
               >
                 <strong>
-                  95% CTR
+                  88% CTR
                 </strong>
               </div>
             </div>
@@ -142,6 +144,8 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
@@ -204,6 +208,8 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
@@ -273,6 +279,8 @@ exports[`PopularKeywordsWidget should render the loading state while resolving t
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="The top search queries for your site by highest clickthrough rate"
             >
               <svg />

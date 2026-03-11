@@ -21,6 +21,8 @@ exports[`ConnectAdSenseCTATileWidget should render a title when only a single Co
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Pages that generated the most AdSense revenue"
           >
             <svg />

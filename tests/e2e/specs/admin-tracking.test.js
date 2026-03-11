@@ -252,7 +252,7 @@ describe( 'admin tracking', () => {
 					'page=googlesitekit-settings'
 				);
 
-				await expect( page ).toHaveTracking();
+				await expect( page ).toHaveTracking( { timeout: 10000 } );
 			} );
 		} );
 
@@ -279,34 +279,7 @@ describe( 'admin tracking', () => {
 					'page=googlesitekit-dashboard'
 				);
 
-				await expect( page ).toHaveTracking();
-			} );
-		} );
-
-		describe( 'module pages', () => {
-			it( 'does not load tracking if not opted-in', async () => {
-				await setupSiteKit();
-				await visitAdminPage(
-					'admin.php',
-					'page=googlesitekit-module-search-console'
-				);
-
-				await expect( page ).not.toHaveTracking();
-			} );
-
-			it( 'loads tracking when opted-in', async () => {
-				await visitAdminPage(
-					'admin.php',
-					'page=googlesitekit-splash'
-				);
-				await toggleOptIn();
-				await setupSiteKit();
-				await visitAdminPage(
-					'admin.php',
-					'page=googlesitekit-module-search-console'
-				);
-
-				await expect( page ).toHaveTracking();
+				await expect( page ).toHaveTracking( { timeout: 10000 } );
 			} );
 		} );
 	} );

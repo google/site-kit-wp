@@ -21,6 +21,8 @@ exports[`VisitLengthWidget should render correctly with the expected metrics 1`]
           </h3>
           <span
             class="googlesitekit-info-tooltip"
+            role="tooltip"
+            tabindex="0"
             title="Average duration of engaged visits"
           >
             <svg />
@@ -77,6 +79,8 @@ exports[`VisitLengthWidget should render the generic error variant when the repo
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Average duration of engaged visits"
         >
           <svg />
@@ -139,6 +143,8 @@ exports[`VisitLengthWidget should render the insufficient permissions error vari
         </h2>
         <span
           class="googlesitekit-info-tooltip"
+          role="tooltip"
+          tabindex="0"
           title="Average duration of engaged visits"
         >
           <svg />
@@ -208,6 +214,8 @@ exports[`VisitLengthWidget should render the loading state while resolving the r
           >
             <span
               class="googlesitekit-info-tooltip"
+              role="tooltip"
+              tabindex="0"
               title="Average duration of engaged visits"
             >
               <svg />

@@ -24,7 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useState,
+	createInterpolateElement,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,12 +44,19 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
 import EmailReportingCardNotice, {
-	EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTING_CARD_NOTICE,
 } from '@/js/components/email-reporting/notices/EmailReportingCardNotice';
 import AnalyticsDisconnectedNotice from '@/js/components/email-reporting/notices/AnalyticsDisconnectedNotice';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import EmailReportingErrorNotice from '@/js/components/email-reporting/notices/EmailReportingErrorNotices';
 
 export default function SettingsEmailReporting( { loading = false } ) {
+	const viewContext = useViewContext();
+	const [ isDisableDialogOpen, setIsDisableDialogOpen ] = useState( false );
+
 	const isEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
@@ -58,9 +70,11 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	);
 
 	const isDismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed(
-			EMAIL_REPORTING_CARD_NOTICE_DISMISSED_ITEM
-		)
+		select( CORE_USER ).isItemDismissed( EMAIL_REPORTING_CARD_NOTICE )
+	);
+
+	const documentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
 	);
 
 	const { setEmailReportingEnabled, saveEmailReportingSettings } =
@@ -69,13 +83,47 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handleToggle = useCallback( async () => {
-		await setEmailReportingEnabled( ! isEnabled );
+		if ( isEnabled ) {
+			setIsDisableDialogOpen( true );
+			return;
+		}
+
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'activate_periodic_email_reports'
+		);
+
+		await setEmailReportingEnabled( true );
 		await saveEmailReportingSettings();
-	}, [ isEnabled, setEmailReportingEnabled, saveEmailReportingSettings ] );
+	}, [
+		isEnabled,
+		setEmailReportingEnabled,
+		saveEmailReportingSettings,
+		viewContext,
+	] );
+
+	const handleDisableConfirm = useCallback( async () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'deactivate_periodic_email_reports'
+		);
+		setIsDisableDialogOpen( false );
+		await setEmailReportingEnabled( false );
+		await saveEmailReportingSettings();
+	}, [ saveEmailReportingSettings, setEmailReportingEnabled, viewContext ] );
+
+	const handleDisableCancel = useCallback( () => {
+		setIsDisableDialogOpen( false );
+	}, [] );
 
 	const handleManageClick = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_settings`,
+			'manage_email_reports_subscription'
+		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+		handleDisableCancel();
+	}, [ setValue, viewContext, handleDisableCancel ] );
 
 	if ( loading || settings === undefined ) {
 		return null;
@@ -105,9 +153,21 @@ export default function SettingsEmailReporting( { loading = false } ) {
 										size="medium"
 										className="googlesitekit-settings-email-reporting__label-description"
 									>
-										{ __(
-											'This allows you and any dashboard sharing user to subscribe to email reports',
-											'google-site-kit'
+										{ createInterpolateElement(
+											__(
+												'This allows you and any dashboard sharing user to subscribe to email reports. <a>Learn more</a>',
+												'google-site-kit'
+											),
+											{
+												a: (
+													<Link
+														href={
+															documentationURL
+														}
+														external
+													/>
+												),
+											}
 										) }
 									</Typography>
 								</Fragment>
@@ -146,7 +206,47 @@ export default function SettingsEmailReporting( { loading = false } ) {
 						</Cell>
 					</Row>
 				) }
+			<EmailReportingErrorNotice />
 			<AnalyticsDisconnectedNotice />
+			{ isDisableDialogOpen && (
+				<RefocusableModalDialog
+					className="googlesitekit-settings-email-reporting__confirm-disable-modal"
+					title={ __(
+						'Are you sure you want to disable email reports?',
+						'google-site-kit'
+					) }
+					subtitle={
+						<Fragment>
+							<span>
+								{ __(
+									'Disabling email reports will pause sending email reports for all subscribed users.',
+									'google-site-kit'
+								) }
+							</span>
+							<br />
+							{ createInterpolateElement(
+								__(
+									'You can manage your subscription in your <a>email report settings</a>.',
+									'google-site-kit'
+								),
+								{
+									a: <Link onClick={ handleManageClick } />,
+								}
+							) }
+							<br />
+							{ /** TODO update learn more link when it is provided. */ }
+							<Link href="">
+								{ __( 'Learn more', 'google-site-kit' ) }
+							</Link>
+						</Fragment>
+					}
+					handleConfirm={ handleDisableConfirm }
+					handleCancel={ handleDisableCancel }
+					onClose={ handleDisableCancel }
+					confirmButton={ __( 'Disable', 'google-site-kit' ) }
+					dialogActive
+				/>
+			) }
 		</Fragment>
 	);
 }

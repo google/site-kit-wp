@@ -125,4 +125,6 @@ export {
 	RegistryProvider,
 };
 
+export * from './types';
+
 export default Data;

@@ -29,7 +29,7 @@ import { Widget } from '@/js/googlesitekit/widgets/types';
 /**
  * Widget context value interface.
  *
- * @since n.e.x.t
+ * @since 1.170.0
  */
 export type WidgetContextValue = Partial< Widget >;
 
