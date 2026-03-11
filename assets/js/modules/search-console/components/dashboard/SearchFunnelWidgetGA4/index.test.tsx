@@ -161,116 +161,123 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	describe( 'GA Event Tracking with SetupFlowRefresh Enabled', () => {
-		beforeEach( () => {
-			provideModules( registry, [
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: false,
-				},
-			] );
-			provideModuleRegistrations( registry );
+	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: false,
+			},
+		] );
 
-			fetchMock.postOnce( dismissItemEndpoint, {
-				body: [ 'analytics-setup-cta-search-funnel' ],
-				status: 200,
-			} );
+		( mockUseIntersection as unknown as jest.Mock ).mockImplementation(
+			() => ( {
+				isIntersecting: true,
+				intersectionRatio: 1,
+			} )
+		);
+
+		const { waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'search_funnel'
+		);
+	} );
+
+	it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-search-funnel' ],
+			status: 200,
 		} );
 
-		it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-			( mockUseIntersection as unknown as jest.Mock ).mockImplementation(
-				() => ( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} )
-			);
+		const { getByRole, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
-			const { waitForRegistry } = render(
-				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+		await waitForRegistry();
 
-			await waitForRegistry();
+		fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
 
+		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'view_cta',
+				'dismiss_cta',
 				'search_funnel'
 			);
 		} );
+	} );
 
-		it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+	it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+		provideModules( registry, [
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
 
-			await waitForRegistry();
-
-			fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
-
-			await waitFor( () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-					'dismiss_cta',
-					'search_funnel'
-				);
-			} );
+		fetchMock.postOnce( dismissItemEndpoint, {
+			body: [ 'analytics-setup-cta-search-funnel' ],
+			status: 200,
 		} );
 
-		it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
+		const { getByRole, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
 
-			await waitForRegistry();
+		await waitForRegistry();
 
-			fireEvent.click(
-				getByRole( 'button', { name: /Complete setup/i } )
-			);
+		fireEvent.click( getByRole( 'button', { name: /Complete setup/i } ) );
 
-			await waitFor( () => {
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-					'confirm_cta',
-					'search_funnel'
-				);
-			} );
-		} );
-
-		it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
-			const { getByRole, waitForRegistry } = render(
-				<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				}
-			);
-
-			await waitForRegistry();
-
-			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
-
+		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-				'click_learn_more_link',
+				'confirm_cta',
 				'search_funnel'
 			);
 		} );
+	} );
+
+	it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'click_learn_more_link',
+			'search_funnel'
+		);
 	} );
 } );
