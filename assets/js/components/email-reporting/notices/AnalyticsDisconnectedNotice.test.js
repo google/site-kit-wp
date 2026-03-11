@@ -25,7 +25,7 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import AnalyticsDisconnectedNotice, {
-	EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
+	EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE,
 } from './AnalyticsDisconnectedNotice';
 import {
 	createTestRegistry,
@@ -147,7 +147,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 	it( 'dismisses the notice when "Got it" is clicked', async () => {
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [ EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE ],
+			body: [ EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE ],
 		} );
 
 		const { getByRole } = render( <AnalyticsDisconnectedNotice />, {
@@ -177,7 +177,7 @@ describe( 'AnalyticsDisconnectedNotice', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems( [
-				EMAIL_REPORTING_ANALYTICS_DISCONNECTED_NOTICE,
+				EMAIL_REPORTS_ANALYTICS_DISCONNECTED_NOTICE,
 			] );
 
 		const { container } = render( <AnalyticsDisconnectedNotice />, {
