@@ -52,6 +52,48 @@ export function getPostTypesString( postTypes, allPostTypes ) {
 }
 
 /**
+ * Extracts the product IDs from the products array returned by the API.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array} products The products array from the publication.
+ * @return {Array} Array of product ID names.
+ */
+export function getProductIDs( products ) {
+	if ( ! products || ! Array.isArray( products ) ) {
+		return [];
+	}
+
+	return products.reduce( ( ids, { name } ) => {
+		if ( ! name ) {
+			return ids;
+		}
+
+		return [ ...ids, name ];
+	}, [] );
+}
+
+/**
+ * Extracts the active payment option from the payment options object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} paymentOptions The payment options object from the publication.
+ * @return {string} The active payment option key, or empty string if none found.
+ */
+export function getPaymentOption( paymentOptions ) {
+	if ( ! paymentOptions ) {
+		return '';
+	}
+
+	const paymentOption = Object.keys( paymentOptions ).find(
+		( key ) => !! paymentOptions[ key ]
+	);
+
+	return paymentOption || '';
+}
+
+/**
  * Extracts the product ID from the name returned from the API, which is
  * in the format of `publicationID:productID`.
  *
