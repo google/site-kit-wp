@@ -19,10 +19,25 @@
  */
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { Connection } from 'mysql2/promise';
+import { Connection, RowDataPacket } from 'mysql2/promise';
 import { type TestInfo } from '@playwright/test';
 
 const BACKUP_SQL_PATH = join( __dirname, '../docker/mariadb/backup.sql' );
+
+/**
+ * Represents a PHP error log entry stored in the per-test database.
+ *
+ * @since n.e.x.t
+ */
+export interface PHPErrorLogEntry {
+	id: number;
+	timestamp: string;
+	level: string;
+	message: string;
+	file: string;
+	line: number;
+	backtrace: string | null;
+}
 
 /**
  * Returns a database name derived from a Playwright test ID.
@@ -96,6 +111,20 @@ export class WordPressDatabase {
 	async drop(): Promise< void > {
 		const name = getDbName( this.testInfo );
 		await this.db.query( `DROP DATABASE IF EXISTS \`${ name }\`` );
+	}
+
+	/**
+	 * Returns all PHP error log entries for the current test.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Promise<PHPErrorLogEntry[]>} A promise that resolves with the error log entries.
+	 */
+	async getErrorLog(): Promise< PHPErrorLogEntry[] > {
+		const [ rows ] = await this.db.query< RowDataPacket[] >(
+			'SELECT * FROM `wp_e2e_error_log` ORDER BY `id` ASC'
+		);
+		return rows as PHPErrorLogEntry[];
 	}
 
 	/**

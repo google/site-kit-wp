@@ -24,7 +24,7 @@ BACKUP_FILE="$BACKUP_DIR/backup.sql"
 
 # Tear down any running containers and volumes to start fresh.
 echo "Stopping any existing containers..."
-docker compose down -v
+docker compose --profile test down -v
 
 # Remove the existing backup.sql so MariaDB starts with an empty database.
 # The MYSQL_DATABASE env var will create the empty 'wordpress' database automatically.
@@ -32,7 +32,7 @@ mkdir -p "$BACKUP_DIR"
 rm -f "$BACKUP_FILE"
 
 echo "Starting Docker services with WP_VERSION=$WP_VERSION..."
-WP_DEBUG=0 docker compose up -d
+WP_DEBUG=0 docker compose --profile generate up -d
 
 echo "Waiting for WordPress container to be healthy..."
 attempt=0
@@ -112,7 +112,7 @@ docker compose exec -T mysql mysqldump -u root -pexample wordpress > "$BACKUP_FI
 sed -i '/^-- Dump completed on /d' "$BACKUP_FILE"
 
 echo "Tearing down containers..."
-docker compose down -v
+docker compose --profile generate down -v
 
 echo "Done! backup.sql has been generated at:"
 echo "  $BACKUP_FILE"

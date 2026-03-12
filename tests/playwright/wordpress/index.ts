@@ -15,5 +15,7 @@
  */
 
 export * from './args';
+export * from './database';
+export * from './error-log-ignore-list';
 export * from './options';
 export * from './wordpress';
