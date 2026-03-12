@@ -29,8 +29,6 @@ import {
 	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
@@ -52,22 +50,6 @@ const mockWelcomeTour = getWelcomeTour( {
 describe( 'HelpMenu', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
-	function setupQueuedNotifications( notifications: { id: string }[] ) {
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.receiveQueuedNotifications(
-				notifications,
-				NOTIFICATION_GROUPS.DEFAULT
-			);
-
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.finishResolution( 'getQueuedNotifications', [
-				VIEW_CONTEXT_MAIN_DASHBOARD,
-				NOTIFICATION_GROUPS.DEFAULT,
-			] );
-	}
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -77,8 +59,6 @@ describe( 'HelpMenu', () => {
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-
-		setupQueuedNotifications( [] );
 
 		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
 	} );

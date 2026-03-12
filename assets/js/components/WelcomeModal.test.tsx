@@ -48,8 +48,6 @@ import {
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
@@ -84,22 +82,6 @@ describe( 'WelcomeModal', () => {
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
-
-	function setupQueuedNotifications( notifications: { id: string }[] ) {
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.receiveQueuedNotifications(
-				notifications,
-				NOTIFICATION_GROUPS.DEFAULT
-			);
-
-		registry
-			.dispatch( CORE_NOTIFICATIONS )
-			.finishResolution( 'getQueuedNotifications', [
-				VIEW_CONTEXT_MAIN_DASHBOARD,
-				NOTIFICATION_GROUPS.DEFAULT,
-			] );
-	}
 
 	function provideDataAvailableVariantData() {
 		provideModules( registry, [
@@ -196,8 +178,6 @@ describe( 'WelcomeModal', () => {
 		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-
-		setupQueuedNotifications( [] );
 
 		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
 	} );
