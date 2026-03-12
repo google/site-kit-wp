@@ -73,6 +73,20 @@
 			"./vendor/bin/phpcs"
 		]
 	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^7.37.0",
+		"@wordpress/compose": "^7.37.0",
+		"@wordpress/data": "^10.39.0",
+		"@wordpress/dom-ready": "^4.37.0",
+		"@wordpress/element": "^6.39.0",
+		"@wordpress/i18n": "^6.10.0",
+		"@wordpress/icons": "^11.4.0",
+		"@wordpress/keycodes": "^4.37.0",
+		"@wordpress/url": "^3.1.1",
+		"history": "^5.3.0",
+		"react": "18.2.0",
+		"react-dom": "18.2.0"
+	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -109,12 +123,19 @@
 		"semver-regex": "^3.1.4",
 		"stylelint": "^14.11.0",
 		"stylelint-config-standard-scss": "^5.0.0",
-		"stylelint-declaration-strict-value": "^1.9.0",
 		"stylelint-order": "^5.0.0",
 		"stylelint-scss": "^4.3.0",
 		"tsc-files": "^1.1.4",
 		"typescript": "^5.9.3",
 		"webpack-cli": "^6.0.1"
+	},
+	"overrides": {
+		"react": {
+			".": "18.2.0"
+		},
+		"react-dom": {
+			".": "18.2.0"
+		}
 	},
 	"workspaces": [
 		"assets",
