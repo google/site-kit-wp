@@ -18,6 +18,21 @@ runs:
 
     - uses: google-github-actions/setup-gcloud@v3
 
+    - name: Validate path
+      shell: bash
+      run: |
+        path="${{ inputs.path }}"
+        if [ -z "$path" ]; then
+          echo "::error::Path must not be empty."
+          exit 1
+        fi
+        # Path must have at least 3 segments (e.g., playwright/pull/123)
+        segment_count=$(echo "$path" | tr '/' '\n' | grep -c .)
+        if [ "$segment_count" -lt 3 ]; then
+          echo "::error::Path must have at least 3 segments (e.g., playwright/pull/123), got: $path"
+          exit 1
+        fi
+
     - name: Remove files
       shell: bash
       run: gcloud storage rm "gs://site-kit-github-artifacts/${{ inputs.path }}/**"
