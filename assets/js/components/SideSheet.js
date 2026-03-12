@@ -33,13 +33,30 @@ import { useClickAway, useKey } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import Portal from './Portal';
+
+function getSideSheetTopOffset() {
+	const adminBar = global.document?.getElementById( 'wpadminbar' );
+
+	if ( ! adminBar ) {
+		return 0;
+	}
+
+	const { top, bottom, height } = adminBar.getBoundingClientRect();
+
+	// The admin bar is hidden on mobile when the page is scrolled down.
+	if ( top < 0 || bottom <= 0 ) {
+		return 0;
+	}
+
+	return height;
+}
 
 export default function SideSheet( {
 	className,
@@ -51,22 +68,45 @@ export default function SideSheet( {
 	focusTrapOptions = {},
 } ) {
 	const sideSheetRef = useRef();
+	const [ sideSheetTopOffset, setSideSheetTopOffset ] = useState( 0 );
 
 	useEffect( () => {
 		if ( isOpen ) {
+			// Compute once when opening. Once the side sheet is open, scrolling
+			// is locked so the admin bar visibility won't change until it is closed.
+			setSideSheetTopOffset( getSideSheetTopOffset() );
 			onOpen();
 
 			document.body.classList.add(
 				'googlesitekit-side-sheet-scroll-lock'
 			);
 		} else {
+			setSideSheetTopOffset( 0 );
 			document.body.classList.remove(
 				'googlesitekit-side-sheet-scroll-lock'
 			);
 		}
 	}, [ isOpen, onOpen ] );
 
-	useClickAway( sideSheetRef, closeSheet );
+	function handleClickAway( event ) {
+		// Prevent closing side sheet when a link inside of a tooltip is clicked.
+		if ( event.target.closest?.( '.googlesitekit-tooltip-popper' ) ) {
+			return;
+		}
+
+		closeSheet();
+	}
+
+	function allowOutsideClick( event ) {
+		// Allow clicks within a tooltip popup inside of the SideSheet.
+		if ( event.target.closest?.( '.googlesitekit-tooltip-popper' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	useClickAway( sideSheetRef, handleClickAway );
 
 	useKey( ( event ) => isOpen && ESCAPE === event.keyCode, closeSheet );
 
@@ -76,6 +116,7 @@ export default function SideSheet( {
 				active={ !! isOpen && ! isLoading }
 				focusTrapOptions={ {
 					fallbackFocus: 'body',
+					allowOutsideClick,
 					...focusTrapOptions,
 				} }
 			>
@@ -92,6 +133,9 @@ export default function SideSheet( {
 					aria-modal="true"
 					aria-hidden={ ! isOpen }
 					tabIndex="0"
+					style={ {
+						'--googlesitekit-side-sheet-top': `${ sideSheetTopOffset }px`,
+					} }
 				>
 					{ children }
 				</section>

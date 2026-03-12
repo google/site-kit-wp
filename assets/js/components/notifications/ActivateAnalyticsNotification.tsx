@@ -42,6 +42,7 @@ import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
 // @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
@@ -71,6 +72,10 @@ const ActivateAnalyticsNotification: FC<
 	const isDismissalFinal = useSelect( ( select: Select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
+
+	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
+		isDismissalFinal,
+	} );
 
 	const isNavigatingToReauthURL = useSelect( ( select: Select ) => {
 		const adminReauthURL =
@@ -125,9 +130,7 @@ const ActivateAnalyticsNotification: FC<
 					},
 				} }
 				dismissButton={ {
-					label: isDismissalFinal
-						? __( 'Don’t show again', 'google-site-kit' )
-						: __( 'Maybe later', 'google-site-kit' ),
+					label: dismissLabel,
 					onClick: showTooltip,
 					disabled: isBusy,
 					dismissOptions: {

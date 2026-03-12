@@ -26,18 +26,59 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserCapabilities,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import UserSettingsSelectionPanel from '.';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+
+const mockEligibleSubscribers = [
+	{
+		id: 2,
+		displayName: 'MainAdminName',
+		name: 'MainAdminName',
+		email: 'someone@anybusiness.com',
+		role: 'administrator',
+		subscribed: false,
+	},
+	{
+		id: 3,
+		displayName: 'AdminName2',
+		name: 'AdminName2',
+		email: 'anotheradminname@anybusiness.com',
+		role: 'administrator',
+		subscribed: false,
+	},
+	{
+		id: 4,
+		displayName: 'AuthorName',
+		name: 'AuthorName',
+		email: 'admin2business@gmail.com',
+		role: 'author',
+		subscribed: false,
+	},
+];
+
+const defaultQueryArgs = { search: '' };
+
+function createEligibleSubscribersResponse( users ) {
+	return {
+		users,
+		total: users.length,
+		totalPages: 1,
+	};
+}
 
 function Template( { viewContext } ) {
 	return (
@@ -49,12 +90,44 @@ function Template( { viewContext } ) {
 	);
 }
 
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.scenario = {};
+Loading.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/core/site/data/email-reporting-errors'
+			)
+		);
+	},
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -164,9 +237,33 @@ EmailReportingDisabledViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 };
 
+export const WithoutManagePermission = Template.bind( {} );
+WithoutManagePermission.storyName = 'Without manage permission';
+WithoutManagePermission.scenario = {};
+WithoutManagePermission.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: false,
+		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
+		registry
+			.dispatch( CORE_SITE )
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
+	},
+};
+
 export default {
 	title: 'Components/EmailReporting/UserSettingsSelectionPanel',
 	component: UserSettingsSelectionPanel,
+	parameters: {
+		features: [ 'proactiveUserEngagement' ],
+	},
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
@@ -195,10 +292,6 @@ export default {
 					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 					} );
-
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetEmailReportingErrors( [] );
 
 				registry
 					.dispatch( CORE_UI )

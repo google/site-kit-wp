@@ -38,8 +38,6 @@ import {
 	isValidOnboardingState,
 	isValidSnippetMode,
 } from '@/js/modules/reader-revenue-manager/utils/validation';
-import { isFeatureEnabled } from '@/js/features';
-
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
@@ -128,16 +126,14 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_PAYMENT_OPTION
 	);
 
-	if ( isFeatureEnabled( 'rrmPolicyViolations' ) ) {
-		const contentPolicyStatus = strictSelect(
-			MODULES_READER_REVENUE_MANAGER
-		).getContentPolicyStatus();
+	const contentPolicyStatus = strictSelect(
+		MODULES_READER_REVENUE_MANAGER
+	).getContentPolicyStatus();
 
-		invariant(
-			isPlainObject( contentPolicyStatus ),
-			INVARIANT_INVALID_CONTENT_POLICY_STATUS
-		);
-	}
+	invariant(
+		isPlainObject( contentPolicyStatus ),
+		INVARIANT_INVALID_CONTENT_POLICY_STATUS
+	);
 }
 
 export async function submitChanges( { dispatch, select } ) {

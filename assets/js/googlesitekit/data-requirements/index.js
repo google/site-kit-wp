@@ -174,6 +174,21 @@ export function requireModuleGatheringData( datastoreSlug ) {
 }
 
 /**
+ * Returns a function that checks if the current user is authenticated.
+ *
+ * @since 1.174.0
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user is authenticated or not.
+ */
+export function requireIsAuthenticatedUser() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( CORE_USER ).getAuthentication();
+
+		return true === select( CORE_USER ).isAuthenticated();
+	};
+}
+
+/**
  * Returns a function that checks if the current user can activate the given module.
  *
  * @since 1.170.0

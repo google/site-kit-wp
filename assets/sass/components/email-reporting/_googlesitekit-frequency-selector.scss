@@ -28,11 +28,6 @@ h3.googlesitekit-frequency-selector-title {
 }
 
 .googlesitekit-frequency-selector__current-subscription {
-	@media (min-width: $bp-nonMobile) {
-		background-color: $c-blue-b-50;
-		color: $c-blue-b-500;
-		margin: 0;
-	}
 	background-color: $c-surfaces-surface;
 	border-radius: 4px;
 	color: $c-surfaces-on-surface-variant;
@@ -40,6 +35,12 @@ h3.googlesitekit-frequency-selector-title {
 	padding: 4px 0;
 	text-align: center;
 	width: 100%;
+
+	@media (min-width: $bp-nonMobile) {
+		background-color: $c-blue-b-50;
+		color: $c-blue-b-500;
+		margin: 0;
+	}
 }
 
 .googlesitekit-frequency-selector__current-subscription--selected {

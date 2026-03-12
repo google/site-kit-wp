@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useClickAway } from 'react-use';
 
@@ -32,22 +33,29 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import HelpIcon from '@/svg/icons/help.svg';
-import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import { trackEvent } from '@/js/util';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useFeature } from '@/js/hooks/useFeature';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { useFeature } from '@/js/hooks/useFeature';
+import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import FeedbackIcon from '@/svg/icons/feedback.svg';
 import CompassIcon from '@/svg/icons/compass.svg';
 import SupportIcon from '@/svg/icons/support.svg';
 import DocumentationIcon from '@/svg/icons/documentation.svg';
-import classnames from 'classnames';
+import HelpIcon from '@/svg/icons/help.svg';
+import AdsenseHelpIcon from '@/svg/icons/adsense-help.svg';
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -82,6 +90,31 @@ export default function HelpMenu( { children } ) {
 		);
 	} );
 
+	const isViewOnly = useViewOnly();
+	const canAuthenticate = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const { triggerOnDemandTour } = useDispatch( CORE_USER );
+
+	const handleStartFeatureTour = useCallback( () => {
+		const tour = getWelcomeTour( {
+			isViewOnly,
+			canAuthenticate,
+			isAnalyticsConnected,
+		} );
+
+		triggerOnDemandTour( tour );
+	}, [
+		isViewOnly,
+		canAuthenticate,
+		isAnalyticsConnected,
+		triggerOnDemandTour,
+	] );
+
 	const menuItems = [
 		{
 			gaEventLabel: 'fix_common_issues',
@@ -114,25 +147,42 @@ export default function HelpMenu( { children } ) {
 
 	const setupFlowRefreshMenuItems = [
 		{
+			gaEventLabel: 'browse_documentation',
 			href: 'https://sitekit.withgoogle.com/documentation/',
 			icon: <DocumentationIcon width={ 24 } height={ 24 } />,
 			children: __( 'Browse documentation', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'get_support',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/',
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
 		{
-			onClick: () => {},
+			gaEventLabel: 'start_tour',
+			onClick: handleStartFeatureTour,
 			icon: <CompassIcon width={ 24 } height={ 24 } />,
 			children: __( 'Start a feature tour', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'send_feedback',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
 			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
 			children: __( 'Send feedback', 'google-site-kit' ),
 		},
+		...( adSenseModuleActive
+			? [
+					{
+						gaEventLabel: 'get_adsense_help',
+						href: 'https://support.google.com/adsense/',
+						icon: <AdsenseHelpIcon width={ 24 } height={ 24 } />,
+						children: __(
+							'Get help with AdSense',
+							'google-site-kit'
+						),
+					},
+			  ]
+			: [] ),
 	];
 
 	return (

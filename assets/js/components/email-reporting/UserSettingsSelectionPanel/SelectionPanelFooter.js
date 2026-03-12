@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import P from '@/js/components/Typography/P';
+import { TYPES } from '@/js/components/Notice/constants';
 
 export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
 	return (
@@ -64,7 +65,7 @@ SelectionPanelFooter.propTypes = {
 	notice: PropTypes.shape( {
 		title: PropTypes.node,
 		text: PropTypes.node,
-		type: PropTypes.oneOf( [ 'info', 'success', 'error' ] ),
+		type: PropTypes.oneOf( Object.values( TYPES ) ),
 	} ),
 	onNoticeDismiss: PropTypes.func,
 };

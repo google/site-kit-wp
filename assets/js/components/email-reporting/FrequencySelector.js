@@ -41,10 +41,16 @@ import { Fragment } from 'react';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import PreviewBlocks from '@/js/components/PreviewBlocks';
 
-export default function FrequencySelector( { isUserSubscribed } ) {
+export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
+	const isEmailReportingEnabled = useSelect( ( select ) =>
+		select( CORE_SITE ).isEmailReportingEnabled()
+	);
 
 	const DAY_NAMES = useMemo(
 		() => [
@@ -120,6 +126,24 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 			event.preventDefault();
 			setEmailReportingFrequency( reportFrequency );
 		}
+	}
+
+	if ( isLoading ) {
+		return (
+			<Fragment>
+				<br />
+				<PreviewBlock width="20%" height="16px" />
+				<br />
+
+				<div className="googlesitekit-frequency-selector">
+					<PreviewBlocks width="100%" height="184px" count={ 3 } />
+				</div>
+			</Fragment>
+		);
+	}
+
+	if ( false === isEmailReportingEnabled ) {
+		return null;
 	}
 
 	return (
@@ -247,4 +271,5 @@ export default function FrequencySelector( { isUserSubscribed } ) {
 
 FrequencySelector.propTypes = {
 	isUserSubscribed: PropTypes.bool,
+	isLoading: PropTypes.bool,
 };

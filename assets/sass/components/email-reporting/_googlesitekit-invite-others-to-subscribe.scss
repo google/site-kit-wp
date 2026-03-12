@@ -1,0 +1,193 @@
+/**
+ * Invite Others to Subscribe styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-invite-others-to-subscribe {
+		display: flex;
+		flex: 1 1 0;
+		flex-direction: column;
+		margin-top: 70px;
+		min-height: 0;
+		overflow: hidden;
+
+		@media (max-height: 799px) {
+			margin-top: $grid-gap-phone;
+		}
+	}
+
+	.googlesitekit-invite-others-to-subscribe__header {
+		align-items: center;
+		display: flex;
+		gap: 8px;
+		margin-bottom: $grid-gap-phone;
+
+		.googlesitekit-info-tooltip {
+			color: $c-content-secondary;
+			height: 18px;
+		}
+	}
+
+	.googlesitekit-invite-others-to-subscribe__title {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+	}
+
+	.googlesitekit-invite-search-input {
+		margin-bottom: 6px;
+		position: relative;
+	}
+
+	.googlesitekit-invite-search-input__input {
+		border: 1px solid $c-utility-outline;
+		border-radius: $grid-gap-phone;
+		font-family: $f-primary;
+		font-size: $fs-body-sm;
+		height: 32px;
+		letter-spacing: $ls-s;
+		min-height: 32px;
+		padding: 0 36px 0 $grid-gap-phone;
+		width: calc(100% - 1px);
+
+		&::placeholder {
+			color: $c-surfaces-on-surface-variant;
+		}
+
+		&:focus {
+			border-color: $c-content-primary;
+			border-width: 2px;
+			box-shadow: none;
+			outline: none;
+		}
+	}
+
+	.googlesitekit-invite-user-list {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+	}
+
+	.googlesitekit-invite-user-list__empty {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-sm;
+		padding: $grid-gap-phone 0;
+	}
+
+	.googlesitekit-invite-user-row {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		padding: 12px 0;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid $c-utility-divider;
+		}
+	}
+
+	.googlesitekit-invite-user-row__info {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.googlesitekit-invite-user-row__name {
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-md;
+		font-weight: 500;
+	}
+
+	.googlesitekit-invite-user-row__role {
+		color: $c-surfaces-on-surface-variant;
+		font-size: $fs-body-md;
+		font-weight: 400;
+		margin-left: 4px;
+		text-transform: capitalize;
+	}
+
+	.googlesitekit-invite-user-row__email {
+		color: $c-surfaces-on-surface;
+		font-size: $fs-body-sm;
+	}
+
+	.googlesitekit-invite-user-row__action {
+		flex-shrink: 0;
+		margin-left: $grid-gap-phone;
+
+		.mdc-button {
+			color: $c-content-secondary;
+			gap: 4px;
+			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-invite-user-row__success {
+		align-items: center;
+		color: $c-surfaces-on-surface-variant;
+		display: flex;
+		font-size: $fs-body-md;
+		gap: 4px;
+		padding: 8px $grid-gap-phone;
+
+		svg {
+			stroke: currentColor;
+		}
+	}
+
+	.googlesitekit-invite-user-row__error {
+		background-color: $c-utility-error-container;
+		border-radius: 4px;
+		color: $c-utility-on-error-container;
+		font-size: $fs-body-sm;
+		padding: 4px 8px;
+
+		a,
+		.googlesitekit-cta-link {
+			color: inherit;
+			cursor: pointer;
+			text-decoration: underline;
+
+			&:hover {
+				text-decoration: none;
+			}
+		}
+	}
+
+	.googlesitekit-invite-search-input__clear {
+		align-items: center;
+		background-color: $c-surfaces-surface-1;
+		border-radius: 50%;
+		cursor: pointer;
+		display: flex;
+		height: 20px;
+		justify-content: center;
+		position: absolute;
+		right: 6px;
+		top: 6px;
+		width: 20px;
+
+		svg {
+			fill: $c-surfaces-on-background-variant;
+		}
+
+		&:hover svg {
+			fill: $c-surfaces-on-surface;
+		}
+	}
+}

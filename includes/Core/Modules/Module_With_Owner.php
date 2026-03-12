@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+
 /**
  * Interface for a module that includes an owner.
  *
@@ -27,4 +29,13 @@ interface Module_With_Owner {
 	 * @return int Owner ID.
 	 */
 	public function get_owner_id();
+
+	/**
+	 * Gets the OAuth_Client instance for the module owner.
+	 *
+	 * @since 1.174.0
+	 *
+	 * @return OAuth_Client OAuth_Client instance.
+	 */
+	public function get_owner_oauth_client();
 }

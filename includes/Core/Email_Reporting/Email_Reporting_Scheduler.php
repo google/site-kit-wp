@@ -163,6 +163,50 @@ class Email_Reporting_Scheduler {
 	}
 
 	/**
+	 * Schedules subscription confirmation delivery via existing worker and fallback pipeline.
+	 *
+	 * @since 1.174.0
+	 *
+	 * @param int   $user_id           User ID.
+	 * @param array $previous_settings Previous settings.
+	 * @param array $updated_settings  Updated settings.
+	 * @return true|\WP_Error True on success, WP_Error on failure.
+	 */
+	public function schedule_email_confirmation( $user_id, array $previous_settings, array $updated_settings ) {
+		$task  = new Subscription_Confirmation_Task( $this->frequency_planner );
+		$batch = $task->maybe_schedule(
+			$user_id,
+			$previous_settings,
+			$updated_settings
+		);
+
+		if ( false === $batch ) {
+			return true;
+		}
+
+		if ( is_wp_error( $batch ) ) {
+			return $batch;
+		}
+
+		if ( empty( $batch['batch_id'] ) || empty( $batch['frequency'] ) || ! isset( $batch['timestamp'] ) ) {
+			return new \WP_Error(
+				'email_reporting_invalid_confirmation_batch',
+				__( 'Subscription confirmation batch payload is invalid.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		$batch_id  = (string) $batch['batch_id'];
+		$frequency = (string) $batch['frequency'];
+		$timestamp = (int) $batch['timestamp'];
+
+		$this->schedule_worker( $batch_id, $frequency, $timestamp, 0 );
+		$this->schedule_fallback( $batch_id, $frequency, $timestamp, 0 );
+
+		return true;
+	}
+
+	/**
 	 * Unschedules all email reporting related events.
 	 *
 	 * @since 1.167.0

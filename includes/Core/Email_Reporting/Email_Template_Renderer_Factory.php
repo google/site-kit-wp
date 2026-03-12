@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Golinks\Golinks;
 
 /**
  * Factory for creating Email_Template_Renderer instances.
@@ -31,14 +32,26 @@ class Email_Template_Renderer_Factory {
 	private $context;
 
 	/**
+	 * Golinks instance.
+	 *
+	 * @since 1.174.0
+	 *
+	 * @var Golinks
+	 */
+	private $golinks;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.170.0
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context $context Plugin context.
+	 * @param Golinks $golinks Golinks instance.
 	 */
-	public function __construct( Context $context ) {
+	public function __construct( Context $context, Golinks $golinks ) {
 		$this->context = $context;
+		$this->golinks = $golinks;
 	}
 
 	/**
@@ -50,6 +63,6 @@ class Email_Template_Renderer_Factory {
 	 * @return Email_Template_Renderer Template renderer instance.
 	 */
 	public function create( array $sections_payload ) {
-		return new Email_Template_Renderer( new Sections_Map( $this->context, $sections_payload ) );
+		return new Email_Template_Renderer( new Sections_Map( $this->context, $sections_payload, $this->golinks ) );
 	}
 }

@@ -63,22 +63,23 @@ class Email_Report_Sender {
 	 * @param WP_User $user             Recipient user.
 	 * @param array   $sections_payload Sections payload.
 	 * @param array   $template_data    Template data.
+	 * @param string  $template_name    Optional. Template name. Default Email_Log::TEMPLATE_TYPE_EMAIL_REPORT.
 	 * @return true|WP_Error True on success, WP_Error on failure.
 	 */
-	public function send( WP_User $user, $sections_payload, $template_data ) {
+	public function send( WP_User $user, $sections_payload, $template_data, $template_name = Email_Log::TEMPLATE_TYPE_EMAIL_REPORT ) {
 		$renderer = $this->template_renderer_factory->create( $sections_payload );
 
 		if ( ! $renderer instanceof Email_Template_Renderer ) {
 			return new WP_Error( 'email_report_renderer_missing', __( 'Unable to render email template.', 'google-site-kit' ) );
 		}
 
-		$html_content = $this->render_template( $renderer, $template_data );
+		$html_content = $this->render_template( $renderer, $template_data, $template_name );
 
 		if ( is_wp_error( $html_content ) ) {
 			return $html_content;
 		}
 
-		$text_content = $this->render_text_template( $renderer, $template_data );
+		$text_content = $this->render_text_template( $renderer, $template_data, $template_name );
 
 		if ( is_wp_error( $text_content ) ) {
 			return $text_content;
@@ -112,10 +113,11 @@ class Email_Report_Sender {
 	 *
 	 * @param Email_Template_Renderer $renderer      Template renderer instance.
 	 * @param array                   $template_data Template data.
+	 * @param string                  $template_name Template name.
 	 * @return string|WP_Error Rendered HTML or WP_Error.
 	 */
-	private function render_template( Email_Template_Renderer $renderer, $template_data ) {
-		$rendered = $renderer->render( 'email-report', $template_data );
+	private function render_template( Email_Template_Renderer $renderer, $template_data, $template_name ) {
+		$rendered = $renderer->render( $template_name, $template_data );
 
 		if ( is_wp_error( $rendered ) ) {
 			return $rendered;
@@ -135,10 +137,11 @@ class Email_Report_Sender {
 	 *
 	 * @param Email_Template_Renderer $renderer      Template renderer instance.
 	 * @param array                   $template_data Template data.
+	 * @param string                  $template_name Template name.
 	 * @return string|WP_Error Rendered plain text or WP_Error.
 	 */
-	private function render_text_template( Email_Template_Renderer $renderer, $template_data ) {
-		$rendered = $renderer->render_text( 'email-report', $template_data );
+	private function render_text_template( Email_Template_Renderer $renderer, $template_data, $template_name ) {
+		$rendered = $renderer->render_text( $template_name, $template_data );
 
 		if ( is_wp_error( $rendered ) ) {
 			return $rendered;

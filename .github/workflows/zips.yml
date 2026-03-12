@@ -121,16 +121,16 @@ jobs:
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p "${{ github.ref }}"
+          mkdir -p "${GITHUB_REF}"
           sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
@@ -178,8 +178,8 @@ jobs:
         # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
         run: |
           body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}/google-site-kit.zip?${{ github.sha }})"
+          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${GITHUB_REF}/google-site-kit-dev.zip?${{ github.sha }})
+          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${GITHUB_REF}/google-site-kit.zip?${{ github.sha }})"
           delimiter="${body//$'\n'/'%0A'}"
           echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
           echo "$body" >> "$GITHUB_OUTPUT"

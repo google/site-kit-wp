@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\User;
 
+use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -35,14 +36,24 @@ class REST_Email_Reporting_Controller {
 	private $settings;
 
 	/**
+	 * Email reporting scheduler instance.
+	 *
+	 * @since 1.174.0
+	 * @var Email_Reporting_Scheduler
+	 */
+	private $scheduler;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.162.0
 	 *
-	 * @param Email_Reporting_Settings $settings Email_Reporting_Settings instance.
+	 * @param Email_Reporting_Settings  $settings  Email_Reporting_Settings instance.
+	 * @param Email_Reporting_Scheduler $scheduler Scheduler instance.
 	 */
-	public function __construct( Email_Reporting_Settings $settings ) {
-		$this->settings = $settings;
+	public function __construct( Email_Reporting_Settings $settings, Email_Reporting_Scheduler $scheduler ) {
+		$this->settings  = $settings;
+		$this->scheduler = $scheduler;
 	}
 
 	/**
@@ -97,11 +108,24 @@ class REST_Email_Reporting_Controller {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
+							$previous_settings = $this->settings->get();
 							$settings = $request['data']['settings'];
 
 							$this->settings->merge( $settings );
 
-							return new WP_REST_Response( $this->settings->get() );
+							$updated_settings = $this->settings->get();
+
+							$scheduling_error = $this->scheduler->schedule_email_confirmation(
+								get_current_user_id(),
+								$previous_settings,
+								$updated_settings
+							);
+
+							if ( is_wp_error( $scheduling_error ) ) {
+								return $scheduling_error;
+							}
+
+							return new WP_REST_Response( $updated_settings );
 						},
 						'permission_callback' => $can_view_dashboard,
 						'args'                => array(

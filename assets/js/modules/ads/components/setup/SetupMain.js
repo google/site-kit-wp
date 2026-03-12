@@ -63,6 +63,7 @@ import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
 import Link from '@/js/components/Link';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import NewBadge from '@/js/components/NewBadge';
 import Typography from '@/js/components/Typography';
 
 export default function SetupMain( { finishSetup = () => {} } ) {
@@ -325,6 +326,7 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 										'Set up a new Ads account',
 										'google-site-kit'
 									) }
+									<NewBadge hasLeftSpacing />
 								</Typography>
 								<p className="instructions">
 									{ createInterpolateElement(

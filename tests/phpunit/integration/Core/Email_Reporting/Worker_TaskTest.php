@@ -9,6 +9,7 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Batch_Error_Notifier;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Processor;
@@ -19,6 +20,7 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Renderer;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Formatter;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Renderer_Factory;
+use Google\Site_Kit\Core\Email_Reporting\Fallback_Task;
 use Google\Site_Kit\Core\Email_Reporting\Max_Execution_Limiter;
 use Google\Site_Kit\Core\Email_Reporting\Worker_Task;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
@@ -83,6 +85,11 @@ class Worker_TaskTest extends TestCase {
 	private $created_post_ids = array();
 
 	/**
+	 * @var Batch_Error_Notifier|\PHPUnit_Framework_MockObject_MockObject
+	 */
+	private $notifier;
+
+	/**
 	 * @var Email_Log_Batch_Query
 	 */
 	private $real_batch_query;
@@ -100,6 +107,7 @@ class Worker_TaskTest extends TestCase {
 		$this->template_renderer         = $this->createMock( Email_Template_Renderer::class );
 		$this->template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
+		$this->notifier         = $this->createMock( Batch_Error_Notifier::class );
 		$this->email_log        = new Email_Log( $this->context );
 		$this->created_post_ids = array();
 		$this->real_batch_query = new Email_Log_Batch_Query();
@@ -132,6 +140,7 @@ class Worker_TaskTest extends TestCase {
 				Email_Log::META_ERROR_DETAILS,
 				Email_Log::META_REPORT_REFERENCE_DATES,
 				Email_Log::META_SITE_ID,
+				Email_Log::META_TEMPLATE_TYPE,
 			) as $meta_key
 		) {
 			if ( function_exists( 'unregister_meta_key' ) ) {
@@ -287,7 +296,8 @@ class Worker_TaskTest extends TestCase {
 			$this->batch_query,
 			$this->scheduler,
 			$log_processor_mock,
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
@@ -316,7 +326,8 @@ class Worker_TaskTest extends TestCase {
 				$this->template_formatter,
 				new Email_Report_Sender( $this->template_renderer_factory, $this->email_sender )
 			),
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 
 		$batch_id       = 'batch-real';
@@ -374,7 +385,12 @@ class Worker_TaskTest extends TestCase {
 
 		$this->template_formatter->expects( $this->once() )
 			->method( 'build_template_payload' )
-			->with( array( $section ), Email_Reporting_Settings::FREQUENCY_WEEKLY, $this->arrayHasKey( 'startDate' ) )
+			->with(
+				array( $section ),
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$this->arrayHasKey( 'startDate' ),
+				$this->isInstanceOf( \WP_User::class )
+			)
 			->willReturn(
 				array(
 					'sections_payload' => array( 'total_conversion_events' => array( 'value' => '10' ) ),
@@ -541,6 +557,124 @@ class Worker_TaskTest extends TestCase {
 		$this->assertFalse( get_transient( 'googlesitekit_email_reporting_worker_lock_weekly' ), 'Lock transient should be cleared after send failure.' );
 	}
 
+	public function test_subscribe_success_log_sends_subscription_confirmation_template() {
+		$this->register_email_log_dependencies();
+
+		$batch_id = 'batch-subscribe-success';
+		$email    = 'subscriber@example.com';
+		$user_id  = self::factory()->user->create( array( 'user_email' => $email ) );
+		$post_id  = $this->create_log_post(
+			$batch_id,
+			Email_Log::STATUS_SCHEDULED,
+			0,
+			$user_id,
+			null,
+			null,
+			Email_Log::TEMPLATE_TYPE_SUBSCRIBE_SUCCESS
+		);
+
+		$this->limiter->method( 'should_abort' )->willReturn( false );
+		$this->email_sender = new Email();
+
+		$this->data_requests->expects( $this->never() )->method( 'get_user_payload' );
+		$this->template_formatter->method( 'prepare_subscription_confirmation_template_data' )
+			->willReturn( array( 'subject' => 'Subscription Confirmation' ) );
+		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
+
+		$this->template_renderer->expects( $this->once() )
+			->method( 'render' )
+			->with( 'subscription-confirmation', $this->arrayHasKey( 'subject' ) )
+			->willReturn( '<html>Subscription confirmation email</html>' );
+
+		$this->template_renderer->method( 'render_text' )->willReturn( 'Subscription confirmation email' );
+
+		$captured_mail = null;
+		$wp_mail       = function ( $atts ) use ( &$captured_mail ) {
+			$captured_mail = $atts;
+			return $atts;
+		};
+		add_filter( 'wp_mail', $wp_mail );
+
+		$task = $this->create_worker_task( $this->real_batch_query );
+		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
+		remove_filter( 'wp_mail', $wp_mail );
+
+		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Subscribe-success log should be marked sent when email delivery succeeds.' );
+		$this->assertIsArray( $captured_mail, 'Subscription confirmation should call wp_mail.' );
+		$this->assertSame( $email, $captured_mail['to'], 'Subscription confirmation should be sent to the subscribed user.' );
+		$this->assertSame( 'Subscription Confirmation', $captured_mail['subject'], 'Subscription confirmation should include the expected subject.' );
+		$this->assertStringContainsString( 'Subscription confirmation email', $captured_mail['message'], 'Subscription confirmation should include the rendered content.' );
+	}
+
+	public function test_subscribe_success_log_failure_marks_failed_and_increments_attempts() {
+		$this->register_email_log_dependencies();
+
+		$batch_id = 'batch-subscribe-fail';
+		$user_id  = self::factory()->user->create( array( 'user_email' => 'subscriber-fail@example.com' ) );
+		$post_id  = $this->create_log_post(
+			$batch_id,
+			Email_Log::STATUS_SCHEDULED,
+			0,
+			$user_id,
+			null,
+			null,
+			Email_Log::TEMPLATE_TYPE_SUBSCRIBE_SUCCESS
+		);
+
+		$this->limiter->method( 'should_abort' )->willReturn( false );
+
+		$this->data_requests->expects( $this->never() )->method( 'get_user_payload' );
+		$this->template_formatter->method( 'prepare_subscription_confirmation_template_data' )
+			->willReturn( array( 'subject' => 'Subscription Confirmation' ) );
+		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
+		$this->template_renderer->method( 'render' )->willReturn( '<html>Subscription Confirmation</html>' );
+		$this->template_renderer->method( 'render_text' )->willReturn( 'Subscription Confirmation' );
+		$this->email_sender->method( 'send' )->willReturn( new WP_Error( 'send_failure', 'Send failed' ) );
+
+		$task = $this->create_worker_task( $this->real_batch_query );
+		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
+
+		$this->assertSame( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'Subscribe-success log should be marked failed when email delivery fails.' );
+		$this->assertSame( 1, (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true ), 'Subscribe-success failure should increment attempts.' );
+	}
+
+	public function test_fallback_retries_subscribe_success_until_max_attempts() {
+		$this->register_email_log_dependencies();
+
+		$batch_id = 'batch-subscribe-fallback';
+		$user_id  = self::factory()->user->create( array( 'user_email' => 'subscriber-fallback@example.com' ) );
+		$post_id  = $this->create_log_post(
+			$batch_id,
+			Email_Log::STATUS_SCHEDULED,
+			0,
+			$user_id,
+			null,
+			null,
+			Email_Log::TEMPLATE_TYPE_SUBSCRIBE_SUCCESS
+		);
+
+		$timestamp = time();
+		$this->limiter->method( 'should_abort' )->willReturn( false );
+
+		$this->template_formatter->method( 'prepare_subscription_confirmation_template_data' )
+			->willReturn( array( 'subject' => 'Subscription Confirmation' ) );
+		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
+		$this->template_renderer->method( 'render' )->willReturn( '<html>Subscription Confirmation</html>' );
+		$this->template_renderer->method( 'render_text' )->willReturn( 'Subscription Confirmation' );
+		$this->email_sender->method( 'send' )->willReturn( new WP_Error( 'send_failure', 'Send failed' ) );
+
+		$worker_task   = $this->create_worker_task( $this->real_batch_query );
+		$fallback_task = new Fallback_Task( $this->real_batch_query, $this->scheduler, $worker_task, $this->notifier );
+
+		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
+		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
+		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
+		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
+
+		$this->assertSame( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'Subscribe-success log should remain failed after retries are exhausted.' );
+		$this->assertSame( Email_Log_Batch_Query::MAX_ATTEMPTS, (int) get_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, true ), 'Subscribe-success fallback retries should stop at max attempts.' );
+	}
+
 	public function test_processes_multiple_posts_and_continues_after_failure() {
 		$this->register_email_log_dependencies();
 
@@ -641,15 +775,17 @@ class Worker_TaskTest extends TestCase {
 			$batch_query,
 			$this->scheduler,
 			$log_processor,
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 	}
 
-	private function create_log_post( $batch_id, $status, $attempts, $user_id = null, $date_range_meta = null, $site_id = null ) {
-		$user_id = $user_id ?: self::factory()->user->create();
-		$site_id = null !== $site_id ? (int) $site_id : get_current_blog_id();
+	private function create_log_post( $batch_id, $status, $attempts, $user_id = null, $date_range_meta = null, $site_id = null, $template_type = null ) {
+		$user_id       = $user_id ?: self::factory()->user->create();
+		$site_id       = null !== $site_id ? (int) $site_id : get_current_blog_id();
+		$template_type = $template_type ?: Email_Log::TEMPLATE_TYPE_EMAIL_REPORT;
 
-		$post_id = wp_insert_post(
+		$post_id = $this->factory()->post->create(
 			array(
 				'post_type'     => Email_Log::POST_TYPE,
 				'post_status'   => $status,
@@ -657,15 +793,15 @@ class Worker_TaskTest extends TestCase {
 				'post_author'   => $user_id,
 				'post_date'     => '2000-01-01 00:00:00',
 				'post_date_gmt' => '2000-01-01 00:00:00',
-				'meta_input'    => array(
-					Email_Log::META_BATCH_ID               => $batch_id,
-					Email_Log::META_REPORT_FREQUENCY       => Email_Reporting_Settings::FREQUENCY_WEEKLY,
-					Email_Log::META_SEND_ATTEMPTS          => $attempts,
-					Email_Log::META_REPORT_REFERENCE_DATES => $date_range_meta ?: $this->get_reference_dates_meta(),
-					Email_Log::META_SITE_ID                => $site_id,
-				),
 			)
 		);
+
+		update_post_meta( $post_id, Email_Log::META_BATCH_ID, $batch_id );
+		update_post_meta( $post_id, Email_Log::META_REPORT_FREQUENCY, Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		update_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, $attempts );
+		update_post_meta( $post_id, Email_Log::META_REPORT_REFERENCE_DATES, $date_range_meta ?: $this->get_reference_dates_meta() );
+		update_post_meta( $post_id, Email_Log::META_SITE_ID, $site_id );
+		update_post_meta( $post_id, Email_Log::META_TEMPLATE_TYPE, $template_type );
 
 		$this->created_post_ids[] = $post_id;
 
@@ -677,10 +813,9 @@ class Worker_TaskTest extends TestCase {
 			return;
 		}
 
-		$email_log       = new Email_Log( $this->context );
-		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register_method->setAccessible( true );
-		$register_method->invoke( $email_log );
+		$email_log = new Email_Log( $this->context );
+		$email_log->register();
+		do_action( 'init' );
 	}
 
 	private function get_reference_dates_meta() {

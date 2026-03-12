@@ -65,7 +65,7 @@ class Initiator_Task {
 		$batch_id = wp_generate_uuid4();
 		$user_ids = $this->subscribed_users_query->for_frequency( $frequency );
 
-		$reference_dates = $this->build_reference_dates( $frequency, $timestamp );
+		$reference_dates = self::build_reference_dates( $frequency, $timestamp );
 
 		foreach ( $user_ids as $user_id ) {
 			wp_insert_post(
@@ -80,6 +80,7 @@ class Initiator_Task {
 						Email_Log::META_REPORT_REFERENCE_DATES => $reference_dates,
 						Email_Log::META_SEND_ATTEMPTS    => 0,
 						Email_Log::META_SITE_ID          => get_current_blog_id(),
+						Email_Log::META_TEMPLATE_TYPE    => Email_Log::TEMPLATE_TYPE_EMAIL_REPORT,
 					),
 				)
 			);
@@ -92,11 +93,14 @@ class Initiator_Task {
 	/**
 	 * Builds the report reference dates for a batch.
 	 *
+	 * @since 1.167.0
+	 * @since 1.174.0 Made method static.
+	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp.
 	 * @return array Reference date payload.
 	 */
-	private function build_reference_dates( $frequency, $timestamp ) {
+	public static function build_reference_dates( $frequency, $timestamp ) {
 		$time_zone = wp_timezone();
 		$send_date = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )

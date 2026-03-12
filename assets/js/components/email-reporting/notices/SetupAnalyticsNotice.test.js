@@ -40,7 +40,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import SetupAnalyticsNotice, {
-	EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM,
+	EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE,
 } from './SetupAnalyticsNotice';
 
 describe( 'SetupAnalyticsNotice', () => {
@@ -148,7 +148,7 @@ describe( 'SetupAnalyticsNotice', () => {
 
 		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 		fetchMock.postOnce( fetchDismissItem, {
-			body: [ EMAIL_REPORTING_SETUP_ANALYTICS_NOTICE_DISMISSED_ITEM ],
+			body: [ EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE ],
 		} );
 
 		const { getByRole } = render( <SetupAnalyticsNotice />, {
