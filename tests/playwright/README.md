@@ -11,6 +11,7 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Cookie-Based Routing](#cookie-based-routing)
     -   [Authentication Without Login](#authentication-without-login)
     -   [Plugin Activation via Database](#plugin-activation-via-database)
+    -   [PHP Error Logging](#php-error-logging)
 -   [Running Tests](#running-tests)
 -   [Writing Tests](#writing-tests)
     -   [Basic Test Structure](#basic-test-structure)
@@ -20,9 +21,11 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Plugin Management](#plugin-management)
 -   [Test Infrastructure](#test-infrastructure)
     -   [Docker Services](#docker-services)
+    -   [Docker Compose Profiles](#docker-compose-profiles)
     -   [Must-Use Plugins](#must-use-plugins)
     -   [Test Helper Plugins](#test-helper-plugins)
     -   [Database Snapshot](#database-snapshot)
+    -   [Generating the Database Snapshot](#generating-the-database-snapshot)
 -   [Artifacts and Reporting](#artifacts-and-reporting)
 -   [CI / GitHub Actions](#ci--github-actions)
 
@@ -46,27 +49,32 @@ tests/playwright/
 ├── artifacts/                          # Generated test outputs (gitignored)
 │   ├── playwright-html/                # HTML test report
 │   └── playwright-output/             # Screenshots and traces on failure
+├── bin/
+│   └── generate-backup-sql.sh          # Script to regenerate the DB snapshot
+├── config/
+│   └── viewports.ts                    # Viewport helpers (mobile, tablet, desktop, large)
 ├── docker/                             # Docker runtime assets
 │   ├── mariadb/
 │   │   └── backup.sql                  # WordPress DB snapshot (loaded on container init)
 │   └── wordpress/
 │       ├── Dockerfile                  # Custom WordPress image (configurable WP version)
-│       ├── db.php                      # DB drop-in: routes connections per test via cookie
+│       ├── db.php                      # DB drop-in: routes connections and logs PHP errors
 │       ├── mu-plugins/
-│       │   ├── e2e-authenticate-admin.php   # Authenticates user via cookie
+│       │   └── e2e-authenticate-admin.php  # Authenticates user via cookie
 │       └── plugins/                    # Test helper plugins (auto-mounted)
 │           ├── gcp-credentials.php     # Mock GCP OAuth credentials
-│           └── proxy-credentials.php  # Mock proxy OAuth credentials
+│           └── proxy-credentials.php   # Mock proxy OAuth credentials
 ├── specs/                              # Test files
 │   └── plugin-activation.spec.ts
 ├── wordpress/                          # TypeScript test utilities
 │   ├── index.ts                        # Re-exports
 │   ├── args.ts                         # WordPressArgs type
 │   ├── wordpress.ts                    # WordPress class (main fixture object)
-│   ├── database.ts                     # Per-test DB create/drop
+│   ├── database.ts                     # Per-test DB create/drop and error log retrieval
 │   ├── cookies.ts                      # Test routing cookies
 │   ├── plugins.ts                      # Plugin activation via DB
-│   └── options.ts                      # Annotation helpers (withPlugins, asUser)
+│   ├── options.ts                      # Annotation helpers (withPlugins, asUser)
+│   └── error-log-ignore-list.ts        # Known PHP errors to ignore per WP version
 ├── docker-compose.yml
 ├── package.json
 ├── playwright.config.ts
@@ -107,6 +115,18 @@ This means tests never need to fill in a username/password form, making them fas
 `WordPressPlugins` activates and deactivates plugins by directly reading and writing the `active_plugins` option in `wp_options` (as a PHP-serialized array). This avoids the overhead of navigating the WordPress admin UI for plugin management.
 
 Plugins specified via the `withPlugins()` annotation are activated automatically during test setup, before the test body runs.
+
+### PHP Error Logging
+
+The `db.php` drop-in registers PHP error handlers that capture all errors, warnings, notices, deprecations, uncaught exceptions, and fatal errors into a per-test `wp_e2e_error_log` database table. This ensures that PHP-level problems are surfaced in test results rather than silently ignored.
+
+**How it works:**
+
+1. **During the test:** Three PHP handlers (error handler, exception handler, shutdown handler) log every PHP error into the `wp_e2e_error_log` table in the test's database. Captured error levels include `E_WARNING`, `E_NOTICE`, `E_DEPRECATED`, `E_STRICT`, `E_USER_*` variants, `UNCAUGHT_EXCEPTION`, and fatal errors (`E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR`).
+2. **After the test:** The `WordPress.tearDown()` method queries `wp_e2e_error_log` and filters results against a version-aware ignore list (`wordpress/error-log-ignore-list.ts`).
+3. **If errors remain:** The error log is attached to the test result as a `php-error-log` JSON artifact, and the test is failed with a summary of all errors (format: `[LEVEL] message (file:line)`).
+
+**Ignore list:** Some PHP errors are expected on older WordPress versions. The ignore list in `wordpress/error-log-ignore-list.ts` is keyed by WordPress version, with a special `ALL` key for errors ignored across all versions. Each entry is a substring match against the error message. For example, `get_magic_quotes_gpc()` deprecation warnings are expected on WordPress 5.2.21 but not on newer versions.
 
 ---
 
@@ -281,9 +301,19 @@ test( 'my test', async ( { wp } ) => {
 -   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
 -   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
 -   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable)
--   `SCRIPT_DEBUG` and `WP_DEBUG_LOG` are enabled; `WP_DEBUG_DISPLAY` is **disabled** (errors go to the log file, not the page)
+-   `db.php` drop-in is mounted at `wp-content/db.php` — handles per-test database routing and PHP error logging
+-   `SCRIPT_DEBUG` and `WP_DEBUG_LOG` are enabled; `WP_DEBUG_DISPLAY` is **disabled** (errors go to the log file and the per-test error log table, not the page)
 -   `WP_AUTO_UPDATE_CORE` is disabled
 -   Depends on `mysql` being healthy before starting
+
+### Docker Compose Profiles
+
+Docker Compose uses profiles to separate test-running services from backup-generation services:
+
+-   **`test`** — used when running tests (`npm run start` / `npm run test`). Both `mysql` and `wp` services are started.
+-   **`generate`** — used by `bin/generate-backup-sql.sh` to generate the database snapshot. Starts the same services but with `WP_DEBUG=0` to suppress debug output during setup.
+
+Both services belong to both profiles, so the same containers serve both purposes. The profile controls which `docker compose` commands activate the services.
 
 ### Must-Use Plugins
 
@@ -309,14 +339,38 @@ Similar to `gcp-credentials.php` but uses the `sitekit.withgoogle.com` proxy dom
 The snapshot contains:
 
 -   All standard WordPress tables (`wp_options`, `wp_users`, `wp_posts`, etc.)
--   A pre-configured `admin` user
+-   Pre-configured users: `admin`, `admin-2` (administrators), `editor`, `author`, `contributor`
+-   Four sample posts (including one with special characters)
+-   TwentyNineteen theme activated
 -   Site Kit plugin installed (but configured as deactivated in the snapshot)
+-   Permalink structure set to `%postname%`
 
-To update the snapshot, make the desired changes to the running WordPress container's database, then export it:
+### Generating the Database Snapshot
+
+The snapshot is generated deterministically by `bin/generate-backup-sql.sh`. This script ensures the `backup.sql` file produces clean diffs and is reproducible across runs.
 
 ```bash
-docker compose exec mysql mysqldump -uroot -pexample wordpress > docker/mariadb/backup.sql
+# From the repository root:
+npm run playwright:generate-backup
+
+# Or from within tests/playwright/:
+npm run generate-backup
 ```
+
+**What the script does:**
+
+1. Tears down any existing containers and removes the current `backup.sql`.
+2. Starts Docker services with WordPress 5.2.21 (oldest supported version, for maximum forward-compatibility).
+3. Installs WordPress via WP-CLI with test configuration (users, posts, theme, plugin, permalinks).
+4. Normalizes the database for deterministic output:
+    - All dates set to `2025-01-01 00:00:00`
+    - All password hashes set to a fixed phpass hash of `"password"`
+    - Session tokens and transients cleared
+    - Cron option replaced with a fixed empty cron array
+5. Exports the database with `mysqldump` and strips the timestamp comment.
+6. Tears down containers.
+
+**When to regenerate:** Run this script whenever you need to change the baseline state of the test database (e.g. adding new users, changing default options, updating the pre-installed plugin set). The resulting `backup.sql` should be committed to version control.
 
 ---
 
