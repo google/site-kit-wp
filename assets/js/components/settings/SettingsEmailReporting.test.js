@@ -157,7 +157,7 @@ describe( 'SettingsEmailReporting', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'settings_email_reports_settings',
+			'settings_email_reports',
 			'activate_periodic_email_reports'
 		);
 	} );
@@ -266,7 +266,7 @@ describe( 'SettingsEmailReporting', () => {
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'settings_email_reports_settings',
+			'settings_email_reports',
 			'deactivate_periodic_email_reports'
 		);
 
@@ -368,7 +368,7 @@ describe( 'SettingsEmailReporting', () => {
 		).toBe( true );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			'settings_email_reports_settings',
+			'settings_email_reports',
 			'manage_email_reports_subscription'
 		);
 	} );
