@@ -26,3 +26,17 @@ export default function CoreModuleSetupEffects() {
 
 	return null;
 }
+
+/**
+ * Notice component styles/types.
+ *
+ * Determines the style of the notice.
+ */
+export enum TYPES {
+	NEW = 'new',
+	SUCCESS = 'success',
+	WARNING = 'warning',
+	INFO = 'info',
+	INFO_ALT = 'info-alt',
+	ERROR = 'error',
+}

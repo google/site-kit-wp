@@ -1,7 +1,14 @@
 /**
  * External dependencies
  */
-import { Dispatch, FC, ReactElement, ReactNode, SetStateAction } from 'react';
+import {
+	Dispatch,
+	FC,
+	PropsWithChildren,
+	ReactElement,
+	ReactNode,
+	SetStateAction,
+} from 'react';
 import { render, act, RenderResult } from '@testing-library/react';
 import {
 	renderHook,
@@ -101,7 +108,9 @@ function customRender(
 		history.push( route );
 	}
 
-	const Wrapper: FC< { children: ReactNode } > = ( { children } ) => {
+	const Wrapper: FC< PropsWithChildren< Record< string, never > > > = ( {
+		children,
+	} ) => {
 		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
 		setInView = setInViewStateValue;
 
@@ -134,7 +143,7 @@ function customRender(
 
 	const waitForRegistry = createWaitForRegistry( registry );
 
-	const result = render( ui, { wrapper: Wrapper, ...renderOptions } );
+	const result = render( ui, { wrapper: Wrapper as any, ...renderOptions } );
 	const {
 		getByTestId: getByTestID, // eslint-disable-line sitekit/acronym-case
 		findByTestId: findByTestID, // eslint-disable-line sitekit/acronym-case
@@ -209,7 +218,9 @@ function customRenderHook< Props, Result >(
 
 	let setInView: Dispatch< SetStateAction< boolean > > | undefined;
 
-	const Wrapper: FC< { children: ReactNode } > = ( { children } ) => {
+	const Wrapper: FC< PropsWithChildren< Record< string, never > > > = ( {
+		children,
+	} ) => {
 		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
 		setInView = setInViewStateValue;
 

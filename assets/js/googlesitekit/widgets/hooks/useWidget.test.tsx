@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { FC, ProviderProps, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -30,6 +30,7 @@ import {
 	WidgetContextValue,
 } from '@/js/googlesitekit/widgets/components/WidgetContext';
 import useWidget from './useWidget';
+import { Widget } from '@/js/googlesitekit/widgets/types';
 
 describe( 'useWidget', () => {
 	it( 'should return empty object when no provider is found', () => {
