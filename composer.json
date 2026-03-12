@@ -64,6 +64,11 @@
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "roots/wordpress-core-installer": true
+    },
+    "audit": {
+      "ignore": {
+        "PKSA-y2cr-5h3j-g3ys": "[Low] blocked by current minimum PHP requirement"
+      }
     }
   },
   "extra": {
