@@ -49,7 +49,7 @@
 		],
 		"onboardingState": "PENDING_VERIFICATION",
 		"contentPolicyStatus": {
-			"contentPolicyState": "CONTENT_POLICY_VIOLATION_ACTIVE",
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=PQRSTUV"
 		}
 	},
@@ -76,7 +76,7 @@
 		],
 		"onboardingState": "ONBOARDING_ACTION_REQUIRED",
 		"contentPolicyStatus": {
-			"contentPolicyState": "CONTENT_POLICY_VIOLATION_GRACE_PERIOD",
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=IJKLMNOP"
 		}
 	},
@@ -103,7 +103,7 @@
 		],
 		"onboardingState": "ONBOARDING_COMPLETE",
 		"contentPolicyStatus": {
-			"contentPolicyState": "CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE",
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
 			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=QRSTUVWX"
 		}
 	}
