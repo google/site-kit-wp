@@ -186,7 +186,9 @@ jobs:
 
       - name: Configure Composer Dev Packages
         if: ${{ matrix.composer_dev_require }}
-        run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
+        run: |
+          composer config audit.ignore '{"PKSA-z3gr-8qht-p93v": "Necessary to install PHPUnit 7"}' --json --merge
+          composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress -vv
