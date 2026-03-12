@@ -24,11 +24,15 @@ import ModuleSetupFooter from './ModuleSetupFooter';
 import {
 	createTestRegistry,
 	render,
+	provideSiteInfo,
 	provideModules,
 } from '../../../../tests/js/test-utils';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 describe( 'ModuleSetupFooter', () => {
+	mockLocation();
+
 	let registry;
 	const slug = 'test-module';
 	const storeName = `test/${ slug }`;
@@ -56,6 +60,7 @@ describe( 'ModuleSetupFooter', () => {
 		registry.dispatch( CORE_MODULES ).registerModule( slug, { storeName } );
 
 		provideModules( registry );
+		provideSiteInfo( registry );
 	} );
 
 	it.each( [
@@ -77,4 +82,24 @@ describe( 'ModuleSetupFooter', () => {
 			).toEqual( label );
 		}
 	);
+
+	it( 'should include forwardable params in the cancel/back URL', () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
+
+		const { container } = render(
+			<ModuleSetupFooter module={ module } onCancel={ () => {} } />,
+			{
+				registry,
+			}
+		);
+
+		const link = container.querySelector( `#setup-${ slug }-cancel` );
+		const url = new URL( link.href );
+
+		expect( url.searchParams.get( 'page' ) ).toEqual(
+			'googlesitekit-settings'
+		);
+		expect( url.searchParams.get( 'panel' ) ).toEqual( 'email-reporting' );
+	} );
 } );
