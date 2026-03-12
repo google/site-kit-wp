@@ -67,7 +67,10 @@
     },
     "audit": {
       "ignore": {
-        "PKSA-y2cr-5h3j-g3ys": "[Low] blocked by current minimum PHP requirement"
+        "PKSA-y2cr-5h3j-g3ys": {
+          "apply": "block",
+          "reason": "[Low] blocked by current minimum PHP requirement"
+        }
       }
     }
   },
