@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { mocked } from 'jest-mock';
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
@@ -39,6 +40,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WPDashboardWidgets from './WPDashboardWidgets';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { type WPDataRegistry } from '@/js/googlesitekit/data';
 
 jest.mock( 'react-use', () => ( {
 	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
@@ -49,7 +51,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'WPDashboardWidgets', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -77,20 +79,30 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
-		( mockUseIntersection as unknown as jest.Mock ).mockImplementation(
-			() => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} )
-		);
-
-		const { waitForRegistry } = render( <WPDashboardWidgets />, {
+		const { waitForRegistry, rerender } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
 		await waitForRegistry();
+
+		// Should not be called with `view_cta` event until the CTA banner is in view.
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'wp_dashboard'
+		);
+
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} as unknown as IntersectionObserverEntry )
+		);
+
+		rerender( <WPDashboardWidgets /> );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -99,7 +111,7 @@ describe( 'WPDashboardWidgets', () => {
 		);
 	} );
 
-	it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+	it( 'should track the `dismiss_cta` event when the Activate Analytics CTA banner is dismissed', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
@@ -108,7 +120,7 @@ describe( 'WPDashboardWidgets', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -117,7 +129,7 @@ describe( 'WPDashboardWidgets', () => {
 		);
 	} );
 
-	it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+	it( 'should track the `confirm_cta` event when the Activate Analytics CTA is clicked', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
@@ -126,7 +138,7 @@ describe( 'WPDashboardWidgets', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Set up Analytics/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -135,7 +147,7 @@ describe( 'WPDashboardWidgets', () => {
 		);
 	} );
 
-	it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+	it( 'should track the `click_learn_more_link` event when `Learn more` link is clicked in the Activate Analytics CTA banner', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],

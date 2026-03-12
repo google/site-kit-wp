@@ -20,6 +20,7 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { mocked } from 'jest-mock';
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
@@ -61,10 +62,11 @@ import {
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { type WPDataRegistry } from '@/js/googlesitekit/data';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	mockLocation();
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 	let originalViewport: number;
 
 	const widgetComponentProps = getWidgetComponentProps( 'searchFunnel' );
@@ -170,14 +172,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			},
 		] );
 
-		( mockUseIntersection as unknown as jest.Mock ).mockImplementation(
-			() => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} )
-		);
-
-		const { waitForRegistry } = render(
+		const { rerender } = render(
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
@@ -186,16 +181,30 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			}
 		);
 
-		await waitForRegistry();
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-		expect( mockTrackEvent ).toHaveBeenCalledWith(
-			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
-			'view_cta',
-			'search_funnel'
+		mocked( mockUseIntersection ).mockImplementation(
+			() =>
+				( {
+					isIntersecting: true,
+					intersectionRatio: 1,
+				} as unknown as IntersectionObserverEntry )
 		);
+
+		rerender( <SearchFunnelWidgetGA4 { ...widgetComponentProps } /> );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+				'view_cta',
+				'search_funnel'
+			);
+		} );
 	} );
 
-	it( 'should track dismiss event when Activate Analytics CTA banner is dismissed', async () => {
+	it( 'should track the `dismiss_cta` event when the Activate Analytics CTA banner is dismissed', async () => {
 		fetchMock.postOnce( dismissItemEndpoint, {
 			body: [ 'analytics-setup-cta-search-funnel' ],
 			status: 200,
@@ -212,7 +221,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Maybe later/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -223,7 +232,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 	} );
 
-	it( 'should track confirm event when Activate Analytics CTA is clicked', async () => {
+	it( 'should track the `confirm_cta` event when the Activate Analytics CTA is clicked', async () => {
 		provideModules( registry, [
 			{
 				slug: 'analytics-4',
@@ -249,7 +258,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /Complete setup/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -260,7 +269,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		} );
 	} );
 
-	it( 'should track clickLearnMore event when Learn more link is clicked in Activate Analytics CTA banner', async () => {
+	it( 'should track the `click_learn_more_link` event when `Learn more` link is clicked in the Activate Analytics CTA banner', async () => {
 		const { getByRole, waitForRegistry } = render(
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
