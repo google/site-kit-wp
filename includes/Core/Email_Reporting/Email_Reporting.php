@@ -11,16 +11,20 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
+use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
+use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
-use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * Base class for Email Reporting feature.
@@ -68,7 +72,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Golinks
 	 */
 	protected $golinks;
@@ -96,6 +100,14 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 * @var User_Email_Reporting_Settings
 	 */
 	protected $user_settings;
+
+	/**
+	 * Email notices resolver.
+	 *
+	 * @since n.e.x.t
+	 * @var Email_Notices
+	 */
+	protected $email_notices;
 
 	/**
 	 * Email log batch query instance.
@@ -190,7 +202,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.162.0
 	 * @since 1.168.0 Added authentication dependency.
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context                       $context       Plugin context.
 	 * @param Modules                       $modules       Modules instance.
@@ -209,15 +221,25 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
-		$this->context        = $context;
-		$this->modules        = $modules;
-		$this->data_requests  = $data_requests;
-		$this->golinks        = $golinks;
-		$this->authentication = $authentication;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->settings       = new Email_Reporting_Settings( $this->options );
-		$this->user_settings  = new User_Email_Reporting_Settings( $this->user_options );
+		$this->context                = $context;
+		$this->modules                = $modules;
+		$this->data_requests          = $data_requests;
+		$this->golinks                = $golinks;
+		$this->authentication         = $authentication;
+		$this->options                = $options ?: new Options( $this->context );
+		$this->user_options           = $user_options ?: new User_Options( $this->context );
+		$this->settings               = new Email_Reporting_Settings( $this->options );
+		$this->user_settings          = new User_Email_Reporting_Settings( $this->user_options );
+		$conversion_tracking_settings = new Conversion_Tracking_Settings( $this->options );
+		$conversion_tracking          = new Conversion_Tracking( $this->context, $this->options );
+		$this->email_notices          = new Email_Notices(
+			$this->context,
+			$this->golinks,
+			array(
+				new Analytics_Setup_Email_Notice( $this->context, $this->modules, $this->golinks ),
+				new Enable_Conversion_Events_Email_Notice( $this->context, $this->modules, $this->golinks, $conversion_tracking_settings, $conversion_tracking ),
+			)
+		);
 
 		$frequency_planner            = new Frequency_Planner();
 		$this->subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
@@ -226,7 +248,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->email_log_batch_query  = new Email_Log_Batch_Query();
 		$email_sender                 = new Email();
 		$section_builder              = new Email_Report_Section_Builder( $this->context );
-		$template_formatter           = new Email_Template_Formatter( $this->context, $section_builder, $this->golinks );
+		$template_formatter           = new Email_Template_Formatter( $this->context, $section_builder, $this->golinks, $this->email_notices );
 		$template_renderer_factory    = new Email_Template_Renderer_Factory( $this->context, $this->golinks );
 		$report_sender                = new Email_Report_Sender( $template_renderer_factory, $email_sender );
 		$log_processor                = new Email_Log_Processor( $this->email_log_batch_query, $this->data_requests, $template_formatter, $report_sender );
@@ -242,14 +264,16 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->email_log         = new Email_Log();
 		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );
+		$notifier                = new Batch_Error_Notifier( $this->email_log_batch_query, $email_sender, $this->context, $this->golinks );
 		$this->worker_task       = new Worker_Task(
 			$max_execution_limiter,
 			$this->email_log_batch_query,
 			$this->scheduler,
 			$log_processor,
-			$this->data_requests
+			$this->data_requests,
+			$notifier
 		);
-		$this->fallback_task     = new Fallback_Task( $this->email_log_batch_query, $this->scheduler, $this->worker_task );
+		$this->fallback_task     = new Fallback_Task( $this->email_log_batch_query, $this->scheduler, $this->worker_task, $notifier );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
 		$this->email_log_cleanup = new Email_Log_Cleanup( $this->settings );
 	}
@@ -261,6 +285,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 */
 	public function register() {
 		$this->golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
+		$this->golinks->register_handler( 'settings', new Settings_Golink_Handler() );
+		$this->golinks->register_handler( Email_Notices::GOLINK_NOTICE, new Email_Notice_Golink_Handler( $this->email_notices, $this->modules, $this->authentication ) );
 		$this->settings->register();
 		$this->rest_controller->register();
 		$this->register_feature_metrics();

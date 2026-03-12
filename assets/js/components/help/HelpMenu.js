@@ -38,18 +38,13 @@ import { Button, Menu } from 'googlesitekit-components';
 import { trackEvent } from '@/js/util';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-} from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import useViewContext from '@/js/hooks/useViewContext';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import FeedbackIcon from '@/svg/icons/feedback.svg';
 import CompassIcon from '@/svg/icons/compass.svg';
 import SupportIcon from '@/svg/icons/support.svg';
@@ -90,30 +85,13 @@ export default function HelpMenu( { children } ) {
 		);
 	} );
 
-	const isViewOnly = useViewOnly();
-	const canAuthenticate = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
-	);
-	const isAnalyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
-	);
-
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
-	const handleStartFeatureTour = useCallback( () => {
-		const tour = getWelcomeTour( {
-			isViewOnly,
-			canAuthenticate,
-			isAnalyticsConnected,
-		} );
+	const welcomeTour = useWelcomeTour();
 
-		triggerOnDemandTour( tour );
-	}, [
-		isViewOnly,
-		canAuthenticate,
-		isAnalyticsConnected,
-		triggerOnDemandTour,
-	] );
+	const handleStartFeatureTour = useCallback( () => {
+		triggerOnDemandTour( welcomeTour );
+	}, [ triggerOnDemandTour, welcomeTour ] );
 
 	const menuItems = [
 		{
@@ -147,21 +125,25 @@ export default function HelpMenu( { children } ) {
 
 	const setupFlowRefreshMenuItems = [
 		{
+			gaEventLabel: 'browse_documentation',
 			href: 'https://sitekit.withgoogle.com/documentation/',
 			icon: <DocumentationIcon width={ 24 } height={ 24 } />,
 			children: __( 'Browse documentation', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'get_support',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/',
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'start_tour',
 			onClick: handleStartFeatureTour,
 			icon: <CompassIcon width={ 24 } height={ 24 } />,
 			children: __( 'Start a feature tour', 'google-site-kit' ),
 		},
 		{
+			gaEventLabel: 'send_feedback',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
 			icon: <FeedbackIcon width={ 24 } height={ 24 } />,
 			children: __( 'Send feedback', 'google-site-kit' ),
@@ -169,6 +151,7 @@ export default function HelpMenu( { children } ) {
 		...( adSenseModuleActive
 			? [
 					{
+						gaEventLabel: 'get_adsense_help',
 						href: 'https://support.google.com/adsense/',
 						icon: <AdsenseHelpIcon width={ 24 } height={ 24 } />,
 						children: __(

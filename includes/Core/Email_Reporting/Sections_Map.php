@@ -19,6 +19,12 @@ use Google\Site_Kit\Core\Golinks\Golinks;
  * @since 1.168.0
  */
 class Sections_Map {
+	/**
+	 * Payload flag for rendering conversions section without metric data.
+	 *
+	 * @since n.e.x.t
+	 */
+	const CONVERSIONS_NOTICE_ONLY_FLAG = '__show_conversion_notice_only';
 
 	/**
 	 * Plugin context.
@@ -72,7 +78,7 @@ class Sections_Map {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Golinks
 	 */
 	protected $golinks;
@@ -81,7 +87,7 @@ class Sections_Map {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added golinks dependency.
+	 * @since 1.174.0 Added golinks dependency.
 	 *
 	 * @param Context $context Plugin context.
 	 * @param array   $payload The payload data to be used in sections.
@@ -96,7 +102,7 @@ class Sections_Map {
 	/**
 	 * Gets the dashboard golink URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return string Dashboard URL.
 	 */
@@ -169,7 +175,10 @@ class Sections_Map {
 		}
 
 		$section_parts = $this->filter_section_parts( $section_parts );
-		if ( empty( $section_parts ) ) {
+		if (
+			empty( $section_parts )
+			&& empty( $this->payload[ self::CONVERSIONS_NOTICE_ONLY_FLAG ] )
+		) {
 			return array();
 		}
 

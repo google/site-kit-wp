@@ -18,7 +18,7 @@ use WP_Error;
 /**
  * Class for handling Site Kit golinks.
  *
- * @since n.e.x.t
+ * @since 1.174.0
  * @access private
  * @ignore
  */
@@ -27,14 +27,14 @@ class Golinks {
 	/**
 	 * Action name for handling golinks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 */
 	const ACTION_GO = 'googlesitekit_go';
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var Context
 	 */
 	private $context;
@@ -42,7 +42,7 @@ class Golinks {
 	/**
 	 * Registered golink handlers keyed by golink key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 * @var array<string, Golink_Handler_Interface>
 	 */
 	private $handlers = array();
@@ -50,7 +50,7 @@ class Golinks {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -61,7 +61,7 @@ class Golinks {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 */
 	public function register() {
 		add_action( 'admin_action_' . self::ACTION_GO, array( $this, 'handle_go' ) );
@@ -70,7 +70,7 @@ class Golinks {
 	/**
 	 * Registers a handler for a golink key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param string                   $key     Golink key.
 	 * @param Golink_Handler_Interface $handler Handler instance.
@@ -89,7 +89,7 @@ class Golinks {
 	/**
 	 * Gets a golink URL for a registered key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param string $key Golink key.
 	 * @return string|null Golink URL if registered, otherwise null.
@@ -109,7 +109,7 @@ class Golinks {
 	/**
 	 * Handles a golink redirect action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 */
 	public function handle_go() {
 		$key = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'to', FILTER_DEFAULT ) );
@@ -133,7 +133,7 @@ class Golinks {
 	/**
 	 * Handles a handler error by displaying a wp_die screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @param WP_Error $error Handler error.
 	 */
@@ -167,7 +167,7 @@ class Golinks {
 	/**
 	 * Gets the URL used for handling golink actions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return string Action URL.
 	 */
@@ -182,7 +182,7 @@ class Golinks {
 	/**
 	 * Gets invalid golink error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return WP_Error Invalid golink error.
 	 */

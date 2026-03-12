@@ -41,7 +41,6 @@ import {
 } from './constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	getProductIDs,
 	getPaymentOption,
@@ -73,15 +72,8 @@ const fetchGetPublicationsStore = createFetchStore( {
 					paymentOption: getPaymentOption(
 						publication.paymentOptions
 					),
+					contentPolicyStatus: publication.contentPolicyStatus,
 				};
-
-				if (
-					isFeatureEnabled( 'rrmPolicyViolations' ) &&
-					publication.contentPolicyStatus
-				) {
-					newSettings.contentPolicyStatus =
-						publication.contentPolicyStatus;
-				}
 
 				Object.assign( state.settings, newSettings );
 
@@ -295,10 +287,7 @@ const baseActions = {
 				productID: 'openaccess',
 			};
 
-			if (
-				isFeatureEnabled( 'rrmPolicyViolations' ) &&
-				contentPolicyStatus
-			) {
+			if ( contentPolicyStatus ) {
 				settings.contentPolicyStatus = contentPolicyStatus;
 			}
 

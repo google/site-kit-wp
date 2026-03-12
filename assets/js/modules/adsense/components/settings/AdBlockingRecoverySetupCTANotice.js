@@ -19,18 +19,13 @@
 /**
  * WordPress dependencies
  */
-import {
-	Fragment,
-	createInterpolateElement,
-	useEffect,
-} from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import Badge from '@/js/components/Badge';
 import SupportLink from '@/js/components/SupportLink';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -108,15 +103,7 @@ export default function AdBlockingRecoverySetupCTANotice() {
 	return (
 		<Notice
 			type={ Notice.TYPES.INFO }
-			title={
-				<Fragment>
-					{ __( 'Ad blocking recovery', 'google-site-kit' ) }
-					<Badge
-						className="googlesitekit-new-badge"
-						label={ __( 'New', 'google-site-kit' ) }
-					/>
-				</Fragment>
-			}
+			title={ __( 'Ad blocking recovery', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(
 					'Start recovering revenue lost from ad blockers by deploying an ad blocking recovery message through Site Kit. <a>Learn more</a>',

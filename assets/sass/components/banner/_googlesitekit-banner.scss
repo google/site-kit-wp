@@ -129,6 +129,14 @@
 		margin-top: 20px;
 	}
 
+	.googlesitekit-banner__notice--content-width {
+		@media (min-width: $width-tablet + 1 + px) and (max-width: $width-desktop + px) {
+			margin-right: auto;
+			max-width: 100%;
+			width: fit-content;
+		}
+	}
+
 	// Setting the margin top on each button so that when they stack on mobile the spacing is consistent.
 	.googlesitekit-notice__action > .mdc-button {
 		gap: 0 6px;

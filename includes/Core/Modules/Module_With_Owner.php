@@ -33,7 +33,7 @@ interface Module_With_Owner {
 	/**
 	 * Gets the OAuth_Client instance for the module owner.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.174.0
 	 *
 	 * @return OAuth_Client OAuth_Client instance.
 	 */

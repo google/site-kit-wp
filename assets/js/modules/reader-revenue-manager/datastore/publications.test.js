@@ -34,7 +34,6 @@ import {
 	provideModuleRegistrations,
 	muteFetch,
 } from '../../../../../tests/js/utils';
-import { setEnabledFeatures } from '../../../../../tests/js/test-utils';
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -493,8 +492,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should set `contentPolicyStatus` in state when provided', () => {
-				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
-
 				const contentPolicyStatus = {
 					contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
 					policyInfoLink: 'https://example.com/policy-info',
@@ -518,8 +515,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 
 			it( 'should not set `contentPolicyStatus` when not provided', () => {
-				setEnabledFeatures( [ 'rrmPolicyViolations' ] );
-
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.selectPublication( {
@@ -583,6 +578,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [ 'basic' ] );
 			expect( settings.paymentOption ).toEqual( 'subscriptions' );
+			expect( settings.contentPolicyStatus ).toEqual( {
+				contentPolicyState: 'CONTENT_POLICY_STATE_OK',
+				policyInfoLink: `https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=${ publication.publicationId }`,
+			} );
 		} );
 
 		it( 'should update savedSettings in state when publications are fetched', async () => {
@@ -649,49 +648,6 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [] );
 			expect( settings.paymentOption ).toEqual( '' );
-		} );
-
-		it( 'should sync contentPolicyStatus when rrmPolicyViolations feature is enabled', async () => {
-			setEnabledFeatures( [ 'rrmPolicyViolations' ] );
-
-			const contentPolicyStatus = {
-				contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
-				policyInfoLink: 'https://example.com/policy-info',
-			};
-
-			const publicationsWithPolicy = cloneDeep( fixtures.publications );
-			publicationsWithPolicy[ 0 ].contentPolicyStatus =
-				contentPolicyStatus;
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					publicationID: publicationsWithPolicy[ 0 ].publicationId,
-					publicationOnboardingState:
-						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
-					productIDs: [],
-					paymentOption: '',
-				} );
-
-			fetchMock.getOnce( publicationsEndpoint, {
-				body: publicationsWithPolicy,
-				status: 200,
-			} );
-
-			registry.select( MODULES_READER_REVENUE_MANAGER ).getPublications();
-
-			await untilResolved(
-				registry,
-				MODULES_READER_REVENUE_MANAGER
-			).getPublications();
-
-			const settings = registry
-				.select( MODULES_READER_REVENUE_MANAGER )
-				.getSettings();
-
-			expect( settings.contentPolicyStatus ).toEqual(
-				contentPolicyStatus
-			);
 		} );
 	} );
 
