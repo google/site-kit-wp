@@ -49,7 +49,7 @@ class Plugin_Action_LinksTest extends TestCase {
 
 		$this->assertEquals(
 			array(
-				'<a href="http://example.org/wp-admin/admin.php?page=googlesitekit-dashboard">Start Setup</a>',
+				'<a href="http://example.org/wp-admin/admin.php?page=googlesitekit-dashboard">Start setup</a>',
 			),
 			$action_links,
 			'The action links array should only contain a link to the Settings page.'

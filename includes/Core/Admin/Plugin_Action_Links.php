@@ -56,7 +56,7 @@ class Plugin_Action_Links {
 					$setup_link = sprintf(
 						'<a href="%s">%s</a>',
 						esc_url( $this->context->admin_url() ),
-						esc_html__( 'Start Setup', 'google-site-kit' )
+						esc_html__( 'Start setup', 'google-site-kit' )
 					);
 
 					array_unshift( $links, $setup_link );
