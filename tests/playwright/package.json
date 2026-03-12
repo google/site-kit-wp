@@ -5,7 +5,8 @@
 		"test:ui": "npm run test --silent -- --ui",
 		"start": "docker compose up -d",
 		"stop": "docker compose down",
-		"setup": "playwright install chromium"
+		"setup": "playwright install chromium",
+		"generate-backup": "./bin/generate-backup-sql.sh"
 	},
 	"dependencies": {
 		"@playwright/test": "^1.58.2",

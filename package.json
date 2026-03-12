@@ -40,6 +40,7 @@
 		"env:reset-site": "npm run -w tests/e2e reset-site",
 		"playwright:env:start": "npm run -w tests/playwright start",
 		"playwright:env:stop": "npm run -w tests/playwright stop",
+		"playwright:generate-backup": "npm run -w tests/playwright generate-backup",
 		"postinstall": "node -e \"process.env.SKIP_PATCH_PACKAGE || require('child_process').execSync('patch-package', {stdio:'inherit'})\"",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit"
