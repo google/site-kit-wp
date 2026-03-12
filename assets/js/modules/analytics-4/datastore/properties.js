@@ -785,13 +785,11 @@ const baseResolvers = {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
 	},
-	*getPropertySummaries( accountID ) {
+	*getPropertySummaries() {
 		const { resolveSelect } = yield commonActions.getRegistry();
 
 		yield commonActions.await(
-			resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(
-				accountID
-			)
+			resolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries()
 		);
 	},
 	*getPropertyCreateTime() {
