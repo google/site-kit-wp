@@ -92,7 +92,7 @@ export default function KeyMetricsSetupApp() {
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
 
-	const areGA4SettingsLoaded = useSelect(
+	const settingsLoaded = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
 	);
 
@@ -193,14 +193,14 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
-		if ( ! areGA4SettingsLoaded ) {
+		if ( ! settingsLoaded ) {
 			return;
 		}
 
 		syncAvailableAudiences();
 		fetchSyncAvailableCustomDimensions();
 	}, [
-		areGA4SettingsLoaded,
+		settingsLoaded,
 		syncAvailableAudiences,
 		fetchSyncAvailableCustomDimensions,
 	] );
