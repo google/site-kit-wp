@@ -8,6 +8,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress
+    profiles:
+      - generate
+      - test
     healthcheck:
       test:
         [
@@ -41,10 +44,11 @@ services:
         target: /var/www/html/wp-content/plugins/google-site-kit
         read_only: true
     environment:
+      WP_VERSION: ${WP_VERSION:-5.2.21}
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: example
-      WORDPRESS_DEBUG: 1
+      WORDPRESS_DEBUG: ${WP_DEBUG:-1}
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
         define( 'WP_DEBUG_LOG', true );
@@ -53,6 +57,9 @@ services:
         define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
         define( 'WP_AUTO_UPDATE_CORE', false );
       PLAYWRIGHT_MAILPIT_URL: http://mailpit:8025
+    profiles:
+      - generate
+      - test
     depends_on:
       mysql:
         condition: service_healthy
@@ -67,3 +74,5 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
+    profiles:
+      - test

@@ -17,14 +17,19 @@
 /**
  * External dependencies
  */
-import { test, Response, type Page } from '@playwright/test';
+import { test, Response, type Page, type TestInfo } from '@playwright/test';
 
 /**
  * Internal dependencies
  */
 import { WordPressArgs } from './args';
-import { WordPressDatabase, getDbName } from './database';
+import {
+	WordPressDatabase,
+	getDbName,
+	type PHPErrorLogEntry,
+} from './database';
 import { WordPressCookies } from './cookies';
+import { errorLogIgnoreList } from './error-log-ignore-list';
 import { WordPressPlugins } from './plugins';
 import { Mailpit } from './mailpit';
 
@@ -63,6 +68,13 @@ export class WordPress {
 	readonly mailpit: Mailpit;
 
 	/**
+	 * The Playwright TestInfo object for the current test.
+	 *
+	 * @since n.e.x.t
+	 */
+	private readonly testInfo: TestInfo;
+
+	/**
 	 * The page to use for the WordPress instance.
 	 *
 	 * @since n.e.x.t
@@ -86,6 +98,7 @@ export class WordPress {
 	constructor( args: WordPressArgs ) {
 		this.page = args.page;
 		this.baseURL = args.baseURL;
+		this.testInfo = args.testInfo;
 
 		this.database = new WordPressDatabase( args.db, args.testInfo );
 		this.cookies = new WordPressCookies(
@@ -123,6 +136,17 @@ export class WordPress {
 	 * @return {Promise<void>} A promise that resolves when the WordPress environment is torn down.
 	 */
 	async tearDown(): Promise< void > {
+		const errors = await test.step( 'Collect error log', () =>
+			this.getErrorLog()
+		);
+
+		if ( errors.length > 0 ) {
+			await this.testInfo.attach( 'php-error-log', {
+				body: JSON.stringify( errors, null, 2 ),
+				contentType: 'application/json',
+			} );
+		}
+
 		await test.step( 'Drop database', async () => {
 			await this.database.drop();
 			await this.database.end();
@@ -133,6 +157,52 @@ export class WordPress {
 				this.mailpit.deleteMessages()
 			);
 		}
+
+		if ( errors.length > 0 ) {
+			const summary = errors
+				.map(
+					( e ) =>
+						`[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`
+				)
+				.join( '\n' );
+
+			throw new Error(
+				`${ errors.length } PHP error(s) during test:\n${ summary }`
+			);
+		}
+	}
+
+	/**
+	 * Returns all PHP error log entries for the current test,
+	 * excluding entries that match the ignore list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Promise<PHPErrorLogEntry[]>} A promise that resolves with the error log entries.
+	 */
+	async getErrorLog(): Promise< PHPErrorLogEntry[] > {
+		const errors = await this.database.getErrorLog();
+		return errors.filter( ( entry ) => ! this.isIgnoredError( entry ) );
+	}
+
+	/**
+	 * Checks whether a PHP error log entry matches the ignore list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param entry The error log entry to check.
+	 * @return Whether the entry should be ignored.
+	 */
+	private isIgnoredError( entry: PHPErrorLogEntry ): boolean {
+		const wpVersion = process.env.WP_VERSION || '5.2.21';
+		const ignoredEntries = [
+			...( errorLogIgnoreList.ALL || [] ),
+			...( errorLogIgnoreList[ wpVersion ] || [] ),
+		];
+
+		return ignoredEntries.some( ( ignored ) =>
+			entry.message.includes( ignored )
+		);
 	}
 
 	/**

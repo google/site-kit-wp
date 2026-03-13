@@ -1,11 +1,12 @@
 {
 	"scripts": {
-		"pretest": "docker compose ps --services --filter status=running | grep -q wp || npm run start --silent",
+		"pretest": "docker compose --profile test ps --services --filter status=running | grep -q wp || npm run start --silent",
 		"test": "playwright test --config=playwright.config.ts",
 		"test:ui": "npm run test --silent -- --ui",
-		"start": "docker compose up -d",
-		"stop": "docker compose down",
-		"setup": "playwright install chromium"
+		"start": "docker compose --profile test up -d",
+		"stop": "docker compose --profile test down",
+		"setup": "playwright install chromium",
+		"generate-backup": "./bin/generate-backup-sql.sh"
 	},
 	"dependencies": {
 		"@playwright/test": "^1.58.2",

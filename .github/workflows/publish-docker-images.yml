@@ -11,6 +11,8 @@ on:
       - 'tests/playwright/docker/wordpress/Dockerfile'
       - '.github/workflows/publish-docker-images.yml'
   schedule:
+    # This cron job is used to build WordPress:nightly image only. All other images
+    # ignore this schedule.
     - cron: '0 0 * * *'
   workflow_dispatch:
     inputs:

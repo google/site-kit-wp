@@ -17,7 +17,14 @@
 /**
  * External dependencies
  */
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
+
+/**
+ * Internal dependencies
+ */
+import { withDesktopViewport, withMobileViewport } from './config/viewports';
+
+const DESKTOP_CHROME = 'Desktop Chrome';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -45,33 +52,7 @@ export default defineConfig( {
 		screenshot: 'on',
 	},
 	projects: [
-		{
-			name: 'mobile',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 450, height: 900 },
-			},
-		},
-		{
-			name: 'tablet',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 600, height: 900 },
-			},
-		},
-		{
-			name: 'desktop',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 960, height: 900 },
-			},
-		},
-		{
-			name: 'large',
-			use: {
-				...devices[ 'Desktop Chrome' ],
-				viewport: { width: 1440, height: 900 },
-			},
-		},
+		withMobileViewport( 'chrome::mobile', DESKTOP_CHROME ),
+		withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
 	],
 } );
