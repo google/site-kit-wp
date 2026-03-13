@@ -163,14 +163,12 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, uopz
-          tools: composer:2.1
           php-version: ${{ matrix.php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: ${{ !matrix.composer_php_version }}
       - uses: shivammathur/setup-php@v2
         with:
-          tools: composer:2.1
           php-version: ${{ matrix.composer_php_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -188,14 +186,15 @@ jobs:
 
       - name: Configure Composer Dev Packages
         if: ${{ matrix.composer_dev_require }}
-        run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
+        run: |
+          composer config audit.ignore '{"PKSA-z3gr-8qht-p93v": "Necessary to install PHPUnit 7"}' --json --merge
+          composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress -vv
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, uopz
-          tools: composer:2.1
           php-version: ${{ matrix.php_version }}
         if: ${{ matrix.composer_php_version }}
 
