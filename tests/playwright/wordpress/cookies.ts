@@ -108,6 +108,18 @@ export class WordPressCookies {
 			} );
 		}
 
+		const featureFlagsAnnotation = this.testInfo.annotations.find(
+			( { type } ) => type === '_wp:feature-flags'
+		);
+
+		if ( featureFlagsAnnotation?.description ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_feature_flags',
+				value: featureFlagsAnnotation.description,
+			} );
+		}
+
 		return this.context.addCookies( cookies );
 	}
 }
