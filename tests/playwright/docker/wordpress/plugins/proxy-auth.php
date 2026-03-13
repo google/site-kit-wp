@@ -11,6 +11,7 @@
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Data_Encryption;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Plugin;
 
 /**
@@ -25,6 +26,24 @@ add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
 		return ( new Data_Encryption() )->encrypt( 'test-access-token' );
+	}
+);
+
+/**
+ * Provide a placeholder site verification meta to fake an authenticated state.
+ */
+add_action(
+	'init',
+	function () {
+		update_user_option(
+			get_current_user_id(),
+			'googlesitekit_site_verified_meta',
+			'verified'
+		);
+
+		$settings               = get_option( Search_Console_Settings::OPTION );
+		$settings['propertyID'] = 'http://localhost:9002';
+		update_option( Search_Console_Settings::OPTION, $settings );
 	}
 );
 

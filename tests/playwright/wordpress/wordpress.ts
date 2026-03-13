@@ -242,6 +242,27 @@ export class WordPress {
 	}
 
 	/**
+	 * Navigates to the Site Kit dashboard.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  hash The hash to navigate to.
+	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
+	 */
+	visitDashboard( hash = '' ): Promise< Response | null > {
+		let stepName = 'Visit Dashboard';
+		if ( hash ) {
+			stepName += ` (#${ hash })`;
+		}
+
+		return test.step( stepName, () =>
+			this.visitAdmin(
+				`admin.php?page=googlesitekit-dashboard#${ hash }`
+			)
+		);
+	}
+
+	/**
 	 * Navigates to the given path in the admin area.
 	 *
 	 * @since n.e.x.t
