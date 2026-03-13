@@ -91,7 +91,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: shivammathur/setup-php@v2
+      # PHP 8.4 is needed for composer install which triggers php-scoper.
+      - name: Setup PHP for Composer
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
         env:
@@ -111,6 +113,16 @@ jobs:
         run: composer validate --strict
       - name: Composer Install
         run: composer install --no-interaction --no-progress
+
+      # Static analysis runs under the minimum supported PHP version
+      # to correctly detect usage of functions not available in older PHP.
+      - name: Setup PHP for Analysis
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run Analysis
         run: composer analyze
 
@@ -176,9 +188,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
+      # PHPUnit 7.x has a known security advisory but is only used as a test
+      # dependency for the oldest WordPress version. Disable Composer's
+      # block-insecure audit to allow resolution.
       - name: Configure Composer Dev Packages
         if: ${{ matrix.composer_dev_require }}
-        run: composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
+        run: |
+          composer config audit.block-insecure false
+          composer require ${{ matrix.composer_dev_require }} --dev --with-dependencies --no-install --no-scripts
 
       - name: Composer Install
         run: composer install --no-interaction --no-progress -vv
