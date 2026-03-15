@@ -38,6 +38,10 @@
 			@media (min-width: $bp-tablet) {
 				padding: 0 $grid-gap-desktop;
 			}
+
+			.googlesitekit-notice-container:nth-of-type(n + 2) {
+				margin-top: $grid-gap-phone;
+			}
 		}
 
 		.googlesitekit-user-settings-selection__panel-description {
