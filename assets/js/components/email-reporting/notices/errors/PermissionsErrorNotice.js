@@ -65,7 +65,7 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.ERROR }
 			title={ __(
-				'Email reports are failing to send',
+				'Email Reports are failing to send',
 				'google-site-kit'
 			) }
 			description={ sprintf(

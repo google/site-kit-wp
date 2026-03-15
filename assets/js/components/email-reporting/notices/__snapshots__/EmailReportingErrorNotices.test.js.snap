@@ -19,7 +19,7 @@ exports[`EmailReportingErrorNotices should render the permissions error notice w
         <p
           class="googlesitekit-notice__title"
         >
-          Email reports are failing to send
+          Email Reports are failing to send
         </p>
         <p
           class="googlesitekit-notice__description"
@@ -68,7 +68,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
         <p
           class="googlesitekit-notice__title"
         >
-          Email reports are failing to send
+          Email Reports are failing to send
         </p>
         <p
           class="googlesitekit-notice__description"
