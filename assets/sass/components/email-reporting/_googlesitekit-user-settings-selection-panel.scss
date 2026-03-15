@@ -32,7 +32,7 @@
 			flex: 1 1 0;
 			flex-direction: column;
 			min-height: 200px;
-			overflow: hidden;
+			overflow: auto;
 			padding: 0 $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
