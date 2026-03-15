@@ -30,6 +30,7 @@ import SettingsEmailReporting from './SettingsEmailReporting';
 import Layout from '@/js/components/layout/Layout';
 import { Grid, Cell, Row } from '@/js/material-components';
 import PreviewBlock from '@/js/components/PreviewBlock';
+import useScrollToID from '@/js/hooks/useScrollToID';
 
 export default function SettingsCardEmailReporting() {
 	const isLoading = useSelect( ( select ) => {
@@ -44,6 +45,8 @@ export default function SettingsCardEmailReporting() {
 	const settings = useSelect( ( select ) =>
 		select( CORE_SITE ).getEmailReportingSettings()
 	);
+
+	useScrollToID( 'email-reporting' );
 
 	return (
 		<Layout
