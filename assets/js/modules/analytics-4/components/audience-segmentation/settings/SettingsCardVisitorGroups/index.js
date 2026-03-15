@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,9 +38,7 @@ import SetupCTA from './SetupCTA';
 import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from './SetupSuccess';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import useScrollToID from '@/js/hooks/useScrollToID';
 
 export default function SettingsCardVisitorGroups() {
 	const viewContext = useViewContext();
@@ -84,24 +82,7 @@ export default function SettingsCardVisitorGroups() {
 		viewContext,
 	] );
 
-	const [ scrollTo ] = useQueryArg( 'scrollTo' );
-
-	const breakpoint = useBreakpoint();
-
-	useEffect( () => {
-		if ( scrollTo !== 'visitor-groups' ) {
-			return;
-		}
-
-		setTimeout( () => {
-			global.scrollTo( {
-				top:
-					getNavigationalScrollTop( '#visitor-groups', breakpoint ) -
-					20,
-				behavior: 'smooth',
-			} );
-		}, 50 );
-	}, [ scrollTo, breakpoint ] );
+	useScrollToID( 'visitor-groups' );
 
 	if (
 		configuredAudiences === undefined ||
