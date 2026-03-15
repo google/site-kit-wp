@@ -47,6 +47,7 @@ export default function SettingsCardEmailReporting() {
 
 	return (
 		<Layout
+			id="email-reporting"
 			title={ __( 'Email reports', 'google-site-kit' ) }
 			header
 			rounded
