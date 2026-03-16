@@ -174,8 +174,14 @@ export default function SettingsEmailReporting( { loading = false } ) {
 												a: (
 													<Link
 														href={
-															documentationURL
+															documentationURL /** TODO update learn more link when it is provided. */
 														}
+														onClick={ () => {
+															trackEvent(
+																`${ viewContext }_email_reports`,
+																'click_learn_more_link'
+															);
+														} }
 														external
 													/>
 												),
@@ -253,7 +259,16 @@ export default function SettingsEmailReporting( { loading = false } ) {
 							) }
 							<br />
 							{ /** TODO update learn more link when it is provided. */ }
-							<Link href="">
+							<Link
+								href={ documentationURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_email_reports_confirm_disable_modal`,
+										'click_learn_more_link'
+									);
+								} }
+								external
+							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
 						</Fragment>
