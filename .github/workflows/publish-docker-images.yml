@@ -84,7 +84,7 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/codegen:${{ steps.library_version.outputs.sha }}
           context: codegen
           labels: org.opencontainers.image.description=Docker image used to run code generation for Site Kit.
-          registry-username: ${{ github.actor }}
+          registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-vrt:
@@ -105,7 +105,7 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22
           context: ./tests/backstop
           labels: org.opencontainers.image.description=Docker image used to run visual regression tests for Site Kit.
-          registry-username: ${{ github.actor }}
+          registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-fixed:
@@ -126,7 +126,7 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21
           build-args: WP_VERSION=5.2.21
           labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image for Site Kit Playwright tests.
-          registry-username: ${{ github.actor }}
+          registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-latest:
@@ -156,7 +156,7 @@ jobs:
           build-args: WP_VERSION=latest
           skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
           labels: org.opencontainers.image.description=WordPress latest Docker image for Site Kit Playwright tests.
-          registry-username: ${{ github.actor }}
+          registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-nightly:
@@ -178,5 +178,5 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/playwright-wp:nightly
           build-args: WP_VERSION=nightly
           labels: org.opencontainers.image.description=WordPress nightly Docker image for Site Kit Playwright tests.
-          registry-username: ${{ github.actor }}
+          registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
