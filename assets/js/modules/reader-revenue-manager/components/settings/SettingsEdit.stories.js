@@ -229,13 +229,11 @@ WithPolicyViolationPending.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setContentPolicyStatus( {
-				contentPolicyState:
-					CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
-				policyInfoLink: 'https://publishercenter.google.com/policy',
-			} );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			contentPolicyState:
+				CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+			policyInfoLink: 'https://publishercenter.google.com/policy',
+		} );
 	},
 };
 
@@ -253,13 +251,11 @@ WithPolicyViolationActive.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setContentPolicyStatus( {
-				contentPolicyState:
-					CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
-				policyInfoLink: 'https://publishercenter.google.com/policy',
-			} );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			contentPolicyState:
+				CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+			policyInfoLink: 'https://publishercenter.google.com/policy',
+		} );
 	},
 };
 
@@ -277,13 +273,11 @@ WithPolicyViolationExtreme.args = {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
 
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setContentPolicyStatus( {
-				contentPolicyState:
-					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
-				policyInfoLink: 'https://publishercenter.google.com/policy',
-			} );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+			contentPolicyState:
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+			policyInfoLink: 'https://publishercenter.google.com/policy',
+		} );
 	},
 };
 
