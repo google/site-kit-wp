@@ -89,7 +89,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 		}
 
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports`,
 			'activate_periodic_email_reports'
 		);
 
@@ -104,7 +104,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 
 	const handleDisableConfirm = useCallback( async () => {
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports`,
 			'deactivate_periodic_email_reports'
 		);
 		setIsDisableDialogOpen( false );
@@ -113,17 +113,29 @@ export default function SettingsEmailReporting( { loading = false } ) {
 	}, [ saveEmailReportingSettings, setEmailReportingEnabled, viewContext ] );
 
 	const handleDisableCancel = useCallback( () => {
-		setIsDisableDialogOpen( false );
-	}, [] );
-
-	const handleManageClick = useCallback( () => {
 		trackEvent(
-			`${ viewContext }_email_reports_settings`,
+			`${ viewContext }_email_reports_confirm_disable_modal`,
+			'dismiss_modal'
+		);
+		setIsDisableDialogOpen( false );
+	}, [ viewContext ] );
+
+	const handleManageClickFromCardNotice = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports`,
 			'manage_email_reports_subscription'
 		);
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ viewContext, setValue ] );
+
+	const handleManageClickFromModal = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_email_reports_confirm_disable_modal`,
+			'manage_email_reports_subscription'
+		);
 		handleDisableCancel();
-	}, [ setValue, viewContext, handleDisableCancel ] );
+		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+	}, [ viewContext, setValue, handleDisableCancel ] );
 
 	if ( loading || settings === undefined ) {
 		return null;
@@ -161,9 +173,18 @@ export default function SettingsEmailReporting( { loading = false } ) {
 											{
 												a: (
 													<Link
+														// This is a temporary link until we have a
+														// dedicated page for email reporting documentation.
+														// See: https://github.com/google/site-kit-wp/issues/12327
 														href={
 															documentationURL
 														}
+														onClick={ () => {
+															trackEvent(
+																`${ viewContext }_email_reports`,
+																'click_learn_more_link'
+															);
+														} }
 														external
 													/>
 												),
@@ -197,7 +218,7 @@ export default function SettingsEmailReporting( { loading = false } ) {
 				( isSubscribed || isDismissed !== false ) && (
 					<Row className="googlesitekit-settings-email-reporting__manage">
 						<Cell size={ 12 }>
-							<Link onClick={ handleManageClick }>
+							<Link onClick={ handleManageClickFromCardNotice }>
 								{ __(
 									'Manage email reports subscription',
 									'google-site-kit'
@@ -230,16 +251,37 @@ export default function SettingsEmailReporting( { loading = false } ) {
 									'google-site-kit'
 								),
 								{
-									a: <Link onClick={ handleManageClick } />,
+									a: (
+										<Link
+											onClick={
+												handleManageClickFromModal
+											}
+										/>
+									),
 								}
 							) }
 							<br />
 							{ /** TODO update learn more link when it is provided. */ }
-							<Link href="">
+							<Link
+								href={ documentationURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_email_reports_confirm_disable_modal`,
+										'click_learn_more_link'
+									);
+								} }
+								external
+							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
 						</Fragment>
 					}
+					onOpen={ () => {
+						trackEvent(
+							`${ viewContext }_email_reports_confirm_disable_modal`,
+							'view_modal'
+						);
+					} }
 					handleConfirm={ handleDisableConfirm }
 					handleCancel={ handleDisableCancel }
 					onClose={ handleDisableCancel }

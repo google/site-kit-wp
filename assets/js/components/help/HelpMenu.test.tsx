@@ -20,78 +20,171 @@
  * Internal dependencies
  */
 import {
-	act,
-	createTestRegistry,
-	fireEvent,
-	provideModules,
 	render,
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+	fireEvent,
+	waitFor,
 } from '../../../../tests/js/test-utils';
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-} from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import HelpMenu from './HelpMenu';
-import * as tours from '@/js/feature-tours/welcome';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-const welcomeTourMock = {
-	slug: 'mocked-tour',
-	isRepeatable: true,
-	contexts: [],
-	gaEventCategory: () => '',
-	step: '',
-	steps: [],
-};
-const getWelcomeTourMock = jest.spyOn( tours, 'getWelcomeTour' );
-getWelcomeTourMock.mockImplementation( () => welcomeTourMock );
+jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const mockWelcomeTour = getWelcomeTour( {
+	isViewOnly: false,
+	canAuthenticate: true,
+	isAnalyticsConnected: false,
+	isActivateAnalyticsNotificationPresent: false,
+} );
 
 describe( 'HelpMenu', () => {
-	let registry: WPDataRegistry;
-	let triggerOnDemandTourSpy: jest.SpyInstance;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
-			[ PERMISSION_AUTHENTICATE ]: true,
-		} );
-		triggerOnDemandTourSpy = jest.spyOn(
-			registry.dispatch( CORE_USER ),
-			'triggerOnDemandTour'
-		);
+
+		provideSiteInfo( registry );
+		provideModules( registry );
+		provideUserCapabilities( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
 	} );
 
-	it( 'should trigger an on-demand tour when clicking on "Start a feature tour"', () => {
-		const { getByRole } = render( <HelpMenu />, {
-			registry,
-			features: [ 'setupFlowRefresh' ],
+	afterEach( () => {
+		jest.clearAllMocks();
+	} );
+
+	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
+		it( 'should render the correct menu items', () => {
+			const { container } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( container ).toMatchSnapshot();
 		} );
 
-		act( () => {
+		it( 'should render the "Get help with AdSense" menu item when AdSense is active', () => {
+			provideModules( registry, [ { slug: 'adsense', active: true } ] );
+
+			const { container, getByText } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( container ).toMatchSnapshot();
+			expect( getByText( 'Get help with AdSense' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should track the `open_helpmenu` event when the help menu is opened', () => {
+			const { getByRole } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
 			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
-		} );
 
-		act( () => {
-			fireEvent.click(
-				getByRole( 'menuitem', { name: 'Start a feature tour' } )
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
+				'open_helpmenu'
 			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
-		expect( getWelcomeTourMock ).toHaveBeenCalledWith( {
-			canAuthenticate: true,
-			isAnalyticsConnected: true,
-			isViewOnly: false,
-		} );
+		it.each( [
+			[ 'Browse documentation', 'browse_documentation' ],
+			[ 'Get free support', 'get_support' ],
+			[ 'Start a feature tour', 'start_tour' ],
+			[ 'Send feedback', 'send_feedback' ],
+		] )(
+			'should track the `click_menu_item` event when clicking the "%s" button, with the label set to `%s`',
+			( linkText, expectedLabel ) => {
+				const { getByText } = render( <HelpMenu />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'setupFlowRefresh' ],
+				} );
 
-		expect( triggerOnDemandTourSpy ).toHaveBeenCalledWith(
-			welcomeTourMock
+				fireEvent.click( getByText( linkText ) );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
+					'click_menu_item',
+					expectedLabel
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+			}
 		);
+
+		it( 'should track the `click_menu_item` event for the "Get help with AdSense" menu item when AdSense is active', () => {
+			provideModules( registry, [ { slug: 'adsense', active: true } ] );
+
+			const { getByText } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			fireEvent.click( getByText( 'Get help with AdSense' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
+				'click_menu_item',
+				'get_adsense_help'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
+			const { getByText, waitForRegistry } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( 'Start a feature tour' ) );
+
+			await waitFor( () => {
+				expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
+					mockWelcomeTour
+				);
+			} );
+		} );
+	} );
+
+	describe( 'without the `setupFlowRefresh` feature flag', () => {
+		it( 'should track the `click_outgoing_link` event for legacy menu items', () => {
+			const { getByText } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			fireEvent.click( getByText( 'Read help docs' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
+				'click_outgoing_link',
+				'documentation'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

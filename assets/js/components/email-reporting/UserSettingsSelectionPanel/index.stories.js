@@ -26,6 +26,7 @@ import {
 	provideUserInfo,
 	provideModules,
 	provideUserCapabilities,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -69,6 +70,16 @@ const mockEligibleSubscribers = [
 	},
 ];
 
+const defaultQueryArgs = { search: '' };
+
+function createEligibleSubscribersResponse( users ) {
+	return {
+		users,
+		total: users.length,
+		totalPages: 1,
+	};
+}
+
 function Template( { viewContext } ) {
 	return (
 		<ViewContextProvider
@@ -79,6 +90,29 @@ function Template( { viewContext } ) {
 	);
 }
 
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.scenario = {};
+Loading.args = {
+	setupRegistry: () => {
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/core/site/data/email-reporting-errors'
+			)
+		);
+	},
+};
+Loading.decorators = [
+	( Story ) => {
+		// Ensure the animation is paused for VRT tests to correctly capture the loading state.
+		return (
+			<div className="googlesitekit-vrt-animation-paused">
+				<Story />
+			</div>
+		);
+	},
+];
+
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
@@ -87,10 +121,13 @@ Default.args = {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -211,10 +248,13 @@ WithoutManagePermission.args = {
 		} );
 		registry
 			.dispatch( CORE_SITE )
-			.receiveGetEligibleSubscribers( mockEligibleSubscribers );
+			.receiveGetEligibleSubscribers(
+				createEligibleSubscribersResponse( mockEligibleSubscribers ),
+				{ page: 1, search: '' }
+			);
 		registry
 			.dispatch( CORE_SITE )
-			.finishResolution( 'getEligibleSubscribers', [] );
+			.finishResolution( 'getEligibleSubscribers', [ defaultQueryArgs ] );
 	},
 };
 
@@ -252,10 +292,6 @@ export default {
 					.receiveGetEmailReportingSettings( {
 						subscribed: true,
 					} );
-
-				registry
-					.dispatch( CORE_SITE )
-					.receiveGetEmailReportingErrors( [] );
 
 				registry
 					.dispatch( CORE_UI )

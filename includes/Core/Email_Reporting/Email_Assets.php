@@ -50,6 +50,7 @@ class Email_Assets {
 		'icon-search'                   => '2025-12-01-icon-search.png',
 		'icon-views'                    => '2025-12-01-icon-views.png',
 		'icon-visitors'                 => '2025-12-01-icon-visitors.png',
+		'icon-star'                     => '2026-03-03-icon-star.png',
 		'conversions-timeline-green'    => '2025-12-01-conversions-timeline-green.png',
 		'conversions-timeline-red'      => '2025-12-01-conversions-timeline-red.png',
 		'notification-icon-star'        => '2025-12-01-notification-icon-star.png',

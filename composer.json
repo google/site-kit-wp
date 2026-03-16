@@ -13,7 +13,6 @@
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^9.0",
-    "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=5.2",
     "squizlabs/php_codesniffer": "^3.7",
     "szepeviktor/phpstan-wordpress": "^2.0",
@@ -25,6 +24,7 @@
     "php": ">=7.4",
     "ext-json": "*",
     "ext-openssl": "*",
+    "composer-plugin-api": ">=2.9.0",
     "google/apiclient": "^2.16",
     "google/apiclient-services-adsense.v2": "dev-generated",
     "google/apiclient-services-analyticsadmin.v1alpha": "dev-generated",
@@ -64,6 +64,14 @@
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "roots/wordpress-core-installer": true
+    },
+    "audit": {
+      "ignore": {
+        "PKSA-y2cr-5h3j-g3ys": {
+          "apply": "block",
+          "reason": "[Low] blocked by current minimum PHP requirement"
+        }
+      }
     }
   },
   "extra": {

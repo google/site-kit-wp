@@ -51,7 +51,7 @@ import {
 	surveyTriggerEndpoint,
 } from '../../../../../../tests/js/mock-survey-endpoints';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );

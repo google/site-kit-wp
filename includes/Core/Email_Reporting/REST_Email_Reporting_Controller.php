@@ -225,9 +225,22 @@ class REST_Email_Reporting_Controller {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function () {
-							$meta_key       = $this->user_email_reporting_settings->get_meta_key();
-							$eligible_users = $this->eligible_subscribers_query->get_eligible_users( get_current_user_id() );
+						'callback'            => function ( WP_REST_Request $request ) {
+							$page            = (int) $request['page'];
+							$per_page        = (int) $request['per_page'];
+							$search          = (string) $request['search'];
+							$current_user_id = get_current_user_id();
+							$meta_key        = $this->user_email_reporting_settings->get_meta_key();
+							$eligible_users  = $this->eligible_subscribers_query->get_eligible_users(
+								$current_user_id,
+								array(
+									'page'     => $page,
+									'per_page' => $per_page,
+									'search'   => $search,
+								)
+							);
+							$total          = $this->eligible_subscribers_query->get_eligible_users_count( $current_user_id, $search );
+							$total_pages    = $total > 0 ? (int) ceil( $total / $per_page ) : 0;
 
 							$data = array_map(
 								function ( WP_User $user ) use ( $meta_key ) {
@@ -236,9 +249,33 @@ class REST_Email_Reporting_Controller {
 								$eligible_users
 							);
 
-							return new WP_REST_Response( array_values( $data ) );
+							return new WP_REST_Response(
+								array(
+									'users'      => array_values( $data ),
+									'total'      => $total,
+									'totalPages' => $total_pages,
+								)
+							);
 						},
 						'permission_callback' => $can_manage,
+						'args'                => array(
+							'page'     => array(
+								'type'    => 'integer',
+								'default' => 1,
+								'minimum' => 1,
+							),
+							'per_page' => array(
+								'type'    => 'integer',
+								'default' => Eligible_Subscribers_Query::PER_PAGE,
+								'minimum' => 1,
+								'maximum' => Eligible_Subscribers_Query::MAX_PER_PAGE,
+							),
+							'search'   => array(
+								'type'              => 'string',
+								'default'           => '',
+								'sanitize_callback' => 'sanitize_text_field',
+							),
+						),
 					),
 				)
 			),
@@ -310,18 +347,18 @@ class REST_Email_Reporting_Controller {
 			);
 		}
 
-		if ( ! $this->is_user_eligible_for_invite( $user_id ) ) {
-			return $this->invite_error(
-				'email_reporting_ineligible_user',
-				__( 'The provided user is not eligible for invitation.', 'google-site-kit' ),
-				400
-			);
-		}
-
 		if ( $this->is_user_subscribed( $user_id ) ) {
 			return $this->invite_error(
 				'email_reporting_user_already_subscribed',
 				__( 'The user is already subscribed to email reports.', 'google-site-kit' ),
+				400
+			);
+		}
+
+		if ( ! $this->is_user_eligible_for_invite( $user_id ) ) {
+			return $this->invite_error(
+				'email_reporting_ineligible_user',
+				__( 'The provided user is not eligible for invitation.', 'google-site-kit' ),
 				400
 			);
 		}
@@ -425,10 +462,7 @@ class REST_Email_Reporting_Controller {
 	 * @return bool
 	 */
 	private function is_user_eligible_for_invite( $user_id ) {
-		$eligible_users = $this->eligible_subscribers_query->get_eligible_users( get_current_user_id() );
-		$eligible_ids   = wp_list_pluck( $eligible_users, 'ID' );
-
-		return in_array( $user_id, array_map( 'intval', $eligible_ids ), true );
+		return $this->eligible_subscribers_query->is_user_eligible( get_current_user_id(), $user_id );
 	}
 
 	/**
@@ -522,7 +556,14 @@ class REST_Email_Reporting_Controller {
 				'domain' => $site_domain,
 				'url'    => home_url( '/' ),
 			),
-			'title'                  => Content_Map::get_title_with_args( 'invitation-email', array( $inviter_email ) ),
+			'title'                  => Content_Map::get_title_with_args(
+				'invitation-email',
+				array(
+					'<a class="text-primary" href="mailto:' . $inviter_email . '" style="color: #161B18; text-decoration: none; font-weight: 500;">',
+					$inviter_email,
+					'</a>',
+				)
+			),
 			'body'                   => Content_Map::get_body( 'invitation-email' ),
 			'inviter_email'          => $inviter_email,
 			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',

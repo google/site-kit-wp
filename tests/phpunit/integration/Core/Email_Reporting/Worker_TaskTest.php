@@ -9,6 +9,7 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Batch_Error_Notifier;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Processor;
@@ -84,6 +85,11 @@ class Worker_TaskTest extends TestCase {
 	private $created_post_ids = array();
 
 	/**
+	 * @var Batch_Error_Notifier|\PHPUnit_Framework_MockObject_MockObject
+	 */
+	private $notifier;
+
+	/**
 	 * @var Email_Log_Batch_Query
 	 */
 	private $real_batch_query;
@@ -101,6 +107,7 @@ class Worker_TaskTest extends TestCase {
 		$this->template_renderer         = $this->createMock( Email_Template_Renderer::class );
 		$this->template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
+		$this->notifier         = $this->createMock( Batch_Error_Notifier::class );
 		$this->email_log        = new Email_Log( $this->context );
 		$this->created_post_ids = array();
 		$this->real_batch_query = new Email_Log_Batch_Query();
@@ -289,7 +296,8 @@ class Worker_TaskTest extends TestCase {
 			$this->batch_query,
 			$this->scheduler,
 			$log_processor_mock,
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
@@ -318,7 +326,8 @@ class Worker_TaskTest extends TestCase {
 				$this->template_formatter,
 				new Email_Report_Sender( $this->template_renderer_factory, $this->email_sender )
 			),
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 
 		$batch_id       = 'batch-real';
@@ -376,7 +385,12 @@ class Worker_TaskTest extends TestCase {
 
 		$this->template_formatter->expects( $this->once() )
 			->method( 'build_template_payload' )
-			->with( array( $section ), Email_Reporting_Settings::FREQUENCY_WEEKLY, $this->arrayHasKey( 'startDate' ) )
+			->with(
+				array( $section ),
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$this->arrayHasKey( 'startDate' ),
+				$this->isInstanceOf( \WP_User::class )
+			)
 			->willReturn(
 				array(
 					'sections_payload' => array( 'total_conversion_events' => array( 'value' => '10' ) ),
@@ -650,7 +664,7 @@ class Worker_TaskTest extends TestCase {
 		$this->email_sender->method( 'send' )->willReturn( new WP_Error( 'send_failure', 'Send failed' ) );
 
 		$worker_task   = $this->create_worker_task( $this->real_batch_query );
-		$fallback_task = new Fallback_Task( $this->real_batch_query, $this->scheduler, $worker_task );
+		$fallback_task = new Fallback_Task( $this->real_batch_query, $this->scheduler, $worker_task, $this->notifier );
 
 		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
 		$fallback_task->handle_fallback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp );
@@ -761,7 +775,8 @@ class Worker_TaskTest extends TestCase {
 			$batch_query,
 			$this->scheduler,
 			$log_processor,
-			$this->data_requests
+			$this->data_requests,
+			$this->notifier
 		);
 	}
 

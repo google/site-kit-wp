@@ -21,6 +21,8 @@ $preheader          = $data['preheader'];
 $site_domain        = $data['site']['domain'];
 $site_url           = ! empty( $data['site']['url'] ) ? $data['site']['url'] : '';
 $date_label         = $data['date_range']['label'];
+$header_notices     = ! empty( $data['header_notices'] ) && is_array( $data['header_notices'] ) ? $data['header_notices'] : array();
+$section_notices    = ! empty( $data['section_notices'] ) && is_array( $data['section_notices'] ) ? $data['section_notices'] : array();
 $primary_cta        = $data['primary_call_to_action'];
 $footer_content     = $data['footer'];
 $sections           = $data['sections'];
@@ -33,6 +35,9 @@ $render_shared_part = $data['render_shared_part'];
 <head>
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<?php /* Enable dark mode support in email clients that honor these meta tags. */ ?>
+	<meta name="color-scheme" content="light dark" />
+	<meta name="supported-color-schemes" content="light dark" />
 	<?php /* Outlook requires this VML to prevent visual bugs when DPI is scaled on Windows. */ ?>
 	<!--[if gte mso 9]>
 	<xml>
@@ -44,78 +49,7 @@ $render_shared_part = $data['render_shared_part'];
 	<![endif]-->
 	<title><?php echo esc_html( $subject ); ?></title>
 	<style>
-		:root {
-			color-scheme: light;
-		}
-
-		body {
-			background-color: #F3F5F7;
-			margin: 0;
-			padding: 0;
-			font-family: 'Google Sans', Roboto, Arial, sans-serif;
-			font-size: 14px;
-			line-height: 1.4;
-			color: #202124;
-		}
-
-		table {
-			border-spacing: 0;
-			border-collapse: separate;
-			width: 100%;
-		}
-
-		img {
-			border: 0;
-			max-width: 100%;
-			height: auto;
-			line-height: 100%;
-		}
-
-		.body {
-			width: 100%;
-			<?php /* Outlook only allows max-width when set on table elements. */ ?>
-			max-width: 520px;
-			background-color: #F3F5F7;
-		}
-
-		.container {
-			max-width: 520px;
-			margin: 0 auto;
-			padding: 0;
-			width: 100%;
-			box-sizing: border-box;
-		}
-
-		.main {
-			width: 100%;
-			max-width: 520px;
-			margin: 0 auto;
-		}
-
-		.wrapper {
-			box-sizing: border-box;
-			padding: 0 16px 40px 16px;
-		}
-
-		.preheader {
-			display: none !important;
-			visibility: hidden;
-			mso-hide: all;
-			font-size: 1px;
-			color: #F3F5F7;
-			line-height: 1px;
-			max-height: 0;
-			max-width: 0;
-			opacity: 0;
-			overflow: hidden;
-		}
-
-		@media (min-width: 481px) {
-			.subtitle {
-				/* `!important` used to override inline styles in the element. */
-				width: auto !important;
-			}
-		}
+		<?php $render_shared_part( 'styles' ); ?>
 	</style>
 </head>
 <body>
@@ -138,17 +72,21 @@ $render_shared_part = $data['render_shared_part'];
 							$render_part(
 								'header',
 								array(
-									'site_domain'   => $site_domain,
-									'site_url'      => $site_url,
-									'date_label'    => $date_label,
-									'get_asset_url' => $get_asset_url,
+									'site_domain'    => $site_domain,
+									'site_url'       => $site_url,
+									'date_label'     => $date_label,
+									'header_notices' => $header_notices,
+									'get_asset_url'  => $get_asset_url,
+									'render_part'    => $render_part,
 								)
 							);
 
 							// Render each section with its parts.
 							foreach ( $sections as $section_key => $section ) {
-								// Skip sections without parts.
-								if ( empty( $section['section_parts'] ) ) {
+								$has_section_notices = ! empty( $section_notices[ $section_key ] );
+
+								// Skip sections without parts unless there are section notices to render.
+								if ( empty( $section['section_parts'] ) && ! $has_section_notices ) {
 									continue;
 								}
 
@@ -158,6 +96,7 @@ $render_shared_part = $data['render_shared_part'];
 										$section['section_template'],
 										array(
 											'section'     => $section,
+											'section_notices' => $section_notices,
 											'render_part' => $render_part,
 											'render_shared_part' => $render_shared_part,
 											'get_asset_url' => $get_asset_url,

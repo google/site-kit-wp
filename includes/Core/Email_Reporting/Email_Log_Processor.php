@@ -130,7 +130,7 @@ class Email_Log_Processor {
 			return;
 		}
 
-		$template_payload = $this->build_template_payload_for_log( $sections, $frequency, $date_range );
+		$template_payload = $this->build_template_payload_for_log( $sections, $frequency, $date_range, $user );
 		if ( is_wp_error( $template_payload ) ) {
 			$this->mark_failed( $post_id, $template_payload );
 			return;
@@ -285,13 +285,14 @@ class Email_Log_Processor {
 	 *
 	 * @since 1.170.0
 	 *
-	 * @param array  $sections   Sections data.
-	 * @param string $frequency  Frequency slug.
-	 * @param array  $date_range Date range.
+	 * @param array   $sections   Sections data.
+	 * @param string  $frequency  Frequency slug.
+	 * @param array   $date_range Date range.
+	 * @param WP_User $user      Recipient user.
 	 * @return array|WP_Error Template payload or WP_Error.
 	 */
-	private function build_template_payload_for_log( $sections, $frequency, $date_range ) {
-		return $this->template_formatter->build_template_payload( $sections, $frequency, $date_range );
+	private function build_template_payload_for_log( $sections, $frequency, $date_range, WP_User $user ) {
+		return $this->template_formatter->build_template_payload( $sections, $frequency, $date_range, $user );
 	}
 
 	/**

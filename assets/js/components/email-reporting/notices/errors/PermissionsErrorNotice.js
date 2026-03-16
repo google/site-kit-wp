@@ -32,8 +32,8 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-export const EMAIL_REPORTING_PERMISSIONS_ERROR_NOTICE =
-	'email_reporting_permissions_error_notice';
+export const EMAIL_REPORTS_PERMISSIONS_ERROR_NOTICE =
+	'email_reports_permissions_error_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
@@ -57,7 +57,7 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 	);
 
 	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTING_PERMISSIONS_ERROR_NOTICE
+		EMAIL_REPORTS_PERMISSIONS_ERROR_NOTICE
 	);
 
 	return (

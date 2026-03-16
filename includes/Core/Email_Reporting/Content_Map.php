@@ -106,11 +106,10 @@ class Content_Map {
 	 */
 	protected static function get_all_titles() {
 		return array(
-			/* translators: %1$s: Email address of the person who sent the invitation */
-			'invitation-email'          => __( '<a href="mailto:%1$s" style="color: #161B18; text-decoration: none; font-weight: 500;">%1$s</a> invited you to receive periodic performance reports', 'google-site-kit' ),
+			/* translators: 1: opening anchor tag with mailto link, 2: inviter email address, 3: closing anchor tag */
+			'invitation-email'          => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
 			'subscription-confirmation' => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
-			// Note: Error email titles can be overridden for specific error titles directly when calling Email_Template_Renderer::render().
-			'error-email'               => __( 'We’ve detected an issue with your Site Kit email reports', 'google-site-kit' ),
+			'error-email'               => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
 		);
 	}
 
@@ -123,18 +122,41 @@ class Content_Map {
 	 */
 	protected static function get_all_bodies() {
 		return array(
-			'invitation-email'          => array(
+			'invitation-email'                       => array(
 				__( 'Receive the most important insights about your site’s performance, key trends, and tailored metrics, powered by Site Kit, directly in your inbox.', 'google-site-kit' ),
 				__( 'You can unsubscribe or change how often emails are sent anytime from your Site Kit dashboard.', 'google-site-kit' ),
 			),
-			'subscription-confirmation' => array(
+			'subscription-confirmation'              => array(
 				__( 'You’re all set to receive your site performance reports.', 'google-site-kit' ),
 				/* translators: %1$s: frequency (e.g., "monthly") wrapped in strong tags, %2$s: first report date wrapped in strong tags */
 				__( 'You’ve successfully set your frequency to <strong>%1$s</strong>, and you can expect to receive your first report on <strong>%2$s</strong>.', 'google-site-kit' ),
 				__( 'You can manage your subscription settings or change the report frequency anytime in your Site Kit dashboard.', 'google-site-kit' ),
 			),
-			'error-email'               => array(
-				__( 'We were unable to generate your reports due to insufficient permissions. To fix this, contact your administrator or get help. Once the issue is resolved, report generation will resume automatically.', 'google-site-kit' ),
+			'error-email'                            => array(
+				__( 'We were unable to generate your report due to a server error. To fix this, contact your host. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
+			),
+			// Opening/closing tag placeholders keep inline styles and HTML
+			// out of translation strings. Inline color styles are required
+			// because many email clients strip or ignore CSS classes.
+			'error-email-permissions-search-console' => array(
+				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
+				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
+				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
+			),
+			'error-email-permissions-analytics-4'    => array(
+				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
+				__( 'We were unable to generate your reports due to insufficient permissions in Analytics. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
+				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
+			),
+			'error-email-report-search-console'      => array(
+				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
+				__( 'We were unable to generate your report because data loading failed for Search Console. To fix this, go to %1$sSearch Console settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
+				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
+			),
+			'error-email-report-analytics-4'         => array(
+				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
+				__( 'We were unable to generate your report because data loading failed for Analytics. To fix this, go to %1$sAnalytics settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
+				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 		);
 	}
