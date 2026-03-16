@@ -406,7 +406,7 @@ describe( 'getWelcomeTour', () => {
 			expect( activateAnalyticsStep ).toBeUndefined();
 		} );
 
-		it( 'should use the chart as the floater target when window height is less than 930 for SC-only tours', () => {
+		it( 'should use the chart as the floater target when the window height is less than 930 for SC-only tours', () => {
 			const smallTour = getWelcomeTour( {
 				isViewOnly: false,
 				canAuthenticate: true,
@@ -416,6 +416,18 @@ describe( 'getWelcomeTour', () => {
 
 			expect( smallTour.steps[ 0 ].floaterProps ).toEqual( {
 				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart',
+			} );
+		} );
+
+		it( 'should use the widget body target when windowHeight is undefined', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+			} );
+
+			expect( tour.steps[ 0 ].floaterProps ).toEqual( {
+				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
 			} );
 		} );
 	} );
