@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { EnhancedMeasurementActivationBanner } from '@/js/modules/analytics-4/components/dashboard';
 import AudienceSegmentationIntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
@@ -53,6 +54,8 @@ import {
 	asyncRequireAll,
 	asyncRequireAny,
 } from '@/js/util/async';
+import { isFeatureEnabled } from '@/js/features';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	requireAudienceSegmentationWidgetHidden,
 	requireCanViewSharedModule,
@@ -72,6 +75,7 @@ import {
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
@@ -154,6 +158,26 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			( { select, dispatch } ) => {
+				if (
+					! isFeatureEnabled( 'setupFlowRefresh' ) ||
+					! isInitialWelcomeModalActive()
+				) {
+					return true;
+				}
+
+				const isDismissing = select( CORE_USER ).isDismissingItem(
+					AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+				);
+
+				if ( ! isDismissing ) {
+					dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
+					);
+				}
+
+				return false;
+			},
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequireAny(
 				requireIsAuthenticated(),
