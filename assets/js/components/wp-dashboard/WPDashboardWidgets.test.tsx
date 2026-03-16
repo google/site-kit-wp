@@ -112,6 +112,11 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': false,
+		} );
+
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
@@ -121,6 +126,8 @@ describe( 'WPDashboardWidgets', () => {
 		await waitForRegistry();
 
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,

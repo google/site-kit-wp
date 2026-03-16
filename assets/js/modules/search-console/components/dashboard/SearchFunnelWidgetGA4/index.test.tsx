@@ -124,6 +124,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 	afterEach( () => {
 		setViewportWidth( originalViewport );
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render the Search Funnel Widget, including the Activate Analytics CTA', async () => {
@@ -224,6 +225,8 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
 		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'dismiss_cta',

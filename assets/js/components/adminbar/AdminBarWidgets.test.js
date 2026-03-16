@@ -221,6 +221,8 @@ describe( 'AdminBarWidgets', () => {
 
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 			'dismiss_cta',
