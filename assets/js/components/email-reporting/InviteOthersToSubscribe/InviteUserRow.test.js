@@ -19,12 +19,17 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../../tests/js/test-utils';
 import InviteUserRow from './InviteUserRow';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'InviteUserRow', () => {
 	let registry;
@@ -120,7 +125,7 @@ describe( 'InviteUserRow', () => {
 		expect( getByText( 'Retry' ) ).toBeInTheDocument();
 	} );
 
-	it( 'calls inviteUser action when Send invite is clicked', async () => {
+	it( 'calls inviteUser action and tracks GA event when Send invite is clicked', async () => {
 		const inviteUserEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/site/data/email-reporting-invite-user'
 		);
@@ -135,7 +140,7 @@ describe( 'InviteUserRow', () => {
 				user={ mockUser }
 				onInviteResult={ mockOnInviteResult }
 			/>,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 
 		fireEvent.click( getByRole( 'button', { name: /send invite/i } ) );
@@ -146,6 +151,12 @@ describe( 'InviteUserRow', () => {
 		expect( mockOnInviteResult ).toHaveBeenCalledWith( mockUser.id, {
 			status: 'success',
 		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+			'mainDashboard_email_reports_user_settings-sidebar',
+			'send_invite'
+		);
 	} );
 
 	it( 'calls onInviteResult with error when invite fails', async () => {

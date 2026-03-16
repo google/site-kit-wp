@@ -58,6 +58,8 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
+use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 use WP_Error;
 
 /**
@@ -457,11 +459,123 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:publications':
-				$publications = $response->getPublications();
-				return array_values( $publications );
+				$publications = array_values( $response->getPublications() );
+				$this->synchronize_publication_data( $publications );
+				return $publications;
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Synchronizes the publication data with the module settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $publications Array of Publication objects.
+	 * @return void
+	 */
+	protected function synchronize_publication_data( $publications ) {
+		if ( empty( $publications ) ) {
+			return;
+		}
+
+		$settings       = $this->get_settings()->get();
+		$publication_id = $settings['publicationID'];
+
+		if ( empty( $publication_id ) ) {
+			return;
+		}
+
+		$filtered_publications = array_filter(
+			$publications,
+			function ( $pub ) use ( $publication_id ) {
+				return $pub->getPublicationId() === $publication_id;
+			}
+		);
+
+		if ( empty( $filtered_publications ) ) {
+			return;
+		}
+
+		$filtered_publications = array_values( $filtered_publications );
+		$publication           = $filtered_publications[0];
+
+		$onboarding_state     = $settings['publicationOnboardingState'];
+		$new_onboarding_state = $publication->getOnboardingState();
+
+		$new_settings = array(
+			'publicationOnboardingState' => $new_onboarding_state,
+			'productIDs'                 => $this->get_product_ids( $publication ),
+			'paymentOption'              => $this->get_payment_option( $publication ),
+		);
+
+		$content_policy_status = $publication->getContentPolicyStatus();
+
+		if ( $content_policy_status ) {
+			$new_settings['contentPolicyStatus'] = (array) $content_policy_status->toSimpleObject();
+		}
+
+		if ( $new_onboarding_state !== $onboarding_state ) {
+			$new_settings['publicationOnboardingStateChanged'] = true;
+		}
+
+		$this->get_settings()->merge( $new_settings );
+
+		$cron_event = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		if ( $cron_event ) {
+			wp_unschedule_event( $cron_event, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		}
+
+		wp_schedule_single_event(
+			time() + HOUR_IN_SECONDS,
+			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
+		);
+	}
+
+	/**
+	 * Returns the product IDs for the given publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Publication $publication Publication object.
+	 * @return array Product IDs.
+	 */
+	private function get_product_ids( Publication $publication ) {
+		$products    = $publication->getProducts();
+		$product_ids = array();
+
+		if ( ! empty( $products ) ) {
+			foreach ( $products as $product ) {
+				$product_ids[] = $product->getName();
+			}
+		}
+
+		return $product_ids;
+	}
+
+	/**
+	 * Returns the payment option for the given publication.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Publication $publication Publication object.
+	 * @return string Payment option.
+	 */
+	private function get_payment_option( Publication $publication ) {
+		$payment_options = $publication->getPaymentOptions();
+		$payment_option  = '';
+
+		if ( $payment_options instanceof PaymentOptions ) {
+			foreach ( $payment_options as $option => $value ) {
+				if ( true === $value ) {
+					$payment_option = $option;
+					break;
+				}
+			}
+		}
+
+		return $payment_option;
 	}
 
 	/**

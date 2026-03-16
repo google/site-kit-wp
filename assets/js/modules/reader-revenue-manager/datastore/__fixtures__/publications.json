@@ -20,7 +20,11 @@
 				"name": "basic"
 			}
 		],
-		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED"
+		"onboardingState": "ONBOARDING_STATE_UNSPECIFIED",
+		"contentPolicyStatus": {
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
+			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=ABCDEFGH"
+		}
 	},
 	{
 		"publicationId": "PQRSTUV",
@@ -43,7 +47,11 @@
 				"name": "premium"
 			}
 		],
-		"onboardingState": "PENDING_VERIFICATION"
+		"onboardingState": "PENDING_VERIFICATION",
+		"contentPolicyStatus": {
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
+			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=PQRSTUV"
+		}
 	},
 	{
 		"publicationId": "IJKLMNOP",
@@ -66,7 +74,11 @@
 				"name": "basic"
 			}
 		],
-		"onboardingState": "ONBOARDING_ACTION_REQUIRED"
+		"onboardingState": "ONBOARDING_ACTION_REQUIRED",
+		"contentPolicyStatus": {
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
+			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=IJKLMNOP"
+		}
 	},
 	{
 		"publicationId": "QRSTUVWX",
@@ -89,6 +101,10 @@
 				"name": "premium"
 			}
 		],
-		"onboardingState": "ONBOARDING_COMPLETE"
+		"onboardingState": "ONBOARDING_COMPLETE",
+		"contentPolicyStatus": {
+			"contentPolicyState": "CONTENT_POLICY_STATE_OK",
+			"policyInfoLink": "https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=QRSTUVWX"
+		}
 	}
 ]
