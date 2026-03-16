@@ -41,6 +41,10 @@ import {
 } from './constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import {
+	getProductIDs,
+	getPaymentOption,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
 
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
@@ -54,6 +58,30 @@ const fetchGetPublicationsStore = createFetchStore( {
 		),
 	reducerCallback: createReducer( ( state, publications ) => {
 		state.publications = publications;
+
+		if ( state.settings?.publicationID ) {
+			const publication = publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) => id === state.settings.publicationID
+			);
+
+			if ( publication ) {
+				const newSettings = {
+					publicationOnboardingState: publication.onboardingState,
+					productIDs: getProductIDs( publication.products ),
+					paymentOption: getPaymentOption(
+						publication.paymentOptions
+					),
+					contentPolicyStatus: publication.contentPolicyStatus,
+				};
+
+				Object.assign( state.settings, newSettings );
+
+				if ( state.savedSettings ) {
+					Object.assign( state.savedSettings, newSettings );
+				}
+			}
+		}
 	} ),
 } );
 
@@ -254,31 +282,10 @@ const baseActions = {
 				publicationID,
 				publicationOnboardingState: onboardingState,
 				publicationOnboardingStateChanged: false,
-				productIDs: [],
-				paymentOption: '',
+				productIDs: getProductIDs( products ),
+				paymentOption: getPaymentOption( paymentOptions ),
+				productID: 'openaccess',
 			};
-
-			if ( paymentOptions ) {
-				const paymentOption = Object.keys( paymentOptions ).find(
-					( key ) => !! paymentOptions[ key ]
-				);
-
-				if ( paymentOption ) {
-					settings.paymentOption = paymentOption;
-				}
-			}
-
-			if ( products ) {
-				settings.productIDs = products.reduce( ( ids, { name } ) => {
-					if ( ! name ) {
-						return ids;
-					}
-
-					return [ ...ids, name ];
-				}, [] );
-			}
-
-			settings.productID = 'openaccess';
 
 			if ( contentPolicyStatus ) {
 				settings.contentPolicyStatus = contentPolicyStatus;

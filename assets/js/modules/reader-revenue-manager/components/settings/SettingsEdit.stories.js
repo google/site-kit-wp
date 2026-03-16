@@ -228,9 +228,15 @@ WithPolicyViolationPending.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setContentPolicyStatus( {
+				contentPolicyState:
+					CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+				policyInfoLink: 'https://publishercenter.google.com/policy',
+			} );
 	},
-	contentPolicyState:
-		CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
 };
 
 export const WithPolicyViolationActive = Template.bind( {} );
@@ -246,8 +252,15 @@ WithPolicyViolationActive.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setContentPolicyStatus( {
+				contentPolicyState:
+					CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+				policyInfoLink: 'https://publishercenter.google.com/policy',
+			} );
 	},
-	contentPolicyState: CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
 };
 
 export const WithPolicyViolationExtreme = Template.bind( {} );
@@ -263,9 +276,15 @@ WithPolicyViolationExtreme.args = {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setContentPolicyStatus( {
+				contentPolicyState:
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+				policyInfoLink: 'https://publishercenter.google.com/policy',
+			} );
 	},
-	contentPolicyState:
-		CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 };
 
 export default {
@@ -306,15 +325,6 @@ export default {
 					productIDs: [ 'product-1', 'product-2' ],
 					snippetMode: 'post_types',
 				};
-
-				// Add content policy status if provided.
-				if ( args?.contentPolicyState ) {
-					settings.contentPolicyStatus = {
-						contentPolicyState: args.contentPolicyState,
-						policyInfoLink:
-							'https://publishercenter.google.com/policy',
-					};
-				}
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )

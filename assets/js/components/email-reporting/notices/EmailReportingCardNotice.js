@@ -39,7 +39,7 @@ import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
-export const EMAIL_REPORTING_CARD_NOTICE = 'email_reports_settings_new_notice';
+export const EMAIL_REPORTING_CARD_NOTICE = 'email_reports_new_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 

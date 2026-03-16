@@ -40,7 +40,6 @@ import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	CORE_USER,
-	PERMISSION_AUTHENTICATE,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
@@ -56,13 +55,12 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import useViewOnly from '@/js/hooks/useViewOnly';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { trackEvent } from '@/js/util';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import useViewContext from '@/js/hooks/useViewContext';
 
 enum MODAL_VARIANT {
@@ -81,12 +79,6 @@ export default function WelcomeModal() {
 	const viewContext = useViewContext();
 
 	const [ isOpen, setIsOpen ] = useState( true );
-
-	const isViewOnly = useViewOnly();
-
-	const canAuthenticate = useSelect( ( select: Select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
-	);
 
 	const analyticsConnected = useSelect( ( select: Select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -165,22 +157,12 @@ export default function WelcomeModal() {
 		}
 	}, [ closeAndDismissModal, modalVariant, showTooltip ] );
 
+	const welcomeTour = useWelcomeTour();
+
 	const startTourAndClose = useCallback( () => {
 		closeAndDismissModal();
-		triggerOnDemandTour(
-			getWelcomeTour( {
-				isViewOnly,
-				canAuthenticate,
-				isAnalyticsConnected: !! analyticsConnected,
-			} )
-		);
-	}, [
-		analyticsConnected,
-		canAuthenticate,
-		closeAndDismissModal,
-		isViewOnly,
-		triggerOnDemandTour,
-	] );
+		triggerOnDemandTour( welcomeTour );
+	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
 	const intersectionRef = useRef( null );
 
