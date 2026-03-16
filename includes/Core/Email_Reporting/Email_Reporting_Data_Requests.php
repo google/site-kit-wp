@@ -101,6 +101,18 @@ class Email_Reporting_Data_Requests {
 	private $custom_dimensions_data_available;
 
 	/**
+	 * Last user ID processed for payload generation in this request.
+	 *
+	 * Email reporting iterates multiple recipients in one worker run. Module and
+	 * auth clients can cache user-scoped tokens in-memory, so we track user changes
+	 * and reset runtime caches before building payloads for the next user.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	private $last_payload_user_id = 0;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.168.0
@@ -157,13 +169,6 @@ class Email_Reporting_Data_Requests {
 			);
 		}
 
-		$active_modules = $this->modules->get_active_modules();
-
-		if ( ! empty( $allowed_module_slugs ) ) {
-			// Flip slugs to keys so we can intersect by module slug.
-			$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
-		}
-
 		$previous_user_id     = get_current_user_id();
 		$restore_user_options = $this->user_options->switch_user( $user_id );
 
@@ -172,6 +177,15 @@ class Email_Reporting_Data_Requests {
 		// Collect payloads while impersonating the target user. Finally executes even
 		// when returning, so we restore user context on both success and unexpected throws.
 		try {
+			$this->maybe_reset_runtime_caches_for_user_change( $user_id );
+
+			$active_modules = $this->modules->get_active_modules();
+
+			if ( ! empty( $allowed_module_slugs ) ) {
+				// Flip slugs to keys so we can intersect by module slug.
+				$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
+			}
+
 			$available_modules = $this->filter_modules_for_user( $active_modules, $user );
 
 			if ( empty( $available_modules ) ) {
@@ -186,6 +200,35 @@ class Email_Reporting_Data_Requests {
 
 			wp_set_current_user( $previous_user_id );
 		}
+	}
+
+	/**
+	 * Resets module/auth runtime caches when switching between users in one request.
+	 *
+	 * Without this, modules can reuse a client initialized for the previous user,
+	 * which can lead to permission checks passing/failing against stale auth state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id Target user ID.
+	 */
+	private function maybe_reset_runtime_caches_for_user_change( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return;
+		}
+
+		if ( 0 === $this->last_payload_user_id ) {
+			$this->last_payload_user_id = $user_id;
+			return;
+		}
+
+		if ( $this->last_payload_user_id === $user_id ) {
+			return;
+		}
+
+		$this->last_payload_user_id = $user_id;
+		$this->modules->reset_runtime_caches();
 	}
 
 	/**
