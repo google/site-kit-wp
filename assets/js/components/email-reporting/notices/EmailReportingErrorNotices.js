@@ -27,8 +27,6 @@ import ReportErrorNotice from '@/js/components/email-reporting/notices/errors/Re
 import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
-export const EMAIL_REPORTING_ERROR_NOTICE = 'email_reporting_error_notice';
-
 export default function EmailReportingErrorNotices() {
 	const isViewOnly = useViewOnly();
 
