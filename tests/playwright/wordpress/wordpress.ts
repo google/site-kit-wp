@@ -23,10 +23,15 @@ import { test, Response, type Page, type TestInfo } from '@playwright/test';
  * Internal dependencies
  */
 import { WordPressArgs } from './args';
-import { WordPressDatabase, type PHPErrorLogEntry } from './database';
+import {
+	WordPressDatabase,
+	getDbName,
+	type PHPErrorLogEntry,
+} from './database';
 import { WordPressCookies } from './cookies';
 import { errorLogIgnoreList } from './error-log-ignore-list';
 import { WordPressPlugins } from './plugins';
+import { Mailpit } from './mailpit';
 
 /**
  * Represents a WordPress instance.
@@ -54,6 +59,13 @@ export class WordPress {
 	 * @since n.e.x.t
 	 */
 	private readonly plugins: WordPressPlugins;
+
+	/**
+	 * Mailpit client for email testing.
+	 *
+	 * @since n.e.x.t
+	 */
+	readonly mailpit: Mailpit;
 
 	/**
 	 * The Playwright TestInfo object for the current test.
@@ -95,6 +107,10 @@ export class WordPress {
 			args.baseURL
 		);
 		this.plugins = new WordPressPlugins( args.testInfo, args.db );
+		this.mailpit = new Mailpit(
+			args.mailpitURL,
+			`${ getDbName( args.testInfo ) }@example.com`
+		);
 	}
 
 	/**
@@ -135,6 +151,12 @@ export class WordPress {
 			await this.database.drop();
 			await this.database.end();
 		} );
+
+		if ( this.mailpit.hasInteracted() ) {
+			await test.step( 'Drop emails', () =>
+				this.mailpit.deleteMessages()
+			);
+		}
 
 		if ( errors.length > 0 ) {
 			const summary = errors

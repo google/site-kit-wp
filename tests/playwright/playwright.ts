@@ -36,6 +36,8 @@ const DB_HOST = process.env.PLAYWRIGHT_DB_HOST ?? 'localhost';
 const DB_PORT = Number( process.env.PLAYWRIGHT_DB_PORT ?? '9306' );
 const DB_USER = process.env.PLAYWRIGHT_DB_USER ?? 'root';
 const DB_PASSWORD = process.env.PLAYWRIGHT_DB_PASSWORD ?? 'example';
+const MAILPIT_URL =
+	process.env.PLAYWRIGHT_MAILPIT_URL ?? 'http://localhost:8025';
 
 /**
  * Type definition for the WordPress fixture.
@@ -68,6 +70,7 @@ export const test = base.extend< WordPressFixture >( {
 			context,
 			testInfo,
 			baseURL: WP_BASE_URL,
+			mailpitURL: MAILPIT_URL,
 		};
 
 		const wp = new WordPress( wpArgs );

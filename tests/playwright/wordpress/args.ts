@@ -60,4 +60,11 @@ export type WordPressArgs = {
 	 * @since n.e.x.t
 	 */
 	baseURL: string;
+
+	/**
+	 * The base URL of the Mailpit HTTP API.
+	 *
+	 * @since n.e.x.t
+	 */
+	mailpitURL: string;
 };

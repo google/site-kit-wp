@@ -15,6 +15,7 @@
  */
 
 export * from './args';
+export * from './mailpit';
 export * from './database';
 export * from './error-log-ignore-list';
 export * from './options';
