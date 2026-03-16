@@ -53,7 +53,7 @@ import {
 } from './settings';
 import * as fixtures from './__fixtures__';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '..';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 
 describe( 'modules/analytics-4 settings', () => {
 	let registry;
