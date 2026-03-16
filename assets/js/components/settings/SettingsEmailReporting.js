@@ -173,8 +173,11 @@ export default function SettingsEmailReporting( { loading = false } ) {
 											{
 												a: (
 													<Link
+														// This is a temporary link until we have a
+														// dedicated page for email reporting documentation.
+														// See: https://github.com/google/site-kit-wp/issues/12327
 														href={
-															documentationURL /** TODO update learn more link when it is provided. */
+															documentationURL
 														}
 														onClick={ () => {
 															trackEvent(
