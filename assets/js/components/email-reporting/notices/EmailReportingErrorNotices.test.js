@@ -65,7 +65,7 @@ describe( 'EmailReportingErrorNotices', () => {
 
 		expect( container ).not.toBeEmptyDOMElement();
 		expect(
-			getByText( 'Email Reports are failing to send' )
+			getByText( 'Email reports are failing to send' )
 		).toBeInTheDocument();
 		expect(
 			getByText(
@@ -163,7 +163,7 @@ describe( 'EmailReportingErrorNotices', () => {
 
 		expect( container ).not.toBeEmptyDOMElement();
 		expect(
-			getByText( 'Email Reports are failing to send' )
+			getByText( 'Email reports are failing to send' )
 		).toBeInTheDocument();
 		expect(
 			getByText(

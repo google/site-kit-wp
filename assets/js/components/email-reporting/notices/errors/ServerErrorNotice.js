@@ -44,7 +44,7 @@ export default function ServerErrorNotice() {
 			className="googlesitekit-email-reporting__admin-settings-notice"
 			type={ TYPES.ERROR }
 			title={ __(
-				'Email Reports are failing to send',
+				'Email reports are failing to send',
 				'google-site-kit'
 			) }
 			description={ __(
