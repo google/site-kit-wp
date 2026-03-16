@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -59,8 +58,11 @@ export const INVARIANT_INVALID_PRODUCT_IDS =
 export const INVARIANT_INVALID_PAYMENT_OPTION =
 	'a valid payment option is required';
 
-export const INVARIANT_INVALID_CONTENT_POLICY_STATUS =
-	'a valid content policy status object is required';
+export const INVARIANT_INVALID_CONTENT_POLICY_STATE =
+	'a valid content policy state string is required';
+
+export const INVARIANT_INVALID_POLICY_INFO_LINK =
+	'a valid policy info link string is required';
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
@@ -126,13 +128,22 @@ export function validateCanSubmitChanges( select ) {
 		INVARIANT_INVALID_PAYMENT_OPTION
 	);
 
-	const contentPolicyStatus = strictSelect(
+	const contentPolicyState = strictSelect(
 		MODULES_READER_REVENUE_MANAGER
-	).getContentPolicyStatus();
+	).getContentPolicyState();
 
 	invariant(
-		isPlainObject( contentPolicyStatus ),
-		INVARIANT_INVALID_CONTENT_POLICY_STATUS
+		typeof contentPolicyState === 'string',
+		INVARIANT_INVALID_CONTENT_POLICY_STATE
+	);
+
+	const policyInfoLink = strictSelect(
+		MODULES_READER_REVENUE_MANAGER
+	).getPolicyInfoLink();
+
+	invariant(
+		typeof policyInfoLink === 'string' || policyInfoLink === null,
+		INVARIANT_INVALID_POLICY_INFO_LINK
 	);
 }
 
