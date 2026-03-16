@@ -559,7 +559,7 @@ class REST_Email_Reporting_Controller {
 			'title'                  => Content_Map::get_title_with_args(
 				'invitation-email',
 				array(
-					'<a href="mailto:' . $inviter_email . '" style="color: #161B18; text-decoration: none; font-weight: 500;">',
+					'<a class="text-primary" href="mailto:' . $inviter_email . '" style="color: #161B18; text-decoration: none; font-weight: 500;">',
 					$inviter_email,
 					'</a>',
 				)
