@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 
 /**
@@ -77,7 +78,7 @@ class Email_Reporting_Scheduler {
 			return;
 		}
 
-		$next = $this->frequency_planner->next_occurrence( $frequency, time(), wp_timezone() );
+		$next = $this->frequency_planner->next_occurrence( $frequency, time(), BC_Functions::wp_timezone() );
 
 		wp_schedule_single_event( $next, self::ACTION_INITIATOR, array( $frequency, $next ) );
 	}
@@ -91,7 +92,7 @@ class Email_Reporting_Scheduler {
 	 * @param int    $timestamp Base timestamp used to calculate the next run.
 	 */
 	public function schedule_next_initiator( $frequency, $timestamp ) {
-		$next = $this->frequency_planner->next_occurrence( $frequency, $timestamp, wp_timezone() );
+		$next = $this->frequency_planner->next_occurrence( $frequency, $timestamp, BC_Functions::wp_timezone() );
 
 		wp_schedule_single_event( $next, self::ACTION_INITIATOR, array( $frequency, $next ) );
 	}

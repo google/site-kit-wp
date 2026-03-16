@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use DateInterval;
 use DateTimeImmutable;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 
 /**
@@ -106,7 +107,7 @@ class Initiator_Task {
 	 * @return array Reference date payload.
 	 */
 	public static function build_reference_dates( $frequency, $timestamp ) {
-		$time_zone = wp_timezone();
+		$time_zone = BC_Functions::wp_timezone();
 		$send_date = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )
 			->setTime( 0, 0, 0 );
