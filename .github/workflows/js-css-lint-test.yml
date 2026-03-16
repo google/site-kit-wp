@@ -75,7 +75,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+        run: npm ci --workspaces --include-workspace-root
       - name: JS Lint
         run: npm run lint:js
   typecheck:

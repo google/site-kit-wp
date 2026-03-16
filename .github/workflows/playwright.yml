@@ -1,0 +1,288 @@
+name: Playwright
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    # Ignore Storybook-only and unit-test-only changes when checking to run
+    # E2E tests. This is useful when adding/modifying/refactoring/removing
+    # test code ONLY in a commit, but saves running the expensive E2E test
+    # suite on GitHub Actions when all that's changing are tests and not code
+    # that would affect E2E behavior.
+    paths:
+      - ".github/workflows/playwright.yml"
+      - ".babelrc"
+      - "assets/**"
+      - "includes/**"
+      - "*.php"
+      - "jest-puppeteer.config.js"
+      - "composer.json"
+      - "composer.lock"
+      - "php-scoper/composer.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "postcss.config.js"
+      - "webpack/*.config.js"
+      - "webpack.config.js"
+      - "tests/playwright/**"
+      - "!assets/**/__tests__/**/*.js"
+      - "!assets/**/test/*.js"
+      - "!assets/**/*.test.js"
+      - "!packages/**/__tests__/**/*.js"
+      - "!packages/**/test/*.js"
+      - "!packages/**/*.test.js"
+  pull_request:
+    branches:
+      - develop
+      - main
+      - "feature/**"
+    # Ignore Storybook-only and unit-test-only changes when checking to run
+    # E2E tests. This is useful when adding/modifying/refactoring/removing
+    # test code ONLY in a commit, but saves running the expensive E2E test
+    # suite on GitHub Actions when all that's changing are tests and not code
+    # that would affect E2E behavior.
+    paths:
+      - ".github/workflows/playwright.yml"
+      - ".babelrc"
+      - "assets/**"
+      - "includes/**"
+      - "*.php"
+      - "jest-puppeteer.config.js"
+      - "composer.json"
+      - "composer.lock"
+      - "php-scoper/composer.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "postcss.config.js"
+      - "webpack/*.config.js"
+      - "webpack.config.js"
+      - "tests/playwright/**"
+      - "!assets/**/__tests__/**/*.js"
+      - "!assets/**/test/*.js"
+      - "!assets/**/*.test.js"
+      - "!packages/**/__tests__/**/*.js"
+      - "!packages/**/test/*.js"
+      - "!packages/**/*.test.js"
+    types:
+      - opened
+      - closed
+      - reopened
+      - synchronize
+      - ready_for_review
+
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GCS_ROOT_PATH: playwright
+  FORBID_ONLY: true
+  RETRIES: 2
+  WORKERS: 4
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false )
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Composer Install
+        run: composer install --no-interaction --no-progress --no-dev
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
+
+      - name: Prepare plugin
+        run: |
+          npm ci --workspaces --include-workspace-root
+          npm run dev-zip
+          unzip -q google-site-kit.v*.zip -d plugin/
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npm run -w tests/playwright setup
+
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: plugin
+          path: plugin/google-site-kit
+
+  playwright-tests:
+    name: WordPress ${{ matrix.wp_version }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        wp_version: ["latest", "nightly"]
+        include:
+          - wp_version: "5.2.21"
+    env:
+      WP_VERSION: ${{ matrix.wp_version }}
+      PLUGIN_PATH: ${{ github.workspace }}/plugin/google-site-kit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: npm install
+        run: npm ci -w tests/playwright
+        env:
+          SKIP_PATCH_PACKAGE: '1'
+
+      - name: Download plugin artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: plugin
+          path: plugin/google-site-kit
+
+      - name: Restore Playwright browsers cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
+
+      - name: Start environment
+        run: npm run playwright:env:start
+
+      - name: Run tests
+        run: npm run test:playwright
+        env:
+          PLAYWRIGHT_HTML_TITLE: "WordPress ${{ matrix.wp_version }}"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: playwright-report-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]
+          path: tests/playwright/artifacts/
+
+      - name: Set report target directory
+        id: report-target
+        if: always()
+        run: |
+          suffix="wp-${{ matrix.wp_version }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "dir=pull/${{ github.event.number }}/${suffix}" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=${GITHUB_REF##*/}/${suffix}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: ./.github/actions/upload-to-gcs
+        id: upload-to-gcs
+        if: always()
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: tests/playwright/artifacts
+          destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
+
+      - name: Save report URL
+        if: always()
+        run: |
+          mkdir -p /tmp/artifact-url
+          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+
+      - name: Upload report URL
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: artifact-url-wp-${{ matrix.wp_version }}
+          path: /tmp/artifact-url/url.md
+
+  add-comment-to-pr:
+    name: Add comment to PR
+    runs-on: ubuntu-latest
+    needs: playwright-tests
+    if: always() && github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download artifact URLs
+        uses: actions/download-artifact@v6
+        with:
+          pattern: artifact-url-wp-*
+          merge-multiple: false
+          path: /tmp/artifact-urls/
+
+      - name: Build comment body
+        id: build-comment
+        run: |
+          {
+            echo 'body<<EOF'
+            echo '🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**'
+            find /tmp/artifact-urls -name 'url.md' | sort | xargs cat
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: ./.github/actions/update-pr-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          section-id: playwright
+          section-content: ${{ steps.build-comment.outputs.body }}
+
+  remove-playwright-reports:
+    name: Remove Playwright reports
+    runs-on: ubuntu-latest
+    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/remove-gcs-path
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: ${{ env.GCS_ROOT_PATH }}/pull/${{ github.event.pull_request.number }}
+
+      - uses: ./.github/actions/update-pr-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          section-id: playwright
+          section-content: |
+            🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
+            - Reports have been deleted.
