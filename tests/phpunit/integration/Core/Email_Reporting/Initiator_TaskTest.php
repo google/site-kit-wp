@@ -64,7 +64,7 @@ class Initiator_TaskTest extends TestCase {
 			self::factory()->user->create(),
 		);
 
-		$scheduled_timestamp = 1_700_010_000;
+		$scheduled_timestamp = strtotime( '2023-11-15 01:00:00 UTC' );
 
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
