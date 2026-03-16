@@ -45,9 +45,9 @@ describe( 'partitionReport', () => {
 
 	describe( 'partitions the given report into a currentRange and compareRange based on the dateRangeLength', () => {
 		function genItems( { batch, length } ) {
-			return Array.from( { length } ).map( ( _, i ) => ( {
+			return Array.from( { length } ).map( ( _, index ) => ( {
 				batch,
-				index: i,
+				index,
 			} ) );
 		}
 

@@ -118,14 +118,14 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
 			name: /Enable ad blocking recovery message/i,
 		} );
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
+		recoveryTagSwitchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).toBeChecked();
 		} );
 		const errorProtectionTagSwitchElements = getAllByRole( 'switch', {
 			name: /Enable ad blocking recovery message/i,
 		} );
-		errorProtectionTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
+		errorProtectionTagSwitchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).toBeChecked();
 		} );
 	} );
 
@@ -152,8 +152,8 @@ describe( 'AdBlockingRecoveryToggle', () => {
 		const recoveryTagSwitchElements = getAllByRole( 'switch', {
 			name: /Enable ad blocking recovery message/i,
 		} );
-		recoveryTagSwitchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
+		recoveryTagSwitchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).not.toBeChecked();
 		} );
 
 		expect(

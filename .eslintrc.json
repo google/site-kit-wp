@@ -126,7 +126,39 @@
 			}
 		],
 		"react/jsx-no-useless-fragment": "error",
-		"consistent-return": "error"
+		"consistent-return": "error",
+		"unicorn/prevent-abbreviations": [
+			"warn",
+			{
+				"checkProperties": true,
+				"checkFilenames": false,
+				"extendDefaultReplacements": false,
+				"replacements": {
+					"e": {
+						"error": true,
+						"event": true
+					},
+					"i": {
+						"index": true
+					},
+					"j": {
+						"index": true
+					},
+					"el": {
+						"element": true
+					},
+					"val": {
+						"value": true
+					}
+				},
+				"ignore": [
+					"^_?e2e"
+				],
+				"allowList": {
+					"jQuery": true
+				}
+			}
+		]
 	},
 	"settings": {
 		"import/core-modules": [
@@ -269,6 +301,7 @@
 		"react",
 		"react-hooks",
 		"lodash",
-		"no-relative-import-paths"
+		"no-relative-import-paths",
+		"unicorn"
 	]
 }

@@ -61,9 +61,9 @@ function DataBlock( {
 	}, [ gatheringData, handleStatSelection, stat ] );
 
 	const handleKeyDown = useCallback(
-		( e ) => {
-			if ( 'Enter' === e.key || ' ' === e.key ) {
-				e.preventDefault();
+		( event ) => {
+			if ( 'Enter' === event.key || ' ' === event.key ) {
+				event.preventDefault();
 				handleClick();
 			}
 		},

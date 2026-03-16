@@ -94,8 +94,8 @@ export function extractAnalyticsDataForPieChart( report, options = {} ) {
 		rowsNumber = currentDateRangeRows.length;
 	}
 
-	for ( let i = 0; i < rowsNumber; i++ ) {
-		const row = currentDateRangeRows[ i ];
+	for ( let index = 0; index < rowsNumber; index++ ) {
+		const row = currentDateRangeRows[ index ];
 		const usersCurrent = row.metricValues[ keyColumnIndex ].value;
 
 		const previousRow = previousDateRangeRows.find(

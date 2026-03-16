@@ -83,17 +83,17 @@ export default function UserInputSelectOptions( {
 		}
 
 		const optionType = max === 1 ? 'radio' : 'checkbox';
-		const checkedEl = optionsRef.current.querySelector(
+		const checkedElement = optionsRef.current.querySelector(
 			`input[type="${ optionType }"]:checked`
 		);
 
-		if ( checkedEl ) {
-			focusOption( checkedEl );
+		if ( checkedElement ) {
+			focusOption( checkedElement );
 		} else {
-			const el = optionsRef.current.querySelector(
+			const element = optionsRef.current.querySelector(
 				`input[type="${ optionType }"]`
 			);
-			focusOption( el );
+			focusOption( element );
 		}
 	}, [ max ] );
 

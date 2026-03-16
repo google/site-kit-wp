@@ -60,8 +60,8 @@ function createWidgetAreasFromWidths( registry, ...widgetAreaWidgetWidths ) {
 }
 
 function createWidgetAreas( registry, ...widgetAreaWidgets ) {
-	return widgetAreaWidgets.map( ( widgets, i ) =>
-		createWidgetArea( registry, `area${ i + 1 }`, widgets )
+	return widgetAreaWidgets.map( ( widgets, index ) =>
+		createWidgetArea( registry, `area${ index + 1 }`, widgets )
 	);
 }
 
@@ -72,8 +72,8 @@ function createWidgetArea( registry, areaName, widgets ) {
 		style: WIDGET_AREA_STYLES.BOXES,
 	} );
 
-	widgets.forEach( ( { Component, slug, width }, i ) => {
-		const widgetSlug = slug || `${ areaName }-widget${ i + 1 }`;
+	widgets.forEach( ( { Component, slug, width }, index ) => {
+		const widgetSlug = slug || `${ areaName }-widget${ index + 1 }`;
 		function componentFallback() {
 			return (
 				<div>
@@ -97,10 +97,10 @@ function createWidgetArea( registry, areaName, widgets ) {
 }
 
 function Template( { totalWidgetAreas } ) {
-	return Array.from( { length: totalWidgetAreas } ).map( ( _, i ) => (
+	return Array.from( { length: totalWidgetAreas } ).map( ( _, index ) => (
 		<WidgetAreaRenderer
-			slug={ `area${ i + 1 }` }
-			key={ `area${ i + 1 }` }
+			slug={ `area${ index + 1 }` }
+			key={ `area${ index + 1 }` }
 		/>
 	) );
 }

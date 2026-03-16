@@ -86,8 +86,8 @@ describe( 'UserSettingsSelectionPanel', () => {
 		const heading = getByText( 'Email reports subscription' );
 		expect( heading ).toBeInTheDocument();
 
-		const headerEl = heading.closest( 'header' );
-		expect( headerEl ).toBeInTheDocument();
+		const headerElement = heading.closest( 'header' );
+		expect( headerElement ).toBeInTheDocument();
 
 		expect(
 			getByText( 'You can always deactivate this feature in', {
