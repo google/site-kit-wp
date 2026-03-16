@@ -57,6 +57,7 @@ const Notice = forwardRef(
 						`googlesitekit-notice--${ type }`,
 						className
 					) }
+					role="alert"
 				>
 					{ ! hideIcon && (
 						<div className="googlesitekit-notice__icon">

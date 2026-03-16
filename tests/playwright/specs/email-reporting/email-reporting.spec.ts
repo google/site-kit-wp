@@ -30,55 +30,69 @@ const details: TestDetails = {
 	],
 };
 
-test.describe( 'email reporting', details, () => {
-	test( 'should let user to select a subscription', async ( { wp } ) => {
-		// Go to the Site Kit dashboard page.
-		await wp.visitDashboard();
+test( 'should let user select a subscription', details, async ( { wp } ) => {
+	// Go to the Site Kit dashboard page.
+	await wp.visitDashboard();
 
-		// Open the email reporting settings panel.
-		await test.step( 'Open settings page', async () => {
-			const itemName = 'Manage email reports';
-			await wp.page.getByRole( 'button', { name: 'Account' } ).click();
-			await wp.page.getByRole( 'menuitem', { name: itemName } ).click();
-		} );
+	// Open the email reporting settings panel.
+	await test.step( 'Open settings page', async () => {
+		const itemName = 'Manage email reports';
+		await wp.page.getByRole( 'button', { name: 'Account' } ).click();
+		await wp.page.getByRole( 'menuitem', { name: itemName } ).click();
+	} );
 
-		const frequency = wp.page.getByRole( 'heading', { name: 'Frequency' } );
-		const weekly = wp.page.getByRole( 'radio', { name: 'Weekly' } );
-		const monthly = wp.page.getByRole( 'radio', { name: 'Monthly' } );
-		const quarterly = wp.page.getByRole( 'radio', { name: 'Quarterly' } );
+	// Get the root element of the Email Reporting settings panel.
+	const root = wp.page.locator( '.googlesitekit-email-reporting-settings' );
 
-		// Verify the settings panel state.
-		await test.step( 'Verify settings panel state', async () => {
-			// The frequency heading is visible.
-			await expect( frequency ).toBeVisible();
+	const frequency = root.getByRole( 'heading', { name: 'Frequency' } );
+	const currentSubscription = root.locator(
+		'.googlesitekit-frequency-selector__current-subscription'
+	);
 
-			// The current subscription badge is not visible.
-			const currentSubscription = wp.page.locator(
-				'.googlesitekit-frequency-selector__current-subscription'
-			);
-			await expect( currentSubscription ).not.toBeVisible();
+	const weekly = root.getByRole( 'radio', { name: 'Weekly' } );
+	const monthly = root.getByRole( 'radio', { name: 'Monthly' } );
+	const quarterly = root.getByRole( 'radio', { name: 'Quarterly' } );
 
-			// Frequency options are visible.
-			await expect( weekly ).toBeVisible();
-			await expect( monthly ).toBeVisible();
-			await expect( quarterly ).toBeVisible();
+	// Verify the settings panel state.
+	await test.step( 'Verify settings panel state', async () => {
+		// The frequency heading is visible.
+		await expect( frequency ).toBeVisible();
 
-			// Weekly option is checked by default.
-			await expect( weekly ).toBeChecked();
-		} );
+		// The current subscription badge is not visible.
+		await expect( currentSubscription ).not.toBeVisible();
 
-		// Verify the monthly option can be selected.
-		await test.step( 'Set monthly option', async () => {
-			await monthly.click();
-			await expect( weekly ).not.toBeChecked();
-			await expect( monthly ).toBeChecked();
+		// Frequency options are visible.
+		await expect( weekly ).toBeVisible();
+		await expect( monthly ).toBeVisible();
+		await expect( quarterly ).toBeVisible();
 
-			await wp.page.getByRole( 'button', { name: 'Subscribe' } ).click();
+		// Weekly option is checked by default.
+		await expect( weekly ).toBeChecked();
+	} );
 
-			const notice = wp.page.getByRole( 'alert', {
-				name: 'successfully subscribed',
-			} );
-			await expect( notice ).toBeVisible();
-		} );
+	// Verify the monthly option can be selected.
+	await test.step( 'Set monthly option', async () => {
+		await monthly.click();
+		await expect( weekly ).not.toBeChecked();
+		await expect( monthly ).toBeChecked();
+
+		await root.getByRole( 'button', { name: 'Subscribe' } ).click();
+
+		const notice = root
+			.getByRole( 'alert' )
+			.filter( { hasText: 'successfully subscribed' } );
+		await expect( notice ).toBeVisible( { timeout: 10_000 } );
+	} );
+
+	// Verify the settings panel state changed.
+	await test.step( 'Verify settings state changed', async () => {
+		const unsubscribe = root.getByRole( 'button', { name: 'Unsubscribe' } );
+		const update = root.getByRole( 'button', { name: 'Update settings' } );
+
+		await expect( currentSubscription ).toBeVisible();
+		await expect( weekly ).not.toBeChecked();
+		await expect( monthly ).toBeChecked();
+		await expect( unsubscribe ).toBeVisible();
+		await expect( update ).toBeVisible();
 	} );
 } );
