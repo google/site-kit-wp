@@ -29,14 +29,14 @@ import { TYPES } from '@/js/components/Notice/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
-export const EMAIL_REPORTING_SERVER_ERROR_NOTICE =
-	'email_reporting_server_error_notice';
+export const EMAIL_REPORTS_SERVER_ERROR_NOTICE =
+	'email_reports_server_error_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 export default function ServerErrorNotice() {
 	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTING_SERVER_ERROR_NOTICE
+		EMAIL_REPORTS_SERVER_ERROR_NOTICE
 	);
 
 	return (
