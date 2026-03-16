@@ -30,6 +30,7 @@ const SelectionPanelNotice = forwardRef( ( props, ref ) => {
 	return (
 		<Notice
 			className="googlesitekit-notice--square googlesitekit-notice--side-panel"
+			role="alert"
 			{ ...props }
 			ref={ ref }
 		/>

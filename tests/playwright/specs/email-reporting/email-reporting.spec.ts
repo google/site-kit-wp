@@ -31,16 +31,54 @@ const details: TestDetails = {
 };
 
 test.describe( 'email reporting', details, () => {
-	test( 'should add menu item to manage subscriptions', async ( { wp } ) => {
+	test( 'should let user to select a subscription', async ( { wp } ) => {
+		// Go to the Site Kit dashboard page.
 		await wp.visitDashboard();
 
-		const userMenu = wp.page.getByRole( 'button', { name: 'Account' } );
-		await expect( userMenu ).toBeVisible();
-		await userMenu.click();
-
-		const menuItem = wp.page.getByRole( 'menuitem', {
-			name: 'Manage email reports',
+		// Open the email reporting settings panel.
+		await test.step( 'Open settings page', async () => {
+			const itemName = 'Manage email reports';
+			await wp.page.getByRole( 'button', { name: 'Account' } ).click();
+			await wp.page.getByRole( 'menuitem', { name: itemName } ).click();
 		} );
-		await expect( menuItem ).toBeVisible();
+
+		const frequency = wp.page.getByRole( 'heading', { name: 'Frequency' } );
+		const weekly = wp.page.getByRole( 'radio', { name: 'Weekly' } );
+		const monthly = wp.page.getByRole( 'radio', { name: 'Monthly' } );
+		const quarterly = wp.page.getByRole( 'radio', { name: 'Quarterly' } );
+
+		// Verify the settings panel state.
+		await test.step( 'Verify settings panel state', async () => {
+			// The frequency heading is visible.
+			await expect( frequency ).toBeVisible();
+
+			// The current subscription badge is not visible.
+			const currentSubscription = wp.page.locator(
+				'.googlesitekit-frequency-selector__current-subscription'
+			);
+			await expect( currentSubscription ).not.toBeVisible();
+
+			// Frequency options are visible.
+			await expect( weekly ).toBeVisible();
+			await expect( monthly ).toBeVisible();
+			await expect( quarterly ).toBeVisible();
+
+			// Weekly option is checked by default.
+			await expect( weekly ).toBeChecked();
+		} );
+
+		// Verify the monthly option can be selected.
+		await test.step( 'Set monthly option', async () => {
+			await monthly.click();
+			await expect( weekly ).not.toBeChecked();
+			await expect( monthly ).toBeChecked();
+
+			await wp.page.getByRole( 'button', { name: 'Subscribe' } ).click();
+
+			const notice = wp.page.getByRole( 'alert', {
+				name: 'successfully subscribed',
+			} );
+			await expect( notice ).toBeVisible();
+		} );
 	} );
 } );
