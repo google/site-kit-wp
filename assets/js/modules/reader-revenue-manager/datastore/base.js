@@ -30,7 +30,8 @@ export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 	validateCanSubmitChanges,
 	ownedSettingsSlugs: [ 'publicationID' ],
 	settingSlugs: [
-		'contentPolicyStatus',
+		'contentPolicyState',
+		'policyInfoLink',
 		'ownerID',
 		'publicationID',
 		'publicationOnboardingState',
