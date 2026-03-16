@@ -11,6 +11,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
+use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
@@ -261,29 +262,8 @@ class Email_ReportingTest extends TestCase {
 	}
 
 	private function get_initiator_scheduled_timestamp( $frequency ) {
-		$cron = _get_cron_array();
-
-		if ( ! is_array( $cron ) ) {
-			return false;
-		}
-
-		foreach ( $cron as $timestamp => $hooks ) {
-			if ( empty( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) || ! is_array( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) ) {
-				continue;
-			}
-
-			foreach ( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] as $event ) {
-				$args = isset( $event['args'] ) && is_array( $event['args'] )
-					? $event['args']
-					: array();
-
-				if ( isset( $args[0] ) && $frequency === $args[0] ) {
-					return (int) $timestamp;
-				}
-			}
-		}
-
-		return false;
+		$scheduler = new Email_Reporting_Scheduler( new Frequency_Planner() );
+		return $scheduler->get_initiator_timestamp( $frequency );
 	}
 
 	private function clear_scheduled_events() {
