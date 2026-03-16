@@ -89,13 +89,11 @@ describe( 'PolicyViolationNotification', () => {
 			.receiveGetSettings( {
 				publicationOnboardingState:
 					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-				contentPolicyStatus: {
-					contentPolicyState,
-					policyInfoLink:
-						contentPolicyState === CONTENT_POLICY_STATE_OK
-							? null
-							: POLICY_INFO_URL,
-				},
+				contentPolicyState,
+				policyInfoLink:
+					contentPolicyState === CONTENT_POLICY_STATE_OK
+						? null
+						: POLICY_INFO_URL,
 			} );
 	}
 
