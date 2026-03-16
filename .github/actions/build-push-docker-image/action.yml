@@ -2,6 +2,9 @@ name: Build and Push Docker Image
 description: Sets up QEMU and Docker Buildx, logs in to a container registry, and builds and pushes a Docker image.
 
 inputs:
+  registry-username:
+    description: Username for the container registry
+    required: true
   registry-password:
     description: Password or token for the container registry
     required: true
@@ -34,10 +37,10 @@ runs:
       uses: docker/setup-buildx-action@v3
 
     - name: Log in to container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
-        username: google-site-kit-bot
+        username: ${{ inputs.registry-username }}
         password: ${{ inputs.registry-password }}
 
     - name: Check if image already exists in registry

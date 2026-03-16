@@ -84,7 +84,8 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/codegen:${{ steps.library_version.outputs.sha }}
           context: codegen
           labels: org.opencontainers.image.description=Docker image used to run code generation for Site Kit.
-          registry-password: ${{ secrets.GH_BOT_TOKEN }}
+          registry-username: "github-actions[bot]"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-vrt:
     name: Backstop
@@ -104,7 +105,8 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22
           context: ./tests/backstop
           labels: org.opencontainers.image.description=Docker image used to run visual regression tests for Site Kit.
-          registry-password: ${{ secrets.GH_BOT_TOKEN }}
+          registry-username: "github-actions[bot]"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-fixed:
     name: Playwright WP 5.2.21
@@ -124,7 +126,8 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21
           build-args: WP_VERSION=5.2.21
           labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image for Site Kit Playwright tests.
-          registry-password: ${{ secrets.GH_BOT_TOKEN }}
+          registry-username: "github-actions[bot]"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-latest:
     name: Playwright WP latest
@@ -153,7 +156,8 @@ jobs:
           build-args: WP_VERSION=latest
           skip-if-exists-tag: ghcr.io/google/site-kit-wp/playwright-wp:${{ steps.wp_version.outputs.version }}
           labels: org.opencontainers.image.description=WordPress latest Docker image for Site Kit Playwright tests.
-          registry-password: ${{ secrets.GH_BOT_TOKEN }}
+          registry-username: "github-actions[bot]"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}
 
   publish-playwright-wp-nightly:
     name: Playwright WP nightly
@@ -174,4 +178,5 @@ jobs:
           tags: ghcr.io/google/site-kit-wp/playwright-wp:nightly
           build-args: WP_VERSION=nightly
           labels: org.opencontainers.image.description=WordPress nightly Docker image for Site Kit Playwright tests.
-          registry-password: ${{ secrets.GH_BOT_TOKEN }}
+          registry-username: "github-actions[bot]"
+          registry-password: ${{ secrets.GITHUB_TOKEN }}

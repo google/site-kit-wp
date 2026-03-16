@@ -95,7 +95,6 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: composer:2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -183,36 +182,6 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('tests/playwright/package.json') }}
-
-      - name: Cache Docker images
-        id: docker-cache
-        if: matrix.wp_version != 'nightly'
-        uses: actions/cache@v5
-        with:
-          path: /tmp/docker-images
-          key: docker-${{ env.WP_VERSION }}-${{ hashFiles('tests/playwright/docker/wordpress/Dockerfile', 'tests/playwright/docker-compose.yml') }}
-
-      - name: Load Docker images from cache
-        if: matrix.wp_version != 'nightly' && steps.docker-cache.outputs.cache-hit == 'true'
-        run: docker load -i /tmp/docker-images/images.tar
-
-      - name: Build and cache Docker images
-        if: matrix.wp_version == 'nightly' || steps.docker-cache.outputs.cache-hit != 'true'
-        run: |
-          echo "Building Docker images..."
-          docker compose -f tests/playwright/docker-compose.yml build --quiet
-          echo "Pulling images..."
-          docker compose -f tests/playwright/docker-compose.yml pull --ignore-buildable --quiet
-          if [ "${{ matrix.wp_version }}" != "nightly" ]; then
-            echo "Saving Docker images to cache..."
-            mkdir -p /tmp/docker-images
-            images=$(docker compose -f tests/playwright/docker-compose.yml config --images)
-            if [ -n "$images" ]; then
-              echo "$images" | xargs docker save -o /tmp/docker-images/images.tar
-            else
-              echo "No images to cache."
-            fi
-          fi
 
       - name: Start environment
         run: npm run playwright:env:start
