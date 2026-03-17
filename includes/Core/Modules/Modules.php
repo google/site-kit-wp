@@ -318,7 +318,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 							if ( ! $module instanceof Module_With_Service_Entity ) {
 								// If the option was just added, set the ownerID directly and bail.
-								if ( empty( $old_values ) ) {
+								if ( empty( $old_values ) && $module instanceof Module_With_Settings ) {
 									$module->get_settings()->merge(
 										array(
 											'ownerID' => get_current_user_id(),
@@ -357,7 +357,7 @@ final class Modules implements Provides_Feature_Metrics {
 									);
 								}
 
-								if ( $changed_settings ) {
+								if ( $changed_settings && $module instanceof Module_With_Settings ) {
 									$module->get_settings()->merge(
 										array(
 											'ownerID' => get_current_user_id(),
@@ -432,7 +432,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * @since 1.0.0
 	 * @since 1.85.0 Filter out modules which are missing any of the dependencies specified in `depends_on`.
 	 *
-	 * @return array Available modules as $slug => $module pairs.
+	 * @return Module[] Available modules as $slug => $module pairs.
 	 */
 	public function get_available_modules() {
 		if ( empty( $this->modules ) ) {

@@ -3,7 +3,7 @@ includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
 
 parameters:
-    level: 1
+    level: 2
     treatPhpDocTypesAsCertain: false
     inferPrivatePropertyTypeFromConstructor: true
     paths:
@@ -17,3 +17,5 @@ parameters:
     scanDirectories:
         - %currentWorkingDirectory%/gtg
         - %currentWorkingDirectory%/third-party
+    ignoreErrors:
+        - '#property.*Google\\Site_Kit_Dependencies\\Google\\Service.*#'
