@@ -52,7 +52,7 @@ class Plugin_Action_LinksTest extends TestCase {
 				'<a href="http://example.org/wp-admin/admin.php?page=googlesitekit-dashboard">Start setup</a>',
 			),
 			$action_links,
-			'The action links array should only contain a link to the Settings page.'
+			'The action links array should only contain a setup link.'
 		);
 	}
 
@@ -76,7 +76,7 @@ class Plugin_Action_LinksTest extends TestCase {
 				'<a href="http://example.org/wp-admin/admin.php?page=googlesitekit-settings">Settings</a>',
 			),
 			$action_links,
-			'The action links array should only contain a setup link.'
+			'The action links array should only contain a link to the Settings page.'
 		);
 	}
 }
