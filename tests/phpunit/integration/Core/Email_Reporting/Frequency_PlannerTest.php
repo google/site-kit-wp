@@ -11,6 +11,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -55,7 +56,7 @@ class Frequency_PlannerTest extends TestCase {
 		update_option( 'start_of_week', $start_of_week );
 		update_option( 'timezone_string', 'America/New_York' );
 
-		$timezone = wp_timezone();
+		$timezone = BC_Functions::wp_timezone();
 		$current  = new DateTimeImmutable( $current_date, $timezone );
 
 		$next_timestamp = $this->planner->next_occurrence(
@@ -86,7 +87,7 @@ class Frequency_PlannerTest extends TestCase {
 	 */
 	public function test_next_occurrence_monthly( $baseline, $timezone_string, $expected, $message ) {
 		update_option( 'timezone_string', $timezone_string );
-		$timezone = wp_timezone();
+		$timezone = BC_Functions::wp_timezone();
 
 		$timestamp          = ( new DateTimeImmutable( $baseline, $timezone ) )->getTimestamp();
 		$next               = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_MONTHLY, $timestamp, $timezone );
