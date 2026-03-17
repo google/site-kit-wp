@@ -219,6 +219,8 @@ describe( 'AdminBarWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -239,7 +241,11 @@ describe( 'AdminBarWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -257,7 +263,11 @@ describe( 'AdminBarWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,

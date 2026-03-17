@@ -222,6 +222,8 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
 		await waitFor( () => {
@@ -261,9 +263,13 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
 
 		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 				'confirm_cta',
@@ -284,7 +290,11 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,

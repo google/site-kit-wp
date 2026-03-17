@@ -57,8 +57,10 @@ describe( 'WPDashboardWidgets', () => {
 		registry = createTestRegistry();
 
 		provideModules( registry );
-		provideUserCapabilities( registry );
-		provideUserAuthentication( registry );
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			'googlesitekit_read_shared_module_data::["search-console"]': false,
+		} );
 		provideSiteInfo( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -87,6 +89,8 @@ describe( 'WPDashboardWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		// Should not be called with `view_cta` event until the CTA banner is in view.
 		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -104,6 +108,8 @@ describe( 'WPDashboardWidgets', () => {
 
 		rerender( <WPDashboardWidgets /> );
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
 			'view_cta',
@@ -112,11 +118,6 @@ describe( 'WPDashboardWidgets', () => {
 	} );
 
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
-		provideUserAuthentication( registry, { authenticated: false } );
-		provideUserCapabilities( registry, {
-			'googlesitekit_read_shared_module_data::["search-console"]': false,
-		} );
-
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
 			features: [ 'setupFlowRefresh' ],
@@ -124,6 +125,8 @@ describe( 'WPDashboardWidgets', () => {
 		} );
 
 		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
 
@@ -145,7 +148,11 @@ describe( 'WPDashboardWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
@@ -163,7 +170,11 @@ describe( 'WPDashboardWidgets', () => {
 
 		await waitForRegistry();
 
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
 		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
 		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
