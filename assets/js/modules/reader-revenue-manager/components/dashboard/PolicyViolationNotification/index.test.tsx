@@ -39,7 +39,7 @@ import {
 	CONTENT_POLICY_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import PolicyViolationNotification from './';
 

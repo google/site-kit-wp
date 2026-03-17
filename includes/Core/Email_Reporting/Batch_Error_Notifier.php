@@ -334,25 +334,25 @@ class Batch_Error_Notifier {
 			case 'error-email-report-search-console':
 				$settings_url = add_query_arg( 'module', 'search-console', $this->golinks->get_url( 'settings' ) );
 				return array(
-					'<a href="' . $settings_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
 					'</a>',
-					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
 					'</a>',
 				);
 
 			case 'error-email-report-analytics-4':
 				$settings_url = add_query_arg( 'module', 'analytics-4', $this->golinks->get_url( 'settings' ) );
 				return array(
-					'<a href="' . $settings_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
 					'</a>',
-					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
 					'</a>',
 				);
 
 			case 'error-email-permissions-search-console':
 			case 'error-email-permissions-analytics-4':
 				return array(
-					'<a href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
 					'</a>',
 				);
 

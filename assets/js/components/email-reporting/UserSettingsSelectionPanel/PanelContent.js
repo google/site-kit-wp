@@ -44,6 +44,7 @@ import Notices from './Notices';
 import { TYPES } from '@/js/components/Notice/constants';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
 import PreviewBlock from '@/js/components/PreviewBlock';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function PanelContent( {
 	notice,
@@ -57,15 +58,20 @@ export default function PanelContent( {
 } ) {
 	const user = useSelect( ( select ) => select( CORE_USER ).getUser() );
 	const email = user?.wpEmail;
+	const isViewOnly = useViewOnly();
 	const isEmailReportingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isEmailReportingEnabled()
 	);
 
 	// The following selectors are used to determine if the data is still loading,
 	// as these are used in child components within the panel.
-	const emailReportingErrors = useSelect( ( select ) =>
-		select( CORE_SITE ).getEmailReportingErrors()
-	);
+	const emailReportingErrors = useSelect( ( select ) => {
+		if ( isViewOnly ) {
+			return null;
+		}
+
+		return select( CORE_SITE ).getEmailReportingErrors();
+	} );
 	const userEmailReportingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).getEmailReportingSettings()
 	);
@@ -122,7 +128,9 @@ export default function PanelContent( {
 					isLoading={ isLoading }
 				/>
 
-				{ isEmailReportingEnabled && <InviteOthersToSubscribe /> }
+				{ isEmailReportingEnabled && ! isViewOnly && (
+					<InviteOthersToSubscribe />
+				) }
 			</div>
 
 			{ isEmailReportingEnabled && (

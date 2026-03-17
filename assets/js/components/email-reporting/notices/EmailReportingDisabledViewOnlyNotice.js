@@ -29,6 +29,11 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { EMAIL_REPORTS_DISABLED_NOTICE } from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+
+const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
 export default function EmailReportingDisabledViewOnlyNotice() {
 	const isEmailReportingEnabled = useSelect( ( select ) =>
@@ -37,18 +42,23 @@ export default function EmailReportingDisabledViewOnlyNotice() {
 
 	const isViewOnly = useViewOnly();
 
+	// We use the same notice slug as the admin notice because the viewContext
+	// prefixed to the event category will differencentiate the two.
+	const trackEvents = useNotificationEvents( EMAIL_REPORTS_DISABLED_NOTICE );
+
 	if ( isEmailReportingEnabled || ! isViewOnly ) {
 		return null;
 	}
 
 	return (
-		<Notice
+		<NoticeWithIntersectionObserver
 			type={ TYPES.WARNING }
 			title={ __( 'Email reports are unavailable', 'google-site-kit' ) }
 			description={ __(
 				'To enable email reports, contact your administrator',
 				'google-site-kit'
 			) }
+			onInView={ trackEvents.view }
 		/>
 	);
 }

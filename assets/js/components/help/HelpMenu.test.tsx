@@ -26,24 +26,41 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 	fireEvent,
+	waitFor,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import HelpMenu from './HelpMenu';
+
+jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const mockWelcomeTour = getWelcomeTour( {
+	isViewOnly: false,
+	canAuthenticate: true,
+	isAnalyticsConnected: false,
+	isActivateAnalyticsNotificationPresent: false,
+} );
 
 describe( 'HelpMenu', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideUserCapabilities( registry );
+
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
 	} );
 
 	afterEach( () => {
@@ -132,6 +149,24 @@ describe( 'HelpMenu', () => {
 				'get_adsense_help'
 			);
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+
+		it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
+			const { getByText, waitForRegistry } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByText( 'Start a feature tour' ) );
+
+			await waitFor( () => {
+				expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
+					mockWelcomeTour
+				);
+			} );
 		} );
 	} );
 

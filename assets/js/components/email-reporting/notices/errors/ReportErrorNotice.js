@@ -32,8 +32,8 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-export const EMAIL_REPORTING_REPORT_ERROR_NOTICE =
-	'email_reporting_report_error_notice';
+export const EMAIL_REPORTS_REPORT_ERROR_NOTICE =
+	'email_reports_report_error_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
@@ -43,7 +43,7 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 	);
 
 	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTING_REPORT_ERROR_NOTICE
+		EMAIL_REPORTS_REPORT_ERROR_NOTICE
 	);
 
 	const settingsURL = useSelect( ( select ) =>
