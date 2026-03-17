@@ -66,6 +66,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
+	/** @use Module_With_Settings_Trait<Settings> */
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Module_With_Inline_Data_Trait;
