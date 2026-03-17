@@ -18,13 +18,11 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
@@ -34,22 +32,10 @@ import Icon from '@/svg/graphics/sign-in-with-google.svg';
 import SetupMain from './components/setup/SetupMain';
 import SettingsEdit from './components/settings/SettingsEdit';
 import SettingsView from './components/settings/SettingsView';
-import SignInWithGoogleSetupCTABanner from './components/dashboard/SignInWithGoogleSetupCTABanner';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
-import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_SETTINGS,
-} from '@/js/googlesitekit/constants';
-import SetupSuccessSubtleNotification from './components/dashboard/SetupSuccessSubtleNotification';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
-import CompatibilityWarningSubtleNotification from './components/dashboard/CompatibilityWarningSubtleNotification';
 
 export { registerStore } from './datastore';
+export { registerNotifications } from './notifications';
 
 export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {
@@ -102,98 +88,4 @@ export function registerModule( modules ) {
 			};
 		},
 	} );
-}
-
-export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
-	'sign-in-with-google-setup-cta': {
-		Component: SignInWithGoogleSetupCTABanner,
-		priority: PRIORITY.SETUP_CTA_LOW,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isModuleConnected() relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-				// Ensure the site info is resolved to get the home URL.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
-			] );
-
-			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			);
-			if ( isConnected ) {
-				return false;
-			}
-
-			const homeURL = select( CORE_SITE ).getHomeURL();
-			if ( ! isURLUsingHTTPS( homeURL ) ) {
-				return false;
-			}
-
-			return true;
-		},
-		isDismissible: true,
-	},
-	'setup-success-notification-siwg': {
-		Component: SetupSuccessSubtleNotification,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			if (
-				'authentication_success' === notification &&
-				slug === MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			) {
-				return true;
-			}
-
-			return false;
-		},
-	},
-	'sign-in-with-google-compatibility-warning': {
-		Component: CompatibilityWarningSubtleNotification,
-		priority: PRIORITY.WARNING,
-		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		viewContexts: [
-			VIEW_CONTEXT_MAIN_DASHBOARD,
-			VIEW_CONTEXT_SETTINGS,
-			VIEW_CONTEXT_ENTITY_DASHBOARD,
-		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_MODULES ).getModules();
-
-			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			);
-
-			if ( ! isConnected ) {
-				return false;
-			}
-
-			// Ensure compatibility checks are loaded only when the module is connected.
-			const compatibilityChecks = await resolveSelect(
-				MODULES_SIGN_IN_WITH_GOOGLE
-			).getCompatibilityChecks();
-
-			const errors = compatibilityChecks?.checks || {};
-
-			return Object.keys( errors ).length > 0;
-		},
-		isDismissible: true,
-	},
-};
-
-export function registerNotifications( notifications ) {
-	for ( const [ notificationID, notificationSettings ] of Object.entries(
-		SIGN_IN_WITH_GOOGLE_NOTIFICATIONS
-	) ) {
-		notifications.registerNotification(
-			notificationID,
-			notificationSettings
-		);
-	}
 }

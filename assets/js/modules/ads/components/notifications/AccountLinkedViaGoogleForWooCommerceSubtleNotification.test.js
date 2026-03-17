@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {

@@ -29,7 +29,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';

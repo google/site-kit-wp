@@ -173,9 +173,18 @@ export default function SettingsEmailReporting( { loading = false } ) {
 											{
 												a: (
 													<Link
+														// This is a temporary link until we have a
+														// dedicated page for email reporting documentation.
+														// See: https://github.com/google/site-kit-wp/issues/12327
 														href={
 															documentationURL
 														}
+														onClick={ () => {
+															trackEvent(
+																`${ viewContext }_email_reports`,
+																'click_learn_more_link'
+															);
+														} }
 														external
 													/>
 												),
@@ -253,7 +262,16 @@ export default function SettingsEmailReporting( { loading = false } ) {
 							) }
 							<br />
 							{ /** TODO update learn more link when it is provided. */ }
-							<Link href="">
+							<Link
+								href={ documentationURL }
+								onClick={ () => {
+									trackEvent(
+										`${ viewContext }_email_reports_confirm_disable_modal`,
+										'click_learn_more_link'
+									);
+								} }
+								external
+							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
 						</Fragment>

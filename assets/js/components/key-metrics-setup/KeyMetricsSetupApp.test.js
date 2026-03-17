@@ -48,6 +48,10 @@ describe( 'KeyMetricsSetupApp', () => {
 
 	let registry;
 
+	const analytics4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
+
 	const syncAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
@@ -245,6 +249,8 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should show an error when the save fails', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
 				code: 'internal_server_error',
@@ -331,7 +337,11 @@ describe( 'KeyMetricsSetupApp', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should sync audiences and custom dimensions on render', async () => {
+	it( 'should sync audiences and custom dimensions on render when GA4 settings are loaded', async () => {
+		fetchMock.getOnce( analytics4SettingsEndpoint, {
+			body: analyticsFixtures.defaultSettings,
+		} );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: null,
 		} );
@@ -343,11 +353,33 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		await waitForRegistry();
 
+		expect( fetchMock ).toHaveFetched( analytics4SettingsEndpoint );
 		expect( fetchMock ).toHaveFetched( syncAudiencesEndpoint );
 		expect( fetchMock ).toHaveFetched( syncCustomDimensionsEndpoint );
 	} );
 
+	it( 'should not sync audiences and custom dimensions on render when GA4 settings are not loaded yet', async () => {
+		freezeFetch( analytics4SettingsEndpoint );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: null,
+		} );
+
+		const { waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetched( analytics4SettingsEndpoint );
+		expect( fetchMock ).not.toHaveFetched( syncAudiencesEndpoint );
+		expect( fetchMock ).not.toHaveFetched( syncCustomDimensionsEndpoint );
+	} );
+
 	it( 'should not attempt to sync again while syncing is already in progress', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: null,
 		} );
