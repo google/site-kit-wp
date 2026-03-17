@@ -1,5 +1,5 @@
 # Config files
-.*
+/.*
 !.gemini/
 .gemini/*
 !.gemini/settings.json

@@ -18,7 +18,7 @@ BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$(dirname "$BIN_DIR")/../../"
 
 # Remember to update the version tag in the publish-vrt-docker-image workflow when updating this version.
-VERSION=6.3.25-node22 # node 22 suffix added here as we have updated the image as part of the node update, but have not changed the backstop version.
+VERSION=6.3.25-node22-chrome146.0.7680.80
 
 # Use the GitHub Container Registry image.
 IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
