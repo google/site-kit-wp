@@ -172,7 +172,7 @@ jobs:
           SKIP_PATCH_PACKAGE: '1'
 
       - name: Download plugin artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: plugin
           path: plugin/google-site-kit
@@ -242,7 +242,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Download artifact URLs
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: artifact-url-wp-*
           merge-multiple: false
