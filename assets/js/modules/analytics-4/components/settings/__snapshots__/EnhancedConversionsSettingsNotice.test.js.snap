@@ -7,6 +7,7 @@ exports[`Analytics EnhancedConversionsNotification should render the notice 1`] 
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--info"
+      role="alert"
     >
       <div
         class="googlesitekit-notice__icon"

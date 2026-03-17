@@ -19,6 +19,7 @@ exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--success"
+              role="alert"
             >
               <div
                 class="googlesitekit-notice__icon"

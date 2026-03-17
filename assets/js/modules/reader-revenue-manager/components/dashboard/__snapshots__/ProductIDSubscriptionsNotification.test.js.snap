@@ -19,6 +19,7 @@ exports[`ProductIDSubscriptionsNotification should render correctly 1`] = `
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--warning"
+              role="alert"
             >
               <div
                 class="googlesitekit-notice__icon"

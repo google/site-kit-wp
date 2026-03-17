@@ -160,6 +160,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
     >
       <div
         class="googlesitekit-notice googlesitekit-notice--warning"
+        role="alert"
       >
         <div
           class="googlesitekit-notice__icon"
