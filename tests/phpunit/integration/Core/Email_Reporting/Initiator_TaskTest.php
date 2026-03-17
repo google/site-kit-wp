@@ -158,7 +158,7 @@ class Initiator_TaskTest extends TestCase {
 	}
 
 	public function test_handle_callback_action_without_subscribers_still_schedules_follow_up_events() {
-		$scheduled_timestamp = 1_700_020_000;
+		$scheduled_timestamp = strtotime( '2023-11-15 01:00:00 UTC' );
 
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
