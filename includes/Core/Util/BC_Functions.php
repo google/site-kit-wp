@@ -22,6 +22,7 @@ use BadMethodCallException;
  * @method static void wp_print_script_tag( $attributes )
  * @method static void wp_print_inline_script_tag( $javascript, $attributes = array() )
  * @method static bool array_is_list( array $value )
+ * @method static string wp_timezone_string()
  * @method static \DateTimeZone wp_timezone()
  */
 class BC_Functions {
@@ -153,6 +154,32 @@ class BC_Functions {
 	}
 
 	/**
+	 * A fallback for the wp_timezone_string function introduced in WordPress 5.3.0.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string PHP timezone string or a ±HH:MM offset.
+	 */
+	protected static function wp_timezone_string() {
+		$timezone_string = get_option( 'timezone_string' );
+
+		if ( $timezone_string ) {
+			return $timezone_string;
+		}
+
+		$offset  = (float) get_option( 'gmt_offset' );
+		$hours   = (int) $offset;
+		$minutes = ( $offset - $hours );
+
+		$sign      = ( $offset < 0 ) ? '-' : '+';
+		$abs_hour  = abs( $hours );
+		$abs_mins  = abs( $minutes * 60 );
+		$tz_offset = sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
+
+		return $tz_offset;
+	}
+
+	/**
 	 * A fallback for the wp_timezone function introduced in WordPress 5.3.0.
 	 *
 	 * @since n.e.x.t
@@ -160,21 +187,7 @@ class BC_Functions {
 	 * @return \DateTimeZone Site timezone.
 	 */
 	protected static function wp_timezone() {
-		$timezone_string = get_option( 'timezone_string' );
-
-		if ( $timezone_string ) {
-			return new \DateTimeZone( $timezone_string );
-		}
-
-		$offset    = (float) get_option( 'gmt_offset' );
-		$hours     = (int) $offset;
-		$minutes   = ( $offset - $hours );
-		$sign      = ( $offset < 0 ) ? '-' : '+';
-		$abs_hour  = abs( $hours );
-		$abs_mins  = abs( $minutes * 60 );
-		$tz_offset = sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
-
-		return new \DateTimeZone( $tz_offset );
+		return new \DateTimeZone( self::wp_timezone_string() );
 	}
 
 	/**
