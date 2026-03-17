@@ -42,6 +42,13 @@ class Email_Notices {
 	const PLACEMENT_HEADER = 'header';
 
 	/**
+	 * Section placement identifier.
+	 *
+	 * @since n.e.x.t
+	 */
+	const PLACEMENT_SECTION = 'section';
+
+	/**
 	 * Maximum number of impressions before permanent dismissal.
 	 *
 	 * @since n.e.x.t
@@ -129,36 +136,50 @@ class Email_Notices {
 	 * @return array Eligible header notices.
 	 */
 	public function get_header_notices( WP_User $user ) {
-		$header_notices = array();
+		return $this->get_notices_for_placement( $user, self::PLACEMENT_HEADER );
+	}
+
+	/**
+	 * Gets eligible section notices for a user and section key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user        Recipient user.
+	 * @param string  $section_key Section key.
+	 * @return array Eligible section notices.
+	 */
+	public function get_section_notices( WP_User $user, $section_key ) {
+		return $this->get_notices_for_placement(
+			$user,
+			self::PLACEMENT_SECTION,
+			(string) $section_key
+		);
+	}
+
+	/**
+	 * Gets registered section notice keys.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Unique section keys.
+	 */
+	public function get_section_notice_keys() {
+		$section_keys = array();
 
 		foreach ( $this->notices as $notice ) {
-			if ( self::PLACEMENT_HEADER !== $notice->get_placement() ) {
+			if ( self::PLACEMENT_SECTION !== $notice->get_placement() ) {
 				continue;
 			}
 
-			if ( ! $this->is_notice_eligible( $notice, $user ) ) {
+			$section_key = sanitize_key( $notice->get_section_key() );
+			if ( '' === $section_key ) {
 				continue;
 			}
 
-			$payload = $notice->get_payload( $user );
-			if ( ! is_array( $payload ) ) {
-				continue;
-			}
-
-			$header_notices[] = array(
-				'id'               => $notice->get_id(),
-				'title'            => isset( $payload['title'] ) ? (string) $payload['title'] : '',
-				'body'             => isset( $payload['body'] ) ? (string) $payload['body'] : '',
-				'learn_more_label' => isset( $payload['learn_more_label'] ) ? (string) $payload['learn_more_label'] : '',
-				'learn_more_url'   => isset( $payload['learn_more_url'] ) ? (string) $payload['learn_more_url'] : '',
-				'cta_label'        => isset( $payload['cta_label'] ) ? (string) $payload['cta_label'] : '',
-				'cta_url'          => isset( $payload['cta_url'] ) ? (string) $payload['cta_url'] : '',
-			);
-
-			$this->track_notice_impression( $notice, $user );
+			$section_keys[] = $section_key;
 		}
 
-		return $header_notices;
+		return array_values( array_unique( $section_keys ) );
 	}
 
 	/**
@@ -223,6 +244,54 @@ class Email_Notices {
 		$notice_id = sanitize_key( (string) $notice_id );
 
 		return $this->notices[ $notice_id ] ?? null;
+	}
+
+	/**
+	 * Gets eligible notices for a placement and optional section key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_User $user        Recipient user.
+	 * @param string  $placement   Placement slug.
+	 * @param string  $section_key Optional. Section key for section placement.
+	 * @return array Eligible notices.
+	 */
+	private function get_notices_for_placement( WP_User $user, $placement, $section_key = '' ) {
+		$eligible_notices = array();
+		$section_key      = sanitize_key( $section_key );
+
+		foreach ( $this->notices as $notice ) {
+			if ( $placement !== $notice->get_placement() ) {
+				continue;
+			}
+
+			if ( self::PLACEMENT_SECTION === $placement && $notice->get_section_key() !== $section_key ) {
+				continue;
+			}
+
+			if ( ! $this->is_notice_eligible( $notice, $user ) ) {
+				continue;
+			}
+
+			$payload = $notice->get_payload( $user );
+			if ( ! is_array( $payload ) ) {
+				continue;
+			}
+
+			$eligible_notices[] = array(
+				'id'               => $notice->get_id(),
+				'title'            => isset( $payload['title'] ) ? (string) $payload['title'] : '',
+				'body'             => isset( $payload['body'] ) ? (string) $payload['body'] : '',
+				'learn_more_label' => isset( $payload['learn_more_label'] ) ? (string) $payload['learn_more_label'] : '',
+				'learn_more_url'   => isset( $payload['learn_more_url'] ) ? (string) $payload['learn_more_url'] : '',
+				'cta_label'        => isset( $payload['cta_label'] ) ? (string) $payload['cta_label'] : '',
+				'cta_url'          => isset( $payload['cta_url'] ) ? (string) $payload['cta_url'] : '',
+			);
+
+			$this->track_notice_impression( $notice, $user );
+		}
+
+		return $eligible_notices;
 	}
 
 	/**

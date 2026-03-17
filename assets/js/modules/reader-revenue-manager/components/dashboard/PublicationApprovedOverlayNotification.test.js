@@ -38,7 +38,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 

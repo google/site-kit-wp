@@ -36,7 +36,7 @@ import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
-const EMAIL_REPORTING_DISABLED_NOTICE =
+export const EMAIL_REPORTS_DISABLED_NOTICE =
 	'email_reports_user_settings_reports_disabled_notice';
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
@@ -49,12 +49,12 @@ export default function EmailReportingDisabledNotice() {
 	const isViewOnly = useViewOnly();
 
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'email-reporting',
+		} )
 	);
 
-	const trackEvents = useNotificationEvents(
-		EMAIL_REPORTING_DISABLED_NOTICE
-	);
+	const trackEvents = useNotificationEvents( EMAIL_REPORTS_DISABLED_NOTICE );
 
 	const { setValue } = useDispatch( CORE_UI );
 	const onCTAClick = useCallback( () => {

@@ -50,7 +50,7 @@ import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
 	ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION,
 } from './AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense/notifications';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,

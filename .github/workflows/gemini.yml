@@ -46,7 +46,6 @@ jobs:
         with:
           php-version: "7.4"
           extensions: mysqli, runkit7, uopz
-          tools: composer:2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
@@ -69,11 +68,11 @@ jobs:
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
       - name: Install Gemini CLI
         run: |
-          npm install -g @google/gemini-cli@0.31.0
+          npm install -g @google/gemini-cli@0.32.1
           gemini --version
       - name: Run /implement command
         run: |
-          gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}" --debug
+          gemini --approval-mode=yolo --model=gemini-3-pro-preview --timeout 2700000 "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

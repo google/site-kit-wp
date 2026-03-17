@@ -102,9 +102,9 @@ function getActivateAnalyticsStep() {
 	return {
 		// This slug is used to target the step in the CSS and remove the border radius from the spotlight.
 		slug: 'activate-analytics',
-		target: '#activate-analytics-cta',
+		target: '#activate-analytics-notification',
 		floaterProps: {
-			target: '#activate-analytics-cta .googlesitekit-banner__cta',
+			target: '#activate-analytics-notification .googlesitekit-banner__cta',
 		},
 		title: __(
 			'Want to know what people do once they land on your site?',
@@ -125,22 +125,25 @@ function getActivateAnalyticsStep() {
  *
  * @since 1.173.0
  *
- * @param {Object}  params                      Tour parameters.
- * @param {boolean} params.isViewOnly           Whether the user is in view-only mode.
- * @param {boolean} params.canAuthenticate      Whether the user can authenticate.
- * @param {boolean} params.isAnalyticsConnected Whether Analytics is connected.
- * @param {number}  params.windowHeight         The height of the window.
+ * @param {Object}  params                                        Tour parameters.
+ * @param {boolean} params.isViewOnly                             Whether the user is in view-only mode.
+ * @param {boolean} params.canAuthenticate                        Whether the user can authenticate.
+ * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
+ * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
+ * @param {number}  params.windowHeight                           The height of the window.
  * @return {Object} The welcome tour configuration object.
  */
 export function getWelcomeTour( {
 	isViewOnly,
 	canAuthenticate,
 	isAnalyticsConnected,
+	isActivateAnalyticsNotificationPresent,
 	windowHeight,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
 	isAnalyticsConnected: boolean;
+	isActivateAnalyticsNotificationPresent: boolean;
 	windowHeight?: number;
 } ) {
 	if ( ! isAnalyticsConnected ) {
@@ -186,7 +189,7 @@ export function getWelcomeTour( {
 		];
 
 		// Add the Activate Analytics step for authenticated users only.
-		if ( ! isViewOnly ) {
+		if ( ! isViewOnly && isActivateAnalyticsNotificationPresent ) {
 			steps.push( getActivateAnalyticsStep() );
 		}
 

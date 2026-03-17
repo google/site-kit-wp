@@ -39,7 +39,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDContributionsNotification from './ProductIDContributionsNotification';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';

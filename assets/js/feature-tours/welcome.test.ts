@@ -135,6 +135,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -173,6 +174,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -208,6 +210,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: false,
 				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -245,6 +248,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -272,24 +276,6 @@ describe( 'getWelcomeTour', () => {
 					spotlightPadding: 0,
 					placement: 'bottom',
 				},
-				{
-					slug: 'activate-analytics',
-					target: '#activate-analytics-cta',
-					floaterProps: {
-						target: '#activate-analytics-cta .googlesitekit-banner__cta',
-					},
-					title: __(
-						'Want to know what people do once they land on your site?',
-						'google-site-kit'
-					),
-					content: __(
-						'Get insights on how visitors navigate your site and help you achieve your goals by connecting Analytics',
-						'google-site-kit'
-					),
-					offset: 0,
-					spotlightPadding: 0,
-					placement: 'bottom',
-				},
 			] );
 		} );
 
@@ -298,6 +284,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -305,7 +292,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
@@ -334,6 +320,7 @@ describe( 'getWelcomeTour', () => {
 				isViewOnly: true,
 				canAuthenticate: false,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 1000,
 			} );
 
@@ -341,7 +328,6 @@ describe( 'getWelcomeTour', () => {
 				'test-context_dashboard-tour-sc'
 			);
 			expect( tour.slug ).toBe( 'welcome-without-analytics' );
-			// View-only users should NOT have the Activate Analytics step.
 			expect( tour.steps ).toEqual( [
 				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
 				{
@@ -365,57 +351,115 @@ describe( 'getWelcomeTour', () => {
 			] );
 		} );
 
-		it( 'should include the Activate Analytics step for authenticated non-view-only users', () => {
+		it( 'should include the Activate Analytics step when the notification is present for authenticated users', () => {
 			const tour = getWelcomeTour( {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: true,
 				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
 				'test-context_dashboard-tour-sc'
 			);
-			const activateAnalyticsStep = tour.steps.find(
-				( step ) => 'slug' in step && step.slug === 'activate-analytics'
-			);
-			expect( activateAnalyticsStep ).toBeDefined();
-			expect( activateAnalyticsStep ).toMatchObject( {
-				slug: 'activate-analytics',
-				target: '#activate-analytics-cta',
-				floaterProps: {
-					target: '#activate-analytics-cta .googlesitekit-banner__cta',
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
+			expect( tour.steps ).toEqual( [
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-sharing-settings__button',
+					},
+					title: __(
+						'Share insights with your team',
+						'google-site-kit'
+					),
+					content: __(
+						'Give access to your teammates or clients to view the dashboard instantly, no setup required. You control who sees what.',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
 				},
-			} );
+				{
+					content:
+						'Get insights on how visitors navigate your site and help you achieve your goals by connecting Analytics',
+					floaterProps: {
+						target: '#activate-analytics-notification .googlesitekit-banner__cta',
+					},
+					offset: 0,
+					placement: 'bottom',
+					slug: 'activate-analytics',
+					spotlightPadding: 0,
+					target: '#activate-analytics-notification',
+					title: 'Want to know what people do once they land on your site?',
+				},
+			] );
 		} );
 
-		it( 'should NOT include the Activate Analytics step for view-only users', () => {
+		it( 'should not include the Activate Analytics step for view-only users', () => {
 			const tour = getWelcomeTour( {
 				isViewOnly: true,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: true,
 				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
 				'test-context_dashboard-tour-sc'
 			);
-			const activateAnalyticsStep = tour.steps.find(
-				( step ) => 'slug' in step && step.slug === 'activate-analytics'
-			);
-			expect( activateAnalyticsStep ).toBeUndefined();
+			expect( tour.slug ).toBe( 'welcome-without-analytics' );
+			expect( tour.steps ).toEqual( [
+				...SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS,
+				{
+					slug: 'dashboard-sharing',
+					target: '.googlesitekit-header',
+					floaterProps: {
+						target: '.googlesitekit-view-only-menu',
+					},
+					title: __(
+						'Get instant access to insights, no setup',
+						'google-site-kit'
+					),
+					content: __(
+						'See what’s been shared with you here, or sign in with Google to configure services and sharing access',
+						'google-site-kit'
+					),
+					offset: 0,
+					spotlightPadding: 0,
+					placement: 'bottom',
+				},
+			] );
 		} );
 
-		it( 'should use the chart as the floater target when window height is less than 930 for SC-only tours', () => {
+		it( 'should use the chart as the floater target when the window height is less than 930 for SC-only tours', () => {
 			const smallTour = getWelcomeTour( {
 				isViewOnly: false,
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
 				windowHeight: 768,
 			} );
 
 			expect( smallTour.steps[ 0 ].floaterProps ).toEqual( {
 				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart',
+			} );
+		} );
+
+		it( 'should use the widget body target when windowHeight is undefined', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
+			} );
+
+			expect( tour.steps[ 0 ].floaterProps ).toEqual( {
+				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
 			} );
 		} );
 	} );
