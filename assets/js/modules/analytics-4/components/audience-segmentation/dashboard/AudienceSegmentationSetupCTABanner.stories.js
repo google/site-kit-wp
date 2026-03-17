@@ -33,7 +33,7 @@ import AudienceSegmentationSetupCTABanner, {
 } from './AudienceSegmentationSetupCTABanner';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4';
+import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION

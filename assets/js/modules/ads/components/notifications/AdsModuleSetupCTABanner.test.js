@@ -44,7 +44,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '@/js/modules/ads';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
