@@ -159,15 +159,16 @@ export class WordPress {
 		}
 
 		if ( errors.length > 0 ) {
-			const summary = errors
-				.map(
-					( e ) =>
-						`[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`
-				)
-				.join( '\n' );
+			const uniqueErrors: string[] = [];
+			errors.forEach( ( e ) => {
+				uniqueErrors.push(
+					`[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`
+				);
+			} );
 
+			const summary = uniqueErrors.join( '\n' );
 			throw new Error(
-				`${ errors.length } PHP error(s) during test:\n${ summary }`
+				`${ uniqueErrors.length } PHP error(s) during test:\n${ summary }`
 			);
 		}
 	}
