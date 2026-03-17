@@ -29,7 +29,7 @@ import {
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { SIGN_IN_WITH_GOOGLE_NOTIFICATIONS } from '@/js/modules/sign-in-with-google';
+import { SIGN_IN_WITH_GOOGLE_NOTIFICATIONS } from '@/js/modules/sign-in-with-google/notifications';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import CompatibilityWarningSubtleNotification from './CompatibilityWarningSubtleNotification';

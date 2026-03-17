@@ -54,7 +54,9 @@ export default function Header( { closePanel, isLoading } ) {
 	);
 
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'email-reporting',
+		} )
 	);
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 

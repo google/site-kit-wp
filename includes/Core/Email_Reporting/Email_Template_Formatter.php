@@ -142,17 +142,18 @@ class Email_Template_Formatter {
 	 */
 	public function build_template_payload( $sections, $frequency, $date_range, WP_User $user ) {
 		$sections_payload = $this->prepare_sections_payload( $sections, $date_range );
-		$section_notices  = $this->prepare_section_notices( $user );
-
-		if ( ! empty( $section_notices[ Enable_Conversion_Events_Email_Notice::SECTION_KEY ] ) ) {
-			$sections_payload[ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ] = true;
-		}
 
 		if ( empty( $sections_payload ) ) {
 			return new WP_Error(
 				'email_report_no_data',
 				__( 'No email report data available.', 'google-site-kit' )
 			);
+		}
+
+		$section_notices = $this->prepare_section_notices( $user );
+
+		if ( ! empty( $section_notices[ Enable_Conversion_Events_Email_Notice::SECTION_KEY ] ) ) {
+			$sections_payload[ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ] = true;
 		}
 
 		$sections_map = new Sections_Map( $this->context, $sections_payload, $this->golinks );
