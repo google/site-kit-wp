@@ -241,8 +241,10 @@ class Email_Reporting_Data_Requests {
 	 * @return WP_Error The categorized error with an added 'category' data field.
 	 */
 	public function categorize_error( WP_Error $error, $module_slug ) {
-		$status = $error->get_error_data()['status'];
-		$reason = $error->get_error_data()['reason'];
+		$error_data = $error->get_error_data();
+
+		$status = $error_data['status'] ?? null;
+		$reason = $error_data['reason'] ?? null;
 
 		$category = 'report_error';
 		if ( in_array( $status, self::PERMISSIONS_ERROR_STATUSES, true ) || in_array( $reason, self::PERMISSIONS_ERROR_REASONS, true ) ) {
@@ -253,7 +255,7 @@ class Email_Reporting_Data_Requests {
 			$error->get_error_code(),
 			$error->get_error_message(),
 			array_merge(
-				$error->get_error_data(),
+				$error_data ?? array(),
 				array(
 					'category_id' => $category,
 					'module_slug' => $module_slug,
@@ -383,10 +385,6 @@ class Email_Reporting_Data_Requests {
 				'requests' => $requests,
 			)
 		);
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
 
 		return $request_assembler->map_responses( $response, $request_map );
 	}
