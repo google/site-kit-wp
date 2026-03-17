@@ -42,7 +42,7 @@ import * as tracking from '@/js/util/tracking';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense/notifications';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

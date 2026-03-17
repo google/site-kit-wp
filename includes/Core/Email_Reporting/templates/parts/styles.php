@@ -104,8 +104,8 @@
 
 			/* Keep notice cards visible in dark mode. */
 			.googlesitekit-email-report-notice .googlesitekit-email-report-notice-surface {
-				background-color: #D3C2ED !important;
-				box-shadow: inset 0 0 0 9999px #D3C2ED !important;
+				background-color: #E3D1FF !important;
+				box-shadow: inset 0 0 0 9999px #E3D1FF !important;
 			}
 
 			.text-primary {
@@ -172,8 +172,8 @@
 
 		/* Keep notice cards visible in Outlook app dark mode. */
 		[data-ogsc] .googlesitekit-email-report-notice .googlesitekit-email-report-notice-surface {
-			background-color: #D3C2ED !important;
-			box-shadow: inset 0 0 0 9999px #D3C2ED !important;
+			background-color: #E3D1FF !important;
+			box-shadow: inset 0 0 0 9999px #E3D1FF !important;
 		}
 
 		[data-ogsc] .text-primary {

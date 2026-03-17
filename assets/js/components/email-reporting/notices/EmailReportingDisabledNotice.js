@@ -49,7 +49,9 @@ export default function EmailReportingDisabledNotice() {
 	const isViewOnly = useViewOnly();
 
 	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL()
+		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
+			scrollTo: 'email-reporting',
+		} )
 	);
 
 	const trackEvents = useNotificationEvents( EMAIL_REPORTS_DISABLED_NOTICE );
