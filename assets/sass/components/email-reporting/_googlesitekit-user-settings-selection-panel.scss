@@ -39,6 +39,10 @@
 				padding: 0 $grid-gap-desktop;
 			}
 
+			// Ensure every notice after the first notice has a margin
+			// so the notices don't render with no gap.
+			//
+			// See: https://github.com/google/site-kit-wp/issues/12279
 			.googlesitekit-notice-container:nth-of-type(n + 2) {
 				margin-top: $grid-gap-phone;
 			}
