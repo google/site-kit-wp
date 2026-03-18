@@ -1,9 +1,10 @@
 includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - tests/phpstan/phpstan-baseline.neon
 
 parameters:
-    level: 2
+    level: 3
     treatPhpDocTypesAsCertain: false
     inferPrivatePropertyTypeFromConstructor: true
     paths:
