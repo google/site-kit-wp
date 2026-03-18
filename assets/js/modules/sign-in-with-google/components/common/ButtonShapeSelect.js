@@ -52,7 +52,7 @@ export default function ButtonShapeSelect() {
 	const debounceTrackButtonClick = useDebounce( trackButtonClick, 500 );
 
 	const onEnhancedChange = useCallback(
-		( i, item ) => {
+		( index, item ) => {
 			const newValue = item.dataset.value;
 
 			if ( newValue !== shape ) {

@@ -30,11 +30,7 @@ services:
       - sitekit
 
   wp:
-    build:
-      context: ./docker/wordpress
-      args:
-        WP_VERSION: ${WP_VERSION:-5.2.21}
-    image: site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21}
+    image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21}
     ports:
       - 9002:80
     volumes:

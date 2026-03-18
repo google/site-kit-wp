@@ -326,7 +326,7 @@ class Email_Log_Batch_Query {
 	 * Returns true only when every log has email_failed status and
 	 * send attempts >= MAX_ATTEMPTS, with no email_sent logs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return bool True if all logs in the batch have exhausted retries.
@@ -353,7 +353,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Checks if admin notification has already been sent for a batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return bool True if the batch has already been admin-notified.
@@ -371,7 +371,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Marks a batch as admin-notified to prevent duplicate sends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 */
@@ -388,7 +388,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Gets the error details from the first log in a batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return string|null Error details JSON string or null.
@@ -408,7 +408,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Gets post IDs for a specific batch with deterministic ordering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return array<int> Post IDs ordered by ID ascending.

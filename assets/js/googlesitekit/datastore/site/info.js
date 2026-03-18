@@ -413,7 +413,7 @@ export const selectors = {
 						: `${ admin.pathname }/`;
 					baseURL = `${ admin.origin }${ pathname }`;
 					baseQuery = admin.search || '';
-				} catch ( e ) {
+				} catch ( error ) {
 					baseURL =
 						adminURL[ adminURL.length - 1 ] === '/'
 							? adminURL

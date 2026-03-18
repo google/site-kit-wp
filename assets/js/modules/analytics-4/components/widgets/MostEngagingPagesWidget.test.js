@@ -84,7 +84,7 @@ describe( 'MostEngagingPagesWidget', () => {
 			dimensionFilters: {
 				pagePath: new Array( 3 )
 					.fill( '' )
-					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.map( ( _, index ) => `/test-post-${ index + 1 }/` )
 					.sort(),
 			},
 			dimensions: [ 'pagePath', 'pageTitle' ],

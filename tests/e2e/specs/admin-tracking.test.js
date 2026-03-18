@@ -116,7 +116,7 @@ describe( 'admin tracking', () => {
 			expect(
 				await page.$eval(
 					'#googlesitekit-opt-in',
-					( el ) => el.checked
+					( element ) => element.checked
 				)
 			).toBe( false );
 		} );
@@ -135,7 +135,7 @@ describe( 'admin tracking', () => {
 			expect(
 				await page.$eval(
 					'#googlesitekit-opt-in',
-					( el ) => el.checked
+					( element ) => element.checked
 				)
 			).toBe( true );
 

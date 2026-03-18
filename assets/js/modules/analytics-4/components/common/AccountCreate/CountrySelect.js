@@ -40,7 +40,7 @@ export default function CountrySelect() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback(
-		( i, item ) => {
+		( index, item ) => {
 			const newCountryCode = item.dataset.value;
 			if (
 				newCountryCode !== value &&
@@ -66,8 +66,8 @@ export default function CountrySelect() {
 			enhanced
 			outlined
 		>
-			{ allCountries.map( ( { countryCode, displayName }, i ) => (
-				<Option key={ i } value={ countryCode }>
+			{ allCountries.map( ( { countryCode, displayName }, index ) => (
+				<Option key={ index } value={ countryCode }>
 					{ displayName }
 				</Option>
 			) ) }

@@ -25,7 +25,7 @@ import { asUser, withPlugins } from '../wordpress';
 /**
  * Creates a test that checks for a setup screen with the given name.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name The name of the setup screen to check for.
  * @return    A test function that checks for the setup screen.

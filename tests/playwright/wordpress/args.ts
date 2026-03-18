@@ -23,48 +23,48 @@ import { Connection } from 'mysql2/promise';
 /**
  * Arguments for creating a new WordPress instance.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export type WordPressArgs = {
 	/**
 	 * The database connection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	db: Connection;
 
 	/**
 	 * The page to use for the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	page: Page;
 
 	/**
 	 * The browser context of the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	context: BrowserContext;
 
 	/**
 	 * The information about the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	testInfo: TestInfo;
 
 	/**
 	 * The base URL of the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	baseURL: string;
 
 	/**
 	 * The base URL of the Mailpit HTTP API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	mailpitURL: string;
 };

@@ -418,8 +418,8 @@ describe( 'core/widgets Widgets', () => {
 					{
 						Component,
 					},
-				].forEach( ( widget, i ) => {
-					const slug = `TestWidget${ i }`;
+				].forEach( ( widget, index ) => {
+					const slug = `TestWidget${ index }`;
 
 					registry
 						.dispatch( CORE_WIDGETS )
@@ -471,8 +471,8 @@ describe( 'core/widgets Widgets', () => {
 					{
 						Component,
 					},
-				].forEach( ( widget, i ) => {
-					const slug = `TestWidget${ i }`;
+				].forEach( ( widget, index ) => {
+					const slug = `TestWidget${ index }`;
 
 					registry
 						.dispatch( CORE_WIDGETS )
@@ -524,8 +524,8 @@ describe( 'core/widgets Widgets', () => {
 					{
 						Component,
 					},
-				].forEach( ( widget, i ) => {
-					const slug = `TestWidget${ i }`;
+				].forEach( ( widget, index ) => {
+					const slug = `TestWidget${ index }`;
 
 					registry
 						.dispatch( CORE_WIDGETS )

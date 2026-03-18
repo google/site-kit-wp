@@ -73,10 +73,10 @@ function DeviceSizeTabBar( {
 			activeIndex={ activeIndex }
 			handleActiveIndexUpdate={ onUpdate }
 		>
-			{ deviceSizes.map( ( { icon, label }, i ) => {
+			{ deviceSizes.map( ( { icon, label }, index ) => {
 				return (
 					<Tab
-						key={ `google-sitekit-device-size-tab-key-${ i }` }
+						key={ `google-sitekit-device-size-tab-key-${ index }` }
 						aria-label={ label }
 						disabled={ disabled }
 						focusOnActivate={ false }

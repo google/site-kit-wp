@@ -35,7 +35,10 @@ export default function WPDashboardActivateAnalyticsCTA() {
 
 	if ( setupFlowRefreshEnabled ) {
 		return (
-			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-wp-dashboard" />
+			<AnalyticsCTA
+				analyticsEventLabel="wp_dashboard"
+				dismissedItemSlug="analytics-setup-cta-wp-dashboard"
+			/>
 		);
 	}
 

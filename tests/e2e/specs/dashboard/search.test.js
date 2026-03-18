@@ -87,7 +87,7 @@ describe( 'Site Kit dashboard post search', () => {
 		await page.waitForSelector( '.googlesitekit-entity-search' );
 		const entitySearcher = await page.$( '.googlesitekit-entity-search' );
 		expect(
-			await entitySearcher.$eval( 'input', ( el ) => el.value )
+			await entitySearcher.$eval( 'input', ( element ) => element.value )
 		).toEqual( 'Hello world!' );
 
 		await expect( page ).toMatchElement(
@@ -138,7 +138,7 @@ describe( 'Site Kit dashboard post search', () => {
 
 		// Search input becomes the post title
 		expect(
-			await entitySearcher.$eval( 'input', ( el ) => el.value )
+			await entitySearcher.$eval( 'input', ( element ) => element.value )
 		).toEqual( 'Hello world!' );
 
 		await expect( page ).toMatchElement(
@@ -230,7 +230,7 @@ describe( 'Site Kit dashboard post search', () => {
 
 		// Search input becomes the post title
 		expect(
-			await entitySearcher.$eval( 'input', ( el ) => el.value )
+			await entitySearcher.$eval( 'input', ( element ) => element.value )
 		).toEqual( TITLE_SPECIAL_CHARACTERS );
 
 		await expect( page ).toMatchElement(

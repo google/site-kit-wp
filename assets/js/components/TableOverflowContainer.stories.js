@@ -25,10 +25,10 @@ function Template() {
 	const columns = [];
 	const rows = [];
 
-	for ( let i = 0; i < 15; i++ ) {
+	for ( let index = 0; index < 15; index++ ) {
 		columns.push(
 			<td
-				key={ i }
+				key={ index }
 				style={ {
 					padding: '20px',
 					border: '1px solid #000',
@@ -40,8 +40,8 @@ function Template() {
 		);
 	}
 
-	for ( let i = 0; i < 30; i++ ) {
-		rows.push( <tr key={ i }>{ columns }</tr> );
+	for ( let index = 0; index < 30; index++ ) {
+		rows.push( <tr key={ index }>{ columns }</tr> );
 	}
 
 	return (

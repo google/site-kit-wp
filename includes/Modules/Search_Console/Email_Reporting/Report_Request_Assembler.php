@@ -171,7 +171,7 @@ class Report_Request_Assembler {
 	 *
 	 * @param array $responses   Batch responses keyed by identifier.
 	 * @param array $request_map Request metadata map.
-	 * @return array Section payloads keyed by section slug.
+	 * @return array|WP_Error Section payloads keyed by section slug.
 	 */
 	public function map_responses( $responses, $request_map ) {
 		$payload = array();
@@ -192,6 +192,10 @@ class Report_Request_Assembler {
 
 				$payload[ $metadata['section_key'] ][ $metadata['context'] ] = $result;
 				continue;
+			}
+
+			if ( is_wp_error( $result ) ) {
+				return $result;
 			}
 
 			$payload[ $metadata['section_key'] ] = $result;

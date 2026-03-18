@@ -470,7 +470,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Synchronizes the publication data with the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param array $publications Array of Publication objects.
 	 * @return void
@@ -536,7 +536,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Returns the product IDs for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return array Product IDs.
@@ -557,7 +557,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Returns the payment option for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return string Payment option.

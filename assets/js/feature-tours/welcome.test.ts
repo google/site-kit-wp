@@ -136,6 +136,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -174,6 +175,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -209,6 +211,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: false,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -246,6 +249,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -281,6 +285,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -316,6 +321,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: false,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -351,6 +357,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -399,6 +406,7 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
+				windowHeight: 1000,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -426,6 +434,33 @@ describe( 'getWelcomeTour', () => {
 					placement: 'bottom',
 				},
 			] );
+		} );
+
+		it( 'should use the chart as the floater target when the window height is less than 930 for SC-only tours', () => {
+			const smallTour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
+				windowHeight: 768,
+			} );
+
+			expect( smallTour.steps[ 0 ].floaterProps ).toEqual( {
+				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart',
+			} );
+		} );
+
+		it( 'should use the widget body target when windowHeight is undefined', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
+			} );
+
+			expect( tour.steps[ 0 ].floaterProps ).toEqual( {
+				target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+			} );
 		} );
 	} );
 } );

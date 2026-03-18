@@ -181,11 +181,11 @@ export default function UserInputPreview( props ) {
 			return;
 		}
 
-		const buttonEl =
+		const buttonElement =
 			previewContainer.current.querySelector( '.mdc-button' );
-		if ( buttonEl ) {
+		if ( buttonElement ) {
 			setTimeout( () => {
-				buttonEl.focus();
+				buttonElement.focus();
 			}, 50 );
 		}
 	}, [ page ] );
