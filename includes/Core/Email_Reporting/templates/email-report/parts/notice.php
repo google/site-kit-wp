@@ -39,9 +39,8 @@ if ( empty( $notice_title ) && empty( $notice_body ) ) {
 			<div style="font-size:14px; line-height:20px; letter-spacing: 0.25px; color:#462083; margin-bottom:16px;">
 				<?php echo esc_html( $notice_body ); ?>
 				<?php if ( ! empty( $learn_more_label ) && ! empty( $learn_more_url ) ) : ?>
-				&nbsp;<a href="<?php echo esc_url( $learn_more_url ); ?>"
-					style="color:#462083; text-decoration:underline;" rel="noopener"
-					target="_blank"><?php echo esc_html( $learn_more_label ); ?></a>
+				<a href="<?php echo esc_url( $learn_more_url ); ?>" style="color:#462083; text-decoration:underline;"
+					rel="noopener" target="_blank"><?php echo esc_html( $learn_more_label ); ?></a>
 				<?php endif; ?>
 			</div>
 			<?php endif; ?>
