@@ -1,0 +1,2883 @@
+{
+	"/webmasters/v3/sites/http%3A%2F%2Flocalhost%3A9002/searchAnalytics/query": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2026-01-01\",\"rowlimit\":1000,\"startdate\":\"2025-11-07\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"2025-11-07"
+						],
+						"clicks": 20,
+						"impressions": 1207,
+						"ctr": 0.016570008285004142,
+						"position": 17.59817729908865
+					},
+					{
+						"keys": [
+							"2025-11-08"
+						],
+						"clicks": 20,
+						"impressions": 1374,
+						"ctr": 0.014556040756914119,
+						"position": 17.321688500727802
+					},
+					{
+						"keys": [
+							"2025-11-09"
+						],
+						"clicks": 13,
+						"impressions": 2170,
+						"ctr": 0.0059907834101382493,
+						"position": 34.480645161290326
+					},
+					{
+						"keys": [
+							"2025-11-10"
+						],
+						"clicks": 19,
+						"impressions": 1317,
+						"ctr": 0.014426727410782081,
+						"position": 20.171602126044039
+					},
+					{
+						"keys": [
+							"2025-11-11"
+						],
+						"clicks": 25,
+						"impressions": 1537,
+						"ctr": 0.016265452179570591,
+						"position": 19.185426154847104
+					},
+					{
+						"keys": [
+							"2025-11-12"
+						],
+						"clicks": 21,
+						"impressions": 1531,
+						"ctr": 0.013716525146962769,
+						"position": 19.241018941868059
+					},
+					{
+						"keys": [
+							"2025-11-13"
+						],
+						"clicks": 17,
+						"impressions": 1697,
+						"ctr": 0.010017678255745434,
+						"position": 18.533883323512079
+					},
+					{
+						"keys": [
+							"2025-11-14"
+						],
+						"clicks": 19,
+						"impressions": 1190,
+						"ctr": 0.015966386554621848,
+						"position": 18.996638655462185
+					},
+					{
+						"keys": [
+							"2025-11-15"
+						],
+						"clicks": 18,
+						"impressions": 1265,
+						"ctr": 0.014229249011857707,
+						"position": 16.196047430830042
+					},
+					{
+						"keys": [
+							"2025-11-16"
+						],
+						"clicks": 19,
+						"impressions": 1652,
+						"ctr": 0.011501210653753027,
+						"position": 22.332324455205811
+					},
+					{
+						"keys": [
+							"2025-11-17"
+						],
+						"clicks": 14,
+						"impressions": 1343,
+						"ctr": 0.010424422933730455,
+						"position": 20.969471332836932
+					},
+					{
+						"keys": [
+							"2025-11-18"
+						],
+						"clicks": 19,
+						"impressions": 1385,
+						"ctr": 0.013718411552346571,
+						"position": 20.538628158844766
+					},
+					{
+						"keys": [
+							"2025-11-19"
+						],
+						"clicks": 15,
+						"impressions": 1251,
+						"ctr": 0.011990407673860911,
+						"position": 20.787370103916867
+					},
+					{
+						"keys": [
+							"2025-11-20"
+						],
+						"clicks": 16,
+						"impressions": 1283,
+						"ctr": 0.012470771628994544,
+						"position": 19.936866718628217
+					},
+					{
+						"keys": [
+							"2025-11-21"
+						],
+						"clicks": 26,
+						"impressions": 1234,
+						"ctr": 0.021069692058346839,
+						"position": 16.966774716369528
+					},
+					{
+						"keys": [
+							"2025-11-22"
+						],
+						"clicks": 32,
+						"impressions": 1507,
+						"ctr": 0.021234240212342402,
+						"position": 17.81950895819509
+					},
+					{
+						"keys": [
+							"2025-11-23"
+						],
+						"clicks": 24,
+						"impressions": 1453,
+						"ctr": 0.016517549896765314,
+						"position": 19.017894012388162
+					},
+					{
+						"keys": [
+							"2025-11-24"
+						],
+						"clicks": 25,
+						"impressions": 1311,
+						"ctr": 0.019069412662090009,
+						"position": 19.028985507246375
+					},
+					{
+						"keys": [
+							"2025-11-25"
+						],
+						"clicks": 10,
+						"impressions": 1364,
+						"ctr": 0.007331378299120235,
+						"position": 18.571114369501466
+					},
+					{
+						"keys": [
+							"2025-11-26"
+						],
+						"clicks": 12,
+						"impressions": 1097,
+						"ctr": 0.010938924339106655,
+						"position": 21.921604375569736
+					},
+					{
+						"keys": [
+							"2025-11-27"
+						],
+						"clicks": 15,
+						"impressions": 1311,
+						"ctr": 0.011441647597254004,
+						"position": 22.880244088482076
+					},
+					{
+						"keys": [
+							"2025-11-28"
+						],
+						"clicks": 8,
+						"impressions": 1226,
+						"ctr": 0.0065252854812398045,
+						"position": 23.182707993474715
+					},
+					{
+						"keys": [
+							"2025-11-29"
+						],
+						"clicks": 12,
+						"impressions": 1151,
+						"ctr": 0.010425716768027803,
+						"position": 16.767158992180711
+					},
+					{
+						"keys": [
+							"2025-11-30"
+						],
+						"clicks": 19,
+						"impressions": 1250,
+						"ctr": 0.0152,
+						"position": 18.0072
+					},
+					{
+						"keys": [
+							"2025-12-01"
+						],
+						"clicks": 16,
+						"impressions": 1098,
+						"ctr": 0.014571948998178506,
+						"position": 20.735883424408016
+					},
+					{
+						"keys": [
+							"2025-12-02"
+						],
+						"clicks": 14,
+						"impressions": 1010,
+						"ctr": 0.013861386138613862,
+						"position": 19.168316831683168
+					},
+					{
+						"keys": [
+							"2025-12-03"
+						],
+						"clicks": 6,
+						"impressions": 974,
+						"ctr": 0.0061601642710472282,
+						"position": 18.913757700205338
+					},
+					{
+						"keys": [
+							"2025-12-04"
+						],
+						"clicks": 8,
+						"impressions": 1089,
+						"ctr": 0.0073461891643709825,
+						"position": 21.13957759412305
+					},
+					{
+						"keys": [
+							"2025-12-05"
+						],
+						"clicks": 20,
+						"impressions": 1091,
+						"ctr": 0.018331805682859761,
+						"position": 19.203483043079743
+					},
+					{
+						"keys": [
+							"2025-12-06"
+						],
+						"clicks": 27,
+						"impressions": 1259,
+						"ctr": 0.021445591739475776,
+						"position": 17.453534551231137
+					},
+					{
+						"keys": [
+							"2025-12-07"
+						],
+						"clicks": 18,
+						"impressions": 1269,
+						"ctr": 0.014184397163120567,
+						"position": 20.078014184397162
+					},
+					{
+						"keys": [
+							"2025-12-08"
+						],
+						"clicks": 11,
+						"impressions": 1168,
+						"ctr": 0.0094178082191780817,
+						"position": 21.320205479452056
+					},
+					{
+						"keys": [
+							"2025-12-09"
+						],
+						"clicks": 8,
+						"impressions": 996,
+						"ctr": 0.0080321285140562242,
+						"position": 23.006024096385541
+					},
+					{
+						"keys": [
+							"2025-12-10"
+						],
+						"clicks": 8,
+						"impressions": 1002,
+						"ctr": 0.0079840319361277438,
+						"position": 24.792415169660678
+					},
+					{
+						"keys": [
+							"2025-12-11"
+						],
+						"clicks": 12,
+						"impressions": 998,
+						"ctr": 0.012024048096192385,
+						"position": 19.658316633266534
+					},
+					{
+						"keys": [
+							"2025-12-12"
+						],
+						"clicks": 13,
+						"impressions": 1642,
+						"ctr": 0.0079171741778319114,
+						"position": 37.897685749086477
+					},
+					{
+						"keys": [
+							"2025-12-13"
+						],
+						"clicks": 8,
+						"impressions": 3016,
+						"ctr": 0.0026525198938992041,
+						"position": 42.875994694960212
+					},
+					{
+						"keys": [
+							"2025-12-14"
+						],
+						"clicks": 10,
+						"impressions": 1236,
+						"ctr": 0.0080906148867313909,
+						"position": 18.822815533980581
+					},
+					{
+						"keys": [
+							"2025-12-15"
+						],
+						"clicks": 15,
+						"impressions": 1192,
+						"ctr": 0.012583892617449664,
+						"position": 21.983221476510067
+					},
+					{
+						"keys": [
+							"2025-12-16"
+						],
+						"clicks": 6,
+						"impressions": 1238,
+						"ctr": 0.0048465266558966073,
+						"position": 23.428917609046849
+					},
+					{
+						"keys": [
+							"2025-12-17"
+						],
+						"clicks": 14,
+						"impressions": 1018,
+						"ctr": 0.0137524557956778,
+						"position": 16.370333988212181
+					},
+					{
+						"keys": [
+							"2025-12-18"
+						],
+						"clicks": 11,
+						"impressions": 1132,
+						"ctr": 0.0097173144876325085,
+						"position": 18.634275618374559
+					},
+					{
+						"keys": [
+							"2025-12-19"
+						],
+						"clicks": 11,
+						"impressions": 1247,
+						"ctr": 0.0088211708099438652,
+						"position": 23.927826784282278
+					},
+					{
+						"keys": [
+							"2025-12-20"
+						],
+						"clicks": 7,
+						"impressions": 1288,
+						"ctr": 0.005434782608695652,
+						"position": 20.3027950310559
+					},
+					{
+						"keys": [
+							"2025-12-21"
+						],
+						"clicks": 11,
+						"impressions": 1259,
+						"ctr": 0.008737092930897538,
+						"position": 22.12549642573471
+					},
+					{
+						"keys": [
+							"2025-12-22"
+						],
+						"clicks": 12,
+						"impressions": 1405,
+						"ctr": 0.0085409252669039152,
+						"position": 27.323131672597864
+					},
+					{
+						"keys": [
+							"2025-12-23"
+						],
+						"clicks": 10,
+						"impressions": 1187,
+						"ctr": 0.0084245998315080027,
+						"position": 26.040438079191237
+					},
+					{
+						"keys": [
+							"2025-12-24"
+						],
+						"clicks": 7,
+						"impressions": 1153,
+						"ctr": 0.0060711188204683438,
+						"position": 25.225498699045968
+					},
+					{
+						"keys": [
+							"2025-12-25"
+						],
+						"clicks": 7,
+						"impressions": 1125,
+						"ctr": 0.0062222222222222219,
+						"position": 23.943111111111111
+					},
+					{
+						"keys": [
+							"2025-12-26"
+						],
+						"clicks": 10,
+						"impressions": 1214,
+						"ctr": 0.0082372322899505763,
+						"position": 19.453871499176277
+					},
+					{
+						"keys": [
+							"2025-12-27"
+						],
+						"clicks": 17,
+						"impressions": 1308,
+						"ctr": 0.012996941896024464,
+						"position": 19.205657492354739
+					},
+					{
+						"keys": [
+							"2025-12-28"
+						],
+						"clicks": 19,
+						"impressions": 1459,
+						"ctr": 0.013022618231665525,
+						"position": 19.51473612063057
+					},
+					{
+						"keys": [
+							"2025-12-29"
+						],
+						"clicks": 16,
+						"impressions": 1548,
+						"ctr": 0.0103359173126615,
+						"position": 19.39470284237726
+					},
+					{
+						"keys": [
+							"2025-12-30"
+						],
+						"clicks": 21,
+						"impressions": 1541,
+						"ctr": 0.0136275146009085,
+						"position": 19.053212199870213
+					},
+					{
+						"keys": [
+							"2025-12-31"
+						],
+						"clicks": 26,
+						"impressions": 1538,
+						"ctr": 0.016905071521456438,
+						"position": 15.973992197659298
+					},
+					{
+						"keys": [
+							"2026-01-01"
+						],
+						"clicks": 16,
+						"impressions": 1353,
+						"ctr": 0.011825572801182557,
+						"position": 21.248337028824835
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2026-01-01\",\"rowlimit\":1000,\"startdate\":\"2025-12-18\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"2025-12-18"
+						],
+						"clicks": 11,
+						"impressions": 1132,
+						"ctr": 0.0097173144876325085,
+						"position": 18.634275618374559
+					},
+					{
+						"keys": [
+							"2025-12-19"
+						],
+						"clicks": 11,
+						"impressions": 1247,
+						"ctr": 0.0088211708099438652,
+						"position": 23.927826784282278
+					},
+					{
+						"keys": [
+							"2025-12-20"
+						],
+						"clicks": 7,
+						"impressions": 1288,
+						"ctr": 0.005434782608695652,
+						"position": 20.3027950310559
+					},
+					{
+						"keys": [
+							"2025-12-21"
+						],
+						"clicks": 11,
+						"impressions": 1259,
+						"ctr": 0.008737092930897538,
+						"position": 22.12549642573471
+					},
+					{
+						"keys": [
+							"2025-12-22"
+						],
+						"clicks": 12,
+						"impressions": 1405,
+						"ctr": 0.0085409252669039152,
+						"position": 27.323131672597864
+					},
+					{
+						"keys": [
+							"2025-12-23"
+						],
+						"clicks": 10,
+						"impressions": 1187,
+						"ctr": 0.0084245998315080027,
+						"position": 26.040438079191237
+					},
+					{
+						"keys": [
+							"2025-12-24"
+						],
+						"clicks": 7,
+						"impressions": 1153,
+						"ctr": 0.0060711188204683438,
+						"position": 25.225498699045968
+					},
+					{
+						"keys": [
+							"2025-12-25"
+						],
+						"clicks": 7,
+						"impressions": 1125,
+						"ctr": 0.0062222222222222219,
+						"position": 23.943111111111111
+					},
+					{
+						"keys": [
+							"2025-12-26"
+						],
+						"clicks": 10,
+						"impressions": 1214,
+						"ctr": 0.0082372322899505763,
+						"position": 19.453871499176277
+					},
+					{
+						"keys": [
+							"2025-12-27"
+						],
+						"clicks": 17,
+						"impressions": 1308,
+						"ctr": 0.012996941896024464,
+						"position": 19.205657492354739
+					},
+					{
+						"keys": [
+							"2025-12-28"
+						],
+						"clicks": 19,
+						"impressions": 1459,
+						"ctr": 0.013022618231665525,
+						"position": 19.51473612063057
+					},
+					{
+						"keys": [
+							"2025-12-29"
+						],
+						"clicks": 16,
+						"impressions": 1548,
+						"ctr": 0.0103359173126615,
+						"position": 19.39470284237726
+					},
+					{
+						"keys": [
+							"2025-12-30"
+						],
+						"clicks": 21,
+						"impressions": 1541,
+						"ctr": 0.0136275146009085,
+						"position": 19.053212199870213
+					},
+					{
+						"keys": [
+							"2025-12-31"
+						],
+						"clicks": 26,
+						"impressions": 1538,
+						"ctr": 0.016905071521456438,
+						"position": 15.973992197659298
+					},
+					{
+						"keys": [
+							"2026-01-01"
+						],
+						"clicks": 16,
+						"impressions": 1353,
+						"ctr": 0.011825572801182557,
+						"position": 21.248337028824835
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"acompanhante na irlanda"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 7
+					},
+					{
+						"keys": [
+							"brazilian restaurant limerick"
+						],
+						"clicks": 1,
+						"impressions": 15,
+						"ctr": 0.066666666666666666,
+						"position": 11.6
+					},
+					{
+						"keys": [
+							"free nye events"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 6
+					},
+					{
+						"keys": [
+							"marcas irlandesas"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.33333333333333331,
+						"position": 1
+					},
+					{
+						"keys": [
+							"pub irlandes sao paulo"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 4.4375
+					},
+					{
+						"keys": [
+							"que signifie le n sur les voitures en irlande"
+						],
+						"clicks": 1,
+						"impressions": 17,
+						"ctr": 0.058823529411764705,
+						"position": 6.2352941176470589
+					},
+					{
+						"keys": [
+							"\"gallaghers boxty house\" \"d02 et66\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 50
+					},
+					{
+						"keys": [
+							"#irishpub"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 16.5
+					},
+					{
+						"keys": [
+							"13 14 burgh quay"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 70
+					},
+					{
+						"keys": [
+							"13.50"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 10.6
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2026-01-01\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"https://oi.ie/en/what-do-l-or-n-car-stickers-mean-in-ireland/"
+						],
+						"clicks": 25,
+						"impressions": 1499,
+						"ctr": 0.016677785190126752,
+						"position": 5.6057371581054039
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brazilian-mass-and-churches-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 55,
+						"ctr": 0.16363636363636364,
+						"position": 6.4545454545454541
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/free-and-cheap-new-years-eve-events-in-dublin-a-guide-for-the-brazilian-community-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 228,
+						"ctr": 0.039473684210526314,
+						"position": 6.5438596491228074
+					},
+					{
+						"keys": [
+							"https://oi.ie/eventos-gratuitos-e-baratos-de-ano-novo-em-dublin-guia-para-a-comunidade-brasileira-na-irlanda/"
+						],
+						"clicks": 9,
+						"impressions": 282,
+						"ctr": 0.031914893617021274,
+						"position": 6.8191489361702127
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-as-melhores-opcoes-para-o-reveillon-na-irlanda/"
+						],
+						"clicks": 8,
+						"impressions": 224,
+						"ctr": 0.035714285714285712,
+						"position": 7.4285714285714288
+					},
+					{
+						"keys": [
+							"https://oi.ie/compras-na-irlanda-os-10-melhores-souvenirs-irlandeses/"
+						],
+						"clicks": 7,
+						"impressions": 134,
+						"ctr": 0.052238805970149252,
+						"position": 5.82089552238806
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-marcas-mais-valiosas-da-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 40,
+						"ctr": 0.075,
+						"position": 1.1
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-caminho-medico-na-irlanda-um-guia-detalhado-para-medicos-em-potencial/"
+						],
+						"clicks": 3,
+						"impressions": 45,
+						"ctr": 0.066666666666666666,
+						"position": 10.044444444444444
+					},
+					{
+						"keys": [
+							"https://oi.ie/tornar-se-eletricista-ou-encanador-na-irlanda-requisitos-de-entrada-custos-salarios-e-oportunidades/"
+						],
+						"clicks": 3,
+						"impressions": 109,
+						"ctr": 0.027522935779816515,
+						"position": 3.0183486238532109
+					},
+					{
+						"keys": [
+							"https://oi.ie/5-lugares-em-dublin-para-vivenciar-a-tradicional-musica-irlandesa/"
+						],
+						"clicks": 2,
+						"impressions": 5,
+						"ctr": 0.4,
+						"position": 7
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"acompanhante na irlanda"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 7
+					},
+					{
+						"keys": [
+							"brazilian restaurant limerick"
+						],
+						"clicks": 1,
+						"impressions": 15,
+						"ctr": 0.066666666666666666,
+						"position": 11.6
+					},
+					{
+						"keys": [
+							"free nye events"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 6
+					},
+					{
+						"keys": [
+							"marcas irlandesas"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.33333333333333331,
+						"position": 1
+					},
+					{
+						"keys": [
+							"pub irlandes sao paulo"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 4.4375
+					},
+					{
+						"keys": [
+							"que signifie le n sur les voitures en irlande"
+						],
+						"clicks": 1,
+						"impressions": 17,
+						"ctr": 0.058823529411764705,
+						"position": 6.2352941176470589
+					},
+					{
+						"keys": [
+							"\"gallaghers boxty house\" \"d02 et66\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 50
+					},
+					{
+						"keys": [
+							"#irishpub"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 16.5
+					},
+					{
+						"keys": [
+							"13 14 burgh quay"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 70
+					},
+					{
+						"keys": [
+							"13.50"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 10.6
+					},
+					{
+						"keys": [
+							"2024 celtics"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 19
+					},
+					{
+						"keys": [
+							"3 foot wide house"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0,
+						"position": 80.333333333333329
+					},
+					{
+						"keys": [
+							"a grande fome na irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 1
+					},
+					{
+						"keys": [
+							"a sorte dos irlandeses"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 27
+					},
+					{
+						"keys": [
+							"accept contactless payments"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 46.4
+					},
+					{
+						"keys": [
+							"activity parks ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 74
+					},
+					{
+						"keys": [
+							"aeroporto de dublin"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 52.5
+					},
+					{
+						"keys": [
+							"agende a sua viagem para chegar ao aeroporto dub"
+						],
+						"clicks": 0,
+						"impressions": 15,
+						"ctr": 0,
+						"position": 24.533333333333335
+					},
+					{
+						"keys": [
+							"airbnb irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 8
+					},
+					{
+						"keys": [
+							"airbnb superhost ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 48
+					},
+					{
+						"keys": [
+							"alugar carro irlanda"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0,
+						"position": 83
+					},
+					{
+						"keys": [
+							"aluguel de carro irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 12
+					},
+					{
+						"keys": [
+							"aluguel de carro na irlanda"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 13
+					},
+					{
+						"keys": [
+							"aluguel de carros irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 64
+					},
+					{
+						"keys": [
+							"amazon ireland launch"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 69
+					},
+					{
+						"keys": [
+							"amazon ireland launch date"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 38
+					},
+					{
+						"keys": [
+							"amazon ireland open now"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 79
+					},
+					{
+						"keys": [
+							"amazon irlanda"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 75.5
+					},
+					{
+						"keys": [
+							"amazon marketplace ireland"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 38
+					},
+					{
+						"keys": [
+							"amazon.ie launch"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 45
+					},
+					{
+						"keys": [
+							"amusement park"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 58
+					},
+					{
+						"keys": [
+							"amusement parks ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 31
+					},
+					{
+						"keys": [
+							"andre oliveira dublin"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 9
+					},
+					{
+						"keys": [
+							"anel de claddagh"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0,
+						"position": 32.666666666666671
+					},
+					{
+						"keys": [
+							"anel irlandes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 12
+					},
+					{
+						"keys": [
+							"anel o irlandes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"ano novo em dublin"
+						],
+						"clicks": 0,
+						"impressions": 6,
+						"ctr": 0,
+						"position": 4.3333333333333339
+					},
+					{
+						"keys": [
+							"aplicativo de aluguel de carros"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 9
+					},
+					{
+						"keys": [
+							"archeology ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 97
+					},
+					{
+						"keys": [
+							"are boston celtics irish"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"are irish people ginger"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 86.5
+					},
+					{
+						"keys": [
+							"are redheads irish"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 57
+					},
+					{
+						"keys": [
+							"are the boston celtics irish"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 6
+					},
+					{
+						"keys": [
+							"are the celtics irish"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 57
+					},
+					{
+						"keys": [
+							"arnotts opening hours"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 3
+					},
+					{
+						"keys": [
+							"artificial ski slopes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 96
+					},
+					{
+						"keys": [
+							"arty baker kimmage"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 46
+					},
+					{
+						"keys": [
+							"arty baker sandymount opening hours"
+						],
+						"clicks": 0,
+						"impressions": 25,
+						"ctr": 0,
+						"position": 10.8
+					},
+					{
+						"keys": [
+							"ashford castle"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 80
+					},
+					{
+						"keys": [
+							"ator irlandes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 77
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2026-01-01\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"https://oi.ie/en/what-do-l-or-n-car-stickers-mean-in-ireland/"
+						],
+						"clicks": 25,
+						"impressions": 1499,
+						"ctr": 0.016677785190126752,
+						"position": 5.6057371581054039
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brazilian-mass-and-churches-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 55,
+						"ctr": 0.16363636363636364,
+						"position": 6.4545454545454541
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/free-and-cheap-new-years-eve-events-in-dublin-a-guide-for-the-brazilian-community-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 228,
+						"ctr": 0.039473684210526314,
+						"position": 6.5438596491228074
+					},
+					{
+						"keys": [
+							"https://oi.ie/eventos-gratuitos-e-baratos-de-ano-novo-em-dublin-guia-para-a-comunidade-brasileira-na-irlanda/"
+						],
+						"clicks": 9,
+						"impressions": 282,
+						"ctr": 0.031914893617021274,
+						"position": 6.8191489361702127
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-as-melhores-opcoes-para-o-reveillon-na-irlanda/"
+						],
+						"clicks": 8,
+						"impressions": 224,
+						"ctr": 0.035714285714285712,
+						"position": 7.4285714285714288
+					},
+					{
+						"keys": [
+							"https://oi.ie/compras-na-irlanda-os-10-melhores-souvenirs-irlandeses/"
+						],
+						"clicks": 7,
+						"impressions": 134,
+						"ctr": 0.052238805970149252,
+						"position": 5.82089552238806
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-marcas-mais-valiosas-da-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 40,
+						"ctr": 0.075,
+						"position": 1.1
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-caminho-medico-na-irlanda-um-guia-detalhado-para-medicos-em-potencial/"
+						],
+						"clicks": 3,
+						"impressions": 45,
+						"ctr": 0.066666666666666666,
+						"position": 10.044444444444444
+					},
+					{
+						"keys": [
+							"https://oi.ie/tornar-se-eletricista-ou-encanador-na-irlanda-requisitos-de-entrada-custos-salarios-e-oportunidades/"
+						],
+						"clicks": 3,
+						"impressions": 109,
+						"ctr": 0.027522935779816515,
+						"position": 3.0183486238532109
+					},
+					{
+						"keys": [
+							"https://oi.ie/5-lugares-em-dublin-para-vivenciar-a-tradicional-musica-irlandesa/"
+						],
+						"clicks": 2,
+						"impressions": 5,
+						"ctr": 0.4,
+						"position": 7
+					},
+					{
+						"keys": [
+							"https://oi.ie/6-pubs-irlandeses-para-ir-em-sao-paulo/"
+						],
+						"clicks": 2,
+						"impressions": 286,
+						"ctr": 0.006993006993006993,
+						"position": 9.8881118881118883
+					},
+					{
+						"keys": [
+							"https://oi.ie/por-que-a-harpa-e-o-simbolo-nacional-da-irlanda/"
+						],
+						"clicks": 2,
+						"impressions": 75,
+						"ctr": 0.026666666666666668,
+						"position": 5.4266666666666667
+					},
+					{
+						"keys": [
+							"https://oi.ie/5-tradicoes-estranhas-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 14,
+						"ctr": 0.071428571428571425,
+						"position": 5.8571428571428568
+					},
+					{
+						"keys": [
+							"https://oi.ie/6-esteriotipos-errados-sobre-os-brasileiros-que-os-irlandeses-acreditam/"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 5.4
+					},
+					{
+						"keys": [
+							"https://oi.ie/7-livros-de-escritores-irlandeses-para-ler-durante-a-quarentena/"
+						],
+						"clicks": 1,
+						"impressions": 17,
+						"ctr": 0.058823529411764705,
+						"position": 8.2941176470588225
+					},
+					{
+						"keys": [
+							"https://oi.ie/8-airbnbs-super-excentricos-para-voce-se-hospedar-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 6.375
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-melhores-pistas-de-patinacao-no-gelo-da-irlanda-nesta-epoca-de-natal/"
+						],
+						"clicks": 1,
+						"impressions": 51,
+						"ctr": 0.0196078431372549,
+						"position": 9.1568627450980387
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-noites-no-zoologico-de-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.33333333333333331,
+						"position": 4.3333333333333339
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-tradicoes-de-natal-mais-curiosas-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 48,
+						"ctr": 0.020833333333333332,
+						"position": 5.916666666666667
+					},
+					{
+						"keys": [
+							"https://oi.ie/brasileiro-54-que-operou-varios-irlandeses-bordeis-sao-presos-por-posse-de-material-de-abuso-sexual-infantil/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.33333333333333331,
+						"position": 13
+					},
+					{
+						"keys": [
+							"https://oi.ie/como-aprender-gaelico-a-lingua-nativa-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 35,
+						"ctr": 0.028571428571428571,
+						"position": 62.971428571428568
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-a-conexao-do-boston-celtics-com-a-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 22,
+						"ctr": 0.045454545454545456,
+						"position": 6.1363636363636367
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-a-profissao-de-dog-sitter-que-pode-pagar-ate-e18-a-hora/"
+						],
+						"clicks": 1,
+						"impressions": 13,
+						"ctr": 0.076923076923076927,
+						"position": 10.23076923076923
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-os-principais-simbolos-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 24,
+						"ctr": 0.041666666666666664,
+						"position": 19.166666666666668
+					},
+					{
+						"keys": [
+							"https://oi.ie/conhecas-os-sets-de-filmagem-do-filme-ps-eu-te-amo-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 58,
+						"ctr": 0.017241379310344827,
+						"position": 8.89655172413793
+					},
+					{
+						"keys": [
+							"https://oi.ie/descubra-os-13-restaurantes-mais-instagramaveis-de-dublin-em-2023/"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 7.5
+					},
+					{
+						"keys": [
+							"https://oi.ie/discover-priory-market-tallaghts-new-cultural-and-culinary-heartbeat/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 48
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/10-expressions-in-english-widely-used-by-the-irish/"
+						],
+						"clicks": 1,
+						"impressions": 75,
+						"ctr": 0.013333333333333334,
+						"position": 3.1466666666666665
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/8-super-eccentric-airbnbs-for-you-to-stay-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.33333333333333331,
+						"position": 28.333333333333332
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/all-about-public-speaking-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 28,
+						"ctr": 0.035714285714285712,
+						"position": 39.607142857142854
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/are-there-any-irish-themed-christmas-movies-to-watch-this-holiday-season/"
+						],
+						"clicks": 1,
+						"impressions": 11,
+						"ctr": 0.090909090909090912,
+						"position": 25.181818181818183
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/banking-in-ireland-opening-an-account-before-arriving/"
+						],
+						"clicks": 1,
+						"impressions": 7,
+						"ctr": 0.14285714285714285,
+						"position": 95.571428571428569
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/becoming-a-doctor-in-ireland-a-pathway/"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 48.2
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brailian-ronaldo-lupo-sentenced-for-assaults-in-high-profile-dublin-case/"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 6.75
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brazilian-restaurants-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 126,
+						"ctr": 0.0079365079365079361,
+						"position": 24.896825396825395
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/can-you-ski-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 61,
+						"ctr": 0.016393442622950821,
+						"position": 16.098360655737707
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/direct-flight-from-ireland-to-brazil/"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 13.222222222222221
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/from-the-emerald-isle-to-the-tropics-the-forgotten-story-of-the-first-irish-settlers-in-brazil/"
+						],
+						"clicks": 1,
+						"impressions": 14,
+						"ctr": 0.071428571428571425,
+						"position": 9.1428571428571423
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/gardai-dismantle-brazilian-crime-gang-operating-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 2.3
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/how-is-ireland-subdivided-the-difference-between-counties-and-provinces/"
+						],
+						"clicks": 1,
+						"impressions": 29,
+						"ctr": 0.034482758620689655,
+						"position": 18.310344827586206
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/ireland-is-the-3rd-country-in-number-of-vegans-per-capita/"
+						],
+						"clicks": 1,
+						"impressions": 20,
+						"ctr": 0.05,
+						"position": 7.85
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/irelands-spookiest-stays-haunted-houses-and-bram-stoker-home/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 9
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/killary-fjord-the-only-fjord-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 20,
+						"ctr": 0.05,
+						"position": 65.45
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/move-to-spain-region-bordering-portugal-willing-to-pay-digital-nomads-up-to-e15000/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 1
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/new-brazilian-food-delivery-service-is-launched-in-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 9
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/the-best-irish-films-of-2025/"
+						],
+						"clicks": 1,
+						"impressions": 34,
+						"ctr": 0.029411764705882353,
+						"position": 21.911764705882351
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/the-ultimate-guide-to-st-patricks-day-for-brazilians/"
+						],
+						"clicks": 1,
+						"impressions": 8,
+						"ctr": 0.125,
+						"position": 8.5
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/top-3-best-places-for-brazilians-to-enjoy-the-night-in-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.052631578947368418,
+						"position": 10.421052631578947
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/two-women-accused-of-trafficking-brazilian-women-for-prostitution-in-rural-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 42
+					},
+					{
+						"keys": [
+							"https://oi.ie/filmes-irlandeses-para-curtir-no-natal/"
+						],
+						"clicks": 1,
+						"impressions": 8,
+						"ctr": 0.125,
+						"position": 9
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"acompanhantes em dublin"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 11
+					},
+					{
+						"keys": [
+							"best irish movies 2025"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 18.5
+					},
+					{
+						"keys": [
+							"brazilian church dublin"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 9
+					},
+					{
+						"keys": [
+							"christmas movies set in ireland"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 15
+					},
+					{
+						"keys": [
+							"irish pub são paulo"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 3.9
+					},
+					{
+						"keys": [
+							"pub irlandes sp"
+						],
+						"clicks": 1,
+						"impressions": 37,
+						"ctr": 0.027027027027027029,
+						"position": 4.8378378378378377
+					},
+					{
+						"keys": [
+							"significado do l nos carros de condução"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 9.6
+					},
+					{
+						"keys": [
+							"ski slope ireland"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 36.5
+					},
+					{
+						"keys": [
+							"souvenirs irlanda"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 38
+					},
+					{
+						"keys": [
+							"\"gallaghers boxty house\" \"d02 et66\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 49
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"https://oi.ie/en/what-do-l-or-n-car-stickers-mean-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 977,
+						"ctr": 0.0092118730808597744,
+						"position": 7.1494370522006143
+					},
+					{
+						"keys": [
+							"https://oi.ie/8-lojas-online-da-irlanda-que-voce-precisa-conhecer/"
+						],
+						"clicks": 5,
+						"impressions": 43,
+						"ctr": 0.11627906976744186,
+						"position": 5.8837209302325579
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brazilian-mass-and-churches-in-ireland/"
+						],
+						"clicks": 5,
+						"impressions": 48,
+						"ctr": 0.10416666666666667,
+						"position": 5.833333333333333
+					},
+					{
+						"keys": [
+							"https://oi.ie/6-pubs-irlandeses-para-ir-em-sao-paulo/"
+						],
+						"clicks": 3,
+						"impressions": 267,
+						"ctr": 0.011235955056179775,
+						"position": 9.5468164794007482
+					},
+					{
+						"keys": [
+							"https://oi.ie/compras-na-irlanda-os-10-melhores-souvenirs-irlandeses/"
+						],
+						"clicks": 3,
+						"impressions": 136,
+						"ctr": 0.022058823529411766,
+						"position": 5.257352941176471
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-que-significam-as-placas-l-ou-n-atras-dos-carros-na-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 116,
+						"ctr": 0.025862068965517241,
+						"position": 4.3534482758620694
+					},
+					{
+						"keys": [
+							"https://oi.ie/onde-encontrar-uma-ceia-de-natal-brasileira-na-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 54,
+						"ctr": 0.055555555555555552,
+						"position": 6.7592592592592595
+					},
+					{
+						"keys": [
+							"https://oi.ie/como-se-tornar-um-policial-na-irlanda/"
+						],
+						"clicks": 2,
+						"impressions": 71,
+						"ctr": 0.028169014084507043,
+						"position": 4.056338028169014
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-as-melhores-opcoes-para-o-reveillon-na-irlanda/"
+						],
+						"clicks": 2,
+						"impressions": 29,
+						"ctr": 0.068965517241379309,
+						"position": 5.5517241379310347
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/are-there-any-irish-themed-christmas-movies-to-watch-this-holiday-season/"
+						],
+						"clicks": 2,
+						"impressions": 28,
+						"ctr": 0.071428571428571425,
+						"position": 46.678571428571431
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"acompanhantes em dublin"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 11
+					},
+					{
+						"keys": [
+							"best irish movies 2025"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 18.5
+					},
+					{
+						"keys": [
+							"brazilian church dublin"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 9
+					},
+					{
+						"keys": [
+							"christmas movies set in ireland"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 15
+					},
+					{
+						"keys": [
+							"irish pub são paulo"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 3.9
+					},
+					{
+						"keys": [
+							"pub irlandes sp"
+						],
+						"clicks": 1,
+						"impressions": 37,
+						"ctr": 0.027027027027027029,
+						"position": 4.8378378378378377
+					},
+					{
+						"keys": [
+							"significado do l nos carros de condução"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 9.6
+					},
+					{
+						"keys": [
+							"ski slope ireland"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 36.5
+					},
+					{
+						"keys": [
+							"souvenirs irlanda"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 38
+					},
+					{
+						"keys": [
+							"\"gallaghers boxty house\" \"d02 et66\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 49
+					},
+					{
+						"keys": [
+							"+353 (21) 452 2000"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"13.50"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 11.5
+					},
+					{
+						"keys": [
+							"a grande fome irlanda"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0,
+						"position": 1
+					},
+					{
+						"keys": [
+							"acaraje dublin"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 20
+					},
+					{
+						"keys": [
+							"acompanhante na irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 23
+					},
+					{
+						"keys": [
+							"age to become a police officer"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"agende a sua viagem para chegar ao aeroporto dub"
+						],
+						"clicks": 0,
+						"impressions": 7,
+						"ctr": 0,
+						"position": 23.714285714285715
+					},
+					{
+						"keys": [
+							"aib non resident mortgage ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 50
+					},
+					{
+						"keys": [
+							"aib open bank account non resident"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 67
+					},
+					{
+						"keys": [
+							"aib student debit card contactless"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 84.5
+					},
+					{
+						"keys": [
+							"airbnb irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 8
+					},
+					{
+						"keys": [
+							"aldi ie jobs"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"aldi jobs ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 10
+					},
+					{
+						"keys": [
+							"alugar carro irlanda"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0,
+						"position": 79
+					},
+					{
+						"keys": [
+							"alugar carro na irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 100
+					},
+					{
+						"keys": [
+							"aluguel de carro irlanda"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 95
+					},
+					{
+						"keys": [
+							"aluguel de carros irlanda"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 65
+					},
+					{
+						"keys": [
+							"amazing airbnb ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 19
+					},
+					{
+						"keys": [
+							"amazon online shopping ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 71
+					},
+					{
+						"keys": [
+							"amusement park"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 71
+					},
+					{
+						"keys": [
+							"an irish christmas movie"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 85
+					},
+					{
+						"keys": [
+							"ancient ireland symbols"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 86
+					},
+					{
+						"keys": [
+							"andre oliveira dublin"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 7
+					},
+					{
+						"keys": [
+							"anel claddagh"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 49.5
+					},
+					{
+						"keys": [
+							"anel de claddagh"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 31
+					},
+					{
+						"keys": [
+							"anel irlandes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 51
+					},
+					{
+						"keys": [
+							"aniar restaurant galway ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 88
+					},
+					{
+						"keys": [
+							"apps for dating"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 94
+					},
+					{
+						"keys": [
+							"are there really no snakes in ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 98
+					},
+					{
+						"keys": [
+							"are there snakes in ireland"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0,
+						"position": 68.333333333333329
+					},
+					{
+						"keys": [
+							"areas of ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 90
+					},
+					{
+						"keys": [
+							"arpa irlanda simbolo"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 1
+					},
+					{
+						"keys": [
+							"arty baker kimmage"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 48
+					},
+					{
+						"keys": [
+							"arty baker sandymount opening hours"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 9.6
+					},
+					{
+						"keys": [
+							"ashford castle"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 80.5
+					},
+					{
+						"keys": [
+							"ashford castle hotel"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 66
+					},
+					{
+						"keys": [
+							"athenry christmas tree farm"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 10
+					},
+					{
+						"keys": [
+							"atores irlandeses"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0,
+						"position": 54.25
+					},
+					{
+						"keys": [
+							"au pair irlanda"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 44.2
+					},
+					{
+						"keys": [
+							"au pair salary ireland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 88
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"https://oi.ie/en/what-do-l-or-n-car-stickers-mean-in-ireland/"
+						],
+						"clicks": 9,
+						"impressions": 977,
+						"ctr": 0.0092118730808597744,
+						"position": 7.1494370522006143
+					},
+					{
+						"keys": [
+							"https://oi.ie/8-lojas-online-da-irlanda-que-voce-precisa-conhecer/"
+						],
+						"clicks": 5,
+						"impressions": 43,
+						"ctr": 0.11627906976744186,
+						"position": 5.8837209302325579
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/brazilian-mass-and-churches-in-ireland/"
+						],
+						"clicks": 5,
+						"impressions": 48,
+						"ctr": 0.10416666666666667,
+						"position": 5.833333333333333
+					},
+					{
+						"keys": [
+							"https://oi.ie/6-pubs-irlandeses-para-ir-em-sao-paulo/"
+						],
+						"clicks": 3,
+						"impressions": 267,
+						"ctr": 0.011235955056179775,
+						"position": 9.5468164794007482
+					},
+					{
+						"keys": [
+							"https://oi.ie/compras-na-irlanda-os-10-melhores-souvenirs-irlandeses/"
+						],
+						"clicks": 3,
+						"impressions": 136,
+						"ctr": 0.022058823529411766,
+						"position": 5.257352941176471
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-que-significam-as-placas-l-ou-n-atras-dos-carros-na-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 116,
+						"ctr": 0.025862068965517241,
+						"position": 4.3534482758620694
+					},
+					{
+						"keys": [
+							"https://oi.ie/onde-encontrar-uma-ceia-de-natal-brasileira-na-irlanda/"
+						],
+						"clicks": 3,
+						"impressions": 54,
+						"ctr": 0.055555555555555552,
+						"position": 6.7592592592592595
+					},
+					{
+						"keys": [
+							"https://oi.ie/como-se-tornar-um-policial-na-irlanda/"
+						],
+						"clicks": 2,
+						"impressions": 71,
+						"ctr": 0.028169014084507043,
+						"position": 4.056338028169014
+					},
+					{
+						"keys": [
+							"https://oi.ie/conheca-as-melhores-opcoes-para-o-reveillon-na-irlanda/"
+						],
+						"clicks": 2,
+						"impressions": 29,
+						"ctr": 0.068965517241379309,
+						"position": 5.5517241379310347
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/are-there-any-irish-themed-christmas-movies-to-watch-this-holiday-season/"
+						],
+						"clicks": 2,
+						"impressions": 28,
+						"ctr": 0.071428571428571425,
+						"position": 46.678571428571431
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/gort-little-brazil-in-the-west-of-ireland/"
+						],
+						"clicks": 2,
+						"impressions": 72,
+						"ctr": 0.027777777777777776,
+						"position": 11.152777777777779
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/lonely-in-ireland-dont-be-your-guide-to-finding-events-making-friends-and-networking/"
+						],
+						"clicks": 2,
+						"impressions": 65,
+						"ctr": 0.030769230769230771,
+						"position": 9.96923076923077
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/where-to-find-a-brazilian-christmas-dinner-in-ireland/"
+						],
+						"clicks": 2,
+						"impressions": 59,
+						"ctr": 0.033898305084745763,
+						"position": 6.2711864406779663
+					},
+					{
+						"keys": [
+							"https://oi.ie/tornar-se-eletricista-ou-encanador-na-irlanda-requisitos-de-entrada-custos-salarios-e-oportunidades/"
+						],
+						"clicks": 2,
+						"impressions": 79,
+						"ctr": 0.025316455696202531,
+						"position": 4.4050632911392409
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-expressoes-do-ingles-muito-utilizadas-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 39,
+						"ctr": 0.02564102564102564,
+						"position": 9.0769230769230766
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-5-pousadas-mais-inusitadas-no-interior-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 7.333333333333333
+					},
+					{
+						"keys": [
+							"https://oi.ie/as-marcas-mais-valiosas-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 27,
+						"ctr": 0.037037037037037035,
+						"position": 3.5185185185185186
+					},
+					{
+						"keys": [
+							"https://oi.ie/como-obter-o-reconhecimento-do-seu-diploma-brasileiro-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 7,
+						"ctr": 0.14285714285714285,
+						"position": 11.142857142857142
+					},
+					{
+						"keys": [
+							"https://oi.ie/como-votar-nas-eleicoes-do-brasil-estando-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 4.6666666666666661
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/10-expressions-in-english-widely-used-by-the-irish/"
+						],
+						"clicks": 1,
+						"impressions": 63,
+						"ctr": 0.015873015873015872,
+						"position": 3.0952380952380953
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/10-fun-facts-about-dublin-airport-the-12th-largest-in-europe/"
+						],
+						"clicks": 1,
+						"impressions": 8,
+						"ctr": 0.125,
+						"position": 16.625
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/can-i-get-a-loan-in-ireland-as-an-immigrant/"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 13.8
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/can-you-ski-in-ireland/"
+						],
+						"clicks": 1,
+						"impressions": 36,
+						"ctr": 0.027777777777777776,
+						"position": 18.111111111111111
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/elvis-and-his-irish-connection/"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.083333333333333329,
+						"position": 23.416666666666668
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/i-thought-we-were-safe-here-the-brutal-attack-on-brazilian-rider-andre-oliveira-in-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 18,
+						"ctr": 0.055555555555555552,
+						"position": 7.4444444444444446
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/irish-prisons-violent-repeat-offenders-released-after-1-day-due-to-overcrowding/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 6.5
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/meals-for-under-e10-in-dublin-meals-that-come-with-a-pint/"
+						],
+						"clicks": 1,
+						"impressions": 14,
+						"ctr": 0.071428571428571425,
+						"position": 7.4285714285714288
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/tag/brazilians-arrested-in-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 34
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/the-best-irish-films-of-2025/"
+						],
+						"clicks": 1,
+						"impressions": 41,
+						"ctr": 0.024390243902439025,
+						"position": 15.75609756097561
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/the-curious-case-of-barbie-kardashian-a-transgender-known-as-a-danger-to-women-placed-in-a-womens-prison/"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 20.777777777777779
+					},
+					{
+						"keys": [
+							"https://oi.ie/en/the-last-bookshop-in-dublin-a-hidden-literary-gem-with-a-cozy-cafe-retreat/"
+						],
+						"clicks": 1,
+						"impressions": 159,
+						"ctr": 0.0062893081761006293,
+						"position": 9.5220125786163514
+					},
+					{
+						"keys": [
+							"https://oi.ie/killary-fjord-o-unico-fiorde-da-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 6
+					},
+					{
+						"keys": [
+							"https://oi.ie/lugares-para-comer-irish-breakfast-em-dublin/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 63.5
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-caminho-medico-na-irlanda-um-guia-detalhado-para-medicos-em-potencial/"
+						],
+						"clicks": 1,
+						"impressions": 21,
+						"ctr": 0.047619047619047616,
+						"position": 10.333333333333334
+					},
+					{
+						"keys": [
+							"https://oi.ie/o-melhores-aplicativos-de-aluguel-de-carros-para-sua-aventura-na-irlanda/"
+						],
+						"clicks": 1,
+						"impressions": 18,
+						"ctr": 0.055555555555555552,
+						"position": 40.666666666666664
+					},
+					{
+						"keys": [
+							"https://oi.ie/posso-obter-um-emprestimo-na-irlanda-como-imigrante/"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.052631578947368418,
+						"position": 7.8421052631578947
+					},
+					{
+						"keys": [
+							"https://oi.ie/tag/escort/"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 17
+					},
+					{
+						"keys": [
+							"https://oi.ie/top-10-bilionarios-da-irlanda-em-2021/"
+						],
+						"clicks": 1,
+						"impressions": 21,
+						"ctr": 0.047619047619047616,
+						"position": 5.4761904761904763
+					},
+					{
+						"keys": [
+							"https://oi.ie/"
+						],
+						"clicks": 0,
+						"impressions": 15,
+						"ctr": 0,
+						"position": 17
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-comidas-da-irlanda-que-voce-precisa-experimentar/"
+						],
+						"clicks": 0,
+						"impressions": 35,
+						"ctr": 0,
+						"position": 63.428571428571431
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-curiosidades-sobre-o-aeroporto-de-dublin-o-12o-maior-da-europa/"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0,
+						"position": 8
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-curiosidades-sobre-o-gaelico-a-lingua-nativa-da-irlanda/"
+						],
+						"clicks": 0,
+						"impressions": 48,
+						"ctr": 0,
+						"position": 43.395833333333336
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-experiencias-que-voce-nao-pode-deixar-de-ter-na-irlanda/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 1
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-fazendas-de-arvores-de-natal-na-irlanda-para-visitar-em-2023/"
+						],
+						"clicks": 0,
+						"impressions": 9,
+						"ctr": 0,
+						"position": 6.2222222222222223
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-locais-naturais-incriveis-para-nadar-na-irlanda/"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 22.6
+					},
+					{
+						"keys": [
+							"https://oi.ie/10-lugares-alternativos-para-conhecer-na-irlanda-segundo-a-lonely-planet/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 10
+					},
+					{
+						"keys": [
+							"https://oi.ie/14739-2/"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0,
+						"position": 36.333333333333336
+					},
+					{
+						"keys": [
+							"https://oi.ie/2020/05/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 6
+					},
+					{
+						"keys": [
+							"https://oi.ie/2020/11/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0,
+						"position": 10
+					},
+					{
+						"keys": [
+							"https://oi.ie/4-filmes-famosos-gravados-na-irlanda/"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0,
+						"position": 42.2
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		}
+	}
+}

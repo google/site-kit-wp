@@ -106,7 +106,7 @@ export class Mailpit {
 
 		const url = `${
 			this.baseURL
-		}/api/v1/messages?query=${ encodeURIComponent( searchQuery ) }`;
+		}/api/v1/search?query=${ encodeURIComponent( searchQuery ) }`;
 
 		const response = await fetch( url );
 		const data = await response.json();
@@ -168,9 +168,9 @@ export class Mailpit {
 		this.interacted = true;
 
 		const now = Date.now(); // eslint-disable-line sitekit/no-direct-date
-		const { query, timeout = 10000, interval = 500 } = options ?? {};
-		const deadline = now + timeout;
+		const { query, timeout = 2_500, interval = 250 } = options ?? {};
 
+		const deadline = now + timeout;
 		while ( now < deadline ) {
 			const messages = await this.getMessages( query );
 			if ( messages.length > 0 ) {
@@ -180,11 +180,13 @@ export class Mailpit {
 			await new Promise( ( resolve ) => setTimeout( resolve, interval ) );
 		}
 
-		throw new Error(
-			`Timed out waiting for message${
-				query ? ` matching "${ query }"` : ''
-			} after ${ timeout }ms`
-		);
+		let err = 'Timed out waiting for message';
+		if ( query ) {
+			err += ` matching "${ query }"`;
+		}
+		err += ` after ${ timeout }ms`;
+
+		throw new Error( err );
 	}
 
 	/**

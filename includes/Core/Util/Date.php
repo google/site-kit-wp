@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\URL
+ * Class Google\Site_Kit\Core\Util\Date
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2023 Google LLC
@@ -18,6 +18,43 @@ namespace Google\Site_Kit\Core\Util;
  * @ignore
  */
 class Date {
+
+	/**
+	 * Gets the reference date.
+	 *
+	 * @since 1.174.0
+	 *
+	 * @return string|null Reference date in 'Y-m-d' format or null.
+	 */
+	public static function reference_date() {
+		/**
+		 * Filter to allow setting a custom reference date for testing purposes.
+		 *
+		 * @since 1.174.0
+		 *
+		 * @return string|null Reference date in 'Y-m-d' format or null.
+		 */
+		return apply_filters( 'googlesitekit_reference_date', null );
+	}
+
+	/**
+	 * Gets the current time.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int Current time.
+	 */
+	public static function now() {
+		$reference_date = self::reference_date();
+		if ( $reference_date ) {
+			$time = strtotime( $reference_date );
+			if ( $time ) {
+				return $time;
+			}
+		}
+
+		return time();
+	}
 
 	/**
 	 * Parses a date range string into a start date and an end date.

@@ -20,7 +20,12 @@
  * Internal dependencies
  */
 import { test, expect, TestDetails } from '../../playwright';
-import { asUser, withPlugins, withFeatureFlags } from '../../wordpress';
+import {
+	asUser,
+	withPlugins,
+	withFeatureFlags,
+	withFixtures,
+} from '../../wordpress';
 
 const details: TestDetails = {
 	annotation: [
@@ -35,6 +40,7 @@ const emailDeliveryDetails: TestDetails = {
 		asUser( 'admin' ),
 		withPlugins( 'proxy-auth.php', 'mailpit.php', 'email-reporting.php' ),
 		withFeatureFlags( 'proactiveUserEngagement' ),
+		withFixtures( 'email-reporting/weekly-report-data' ),
 	],
 };
 
@@ -49,6 +55,7 @@ test(
 			await wp.page
 				.getByRole( 'menuitem', { name: 'Manage email reports' } )
 				.click();
+
 			const root = wp.page.locator(
 				'.googlesitekit-email-reporting-settings'
 			);
@@ -73,16 +80,18 @@ test(
 			await expect( response ).toEqual( { success: true } );
 		} );
 
-		// const message = await wp.mailpit.waitForMessage( { timeout: 15_000 } );
-		// expect( message.Subject ).toContain( 'Your weekly Site Kit report' );
+		await test.step( 'Verify email', async () => {
+			const message = await wp.mailpit.waitForMessage();
+			expect( message.Subject ).toContain(
+				'Your weekly Site Kit report'
+			);
 
-		// await test.step( 'Assert email content and snapshot', async () => {
-		// 	const detail = await wp.mailpit.getMessage( message.ID );
-		// 	expect( detail.HTML ).toContain( '4,567' );
-		// 	expect( detail.HTML ).toMatch( /\+30/ );
-		// 	await wp.page.setContent( detail.HTML );
-		// 	await expect( wp.page ).toHaveScreenshot( { fullPage: true } );
-		// } );
+			const detail = await wp.mailpit.getMessage( message.ID );
+			await wp.page.setContent( detail.HTML );
+			await expect( wp.page ).toHaveScreenshot( {
+				fullPage: true,
+			} );
+		} );
 	}
 );
 
