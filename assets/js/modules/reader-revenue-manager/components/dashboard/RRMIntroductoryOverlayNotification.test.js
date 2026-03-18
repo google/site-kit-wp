@@ -42,7 +42,7 @@ import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager';
+import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 describe( 'RRMIntroductoryOverlayNotification', () => {

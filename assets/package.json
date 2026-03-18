@@ -52,8 +52,6 @@
 		"psl": "^1.8.0",
 		"punycode": "^2.1.1",
 		"query-string": "^7.0.1",
-		"react": "^16.14.0",
-		"react-dom": "^16.14.0",
 		"react-google-charts": "^3.0.15",
 		"react-joyride": "^2.9.3",
 		"react-router-dom": "^5.2.0",
@@ -66,7 +64,6 @@
 		"@storybook/addon-queryparams": "^6.2.9",
 		"@svgr/webpack": "^8.1.0",
 		"@testing-library/react": "^10.4.9",
-		"@types/react": "^16.14.0",
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"autoprefixer": "^10.4.21",
@@ -90,5 +87,13 @@
 		"webpack": "^5.99.7",
 		"webpack-cli": "^6.0.1",
 		"webpack-manifest-plugin": "^5.0.1"
+	},
+	"overrides": {
+		"react": {
+			".": "^17.0.0"
+		},
+		"react-dom": {
+			".": "^17.0.0"
+		}
 	}
 }

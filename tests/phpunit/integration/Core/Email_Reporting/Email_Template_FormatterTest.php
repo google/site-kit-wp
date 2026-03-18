@@ -187,6 +187,23 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertArrayHasKey( 'is_my_site_helping_my_business_grow', $payload['template_data']['section_notices'], 'Expected conversion section notice to be present when only non-conversion metric data exists.' );
 	}
 
+	public function test_build_template_payload__returns_no_data_error_when_report_has_no_sections_even_if_notice_is_eligible() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user    = get_user_by( 'id', $user_id );
+
+		$this->set_analytics_settings_connected();
+
+		$payload = $this->formatter->build_template_payload(
+			array(),
+			Email_Reporting_Settings::FREQUENCY_WEEKLY,
+			$this->get_date_range(),
+			$user
+		);
+
+		$this->assertWPError( $payload, 'Expected no data error when no report sections are available.' );
+		$this->assertSame( 'email_report_no_data', $payload->get_error_code(), 'Expected no data error code when report has no data sections.' );
+	}
+
 	/**
 	 * Gets a minimal valid date range.
 	 *

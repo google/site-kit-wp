@@ -28,6 +28,7 @@ import { useCallbackOne } from 'use-memo-one';
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,6 +42,7 @@ import { deleteItem } from '@/js/googlesitekit/api/cache';
 import { trackEvent } from '@/js/util';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -54,6 +56,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const forwardableParams = useForwardableParams();
 
 	const isInitialSetupFlow =
 		setupFlowRefreshEnabled &&
@@ -92,7 +95,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 			}
 
 			if ( redirectURL ) {
-				navigateTo( redirectURL );
+				navigateTo( addQueryArgs( redirectURL, forwardableParams ) );
 				return;
 			}
 
@@ -101,13 +104,21 @@ export default function ModuleSetup( { moduleSlug } ) {
 			const adminURL = select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',
 				{
+					...forwardableParams,
 					notification: 'authentication_success',
 					slug: moduleSlug,
 				}
 			);
 			navigateTo( adminURL );
 		},
-		[ registry, navigateTo, moduleSlug, viewContext, isInitialSetupFlow ]
+		[
+			forwardableParams,
+			registry,
+			navigateTo,
+			moduleSlug,
+			viewContext,
+			isInitialSetupFlow,
+		]
 	);
 
 	const onCompleteSetup = module?.onCompleteSetup;

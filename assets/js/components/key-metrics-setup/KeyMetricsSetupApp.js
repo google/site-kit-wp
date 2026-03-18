@@ -32,6 +32,7 @@ import {
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -65,11 +66,13 @@ import {
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
+	const forwardableParams = useForwardableParams();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -90,6 +93,10 @@ export default function KeyMetricsSetupApp() {
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+
+	const settingsLoaded = useSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
 	);
 
 	const error = useSelect( ( select ) =>
@@ -175,13 +182,14 @@ export default function KeyMetricsSetupApp() {
 				url.searchParams.set( 'slug', 'analytics-4' );
 			}
 
-			navigateTo( url.toString() );
+			navigateTo( addQueryArgs( url.toString(), forwardableParams ) );
 		}
 	}, [
 		saveUserInputSettings,
 		dashboardURL,
 		saveInitialSetupSettings,
 		navigateTo,
+		forwardableParams,
 		isInitialSetupFlow,
 	] );
 
@@ -189,9 +197,17 @@ export default function KeyMetricsSetupApp() {
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
+		if ( ! settingsLoaded ) {
+			return;
+		}
+
 		syncAvailableAudiences();
 		fetchSyncAvailableCustomDimensions();
-	}, [ syncAvailableAudiences, fetchSyncAvailableCustomDimensions ] );
+	}, [
+		settingsLoaded,
+		syncAvailableAudiences,
+		fetchSyncAvailableCustomDimensions,
+	] );
 
 	const onSaveClick = useCallback( () => {
 		if ( isBusy || isSyncing ) {

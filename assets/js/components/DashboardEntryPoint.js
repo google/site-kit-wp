@@ -33,7 +33,6 @@ import ModuleSetup from './setup/ModuleSetup';
 import DashboardMainApp from './DashboardMainApp';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import { useFeature } from '@/js/hooks/useFeature';
-import CoreModuleSetupEffects from './CoreModuleSetupEffects';
 
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
@@ -45,7 +44,6 @@ export default function DashboardEntryPoint( { setupModuleSlug } ) {
 
 		return (
 			<Fragment>
-				<CoreModuleSetupEffects />
 				<ModuleSetup moduleSlug={ setupModuleSlug } />
 				<UserSettingsSelectionPanel />
 			</Fragment>
