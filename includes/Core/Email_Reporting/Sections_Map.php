@@ -22,7 +22,7 @@ class Sections_Map {
 	/**
 	 * Payload flag for rendering conversions section without metric data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const CONVERSIONS_NOTICE_ONLY_FLAG = '__show_conversion_notice_only';
 

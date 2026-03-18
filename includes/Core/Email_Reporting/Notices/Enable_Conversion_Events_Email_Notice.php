@@ -23,7 +23,7 @@ use WP_User;
 /**
  * Conversion events setup in-email notice definition.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -32,28 +32,28 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Notice ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const ID = 'enable-conversion-events';
 
 	/**
 	 * Dismissal key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const DISMISSAL_SLUG = 'email-report-notice-enable-conversion-events';
 
 	/**
 	 * Target section key for this notice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const SECTION_KEY = 'is_my_site_helping_my_business_grow';
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Context
 	 */
 	private $context;
@@ -61,7 +61,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Modules service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -69,7 +69,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Golinks service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Golinks
 	 */
 	private $golinks;
@@ -77,7 +77,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Conversion tracking settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Conversion_Tracking_Settings
 	 */
 	private $conversion_tracking_settings;
@@ -85,7 +85,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Conversion tracking service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Conversion_Tracking
 	 */
 	private $conversion_tracking;
@@ -93,7 +93,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Context                      $context                      Plugin context.
 	 * @param Modules                      $modules                      Modules service.
@@ -118,7 +118,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the notice ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Notice ID.
 	 */
@@ -129,7 +129,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the notice placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Placement slug.
 	 */
@@ -140,7 +140,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the target section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Section key.
 	 */
@@ -151,7 +151,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets dismissal key for prompt storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Dismissal key.
 	 */
@@ -162,7 +162,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Determines whether the notice should be shown to a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return bool True if notice should be displayed.
@@ -188,7 +188,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets display payload for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return array Notice payload.
@@ -215,7 +215,7 @@ class Enable_Conversion_Events_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets redirect URL for a notice CTA click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return string Redirect URL.

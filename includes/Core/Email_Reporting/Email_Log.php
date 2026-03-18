@@ -91,7 +91,7 @@ final class Email_Log {
 	/**
 	 * Admin notified meta key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const META_ADMIN_NOTIFIED = '_admin_notified';
 
@@ -555,7 +555,7 @@ final class Email_Log {
 	/**
 	 * Sanitizes the admin notified meta value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param mixed $value Meta value.
 	 * @return string Sanitized value: '1' if truthy, empty string otherwise.

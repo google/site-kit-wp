@@ -70,7 +70,7 @@ class Worker_Task {
 	/**
 	 * Batch error notifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @var Batch_Error_Notifier
 	 */
@@ -80,7 +80,7 @@ class Worker_Task {
 	 * Constructor.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Added $notifier parameter.
+	 * @since 1.175.0 Added $notifier parameter.
 	 *
 	 * @param Max_Execution_Limiter         $max_execution_limiter Execution limiter instance.
 	 * @param Email_Log_Batch_Query         $batch_query           Batch query helper.
