@@ -59,6 +59,21 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 }
 
 /**
+ * Sets the fixtures to use for the test.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} fixtures The fixtures to use for the test.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withFixtures( fixtures: string ): TestDetailsAnnotation {
+	return {
+		type: '_wp:fixtures',
+		description: fixtures,
+	};
+}
+
+/**
  * Sets the user to use for the test.
  *
  * @since n.e.x.t
