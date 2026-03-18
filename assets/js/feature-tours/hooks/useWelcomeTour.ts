@@ -32,6 +32,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { useWindowHeight } from '@/js/hooks/useWindowSize';
 
 /**
  * Returns the welcome tour configuration based on the current user context.
@@ -43,6 +44,7 @@ import { getWelcomeTour } from '@/js/feature-tours/welcome';
 export function useWelcomeTour() {
 	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
+	const windowHeight = useWindowHeight();
 
 	const canAuthenticate = useSelect( ( select: Select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
@@ -77,5 +79,6 @@ export function useWelcomeTour() {
 		canAuthenticate,
 		isAnalyticsConnected: !! isAnalyticsConnected,
 		isActivateAnalyticsNotificationPresent,
+		windowHeight,
 	} );
 }
