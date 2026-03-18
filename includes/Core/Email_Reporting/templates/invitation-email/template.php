@@ -96,7 +96,7 @@ $email_title = sprintf( $email_title, esc_attr( $inviter_email ) );
 
 										<?php /* Body paragraphs from Content_Map. */ ?>
 										<?php foreach ( $body as $index => $paragraph ) : ?>
-										<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+										<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 <?php echo count( $body ) - 1 === $index ? '20px' : '16px'; ?> 0;">
 											<?php echo esc_html( $paragraph ); ?>
 											<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
 											<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
@@ -134,7 +134,7 @@ $email_title = sprintf( $email_title, esc_attr( $inviter_email ) );
 							</table>
 
 							<?php /* Footer text. */ ?>
-							<table role="presentation" width="100%" style="margin-top: 24px;">
+							<table role="presentation" width="100%" style="margin-top: 12px;">
 								<tr>
 									<td style="text-align: left;">
 										<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
