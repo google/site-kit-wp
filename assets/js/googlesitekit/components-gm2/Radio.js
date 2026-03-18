@@ -48,13 +48,13 @@ export default function Radio( props ) {
 		description,
 	} = props;
 
-	const formFieldRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			const formField = new MDCFormField( el );
-			const radioEl = el.querySelector( '.mdc-radio' );
+	const formFieldRef = useCallback( ( element ) => {
+		if ( element !== null ) {
+			const formField = new MDCFormField( element );
+			const radioElement = element.querySelector( '.mdc-radio' );
 
-			if ( radioEl ) {
-				formField.input = new MDCRadio( radioEl );
+			if ( radioElement ) {
+				formField.input = new MDCRadio( radioElement );
 			}
 		}
 	}, [] );

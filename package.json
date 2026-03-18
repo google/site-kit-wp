@@ -102,6 +102,7 @@
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
+		"eslint-plugin-unicorn": "^40.1.0",
 		"eslint-scope": "^5.1.0",
 		"fs-extra": "^9.0.1",
 		"git-repo-info": "^2.1.1",

@@ -299,8 +299,8 @@ function findDuplicates( array ) {
 	const duplicates = [];
 	const counts = {};
 
-	for ( let i = 0; i < array.length; i++ ) {
-		const item = array[ i ];
+	for ( let index = 0; index < array.length; index++ ) {
+		const item = array[ index ];
 		counts[ item ] = counts[ item ] >= 1 ? counts[ item ] + 1 : 1;
 		if ( counts[ item ] > 1 ) {
 			duplicates.push( item );

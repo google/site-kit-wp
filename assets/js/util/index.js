@@ -84,7 +84,7 @@ export function calculateChange( previous, current ) {
 export function validateJSON( stringToValidate ) {
 	try {
 		return JSON.parse( stringToValidate ) && !! stringToValidate;
-	} catch ( e ) {
+	} catch ( error ) {
 		return false;
 	}
 }
