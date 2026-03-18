@@ -174,8 +174,8 @@ export function createFetchStore( {
 				payload: { params },
 				type: FINISH_FETCH,
 			};
-		} catch ( e ) {
-			error = e;
+		} catch ( fetchError ) {
+			error = fetchError;
 
 			yield receiveError( error, baseName, args );
 

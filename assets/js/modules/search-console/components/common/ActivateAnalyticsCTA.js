@@ -40,7 +40,10 @@ export default function ActivateAnalyticsCTA( { title } ) {
 
 	if ( setupFlowRefreshEnabled ) {
 		return (
-			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-search-funnel" />
+			<AnalyticsCTA
+				analyticsEventLabel="search_funnel"
+				dismissedItemSlug="analytics-setup-cta-search-funnel"
+			/>
 		);
 	}
 

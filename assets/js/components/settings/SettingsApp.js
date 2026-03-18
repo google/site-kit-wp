@@ -41,8 +41,11 @@ import { trackEvent } from '@/js/util/tracking';
 import useViewContext from '@/js/hooks/useViewContext';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import { useFeature } from '@/js/hooks/useFeature';
+import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
 
 function SettingsApp() {
+	useOpenEmailReportingSelectionPanelEffect();
+
 	const location = useLocation();
 	// Prevent pushing to hash history if it would send you to the same URL.
 	// (Without this React Router will trigger a warning.)

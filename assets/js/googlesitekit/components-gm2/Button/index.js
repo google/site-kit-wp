@@ -61,9 +61,9 @@ const Button = forwardRef(
 		},
 		ref
 	) => {
-		const buttonRef = useCallback( ( el ) => {
-			if ( el !== null ) {
-				MDCRipple.attachTo( el );
+		const buttonRef = useCallback( ( element ) => {
+			if ( element !== null ) {
+				MDCRipple.attachTo( element );
 			}
 		}, [] );
 		const mergedRefs = useMergedRef( ref, buttonRef );

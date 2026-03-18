@@ -47,7 +47,7 @@ function createLoggerMiddleware( { name } ) {
 				':::',
 				JSON.stringify( _action )
 			);
-		} catch ( e ) {
+		} catch ( error ) {
 			global.console.debug( 'DISPATCH', name, type, 'JSON ERROR' );
 		}
 

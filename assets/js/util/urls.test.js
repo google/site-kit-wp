@@ -47,8 +47,8 @@ describe( 'getURLPath', () => {
 		[ 'incomplete URL', 'foo.com/test' ],
 	] )(
 		'should return NULL if "%s" is passed instead of a valid URL',
-		( _, val ) => {
-			expect( getURLPath( val ) ).toBeNull();
+		( _, value ) => {
+			expect( getURLPath( value ) ).toBeNull();
 		}
 	);
 } );

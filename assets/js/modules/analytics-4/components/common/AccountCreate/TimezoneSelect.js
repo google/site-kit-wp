@@ -38,7 +38,7 @@ export default function TimezoneSelect() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback(
-		( i, item ) => {
+		( index, item ) => {
 			setValues( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
 		},
 		[ setValues ]
@@ -56,9 +56,9 @@ export default function TimezoneSelect() {
 		>
 			{ ( timeZonesByCountryCode[ countryCode ] || [] ).map(
 				// eslint-disable-next-line sitekit/acronym-case
-				( { timeZoneId, displayName }, i ) => (
+				( { timeZoneId, displayName }, index ) => (
 					<Option
-						key={ i }
+						key={ index }
 						// eslint-disable-next-line sitekit/acronym-case
 						value={ timeZoneId }
 					>

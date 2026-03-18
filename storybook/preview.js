@@ -148,15 +148,15 @@ export const parameters = {
 				bParts.length
 			);
 
-			for ( let i = 0; i < lowestNumberOfSegments; i++ ) {
-				const aStorySegment = normalize( aParts[ i ] );
-				const bStorySegment = normalize( bParts[ i ] );
+			for ( let index = 0; index < lowestNumberOfSegments; index++ ) {
+				const aStorySegment = normalize( aParts[ index ] );
+				const bStorySegment = normalize( bParts[ index ] );
 
 				// Find the first segment which does not match and sort by this title.
 				if ( aStorySegment !== bStorySegment ) {
 					// Sort folders before files by checking if they have children.
-					const aIsFolderHere = aParts.length > i + 1;
-					const bIsFolderHere = bParts.length > i + 1;
+					const aIsFolderHere = aParts.length > index + 1;
+					const bIsFolderHere = bParts.length > index + 1;
 
 					if ( aIsFolderHere !== bIsFolderHere ) {
 						return aIsFolderHere ? -1 : 1;
@@ -180,8 +180,8 @@ export const parameters = {
 		await page.waitForTimeout( 50 );
 
 		expect(
-			await page.$eval( 'body', ( el ) =>
-				el.classList.contains( 'sb-show-errordisplay' )
+			await page.$eval( 'body', ( element ) =>
+				element.classList.contains( 'sb-show-errordisplay' )
 			)
 		).toBe( false );
 	},

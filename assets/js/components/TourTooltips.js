@@ -249,11 +249,11 @@ export default function TourTooltips( {
 
 		// Center the target in the viewport when transitioning to the step.
 		if ( EVENTS.STEP_BEFORE === type ) {
-			let el = step.target;
+			let element = step.target;
 			if ( 'string' === typeof step.target ) {
-				el = global.document.querySelector( step.target );
+				element = global.document.querySelector( step.target );
 			}
-			el?.scrollIntoView?.( { block: 'center' } );
+			element?.scrollIntoView?.( { block: 'center' } );
 		}
 
 		if ( shouldChangeStep ) {

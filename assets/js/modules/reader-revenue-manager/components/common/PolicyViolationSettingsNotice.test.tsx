@@ -279,8 +279,8 @@ describe( 'PolicyViolationSettingsNotice', () => {
 				} );
 
 				// Add click handler to prevent navigation.
-				ctaButton.addEventListener( 'click', ( e ) =>
-					e.preventDefault()
+				ctaButton.addEventListener( 'click', ( event ) =>
+					event.preventDefault()
 				);
 
 				fireEvent.click( ctaButton );

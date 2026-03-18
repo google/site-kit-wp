@@ -35,7 +35,10 @@ export default function AdminBarActivateAnalyticsCTA() {
 
 	if ( setupFlowRefreshEnabled ) {
 		return (
-			<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-admin-bar" />
+			<AnalyticsCTA
+				analyticsEventLabel="admin_bar"
+				dismissedItemSlug="analytics-setup-cta-admin-bar"
+			/>
 		);
 	}
 
