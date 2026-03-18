@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Core\User\Email_Reporting_Settings as Reporting_Settings;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -224,8 +225,8 @@ final class Email_Log {
 			return null;
 		}
 
-		if ( function_exists( 'wp_timezone' ) && function_exists( 'wp_date' ) ) {
-			$timezone = wp_timezone();
+		if ( function_exists( 'wp_date' ) ) {
+			$timezone = BC_Functions::wp_timezone();
 			if ( $timezone ) {
 				return wp_date( 'Y-m-d', $timestamp, $timezone );
 			}

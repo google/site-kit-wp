@@ -11,6 +11,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;
 use Google\Site_Kit\Core\Email_Reporting\Frequency_Planner;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -55,7 +56,7 @@ class Frequency_PlannerTest extends TestCase {
 		update_option( 'start_of_week', $start_of_week );
 		update_option( 'timezone_string', 'America/New_York' );
 
-		$timezone = wp_timezone();
+		$timezone = BC_Functions::wp_timezone();
 		$current  = new DateTimeImmutable( $current_date, $timezone );
 
 		$next_timestamp = $this->planner->next_occurrence(
@@ -86,7 +87,7 @@ class Frequency_PlannerTest extends TestCase {
 	 */
 	public function test_next_occurrence_monthly( $baseline, $timezone_string, $expected, $message ) {
 		update_option( 'timezone_string', $timezone_string );
-		$timezone = wp_timezone();
+		$timezone = BC_Functions::wp_timezone();
 
 		$timestamp          = ( new DateTimeImmutable( $baseline, $timezone ) )->getTimestamp();
 		$next               = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_MONTHLY, $timestamp, $timezone );
@@ -126,5 +127,32 @@ class Frequency_PlannerTest extends TestCase {
 			'first day of quarter midday'            => array( '2024-07-01 12:00:00', '2024-10-01 00:00:00', 'Being on day one later in the day jumps three months ahead.' ),
 			'late december moves to january'         => array( '2024-12-31 23:59:59', '2025-01-01 00:00:00', 'Quarterly transition across year boundary.' ),
 		);
+	}
+
+	public function test_next_occurrence_respects_site_timezone_midnight() {
+		$base_timestamp = ( new DateTimeImmutable( '2024-03-01 00:30:00', new DateTimeZone( 'UTC' ) ) )->getTimestamp();
+		$utc_timezone   = new DateTimeZone( 'UTC' );
+		$la_timezone    = new DateTimeZone( 'America/Los_Angeles' );
+
+		$utc_next = $this->planner->next_occurrence(
+			Email_Reporting_Settings::FREQUENCY_MONTHLY,
+			$base_timestamp,
+			$utc_timezone
+		);
+		$la_next  = $this->planner->next_occurrence(
+			Email_Reporting_Settings::FREQUENCY_MONTHLY,
+			$base_timestamp,
+			$la_timezone
+		);
+
+		$this->assertNotSame( $utc_next, $la_next, 'Monthly next occurrence should differ by timezone for the same UTC timestamp.' );
+
+		$utc_next_date = ( new DateTimeImmutable( '@' . $utc_next ) )->setTimezone( $utc_timezone );
+		$la_next_date  = ( new DateTimeImmutable( '@' . $la_next ) )->setTimezone( $la_timezone );
+
+		$this->assertSame( '00:00:00', $utc_next_date->format( 'H:i:s' ), 'UTC next occurrence should resolve to midnight.' );
+		$this->assertSame( '00:00:00', $la_next_date->format( 'H:i:s' ), 'Los Angeles next occurrence should resolve to midnight.' );
+		$this->assertSame( '2024-04-01', $utc_next_date->format( 'Y-m-d' ), 'UTC next monthly occurrence should be April 1st.' );
+		$this->assertSame( '2024-03-01', $la_next_date->format( 'Y-m-d' ), 'Los Angeles next monthly occurrence should be March 1st.' );
 	}
 }
