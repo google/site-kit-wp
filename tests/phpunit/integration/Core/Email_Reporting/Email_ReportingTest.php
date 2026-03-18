@@ -17,9 +17,12 @@ use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
+use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Prompts\Dismissed_Prompts;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -233,6 +236,32 @@ class Email_ReportingTest extends TestCase {
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) ), 'Quarterly initiator should not be scheduled when setup is incomplete.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_MONITOR ), 'Monitor should not be scheduled when setup is incomplete.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup should not be scheduled when setup is incomplete.' );
+	}
+
+	public function test_reset_clears_email_notice_dismissals_for_current_user() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$dismissed_prompts = new Dismissed_Prompts( new User_Options( $this->context, $user_id ) );
+		$dismissed_prompts->add( Analytics_Setup_Email_Notice::DISMISSAL_SLUG );
+		$dismissed_prompts->add( Enable_Conversion_Events_Email_Notice::DISMISSAL_SLUG );
+
+		$email_reporting = $this->create_email_reporting();
+		$email_reporting->register();
+
+		do_action( 'googlesitekit_reset' );
+
+		$prompts = $dismissed_prompts->get();
+		$this->assertArrayNotHasKey(
+			Analytics_Setup_Email_Notice::DISMISSAL_SLUG,
+			$prompts,
+			'Analytics setup email notice dismissal should be removed on Site Kit reset.'
+		);
+		$this->assertArrayNotHasKey(
+			Enable_Conversion_Events_Email_Notice::DISMISSAL_SLUG,
+			$prompts,
+			'Enable conversion events email notice dismissal should be removed on Site Kit reset.'
+		);
 	}
 
 	private function create_email_reporting() {
