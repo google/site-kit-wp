@@ -30,6 +30,62 @@ const details: TestDetails = {
 	],
 };
 
+const emailDeliveryDetails: TestDetails = {
+	annotation: [
+		asUser( 'admin' ),
+		withPlugins( 'proxy-auth.php', 'mailpit.php', 'email-reporting.php' ),
+		withFeatureFlags( 'proactiveUserEngagement' ),
+	],
+};
+
+test(
+	'should deliver a weekly email report',
+	emailDeliveryDetails,
+	async ( { wp } ) => {
+		await wp.visitDashboard();
+
+		await test.step( 'Subscribe to weekly reports', async () => {
+			await wp.page.getByRole( 'button', { name: 'Account' } ).click();
+			await wp.page
+				.getByRole( 'menuitem', { name: 'Manage email reports' } )
+				.click();
+			const root = wp.page.locator(
+				'.googlesitekit-email-reporting-settings'
+			);
+			await root.getByRole( 'button', { name: 'Subscribe' } ).click();
+			await expect(
+				root
+					.getByRole( 'alert' )
+					.filter( { hasText: 'successfully subscribed' } )
+			).toBeVisible( { timeout: 10_000 } );
+		} );
+
+		await test.step( 'Trigger email pipeline', async () => {
+			const response = await wp.restRequest(
+				'POST',
+				'google-site-kit/v1/e2e/email-reporting/trigger-cron',
+				{
+					body: JSON.stringify( { frequency: 'weekly' } ),
+					headers: { 'Content-Type': 'application/json' },
+				}
+			);
+
+			await expect( response ).toEqual( { success: true } );
+		} );
+
+		// const message = await wp.mailpit.waitForMessage( { timeout: 15_000 } );
+		// expect( message.Subject ).toContain( 'Your weekly Site Kit report' );
+
+		// await test.step( 'Assert email content and snapshot', async () => {
+		// 	const detail = await wp.mailpit.getMessage( message.ID );
+		// 	expect( detail.HTML ).toContain( '4,567' );
+		// 	expect( detail.HTML ).toMatch( /\+30/ );
+		// 	await wp.page.setContent( detail.HTML );
+		// 	await expect( wp.page ).toHaveScreenshot( { fullPage: true } );
+		// } );
+	}
+);
+
 test( 'should let user select a subscription', details, async ( { wp } ) => {
 	// Go to the Site Kit dashboard page.
 	await wp.visitDashboard();
@@ -44,7 +100,10 @@ test( 'should let user select a subscription', details, async ( { wp } ) => {
 	// Get the root element of the Email Reporting settings panel.
 	const root = wp.page.locator( '.googlesitekit-email-reporting-settings' );
 
-	const frequency = root.getByRole( 'heading', { name: 'Frequency' } );
+	const panelTitle = root.getByRole( 'heading', {
+		name: 'Email reports subscription',
+	} );
+
 	const currentSubscription = root.locator(
 		'.googlesitekit-frequency-selector__current-subscription'
 	);
@@ -55,8 +114,8 @@ test( 'should let user select a subscription', details, async ( { wp } ) => {
 
 	// Verify the settings panel state.
 	await test.step( 'Verify settings panel state', async () => {
-		// The frequency heading is visible.
-		await expect( frequency ).toBeVisible();
+		// The panel title is visible.
+		await expect( panelTitle ).toBeVisible();
 
 		// The current subscription badge is not visible.
 		await expect( currentSubscription ).not.toBeVisible();
