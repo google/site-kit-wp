@@ -66,9 +66,9 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 	);
 
 	function dayNameFromIndex( index ) {
-		const i =
+		const index_ =
 			Number.isInteger( index ) && index >= 0 && index <= 6 ? index : 1;
-		return DAY_NAMES[ i ];
+		return DAY_NAMES[ index_ ];
 	}
 
 	const startOfWeek = useSelect( ( select ) =>

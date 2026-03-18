@@ -17,6 +17,7 @@
  */
 
 import {
+	act,
 	render,
 	createTestRegistry,
 	provideUserAuthentication,
@@ -534,7 +535,12 @@ describe( 'KeyMetricsSetupApp', () => {
 			// Clear the event tracked on mount.
 			mockTrackEvent.mockClear();
 
-			fireEvent.click( getByRole( 'button', { name: 'Exit setup' } ) );
+			await act( async () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Exit setup' } )
+				);
+				await waitForTimeouts( 100 );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_KEY_METRICS_SETUP }_setup`,
@@ -624,6 +630,57 @@ describe( 'KeyMetricsSetupApp', () => {
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success&slug=analytics-4'
 				);
 			} );
+		} );
+
+		it( 'should preserve forwarded params when navigating to the dashboard after successful save', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&panel=email-reporting';
+
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: true } },
+			} );
+
+			fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+				body: {
+					purpose: {
+						values: [ 'publish_blog' ],
+						scope: 'site',
+					},
+				},
+				status: 200,
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			await waitFor( () =>
+				expect( global.location.assign ).toHaveBeenCalled()
+			);
+
+			const redirectURL = new URL(
+				global.location.assign.mock.calls[ 0 ][ 0 ]
+			);
+			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
+				'authentication_success'
+			);
+			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
+				'analytics-4'
+			);
+			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
+				'email-reporting'
+			);
 		} );
 
 		it( 'should track `view_key_metrics_step` event viewing key metrics step', async () => {

@@ -31,14 +31,14 @@ export async function fetchPageContent( url, options = {} ) {
 		await page.waitForFunction( () => window.fetch !== undefined, {
 			timeout: options?.timeout,
 		} );
-	} catch ( e ) {
+	} catch ( error ) {
 		// eslint-disable-next-line no-console
 		console.warn(
 			'fetchPageContent failure',
 			page.url(),
 			JSON.stringify( options )
 		);
-		throw e;
+		throw error;
 	}
 
 	return await page.evaluate(

@@ -52,6 +52,15 @@ class Plugin_Action_Links {
 		add_filter(
 			'plugin_action_links_' . GOOGLESITEKIT_PLUGIN_BASENAME,
 			function ( $links ) {
+				if ( current_user_can( Permissions::SETUP ) && ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+					$setup_link = sprintf(
+						'<a href="%s">%s</a>',
+						esc_url( $this->context->admin_url() ),
+						esc_html__( 'Start setup', 'google-site-kit' )
+					);
+
+					array_unshift( $links, $setup_link );
+				}
 
 				if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
 

@@ -91,11 +91,11 @@ const ANALYTICS_4_DIMENSION_OPTIONS = {
 		'San Francisco',
 	],
 	deviceCategory: [ 'Desktop', 'Tablet', 'Mobile' ],
-	pageTitle: ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
-	pagePath: ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
+	pageTitle: ( index ) => ( index <= 12 ? `Test Post ${ index }` : false ),
+	pagePath: ( index ) => ( index <= 12 ? `/test-post-${ index }/` : false ),
 	newVsReturning: [ 'new', 'returning' ],
-	'customEvent:googlesitekit_post_author': ( i ) =>
-		i <= 12 ? `User ${ i }` : false,
+	'customEvent:googlesitekit_post_author': ( index ) =>
+		index <= 12 ? `User ${ index }` : false,
 	'customEvent:googlesitekit_post_categories': [
 		'Entertainment; Sports; Media',
 		'Wealth',
@@ -280,25 +280,25 @@ function findDimensionValue( row, dimensions, dimensionName ) {
  */
 function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
 	const order = orderby[ 0 ];
-	let valA, valB;
+	let valueA, valueB;
 
 	if ( order.metric ) {
-		valA = findMetricValue( rowA, metrics, order.metric.metricName );
-		valB = findMetricValue( rowB, metrics, order.metric.metricName );
+		valueA = findMetricValue( rowA, metrics, order.metric.metricName );
+		valueB = findMetricValue( rowB, metrics, order.metric.metricName );
 	} else if ( order.dimension ) {
-		valA = findDimensionValue(
+		valueA = findDimensionValue(
 			rowA,
 			dimensions,
 			order.dimension.dimensionName
 		);
-		valB = findDimensionValue(
+		valueB = findDimensionValue(
 			rowB,
 			dimensions,
 			order.dimension.dimensionName
 		);
 	}
 
-	if ( valA === valB ) {
+	if ( valueA === valueB ) {
 		if ( orderby.length > 1 ) {
 			return compareRows(
 				rowA,
@@ -312,7 +312,7 @@ function compareRows( rowA, rowB, metrics, dimensions, orderby ) {
 	}
 
 	const direction = order.desc ? -1 : 1;
-	return ( valA < valB ? -1 : 1 ) * direction;
+	return ( valueA < valueB ? -1 : 1 ) * direction;
 }
 
 /**
@@ -480,12 +480,12 @@ export function getAnalytics4MockResponse(
 			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
 			streams.push(
 				new Observable( ( observer ) => {
-					for ( let i = 1; i <= 90; i++ ) {
+					for ( let index = 1; index <= 90; index++ ) {
 						// 90 is the max number of dates in the longest date range.
-						const val =
-							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( i );
-						if ( val ) {
-							observer.next( val );
+						const value =
+							ANALYTICS_4_DIMENSION_OPTIONS[ dimension ]( index );
+						if ( value ) {
+							observer.next( value );
 						} else {
 							break;
 						}

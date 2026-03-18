@@ -76,9 +76,9 @@ describe( 'core/location', () => {
 				[ 'NULL', null ],
 				[ 'NaN', NaN ],
 				[ 'an URL object', new URL( 'http://example.com/' ) ],
-			] )( 'should throw an error if %s is passed', ( name, val ) => {
+			] )( 'should throw an error if %s is passed', ( name, value ) => {
 				expect( () =>
-					registry.select( CORE_LOCATION ).isNavigatingTo( val )
+					registry.select( CORE_LOCATION ).isNavigatingTo( value )
 				).toThrow(
 					'url must be either a string or a regular expression.'
 				);

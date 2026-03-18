@@ -62,18 +62,18 @@ export async function racePrioritizedAsyncTasks( tasks ) {
 
 			// If we got here, then the fastest task's check did not pass.
 			// Filter out all tasks with completed failed checks.
-			for ( const i in group ) {
-				const task = group[ i ];
+			for ( const index in group ) {
+				const task = group[ index ];
 				if (
 					( await isPromiseResolved( task ) ) &&
 					false === ( await task ).result
 				) {
-					delete group[ i ];
+					delete group[ index ];
 				}
 			}
 
 			// Filter out empty elements for the next iteration.
-			group = group.filter( ( e ) => e );
+			group = group.filter( ( item ) => item );
 		} while ( group.length );
 		// Move on to the next priority group.
 	}

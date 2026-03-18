@@ -69,31 +69,31 @@ export default function setUpAdvancedTracking(
  *
  * @since 1.18.0
  *
- * @param {Element} el       A DOM element.
+ * @param {Element} element  A DOM element.
  * @param {string}  selector A selector to check for.
  * @return {boolean} True if the DOM element matches the selector, false otherwise.
  */
-function matches( el, selector ) {
+function matches( element, selector ) {
 	// Use fallbacks for older browsers.
 	// See https://developer.mozilla.org/en-US/docs/Web/API/Element/matches#Polyfill.
 	const matcher =
-		el.matches ||
-		el.matchesSelector ||
-		el.webkitMatchesSelector ||
-		el.mozMatchesSelector ||
-		el.msMatchesSelector ||
-		el.oMatchesSelector ||
+		element.matches ||
+		element.matchesSelector ||
+		element.webkitMatchesSelector ||
+		element.mozMatchesSelector ||
+		element.msMatchesSelector ||
+		element.oMatchesSelector ||
 		function ( s ) {
 			const elements = (
 				this.document || this.ownerDocument
 			).querySelectorAll( s );
-			let i = elements.length;
-			while ( --i >= 0 && elements.item( i ) !== this ) {}
-			return i > -1;
+			let index = elements.length;
+			while ( --index >= 0 && elements.item( index ) !== this ) {}
+			return index > -1;
 		};
 
 	if ( matcher ) {
-		return matcher.call( el, selector );
+		return matcher.call( element, selector );
 	}
 
 	return false;
