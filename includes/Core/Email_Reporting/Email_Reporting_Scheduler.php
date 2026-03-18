@@ -124,6 +124,10 @@ class Email_Reporting_Scheduler {
 	 * @return int|false Timestamp if found, otherwise false.
 	 */
 	public function get_initiator_timestamp( $frequency ) {
+		// Private function is used here but there are tests covering this
+		// method in case it changes.
+		//
+		// See: https://developer.wordpress.org/reference/functions/_get_cron_array/ and https://github.com/google/site-kit-wp/pull/12303#discussion_r2949495702.
 		$cron = _get_cron_array();
 
 		if ( ! is_array( $cron ) ) {
