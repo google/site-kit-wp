@@ -45,7 +45,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Per-request in-memory cache for eligible user IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var int[][]
 	 */
 	private $eligible_user_ids_cache = array();
@@ -110,7 +110,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Gets the total number of eligible users matching the search term.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int    $exclude_user_id User ID to exclude.
 	 * @param string $search          Search term for display name or email.
@@ -125,7 +125,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Checks whether the user is eligible to receive an invitation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int $exclude_user_id User ID to exclude.
 	 * @param int $user_id         User ID to check.
@@ -140,7 +140,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Gets deduplicated eligible user IDs filtered by subscription status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int    $exclude_user_id User ID to exclude.
 	 * @param string $search          Search term for display name or email.
@@ -178,7 +178,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Filters out users already subscribed to email reporting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int[] $user_ids User IDs.
 	 * @return int[] Unsubscribed user IDs.

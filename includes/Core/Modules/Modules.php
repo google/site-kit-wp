@@ -511,7 +511,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * Recreate authentication and clear the module registry arrays so subsequent
 	 * module lookups build fresh instances bound to the current user context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	public function reset_runtime_caches() {
 		$this->authentication = new Authentication( $this->context, $this->options, $this->user_options );

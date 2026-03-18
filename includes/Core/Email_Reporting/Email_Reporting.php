@@ -104,7 +104,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Email notices resolver.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Email_Notices
 	 */
 	protected $email_notices;

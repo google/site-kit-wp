@@ -54,7 +54,7 @@ export function getPostTypesString( postTypes, allPostTypes ) {
 /**
  * Extracts the product IDs from the products array returned by the API.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param {Array} products The products array from the publication.
  * @return {Array} Array of product ID names.
@@ -76,7 +76,7 @@ export function getProductIDs( products ) {
 /**
  * Extracts the active payment option from the payment options object.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param {Object} paymentOptions The payment options object from the publication.
  * @return {string} The active payment option key, or empty string if none found.

@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Golinks\Golinks;
 /**
  * Sends admin error notification emails when a batch fails completely.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Batch_Error_Notifier {
 	 * These categories indicate the mail system itself is broken or the error
 	 * type does not warrant an admin email notification.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var string[]
 	 */
 	const NON_SENDABLE_CATEGORIES = array(
@@ -41,7 +41,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Category ID to Content_Map key mapping.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var array
 	 */
 	const CATEGORY_CONTENT_MAP = array(
@@ -54,7 +54,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Batch query helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Email_Log_Batch_Query
 	 */
 	private $batch_query;
@@ -62,7 +62,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Email sender instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Email
 	 */
 	private $email_sender;
@@ -70,7 +70,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Plugin context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Context
 	 */
 	private $context;
@@ -78,7 +78,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Golinks instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Golinks
 	 */
 	private $golinks;
@@ -86,7 +86,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Log_Batch_Query $batch_query  Batch query helper.
 	 * @param Email                 $email_sender Email sender instance.
@@ -112,7 +112,7 @@ class Batch_Error_Notifier {
 	 * category is sendable, and no notification has been sent yet. Sends
 	 * to all WordPress administrators with manage_options capability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 */
@@ -169,7 +169,7 @@ class Batch_Error_Notifier {
 	 * checking for body content existence, then falls back to the generic
 	 * error-email key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string|null $category_id Error category ID.
 	 * @param string|null $module_slug Module slug (e.g. analytics-4, search-console).
@@ -195,7 +195,7 @@ class Batch_Error_Notifier {
 	 * Handles all storage formats produced by Email_Log::sanitize_error_details():
 	 * WP_Error JSON, plain string JSON, raw JSON, and empty string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return array Associative array with 'category_id' and 'module_slug' (both nullable).
@@ -240,7 +240,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Gets deduplicated admin email addresses.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string[] Admin email addresses.
 	 */
@@ -260,7 +260,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Builds template data for the error-email template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $content_key Content_Map key for title and body.
 	 * @return array Template data matching the error-email contract.
@@ -318,7 +318,7 @@ class Batch_Error_Notifier {
 	 * Maps each content key to the URLs that fill its `%s` / `%1$s` / `%2$s`
 	 * placeholders. Keys without placeholders return an empty array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $content_key Content_Map key.
 	 * @return array Ordered sprintf arguments for the body paragraphs.
@@ -364,7 +364,7 @@ class Batch_Error_Notifier {
 	/**
 	 * Gets the site domain including subdirectory context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Site domain string.
 	 */

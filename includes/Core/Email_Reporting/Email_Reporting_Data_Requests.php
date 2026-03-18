@@ -107,7 +107,7 @@ class Email_Reporting_Data_Requests {
 	 * auth clients can cache user-scoped tokens in-memory, so we track user changes
 	 * and reset runtime caches before building payloads for the next user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var int
 	 */
 	private $last_payload_user_id = 0;
@@ -208,7 +208,7 @@ class Email_Reporting_Data_Requests {
 	 * Without this, modules can reuse a client initialized for the previous user,
 	 * which can lead to permission checks passing/failing against stale auth state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int $user_id Target user ID.
 	 */

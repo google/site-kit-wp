@@ -36,7 +36,7 @@ import { getWelcomeTour } from '@/js/feature-tours/welcome';
 /**
  * Returns the welcome tour configuration based on the current user context.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @return The welcome tour configuration object.
  */

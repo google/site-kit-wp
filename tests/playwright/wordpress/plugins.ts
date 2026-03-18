@@ -28,7 +28,7 @@ import { PLUGINS_SEPARATOR } from './options';
 /**
  * Serializes a string array to a PHP serialized format.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param  arr The array to serialize.
  * @return {string} The PHP serialized string.
@@ -46,7 +46,7 @@ function phpSerializeStringArray( arr: string[] ): string {
 /**
  * Parses a PHP serialized string array into a JavaScript array.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param  serialized The PHP serialized string.
  * @return {string[]} The parsed array.
@@ -71,27 +71,27 @@ function phpUnserializeStringArray( serialized: string ): string[] {
  * after `WordPressDatabase.create()` runs `USE <db_name>`, so all queries
  * go to the correct isolated database without any cookie or HTTP dependencies.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export class WordPressPlugins {
 	/**
 	 * The Playwright TestInfo object for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly testInfo: TestInfo;
 
 	/**
 	 * The database connection, already scoped to the test database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly db: Connection;
 
 	/**
 	 * Creates a new WordPressPlugins instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param {TestInfo}   testInfo The Playwright TestInfo object for the current test.
 	 * @param {Connection} db       The database connection scoped to the test database.
@@ -104,7 +104,7 @@ export class WordPressPlugins {
 	/**
 	 * Returns the current list of active plugins from the database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<string[]>} A promise that resolves with the active plugin file paths.
 	 */
@@ -121,7 +121,7 @@ export class WordPressPlugins {
 	/**
 	 * Writes the given list of active plugins to the database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  plugins The plugin file paths to set as active.
 	 * @return {Promise<void>} A promise that resolves when the option is updated.
@@ -137,7 +137,7 @@ export class WordPressPlugins {
 	/**
 	 * Activates a plugin by its file path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  pluginFile The plugin file path relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
 	 * @return {Promise<void>} A promise that resolves when the plugin is activated.
@@ -155,7 +155,7 @@ export class WordPressPlugins {
 	/**
 	 * Deactivates a plugin by its file path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  pluginFile The plugin file path relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
 	 * @return {Promise<void>} A promise that resolves when the plugin is deactivated.
@@ -175,7 +175,7 @@ export class WordPressPlugins {
 	 *
 	 * Does nothing when no `_wp:plugin` annotations are present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when all plugins are activated.
 	 */

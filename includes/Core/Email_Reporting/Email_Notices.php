@@ -21,7 +21,7 @@ use WP_User;
 /**
  * Repository for in-email notices and shared notice display logic.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -30,35 +30,35 @@ class Email_Notices {
 	/**
 	 * Golink key for in-email notice clicks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const GOLINK_NOTICE = 'email-report-notice';
 
 	/**
 	 * Header placement identifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const PLACEMENT_HEADER = 'header';
 
 	/**
 	 * Section placement identifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const PLACEMENT_SECTION = 'section';
 
 	/**
 	 * Maximum number of impressions before permanent dismissal.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const MAX_NOTICE_IMPRESSIONS = 2;
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Context
 	 */
 	private $context;
@@ -66,7 +66,7 @@ class Email_Notices {
 	/**
 	 * Golinks service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Golinks
 	 */
 	private $golinks;
@@ -74,7 +74,7 @@ class Email_Notices {
 	/**
 	 * Registered notice definitions keyed by ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var array<string, Email_Notice_Interface>
 	 */
 	private $notices = array();
@@ -82,7 +82,7 @@ class Email_Notices {
 	/**
 	 * Cached dismissed prompts instances keyed by user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var array<int, Dismissed_Prompts>
 	 */
 	private $dismissed_prompts_instances = array();
@@ -90,7 +90,7 @@ class Email_Notices {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Golinks $golinks Golinks service.
@@ -112,7 +112,7 @@ class Email_Notices {
 	/**
 	 * Registers a notice definition.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Notice_Interface $notice Notice definition.
 	 * @throws InvalidArgumentException Thrown when a notice with the same ID is already registered.
@@ -130,7 +130,7 @@ class Email_Notices {
 	/**
 	 * Gets eligible header notices for a user and tracks impressions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user Recipient user.
 	 * @return array Eligible header notices.
@@ -142,7 +142,7 @@ class Email_Notices {
 	/**
 	 * Gets eligible section notices for a user and section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user        Recipient user.
 	 * @param string  $section_key Section key.
@@ -159,7 +159,7 @@ class Email_Notices {
 	/**
 	 * Gets registered section notice keys.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string[] Unique section keys.
 	 */
@@ -185,7 +185,7 @@ class Email_Notices {
 	/**
 	 * Dismisses a notice for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string  $notice_id          Notice ID.
 	 * @param WP_User $user               User who dismissed/clicked.
@@ -206,7 +206,7 @@ class Email_Notices {
 	/**
 	 * Resolves redirect URL for a notice CTA click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string  $notice_id Notice ID.
 	 * @param WP_User $user      Current user.
@@ -224,7 +224,7 @@ class Email_Notices {
 	/**
 	 * Gets the default dashboard redirect URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Redirect URL.
 	 */
@@ -235,7 +235,7 @@ class Email_Notices {
 	/**
 	 * Gets a registered notice by ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $notice_id Notice ID.
 	 * @return Email_Notice_Interface|null Notice definition or null.
@@ -249,7 +249,7 @@ class Email_Notices {
 	/**
 	 * Gets eligible notices for a placement and optional section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user        Recipient user.
 	 * @param string  $placement   Placement slug.
@@ -297,7 +297,7 @@ class Email_Notices {
 	/**
 	 * Determines whether a notice is eligible for display for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Notice_Interface $notice Notice definition.
 	 * @param WP_User                $user   User.
@@ -325,7 +325,7 @@ class Email_Notices {
 	/**
 	 * Tracks a notice impression.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Notice_Interface $notice Notice definition.
 	 * @param WP_User                $user   User.
@@ -340,7 +340,7 @@ class Email_Notices {
 	/**
 	 * Gets prompt state for a notice and user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Notice_Interface $notice  Notice definition.
 	 * @param int                    $user_id User ID.
@@ -358,7 +358,7 @@ class Email_Notices {
 	/**
 	 * Determines whether a prompt is currently dismissed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param array $prompt_state Prompt state.
 	 * @return bool True if dismissed.
@@ -376,7 +376,7 @@ class Email_Notices {
 	/**
 	 * Determines whether a prompt has reached maximum impressions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param array $prompt_state Prompt state.
 	 * @return bool True if exhausted.
@@ -390,7 +390,7 @@ class Email_Notices {
 	/**
 	 * Gets dismissed prompts instance for a specific user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param int $user_id User ID.
 	 * @return Dismissed_Prompts Dismissed prompts instance.

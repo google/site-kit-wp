@@ -24,7 +24,7 @@ use WP_User;
 /**
  * Golink handler for in-email notice CTA URLs.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Email_Notice_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Email notices resolver.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Email_Notices
 	 */
 	private $email_notices;
@@ -41,7 +41,7 @@ class Email_Notice_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Modules service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -49,7 +49,7 @@ class Email_Notice_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Authentication service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -57,7 +57,7 @@ class Email_Notice_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Email_Notices  $email_notices  Email notices resolver.
 	 * @param Modules        $modules        Modules service.
@@ -72,7 +72,7 @@ class Email_Notice_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Handles in-email notice CTA click redirects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string Redirect destination URL.

@@ -57,7 +57,7 @@ class Email_Template_Formatter {
 	/**
 	 * Email notices resolver.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @var Email_Notices
 	 */
@@ -68,7 +68,7 @@ class Email_Template_Formatter {
 	 *
 	 * @since 1.170.0
 	 * @since 1.174.0 Added golinks dependency.
-	 * @since n.e.x.t Added email notices dependency.
+	 * @since 1.175.0 Added email notices dependency.
 	 *
 	 * @param Context                      $context         Plugin context.
 	 * @param Email_Report_Section_Builder $section_builder Section builder instance.
@@ -494,7 +494,7 @@ class Email_Template_Formatter {
 	/**
 	 * Resolves section notices keyed by section slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User receiving the report.
 	 * @return array Section notices map.
