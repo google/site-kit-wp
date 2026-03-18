@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Prompts\Dismissed_Prompts;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
@@ -293,6 +294,22 @@ class Email_Reporting implements Provides_Feature_Metrics {
 
 		// Register WP admin pointer for Email Reporting onboarding.
 		( new Email_Reporting_Pointer( $this->context, $this->user_options, $this->user_settings ) )->register();
+
+		// Clear in-email notice dismissals on Site Kit reset.
+		add_action(
+			'googlesitekit_reset',
+			function () {
+				$current_user_id = get_current_user_id();
+				if ( ! $current_user_id ) {
+					return;
+				}
+
+				$dismissed_prompts = new Dismissed_Prompts( new User_Options( $this->context, $current_user_id ) );
+				$dismissed_prompts->remove( Analytics_Setup_Email_Notice::DISMISSAL_SLUG );
+				$dismissed_prompts->remove( Enable_Conversion_Events_Email_Notice::DISMISSAL_SLUG );
+			}
+		);
+
 		$this->email_log->register();
 		$this->scheduler->register();
 
