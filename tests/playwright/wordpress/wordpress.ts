@@ -161,9 +161,14 @@ export class WordPress {
 		if ( errors.length > 0 ) {
 			const uniqueErrors: string[] = [];
 			errors.forEach( ( e ) => {
-				uniqueErrors.push(
-					`[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`
-				);
+				let msg = `[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`;
+				if ( e.backtrace ) {
+					msg += `\n\t${ e.backtrace.split( '\n' ).join( '\n\t' ) }`;
+				}
+
+				if ( ! uniqueErrors.includes( msg ) ) {
+					uniqueErrors.push( msg );
+				}
 			} );
 
 			const summary = uniqueErrors.join( '\n' );
@@ -285,5 +290,33 @@ export class WordPress {
 	 */
 	visitFrontend( path = '/' ): Promise< Response | null > {
 		return this.page.goto( `${ this.baseURL }${ path }` );
+	}
+
+	/**
+	 * Makes a request to the WordPress REST API using the browser's fetch.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  method HTTP method (e.g. 'GET', 'POST').
+	 * @param  route  REST route without leading slash (e.g. 'sitekit-e2e/v1/my-endpoint').
+	 * @param  init   Optional additional fetch init options (headers, body, etc.).
+	 * @return {Promise<unknown>} Parsed JSON response body.
+	 */
+	restRequest(
+		method: string,
+		route: string,
+		init: Omit< RequestInit, 'method' > = {}
+	): Promise< unknown > {
+		return this.page.evaluate(
+			async ( { url, method: m, init: i } ) => {
+				const response = await fetch( url, { method: m, ...i } );
+				return response.json();
+			},
+			{
+				url: `${ this.baseURL }/wp-json/${ route }`,
+				method,
+				init,
+			}
+		);
 	}
 }
