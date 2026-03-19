@@ -118,12 +118,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$analytics->register();
 		$search_console->register();
 
-		$this->fake_analytics_report( $analytics );
-		$this->fake_search_console_report( $search_console );
-
 		FakeHttp::fake_google_http_handler(
 			$this->authentication->get_oauth_client()->get_client(),
-			$this->get_analytics_batch_handler()
+			$this->get_search_console_analytics_report_handlers()
 		);
 
 		$data_requests = $this->create_data_requests( $conversion_tracking );
@@ -133,16 +130,16 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Conversion data should be under analytics-4 module key.' );
 		$this->assertArrayHasKey( Search_Console::MODULE_SLUG, $payload, 'Search Console data should be under search-console module key.' );
 
+		$this->assertArrayHasKey( 'total_impressions', $payload[ Search_Console::MODULE_SLUG ], 'Search Console impressions payload should be included.' );
+		$this->assertArrayHasKey( 'total_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console clicks payload should be included.' );
+		$this->assertArrayHasKey( 'top_ctr_keywords', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top CTR keywords payload should be included.' );
+		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top pages payload should be included.' );
 		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should be included.' );
 		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Add to cart conversion event payload should be included.' );
 		$this->assertArrayHasKey( 'conversion_event_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Purchase conversion event payload should be included.' );
 		$this->assertArrayHasKey( 'total_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Total visitors payload should be included.' );
 		$this->assertArrayHasKey( 'traffic_channels', $payload[ Analytics_4::MODULE_SLUG ], 'Traffic channels payload should be included.' );
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
-		$this->assertArrayHasKey( 'total_impressions', $payload[ Search_Console::MODULE_SLUG ], 'Search Console impressions payload should be included.' );
-		$this->assertArrayHasKey( 'total_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console clicks payload should be included.' );
-		$this->assertArrayHasKey( 'top_ctr_keywords', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top CTR keywords payload should be included.' );
-		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top pages payload should be included.' );
 	}
 
 	public function test_user_without_shared_roles_gets_empty_payload() {
@@ -353,6 +350,47 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Inaccessible module should be excluded from payload.' );
 	}
 
+	public function test_get_user_payload_resets_runtime_caches_only_when_user_changes() {
+		$first_user_id  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$second_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$data_requests = $this->create_data_requests();
+
+		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
+		$modules_property->setAccessible( true );
+		$modules_property->setValue( $this->modules, array( 'sentinel' => new \stdClass() ) );
+
+		$dependencies_property = new ReflectionProperty( Modules::class, 'dependencies' );
+		$dependencies_property->setAccessible( true );
+		$dependencies_property->setValue( $this->modules, array( 'sentinel' => array( 'dep' ) ) );
+
+		$dependants_property = new ReflectionProperty( Modules::class, 'dependants' );
+		$dependants_property->setAccessible( true );
+		$dependants_property->setValue( $this->modules, array( 'dep' => array( 'sentinel' ) ) );
+
+		$authentication_property = new ReflectionProperty( Modules::class, 'authentication' );
+		$authentication_property->setAccessible( true );
+		$authentication_before = $authentication_property->getValue( $this->modules );
+
+		$method = new \ReflectionMethod( Email_Reporting_Data_Requests::class, 'maybe_reset_runtime_caches_for_user_change' );
+		$method->setAccessible( true );
+
+		$method->invoke( $data_requests, $first_user_id );
+		$method->invoke( $data_requests, $first_user_id );
+
+		$this->assertNotEmpty( $modules_property->getValue( $this->modules ), 'Runtime module cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $dependencies_property->getValue( $this->modules ), 'Module dependency cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $dependants_property->getValue( $this->modules ), 'Module dependant cache should not reset when processing the same user repeatedly.' );
+		$this->assertSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should not be recreated when user does not change.' );
+
+		$method->invoke( $data_requests, $second_user_id );
+
+		$this->assertSame( array(), $modules_property->getValue( $this->modules ), 'Runtime module cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $dependencies_property->getValue( $this->modules ), 'Module dependency cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $dependants_property->getValue( $this->modules ), 'Module dependant cache should reset when switching to a different user.' );
+		$this->assertNotSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should be recreated when switching users.' );
+	}
+
 	public function test_categorize_error() {
 		$permissions_error = new WP_Error(
 			'403',
@@ -561,74 +599,87 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		}
 	}
 
-	private function fake_search_console_report( Search_Console $search_console ) {
-		FakeHttp::fake_google_http_handler(
-			$search_console->get_client(),
-			function ( Request $request ) {
-				if ( $request->getUri()->getHost() !== 'searchconsole.googleapis.com' ) {
-					return new FulfilledPromise( new Response( 200 ) );
+	private function get_search_console_batch_handler() {
+		return function ( Request $request ) {
+			if ( $request->getUri()->getHost() !== 'searchconsole.googleapis.com' ) {
+				return new FulfilledPromise( new Response( 200 ) );
+			}
+
+			$row = new ApiDataRow();
+			$row->setClicks( 1 );
+			$row->setImpressions( 2 );
+			$row->setCtr( 0.5 );
+			$row->setPosition( 3 );
+			$row->setKeys( array( '/' ) );
+
+			$response = new SearchAnalyticsQueryResponse();
+			$response->setRows( array( $row ) );
+
+			$path = $request->getUri()->getPath();
+			if ( false !== strpos( $path, '/batch' ) || false !== strpos( $request->getHeaderLine( 'Content-Type' ), 'multipart/mixed' ) ) {
+				$boundary = 'batch';
+				if ( preg_match( '/boundary=([^;]+)/', $request->getHeaderLine( 'Content-Type' ), $matches ) ) {
+					$boundary = trim( $matches[1] );
 				}
 
-				$row = new ApiDataRow();
-				$row->setClicks( 1 );
-				$row->setImpressions( 2 );
-				$row->setCtr( 0.5 );
-				$row->setPosition( 3 );
-				$row->setKeys( array( '/' ) );
+				$body = (string) $request->getBody();
+				$ids  = array();
 
-				$response = new SearchAnalyticsQueryResponse();
-				$response->setRows( array( $row ) );
-
-				$path = $request->getUri()->getPath();
-				if ( false !== strpos( $path, '/batch' ) || false !== strpos( $request->getHeaderLine( 'Content-Type' ), 'multipart/mixed' ) ) {
-					$boundary = 'batch';
-					if ( preg_match( '/boundary=([^;]+)/', $request->getHeaderLine( 'Content-Type' ), $matches ) ) {
-						$boundary = trim( $matches[1] );
-					}
-
-					$body = (string) $request->getBody();
-					$ids  = array();
-
-					if ( preg_match_all( '/Content-ID:\\s*(.+)/i', $body, $matches ) && ! empty( $matches[1] ) ) {
-						$ids = array_map( 'trim', $matches[1] );
-					}
-
-					if ( empty( $ids ) ) {
-						$ids = array( 'response-0' );
-					}
-
-					$response_body = json_encode( $response );
-					$multipart     = '';
-
-					foreach ( $ids as $id ) {
-						$multipart .= "--{$boundary}\r\n";
-						$multipart .= "Content-Type: application/http\r\n";
-						$multipart .= "Content-ID: {$id}\r\n\r\n";
-						$multipart .= "HTTP/1.1 200 OK\r\n";
-						$multipart .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
-						$multipart .= $response_body . "\r\n";
-					}
-
-					$multipart .= "--{$boundary}--";
-
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array( 'Content-Type' => "multipart/mixed; boundary={$boundary}" ),
-							$multipart
-						)
-					);
+				if ( preg_match_all( '/Content-ID:\\s*(.+)/i', $body, $matches ) && ! empty( $matches[1] ) ) {
+					$ids = array_map( 'trim', $matches[1] );
 				}
+
+				if ( empty( $ids ) ) {
+					$ids = array( 'response-0' );
+				}
+
+				$response_body = json_encode( $response );
+				$multipart     = '';
+
+				foreach ( $ids as $id ) {
+					$multipart .= "--{$boundary}\r\n";
+					$multipart .= "Content-Type: application/http\r\n";
+					$multipart .= "Content-ID: {$id}\r\n\r\n";
+					$multipart .= "HTTP/1.1 200 OK\r\n";
+					$multipart .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
+					$multipart .= $response_body . "\r\n";
+				}
+
+				$multipart .= "--{$boundary}--";
 
 				return new FulfilledPromise(
 					new Response(
 						200,
-						array(),
-						json_encode( $response )
+						array( 'Content-Type' => "multipart/mixed; boundary={$boundary}" ),
+						$multipart
 					)
 				);
 			}
-		);
+
+			return new FulfilledPromise(
+				new Response(
+					200,
+					array(),
+					json_encode( $response )
+				)
+			);
+		};
+	}
+
+	private function get_search_console_analytics_report_handlers() {
+		return function ( Request $request ) {
+			$host = $request->getUri()->getHost();
+
+			if ( strpos( $host, 'searchconsole.googleapis.com' ) !== false ) {
+				return $this->get_search_console_batch_handler()( $request );
+			}
+
+			if ( strpos( $host, 'analyticsdata.googleapis.com' ) !== false ) {
+				return $this->get_analytics_batch_handler()( $request );
+			}
+
+			return new FulfilledPromise( new Response( 200 ) );
+		};
 	}
 
 	private function authenticate_and_grant_required_scopes_for_user( $user_id ) {

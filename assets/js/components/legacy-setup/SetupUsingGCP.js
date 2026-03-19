@@ -149,10 +149,12 @@ class SetupUsingGCP extends Component {
 		const applicableSteps = STEPS;
 		const slugs = Object.keys( applicableSteps );
 
-		let i;
-		for ( i = 0; i < slugs.length; i++ ) {
-			if ( ! applicableSteps[ slugs[ i ] ].isApplicable( this.state ) ) {
-				delete applicableSteps[ slugs[ i ] ];
+		let index;
+		for ( index = 0; index < slugs.length; index++ ) {
+			if (
+				! applicableSteps[ slugs[ index ] ].isApplicable( this.state )
+			) {
+				delete applicableSteps[ slugs[ index ] ];
 			}
 		}
 
@@ -163,15 +165,17 @@ class SetupUsingGCP extends Component {
 		const slugs = Object.keys( applicableSteps );
 
 		// Iterate through all steps (except the last one) and return the first one that is not completed.
-		let i;
-		for ( i = 0; i < slugs.length - 1; i++ ) {
-			if ( ! applicableSteps[ slugs[ i ] ].isCompleted( this.state ) ) {
-				return slugs[ i ];
+		let index;
+		for ( index = 0; index < slugs.length - 1; index++ ) {
+			if (
+				! applicableSteps[ slugs[ index ] ].isCompleted( this.state )
+			) {
+				return slugs[ index ];
 			}
 		}
 
 		// Return the last step only if all other steps are completed.
-		return slugs[ i ];
+		return slugs[ index ];
 	}
 
 	stepStatus( applicableSteps, step ) {

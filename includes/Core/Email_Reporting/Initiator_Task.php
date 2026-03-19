@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use DateInterval;
 use DateTimeImmutable;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 
 /**
@@ -55,10 +56,15 @@ class Initiator_Task {
 	 *
 	 * @since 1.167.0
 	 *
-	 * @param string $frequency Frequency slug.
+	 * @param string   $frequency           Frequency slug.
+	 * @param int|null $scheduled_timestamp Scheduled initiator timestamp.
 	 */
-	public function handle_callback_action( $frequency ) {
-		$timestamp = time();
+	public function handle_callback_action( $frequency, $scheduled_timestamp = null ) {
+		$timestamp = (int) $scheduled_timestamp;
+
+		if ( $timestamp <= 0 ) {
+			$timestamp = time();
+		}
 
 		$this->scheduler->schedule_next_initiator( $frequency, $timestamp );
 
@@ -101,7 +107,7 @@ class Initiator_Task {
 	 * @return array Reference date payload.
 	 */
 	public static function build_reference_dates( $frequency, $timestamp ) {
-		$time_zone = wp_timezone();
+		$time_zone = BC_Functions::wp_timezone();
 		$send_date = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )
 			->setTime( 0, 0, 0 );
@@ -114,7 +120,11 @@ class Initiator_Task {
 
 		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
 
-		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', $period_days ) ) );
+		// Keep the period length inclusive of sendDate (e.g. weekly = 7 days total).
+		// Subtracting period_days would produce an 8-day window.
+		$start_date         = $send_date->sub(
+			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
+		);
 		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
 		$compare_start_date = $compare_end_date->sub(
 			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )

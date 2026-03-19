@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { act, fireEvent, render } from '../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	waitFor,
+} from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -40,6 +45,8 @@ import * as tracking from '@/js/util/tracking';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+jest.mock( '@/js/components/notifications/Notifications', () => () => null );
 
 describe( 'ModuleSetup', () => {
 	mockLocation();
@@ -298,5 +305,141 @@ describe( 'ModuleSetup', () => {
 		).toBeInTheDocument();
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	describe( 'forwardable params', () => {
+		const customRedirectURL =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
+
+		function registerFinishSetupModule( moduleSlug, setupHandler ) {
+			registry.dispatch( CORE_MODULES ).registerModule( moduleSlug, {
+				slug: moduleSlug,
+				storeName: `modules/${ moduleSlug }`,
+				SetupComponent: ( { finishSetup } ) => (
+					<button
+						onClick={ () => setupHandler( finishSetup ) }
+						type="button"
+					>
+						Trigger finish setup
+					</button>
+				),
+			} );
+
+			provideModules( registry, [
+				{
+					slug: moduleSlug,
+					active: false,
+					connected: false,
+				},
+			] );
+		}
+
+		it( 'should preserve forwarded params for custom redirect URL', async () => {
+			const moduleSlug = 'test-module';
+
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
+
+			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
+				finishSetup( customRedirectURL )
+			);
+
+			const { getByRole, waitForRegistry } = render(
+				<ModuleSetup moduleSlug={ moduleSlug } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				).toBeInTheDocument()
+			);
+
+			await act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				);
+			} );
+
+			await act( async () => {
+				await waitFor( () =>
+					expect( global.location.assign ).toHaveBeenCalled()
+				);
+			} );
+
+			const redirectURL = new URL(
+				global.location.assign.mock.calls[ 0 ][ 0 ]
+			);
+			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
+				'googlesitekit-dashboard'
+			);
+			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
+				'analytics-4'
+			);
+			expect( redirectURL.searchParams.get( 'reAuth' ) ).toEqual(
+				'true'
+			);
+			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
+				'email-reporting'
+			);
+		} );
+
+		it( 'should preserve forwarded params for default dashboard redirect URL', async () => {
+			const moduleSlug = 'test-module';
+
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting';
+
+			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
+				finishSetup()
+			);
+
+			const { getByRole, waitForRegistry } = render(
+				<ModuleSetup moduleSlug={ moduleSlug } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				).toBeInTheDocument()
+			);
+
+			await act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				);
+			} );
+
+			await act( async () => {
+				await waitFor( () =>
+					expect( global.location.assign ).toHaveBeenCalled()
+				);
+			} );
+
+			const redirectURL = new URL(
+				global.location.assign.mock.calls[ 0 ][ 0 ]
+			);
+			expect( redirectURL.searchParams.get( 'page' ) ).toEqual(
+				'googlesitekit-dashboard'
+			);
+			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
+				'authentication_success'
+			);
+			expect( redirectURL.searchParams.get( 'slug' ) ).toEqual(
+				moduleSlug
+			);
+			expect( redirectURL.searchParams.get( 'panel' ) ).toEqual(
+				'email-reporting'
+			);
+		} );
 	} );
 } );

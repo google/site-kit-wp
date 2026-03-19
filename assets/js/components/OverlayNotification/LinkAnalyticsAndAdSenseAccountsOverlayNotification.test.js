@@ -41,7 +41,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense';
+import { ADSENSE_NOTIFICATIONS } from '@/js/modules/adsense/notifications';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	NOTIFICATION_AREAS,

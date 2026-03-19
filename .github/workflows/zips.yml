@@ -120,16 +120,16 @@ jobs:
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p "${GITHUB_REF}"
+          mkdir -p "${{ github.ref }}"
           sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv ./*.zip "${GITHUB_REF}/google-site-kit-dev.zip"
+          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv ./*.zip "${GITHUB_REF}/google-site-kit.zip"
+          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
@@ -141,97 +141,56 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'workflow_dispatch'
     needs: build-zips
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
+      - uses: actions/checkout@v6
+
       - uses: actions/download-artifact@v7
         with:
           name: zip-files
           path: ${{ github.ref }}
-      - uses: google-github-actions/auth@v3
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - name: Upload PR files
-        uses: google-github-actions/upload-cloud-storage@v2
-        with:
-          path: ${{ github.ref }}
-          destination: ${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
-          parent: false
-          process_gcloudignore: false
 
-  add-comment-to-pr:
-    name: Add comment to PR
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: upload-to-cloud-storage
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v3
+      - uses: ./.github/actions/upload-to-gcs
+        id: upload
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: ${{ github.ref }}
+          destination: ${{ env.GCS_ROOT_PATH }}/${{ github.ref }}
+
+      - uses: ./.github/actions/update-pr-comment
+        if: github.event_name == 'pull_request'
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Get comment body
-        id: get-comment-body
-        # Setting a multi-line output requires escaping line-feeds. See <https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings>.
-        run: |
-          body="Build files for ${{ github.event.pull_request.head.sha }} are ready:
-          - Download [development build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${GITHUB_REF}/google-site-kit-dev.zip?${{ github.sha }})
-          - Download [production build](https://storage.googleapis.com/${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/${GITHUB_REF}/google-site-kit.zip?${{ github.sha }})"
-          delimiter="${body//$'\n'/'%0A'}"
-          echo "body<<${delimiter}" >> "$GITHUB_OUTPUT"
-          echo "$body" >> "$GITHUB_OUTPUT"
-          echo "${delimiter}" >> "$GITHUB_OUTPUT"
-      - name: Create comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
-      - name: Update comment on PR with links to build files
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: ${{ steps.get-comment-body.outputs.body }}
+          section-id: zips
+          section-content: |
+            📦 **Build files for ${{ github.event.pull_request.head.sha }}:**
+            - Download [development build](${{ steps.upload.outputs.public-url }}/google-site-kit-dev.zip?${{ github.sha }})
+            - Download [production build](${{ steps.upload.outputs.public-url }}/google-site-kit.zip?${{ github.sha }})
 
   remove-zips:
     name: Remove Zips
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
-    steps:
-      - uses: google-github-actions/auth@v3
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - uses: google-github-actions/setup-gcloud@v3
-      - name: Prune PR files
-        run: gcloud storage rm gs://${{ env.GCS_BUCKET }}/${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}/**
-
-  update-after-removal:
-    name: Update comment after removal
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: remove-zips
     permissions:
+      contents: read
       pull-requests: write
     steps:
-      - name: Check the comment exists
-        id: find-comment
-        uses: peter-evans/find-comment@v3
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/remove-gcs-path
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: ${{ env.GCS_ROOT_PATH }}/refs/pull/${{ github.event.pull_request.number }}
+
+      - uses: ./.github/actions/update-pr-comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: github-actions[bot]
-          body-includes: Build files for
-      - name: Update comment on PR with links to plugin builds
-        if: ${{ steps.find-comment.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          edit-mode: replace
-          body: Build files for ${{ github.event.pull_request.head.sha }} have been deleted.
+          section-id: zips
+          section-content: |
+            📦 **Build files for ${{ github.event.pull_request.head.sha }}:**
+            - Build files have been deleted.
 
   dryrun-publish-to-wporg:
     name: '[DRY RUN] Publish to WordPress.org'

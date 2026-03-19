@@ -15,7 +15,7 @@ use WP_User;
 /**
  * Interface for in-email notice definitions.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Gets the notice ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Notice ID.
 	 */
@@ -33,7 +33,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Gets the notice placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Placement slug.
 	 */
@@ -44,7 +44,7 @@ interface Email_Notice_Interface {
 	 *
 	 * Header notices should return an empty string.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Section key.
 	 */
@@ -53,7 +53,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Gets the dismissal slug used for prompt storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Dismissal slug.
 	 */
@@ -62,7 +62,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Determines whether the notice should be shown to a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return bool True if notice should be displayed.
@@ -72,7 +72,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Gets the display payload for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return array Notice payload.
@@ -90,7 +90,7 @@ interface Email_Notice_Interface {
 	/**
 	 * Gets redirect URL for a notice CTA click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return string Redirect URL.

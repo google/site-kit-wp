@@ -1,5 +1,5 @@
 /**
- * CoreModuleSetupEffects component.
+ * Ads module widget registrations.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,13 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
-
-export default function CoreModuleSetupEffects() {
-	useOpenEmailReportingSelectionPanelEffect();
-
-	return null;
-}
+export function registerWidgets() {}

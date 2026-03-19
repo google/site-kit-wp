@@ -49,7 +49,7 @@ class Fallback_Task {
 	/**
 	 * Batch error notifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @var Batch_Error_Notifier
 	 */
@@ -59,7 +59,7 @@ class Fallback_Task {
 	 * Constructor.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added $notifier parameter.
+	 * @since 1.175.0 Added $notifier parameter.
 	 *
 	 * @param Email_Log_Batch_Query     $batch_query Batch query helper.
 	 * @param Email_Reporting_Scheduler $scheduler   Scheduler instance.

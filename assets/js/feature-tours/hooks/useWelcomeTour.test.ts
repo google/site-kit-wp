@@ -108,6 +108,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
+			windowHeight: 768,
 		} );
 	} );
 
@@ -122,6 +123,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			windowHeight: 768,
 		} );
 	} );
 
@@ -140,6 +142,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: true,
+			windowHeight: 768,
 		} );
 	} );
 
@@ -159,6 +162,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			windowHeight: 768,
 		} );
 	} );
 
@@ -173,6 +177,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			windowHeight: 768,
 		} );
 	} );
 
@@ -191,6 +196,7 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: false,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			windowHeight: 768,
 		} );
 	} );
 } );

@@ -97,10 +97,12 @@ module.exports = async ( page, scenario, viewport ) => {
 					return false;
 				}
 
-				const currentFontSizes = Array.from( elements ).map( ( el ) => {
-					const fontSize = el.style.fontSize;
-					return fontSize ? parseInt( fontSize, 10 ) : 0;
-				} );
+				const currentFontSizes = Array.from( elements ).map(
+					( element ) => {
+						const fontSize = element.style.fontSize;
+						return fontSize ? parseInt( fontSize, 10 ) : 0;
+					}
+				);
 
 				return currentFontSizes.every(
 					( size ) => size === targetFontSize

@@ -234,13 +234,13 @@ const baseResolvers = {
 		);
 		if ( remainingPropertyIDs.length > 0 ) {
 			for (
-				let i = 0;
-				i < remainingPropertyIDs.length;
-				i += MAX_WEBDATASTREAMS_PER_BATCH
+				let index = 0;
+				index < remainingPropertyIDs.length;
+				index += MAX_WEBDATASTREAMS_PER_BATCH
 			) {
 				const chunk = remainingPropertyIDs.slice(
-					i,
-					i + MAX_WEBDATASTREAMS_PER_BATCH
+					index,
+					index + MAX_WEBDATASTREAMS_PER_BATCH
 				);
 				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch(
 					chunk

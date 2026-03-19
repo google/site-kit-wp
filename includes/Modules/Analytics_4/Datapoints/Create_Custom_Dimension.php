@@ -21,7 +21,7 @@ use WP_Error;
 /**
  * Class for the custom dimension creation datapoint.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Create_Custom_Dimension extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -103,7 +103,7 @@ class Create_Custom_Dimension extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

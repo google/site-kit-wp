@@ -1,4 +1,5 @@
 {
+	"name": "@google/site-kit-wp",
 	"scripts": {
 		"build": "npm run -w assets build",
 		"build:dev": "npm run -w assets build:dev",
@@ -25,6 +26,8 @@
 		"test:e2e:interactive": "npm run -w tests/e2e test:interactive",
 		"test:e2e:watch": "npm run -w tests/e2e test:watch",
 		"test:e2e:watch:interactive": "npm run -w tests/e2e test:watch:interactive",
+		"test:playwright": "npm run -w tests/playwright test",
+		"test:playwright:ui": "npm run -w tests/playwright test:ui",
 		"storybook": "npm run -w storybook start",
 		"storybook:vrt": "npm run storybook -- --ci --quiet",
 		"backstopjs": "./bin/backstop",
@@ -36,7 +39,10 @@
 		"env:start": "npm run -w tests/e2e start",
 		"env:stop": "npm run -w tests/e2e stop",
 		"env:reset-site": "npm run -w tests/e2e reset-site",
-		"postinstall": "patch-package",
+		"playwright:env:start": "npm run -w tests/playwright start",
+		"playwright:env:stop": "npm run -w tests/playwright stop",
+		"playwright:generate-backup": "npm run -w tests/playwright generate-backup",
+		"postinstall": "node -e \"process.env.SKIP_PATCH_PACKAGE || require('child_process').execSync('patch-package', {stdio:'inherit'})\"",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit"
 	},
@@ -96,6 +102,7 @@
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
+		"eslint-plugin-unicorn": "^40.1.0",
 		"eslint-scope": "^5.1.0",
 		"fs-extra": "^9.0.1",
 		"git-repo-info": "^2.1.1",
@@ -121,6 +128,7 @@
 		"storybook",
 		"tests/backstop",
 		"tests/e2e",
-		"tests/js"
+		"tests/js",
+		"tests/playwright"
 	]
 }

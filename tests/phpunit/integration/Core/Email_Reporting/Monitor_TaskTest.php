@@ -35,7 +35,7 @@ class Monitor_TaskTest extends TestCase {
 
 		$this->scheduler = $this->getMockBuilder( Email_Reporting_Scheduler::class )
 			->disableOriginalConstructor()
-			->setMethods( array( 'schedule_initiator_once' ) )
+			->setMethods( array( 'schedule_initiator_once', 'is_initiator_scheduled' ) )
 			->getMock();
 
 		$this->settings = $this->getMockBuilder( Email_Reporting_Settings::class )
@@ -60,6 +60,8 @@ class Monitor_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->never() )
 			->method( 'schedule_initiator_once' );
+		$this->scheduler->expects( $this->never() )
+			->method( 'is_initiator_scheduled' );
 
 		$this->task->handle_monitor_action();
 	}
@@ -69,8 +71,15 @@ class Monitor_TaskTest extends TestCase {
 			->method( 'is_email_reporting_enabled' )
 			->willReturn( true );
 
-		wp_schedule_single_event( time() + HOUR_IN_SECONDS, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY ) );
-		wp_schedule_single_event( time() + HOUR_IN_SECONDS, Email_Reporting_Scheduler::ACTION_INITIATOR, array( User_Email_Reporting_Settings::FREQUENCY_MONTHLY ) );
+		$this->scheduler->expects( $this->exactly( 3 ) )
+			->method( 'is_initiator_scheduled' )
+			->willReturnMap(
+				array(
+					array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, true ),
+					array( User_Email_Reporting_Settings::FREQUENCY_MONTHLY, true ),
+					array( User_Email_Reporting_Settings::FREQUENCY_QUARTERLY, false ),
+				)
+			);
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_initiator_once' )

@@ -599,16 +599,16 @@ export default function UserDimensionsPieChart( props ) {
 				>
 					{ loaded &&
 						! showZeroDataChart &&
-						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+						dataMap?.slice( 1 ).map( ( [ label ], index ) => {
 							const isActive = label === dimensionValue;
-							const sliceColor = slices[ i ]?.color;
+							const sliceColor = slices[ index ]?.color;
 							const isOthers =
 								__( 'Others', 'google-site-kit' ) === label;
 
 							return (
 								<Link
 									key={ label }
-									onClick={ () => onLegendClick( i ) }
+									onClick={ () => onLegendClick( index ) }
 									className={ classnames(
 										'googlesitekit-widget--analyticsAllTraffic__legend-slice',
 										{

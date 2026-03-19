@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 
 /**
@@ -95,7 +96,7 @@ class Subscription_Confirmation_Task {
 		$first_report_timestamp = $this->frequency_planner->next_occurrence(
 			$frequency,
 			$timestamp,
-			wp_timezone()
+			BC_Functions::wp_timezone()
 		);
 		$reference_dates        = Initiator_Task::build_reference_dates( $frequency, $first_report_timestamp );
 
