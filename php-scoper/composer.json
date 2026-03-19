@@ -1,12 +1,13 @@
 {
-    "require": {
-        "humbug/php-scoper": "^0.18.8"
-    },
-    "config": {
-      "platform": {
-        "php": "8.2"
-      }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+	"require": {
+		"composer-plugin-api": ">=2.9.0",
+		"humbug/php-scoper": "^0.18.8"
+	},
+	"config": {
+		"platform": {
+			"php": "8.2"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }
