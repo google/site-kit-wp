@@ -25,6 +25,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import PermissionsErrorNotice from '@/js/components/email-reporting/notices/errors/PermissionsErrorNotice';
 import ReportErrorNotice from '@/js/components/email-reporting/notices/errors/ReportErrorNotice';
 import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
+import CronSchedulerErrorNotice from '@/js/components/email-reporting/notices/errors/CronSchedulerErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
 export default function EmailReportingErrorNotices() {
@@ -66,6 +67,8 @@ export default function EmailReportingErrorNotices() {
 			);
 		case 'sending_error':
 			return <SendingErrorNotice />;
+		case 'cron_scheduler_error':
+			return <CronSchedulerErrorNotice />;
 		default:
 			return <ServerErrorNotice />;
 	}
