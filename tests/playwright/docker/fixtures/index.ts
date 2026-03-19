@@ -76,14 +76,14 @@ function parseBatchParts( rawBody: string, boundary: string ): BatchPart[] {
 		// The body follows the blank line inside the inner request.
 		let innerBody = '';
 		let blankFound = false;
-		for ( let i = 1; i < innerLines.length; i++ ) {
+		for ( let index = 1; index < innerLines.length; index++ ) {
 			if ( ! blankFound ) {
-				if ( innerLines[ i ].trim() === '' ) {
+				if ( innerLines[ index ].trim() === '' ) {
 					blankFound = true;
 				}
 				continue;
 			}
-			innerBody += ( innerBody ? '\n' : '' ) + innerLines[ i ];
+			innerBody += ( innerBody ? '\n' : '' ) + innerLines[ index ];
 		}
 
 		parts.push( { contentID, method, url, body: innerBody.trim() } );
@@ -182,14 +182,17 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 		? fixturesHeader[ 0 ]
 		: fixturesHeader;
 
+	// If no fixtures are specified, return an empty response.
+	if ( ! fixtures ) {
+		res.writeHead( 200, jsonContentType );
+		res.end( '{}' );
+		return;
+	}
+
 	let body = '';
 	req.on( 'data', ( chunk: Buffer | string ) => ( body += chunk ) );
 	req.on( 'end', () => {
 		try {
-			if ( ! fixtures ) {
-				throw new Error( 'Missing x-wp-test-fixtures header' );
-			}
-
 			const dataPath = join( '/fixtures/data', fixtures, host + '.json' );
 			const data = JSON.parse(
 				readFileSync( dataPath, 'utf8' )
