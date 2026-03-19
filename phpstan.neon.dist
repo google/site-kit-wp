@@ -14,6 +14,8 @@ parameters:
         - %currentWorkingDirectory%/tests/phpstan/constants.php
         - %currentWorkingDirectory%/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - %currentWorkingDirectory%/vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+    scanFiles:
+        - %currentWorkingDirectory%/vendor/roots/wordpress/wp-includes/compat.php
     scanDirectories:
         - %currentWorkingDirectory%/gtg
         - %currentWorkingDirectory%/third-party
