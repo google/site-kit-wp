@@ -191,6 +191,17 @@ jobs:
         env:
           PLAYWRIGHT_HTML_TITLE: "WordPress ${{ matrix.wp_version }}"
 
+      - name: Export mailpit emails
+        if: always()
+        run: |
+          mkdir -p tests/playwright/artifacts/emails
+          ids=$(curl -sf http://localhost:8025/api/v1/messages | jq -r '.messages[]?.ID // empty' || true)
+          for id in $ids; do
+            subject=$(curl -sf "http://localhost:8025/api/v1/message/$id" | jq -r '.Subject // "unknown"' | tr -cs '[:alnum:]-' '_' | cut -c1-80)
+            curl -sf "http://localhost:8025/api/v1/message/$id/raw" \
+              -o "tests/playwright/artifacts/emails/${id}-${subject}.eml" || true
+          done
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         if: always()
