@@ -120,11 +120,7 @@ class Initiator_Task {
 
 		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
 
-		// Keep the period length inclusive of sendDate (e.g. weekly = 7 days total).
-		// Subtracting period_days would produce an 8-day window.
-		$start_date         = $send_date->sub(
-			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
-		);
+		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', $period_days ) ) );
 		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
 		$compare_start_date = $compare_end_date->sub(
 			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
