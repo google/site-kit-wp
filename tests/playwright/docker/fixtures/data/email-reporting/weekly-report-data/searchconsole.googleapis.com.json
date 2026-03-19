@@ -512,7 +512,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2026-01-01\",\"rowlimit\":1000,\"startdate\":\"2025-12-19\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2025-12-31\",\"rowlimit\":1000,\"startdate\":\"2025-12-18\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -655,7 +655,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":10,\"startdate\":\"2025-12-26\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-31\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -753,7 +753,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2026-01-01\",\"rowlimit\":10,\"startdate\":\"2025-12-26\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-31\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -851,7 +851,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":50,\"startdate\":\"2025-12-26\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-31\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1309,7 +1309,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2026-01-01\",\"rowlimit\":50,\"startdate\":\"2025-12-26\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-31\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1767,7 +1767,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-25\",\"rowlimit\":10,\"startdate\":\"2025-12-19\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1865,7 +1865,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-25\",\"rowlimit\":10,\"startdate\":\"2025-12-19\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1963,7 +1963,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-25\",\"rowlimit\":50,\"startdate\":\"2025-12-19\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -2421,7 +2421,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-25\",\"rowlimit\":50,\"startdate\":\"2025-12-19\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -2877,6 +2877,104 @@
 					}
 				],
 				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":\"10\",\"startdate\":\"2025-12-05\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"pub irlandes sp"
+						],
+						"clicks": 4,
+						"impressions": 124,
+						"ctr": 0.032258064516129031,
+						"position": 4.7016129032258061
+					},
+					{
+						"keys": [
+							"andre oliveira gofundme"
+						],
+						"clicks": 3,
+						"impressions": 13,
+						"ctr": 0.23076923076923078,
+						"position": 6.9230769230769234
+					},
+					{
+						"keys": [
+							"irish pub são paulo"
+						],
+						"clicks": 2,
+						"impressions": 24,
+						"ctr": 0.083333333333333329,
+						"position": 3.75
+					},
+					{
+						"keys": [
+							"marcas irlandesas"
+						],
+						"clicks": 2,
+						"impressions": 15,
+						"ctr": 0.13333333333333333,
+						"position": 1.6666666666666665
+					},
+					{
+						"keys": [
+							"acompanhante na irlanda"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 15
+					},
+					{
+						"keys": [
+							"acompanhantes em dublin"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1,
+						"position": 11
+					},
+					{
+						"keys": [
+							"best irish movies 2025"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 14.555555555555555
+					},
+					{
+						"keys": [
+							"brazilian bar dublin"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.083333333333333329,
+						"position": 11.75
+					},
+					{
+						"keys": [
+							"brazilian christian church"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 7
+					},
+					{
+						"keys": [
+							"brazilian church dublin"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 9.5
+					}
+				],
+				"responseAggregationType": "byProperty"
 			}
 		}
 	}
