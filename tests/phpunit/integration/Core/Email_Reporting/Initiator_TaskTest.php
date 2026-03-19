@@ -199,9 +199,9 @@ class Initiator_TaskTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_build_reference_dates_uses_expected_period_length_excluding_send_date
+	 * @dataProvider data_build_reference_dates_uses_expected_period_length
 	 */
-	public function test_build_reference_dates_uses_expected_period_length_excluding_send_date( $frequency, $expected_days ) {
+	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days ) {
 		$original_timezone_string = get_option( 'timezone_string' );
 		$original_gmt_offset      = get_option( 'gmt_offset' );
 
@@ -217,22 +217,44 @@ class Initiator_TaskTest extends TestCase {
 			);
 
 			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
-			$current_end   = ( new \DateTimeImmutable( $reference_dates['sendDate'] ) )->sub( new \DateInterval( 'P1D' ) );
+			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
 			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
 
 			$compare_start = new \DateTimeImmutable( $reference_dates['compareStartDate'] );
 			$compare_end   = new \DateTimeImmutable( $reference_dates['compareEndDate'] );
 			$compare_days  = (int) $compare_start->diff( $compare_end )->days + 1;
 
-				$this->assertSame( $expected_days, $current_days, 'Expected current reference range to use inclusive period length.' );
-				$this->assertSame( $expected_days, $compare_days, 'Expected compare reference range to use inclusive period length.' );
+			$this->assertSame( $expected_days, $current_days, 'Expected current reference range to use inclusive period length.' );
+			$this->assertSame( $expected_days, $compare_days, 'Expected compare reference range to use inclusive period length.' );
 		} finally {
 			update_option( 'timezone_string', $original_timezone_string );
 			update_option( 'gmt_offset', $original_gmt_offset );
 		}
 	}
 
-	public function data_build_reference_dates_uses_expected_period_length_excluding_send_date() {
+	public function test_build_reference_dates_uses_previous_day_as_send_date() {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', 'UTC' );
+		update_option( 'gmt_offset', 0 );
+
+		try {
+			$timestamp       = strtotime( '2026-03-19 00:00:00 UTC' );
+			$reference_dates = Initiator_Task::build_reference_dates(
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$timestamp
+			);
+
+			$this->assertSame( '2026-03-18', $reference_dates['sendDate'], 'Expected sendDate to be one day before the scheduled boundary date.' );
+			$this->assertSame( '2026-03-12', $reference_dates['startDate'], 'Expected weekly startDate to be a 7-day inclusive range ending on sendDate.' );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+			update_option( 'gmt_offset', $original_gmt_offset );
+		}
+	}
+
+	public function data_build_reference_dates_uses_expected_period_length() {
 		return array(
 			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7 ),
 			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 30 ),
