@@ -107,9 +107,10 @@ class Content_Map {
 	protected static function get_all_titles() {
 		return array(
 			/* translators: 1: opening anchor tag with mailto link, 2: inviter email address, 3: closing anchor tag */
-			'invitation-email'          => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
-			'subscription-confirmation' => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
-			'error-email'               => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'invitation-email'           => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
+			'subscription-confirmation'  => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
+			'error-email'                => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'error-email-cron-scheduler' => __( 'Email reports are failing to send', 'google-site-kit' ),
 		);
 	}
 
@@ -134,6 +135,9 @@ class Content_Map {
 			),
 			'error-email'                            => array(
 				__( 'We were unable to generate your report due to a server error. To fix this, contact your host. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
+			),
+			'error-email-cron-scheduler'             => array(
+				__( "We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site's system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.", 'google-site-kit' ),
 			),
 			// Opening/closing tag placeholders keep inline styles and HTML
 			// out of translation strings. Inline color styles are required
