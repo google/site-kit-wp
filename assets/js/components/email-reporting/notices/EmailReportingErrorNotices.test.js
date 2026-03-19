@@ -172,6 +172,39 @@ describe( 'EmailReportingErrorNotices', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render the cron scheduler error notice when there is a cron_scheduler_error category ID', () => {
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				cron_scheduler_error: [ 'Cron issue.' ],
+			},
+			error_data: {
+				cron_scheduler_error: {
+					category_id: 'cron_scheduler_error',
+				},
+			},
+		} );
+
+		const { container, getByText } = render(
+			<EmailReportingErrorNotices />,
+			{
+				registry,
+			}
+		);
+
+		expect( container ).not.toBeEmptyDOMElement();
+		expect(
+			getByText( 'Email reports are failing to send' )
+		).toBeInTheDocument();
+		expect(
+			getByText(
+				"We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site's system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved."
+			)
+		).toBeInTheDocument();
+	} );
+
 	it( 'should not render when email reporting is not enabled', () => {
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: false,
