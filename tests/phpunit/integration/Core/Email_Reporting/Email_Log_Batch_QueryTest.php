@@ -137,6 +137,26 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have exceeded max attempts.' );
 	}
 
+	public function test_has_stale_pending_logs_returns_true_when_scheduled_log_is_older_than_a_day() {
+		$post_id = $this->create_log_post( 'batch-stale', Email_Log::STATUS_SCHEDULED, 0 );
+
+		wp_update_post(
+			array(
+				'ID'            => $post_id,
+				'post_date'     => gmdate( 'Y-m-d H:i:s', time() - ( 2 * DAY_IN_SECONDS ) ),
+				'post_date_gmt' => gmdate( 'Y-m-d H:i:s', time() - ( 2 * DAY_IN_SECONDS ) ),
+			)
+		);
+
+		$this->assertTrue( $this->query->has_stale_pending_logs(), 'A scheduled log older than one day should be considered stale.' );
+	}
+
+	public function test_has_stale_pending_logs_returns_false_when_only_recent_scheduled_logs_exist() {
+		$this->create_log_post( 'batch-recent', Email_Log::STATUS_SCHEDULED, 0 );
+
+		$this->assertFalse( $this->query->has_stale_pending_logs(), 'Recent scheduled logs should not be considered stale.' );
+	}
+
 	public function test_get_total_count_by_status__returns_zero_when_no_logs() {
 		$this->assertSame( 0, $this->query->get_total_count_by_status( Email_Log::STATUS_SENT ), 'Expected zero sent logs when none exist.' );
 	}
