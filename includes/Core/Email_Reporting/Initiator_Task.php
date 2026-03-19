@@ -107,10 +107,13 @@ class Initiator_Task {
 	 * @return array Reference date payload.
 	 */
 	public static function build_reference_dates( $frequency, $timestamp ) {
-		$time_zone = BC_Functions::wp_timezone();
-		$send_date = ( new DateTimeImmutable( '@' . $timestamp ) )
+		$time_zone      = BC_Functions::wp_timezone();
+		$scheduled_date = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )
 			->setTime( 0, 0, 0 );
+		// Initiators are scheduled at period-boundary midnight in site timezone.
+		// The reporting window should end on "yesterday" (inclusive end date), so subtract one day.
+		$send_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
 
 		$period_lengths = array(
 			Email_Reporting_Settings::FREQUENCY_WEEKLY    => 7,
@@ -120,11 +123,8 @@ class Initiator_Task {
 
 		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
 
-		// Keep the period length inclusive of sendDate (e.g. weekly = 7 days total).
-		// Subtracting period_days would produce an 8-day window.
-		$start_date         = $send_date->sub(
-			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
-		);
+		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
+		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
 		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
 		$compare_start_date = $compare_end_date->sub(
 			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
