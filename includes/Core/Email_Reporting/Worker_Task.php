@@ -185,12 +185,12 @@ class Worker_Task {
 	 * @return int Number of emails processed and marked sent.
 	 */
 	private function process_pending_logs( array $pending_ids, $frequency, $initiator_timestamp ) {
-		$shared_payloads  = $this->get_shared_payloads_for_pending_ids( $pending_ids );
-		$emails_processed = 0;
+		$shared_payloads    = $this->get_shared_payloads_for_pending_ids( $pending_ids );
+		$processed_sent_ids = array();
 
 		foreach ( $pending_ids as $post_id ) {
 			if ( $this->should_abort( $initiator_timestamp ) ) {
-				return $emails_processed;
+				return count( $processed_sent_ids );
 			}
 
 			$previous_status = get_post_status( $post_id );
@@ -222,11 +222,11 @@ class Worker_Task {
 			}
 
 			if ( Email_Log::STATUS_SENT === get_post_status( $post_id ) && Email_Log::STATUS_SENT !== $previous_status ) {
-				++$emails_processed;
+				$processed_sent_ids[] = $post_id;
 			}
 		}
 
-		return $emails_processed;
+		return count( $processed_sent_ids );
 	}
 
 	/**

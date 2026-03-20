@@ -137,7 +137,7 @@ class Content_Map {
 				__( 'We were unable to generate your report due to a server error. To fix this, contact your host. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-cron-scheduler'             => array(
-				__( "We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site's system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.", 'google-site-kit' ),
+				__( 'We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site’s system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			// Opening/closing tag placeholders keep inline styles and HTML
 			// out of translation strings. Inline color styles are required

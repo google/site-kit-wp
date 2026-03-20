@@ -48,7 +48,7 @@ export default function CronSchedulerErrorNotice() {
 				'google-site-kit'
 			) }
 			description={ __(
-				"We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site's system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.",
+				'We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site’s system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.',
 				'google-site-kit'
 			) }
 			onInView={ trackEvents.view }

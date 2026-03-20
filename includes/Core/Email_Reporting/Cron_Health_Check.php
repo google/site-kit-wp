@@ -66,9 +66,9 @@ class Cron_Health_Check {
 	 * @since n.e.x.t
 	 */
 	public function check_stale_tasks() {
-		$now         = time();
-		$has_overdue = false;
-		$frequencies = array(
+		$now                    = time();
+		$has_overdue_cron_tasks = false;
+		$frequencies            = array(
 			User_Email_Reporting_Settings::FREQUENCY_WEEKLY,
 			User_Email_Reporting_Settings::FREQUENCY_MONTHLY,
 			User_Email_Reporting_Settings::FREQUENCY_QUARTERLY,
@@ -82,12 +82,12 @@ class Cron_Health_Check {
 			}
 
 			if ( ( (int) $scheduled + DAY_IN_SECONDS ) < $now ) {
-				$has_overdue = true;
+				$has_overdue_cron_tasks = true;
 				break;
 			}
 		}
 
-		if ( $has_overdue ) {
+		if ( $has_overdue_cron_tasks ) {
 			$this->set_cron_scheduler_error();
 		}
 
@@ -117,8 +117,7 @@ class Cron_Health_Check {
 			return;
 		}
 
-		$count = (int) get_transient( $transient_key );
-		++$count;
+		$count = ( (int) get_transient( $transient_key ) ) + 1;
 
 		set_transient( $transient_key, $count, HOUR_IN_SECONDS );
 
