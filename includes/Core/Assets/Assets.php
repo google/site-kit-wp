@@ -102,8 +102,7 @@ final class Assets {
 			'admin_print_scripts-edit.php',
 			function () {
 				global $post_type;
-				if ( 'post' !== $post_type ) {
-					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+				if ( empty( $post_type ) || ! is_string( $post_type ) || ! is_post_type_viewable( $post_type ) ) {
 					return;
 				}
 				$assets = $this->get_assets();
