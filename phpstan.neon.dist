@@ -17,6 +17,7 @@ parameters:
     ignoreErrors:
         -
             identifier: include.fileNotFound
+            message: '#^Path in include\(\) "dist/config\.php" is not a file or it does not exist\.$#'
             path: includes/Plugin.php
             reportUnmatched: false
     scanFiles:
