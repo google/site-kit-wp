@@ -26,7 +26,7 @@
 		min-height: 0;
 		overflow: hidden;
 
-		@media (max-height: 799px) {
+		@media (height < 800px) {
 			margin-top: $grid-gap-phone;
 		}
 	}
