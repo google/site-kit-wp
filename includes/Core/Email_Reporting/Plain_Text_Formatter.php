@@ -228,7 +228,7 @@ class Plain_Text_Formatter {
 	 * link destinations are preserved in plain text emails. The input
 	 * is controlled (Content_Map strings), not arbitrary user HTML.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $html HTML string that may contain anchor tags.
 	 * @return string String with anchors converted to text format.

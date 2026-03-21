@@ -22,7 +22,7 @@ import { devices } from '@playwright/test';
 /**
  * Creates a project with a specific viewport.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name   The name of the project.
  * @param device The device to use for the project.
@@ -48,7 +48,7 @@ function withViewport(
 /**
  * Creates a project with a mobile viewport.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name   The name of the project.
  * @param device The device to use for the project.
@@ -61,7 +61,7 @@ export function withMobileViewport( name: string, device: string ) {
 /**
  * Creates a project with a tablet viewport.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name   The name of the project.
  * @param device The device to use for the project.
@@ -74,7 +74,7 @@ export function withTabletViewport( name: string, device: string ) {
 /**
  * Creates a project with a desktop viewport.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name   The name of the project.
  * @param device The device to use for the project.
@@ -87,7 +87,7 @@ export function withDesktopViewport( name: string, device: string ) {
 /**
  * Creates a project with a large viewport.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param name   The name of the project.
  * @param device The device to use for the project.

@@ -17,7 +17,7 @@
 /**
  * Summary fields for a Mailpit message.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export type MailpitMessage = {
 	ID: string;
@@ -30,7 +30,7 @@ export type MailpitMessage = {
 /**
  * Full message detail including body content.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export type MailpitMessageDetail = MailpitMessage & {
 	Text: string;
@@ -41,7 +41,7 @@ export type MailpitMessageDetail = MailpitMessage & {
 /**
  * Options for waiting for a message.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 type WaitForMessageOptions = {
 	query?: string;
@@ -52,34 +52,34 @@ type WaitForMessageOptions = {
 /**
  * Client for the Mailpit API, scoped to a per-test from address.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export class Mailpit {
 	/**
 	 * The base URL of the Mailpit API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly baseURL: string;
 
 	/**
 	 * The from address used to scope messages to the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly fromAddress: string;
 
 	/**
 	 * Whether the Mailpit instance has interacted with the API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private interacted: boolean = false;
 
 	/**
 	 * Creates a new Mailpit instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param baseURL     The base URL of the Mailpit HTTP API.
 	 * @param fromAddress The from address for scoping messages to the current test.
@@ -92,7 +92,7 @@ export class Mailpit {
 	/**
 	 * Gets messages matching the given query, scoped to the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  query Optional additional search query.
 	 * @return {Promise<MailpitMessage[]>} A promise that resolves with matching messages.
@@ -117,7 +117,7 @@ export class Mailpit {
 	/**
 	 * Gets full message detail by ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  id The message ID.
 	 * @return {Promise<MailpitMessageDetail>} A promise that resolves with the message detail.
@@ -133,7 +133,7 @@ export class Mailpit {
 	/**
 	 * Deletes all messages scoped to the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when messages are deleted.
 	 */
@@ -157,7 +157,7 @@ export class Mailpit {
 	/**
 	 * Polls for a message matching the given query until one is found or the timeout expires.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  options Options for waiting.
 	 * @return {Promise<MailpitMessage>} A promise that resolves with the first matching message.
@@ -190,7 +190,7 @@ export class Mailpit {
 	/**
 	 * Checks whether any messages match the given query.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  query Optional additional search query.
 	 * @return {Promise<boolean>} A promise that resolves with whether any messages match.
@@ -205,7 +205,7 @@ export class Mailpit {
 	/**
 	 * Checks whether the Mailpit instance has interacted with the API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {boolean} Whether the Mailpit instance has interacted with the API.
 	 */

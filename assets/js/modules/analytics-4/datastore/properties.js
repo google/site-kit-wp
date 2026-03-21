@@ -442,13 +442,13 @@ const baseActions = {
 			.map( normalizeURL );
 
 		for (
-			let i = 0;
-			i < properties.length;
-			i += MAX_WEBDATASTREAMS_PER_BATCH
+			let index = 0;
+			index < properties.length;
+			index += MAX_WEBDATASTREAMS_PER_BATCH
 		) {
 			const chunk = properties.slice(
-				i,
-				i + MAX_WEBDATASTREAMS_PER_BATCH
+				index,
+				index + MAX_WEBDATASTREAMS_PER_BATCH
 			);
 			const webdatastreams = yield commonActions.await(
 				registry
@@ -496,13 +496,13 @@ const baseActions = {
 			: [ measurementID ];
 
 		for (
-			let i = 0;
-			i < properties.length;
-			i += MAX_WEBDATASTREAMS_PER_BATCH
+			let index = 0;
+			index < properties.length;
+			index += MAX_WEBDATASTREAMS_PER_BATCH
 		) {
 			const chunk = properties.slice(
-				i,
-				i + MAX_WEBDATASTREAMS_PER_BATCH
+				index,
+				index + MAX_WEBDATASTREAMS_PER_BATCH
 			);
 			const webdatastreams = yield commonActions.await(
 				registry

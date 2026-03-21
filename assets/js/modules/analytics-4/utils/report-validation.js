@@ -192,7 +192,8 @@ export function isValidMetricFilters( filters ) {
 				props.includes( 'fromValue' ) &&
 				props.includes( 'toValue' ) &&
 				[ fromValue, toValue ].every(
-					( val ) => ! isPlainObject( val ) || 'int64Value' in val
+					( value_ ) =>
+						! isPlainObject( value_ ) || 'int64Value' in value_
 				)
 			);
 		}

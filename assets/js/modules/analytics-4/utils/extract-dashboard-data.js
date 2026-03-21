@@ -111,7 +111,7 @@ export function extractAnalytics4DashboardData(
 	if ( days * 2 > rowLength ) {
 		const date = stringToDate( referenceDate );
 
-		for ( let i = 0; days > i; i++ ) {
+		for ( let index = 0; days > index; index++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
 			const dateString =
@@ -121,7 +121,7 @@ export function extractAnalytics4DashboardData(
 				( 2 > day.length ? '0' : '' ) +
 				day;
 
-			if ( i > rowLength ) {
+			if ( index > rowLength ) {
 				const emptyDay = [
 					{
 						dimensionValues: [
@@ -211,15 +211,15 @@ export function extractAnalytics4DashboardData(
 		day: 'numeric',
 	};
 
-	lastMonthData.forEach( ( row, i ) => {
-		if ( ! row[ 0 ] || ! row[ 1 ] || ! previousMonthData[ i ] ) {
+	lastMonthData.forEach( ( row, index ) => {
+		if ( ! row[ 0 ] || ! row[ 1 ] || ! previousMonthData[ index ] ) {
 			return;
 		}
 
 		const chartDataFormat = chartDataFormats[ selectedStats ];
 		const currentMonthDatum = chartDataFormat( row[ 1 ] );
 		const previousMonthDatum = chartDataFormat(
-			previousMonthData[ i ][ 1 ]
+			previousMonthData[ index ][ 1 ]
 		);
 
 		const prevMonth = parseFloat( previousMonthDatum );
@@ -237,7 +237,7 @@ export function extractAnalytics4DashboardData(
 				'google-site-kit'
 			),
 			row[ 0 ].toLocaleDateString( locale, localeDateOptions ),
-			previousMonthData[ i ][ 0 ].toLocaleDateString(
+			previousMonthData[ index ][ 0 ].toLocaleDateString(
 				locale,
 				localeDateOptions
 			)

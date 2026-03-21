@@ -29,21 +29,21 @@ import { createPortal, useState } from '@wordpress/element';
 
 function Portal( { children, slug } ) {
 	// Using state as we need `el` to not change when the component re-renders
-	const [ el ] = useState( document.createElement( 'div' ) );
+	const [ element ] = useState( document.createElement( 'div' ) );
 
 	useEffectOnce( () => {
 		if ( slug ) {
-			el.classList.add( `googlesitekit-portal-${ slug }` );
+			element.classList.add( `googlesitekit-portal-${ slug }` );
 		}
 
 		const root =
 			document.querySelector( '.googlesitekit-plugin' ) || document.body;
-		root.appendChild( el );
+		root.appendChild( element );
 
-		return () => root.removeChild( el );
+		return () => root.removeChild( element );
 	} );
 
-	return createPortal( children, el );
+	return createPortal( children, element );
 }
 
 Portal.propTypes = {

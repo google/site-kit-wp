@@ -27,7 +27,7 @@ const BACKUP_SQL_PATH = join( __dirname, '../docker/mariadb/backup.sql' );
 /**
  * Represents a PHP error log entry stored in the per-test database.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export interface PHPErrorLogEntry {
 	id: number;
@@ -42,7 +42,7 @@ export interface PHPErrorLogEntry {
 /**
  * Returns a database name derived from a Playwright test ID.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param  testInfo The Playwright TestInfo object for the current test.
  * @return {string} A valid MySQL database name.
@@ -55,27 +55,27 @@ export function getDbName( testInfo: TestInfo ): string {
 /**
  * Manages the per-test WordPress database.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export class WordPressDatabase {
 	/**
 	 * The database connection for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly db: Connection;
 
 	/**
 	 * The Playwright TestInfo object for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly testInfo: TestInfo;
 
 	/**
 	 * Creates a new WordPressDatabase instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param {Connection} db       The database connection.
 	 * @param {TestInfo}   testInfo The Playwright TestInfo object for the current test.
@@ -88,7 +88,7 @@ export class WordPressDatabase {
 	/**
 	 * Creates the test database and restores it from the backup snapshot.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the database is ready.
 	 */
@@ -104,7 +104,7 @@ export class WordPressDatabase {
 	/**
 	 * Drops the test database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the database is dropped.
 	 */
@@ -116,7 +116,7 @@ export class WordPressDatabase {
 	/**
 	 * Returns all PHP error log entries for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<PHPErrorLogEntry[]>} A promise that resolves with the error log entries.
 	 */
@@ -130,7 +130,7 @@ export class WordPressDatabase {
 	/**
 	 * Closes the underlying database connection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the connection is closed.
 	 */

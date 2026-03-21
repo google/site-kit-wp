@@ -43,7 +43,10 @@ async function getTotalImpressions() {
 	const datapointSelector =
 		'.googlesitekit-data-block--impressions .googlesitekit-data-block__datapoint';
 	await expect( page ).toMatchElement( datapointSelector );
-	return await page.$eval( datapointSelector, ( el ) => el.textContent );
+	return await page.$eval(
+		datapointSelector,
+		( element ) => element.textContent
+	);
 }
 
 describe( 'date range filtering on dashboard views', () => {

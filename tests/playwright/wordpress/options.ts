@@ -22,14 +22,14 @@ import { TestDetailsAnnotation } from '@playwright/test';
 /**
  * Separator for plugin file paths.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export const PLUGINS_SEPARATOR = ',';
 
 /**
  * Sets the plugins to activate for the test.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param {string[]} plugins Plugin file paths relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -46,7 +46,7 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 /**
  * Sets the user to use for the test.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param {string} user The user to use for the test.
  * @return {TestDetailsAnnotation} The annotation to use for the test.

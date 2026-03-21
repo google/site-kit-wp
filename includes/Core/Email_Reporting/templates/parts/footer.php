@@ -13,7 +13,7 @@
  */
 
 ?>
-<table role="presentation" width="100%" style="margin-top:16px;">
+<table role="presentation" width="100%" style="margin-top:12px;">
 	<tr>
 		<td style="text-align:center;">
 			<?php if ( ! empty( $cta['url'] ) ) : ?>

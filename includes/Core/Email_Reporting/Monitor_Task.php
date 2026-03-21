@@ -66,7 +66,7 @@ class Monitor_Task {
 		}
 
 		foreach ( array( User_Email_Reporting_Settings::FREQUENCY_WEEKLY, User_Email_Reporting_Settings::FREQUENCY_MONTHLY, User_Email_Reporting_Settings::FREQUENCY_QUARTERLY ) as $frequency ) {
-			if ( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) ) ) {
+			if ( $this->scheduler->is_initiator_scheduled( $frequency ) ) {
 				continue;
 			}
 

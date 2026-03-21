@@ -42,7 +42,7 @@ const MAILPIT_URL =
 /**
  * Type definition for the WordPress fixture.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export type WordPressFixture = {
 	wp: WordPress;
@@ -51,7 +51,7 @@ export type WordPressFixture = {
 /**
  * Test class with WordPress fixture.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export const test = base.extend< WordPressFixture >( {
 	wp: async ( { page, context }, use, testInfo ) => {

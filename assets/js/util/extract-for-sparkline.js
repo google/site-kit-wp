@@ -36,10 +36,10 @@ export default function extractForSparkline(
 	column,
 	indexColumn = 0
 ) {
-	return rowData.map( ( row, i ) => {
+	return rowData.map( ( row, index ) => {
 		return [
 			get( row, indexColumn ), // row[0] always contains the x axis value (typically date).
-			get( row, column, 0 === i ? '' : 0 ), // the data for the sparkline.
+			get( row, column, 0 === index ? '' : 0 ), // the data for the sparkline.
 		];
 	} );
 }

@@ -28,34 +28,34 @@ import { getDbName } from './database';
  * Manages the per-test cookies that route WordPress to the correct test
  * database and authenticate the specified user.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export class WordPressCookies {
 	/**
 	 * The Playwright browser context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly context: BrowserContext;
 
 	/**
 	 * The Playwright TestInfo object for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly testInfo: TestInfo;
 
 	/**
 	 * The base URL of the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly baseURL: string;
 
 	/**
 	 * Creates a new WordPressCookies instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param {BrowserContext} ctx      The Playwright browser context.
 	 * @param {TestInfo}       testInfo The Playwright TestInfo object for the current test.
@@ -73,7 +73,7 @@ export class WordPressCookies {
 	 * Always sets `_wp_test_db` to route WordPress to the per-test database.
 	 * Also sets `_wp_test_user` when the test carries an `_wp:as-user` annotation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the cookies are set.
 	 */

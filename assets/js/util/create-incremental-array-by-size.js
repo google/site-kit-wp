@@ -26,5 +26,5 @@
  * @example createIncrementalArrayBySize(3); // [0, 1, 2]
  */
 export function createIncrementalArrayBySize( size ) {
-	return new Array( size ?? 0 ).fill().map( ( _, i ) => i );
+	return new Array( size ?? 0 ).fill().map( ( _, index ) => index );
 }
