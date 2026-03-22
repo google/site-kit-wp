@@ -1,6 +1,7 @@
 [
 	{
 		"slug": "site-verification",
+		"storeName": "modules/site-verification",
 		"name": "Site Verification",
 		"description": "Google Site Verification allows you to manage ownership of your site.",
 		"homepage": "https://www.google.com/webmasters/verification/home",
@@ -18,6 +19,7 @@
 	},
 	{
 		"slug": "search-console",
+		"storeName": "modules/search-console",
 		"name": "Search Console",
 		"description": "Google Search Console and helps you understand how Google views your site and optimize its performance in search results.",
 		"homepage": "https://search.google.com/search-console",
@@ -35,6 +37,7 @@
 	},
 	{
 		"slug": "ads",
+		"storeName": "modules/ads",
 		"name": "Ads",
 		"description": "Track conversions for your existing Google Ads campaigns",
 		"homepage": "https://google.com/ads",
@@ -52,6 +55,7 @@
 	},
 	{
 		"slug": "adsense",
+		"storeName": "modules/adsense",
 		"name": "AdSense",
 		"description": "Earn money by placing ads on your website. It’s free and easy.",
 		"homepage": "https://adsense.google.com/start?source=site-kit&url=https://example.com",
@@ -69,6 +73,7 @@
 	},
 	{
 		"slug": "analytics-4",
+		"storeName": "modules/analytics-4",
 		"name": "Analytics",
 		"description": "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.",
 		"homepage": "https://analytics.google.com/analytics/web",
@@ -86,6 +91,7 @@
 	},
 	{
 		"slug": "pagespeed-insights",
+		"storeName": "modules/pagespeed-insights",
 		"name": "PageSpeed Insights",
 		"description": "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA",
 		"homepage": "https://pagespeed.web.dev",
@@ -103,6 +109,7 @@
 	},
 	{
 		"slug": "reader-revenue-manager",
+		"storeName": "modules/reader-revenue-manager",
 		"name": "Reader Revenue Manager",
 		"description": "Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities",
 		"homepage": "https://readerrevenue.withgoogle.com/",
@@ -120,6 +127,7 @@
 	},
 	{
 		"slug": "tagmanager",
+		"storeName": "modules/tagmanager",
 		"name": "Tag Manager",
 		"description": "Tag Manager creates an easy to manage way to create tags on your site without updating code",
 		"homepage": "https://tagmanager.google.com/",
@@ -137,6 +145,7 @@
 	},
 	{
 		"slug": "sign-in-with-google",
+		"storeName": "modules/sign-in-with-google",
 		"name": "Sign in with Google",
 		"description": "Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors",
 		"homepage": "https://developers.google.com/identity/gsi/web/guides/overview",

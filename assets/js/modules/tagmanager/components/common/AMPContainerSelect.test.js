@@ -20,12 +20,7 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import {
-	fireEvent,
-	render,
-	act,
-	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
@@ -173,12 +168,9 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText, waitForRegistry } = render(
-			<AMPContainerSelect />,
-			{
-				registry,
-			}
-		);
+		const { container, getByText } = render( <AMPContainerSelect />, {
+			registry,
+		} );
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -207,10 +199,11 @@ describe( 'AMPContainerSelect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 
-		// Ensure any pending async updates from the enhanced Select finish before unmount,
-		// preventing setState on unmounted component warnings in Jest.
-		await waitForRegistry();
-		await waitForDefaultTimeouts();
+		// This error is caused by the `react-select` component trying to update
+		// state after the component has unmounted, so we can't fix it ourselves.
+		expect( console ).toHaveErrored(
+			'Warning: Can\'t perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s"'
+		);
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

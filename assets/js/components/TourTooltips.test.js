@@ -23,6 +23,7 @@ import {
 	render,
 	createTestRegistry,
 	fireEvent,
+	act,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -227,11 +228,13 @@ describe( 'TourTooltips', () => {
 		);
 	} );
 
-	it( 'should end tour when close icon is clicked', () => {
+	it( 'should end tour when close icon is clicked', async () => {
 		const { getByRole, queryByRole } =
 			renderTourTooltipsWithMockUI( registry );
 
-		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		await act( () => {
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		} );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 		expect( dismissTourSpy ).toHaveBeenCalled();
