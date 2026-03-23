@@ -618,17 +618,17 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				const firstBatch = {};
 				const secondBatch = {};
 
-				for ( let i = 0; i < 15; i++ ) {
-					const propertyID = `${ 1000 + i }`;
+				for ( let index = 0; index < 15; index++ ) {
+					const propertyID = `${ 1000 + index }`;
 					const datastream = {
-						_id: `${ 2000 + i }`,
+						_id: `${ 2000 + index }`,
 						_propertyID: propertyID,
 					};
 
 					propertyIDs.push( propertyID );
 
 					allDataStreams[ propertyID ] = datastream;
-					if ( i < 10 ) {
+					if ( index < 10 ) {
 						firstBatch[ propertyID ] = datastream;
 					} else {
 						secondBatch[ propertyID ] = datastream;

@@ -116,18 +116,18 @@ export async function isStorageAvailable( type ) {
 		storage.setItem( x, x );
 		storage.removeItem( x );
 		return true;
-	} catch ( e ) {
+	} catch ( error ) {
 		return (
-			e instanceof DOMException &&
+			error instanceof DOMException &&
 			// everything except Firefox
-			( 22 === e.code ||
+			( 22 === error.code ||
 				// Firefox
-				1014 === e.code ||
+				1014 === error.code ||
 				// test name field too, because code might not be present
 				// everything except Firefox
-				'QuotaExceededError' === e.name ||
+				'QuotaExceededError' === error.name ||
 				// Firefox
-				'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
+				'NS_ERROR_DOM_QUOTA_REACHED' === error.name ) &&
 			// acknowledge QuotaExceededError only if there's something already stored
 			0 !== storage.length
 		);
@@ -314,8 +314,8 @@ export async function getKeys() {
 	if ( storage ) {
 		try {
 			const keys = [];
-			for ( let i = 0; i < storage.length; i++ ) {
-				const itemKey = storage.key( i );
+			for ( let index = 0; index < storage.length; index++ ) {
+				const itemKey = storage.key( index );
 				if ( itemKey.indexOf( STORAGE_KEY_PREFIX_ROOT ) === 0 ) {
 					keys.push( itemKey );
 				}

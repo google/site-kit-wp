@@ -32,6 +32,7 @@ import {
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -65,11 +66,13 @@ import {
 } from '@/js/components/user-input/util/constants';
 import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
+	const forwardableParams = useForwardableParams();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
@@ -179,13 +182,14 @@ export default function KeyMetricsSetupApp() {
 				url.searchParams.set( 'slug', 'analytics-4' );
 			}
 
-			navigateTo( url.toString() );
+			navigateTo( addQueryArgs( url.toString(), forwardableParams ) );
 		}
 	}, [
 		saveUserInputSettings,
 		dashboardURL,
 		saveInitialSetupSettings,
 		navigateTo,
+		forwardableParams,
 		isInitialSetupFlow,
 	] );
 

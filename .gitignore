@@ -1,5 +1,5 @@
 # Config files
-.*
+/.*
 !.gemini/
 .gemini/*
 !.gemini/settings.json
@@ -64,3 +64,7 @@ tests/backstop/tests/
 # Jest
 coverage/
 tests/e2e/screenshots
+
+# Playwright
+tests/playwright/artifacts
+

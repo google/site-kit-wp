@@ -202,20 +202,20 @@ export default function PostSearcherAutoSuggest( {
 	const inputRef = useRef();
 
 	const onKeyDown = useCallback(
-		( e ) => {
+		( event ) => {
 			const input = inputRef.current;
 
-			switch ( e.keyCode ) {
+			switch ( event.keyCode ) {
 				case HOME:
 					if ( input?.value ) {
-						e.preventDefault();
+						event.preventDefault();
 						input.selectionStart = 0;
 						input.selectionEnd = 0;
 					}
 					break;
 				case END:
 					if ( input?.value ) {
-						e.preventDefault();
+						event.preventDefault();
 						input.selectionStart = input.value.length;
 						input.selectionEnd = input.value.length;
 					}
@@ -224,7 +224,7 @@ export default function PostSearcherAutoSuggest( {
 					break;
 			}
 
-			switch ( e.keyCode ) {
+			switch ( event.keyCode ) {
 				case ESCAPE:
 					onClose();
 					break;

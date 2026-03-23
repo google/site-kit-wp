@@ -109,8 +109,8 @@ export default function OptIn( {
 	const debouncedHandleOptIn = useDebounce( handleOptIn, 300 );
 
 	const handleCheck = useCallback(
-		( e ) => {
-			const isChecked = e.target.checked;
+		( event ) => {
+			const isChecked = event.target.checked;
 			setChecked( isChecked );
 			debouncedHandleOptIn( isChecked );
 		},

@@ -39,8 +39,8 @@ function PreviewBlocks( {
 	desktopHeight,
 } ) {
 	const toReturn = [];
-	let i = 0;
-	while ( i++ < count ) {
+	let index = 0;
+	while ( index++ < count ) {
 		toReturn.push(
 			<PreviewBlock
 				width={ width }
@@ -52,7 +52,7 @@ function PreviewBlocks( {
 				tabletHeight={ tabletHeight }
 				desktopWidth={ desktopWidth }
 				desktopHeight={ desktopHeight }
-				key={ i }
+				key={ index }
 			/>
 		);
 	}

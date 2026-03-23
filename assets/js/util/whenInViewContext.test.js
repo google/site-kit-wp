@@ -48,8 +48,8 @@ describe( 'whenInViewContext', () => {
 
 		try {
 			render( <WhenInViewComponent /> );
-		} catch ( e ) {
-			expect( e.message ).toBe(
+		} catch ( error ) {
+			expect( error.message ).toBe(
 				'Do not use both an include and exclude lists for `whenInViewContext`'
 			);
 		}
@@ -66,8 +66,8 @@ describe( 'whenInViewContext', () => {
 
 		try {
 			render( <WhenInViewComponent /> );
-		} catch ( e ) {
-			expect( e.message ).toBe(
+		} catch ( error ) {
+			expect( error.message ).toBe(
 				'Cannot allow both `allViewOnly` and `allNonViewOnly` contexts; if all contexts are allowed, remove this `whenInViewContext` wrapper.'
 			);
 		}

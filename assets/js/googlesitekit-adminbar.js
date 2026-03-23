@@ -63,14 +63,16 @@ const init = once( () => {
 } );
 
 domReady( () => {
-	const siteKitMenuItemEl = document.getElementById(
+	const siteKitMenuItemElement = document.getElementById(
 		'wp-admin-bar-google-site-kit'
 	);
 
-	if ( ! siteKitMenuItemEl ) {
+	if ( ! siteKitMenuItemElement ) {
 		return;
 	}
 
-	siteKitMenuItemEl.addEventListener( 'mouseover', init, { once: true } );
-	siteKitMenuItemEl.addEventListener( 'focusin', init, { once: true } );
+	siteKitMenuItemElement.addEventListener( 'mouseover', init, {
+		once: true,
+	} );
+	siteKitMenuItemElement.addEventListener( 'focusin', init, { once: true } );
 } );

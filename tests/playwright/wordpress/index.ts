@@ -1,6 +1,4 @@
 /**
- * CoreModuleSetupEffects component.
- *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
-
-export default function CoreModuleSetupEffects() {
-	useOpenEmailReportingSelectionPanelEffect();
-
-	return null;
-}
+export * from './args';
+export * from './mailpit';
+export * from './database';
+export * from './error-log-ignore-list';
+export * from './options';
+export * from './wordpress';

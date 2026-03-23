@@ -104,7 +104,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	/**
 	 * Email notices resolver.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Email_Notices
 	 */
 	protected $email_notices;
@@ -303,7 +303,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$this->scheduler->schedule_monitor();
 			$this->scheduler->schedule_cleanup();
 
-			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
+			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 2 );
 			add_action( Email_Reporting_Scheduler::ACTION_MONITOR, array( $this->monitor_task, 'handle_monitor_action' ) );
 			add_action( Email_Reporting_Scheduler::ACTION_WORKER, array( $this->worker_task, 'handle_callback_action' ), 10, 3 );
 			add_action( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $this->fallback_task, 'handle_fallback_action' ), 10, 3 );

@@ -37,12 +37,17 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import Link from '@/js/components/Link';
 import { SpinnerButton } from 'googlesitekit-components';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
 
 export default function ModuleSetupFooter( { module, onCancel, onComplete } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
+	const forwardableParams = useForwardableParams();
 
 	const settingsPageURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+		select( CORE_SITE ).getAdminURL(
+			'googlesitekit-settings',
+			forwardableParams
+		)
 	);
 	const isSetupBlocked = useSelect( ( select ) =>
 		select( module?.storeName )?.isSetupBlocked?.()

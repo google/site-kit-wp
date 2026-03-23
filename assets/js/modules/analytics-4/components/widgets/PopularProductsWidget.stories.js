@@ -86,7 +86,7 @@ const pageTitlesReportOptions = {
 	dimensionFilters: {
 		pagePath: new Array( 3 )
 			.fill( '' )
-			.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+			.map( ( _, index ) => `/test-post-${ index + 1 }/` )
 			.sort(),
 	},
 	dimensions: [ 'pagePath', 'pageTitle' ],
@@ -126,10 +126,11 @@ Ready.args = {
 
 		pageTitlesReport.rows = pageTitlesReport.rows.map( ( row ) => ( {
 			...row,
-			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
-				i === 1
-					? { value: capitalize( faker.lorem.words( 10 ) ) }
-					: dimensionValue
+			dimensionValues: row.dimensionValues.map(
+				( dimensionValue, index ) =>
+					index === 1
+						? { value: capitalize( faker.lorem.words( 10 ) ) }
+						: dimensionValue
 			),
 		} ) );
 
@@ -162,10 +163,11 @@ ReadyViewOnly.args = {
 
 		pageTitlesReport.rows = pageTitlesReport.rows.map( ( row ) => ( {
 			...row,
-			dimensionValues: row.dimensionValues.map( ( dimensionValue, i ) =>
-				i === 1
-					? { value: capitalize( faker.lorem.words( 10 ) ) }
-					: dimensionValue
+			dimensionValues: row.dimensionValues.map(
+				( dimensionValue, index ) =>
+					index === 1
+						? { value: capitalize( faker.lorem.words( 10 ) ) }
+						: dimensionValue
 			),
 		} ) );
 

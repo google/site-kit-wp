@@ -83,8 +83,8 @@ describe( 'ShowNextToCommentsToggle', () => {
 		const switchElements = getAllByRole( 'switch', {
 			name: /Show next to comments/i,
 		} );
-		switchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
+		switchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).not.toBeChecked();
 		} );
 	} );
 
@@ -112,8 +112,8 @@ describe( 'ShowNextToCommentsToggle', () => {
 		const switchElements = getAllByRole( 'switch', {
 			name: /Show next to comments/i,
 		} );
-		switchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
+		switchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).toBeChecked();
 		} );
 	} );
 
@@ -139,8 +139,8 @@ describe( 'ShowNextToCommentsToggle', () => {
 		let switchElements = getAllByRole( 'switch', {
 			name: /Show next to comments/i,
 		} );
-		switchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
+		switchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).not.toBeChecked();
 		} );
 
 		// Click to enable
@@ -149,8 +149,8 @@ describe( 'ShowNextToCommentsToggle', () => {
 		switchElements = getAllByRole( 'switch', {
 			name: /Show next to comments/i,
 		} );
-		switchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).toBeChecked();
+		switchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).toBeChecked();
 		} );
 
 		// Verify the setting was updated in the registry
@@ -166,8 +166,8 @@ describe( 'ShowNextToCommentsToggle', () => {
 		switchElements = getAllByRole( 'switch', {
 			name: /Show next to comments/i,
 		} );
-		switchElements.forEach( ( switchEl ) => {
-			expect( switchEl ).not.toBeChecked();
+		switchElements.forEach( ( switchElement ) => {
+			expect( switchElement ).not.toBeChecked();
 		} );
 
 		// Verify the setting was updated in the registry
