@@ -805,9 +805,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service'   => 'analyticsadmin-v1alpha',
 				'shareable' => true,
 			),
-			'GET:audience-settings'                     => array(
-				'service'   => '',
-				'shareable' => true,
+			'GET:audience-settings'                     => new Get_Audience_Settings(
+				array(
+					'audience_settings' => $this->audience_settings,
+					'service'           => '',
+				)
 			),
 			'POST:save-audience-settings'               => array(
 				'service' => '',
@@ -1439,12 +1441,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
 					);
-			case 'GET:audience-settings':
-				return function () {
-					$settings = $this->audience_settings->get();
-					return current_user_can( Permissions::MANAGE_OPTIONS ) ? $settings : array_intersect_key( $settings, array_flip( $this->audience_settings->get_view_only_keys() ) );
-				};
-
 			case 'POST:save-audience-settings':
 				if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
 					return new WP_Error(
