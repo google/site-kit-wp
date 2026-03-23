@@ -401,10 +401,6 @@ describe( 'WelcomeModal', () => {
 			const closeButton = getByRole( 'button', { name: buttonText } );
 			fireEvent.click( closeButton );
 
-			await waitFor( () => {
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
-			} );
-
 			const tooltipState = registry
 				.select( CORE_UI )
 				.getValue( 'admin-screen-tooltip' );
@@ -414,6 +410,10 @@ describe( 'WelcomeModal', () => {
 				tooltipSlug: 'welcome-modal',
 				title: 'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+			} );
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 		}
 	);
@@ -878,10 +878,6 @@ describe( 'WelcomeModal', () => {
 			const closeButton = getByRole( 'button', { name: buttonText } );
 			fireEvent.click( closeButton );
 
-			await waitFor( () => {
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			const tooltipState = registry
 				.select( CORE_UI )
 				.getValue( 'admin-screen-tooltip' );
@@ -891,6 +887,10 @@ describe( 'WelcomeModal', () => {
 				tooltipSlug: 'welcome-modal',
 				title: 'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+			} );
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		}
 	);
