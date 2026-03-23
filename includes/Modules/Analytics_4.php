@@ -63,6 +63,7 @@ use Google\Site_Kit\Modules\Analytics_4\AMP_Tag;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Utilities;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
@@ -787,10 +788,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:set-is-web-data-stream-unavailable'   => array(
 				'service' => '',
 			),
-			'POST:create-audience'                      => array(
-				'service'                => 'analyticsadmin-v1alpha',
-				'scopes'                 => array( self::EDIT_SCOPE ),
-				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+			'POST:create-audience'                      => new Create_Audience(
+				array(
+					'settings'               => $this->get_settings(),
+					'service'                => function () {
+						return $this->get_analyticsadminv1alpha_service();
+					},
+					'scopes'                 => array( self::EDIT_SCOPE ),
+					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
+				)
 			),
 			'POST:save-resource-data-availability-date' => array(
 				'service' => '',
@@ -1205,53 +1211,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_analyticsadminv1alpha_service()
 					->properties_adSenseLinks
 					->listPropertiesAdSenseLinks( $parent );
-			case 'POST:create-audience':
-				$settings = $this->get_settings()->get();
-				if ( ! isset( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				if ( ! isset( $data['audience'] ) ) {
-					throw new Missing_Required_Param_Exception( 'audience' );
-				}
-
-				$property_id = $settings['propertyID'];
-				$audience    = $data['audience'];
-
-				$fields = array(
-					'displayName',
-					'description',
-					'membershipDurationDays',
-					'eventTrigger',
-					'exclusionDurationMode',
-					'filterClauses',
-				);
-
-				$invalid_keys = array_diff( array_keys( $audience ), $fields );
-
-				if ( ! empty( $invalid_keys ) ) {
-					return new WP_Error(
-						'invalid_property_name',
-						/* translators: %s: Invalid property names */
-						sprintf( __( 'Invalid properties in audience: %s.', 'google-site-kit' ), implode( ', ', $invalid_keys ) ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$property_id = self::normalize_property_id( $property_id );
-
-				$post_body = new GoogleAnalyticsAdminV1alphaAudience( $audience );
-
-				return $this->get_analyticsadminv1alpha_service()
-					->properties_audiences
-					->create(
-						$property_id,
-						$post_body
-					);
 			case 'GET:properties':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(

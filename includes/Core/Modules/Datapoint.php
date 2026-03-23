@@ -93,11 +93,11 @@ class Datapoint {
 	}
 
 	/**
-	 * Gets the service identifier.
+	 * Gets the service identifier or object.
 	 *
 	 * @since 1.77.0
 	 *
-	 * @return string
+	 * @return mixed Service identifier string, or the service object returned by the callable.
 	 */
 	protected function get_service() {
 		$service = $this->service;
