@@ -56,6 +56,7 @@ class Save_Audience_SettingsTest extends TestCase {
 			)
 		);
 
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
 			function ( $caps, $cap ) {
@@ -67,48 +68,6 @@ class Save_Audience_SettingsTest extends TestCase {
 			99,
 			2
 		);
-	}
-
-	public function test_create_request_returns_error_for_non_admin() {
-		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
-		wp_set_current_user( $user->ID );
-
-		$data_request = new Data_Request(
-			'POST',
-			'modules',
-			'analytics-4',
-			'save-audience-settings',
-			array(
-				'settings' => array(
-					'audienceSegmentationSetupCompletedBy' => 1,
-				),
-			)
-		);
-
-		$response = $this->datapoint->create_request( $data_request );
-
-		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error for non-admin users.' );
-		$this->assertEquals( 'forbidden', $response->get_error_code(), 'The `create-request` method should return a `forbidden` error for non-admin users.' );
-	}
-
-	public function test_create_request_validates_setup_completed_by_type() {
-		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-
-		$data_request = new Data_Request(
-			'POST',
-			'modules',
-			'analytics-4',
-			'save-audience-settings',
-			array(
-				'settings' => array(
-					'audienceSegmentationSetupCompletedBy' => 'not-an-integer',
-				),
-			)
-		);
-
-		$this->expectException( Invalid_Param_Exception::class );
-		$this->datapoint->create_request( $data_request );
 	}
 
 	public function test_create_request() {
@@ -127,21 +86,64 @@ class Save_Audience_SettingsTest extends TestCase {
 			)
 		);
 
-		$request = $this->datapoint->create_request( $data_request );
+		$request  = $this->datapoint->create_request( $data_request );
+		$response = $request();
 
-		$this->assertIsCallable( $request, 'The `create_request` method should return a callable.' );
-
-		$response        = $request();
 		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
-
-		$this->assertIsArray( $parsed_response, 'The `create-request` method should return an array.' );
-		$this->assertEquals( 1, $parsed_response['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be saved.' );
+		$this->assertEquals( 1, $parsed_response['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be returned.' );
 
 		$saved_settings = $this->audience_settings->get();
-		$this->assertEquals( 1, $saved_settings['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be persisted in the audience settings.' );
+		$this->assertEquals( 1, $saved_settings['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be persisted.' );
 	}
 
-	public function test_create_request_only_merges_known_settings() {
+
+	public function test_create_request__returns_error_for_non_admin() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user->ID );
+
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'analytics-4',
+			'save-audience-settings',
+			array(
+				'settings' => array(
+					'audienceSegmentationSetupCompletedBy' => 1,
+				),
+			)
+		);
+
+		$response = $this->datapoint->create_request( $data_request );
+
+		$this->assertInstanceOf( WP_Error::class, $response, 'The datapoint should return an error for non-admin users.' );
+		$this->assertEquals( 'forbidden', $response->get_error_code(), 'The datapoint should return a `forbidden` error for non-admin users.' );
+	}
+
+	public function test_create_request__validates_setting_type() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'analytics-4',
+			'save-audience-settings',
+			array(
+				'settings' => array(
+					'audienceSegmentationSetupCompletedBy' => 'not-an-integer',
+				),
+			)
+		);
+
+		try {
+			$this->datapoint->create_request( $data_request );
+			$this->fail( 'Expected `Invalid_Param_Exception` to be thrown.' );
+		} catch ( Invalid_Param_Exception $exception ) {
+			$this->assertEquals( 'Invalid parameter: audienceSegmentationSetupCompletedBy.', $exception->getMessage(), 'The datapoint should return an error when the `audienceSegmentationSetupCompletedBy` setting has the wrong type.' );
+		}
+	}
+
+	public function test_create_request__validates_known_settings() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 

@@ -93,74 +93,6 @@ class Create_AudienceTest extends TestCase {
 		);
 	}
 
-	public function test_create_request_returns_error_when_property_setting_is_missing() {
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '',
-			)
-		);
-
-		$data_request = new Data_Request(
-			'POST',
-			'modules',
-			'analytics-4',
-			'create-audience',
-			array(
-				'audience' => $this->get_audience(),
-			)
-		);
-
-		$response = $this->datapoint->create_request( $data_request );
-
-		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the `propertyID` setting is missing.' );
-		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'The `create-request` method should return a `missing_required_setting` error when the `propertyID` setting is missing.' );
-	}
-
-	public function test_create_request_validates_required_audience_param() {
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '123456',
-			)
-		);
-
-		$data_request = new Data_Request(
-			'POST',
-			'modules',
-			'analytics-4',
-			'create-audience',
-			array()
-		);
-
-		$this->expectException( Missing_Required_Param_Exception::class );
-		$this->datapoint->create_request( $data_request );
-	}
-
-	public function test_create_request_validates_audience_keys() {
-		$this->analytics->get_settings()->merge(
-			array(
-				'propertyID' => '123456',
-			)
-		);
-
-		$audience                 = $this->get_audience();
-		$audience['invalidField'] = 'invalidValue';
-
-		$data_request = new Data_Request(
-			'POST',
-			'modules',
-			'analytics-4',
-			'create-audience',
-			array(
-				'audience' => $audience,
-			)
-		);
-
-		$response = $this->datapoint->create_request( $data_request );
-
-		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the audience contains invalid keys.' );
-		$this->assertEquals( 'invalid_property_name', $response->get_error_code(), 'The `create-request` method should return an `invalid_property_name` error when the audience contains invalid keys.' );
-	}
-
 	public function test_create_request() {
 		$this->create_audience_request = null;
 
@@ -185,15 +117,16 @@ class Create_AudienceTest extends TestCase {
 
 		$this->assertEquals(
 			'https://analyticsadmin.googleapis.com/v1alpha/properties/123456/audiences',
-			$this->create_audience_request->getUri()->__toString(),
-			'The `create-request` method should send a request to the expected API endpoint.'
+			$this->create_audience_request->getUri(),
+			'The request should be made to the correct endpoint.'
 		);
+		$this->assertJsonStringEqualsJsonString( json_encode( $this->get_audience() ), $this->create_audience_request->getBody()->getContents(), 'The request body should match the provided value.' );
 	}
 
-	public function test_parse_response() {
+	public function test_create_request__requires_property_id() {
 		$this->analytics->get_settings()->merge(
 			array(
-				'propertyID' => '123456',
+				'propertyID' => '',
 			)
 		);
 
@@ -207,13 +140,68 @@ class Create_AudienceTest extends TestCase {
 			)
 		);
 
-		$request  = $this->datapoint->create_request( $data_request );
-		$response = $this->datapoint->parse_response(
-			$this->analytics->get_client()->execute( $request ),
-			$data_request
+		$response = $this->datapoint->create_request( $data_request );
+
+		$this->assertInstanceOf( WP_Error::class, $response, 'The datapoint should return an error when the `propertyID` setting is missing.' );
+		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'The datapoint should return a `missing_required_setting` error when the `propertyID` setting is missing.' );
+	}
+
+	public function test_create_request__requires_audience() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456',
+			)
 		);
 
-		$this->assertNotWPError( $response, 'The `create-request` method should succeed when all required parameters are provided.' );
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'analytics-4',
+			'create-audience',
+			array()
+		);
+
+		try {
+			$this->datapoint->create_request( $data_request );
+			$this->fail( 'Expected `Missing_Required_Param_Exception` to be thrown.' );
+		} catch ( Missing_Required_Param_Exception $exception ) {
+			$this->assertEquals( 'Request parameter is empty: audience.', $exception->getMessage(), 'The datapoint should return an error when the `audience` parameter is missing.' );
+		}
+	}
+
+	public function test_create_request__validates_audience_properties() {
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => '123456',
+			)
+		);
+
+		$audience                 = $this->get_audience();
+		$audience['invalidField'] = 'invalidValue';
+
+		$data_request = new Data_Request(
+			'POST',
+			'modules',
+			'analytics-4',
+			'create-audience',
+			array(
+				'audience' => $audience,
+			)
+		);
+
+		$response = $this->datapoint->create_request( $data_request );
+
+		$this->assertInstanceOf( WP_Error::class, $response, 'The datapoint should return an error when the audience contains an invalid property.' );
+		$this->assertEquals( 'invalid_property_name', $response->get_error_code(), 'The datapoint should return an `invalid_property_name` error when the audience contains an invalid property.' );
+	}
+
+	public function test_parse_response() {
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-audience', array( 'audience' => $this->get_audience() ) );
+		$test_data    = new GoogleAnalyticsAdminV1alphaAudience();
+		$test_data->setName( 'properties/123456/audiences/789' );
+		$test_data->setDisplayName( 'Recently active users' );
+
+		$this->assertSame( $test_data, $this->datapoint->parse_response( $test_data, $data_request ), 'The `parse_response` method should return the response unchanged.' );
 	}
 
 	private function get_audience() {

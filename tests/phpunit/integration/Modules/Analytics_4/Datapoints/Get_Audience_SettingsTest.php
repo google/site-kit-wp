@@ -54,6 +54,7 @@ class Get_Audience_SettingsTest extends TestCase {
 			)
 		);
 
+		// Ensure admin user has Permissions::MANAGE_OPTIONS cap regardless of authentication.
 		add_filter(
 			'map_meta_cap',
 			function ( $caps, $cap ) {
@@ -67,14 +68,7 @@ class Get_Audience_SettingsTest extends TestCase {
 		);
 	}
 
-	public function test_create_request_returns_callable() {
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'audience-settings', array() );
-		$request      = $this->datapoint->create_request( $data_request );
-
-		$this->assertIsCallable( $request, 'The `create_request` method should return a callable.' );
-	}
-
-	public function test_create_request_returns_full_settings_for_admin() {
+	public function test_create_request__returns_full_settings_for_admin() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 
@@ -95,7 +89,7 @@ class Get_Audience_SettingsTest extends TestCase {
 		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'An admin should see the `audienceSegmentationSetupCompletedBy` setting.' );
 	}
 
-	public function test_create_request_returns_filtered_settings_for_non_admin() {
+	public function test_create_request__returns_filtered_settings_for_non_admin() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user->ID );
 
@@ -111,8 +105,8 @@ class Get_Audience_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$this->assertArrayHasKey( 'availableAudiences', $response, 'A non-admin should see the `availableAudiences` setting (view-only key).' );
-		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'A non-admin should see the `audienceSegmentationSetupCompletedBy` setting (view-only key).' );
+		$this->assertArrayHasKey( 'availableAudiences', $response, 'A non-admin should see the `availableAudiences` setting.' );
+		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'A non-admin should see the `audienceSegmentationSetupCompletedBy` setting.' );
 		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $response, 'A non-admin should not see the `availableAudiencesLastSyncedAt` setting.' );
 	}
 
