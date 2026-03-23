@@ -4446,6 +4446,12 @@ class Analytics_4Test extends TestCase {
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
 
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
+
 		// Grant EDIT_SCOPE so request doesn't fail.
 		$this->grant_scope( Analytics_4::EDIT_SCOPE );
 
@@ -4466,6 +4472,12 @@ class Analytics_4Test extends TestCase {
 		$property_id = '123456789';
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'propertyID' => $property_id,
+			)
+		);
 
 		// Grant EDIT_SCOPE so request doesn't fail.
 		$this->grant_scope( Analytics_4::EDIT_SCOPE );
