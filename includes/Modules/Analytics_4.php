@@ -1441,36 +1441,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
 					);
-			case 'POST:save-audience-settings':
-				if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-					return new WP_Error(
-						'forbidden',
-						__( 'User does not have permission to save audience settings.', 'google-site-kit' ),
-						array( 'status' => 403 )
-					);
-				}
-
-				$settings = $data['settings'];
-
-				if (
-					isset( $settings['audienceSegmentationSetupCompletedBy'] ) &&
-					! is_int( $settings['audienceSegmentationSetupCompletedBy'] )
-				) {
-					throw new Invalid_Param_Exception( 'audienceSegmentationSetupCompletedBy' );
-				}
-
-				return function () use ( $settings ) {
-					$new_settings = array();
-
-					if ( isset( $settings['audienceSegmentationSetupCompletedBy'] ) ) {
-						$new_settings['audienceSegmentationSetupCompletedBy'] = $settings['audienceSegmentationSetupCompletedBy'];
-					}
-
-					$settings = $this->audience_settings->merge( $new_settings );
-
-					return $settings;
-				};
-
 			case 'POST:sync-audiences':
 				if ( ! $this->authentication->is_authenticated() ) {
 					return new WP_Error(
