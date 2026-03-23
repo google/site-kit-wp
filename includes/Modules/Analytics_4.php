@@ -67,7 +67,10 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Audience;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
@@ -92,7 +95,6 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1betaProperty;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaEnhancedMeasurementSettings;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
@@ -801,9 +803,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:save-resource-data-availability-date' => array(
 				'service' => '',
 			),
-			'POST:sync-audiences'                       => array(
-				'service'   => 'analyticsadmin-v1alpha',
-				'shareable' => true,
+			'POST:sync-audiences'                       => new Sync_Audiences(
+				array(
+					'authentication'     => $this->authentication,
+					'settings'           => $this->get_settings(),
+					'audience_utilities' => $this->audience_utilities,
+					'service'            => function () {
+						return $this->get_analyticsadminv1alpha_service();
+					},
+				)
 			),
 			'GET:audience-settings'                     => new Get_Audience_Settings(
 				array(
@@ -811,8 +819,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service'           => '',
 				)
 			),
-			'POST:save-audience-settings'               => array(
-				'service' => '',
+			'POST:save-audience-settings'               => new Save_Audience_Settings(
+				array(
+					'audience_settings' => $this->audience_settings,
+					'service'           => '',
+				)
 			),
 		);
 
@@ -1441,29 +1452,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 							'updateMask' => 'streamEnabled', // Only allow updating the streamEnabled field for now.
 						)
 					);
-			case 'POST:sync-audiences':
-				if ( ! $this->authentication->is_authenticated() ) {
-					return new WP_Error(
-						'forbidden',
-						__( 'User must be authenticated to sync audiences.', 'google-site-kit' ),
-						array( 'status' => 403 )
-					);
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
-
-				return $this->get_analyticsadminv1alpha_service()
-					->properties_audiences
-					->listPropertiesAudiences( $property_id );
 			case 'POST:save-resource-data-availability-date':
 				if ( ! isset( $data['resourceType'] ) ) {
 					throw new Missing_Required_Param_Exception( 'resourceType' );
@@ -1684,9 +1672,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			case 'GET:report':
 				$report = new Analytics_4_Report_Response( $this->context );
 				return $report->parse_response( $data, $response );
-			case 'POST:sync-audiences':
-				$audiences = $this->audience_utilities->set_available_audiences( $response->getAudiences() );
-				return $audiences;
 		}
 
 		return parent::parse_data_response( $data, $response );
