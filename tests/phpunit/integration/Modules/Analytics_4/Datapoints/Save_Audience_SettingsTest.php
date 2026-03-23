@@ -87,8 +87,8 @@ class Save_Audience_SettingsTest extends TestCase {
 
 		$response = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf( WP_Error::class, $response, 'Save audience settings should return a WP_Error for non-admin users.' );
-		$this->assertEquals( 'forbidden', $response->get_error_code(), 'Save audience settings should return forbidden for non-admin users.' );
+		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error for non-admin users.' );
+		$this->assertEquals( 'forbidden', $response->get_error_code(), 'The `create-request` method should return a `forbidden` error for non-admin users.' );
 	}
 
 	public function test_create_request_validates_setup_completed_by_type() {
@@ -129,16 +129,16 @@ class Save_Audience_SettingsTest extends TestCase {
 
 		$request = $this->datapoint->create_request( $data_request );
 
-		$this->assertIsCallable( $request, 'Save audience settings should return a callable request handler.' );
+		$this->assertIsCallable( $request, 'The `create_request` method should return a callable.' );
 
 		$response        = $request();
 		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
 
-		$this->assertIsArray( $parsed_response, 'Save audience settings should return an array.' );
-		$this->assertEquals( 1, $parsed_response['audienceSegmentationSetupCompletedBy'], 'audienceSegmentationSetupCompletedBy should be saved.' );
+		$this->assertIsArray( $parsed_response, 'The `create-request` method should return an array.' );
+		$this->assertEquals( 1, $parsed_response['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be saved.' );
 
 		$saved_settings = $this->audience_settings->get();
-		$this->assertEquals( 1, $saved_settings['audienceSegmentationSetupCompletedBy'], 'audienceSegmentationSetupCompletedBy should be persisted in audience settings.' );
+		$this->assertEquals( 1, $saved_settings['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` setting should be persisted in the audience settings.' );
 	}
 
 	public function test_create_request_only_merges_known_settings() {
@@ -167,6 +167,6 @@ class Save_Audience_SettingsTest extends TestCase {
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'save-audience-settings', array() );
 		$test_data    = array( 'audienceSegmentationSetupCompletedBy' => 1 );
 
-		$this->assertSame( $test_data, $this->datapoint->parse_response( $test_data, $data_request ), 'parse_response should return the response unchanged.' );
+		$this->assertSame( $test_data, $this->datapoint->parse_response( $test_data, $data_request ), 'The `parse_response` method should return the response unchanged.' );
 	}
 }

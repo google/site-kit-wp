@@ -71,7 +71,7 @@ class Get_Audience_SettingsTest extends TestCase {
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'audience-settings', array() );
 		$request      = $this->datapoint->create_request( $data_request );
 
-		$this->assertIsCallable( $request, 'Get audience settings should return a callable request handler.' );
+		$this->assertIsCallable( $request, 'The `create_request` method should return a callable.' );
 	}
 
 	public function test_create_request_returns_full_settings_for_admin() {
@@ -90,9 +90,9 @@ class Get_Audience_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$this->assertArrayHasKey( 'availableAudiences', $response, 'Admin should see availableAudiences.' );
-		$this->assertArrayHasKey( 'availableAudiencesLastSyncedAt', $response, 'Admin should see availableAudiencesLastSyncedAt.' );
-		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'Admin should see audienceSegmentationSetupCompletedBy.' );
+		$this->assertArrayHasKey( 'availableAudiences', $response, 'An admin should see the `availableAudiences` setting.' );
+		$this->assertArrayHasKey( 'availableAudiencesLastSyncedAt', $response, 'An admin should see the `availableAudiencesLastSyncedAt` setting.' );
+		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'An admin should see the `audienceSegmentationSetupCompletedBy` setting.' );
 	}
 
 	public function test_create_request_returns_filtered_settings_for_non_admin() {
@@ -111,15 +111,15 @@ class Get_Audience_SettingsTest extends TestCase {
 		$request      = $this->datapoint->create_request( $data_request );
 		$response     = $request();
 
-		$this->assertArrayHasKey( 'availableAudiences', $response, 'Non-admin should see availableAudiences (view-only key).' );
-		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'Non-admin should see audienceSegmentationSetupCompletedBy (view-only key).' );
-		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $response, 'Non-admin should not see availableAudiencesLastSyncedAt.' );
+		$this->assertArrayHasKey( 'availableAudiences', $response, 'A non-admin should see the `availableAudiences` setting (view-only key).' );
+		$this->assertArrayHasKey( 'audienceSegmentationSetupCompletedBy', $response, 'A non-admin should see the `audienceSegmentationSetupCompletedBy` setting (view-only key).' );
+		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $response, 'A non-admin should not see the `availableAudiencesLastSyncedAt` setting.' );
 	}
 
 	public function test_parse_response() {
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'audience-settings', array() );
 		$test_data    = array( 'availableAudiences' => array() );
 
-		$this->assertSame( $test_data, $this->datapoint->parse_response( $test_data, $data_request ), 'parse_response should return the response unchanged.' );
+		$this->assertSame( $test_data, $this->datapoint->parse_response( $test_data, $data_request ), 'The `parse_response` method should return the response unchanged.' );
 	}
 }

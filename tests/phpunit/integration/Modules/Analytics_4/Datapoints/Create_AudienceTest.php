@@ -112,8 +112,8 @@ class Create_AudienceTest extends TestCase {
 
 		$response = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf( WP_Error::class, $response, 'Create audience should return a WP_Error when propertyID is missing from settings.' );
-		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'Create audience should return missing_required_setting when propertyID is missing from settings.' );
+		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the `propertyID` setting is missing.' );
+		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'The `create-request` method should return a `missing_required_setting` error when the `propertyID` setting is missing.' );
 	}
 
 	public function test_create_request_validates_required_audience_param() {
@@ -157,8 +157,8 @@ class Create_AudienceTest extends TestCase {
 
 		$response = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf( WP_Error::class, $response, 'Create audience should return a WP_Error when audience contains invalid keys.' );
-		$this->assertEquals( 'invalid_property_name', $response->get_error_code(), 'Create audience should return invalid_property_name when audience contains invalid keys.' );
+		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the audience contains invalid keys.' );
+		$this->assertEquals( 'invalid_property_name', $response->get_error_code(), 'The `create-request` method should return an `invalid_property_name` error when the audience contains invalid keys.' );
 	}
 
 	public function test_create_request() {
@@ -186,7 +186,7 @@ class Create_AudienceTest extends TestCase {
 		$this->assertEquals(
 			'https://analyticsadmin.googleapis.com/v1alpha/properties/123456/audiences',
 			$this->create_audience_request->getUri()->__toString(),
-			'Create audience request should target the expected API endpoint.'
+			'The `create-request` method should send a request to the expected API endpoint.'
 		);
 	}
 
@@ -213,7 +213,7 @@ class Create_AudienceTest extends TestCase {
 			$data_request
 		);
 
-		$this->assertNotWPError( $response, 'Audience creation should succeed when all required parameters are provided.' );
+		$this->assertNotWPError( $response, 'The `create-request` method should succeed when all required parameters are provided.' );
 	}
 
 	private function get_audience() {

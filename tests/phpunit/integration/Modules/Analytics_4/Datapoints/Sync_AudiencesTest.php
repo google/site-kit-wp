@@ -131,8 +131,8 @@ class Sync_AudiencesTest extends TestCase {
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'sync-audiences', array() );
 		$response     = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf( WP_Error::class, $response, 'Sync audiences should return a WP_Error when user is not authenticated.' );
-		$this->assertEquals( 'forbidden', $response->get_error_code(), 'Sync audiences should return forbidden when user is not authenticated.' );
+		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the user is not authenticated.' );
+		$this->assertEquals( 'forbidden', $response->get_error_code(), 'The `create-request` method should return a `forbidden` error when the user is not authenticated.' );
 	}
 
 	public function test_create_request_returns_error_when_property_setting_is_missing() {
@@ -147,8 +147,8 @@ class Sync_AudiencesTest extends TestCase {
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'sync-audiences', array() );
 		$response     = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf( WP_Error::class, $response, 'Sync audiences should return a WP_Error when propertyID is missing from settings.' );
-		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'Sync audiences should return missing_required_setting when propertyID is missing from settings.' );
+		$this->assertInstanceOf( WP_Error::class, $response, 'The `create-request` method should return a WP_Error when the `propertyID` setting is missing.' );
+		$this->assertEquals( 'missing_required_setting', $response->get_error_code(), 'The `create-request` method should return a `missing_required_setting` error when the `propertyID` setting is missing.' );
 	}
 
 	public function test_create_request() {
@@ -169,7 +169,7 @@ class Sync_AudiencesTest extends TestCase {
 		$this->assertEquals(
 			'https://analyticsadmin.googleapis.com/v1alpha/properties/12345/audiences',
 			$this->sync_audiences_request->getUri()->__toString(),
-			'Sync audiences request should target the expected API endpoint.'
+			'The `create-request` method should send a request to the expected API endpoint.'
 		);
 	}
 
@@ -189,23 +189,23 @@ class Sync_AudiencesTest extends TestCase {
 			$data_request
 		);
 
-		$this->assertIsArray( $response, 'Sync audiences should return an array of audiences.' );
-		$this->assertNotEmpty( $response, 'Sync audiences should return a non-empty array of audiences.' );
+		$this->assertIsArray( $response, 'The `create-request` method should return an array of audiences.' );
+		$this->assertNotEmpty( $response, 'The `create-request` method should return a non-empty array of audiences.' );
 
-		$this->assertArrayHasKey( 'name', $response[0], 'Each audience should have a name key.' );
-		$this->assertArrayHasKey( 'displayName', $response[0], 'Each audience should have a displayName key.' );
-		$this->assertArrayHasKey( 'audienceType', $response[0], 'Each audience should have an audienceType key.' );
-		$this->assertArrayHasKey( 'audienceSlug', $response[0], 'Each audience should have an audienceSlug key.' );
+		$this->assertArrayHasKey( 'name', $response[0], 'Each audience should have a `name` key.' );
+		$this->assertArrayHasKey( 'displayName', $response[0], 'Each audience should have a `displayName` key.' );
+		$this->assertArrayHasKey( 'audienceType', $response[0], 'Each audience should have an `audienceType` key.' );
+		$this->assertArrayHasKey( 'audienceSlug', $response[0], 'Each audience should have an `audienceSlug` key.' );
 
 		$audience_settings = $this->audience_settings->get();
-		$this->assertNotNull( $audience_settings['availableAudiences'], 'Available audiences should be updated after sync.' );
-		$this->assertGreaterThan( 0, $audience_settings['availableAudiencesLastSyncedAt'], 'Sync timestamp should be set after sync.' );
+		$this->assertNotNull( $audience_settings['availableAudiences'], 'The `availableAudiences` setting should be updated after sync.' );
+		$this->assertGreaterThan( 0, $audience_settings['availableAudiencesLastSyncedAt'], 'The `availableAudiencesLastSyncedAt` timestamp should be set after sync.' );
 	}
 
 	public function test_parse_response_propagates_wp_error() {
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'sync-audiences', array() );
 		$wp_error     = new WP_Error( 'test_error', 'Test error' );
 
-		$this->assertSame( $wp_error, $this->datapoint->parse_response( $wp_error, $data_request ), 'parse_response should return WP_Error responses unchanged.' );
+		$this->assertSame( $wp_error, $this->datapoint->parse_response( $wp_error, $data_request ), 'The `parse_response` method should return WP_Error responses unchanged.' );
 	}
 }
