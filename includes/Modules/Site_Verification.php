@@ -146,10 +146,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:verification'       => array( 'service' => 'siteverification' ),
-			'POST:verification'      => array( 'service' => 'siteverification' ),
-			'GET:verification-token' => array( 'service' => 'siteverification' ),
-			'GET:verified-sites'     => array( 'service' => 'siteverification' ),
+			'GET:verification'       => array( 'service' => Google_Service_SiteVerification::class ),
+			'POST:verification'      => array( 'service' => Google_Service_SiteVerification::class ),
+			'GET:verification-token' => array( 'service' => Google_Service_SiteVerification::class ),
+			'GET:verified-sites'     => array( 'service' => Google_Service_SiteVerification::class ),
 		);
 	}
 
@@ -367,7 +367,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @return Google_Service_SiteVerification The Site Verification API service.
 	 */
 	private function get_siteverification_service() {
-		return $this->get_service( 'siteverification' );
+		return $this->get_service( Google_Service_SiteVerification::class );
 	}
 
 	/**
@@ -385,7 +385,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'siteverification' => new Google_Service_SiteVerification( $client ),
+			Google_Service_SiteVerification::class => new Google_Service_SiteVerification( $client ),
 		);
 	}
 

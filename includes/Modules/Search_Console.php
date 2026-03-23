@@ -557,7 +557,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * @return Google_Service_SearchConsole The Search Console API service.
 	 */
 	private function get_searchconsole_service() {
-		return $this->get_service( 'searchconsole' );
+		return $this->get_service( Google_Service_SearchConsole::class );
 	}
 
 	/**
@@ -575,7 +575,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'searchconsole' => new Google_Service_SearchConsole( $client ),
+			Google_Service_SearchConsole::class => new Google_Service_SearchConsole( $client ),
 		);
 	}
 

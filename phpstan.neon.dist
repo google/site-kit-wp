@@ -18,5 +18,3 @@ parameters:
     scanDirectories:
         - %currentWorkingDirectory%/gtg
         - %currentWorkingDirectory%/third-party
-    ignoreErrors:
-        - '#property.*Google\\Site_Kit_Dependencies\\Google\\Service.*#'

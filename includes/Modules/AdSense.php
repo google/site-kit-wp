@@ -336,7 +336,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts->listAccounts();
 			case 'GET:adunits':
 				if ( ! isset( $data['accountID'] ) || ! isset( $data['clientID'] ) ) {
@@ -352,14 +352,14 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 				}
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts_adclients_adunits->listAccountsAdclientsAdunits( self::normalize_client_id( $data['accountID'], $data['clientID'] ) );
 			case 'GET:alerts':
 				if ( ! isset( $data['accountID'] ) ) {
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts_alerts->listAccountsAlerts( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:clients':
 				if ( ! isset( $data['accountID'] ) ) {
@@ -370,7 +370,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						array( 'status' => 400 )
 					);
 				}
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts_adclients->listAccountsAdclients( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:notifications':
 				return function () {
@@ -482,14 +482,14 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						array( 'status' => 400 )
 					);
 				}
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
 			case 'POST:sync-ad-blocking-recovery-tags':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['accountID'] ) ) {
 					return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 500 ) );
 				}
-				$service = $this->get_service( 'adsense' );
+				$service = $this->get_service( Google_Service_Adsense::class );
 				return $service->accounts->getAdBlockingRecoveryTag( self::normalize_account_id( $settings['accountID'] ) );
 		}
 
@@ -730,7 +730,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 			)
 		);
 
-		return $this->get_service( 'adsense' )
+		return $this->get_service( Google_Service_Adsense::class )
 			->accounts_reports
 			->generate(
 				self::normalize_account_id( $account_id ),
@@ -774,7 +774,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'adsense' => new Google_Service_Adsense( $client ),
+			Google_Service_Adsense::class => new Google_Service_Adsense( $client ),
 		);
 	}
 

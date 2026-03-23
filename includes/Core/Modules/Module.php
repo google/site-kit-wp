@@ -530,12 +530,13 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $identifier Identifier for the service.
-	 * @return Google_Service Google service instance.
+	 * @template T of Google_Service
+	 * @param class-string<T> $class_name Identifier for the service.
+	 * @return T Google service instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the services or when the identifier is invalid.
 	 */
-	final protected function get_service( $identifier ) {
+	final protected function get_service( $class_name ) {
 		if ( null === $this->google_services ) {
 			$services = $this->setup_services( $this->get_client() );
 			if ( ! is_array( $services ) ) {
@@ -549,12 +550,12 @@ abstract class Module {
 			$this->google_services = $services;
 		}
 
-		if ( ! isset( $this->google_services[ $identifier ] ) ) {
+		if ( ! isset( $this->google_services[ $class_name ] ) ) {
 			/* translators: %s: service identifier */
-			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $identifier ) );
+			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $class_name ) );
 		}
 
-		return $this->google_services[ $identifier ];
+		return $this->google_services[ $class_name ];
 	}
 
 	/**

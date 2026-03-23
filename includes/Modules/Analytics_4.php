@@ -682,24 +682,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	protected function get_datapoint_definitions() {
 		$datapoints = array(
-			'GET:account-summaries'                     => array( 'service' => 'analyticsadmin' ),
-			'GET:accounts'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:ads-links'                             => array( 'service' => 'analyticsadmin' ),
-			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
+			'GET:account-summaries'                     => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:accounts'                              => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:ads-links'                             => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:adsense-links'                         => array( 'service' => GoogleAnalyticsAdminV1alpha::class ),
 			'GET:container-lookup'                      => array(
-				'service' => 'tagmanager',
+				'service' => Google_Service_TagManager::class,
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
 			'GET:container-destinations'                => array(
-				'service' => 'tagmanager',
+				'service' => Google_Service_TagManager::class,
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
 			),
 			'GET:key-events'                            => array(
-				'service'   => 'analyticsadmin',
+				'service'   => Google_Service_GoogleAnalyticsAdmin::class,
 				'shareable' => true,
 			),
 			'POST:create-account-ticket'                => new Create_Account_Ticket(
@@ -707,14 +707,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'credentials'               => $this->authentication->credentials()->get(),
 					'provisioning_redirect_uri' => $this->get_provisioning_redirect_uri(),
 					'service'                   => function () {
-						return $this->get_service( 'analyticsprovisioning' );
+						return $this->get_service( AccountProvisioningService::class );
 					},
 					'scopes'                    => array( self::EDIT_SCOPE ),
 					'request_scopes_message'    => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 				),
 			),
 			'GET:google-tag-settings'                   => array(
-				'service' => 'tagmanager',
+				'service' => Google_Service_TagManager::class,
 				'scopes'  => array(
 					'https://www.googleapis.com/auth/tagmanager.readonly',
 				),
@@ -723,7 +723,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'reference_site_url'     => $this->context->get_reference_site_url(),
 					'service'                => function () {
-						return $this->get_service( 'analyticsadmin' );
+						return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 					},
 					'scopes'                 => array( self::EDIT_SCOPE ),
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
@@ -733,35 +733,35 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'reference_site_url'     => $this->context->get_reference_site_url(),
 					'service'                => function () {
-						return $this->get_service( 'analyticsadmin' );
+						return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 					},
 					'scopes'                 => array( self::EDIT_SCOPE ),
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf.', 'google-site-kit' ),
 				)
 			),
-			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
-			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
+			'GET:properties'                            => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:property'                              => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:has-property-access'                   => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
 			'GET:report'                                => array(
-				'service'   => 'analyticsdata',
+				'service'   => Google_Service_GoogleAnalyticsAdmin::class,
 				'shareable' => true,
 			),
 			'GET:batch-report'                          => array(
-				'service'   => 'analyticsdata',
+				'service'   => Google_Service_GoogleAnalyticsAdmin::class,
 				'shareable' => true,
 			),
-			'GET:webdatastreams'                        => array( 'service' => 'analyticsadmin' ),
-			'GET:webdatastreams-batch'                  => array( 'service' => 'analyticsadmin' ),
-			'GET:enhanced-measurement-settings'         => array( 'service' => 'analyticsadmin-v1alpha' ),
+			'GET:webdatastreams'                        => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:webdatastreams-batch'                  => array( 'service' => Google_Service_GoogleAnalyticsAdmin::class ),
+			'GET:enhanced-measurement-settings'         => array( 'service' => GoogleAnalyticsAdminV1alpha::class ),
 			'POST:enhanced-measurement-settings'        => array(
-				'service'                => 'analyticsadmin-v1alpha',
+				'service'                => GoogleAnalyticsAdminV1alpha::class,
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-custom-dimension'              => new Create_Custom_Dimension(
 				array(
 					'service'                => function () {
-						return $this->get_service( 'analyticsadmin' );
+						return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 					},
 					'scopes'                 => array( self::EDIT_SCOPE ),
 					'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf.', 'google-site-kit' ),
@@ -770,7 +770,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:sync-custom-dimensions'               => new Sync_Custom_Dimensions(
 				array(
 					'service'                          => function () {
-						return $this->get_service( 'analyticsadmin' );
+						return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 					},
 					'settings'                         => $this->get_settings(),
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
@@ -788,7 +788,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:create-audience'                      => array(
-				'service'                => 'analyticsadmin-v1alpha',
+				'service'                => GoogleAnalyticsAdminV1alpha::class,
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			),
@@ -796,7 +796,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				'service' => '',
 			),
 			'POST:sync-audiences'                       => array(
-				'service'   => 'analyticsadmin-v1alpha',
+				'service'   => GoogleAnalyticsAdminV1alpha::class,
 				'shareable' => true,
 			),
 			'GET:audience-settings'                     => array(
@@ -844,7 +844,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$property->setDisplayName( $display_name );
 		$property->setTimeZone( $timezone );
 
-		return $this->get_service( 'analyticsadmin' )->properties->create( $property );
+		return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->properties->create( $property );
 	}
 
 	/**
@@ -878,8 +878,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$datastream->setType( 'WEB_DATA_STREAM' );
 		$datastream->setWebStreamData( $data );
 
-		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-		$analyticsadmin = $this->get_service( 'analyticsadmin' );
+		$analyticsadmin = $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 
 		return $analyticsadmin
 			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1179,9 +1178,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return $this->get_service( 'analyticsadmin' )->accounts->listAccounts();
+				return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->accounts->listAccounts();
 			case 'GET:account-summaries':
-				return $this->get_service( 'analyticsadmin' )->accountSummaries->listAccountSummaries(
+				return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->accountSummaries->listAccountSummaries(
 					array(
 						'pageSize'  => 200,
 						'pageToken' => $data['pageToken'],
@@ -1194,7 +1193,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 				$parent = self::normalize_property_id( $data['propertyID'] );
 
-				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
+				return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
 			case 'GET:adsense-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1262,7 +1261,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties->listProperties(
+				return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->properties->listProperties(
 					array(
 						'filter'   => 'parent:' . self::normalize_account_id( $data['accountID'] ),
 						'pageSize' => 200,
@@ -1278,7 +1277,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
+				return $this->get_service( Google_Service_GoogleAnalyticsAdmin::class )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
 			case 'GET:has-property-access':
 				if ( ! isset( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1577,7 +1576,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$analyticsadmin = $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 
 				return $analyticsadmin
 					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -1603,7 +1602,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$analyticsadmin = $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 				$batch_request  = $analyticsadmin->createBatch();
 
 				foreach ( $data['propertyIDs'] as $property_id ) {
@@ -1672,7 +1671,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					);
 				}
 
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$analyticsadmin = $this->get_service( Google_Service_GoogleAnalyticsAdmin::class );
 				$property_id    = self::normalize_property_id( $settings['propertyID'] );
 
 				return $analyticsadmin
@@ -1776,7 +1775,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
 	private function get_tagmanager_service() {
-		return $this->get_service( 'tagmanager' );
+		return $this->get_service( Google_Service_TagManager::class );
 	}
 
 	/**
@@ -1804,7 +1803,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return GoogleAnalyticsAdminV1alpha
 	 */
 	protected function get_analyticsadminv1alpha_service(): GoogleAnalyticsAdminV1alpha {
-		return $this->get_service( 'analyticsadmin-v1alpha' );
+		return $this->get_service( GoogleAnalyticsAdminV1alpha::class );
 	}
 
 	/**
@@ -1815,7 +1814,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return Google_Service_AnalyticsData The Analytics Data API service.
 	 */
 	protected function get_analyticsdata_service() {
-		return $this->get_service( 'analyticsdata' );
+		return $this->get_service( Google_Service_AnalyticsData::class );
 	}
 
 	/**
@@ -1834,11 +1833,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$google_proxy = $this->authentication->get_google_proxy();
 
 		return array(
-			'analyticsadmin'         => new Google_Service_GoogleAnalyticsAdmin( $client ),
-			'analyticsadmin-v1alpha' => new GoogleAnalyticsAdminV1alpha( $client ),
-			'analyticsdata'          => new Google_Service_AnalyticsData( $client ),
-			'analyticsprovisioning'  => new AccountProvisioningService( $client, $google_proxy->url() ),
-			'tagmanager'             => new Google_Service_TagManager( $client ),
+			Google_Service_GoogleAnalyticsAdmin::class => new Google_Service_GoogleAnalyticsAdmin( $client ),
+			GoogleAnalyticsAdminV1alpha::class         => new GoogleAnalyticsAdminV1alpha( $client ),
+			Google_Service_AnalyticsData::class        => new Google_Service_AnalyticsData( $client ),
+			AccountProvisioningService::class          => new AccountProvisioningService( $client, $google_proxy->url() ),
+			Google_Service_TagManager::class           => new Google_Service_TagManager( $client ),
 		);
 	}
 
