@@ -11,28 +11,22 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-if ( ! function_exists( 'str_starts_with' ) ) {
-	/**
-	 * Polyfill for `str_starts_with()` function added in PHP 8.0.
-	 *
-	 * @param string $haystack The string to search in.
-	 * @param string $needle The substring to search for in the haystack.
-	 * @return bool True if haystack begins with needle, false otherwise.
-	 */
-	function str_starts_with( string $haystack, string $needle ): bool {
-		return 0 === strncmp( $haystack, $needle, strlen( $needle ) );
-	}
+/**
+ * Polyfill for `str_starts_with()` function added in PHP 8.0.
+ *
+ * @param string $haystack The string to search in.
+ * @param string $needle The substring to search for in the haystack.
+ * @return bool True if haystack begins with needle, false otherwise.
+ */
+function str_starts_with( string $haystack, string $needle ): bool {
 }
 
-if ( ! function_exists( 'str_contains' ) ) {
-	/**
-	 * Polyfill for `str_contains()` function added in PHP 8.0.
-	 *
-	 * @param string $haystack The string to search in.
-	 * @param string $needle The substring to search for in the haystack.
-	 * @return bool True if needle is in haystack, false otherwise.
-	 */
-	function str_contains( string $haystack, string $needle ): bool {
-		return '' === $needle || false !== strpos( $haystack, $needle );
-	}
+/**
+ * Polyfill for `str_contains()` function added in PHP 8.0.
+ *
+ * @param string $haystack The string to search in.
+ * @param string $needle The substring to search for in the haystack.
+ * @return bool True if needle is in haystack, false otherwise.
+ */
+function str_contains( string $haystack, string $needle ): bool {
 }
