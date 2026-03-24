@@ -10,6 +10,7 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Batch_Error_Notifier;
+use Google\Site_Kit\Core\Email_Reporting\Cron_Health_Check;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Processor;
@@ -94,6 +95,11 @@ class Worker_TaskTest extends TestCase {
 	 */
 	private $real_batch_query;
 
+	/**
+	 * @var Cron_Health_Check|\PHPUnit_Framework_MockObject_MockObject
+	 */
+	private $health_check;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -108,6 +114,7 @@ class Worker_TaskTest extends TestCase {
 		$this->template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
 		$this->notifier         = $this->createMock( Batch_Error_Notifier::class );
+		$this->health_check     = $this->createMock( Cron_Health_Check::class );
 		$this->email_log        = new Email_Log( $this->context );
 		$this->created_post_ids = array();
 		$this->real_batch_query = new Email_Log_Batch_Query();
@@ -247,6 +254,51 @@ class Worker_TaskTest extends TestCase {
 		$this->assertNotNull( $captured_delay, 'Follow-up delay should be captured for assertion.' );
 	}
 
+	public function test_tracks_worker_progress_after_processing_pending_logs() {
+		$pending_ids        = array( 123 );
+		$initiator_stamp    = time();
+		$log_processor_mock = $this->createMock( Email_Log_Processor::class );
+
+		$this->limiter->method( 'should_abort' )->willReturn( false );
+
+		$this->batch_query->expects( $this->once() )
+			->method( 'is_complete' )
+			->with( 'batch-progress' )
+			->willReturn( false );
+
+		$this->batch_query->expects( $this->once() )
+			->method( 'get_pending_ids' )
+			->with( 'batch-progress' )
+			->willReturn( $pending_ids );
+
+		$this->scheduler->expects( $this->once() )
+			->method( 'schedule_worker' );
+
+		$log_processor_mock->expects( $this->once() )
+			->method( 'process' )
+			->with( $pending_ids[0], Email_Reporting_Settings::FREQUENCY_WEEKLY );
+
+		$this->health_check->expects( $this->once() )
+			->method( 'track_worker_progress' )
+			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY, 0, 'batch-progress' );
+
+		$this->notifier->expects( $this->once() )
+			->method( 'maybe_notify' )
+			->with( 'batch-progress' );
+
+		$task = new Worker_Task(
+			$this->limiter,
+			$this->batch_query,
+			$this->scheduler,
+			$log_processor_mock,
+			$this->data_requests,
+			$this->notifier,
+			$this->health_check
+		);
+
+		$task->handle_callback_action( 'batch-progress', Email_Reporting_Settings::FREQUENCY_WEEKLY, $initiator_stamp );
+	}
+
 	public function test_switches_to_log_site_id_on_multisite() {
 		if ( ! is_multisite() ) {
 			$this->markTestSkipped( 'This test only runs on multisite.' );
@@ -297,7 +349,8 @@ class Worker_TaskTest extends TestCase {
 			$this->scheduler,
 			$log_processor_mock,
 			$this->data_requests,
-			$this->notifier
+			$this->notifier,
+			$this->health_check
 		);
 
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
@@ -327,7 +380,8 @@ class Worker_TaskTest extends TestCase {
 				new Email_Report_Sender( $this->template_renderer_factory, $this->email_sender )
 			),
 			$this->data_requests,
-			$this->notifier
+			$this->notifier,
+			$this->health_check
 		);
 
 		$batch_id       = 'batch-real';
@@ -776,7 +830,8 @@ class Worker_TaskTest extends TestCase {
 			$this->scheduler,
 			$log_processor,
 			$this->data_requests,
-			$this->notifier
+			$this->notifier,
+			$this->health_check
 		);
 	}
 
