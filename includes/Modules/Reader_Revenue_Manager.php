@@ -259,7 +259,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	 */
 	public function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'subscribewithgoogle' => new Google_Service_SubscribewithGoogle( $client ),
+			Google_Service_SubscribewithGoogle::class => new Google_Service_SubscribewithGoogle( $client ),
 		);
 	}
 
@@ -314,7 +314,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		 *
 		 * @var Google_Service_SubscribewithGoogle
 		 */
-		$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
+		$subscribewithgoogle = $this->get_service( Google_Service_SubscribewithGoogle::class );
 
 		try {
 			$response = $subscribewithgoogle->publications->listPublications();
@@ -353,10 +353,10 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:publications'                       => array(
-				'service' => 'subscribewithgoogle',
+				'service' => Google_Service_SubscribewithGoogle::class,
 			),
 			'POST:sync-publication-onboarding-state' => array(
-				'service' => 'subscribewithgoogle',
+				'service' => Google_Service_SubscribewithGoogle::class,
 			),
 		);
 	}
@@ -379,7 +379,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 				 *
 				 * @var Google_Service_SubscribewithGoogle
 				 */
-				$subscribewithgoogle = $this->get_service( 'subscribewithgoogle' );
+				$subscribewithgoogle = $this->get_service( Google_Service_SubscribewithGoogle::class );
 				return $subscribewithgoogle->publications->listPublications( array( 'filter' => $this->get_publication_filter() ) );
 
 			case 'POST:sync-publication-onboarding-state':

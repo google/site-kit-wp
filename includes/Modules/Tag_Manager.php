@@ -274,15 +274,15 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:accounts'               => array( 'service' => 'tagmanager' ),
-			'GET:accounts-containers'    => array( 'service' => 'tagmanager' ),
-			'GET:containers'             => array( 'service' => 'tagmanager' ),
+			'GET:accounts'               => array( 'service' => Google_Service_TagManager::class ),
+			'GET:accounts-containers'    => array( 'service' => Google_Service_TagManager::class ),
+			'GET:containers'             => array( 'service' => Google_Service_TagManager::class ),
 			'POST:create-container'      => array(
-				'service'                => 'tagmanager',
+				'service'                => Google_Service_TagManager::class,
 				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
 				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
 			),
-			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
+			'GET:live-container-version' => array( 'service' => Google_Service_TagManager::class ),
 		);
 	}
 
@@ -495,7 +495,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @throws Exception Thrown if the module did not correctly set up the service.
 	 */
 	public function get_tagmanager_service() {
-		return $this->get_service( 'tagmanager' );
+		return $this->get_service( Google_Service_TagManager::class );
 	}
 
 	/**
@@ -529,7 +529,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'tagmanager' => new Google_Service_TagManager( $client ),
+			Google_Service_TagManager::class => new Google_Service_TagManager( $client ),
 		);
 	}
 

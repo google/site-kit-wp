@@ -75,7 +75,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes, Mod
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:pagespeed' => array(
-				'service'   => 'pagespeedonline',
+				'service'   => Google_Service_PagespeedInsights::class,
 				'shareable' => true,
 			),
 		);
@@ -127,7 +127,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes, Mod
 					$page_url = $this->context->get_reference_site_url();
 				}
 
-				$service = $this->get_service( 'pagespeedonline' );
+				$service = $this->get_service( Google_Service_PagespeedInsights::class );
 
 				return $service->pagespeedapi->runpagespeed(
 					$page_url,
@@ -213,7 +213,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes, Mod
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'pagespeedonline' => new Google_Service_PagespeedInsights( $client ),
+			Google_Service_PagespeedInsights::class => new Google_Service_PagespeedInsights( $client ),
 		);
 	}
 
