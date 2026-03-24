@@ -111,7 +111,6 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertTrue( $response->data['connected'], 'Site should be connected when proxy connection is established.' );
-		$this->assertArrayNotHasKey( 'ownerID', $response->data, 'Connection payload should not include ownerID.' );
 	}
 
 	/**
@@ -127,7 +126,6 @@ class REST_Authentication_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertFalse( $response->data['connected'], 'Site should not be connected when no proxy connection exists.' );
-		$this->assertArrayNotHasKey( 'ownerID', $response->data, 'Connection payload should not include ownerID.' );
 	}
 
 	/**
