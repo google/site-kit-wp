@@ -14,14 +14,13 @@ parameters:
         - %currentWorkingDirectory%/tests/phpstan/constants.php
         - %currentWorkingDirectory%/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - %currentWorkingDirectory%/vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+        - %currentWorkingDirectory%/tests/phpstan/wp-polyfills.php
     ignoreErrors:
         -
             identifier: include.fileNotFound
             message: '#^Path in include\(\) "dist/config\.php" is not a file or it does not exist\.$#'
             path: includes/Plugin.php
             reportUnmatched: false
-    scanFiles:
-        - %currentWorkingDirectory%/vendor/roots/wordpress/wp-includes/compat.php
     scanDirectories:
         - %currentWorkingDirectory%/gtg
         - %currentWorkingDirectory%/third-party

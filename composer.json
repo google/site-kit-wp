@@ -67,7 +67,6 @@
     },
     "audit": {
       "ignore": {
-        "PKSA-z3gr-8qht-p93v": "Necessary to install PHPUnit 7",
         "PKSA-y2cr-5h3j-g3ys": {
           "apply": "block",
           "reason": "[Low] blocked by current minimum PHP requirement"
