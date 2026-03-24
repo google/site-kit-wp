@@ -20,7 +20,7 @@
  * Use `ALL` for entries that should be ignored regardless of WP version.
  * Each entry is a substring match against the error message.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export const errorLogIgnoreList: Record< string, string[] > = {
 	'5.2.21': [

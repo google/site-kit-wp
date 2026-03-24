@@ -36,62 +36,62 @@ import { Mailpit } from './mailpit';
 /**
  * Represents a WordPress instance.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  */
 export class WordPress {
 	/**
 	 * Database manager.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly database: WordPressDatabase;
 
 	/**
 	 * Cookie manager.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly cookies: WordPressCookies;
 
 	/**
 	 * Plugin manager.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly plugins: WordPressPlugins;
 
 	/**
 	 * Mailpit client for email testing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	readonly mailpit: Mailpit;
 
 	/**
 	 * The Playwright TestInfo object for the current test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	private readonly testInfo: TestInfo;
 
 	/**
 	 * The page to use for the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	readonly page: Page;
 
 	/**
 	 * The base URL of the WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	readonly baseURL: string;
 
 	/**
 	 * Creates a new WordPress instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param args Arguments for creating a new WordPress instance.
 	 */
@@ -116,7 +116,7 @@ export class WordPress {
 	/**
 	 * Prepares the WordPress environment for testing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the WordPress environment is prepared.
 	 */
@@ -131,7 +131,7 @@ export class WordPress {
 	/**
 	 * Tears down the WordPress environment.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<void>} A promise that resolves when the WordPress environment is torn down.
 	 */
@@ -176,7 +176,7 @@ export class WordPress {
 	 * Returns all PHP error log entries for the current test,
 	 * excluding entries that match the ignore list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return {Promise<PHPErrorLogEntry[]>} A promise that resolves with the error log entries.
 	 */
@@ -188,7 +188,7 @@ export class WordPress {
 	/**
 	 * Checks whether a PHP error log entry matches the ignore list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param entry The error log entry to check.
 	 * @return Whether the entry should be ignored.
@@ -208,7 +208,7 @@ export class WordPress {
 	/**
 	 * Activates a plugin by its file path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  pluginFile The plugin file path relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
 	 * @return {Promise<void>} A promise that resolves when the plugin is activated.
@@ -220,7 +220,7 @@ export class WordPress {
 	/**
 	 * Deactivates a plugin by its file path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  pluginFile The plugin file path relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
 	 * @return {Promise<void>} A promise that resolves when the plugin is deactivated.
@@ -232,7 +232,7 @@ export class WordPress {
 	/**
 	 * Navigates to the given path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  path The path to navigate to.
 	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
@@ -244,7 +244,7 @@ export class WordPress {
 	/**
 	 * Navigates to the given path in the admin area.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  path The path to navigate to.
 	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
@@ -256,7 +256,7 @@ export class WordPress {
 	/**
 	 * Navigates to the given path in the frontend.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param  path The path to navigate to.
 	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.

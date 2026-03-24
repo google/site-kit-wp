@@ -70,17 +70,26 @@ class Worker_Task {
 	/**
 	 * Batch error notifier.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @var Batch_Error_Notifier
 	 */
 	private $notifier;
 
 	/**
+	 * Cron health check service.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Cron_Health_Check
+	 */
+	private $health_check;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Added $notifier parameter.
+	 * @since 1.175.0 Added $notifier parameter.
 	 *
 	 * @param Max_Execution_Limiter         $max_execution_limiter Execution limiter instance.
 	 * @param Email_Log_Batch_Query         $batch_query           Batch query helper.
@@ -88,6 +97,7 @@ class Worker_Task {
 	 * @param Email_Log_Processor           $log_processor         Log processor instance.
 	 * @param Email_Reporting_Data_Requests $data_requests         Data requests helper.
 	 * @param Batch_Error_Notifier          $notifier              Batch error notifier.
+	 * @param Cron_Health_Check             $health_check          Cron health check service.
 	 */
 	public function __construct(
 		Max_Execution_Limiter $max_execution_limiter,
@@ -95,7 +105,8 @@ class Worker_Task {
 		Email_Reporting_Scheduler $scheduler,
 		Email_Log_Processor $log_processor,
 		Email_Reporting_Data_Requests $data_requests,
-		Batch_Error_Notifier $notifier
+		Batch_Error_Notifier $notifier,
+		Cron_Health_Check $health_check
 	) {
 		$this->max_execution_limiter = $max_execution_limiter;
 		$this->batch_query           = $batch_query;
@@ -103,6 +114,7 @@ class Worker_Task {
 		$this->log_processor         = $log_processor;
 		$this->data_requests         = $data_requests;
 		$this->notifier              = $notifier;
+		$this->health_check          = $health_check;
 	}
 
 	/**
@@ -150,7 +162,8 @@ class Worker_Task {
 				return;
 			}
 
-			$this->process_pending_logs( $pending_ids, $frequency, $initiator_timestamp );
+			$emails_processed = $this->process_pending_logs( $pending_ids, $frequency, $initiator_timestamp );
+			$this->health_check->track_worker_progress( $frequency, $emails_processed, $batch_id );
 
 			$this->notifier->maybe_notify( $batch_id );
 		} finally {
@@ -169,14 +182,18 @@ class Worker_Task {
 	 * @param array  $pending_ids         Pending post IDs.
 	 * @param string $frequency           Frequency slug.
 	 * @param int    $initiator_timestamp Initiator timestamp.
+	 * @return int Number of emails processed and marked sent.
 	 */
 	private function process_pending_logs( array $pending_ids, $frequency, $initiator_timestamp ) {
-		$shared_payloads = $this->get_shared_payloads_for_pending_ids( $pending_ids );
+		$shared_payloads    = $this->get_shared_payloads_for_pending_ids( $pending_ids );
+		$processed_sent_ids = array();
 
 		foreach ( $pending_ids as $post_id ) {
 			if ( $this->should_abort( $initiator_timestamp ) ) {
-				return;
+				return count( $processed_sent_ids );
 			}
+
+			$previous_status = get_post_status( $post_id );
 
 			$email_log = get_post( $post_id );
 			$user      = null;
@@ -203,7 +220,13 @@ class Worker_Task {
 			} else {
 				$this->log_processor->process( $post_id, $frequency, $shared_payloads_for_user );
 			}
+
+			if ( Email_Log::STATUS_SENT === get_post_status( $post_id ) && Email_Log::STATUS_SENT !== $previous_status ) {
+				$processed_sent_ids[] = $post_id;
+			}
 		}
+
+		return count( $processed_sent_ids );
 	}
 
 	/**

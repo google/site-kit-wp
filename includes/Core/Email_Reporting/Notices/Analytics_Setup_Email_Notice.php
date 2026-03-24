@@ -21,7 +21,7 @@ use WP_User;
 /**
  * Analytics setup in-email notice definition.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -30,21 +30,21 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Notice ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const ID = 'analytics-setup';
 
 	/**
 	 * Dismissal key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 */
 	const DISMISSAL_SLUG = 'email-report-notice-analytics-setup';
 
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Context
 	 */
 	private $context;
@@ -52,7 +52,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Modules service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -60,7 +60,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Golinks service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 * @var Golinks
 	 */
 	private $golinks;
@@ -68,7 +68,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Modules $modules Modules service.
@@ -83,7 +83,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the notice ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Notice ID.
 	 */
@@ -94,7 +94,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the notice placement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Placement slug.
 	 */
@@ -105,7 +105,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets the target section key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Empty for header notices.
 	 */
@@ -116,7 +116,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets dismissal key for prompt storage.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @return string Dismissal key.
 	 */
@@ -127,7 +127,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Determines whether the notice should be shown to a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return bool True if notice should be displayed.
@@ -150,7 +150,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets display payload for a user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return array Notice payload.
@@ -177,7 +177,7 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 	/**
 	 * Gets redirect URL for a notice CTA click.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param WP_User $user User.
 	 * @return string Redirect URL.

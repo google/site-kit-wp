@@ -321,12 +321,41 @@ class Email_Log_Batch_Query {
 	}
 
 	/**
+	 * Checks if any scheduled email logs are stale (older than one day).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True when at least one stale scheduled log exists.
+	 */
+	public function has_stale_pending_logs() {
+		$query = new WP_Query(
+			array(
+				'post_type'              => Email_Log::POST_TYPE,
+				'post_status'            => Email_Log::STATUS_SCHEDULED,
+				'posts_per_page'         => 1,
+				'fields'                 => 'ids',
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'date_query'             => array(
+					array(
+						'column' => 'post_date',
+						'before' => gmdate( 'Y-m-d H:i:s', time() - DAY_IN_SECONDS ),
+					),
+				),
+			)
+		);
+
+		return ! empty( $query->posts );
+	}
+
+	/**
 	 * Checks if all logs in a batch have failed after maximum attempts.
 	 *
 	 * Returns true only when every log has email_failed status and
 	 * send attempts >= MAX_ATTEMPTS, with no email_sent logs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return bool True if all logs in the batch have exhausted retries.
@@ -353,7 +382,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Checks if admin notification has already been sent for a batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return bool True if the batch has already been admin-notified.
@@ -371,7 +400,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Marks a batch as admin-notified to prevent duplicate sends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 */
@@ -388,7 +417,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Gets the error details from the first log in a batch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return string|null Error details JSON string or null.
@@ -408,7 +437,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Gets post IDs for a specific batch with deterministic ordering.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 * @return array<int> Post IDs ordered by ID ascending.

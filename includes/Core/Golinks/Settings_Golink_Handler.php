@@ -18,7 +18,7 @@ use Google\Site_Kit\Context;
  * Supports an optional `module` query parameter to deep-link
  * to a specific module's connected services panel.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Settings_Golink_Handler implements Golink_Handler_Interface {
 	/**
 	 * Builds the settings destination URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.175.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string Destination URL.

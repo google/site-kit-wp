@@ -64,6 +64,8 @@ class Initiator_TaskTest extends TestCase {
 			self::factory()->user->create(),
 		);
 
+		$scheduled_timestamp = strtotime( '2023-11-15 01:00:00 UTC' );
+
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
 			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY )
@@ -76,7 +78,7 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_next_initiator' )
-			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY, $this->isType( 'int' ) );
+			->with( Email_Reporting_Settings::FREQUENCY_WEEKLY, $scheduled_timestamp );
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_worker' )
@@ -89,9 +91,9 @@ class Initiator_TaskTest extends TestCase {
 				),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 				$this->callback(
-					function ( $timestamp ) use ( &$captured_worker_timestamp ) {
+					function ( $timestamp ) use ( &$captured_worker_timestamp, $scheduled_timestamp ) {
 						$captured_worker_timestamp = $timestamp;
-						return is_int( $timestamp );
+						return is_int( $timestamp ) && $scheduled_timestamp === $timestamp;
 					}
 				)
 			);
@@ -107,14 +109,14 @@ class Initiator_TaskTest extends TestCase {
 				),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_WEEKLY ),
 				$this->callback(
-					function ( $timestamp ) use ( &$captured_fallback_timestamp ) {
+					function ( $timestamp ) use ( &$captured_fallback_timestamp, $scheduled_timestamp ) {
 						$captured_fallback_timestamp = $timestamp;
-						return is_int( $timestamp );
+						return is_int( $timestamp ) && $scheduled_timestamp === $timestamp;
 					}
 				)
 			);
 
-		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_WEEKLY );
+		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_WEEKLY, $scheduled_timestamp );
 
 		$this->assertNotNull( $captured_batch_id, 'Batch ID should be generated during callback handling.' );
 		$this->assertSame( $captured_batch_id, $captured_fallback_batch_id, 'Fallback should be scheduled with the same batch ID.' );
@@ -156,6 +158,8 @@ class Initiator_TaskTest extends TestCase {
 	}
 
 	public function test_handle_callback_action_without_subscribers_still_schedules_follow_up_events() {
+		$scheduled_timestamp = strtotime( '2023-11-15 01:00:00 UTC' );
+
 		$this->query->expects( $this->once() )
 			->method( 'for_frequency' )
 			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY )
@@ -163,14 +167,14 @@ class Initiator_TaskTest extends TestCase {
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_next_initiator' )
-			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY, $this->isType( 'int' ) );
+			->with( Email_Reporting_Settings::FREQUENCY_MONTHLY, $scheduled_timestamp );
 
 		$this->scheduler->expects( $this->once() )
 			->method( 'schedule_worker' )
 			->with(
 				$this->isType( 'string' ),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ),
-				$this->isType( 'int' )
+				$scheduled_timestamp
 			);
 
 		$this->scheduler->expects( $this->once() )
@@ -178,10 +182,10 @@ class Initiator_TaskTest extends TestCase {
 			->with(
 				$this->isType( 'string' ),
 				$this->equalTo( Email_Reporting_Settings::FREQUENCY_MONTHLY ),
-				$this->isType( 'int' )
+				$scheduled_timestamp
 			);
 
-		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_MONTHLY );
+		$this->task->handle_callback_action( Email_Reporting_Settings::FREQUENCY_MONTHLY, $scheduled_timestamp );
 
 		$posts = get_posts(
 			array(
@@ -192,5 +196,69 @@ class Initiator_TaskTest extends TestCase {
 		);
 
 		$this->assertEmpty( $posts, 'No email logs should be created when there are no subscribers.' );
+	}
+
+	/**
+	 * @dataProvider data_build_reference_dates_uses_expected_period_length
+	 */
+	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days ) {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', 'UTC' );
+		update_option( 'gmt_offset', 0 );
+
+		try {
+			$timestamp = strtotime( '2026-03-16 00:00:00 UTC' );
+
+			$reference_dates = Initiator_Task::build_reference_dates(
+				$frequency,
+				$timestamp
+			);
+
+			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
+
+			$compare_start = new \DateTimeImmutable( $reference_dates['compareStartDate'] );
+			$compare_end   = new \DateTimeImmutable( $reference_dates['compareEndDate'] );
+			$compare_days  = (int) $compare_start->diff( $compare_end )->days + 1;
+
+			$this->assertSame( $expected_days, $current_days, 'Expected current reference range to use inclusive period length.' );
+			$this->assertSame( $expected_days, $compare_days, 'Expected compare reference range to use inclusive period length.' );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+			update_option( 'gmt_offset', $original_gmt_offset );
+		}
+	}
+
+	public function test_build_reference_dates_uses_previous_day_as_send_date() {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', 'UTC' );
+		update_option( 'gmt_offset', 0 );
+
+		try {
+			$timestamp       = strtotime( '2026-03-19 00:00:00 UTC' );
+			$reference_dates = Initiator_Task::build_reference_dates(
+				Email_Reporting_Settings::FREQUENCY_WEEKLY,
+				$timestamp
+			);
+
+			$this->assertSame( '2026-03-18', $reference_dates['sendDate'], 'Expected sendDate to be one day before the scheduled boundary date.' );
+			$this->assertSame( '2026-03-12', $reference_dates['startDate'], 'Expected weekly startDate to be a 7-day inclusive range ending on sendDate.' );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+			update_option( 'gmt_offset', $original_gmt_offset );
+		}
+	}
+
+	public function data_build_reference_dates_uses_expected_period_length() {
+		return array(
+			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7 ),
+			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 30 ),
+			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90 ),
+		);
 	}
 }

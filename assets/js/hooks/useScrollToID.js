@@ -32,7 +32,7 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
  * Custom hook to scroll to a specific HTML ID when the `scrollTo` query
  * argument matches the provided ID.
  *
- * @since n.e.x.t
+ * @since 1.175.0
  *
  * @param {string} id The ID to scroll to.
  */
