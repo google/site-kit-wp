@@ -91,7 +91,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      # PHP 8.4 is needed for composer install which triggers php-scoper.
+      # Using PHP 8.4 here for Composer install to trigger PHP Scoper as the latest supported active version of PHP.
       - name: Setup PHP for Composer
         uses: shivammathur/setup-php@v2
         with:
