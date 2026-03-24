@@ -108,7 +108,6 @@ final class REST_Authentication_Controller {
 								'setupCompleted'     => $this->authentication->is_setup_completed(),
 								'hasConnectedAdmins' => $this->authentication->get_has_connected_admins_instance()->get(),
 								'hasMultipleAdmins'  => $this->authentication->get_has_multiple_admins_instance()->get(),
-								'ownerID'            => $this->authentication->get_owner_id_instance()->get(),
 							);
 
 							return new WP_REST_Response( $data );

@@ -34,7 +34,6 @@ describe( 'core/site connection', () => {
 		resettable: true,
 		setupCompleted: true,
 		hasConnectedAdmins: true,
-		ownerID: 123,
 	};
 
 	let registry;
@@ -168,7 +167,6 @@ describe( 'core/site connection', () => {
 		} );
 
 		describe.each( [
-			[ 'getOwnerID', 'ownerID' ],
 			[ 'hasConnectedAdmins', 'hasConnectedAdmins' ],
 			[ 'isConnected', 'connected' ],
 			[ 'isResettable', 'resettable' ],
