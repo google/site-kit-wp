@@ -57,6 +57,14 @@ class REST_Email_Reporting_Controller {
 	private $settings;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since 1.170.0
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * User_Email_Reporting_Settings instance.
 	 *
 	 * @since 1.170.0
