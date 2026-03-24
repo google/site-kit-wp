@@ -1,6 +1,6 @@
 <?php
 /**
- * Stubs for PHP 8 functions polyfilled by WordPress.
+ * PHPStan stubs for PHP 8 functions polyfilled by WordPress.
  *
  * These functions are available in WordPress since 5.2.20+
  * via wp-includes/compat.php.
