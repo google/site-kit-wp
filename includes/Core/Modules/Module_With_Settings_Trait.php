@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Core\Modules;
  * Trait for a module that includes a screen.
  *
  * @since 1.2.0
- * @template T of Module_Settings
+ * @template TSettings of Module_Settings
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait Module_With_Settings_Trait {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @var T
+	 * @var TSettings
 	 */
 	protected $settings;
 
@@ -34,7 +34,7 @@ trait Module_With_Settings_Trait {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @return T
+	 * @return TSettings
 	 */
 	abstract protected function setup_settings();
 
@@ -43,7 +43,7 @@ trait Module_With_Settings_Trait {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @return T Module_Settings instance.
+	 * @return TSettings Module_Settings instance.
 	 */
 	public function get_settings() {
 		if ( ! $this->settings instanceof Module_Settings ) {
