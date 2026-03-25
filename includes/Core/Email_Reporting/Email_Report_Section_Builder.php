@@ -142,7 +142,7 @@ class Email_Report_Section_Builder {
 			foreach ( $section_payloads as $section_payload ) {
 				list( $labels, $values, $trends, $event_names ) = $this->normalize_section_payload_components( $section_payload );
 
-				$date_range = $log_date_range ? $log_date_range : $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
+				$date_range = $log_date_range ?: $this->report_processor->compute_date_range( $section_payload['date_range'] ?? null );
 
 				$section = new Email_Report_Data_Section_Part(
 					$section_payload['section_key'] ?? 'section',
@@ -397,7 +397,6 @@ class Email_Report_Section_Builder {
 	protected function build_module_section_payloads( $module_key, $module_payload ) {
 		switch ( $module_key ) {
 			case 'analytics-4':
-			case 'adsense':
 				return $this->analytics_builder->build_sections_from_module_payload( $module_payload );
 			case 'search-console':
 				return $this->search_console_builder->build_sections_from_module_payload( $module_payload, $this->current_period_length );
