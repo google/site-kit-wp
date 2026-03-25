@@ -298,6 +298,16 @@ describe( 'TourTooltips', () => {
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
 
+	it( 'should start repeatable tour even if persisted tour completion is found', () => {
+		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
+
+		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
+			isRepeatable: true,
+		} );
+
+		expect( getByRole( 'alertdialog' ) ).toBeInTheDocument();
+	} );
+
 	it( 'should load Joyride in controlled mode', () => {
 		function callback( data ) {
 			const { controlled } = data;
