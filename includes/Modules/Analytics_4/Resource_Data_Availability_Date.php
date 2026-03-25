@@ -167,8 +167,8 @@ class Resource_Data_Availability_Date {
 	 *
 	 * @since 1.127.0
 	 *
-	 * @param array/null  $available_audience_names Optional. List of available audience resource names. If not provided, it will be fetched from settings.
-	 * @param string/null $property_id Optional. Property ID. If not provided, it will be fetched from settings.
+	 * @param array|null  $available_audience_names Optional. List of available audience resource names. If not provided, it will be fetched from settings.
+	 * @param string|null $property_id Optional. Property ID. If not provided, it will be fetched from settings.
 	 */
 	public function reset_all_resource_dates( $available_audience_names = null, $property_id = null ) {
 
