@@ -40,11 +40,16 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
 import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
+import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'EngagedTrafficSourceWidget', () => {
 	let registry;
 	const { Widget, WidgetNull } = getWidgetComponentProps(
 		KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE
+	);
+
+	const analytics4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -55,6 +60,10 @@ describe( 'EngagedTrafficSourceWidget', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+
+		fetchMock.getOnce( analytics4SettingsEndpoint, {
+			body: analyticsFixtures.defaultSettings,
+		} );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
