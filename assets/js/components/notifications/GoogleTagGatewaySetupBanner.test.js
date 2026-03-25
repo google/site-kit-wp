@@ -332,6 +332,8 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
 
+		await waitForRegistry();
+
 		expect(
 			registry
 				.select( CORE_NOTIFICATIONS )
