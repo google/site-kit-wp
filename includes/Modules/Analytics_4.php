@@ -78,6 +78,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
@@ -118,6 +119,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use stdClass;
 use WP_Error;
 use WP_Post;
@@ -778,9 +780,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
 			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
-			'GET:report'                                => array(
-				'service'   => 'analyticsdata',
-				'shareable' => true,
+			'GET:report'                                => new Get_Report(
+				array(
+					'service'           => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'shareable'         => true,
+					'settings'          => $this->get_settings(),
+					'context'           => $this->context,
+					'is_shared_request' => function ( Datapoint $datapoint ) {
+						return $this->is_shared_datapoint_request( $datapoint );
+					},
+				),
 			),
 			'GET:batch-report'                          => array(
 				'service'   => 'analyticsdata',
@@ -1318,35 +1329,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$request->setLimit( 0 );
 
 				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
-			case 'GET:report':
-				if ( empty( $data['metrics'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$report  = new Analytics_4_Report_Request( $this->context );
-				$request = $report->create_request( $data, $this->is_shared_data_request( $data ) );
-				if ( is_wp_error( $request ) ) {
-					return $request;
-				}
-
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
-				$request->setProperty( $property_id );
-
-				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
 
 			case 'GET:batch-report':
 				if ( empty( $data['requests'] ) ) {
@@ -1443,9 +1425,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return self::filter_property_with_ids( $response );
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
-			case 'GET:report':
-				$report = new Analytics_4_Report_Response( $this->context );
-				return $report->parse_response( $data, $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
