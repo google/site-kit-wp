@@ -44,7 +44,9 @@ import SyncErrorNotice from './SyncErrorNotice';
 import Footer from './Footer';
 import Header from './Header';
 import LearnMoreLink from './LearnMoreLink';
-import SelectionPanel from '@/js/components/SelectionPanel';
+import SelectionPanel, {
+	SelectionPanelContent,
+} from '@/js/components/SelectionPanel';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 import useFormValue from '@/js/hooks/useFormValue';
 import SaveErrorNotice from './SaveErrorNotice';
@@ -111,11 +113,13 @@ export default function Panel() {
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
-			<AudienceItems savedItemSlugs={ savedItemSlugs } />
-			<LearnMoreLink />
-			<SaveErrorNotice savedItemSlugs={ savedItemSlugs } />
-			<SyncErrorNotice />
-			<AudienceCreationSuccessNotice />
+			<SelectionPanelContent>
+				<AudienceItems savedItemSlugs={ savedItemSlugs } />
+				<LearnMoreLink />
+				<SaveErrorNotice savedItemSlugs={ savedItemSlugs } />
+				<SyncErrorNotice />
+				<AudienceCreationSuccessNotice />
+			</SelectionPanelContent>
 			<Footer
 				closePanel={ closePanel }
 				isOpen={ isOpen }
