@@ -126,18 +126,14 @@ class Get_Has_Property_AccessTest extends TestCase {
 	}
 
 	public function test_parse_response() {
-		$data = array(
-			'metrics' => array( 'sessions' ),
-		);
-
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', $data );
+		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'has-property-access' );
 
 		$report_response = new Google_Service_AnalyticsData_RunReportResponse();
 		$response        = $this->datapoint->parse_response( $report_response, $data_request );
 
 		$this->assertSame(
 			$response,
-			$this->reportResponse->parse_response( $data_request, $report_response ),
+			$report_response,
 			'The datapoint should return the response as it is, without any modifications.'
 		);
 	}
