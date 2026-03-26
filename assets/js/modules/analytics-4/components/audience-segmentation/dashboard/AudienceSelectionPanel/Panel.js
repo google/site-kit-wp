@@ -113,7 +113,7 @@ export default function Panel() {
 			onOpen={ onSideSheetOpen }
 		>
 			<Header closePanel={ closePanel } />
-			<SelectionPanelContent>
+			<SelectionPanelContent className="googlesitekit-audience-selection-panel__content">
 				<AudienceItems savedItemSlugs={ savedItemSlugs } />
 				<LearnMoreLink />
 				<SaveErrorNotice savedItemSlugs={ savedItemSlugs } />
