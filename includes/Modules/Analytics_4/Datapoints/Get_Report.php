@@ -18,6 +18,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
+use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
 use WP_Error;
 
 /**
@@ -73,6 +74,7 @@ class Get_Report extends Shareable_Datapoint implements Executable_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
+	 * @return mixed Request object on success, or WP_Error on failure.
 	 */
 	public function create_request( Data_Request $data ) {
 		if ( empty( $data['metrics'] ) ) {

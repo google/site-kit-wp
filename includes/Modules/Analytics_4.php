@@ -79,6 +79,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
@@ -779,7 +780,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
+			'GET:has-property-access'                   => new Get_Has_Property_Access(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+				)
+			),
 			'GET:report'                                => new Get_Report(
 				array(
 					'service'           => function () {
@@ -1306,29 +1313,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
-			case 'GET:has-property-access':
-				if ( ! isset( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				// A simple way to check for property access is to attempt a minimal report request.
-				// If the user does not have access, this will return a 403 error.
-				$request = new Google_Service_AnalyticsData_RunReportRequest();
-				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
-				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
-				$request->setDateRanges(
-					array(
-						new Google_Service_AnalyticsData_DateRange(
-							array(
-								'start_date' => 'yesterday',
-								'end_date'   => 'today',
-							)
-						),
-					)
-				);
-				$request->setLimit( 0 );
-
-				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
 
 			case 'GET:batch-report':
 				if ( empty( $data['requests'] ) ) {
