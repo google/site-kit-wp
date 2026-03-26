@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import SelectionPanel from './SelectionPanel';
-
+import SelectionPanel, { SelectionPanelContent } from './SelectionPanel';
+export { SelectionPanelContent };
 export { default as SelectionPanelHeader } from './SelectionPanelHeader';
 export { default as SelectionPanelItem } from './SelectionPanelItem';
 export { default as SelectionPanelItems } from './SelectionPanelItems';
