@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
-use Google\Site_Kit\Modules\Analytics_4\Report\Response as ReportResponse;
+use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -56,9 +56,9 @@ class Get_ReportTest extends TestCase {
 	private $analytics;
 
 	/**
-	 * Report\Response instance.
+	 * Analytics_4_Report_Response instance.
 	 *
-	 * @var ReportRespose
+	 * @var Analytics_4_Report_Response
 	 */
 	private $reportResponse;
 
@@ -75,7 +75,7 @@ class Get_ReportTest extends TestCase {
 		$this->analytics->get_client()->withDefer( true );
 		$service = new Google_Service_AnalyticsData( $this->analytics->get_client() );
 
-		$this->reportResponse = new ReportResponse( $context );
+		$this->reportResponse = new Analytics_4_Report_Response( $context );
 
 		$this->datapoint = new Get_Report(
 			array(
@@ -169,7 +169,7 @@ class Get_ReportTest extends TestCase {
 		$this->assertEquals(
 			$response,
 			$this->reportResponse->parse_response( $data_request, new Google_Service_AnalyticsData_RunReportResponse() ),
-			'The datapoint should parse the response using Analytics_4\Report\Response.'
+			'The datapoint should parse the response using Analytics_4_Report_Response.'
 		);
 	}
 }
