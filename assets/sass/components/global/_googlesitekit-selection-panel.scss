@@ -21,9 +21,20 @@
 	.googlesitekit-selection-panel {
 		display: flex;
 		flex-direction: column;
+		height: 100%;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	.googlesitekit-selection-panel > .googlesitekit-selection-panel__content {
+		flex: 1 1 auto;
+		height: 0;
+		min-height: 0;
+		overflow-y: auto;
 	}
 
 	.googlesitekit-selection-panel-header {
+		flex-shrink: 0;
 		padding: $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
@@ -82,7 +93,6 @@
 	}
 
 	.googlesitekit-selection-panel-items {
-		overflow: auto;
 
 		.googlesitekit-selection-panel-items__subheading {
 			color: $c-surfaces-on-surface-variant;
@@ -166,6 +176,7 @@
 
 	.googlesitekit-selection-panel-footer {
 		background-color: $c-surfaces-background;
+		flex-shrink: 0;
 		margin-top: auto;
 		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
 		width: 100%;
