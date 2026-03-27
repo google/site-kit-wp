@@ -67,9 +67,13 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Custom_Dimension_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Resource_Data_Availability_Date;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Google_Tag_ID_Mismatch;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Set_Is_Web_Data_Stream_Unavailable;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
@@ -96,7 +100,6 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAudience;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
@@ -715,11 +718,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'request_scopes_message'    => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 				),
 			),
-			'GET:google-tag-settings'                   => array(
-				'service' => 'tagmanager',
-				'scopes'  => array(
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			'GET:google-tag-settings'                   => new Get_Google_Tag_Settings(
+				array(
+					'service' => function () {
+						return $this->get_service( 'tagmanager' );
+					},
+					'scopes'  => array(
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					),
+				)
 			),
 			'POST:create-property'                      => new Create_Property(
 				array(
@@ -805,19 +812,29 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			),
-			'POST:set-google-tag-id-mismatch'           => array(
-				'service' => '',
+			'POST:set-google-tag-id-mismatch'           => new Set_Google_Tag_ID_Mismatch(
+				array(
+					'transients' => $this->transients,
+					'service'    => '',
+				)
 			),
-			'POST:set-is-web-data-stream-unavailable'   => array(
-				'service' => '',
+			'POST:set-is-web-data-stream-unavailable'   => new Set_Is_Web_Data_Stream_Unavailable(
+				array(
+					'transients' => $this->transients,
+					'settings'   => $this->get_settings(),
+					'service'    => '',
+				)
 			),
 			'POST:create-audience'                      => array(
 				'service'                => 'analyticsadmin-v1alpha',
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'POST:save-resource-data-availability-date' => array(
-				'service' => '',
+			'POST:save-resource-data-availability-date' => new Save_Resource_Data_Availability_Date(
+				array(
+					'resource_data_availability_date' => $this->resource_data_availability_date,
+					'service'                         => '',
+				)
 			),
 			'POST:sync-audiences'                       => array(
 				'service'   => 'analyticsadmin-v1alpha',
@@ -1467,34 +1484,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->listPropertiesAudiences( $property_id );
-			case 'POST:save-resource-data-availability-date':
-				if ( ! isset( $data['resourceType'] ) ) {
-					throw new Missing_Required_Param_Exception( 'resourceType' );
-				}
-
-				if ( ! isset( $data['resourceSlug'] ) ) {
-					throw new Missing_Required_Param_Exception( 'resourceSlug' );
-				}
-
-				if ( ! isset( $data['date'] ) ) {
-					throw new Missing_Required_Param_Exception( 'date' );
-				}
-
-				if ( ! $this->resource_data_availability_date->is_valid_resource_type( $data['resourceType'] ) ) {
-					throw new Invalid_Param_Exception( 'resourceType' );
-				}
-
-				if ( ! $this->resource_data_availability_date->is_valid_resource_slug( $data['resourceSlug'], $data['resourceType'] ) ) {
-					throw new Invalid_Param_Exception( 'resourceSlug' );
-				}
-
-				if ( ! is_int( $data['date'] ) ) {
-					throw new Invalid_Param_Exception( 'date' );
-				}
-
-				return function () use ( $data ) {
-					return $this->resource_data_availability_date->set_resource_date( $data['resourceSlug'], $data['resourceType'], $data['date'] );
-				};
 			case 'GET:container-lookup':
 				if ( ! isset( $data['destinationID'] ) ) {
 					return new WP_Error(
@@ -1527,17 +1516,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
 					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
 				);
-			case 'GET:google-tag-settings':
-				if ( ! isset( $data['measurementID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'measurementID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['measurementID'] ) );
 			case 'GET:key-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
@@ -1554,42 +1532,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $analyticsadmin
 					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					->listPropertiesKeyEvents( $property_id );
-			case 'POST:set-google-tag-id-mismatch':
-				if ( ! isset( $data['hasMismatchedTag'] ) ) {
-					throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
-				}
-
-				if ( false === $data['hasMismatchedTag'] ) {
-					return function () {
-						$this->transients->delete( 'googlesitekit_inline_tag_id_mismatch' );
-						return false;
-					};
-				}
-
-				return function () use ( $data ) {
-					$this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data['hasMismatchedTag'] );
-					return $data['hasMismatchedTag'];
-				};
-			case 'POST:set-is-web-data-stream-unavailable':
-				if ( ! isset( $data['isWebDataStreamUnavailable'] ) ) {
-					throw new Missing_Required_Param_Exception( 'isWebDataStreamUnavailable' );
-				}
-
-				if ( true === $data['isWebDataStreamUnavailable'] ) {
-					return function () {
-						$settings      = $this->get_settings()->get();
-						$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
-						$this->transients->set( $transient_key, true );
-						return true;
-					};
-				}
-
-				return function () {
-					$settings      = $this->get_settings()->get();
-					$transient_key = 'googlesitekit_web_data_stream_unavailable_' . $settings['webDataStreamID'];
-					$this->transients->delete( $transient_key );
-					return false;
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -1622,8 +1564,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return self::filter_property_with_ids( $response );
 			case 'GET:container-destinations':
 				return (array) $response->getDestination();
-			case 'GET:google-tag-settings':
-				return $this->get_google_tag_settings_for_measurement_id( $response, $data['measurementID'] );
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
@@ -2058,61 +1998,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		return true;
-	}
-
-	/**
-	 * Gets the Google Tag Settings for the given measurement ID.
-	 *
-	 * @since 1.94.0
-	 *
-	 * @param Google_Service_TagManager_Container $container Tag Manager container.
-	 * @param string                              $measurement_id Measurement ID.
-	 * @return array Google Tag Settings.
-	 */
-	protected function get_google_tag_settings_for_measurement_id( $container, $measurement_id ) {
-		return array(
-			'googleTagAccountID'   => $container->getAccountId(),
-			'googleTagContainerID' => $container->getContainerId(),
-			'googleTagID'          => $this->determine_google_tag_id_from_tag_ids( $container->getTagIds(), $measurement_id ),
-		);
-	}
-
-	/**
-	 * Determines Google Tag ID from the given Tag IDs.
-	 *
-	 * @since 1.94.0
-	 *
-	 * @param array  $tag_ids Tag IDs.
-	 * @param string $measurement_id Measurement ID.
-	 * @return string Google Tag ID.
-	 */
-	private function determine_google_tag_id_from_tag_ids( $tag_ids, $measurement_id ) {
-		// If there is only one tag id in the array, return it.
-		if ( count( $tag_ids ) === 1 ) {
-			return $tag_ids[0];
-		}
-
-		// If there are multiple tags, return the first one that starts with `GT-`.
-		foreach ( $tag_ids as $tag_id ) {
-			if ( substr( $tag_id, 0, 3 ) === 'GT-' ) { // strlen( 'GT-' ) === 3.
-				return $tag_id;
-			}
-		}
-
-		// Otherwise, return the `$measurement_id` if it is in the array.
-		if ( in_array( $measurement_id, $tag_ids, true ) ) {
-			return $measurement_id;
-		}
-
-		// Otherwise, return the first one that starts with `G-`.
-		foreach ( $tag_ids as $tag_id ) {
-			if ( substr( $tag_id, 0, 2 ) === 'G-' ) { // strlen( 'G-' ) === 2.
-				return $tag_id;
-			}
-		}
-
-		// If none of the above, return the first one.
-		return $tag_ids[0];
 	}
 
 	/**
