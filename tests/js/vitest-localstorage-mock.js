@@ -41,6 +41,9 @@ class StorageMock {
 			const keys = Object.keys( this.store );
 			return keys[ index ] || null;
 		} );
+		Object.defineProperty( this, 'length', {
+			get: () => Object.keys( this.store ).length,
+		} );
 	}
 }
 

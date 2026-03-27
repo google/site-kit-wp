@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const lib = jest.requireActual( '@wordpress/compose' );
+const lib = vi.requireActual( '@wordpress/compose' );
 
 // Here we ensure that the `useInstanceId()` hook can be mocked, although
 // it initially retains its original implementation.
@@ -25,7 +25,7 @@ const lib = jest.requireActual( '@wordpress/compose' );
 const wordpressCompose = {
 	...lib,
 	// eslint-disable-next-line sitekit/acronym-case
-	useInstanceId: jest.fn( lib.useInstanceId ),
+	useInstanceId: vi.fn( lib.useInstanceId ),
 };
 
 module.exports = wordpressCompose;

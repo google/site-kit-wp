@@ -38,6 +38,13 @@ export default defineConfig( {
 		coverage: {
 			reporter: [ 'text', 'json', 'html' ],
 		},
+		exclude: [
+			'**/node_modules/**',
+			'**/dist/**',
+			'**/cypress/**',
+			'**/.{idea,git,cache,output,temp}/**',
+			'**/tests/e2e/**',
+		],
 		root: '../../',
 		setupFiles: [
 			path.resolve( __dirname, './setup-globals.js' ),
