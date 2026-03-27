@@ -66,6 +66,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
@@ -686,7 +687,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$datapoints = array(
 			'GET:account-summaries'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:ads-links'                             => array( 'service' => 'analyticsadmin' ),
+			'GET:ads-links'                             => new Get_Ads_Links(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+				)
+			),
 			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
 			'GET:container-lookup'                      => array(
 				'service' => 'tagmanager',
@@ -1211,14 +1218,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'pageToken' => $data['pageToken'],
 					)
 				);
-			case 'GET:ads-links':
-				if ( empty( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				$parent = self::normalize_property_id( $data['propertyID'] );
-
-				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
 			case 'GET:adsense-links':
 				if ( empty( $data['propertyID'] ) ) {
 					throw new Missing_Required_Param_Exception( 'propertyID' );
@@ -1609,8 +1608,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
-			case 'GET:ads-links':
-				return (array) $response->getGoogleAdsLinks();
 			case 'GET:adsense-links':
 				return (array) $response->getAdsenseLinks();
 			case 'GET:properties':
