@@ -38,14 +38,14 @@ describe( 'googlesitekit.api.cache', () => {
 		it( 'should return the most applicable storage driver available', async () => {
 			let storage = await getStorage();
 
-			// localStorage is the best storage mechanism available in the test suite
-			// by default and should be returned.
-			expect( storage ).toEqual( localStorage );
+			// sessionStorage is the first in the default storage order and
+			// both storages are available in the test suite, so it should be returned.
+			expect( storage ).toBe( sessionStorage );
 
 			setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
 			storage = await getStorage();
 
-			expect( storage ).toEqual( sessionStorage );
+			expect( storage ).toBe( sessionStorage );
 
 			// Ensure an empty order still works.
 			setStorageOrder( [] );
@@ -246,9 +246,9 @@ describe( 'googlesitekit.api.cache', () => {
 						`${ STORAGE_KEY_PREFIX }array`,
 						storedData
 					);
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 1 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						1
+					);
 				} );
 			} );
 
@@ -262,9 +262,9 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
 						`${ STORAGE_KEY_PREFIX }array`
 					);
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 0 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						0
+					);
 				} );
 
 				it( 'should delete Site Kit data for the current version when the full key is specified', async () => {
@@ -278,9 +278,9 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
 						`${ STORAGE_KEY_PREFIX }array`
 					);
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 0 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						0
+					);
 				} );
 
 				it( 'should delete Site Kit data for an old version when the full key is specified', async () => {
@@ -298,9 +298,9 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( storageMechanism.removeItem ).toHaveBeenCalledWith(
 						`${ oldStorageKeyPrefix }array`
 					);
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 0 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						0
+					);
 				} );
 
 				it( "should not error when trying to delete data that doesn't exist", async () => {
@@ -322,9 +322,9 @@ describe( 'googlesitekit.api.cache', () => {
 					// Set non-Site Kit keys to ensure we don't return them.
 					storageMechanism.setItem( 'whatever', 'cool' );
 					storageMechanism.setItem( 'something', 'else' );
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 2 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						2
+					);
 
 					const keys = await getKeys();
 					expect( keys ).toEqual( [] );
@@ -363,9 +363,9 @@ describe( 'googlesitekit.api.cache', () => {
 						'data'
 					);
 
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 4 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						4
+					);
 
 					const keys = await getKeys();
 					// The returned keys should include the Site Kit prefix.
@@ -396,9 +396,9 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const keys = await getKeys();
 					expect( keys.length ).toEqual( 0 );
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 0 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						0
+					);
 				} );
 
 				it( 'should clear only Site Kit keys', async () => {
@@ -411,9 +411,9 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const keys = await getKeys();
 					expect( keys.length ).toEqual( 0 );
-					expect(
-						Object.keys( storageMechanism.__STORE__ ).length
-					).toBe( 1 );
+					expect( Object.keys( storageMechanism.store ).length ).toBe(
+						1
+					);
 				} );
 			} );
 		}
