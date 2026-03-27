@@ -258,7 +258,7 @@ describe( 'modules/analytics-4 properties', () => {
 					).getTime(),
 				} );
 
-				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock ).toHaveFetched( propertyEndpoint, {
 					query: { propertyID },
 				} );

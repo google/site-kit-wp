@@ -302,7 +302,7 @@ describe( 'core/modules modules', () => {
 
 				// The fourth request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( isActiveAfter ).toEqual( false );
 				expect( console ).toHaveErrored();
 			} );

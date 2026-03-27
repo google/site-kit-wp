@@ -158,7 +158,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect( fetchMock ).toHaveFetched( surveyEventRegexp );
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
@@ -166,7 +166,7 @@ describe( 'CurrentSurvey', () => {
 
 			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			expect( fetchMock ).toHaveFetched(
 				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -306,7 +306,7 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			fireEvent.click( getByText( 'Other' ) );
 
@@ -317,7 +317,7 @@ describe( 'CurrentSurvey', () => {
 			// Check that submits correctly
 			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			expect( fetchMock ).toHaveFetched(
 				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -377,7 +377,7 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			} );
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// The submit button should be disabled until two options are selected.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
@@ -551,7 +551,7 @@ describe( 'CurrentSurvey', () => {
 			// Check that submits correctly.
 			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
-			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			expect( fetchMock ).toHaveFetched(
 				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
@@ -626,7 +626,7 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		fetchMock.resetHistory();
+		fetchMock.callHistory.clear();
 
 		// Render again to ensure we don't send another `survey_shown` event.
 		rerender();
@@ -940,7 +940,7 @@ describe( 'CurrentSurvey', () => {
 			}
 		);
 
-		fetchMock.reset();
+		fetchMock.mockReset();
 
 		// Render again to ensure we don't send another `completion_shown` event.
 		rerender();

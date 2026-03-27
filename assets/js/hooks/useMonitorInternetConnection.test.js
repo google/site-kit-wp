@@ -167,7 +167,7 @@ describe( 'useMonitorInternetConnection', () => {
 		setNavigatorOnlineStatus( true );
 
 		// No fetch should happen when offline until the interval is reached.
-		expect( fetchMock ).toHaveBeenCalledTimes( 0 );
+		expect( fetchMock ).toHaveFetchedTimes( 0 );
 
 		await act( async () => {
 			vi.advanceTimersByTime( 1 );

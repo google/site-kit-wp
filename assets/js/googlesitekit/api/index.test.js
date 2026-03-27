@@ -153,7 +153,6 @@ describe( 'googlesitekit.api', () => {
 			expect( fetchMock ).toHaveFetched(
 				'/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
 				{
-					body: undefined,
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
@@ -518,7 +517,7 @@ describe( 'googlesitekit.api', () => {
 
 		it( 'should invalidate the cache for matching type+identifier+datapoint combo', async () => {
 			// Mock all requests for this URL.
-			fetchMock.mock(
+			fetchMock.route(
 				new RegExp(
 					'/google-site-kit/v1/core/search-console/data/will-cache'
 				),
@@ -565,7 +564,7 @@ describe( 'googlesitekit.api', () => {
 
 		it( 'should invalidate the cache for matching type+identifier+datapoint with query params', async () => {
 			// Mock all requests for this URL.
-			fetchMock.mock(
+			fetchMock.route(
 				new RegExp(
 					'/google-site-kit/v1/core/search-console/data/will-cache'
 				),
@@ -682,9 +681,7 @@ describe( 'googlesitekit.api', () => {
 				'other-data'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				2
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 2 );
 
 			await invalidateCache(
 				'core',
@@ -692,9 +689,7 @@ describe( 'googlesitekit.api', () => {
 				'accounts'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				0
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 0 );
 		} );
 
 		it( 'should remove cached item with query params', async () => {
@@ -710,9 +705,7 @@ describe( 'googlesitekit.api', () => {
 				'data'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				1
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 1 );
 
 			await invalidateCache(
 				'core',
@@ -720,9 +713,7 @@ describe( 'googlesitekit.api', () => {
 				'accounts'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				0
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 0 );
 		} );
 
 		it( 'should only remove keys in the right scope', async () => {
@@ -739,9 +730,7 @@ describe( 'googlesitekit.api', () => {
 				'other-data'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				2
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 2 );
 
 			await invalidateCache(
 				'core',
@@ -753,9 +742,7 @@ describe( 'googlesitekit.api', () => {
 			);
 
 			expect( value ).toEqual( 'other-data' );
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				1
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 1 );
 		} );
 
 		it( 'should remove all keys when scope is broad', async () => {
@@ -772,15 +759,11 @@ describe( 'googlesitekit.api', () => {
 				'other-data'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				2
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 2 );
 
 			await invalidateCache( 'core', MODULE_SLUG_SEARCH_CONSOLE );
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				0
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 0 );
 		} );
 
 		it( 'should remove everything in the cache when called without arguments', async () => {
@@ -801,15 +784,11 @@ describe( 'googlesitekit.api', () => {
 				'other-data'
 			);
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				2
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 2 );
 
 			await invalidateCache();
 
-			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe(
-				0
-			);
+			expect( Object.keys( storageMechanism.store ).length ).toBe( 0 );
 		} );
 	} );
 
@@ -917,7 +896,6 @@ describe( 'googlesitekit.api', () => {
 			expect( fetchMock ).toHaveFetched(
 				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
-					body: undefined,
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',

@@ -77,8 +77,8 @@ describe( 'modules/ads settings', () => {
 		} );
 
 		it( 'should send a POST request when saving changed settings', async () => {
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body ).data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body ).data,
 				status: 200,
 			} ) );
 
@@ -118,17 +118,17 @@ describe( 'modules/ads settings', () => {
 
 			provideNotifications( registry );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body )?.data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+			fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 				const {
 					data: {
 						settings: { isEnabled },
 					},
-				} = JSON.parse( opts.body );
+				} = JSON.parse( callLog.options.body );
 
 				return {
 					body: {
@@ -159,8 +159,8 @@ describe( 'modules/ads settings', () => {
 				isScriptAccessEnabled: true,
 			} );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body ).data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body ).data,
 				status: 200,
 			} ) );
 
@@ -186,8 +186,8 @@ describe( 'modules/ads settings', () => {
 				isScriptAccessEnabled: true,
 			} );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body )?.data,
 				status: 200,
 			} ) );
 
@@ -216,17 +216,17 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body ).data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+			fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 				const {
 					data: {
 						settings: { isEnabled },
 					},
-				} = JSON.parse( opts.body );
+				} = JSON.parse( callLog.options.body );
 
 				return {
 					body: {
@@ -276,17 +276,17 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body ).data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+			fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 				const {
 					data: {
 						settings: { isEnabled },
 					},
-				} = JSON.parse( opts.body );
+				} = JSON.parse( callLog.options.body );
 
 				return {
 					body: {
@@ -323,17 +323,17 @@ describe( 'modules/ads settings', () => {
 
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body ).data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body ).data,
 				status: 200,
 			} ) );
 
-			fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+			fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 				const {
 					data: {
 						settings: { isEnabled },
 					},
-				} = JSON.parse( opts.body );
+				} = JSON.parse( callLog.options.body );
 
 				return {
 					body: {

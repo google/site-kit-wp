@@ -209,7 +209,7 @@ describe( 'EnhancedMeasurementActivationBanner', () => {
 
 		// Enhanced measurement settings should update when enhanced measurement
 		// is enabled via the "Enable now" CTA.
-		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
 		expect( fetchMock ).toHaveFetched(
 			enhancedMeasurementSettingsEndpoint
 		);

@@ -145,15 +145,15 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 
 			// Save updated Ad Blocking Recovery Settings.
-			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
-				{
-					data: {
-						adBlockingRecoverySetupStatus: 'tag-placed',
-						useAdBlockingRecoveryErrorSnippet: true,
-						useAdBlockingRecoverySnippet: true,
-					},
-				}
-			);
+			expect(
+				JSON.parse( fetchMock.callHistory.lastCall()?.options?.body )
+			).toStrictEqual( {
+				data: {
+					adBlockingRecoverySetupStatus: 'tag-placed',
+					useAdBlockingRecoveryErrorSnippet: true,
+					useAdBlockingRecoverySnippet: true,
+				},
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'adBlockingRecovery_adsense-abr',
@@ -301,15 +301,15 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 
 			// Rollback Ad Blocking Recovery Settings.
-			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
-				{
-					data: {
-						adBlockingRecoverySetupStatus: '',
-						useAdBlockingRecoveryErrorSnippet: false,
-						useAdBlockingRecoverySnippet: false,
-					},
-				}
-			);
+			expect(
+				JSON.parse( fetchMock.callHistory.lastCall()?.options?.body )
+			).toStrictEqual( {
+				data: {
+					adBlockingRecoverySetupStatus: '',
+					useAdBlockingRecoveryErrorSnippet: false,
+					useAdBlockingRecoverySnippet: false,
+				},
+			} );
 
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
@@ -350,15 +350,15 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 
 			// Rollback Ad Blocking Recovery Settings.
-			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
-				{
-					data: {
-						adBlockingRecoverySetupStatus: '',
-						useAdBlockingRecoveryErrorSnippet: false,
-						useAdBlockingRecoverySnippet: false,
-					},
-				}
-			);
+			expect(
+				JSON.parse( fetchMock.callHistory.lastCall()?.options?.body )
+			).toStrictEqual( {
+				data: {
+					adBlockingRecoverySetupStatus: '',
+					useAdBlockingRecoveryErrorSnippet: false,
+					useAdBlockingRecoverySnippet: false,
+				},
+			} );
 
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
@@ -426,13 +426,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 
 			// Save updated Ad Blocking Recovery Settings.
-			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
-				{
-					data: {
-						adBlockingRecoverySetupStatus: 'setup-confirmed',
-					},
-				}
-			);
+			expect(
+				JSON.parse( fetchMock.callHistory.lastCall()?.options?.body )
+			).toStrictEqual( {
+				data: {
+					adBlockingRecoverySetupStatus: 'setup-confirmed',
+				},
+			} );
 
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
@@ -531,13 +531,13 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 
 			// Save updated Ad Blocking Recovery Settings.
-			expect( JSON.parse( fetchMock.lastOptions().body ) ).toStrictEqual(
-				{
-					data: {
-						adBlockingRecoverySetupStatus: 'setup-confirmed',
-					},
-				}
-			);
+			expect(
+				JSON.parse( fetchMock.callHistory.lastCall()?.options?.body )
+			).toStrictEqual( {
+				data: {
+					adBlockingRecoverySetupStatus: 'setup-confirmed',
+				},
+			} );
 
 			expect( global.location.assign ).toHaveBeenCalled();
 			expect( global.location.assign ).toHaveBeenCalledWith(
