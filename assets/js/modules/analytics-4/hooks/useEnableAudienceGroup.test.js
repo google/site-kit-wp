@@ -72,8 +72,8 @@ describe( 'useEnableAudienceGroup', () => {
 			'enableAudienceGroup'
 		);
 
-		fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
-			const { data } = JSON.parse( opts.body );
+		fetchMock.postOnce( audienceSettingsEndpoint, ( callLog ) => {
+			const { data } = JSON.parse( callLog.options.body );
 			// Return the same settings passed to the API.
 			return { body: data, status: 200 };
 		} );

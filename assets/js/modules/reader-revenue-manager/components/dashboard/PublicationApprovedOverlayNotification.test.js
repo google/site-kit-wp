@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import {
@@ -82,8 +77,8 @@ describe( 'PublicationApprovedOverlayNotification', () => {
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		fetchMock.postOnce( settingsEndpoint, ( _url, opts ) => {
-			const { data } = JSON.parse( opts.body );
+		fetchMock.postOnce( settingsEndpoint, ( callLog ) => {
+			const { data } = JSON.parse( callLog.options.body );
 
 			// Return the same settings passed to the API.
 			return { body: data, status: 200 };

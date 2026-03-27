@@ -52,9 +52,7 @@ describe( 'initializeTracking', () => {
 		select.mockImplementation( ( store ) => {
 			if ( store === MODULES_READER_REVENUE_MANAGER ) {
 				return {
-					getPublicationID: jest
-						.fn()
-						.mockReturnValue( publicationID ),
+					getPublicationID: vi.fn().mockReturnValue( publicationID ),
 				};
 			}
 
@@ -87,9 +85,7 @@ describe( 'initializeTracking', () => {
 		select.mockImplementation( ( store ) => {
 			if ( store === MODULES_READER_REVENUE_MANAGER ) {
 				return {
-					getPublicationID: jest
-						.fn()
-						.mockReturnValue( publicationID ),
+					getPublicationID: vi.fn().mockReturnValue( publicationID ),
 				};
 			}
 
@@ -100,10 +96,8 @@ describe( 'initializeTracking', () => {
 							[ metaKey ]: productID,
 						},
 					} ),
-					isSavingPost: jest
-						.fn()
-						.mockImplementation( () => isSaving ),
-					isAutosavingPost: jest
+					isSavingPost: vi.fn().mockImplementation( () => isSaving ),
+					isAutosavingPost: vi
 						.fn()
 						.mockImplementation( () => isAutosaving ),
 				};
@@ -163,9 +157,7 @@ describe( 'initializeTracking', () => {
 		select.mockImplementation( ( store ) => {
 			if ( store === MODULES_READER_REVENUE_MANAGER ) {
 				return {
-					getPublicationID: jest
-						.fn()
-						.mockReturnValue( publicationID ),
+					getPublicationID: vi.fn().mockReturnValue( publicationID ),
 				};
 			}
 
@@ -176,10 +168,8 @@ describe( 'initializeTracking', () => {
 							[ metaKey ]: productID,
 						},
 					} ),
-					isSavingPost: jest
-						.fn()
-						.mockImplementation( () => isSaving ),
-					isAutosavingPost: jest
+					isSavingPost: vi.fn().mockImplementation( () => isSaving ),
+					isAutosavingPost: vi
 						.fn()
 						.mockImplementation( () => isAutosaving ),
 				};

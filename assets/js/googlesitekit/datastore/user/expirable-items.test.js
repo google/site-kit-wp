@@ -25,7 +25,6 @@ import {
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import fetchMock from 'fetch-mock';
 
 describe( 'core/user expirable-items', () => {
 	const fetchGetExpiredItems = new RegExp(

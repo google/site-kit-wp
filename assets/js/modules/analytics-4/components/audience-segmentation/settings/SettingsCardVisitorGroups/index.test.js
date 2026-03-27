@@ -158,8 +158,8 @@ describe( 'SettingsCardVisitorGroups', () => {
 					audienceSegmentationSetupCompletedBy: null,
 				} );
 
-			fetchMock.post( audienceSettingsEndpoint, ( url, opts ) => {
-				const { data } = JSON.parse( opts.body );
+			fetchMock.post( audienceSettingsEndpoint, ( callLog ) => {
+				const { data } = JSON.parse( callLog.options.body );
 				// Return the same settings passed to the API.
 				return { body: data, status: 200 };
 			} );

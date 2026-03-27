@@ -48,7 +48,6 @@ import {
 	audiences as audiencesFixture,
 	availableAudiences as availableAudiencesFixture,
 } from './__fixtures__';
-import fetchMock from 'fetch-mock';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
@@ -606,8 +605,8 @@ describe( 'modules/analytics-4 audiences', () => {
 			const isAudienceSegmentationWidgetHidden = false;
 
 			beforeEach( () => {
-				fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
+				fetchMock.postOnce( audienceSettingsEndpoint, ( callLog ) => {
+					const { data } = JSON.parse( callLog.options.body );
 					// Return the same settings passed to the API.
 					return { body: data.settings, status: 200 };
 				} );
@@ -965,9 +964,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 				fetchMock.post(
 					{ url: createAudienceEndpoint, repeat: 2 },
-					( url, opts ) => {
+					( callLog ) => {
 						return {
-							body: opts.body.includes( 'new_visitors' )
+							body: callLog.options.body.includes(
+								'new_visitors'
+							)
 								? {
 										...SITE_KIT_AUDIENCE_DEFINITIONS[
 											'new-visitors'
@@ -1432,8 +1433,10 @@ describe( 'modules/analytics-4 audiences', () => {
 					// Mocking createAudience API call with mixed responses.
 					fetchMock.post(
 						{ url: createAudienceEndpoint, repeat: 2 },
-						( url, opts ) => {
-							if ( opts.body.includes( 'new_visitors' ) ) {
+						( callLog ) => {
+							if (
+								callLog.options.body.includes( 'new_visitors' )
+							) {
 								return {
 									body: {
 										...SITE_KIT_AUDIENCE_DEFINITIONS[
@@ -1524,9 +1527,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					fetchMock.post(
 						{ url: createAudienceEndpoint, repeat: 2 },
-						( url, opts ) => {
+						( callLog ) => {
 							return {
-								body: opts.body.includes( 'new_visitors' )
+								body: callLog.options.body.includes(
+									'new_visitors'
+								)
 									? {
 											...SITE_KIT_AUDIENCE_DEFINITIONS[
 												'new-visitors'
@@ -1672,9 +1677,11 @@ describe( 'modules/analytics-4 audiences', () => {
 
 					fetchMock.post(
 						{ url: createAudienceEndpoint, repeat: 2 },
-						( url, opts ) => {
+						( callLog ) => {
 							return {
-								body: opts.body.includes( 'new_visitors' )
+								body: callLog.options.body.includes(
+									'new_visitors'
+								)
 									? {
 											...SITE_KIT_AUDIENCE_DEFINITIONS[
 												'new-visitors'

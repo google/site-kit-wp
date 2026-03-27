@@ -132,8 +132,8 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
-					const { data } = JSON.parse( opts.body );
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => {
+					const { data } = JSON.parse( callLog.options.body );
 					// Return the same settings passed to the API.
 					return { body: data, status: 200 };
 				} );
@@ -271,8 +271,8 @@ describe( 'modules/analytics-4 settings', () => {
 						webDataStreamName,
 					} );
 
-					fetchMock.postOnce( settingsEndpoint, ( url, opts ) => {
-						const { data } = JSON.parse( opts.body );
+					fetchMock.postOnce( settingsEndpoint, ( callLog ) => {
+						const { data } = JSON.parse( callLog.options.body );
 						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
 					} );
@@ -460,7 +460,7 @@ describe( 'modules/analytics-4 settings', () => {
 						data: { status: 500 },
 					};
 
-					fetchMock.reset();
+					fetchMock.mockReset();
 					fetchMock.postOnce( enhancedMeasurementSettingsEndpoint, {
 						status: 500,
 						body: errorObject,
@@ -554,12 +554,12 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -692,12 +692,12 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -764,12 +764,12 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -827,12 +827,12 @@ describe( 'modules/analytics-4 settings', () => {
 					status: 200,
 				} );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {

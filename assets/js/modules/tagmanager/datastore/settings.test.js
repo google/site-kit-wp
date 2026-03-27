@@ -55,7 +55,6 @@ import {
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { createCacheKey } from '@/js/googlesitekit/api';
-import fetchMock from 'fetch-mock';
 import { createBuildAndReceivers } from './__factories__/utils';
 import { getNormalizedContainerName } from '@/js/modules/tagmanager/util';
 import {
@@ -181,8 +180,8 @@ describe( 'modules/tagmanager settings', () => {
 						new RegExp(
 							'/google-site-kit/v1/modules/tagmanager/data/settings'
 						),
-						( url, opts ) => {
-							const { data } = JSON.parse( opts.body );
+						( callLog ) => {
+							const { data } = JSON.parse( callLog.options.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
 						}
@@ -389,8 +388,8 @@ describe( 'modules/tagmanager settings', () => {
 						new RegExp(
 							'/google-site-kit/v1/modules/tagmanager/data/settings'
 						),
-						( url, opts ) => {
-							const { data } = JSON.parse( opts.body );
+						( callLog ) => {
+							const { data } = JSON.parse( callLog.options.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
 						}
@@ -475,8 +474,8 @@ describe( 'modules/tagmanager settings', () => {
 						new RegExp(
 							'/google-site-kit/v1/modules/tagmanager/data/settings'
 						),
-						( url, opts ) => {
-							const { data } = JSON.parse( opts.body );
+						( callLog ) => {
+							const { data } = JSON.parse( callLog.options.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
 						}
@@ -519,17 +518,17 @@ describe( 'modules/tagmanager settings', () => {
 
 				provideNotifications( registry );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body )?.data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body )?.data,
 					status: 200,
 				} ) );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -564,8 +563,8 @@ describe( 'modules/tagmanager settings', () => {
 						isScriptAccessEnabled: true,
 					} );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body ).data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body ).data,
 					status: 200,
 				} ) );
 
@@ -595,8 +594,8 @@ describe( 'modules/tagmanager settings', () => {
 						isScriptAccessEnabled: true,
 					} );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body )?.data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body )?.data,
 					status: 200,
 				} ) );
 
@@ -619,17 +618,17 @@ describe( 'modules/tagmanager settings', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body ).data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body ).data,
 					status: 200,
 				} ) );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -675,17 +674,17 @@ describe( 'modules/tagmanager settings', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body ).data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body ).data,
 					status: 200,
 				} ) );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {
@@ -726,17 +725,17 @@ describe( 'modules/tagmanager settings', () => {
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-				fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-					body: JSON.parse( opts.body ).data,
+				fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+					body: JSON.parse( callLog.options.body ).data,
 					status: 200,
 				} ) );
 
-				fetchMock.postOnce( gtgSettingsEndpoint, ( url, opts ) => {
+				fetchMock.postOnce( gtgSettingsEndpoint, ( callLog ) => {
 					const {
 						data: {
 							settings: { isEnabled },
 						},
-					} = JSON.parse( opts.body );
+					} = JSON.parse( callLog.options.body );
 
 					return {
 						body: {

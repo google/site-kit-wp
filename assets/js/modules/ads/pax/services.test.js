@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import {
@@ -246,7 +241,7 @@ describe( 'PAX partner services', () => {
 
 			describe( 'getPageViewConversionSetting', () => {
 				it( 'should hold correct value for websitePages property', async () => {
-					const wpPagesEndpoint = new RegExp( '^/wp/v2/pages' );
+					const wpPagesEndpoint = new RegExp( '/wp/v2/pages' );
 
 					fetchMock.getOnce( wpPagesEndpoint, {
 						body: [
@@ -272,9 +267,9 @@ describe( 'PAX partner services', () => {
 					expect( fetchMock ).toHaveFetched( wpPagesEndpoint, {} );
 
 					const wpPagesEndpointLastCall =
-						fetchMock.lastCall( wpPagesEndpoint );
+						fetchMock.callHistory.lastCall( wpPagesEndpoint );
 
-					expect( wpPagesEndpointLastCall[ 0 ] ).toContain(
+					expect( wpPagesEndpointLastCall.url ).toContain(
 						'per_page=100'
 					);
 

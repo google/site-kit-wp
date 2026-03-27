@@ -18,11 +18,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';

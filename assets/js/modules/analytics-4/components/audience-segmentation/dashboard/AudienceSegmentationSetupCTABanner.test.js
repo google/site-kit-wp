@@ -26,7 +26,6 @@ vi.mock( '../../../../../components/AdminMenuTooltip', () => ( {
 	useShowTooltip: vi.fn( () => mockShowTooltip ),
 } ) );
 
-import fetchMock from 'fetch-mock';
 import {
 	act,
 	fireEvent,
@@ -74,8 +73,8 @@ import {
 } from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: vi.fn(),
 } ) );
 
@@ -441,9 +440,9 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			fetchMock.post(
 				{ url: createAudienceEndpoint, repeat: 2 },
-				( url, opts ) => {
+				( callLog ) => {
 					return {
-						body: opts.body.includes( 'new_visitors' )
+						body: callLog.options.body.includes( 'new_visitors' )
 							? {
 									...SITE_KIT_AUDIENCE_DEFINITIONS[
 										'new-visitors'
@@ -545,9 +544,9 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 
 			fetchMock.post(
 				{ url: createAudienceEndpoint, repeat: 2 },
-				( url, opts ) => {
+				( callLog ) => {
 					return {
-						body: opts.body.includes( 'new_visitors' )
+						body: callLog.options.body.includes( 'new_visitors' )
 							? {
 									...SITE_KIT_AUDIENCE_DEFINITIONS[
 										'new-visitors'

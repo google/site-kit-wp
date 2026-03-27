@@ -775,7 +775,7 @@ describe( 'MetricsSelectionPanel', () => {
 
 		describe( 'CTA', () => {
 			it( 'should set autoSubmit to true if GA4 connected and missing custom dimensions', async () => {
-				fetchMock.reset();
+				fetchMock.mockReset();
 
 				provideUserAuthentication( registry, {
 					grantedScopes: EDIT_SCOPE,

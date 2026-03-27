@@ -123,7 +123,7 @@ describe( 'GA4AdSenseLinkedNotification', () => {
 		} );
 
 		it( 'is not active if report has data', async () => {
-			fetchMock.reset();
+			fetchMock.mockReset();
 			fetchMock.getOnce( analyticsReport, ( req ) => {
 				const paramsObject = Object.fromEntries(
 					new URL( req, 'http://example.com' ).searchParams.entries()

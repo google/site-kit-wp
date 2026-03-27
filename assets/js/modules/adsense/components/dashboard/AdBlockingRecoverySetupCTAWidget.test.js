@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import fetchMock from 'fetch-mock';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,

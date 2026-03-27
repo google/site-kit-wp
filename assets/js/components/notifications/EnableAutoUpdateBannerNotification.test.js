@@ -32,7 +32,6 @@ import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import fetchMock from 'fetch-mock';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';

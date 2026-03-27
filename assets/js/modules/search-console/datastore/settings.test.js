@@ -60,8 +60,8 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should send a POST request when saving changed settings', async () => {
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
+			fetchMock.postOnce( settingsEndpoint, ( callLog ) => ( {
+				body: JSON.parse( callLog.options.body )?.data,
 				status: 200,
 			} ) );
 

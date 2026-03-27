@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import fetchMock from 'fetch-mock';
-
 /**
  * Internal dependencies
  */

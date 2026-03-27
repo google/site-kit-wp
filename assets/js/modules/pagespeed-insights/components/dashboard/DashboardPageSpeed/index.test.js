@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import DashboardPageSpeed from '.';
@@ -82,7 +77,7 @@ describe( 'DashboardPageSpeed', () => {
 		} );
 	} );
 
-	afterEach( fetchMock.mockClear );
+	afterEach( () => fetchMock.mockClear() );
 
 	function setupRegistryNoFieldDataDesktop() {
 		registry = createTestRegistry();

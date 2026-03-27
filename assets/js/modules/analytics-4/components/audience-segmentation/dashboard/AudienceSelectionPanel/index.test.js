@@ -810,8 +810,8 @@ describe( 'AudienceSelectionPanel', () => {
 				);
 			} );
 
-			fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
-				const { data } = JSON.parse( opts.body );
+			fetchMock.postOnce( audienceSettingsEndpoint, ( callLog ) => {
+				const { data } = JSON.parse( callLog.options.body );
 				// Return the same settings passed to the API.
 				return { body: data.settings, status: 200 };
 			} );
@@ -1959,8 +1959,8 @@ describe( 'AudienceSelectionPanel', () => {
 				didSetAudiences: true,
 			} );
 
-			fetchMock.postOnce( audienceSettingsEndpoint, ( url, opts ) => {
-				const { data } = JSON.parse( opts.body );
+			fetchMock.postOnce( audienceSettingsEndpoint, ( callLog ) => {
+				const { data } = JSON.parse( callLog.options.body );
 				// Return the same settings passed to the API.
 				return { body: data.settings, status: 200 };
 			} );
