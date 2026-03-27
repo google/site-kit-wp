@@ -12,21 +12,22 @@
 	},
 	"globals": {
 		"fetchMock": false,
-    "vi": false
+		"vi": false
 	},
 	"rules": {
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": [
-          "^@wordpress-core/?.*",
-          "^fetch-mock\/?.*"
-        ]
+				"ignore": [ "^@wordpress-core/?.*", "^fetch-mock/?.*" ]
 			}
 		],
 		"jsdoc/check-tag-names": "error",
 		"jsdoc/check-types": "error",
-		"jsdoc/check-line-alignment": [ "error", "always" ],
+		"jsdoc/check-line-alignment": [
+			"error",
+			"always",
+			{ "preserveMainDescriptionPostDelimiter": true }
+		],
 		"jsdoc/require-description": "error",
 		"jsdoc/require-description-complete-sentence": "off",
 		"jsdoc/require-param": "error",
