@@ -38,17 +38,15 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 
-vi.mock(
-	'../../../../../components/GoogleChart',
-	() =>
+vi.mock( '../../../../../components/GoogleChart', () => ( {
+	default: function GoogleChart( { data } ) {
 		// Here we provide a mock for the GoogleChart component in order to be able to assert that the chart is rendered
 		// for the expected metric. The unmocked component would only render the chart in the loading state, due to the
 		// external Google Charts script not being available in the test environment.
-		function GoogleChart( { data } ) {
-			const metricLabel = data[ 0 ][ 2 ].label;
-			return <div id="google-chart-mock">{ metricLabel }</div>;
-		}
-);
+		const metricLabel = data[ 0 ][ 2 ].label;
+		return <div id="google-chart-mock">{ metricLabel }</div>;
+	},
+} ) );
 
 describe( 'SearchFunnelWidgetGA4 Chart', () => {
 	let registry;

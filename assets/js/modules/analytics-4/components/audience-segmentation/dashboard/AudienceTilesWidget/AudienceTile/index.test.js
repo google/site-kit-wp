@@ -59,8 +59,8 @@ import {
 } from '../../../../../../../../../tests/js/viewport-width-utils';
 import { getPreviousDate } from '@/js/util';
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: vi.fn(),
 } ) );
 

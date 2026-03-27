@@ -48,8 +48,8 @@ import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from '.';
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: vi.fn(),
 } ) );
 

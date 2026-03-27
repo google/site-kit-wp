@@ -44,8 +44,8 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: vi.fn(),
 } ) );
 

@@ -34,12 +34,9 @@ import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWith
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
-vi.mock(
-	'../CompatibilityChecks',
-	() =>
-		( { children } ) =>
-			children( { complete: true } )
-);
+vi.mock( '../CompatibilityChecks', () => ( {
+	default: ( { children } ) => children( { complete: true } ),
+} ) );
 
 describe( 'SetupUsingProxyWithSignIn', () => {
 	let registry;

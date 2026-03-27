@@ -43,10 +43,16 @@ vi.mock( '../../../../hooks/useLatestIntersection', () => {
 	} ) );
 } );
 
+// Create hoisted mock so it can be referenced before mock factory runs.
+export const mockUseHasBeenViewed = vi.hoisted( () =>
+	vi.fn().mockReturnValue( false )
+);
+
 // Mock the useHasBeenViewed hook to control viewed state.
-vi.mock( '../../hooks/useHasBeenViewed', () => {
-	const originalModule = vi.requireActual( '../../hooks/useHasBeenViewed' );
-	const mockUseHasBeenViewed = vi.fn().mockReturnValue( false );
+vi.mock( '../../hooks/useHasBeenViewed', async () => {
+	const originalModule = await vi.importActual(
+		'../../hooks/useHasBeenViewed'
+	);
 	mockUseHasBeenViewed.getKey = originalModule.useHasBeenViewed.getKey;
 
 	return {
@@ -54,11 +60,6 @@ vi.mock( '../../hooks/useHasBeenViewed', () => {
 		useHasBeenViewed: mockUseHasBeenViewed,
 	};
 } );
-
-// Export the mock for direct access in tests.
-export const mockUseHasBeenViewed = vi.requireMock(
-	'../../hooks/useHasBeenViewed'
-).useHasBeenViewed;
 
 describe( 'Notification', () => {
 	let registry;

@@ -48,8 +48,8 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: () => ( {
 		isIntersecting: true,
 	} ),

@@ -35,11 +35,11 @@ describe( 'Data', () => {
 		},
 	};
 
-	it( 'delegates selects to parent wp.data if it exists', () => {
+	it( 'delegates selects to parent wp.data if it exists', async () => {
 		global.wp = {};
 		global.wp.data = createRegistry( { [ TEST_STORE ]: storeDefinition } );
 
-		const Data = require( './index' ).default;
+		const Data = ( await import( './index' ) ).default;
 
 		const selectors = Data.select( TEST_STORE );
 		expect( selectors.getFoo() ).toBe( 'bar' );

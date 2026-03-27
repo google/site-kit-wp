@@ -46,8 +46,8 @@ import {
 	setViewportWidth,
 } from '../../../../../../../../tests/js/viewport-width-utils';
 
-vi.mock( 'react-use', () => ( {
-	...vi.requireActual( 'react-use' ),
+vi.mock( 'react-use', async () => ( {
+	...( await vi.importActual( 'react-use' ) ),
 	useIntersection: vi.fn(),
 } ) );
 

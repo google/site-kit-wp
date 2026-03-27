@@ -35,7 +35,7 @@ const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 // Mock useViewContext to return a consistent value
-vi.mock( '../../hooks/useViewContext', () => vi.fn() );
+vi.mock( '../../hooks/useViewContext', () => ( { default: vi.fn() } ) );
 useViewContext.mockImplementation( () => 'test-context' );
 
 describe( 'AdminMenuTooltip', () => {

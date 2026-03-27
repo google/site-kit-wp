@@ -33,23 +33,24 @@ vi.mock( 'googlesitekit-data', () => ( {
 	subscribe: vi.fn(),
 } ) );
 
-vi.mock( './create-get-blocks-titles', () => ( {
-	createGetBlockTitle: vi.fn( () =>
-		vi.fn( ( name ) => {
-			const constants = vi.requireActual(
-				'@/blocks/reader-revenue-manager/common/constants'
-			);
-
-			const titles = {
-				[ constants.SUBSCRIBE_WITH_GOOGLE_BLOCK ]:
-					'Subscribe with Google',
-				[ constants.CONTRIBUTE_WITH_GOOGLE_BLOCK ]:
-					'Contribute with Google',
-			};
-			return titles[ name ];
-		} )
-	),
-} ) );
+vi.mock( './create-get-blocks-titles', async () => {
+	const constants = await vi.importActual(
+		'@/blocks/reader-revenue-manager/common/constants'
+	);
+	return {
+		createGetBlockTitle: vi.fn( () =>
+			vi.fn( ( name ) => {
+				const titles = {
+					[ constants.SUBSCRIBE_WITH_GOOGLE_BLOCK ]:
+						'Subscribe with Google',
+					[ constants.CONTRIBUTE_WITH_GOOGLE_BLOCK ]:
+						'Contribute with Google',
+				};
+				return titles[ name ];
+			} )
+		),
+	};
+} );
 
 const mockTrackEvent = vi.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

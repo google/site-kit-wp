@@ -39,8 +39,10 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { FORM_TEMPORARY_PERSIST_PERMISSION_ERROR } from '@/js/googlesitekit/datastore/user/constants';
 import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 
-vi.mock( '../../googlesitekit/data/create-snapshot-store', () => ( {
-	...vi.requireActual( '../../googlesitekit/data/create-snapshot-store' ),
+vi.mock( '../../googlesitekit/data/create-snapshot-store', async () => ( {
+	...( await vi.importActual(
+		'../../googlesitekit/data/create-snapshot-store'
+	) ),
 	snapshotAllStores: vi.fn(),
 } ) );
 
