@@ -67,6 +67,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
@@ -694,7 +695,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					},
 				)
 			),
-			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
+			'GET:adsense-links'                         => new Get_Adsense_Links(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin-v1alpha' );
+					},
+				)
+			),
 			'GET:container-lookup'                      => array(
 				'service' => 'tagmanager',
 				'scopes'  => array(
@@ -1218,16 +1225,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'pageToken' => $data['pageToken'],
 					)
 				);
-			case 'GET:adsense-links':
-				if ( empty( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				$parent = self::normalize_property_id( $data['propertyID'] );
-
-				return $this->get_analyticsadminv1alpha_service()
-					->properties_adSenseLinks
-					->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1608,8 +1605,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
-			case 'GET:adsense-links':
-				return (array) $response->getAdsenseLinks();
 			case 'GET:properties':
 				return Sort::case_insensitive_list_sort(
 					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
