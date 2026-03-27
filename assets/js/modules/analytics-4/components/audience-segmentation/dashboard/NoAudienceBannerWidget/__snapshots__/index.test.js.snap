@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`NoAudienceBannerWidget with a view-only user who's never populated their audience selection should render correctly. 1`] = `
+exports[`NoAudienceBannerWidget > with a view-only user who's never populated their audience selection > should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
@@ -50,7 +50,7 @@ exports[`NoAudienceBannerWidget with a view-only user who's never populated thei
 </div>
 `;
 
-exports[`NoAudienceBannerWidget with a view-only user who's previously populated their audience selection should render correctly. 1`] = `
+exports[`NoAudienceBannerWidget > with a view-only user who's previously populated their audience selection > should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
@@ -100,7 +100,7 @@ exports[`NoAudienceBannerWidget with a view-only user who's previously populated
 </div>
 `;
 
-exports[`NoAudienceBannerWidget with an authenticated user who's never populated their audience selection should render correctly. 1`] = `
+exports[`NoAudienceBannerWidget > with an authenticated user who's never populated their audience selection > should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"
@@ -165,7 +165,7 @@ exports[`NoAudienceBannerWidget with an authenticated user who's never populated
 </div>
 `;
 
-exports[`NoAudienceBannerWidget with an authenticated user who's previously populated their audience selection should render correctly. 1`] = `
+exports[`NoAudienceBannerWidget > with an authenticated user who's previously populated their audience selection > should render correctly. 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--analyticsNoAudienceBanner googlesitekit-widget--no-padding"

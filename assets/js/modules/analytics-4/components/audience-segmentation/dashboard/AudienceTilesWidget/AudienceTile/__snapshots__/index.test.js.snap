@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AudienceTile Partial data badge should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not 1`] = `
+exports[`AudienceTile > Partial data badge > should render a partial data badge for the "Top content" metric area when the custom dimension is in the partial data state and the audience is not 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
@@ -281,7 +281,7 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
 </div>
 `;
 
-exports[`AudienceTile Partial data badge should render a partial data badge for the audience when the audience is in the partial data state 1`] = `
+exports[`AudienceTile > Partial data badge > should render a partial data badge for the audience when the audience is in the partial data state 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
@@ -562,7 +562,7 @@ exports[`AudienceTile Partial data badge should render a partial data badge for 
 </div>
 `;
 
-exports[`AudienceTile should render the AudienceTile component 1`] = `
+exports[`AudienceTile > should render the AudienceTile component 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"
@@ -832,7 +832,7 @@ exports[`AudienceTile should render the AudienceTile component 1`] = `
 </div>
 `;
 
-exports[`AudienceTile with zero data, in the partial data state should render the zero data tile 1`] = `
+exports[`AudienceTile > with zero data, in the partial data state > should render the zero data tile 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceTile googlesitekit-widget--no-padding"

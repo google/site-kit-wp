@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GoogleTagGatewayToggle should render in default state 1`] = `
+exports[`GoogleTagGatewayToggle > should render in default state 1`] = `
 <div>
   <div
     class="googlesitekit-google-tag-gateway-toggle"
@@ -79,7 +79,7 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
 </div>
 `;
 
-exports[`GoogleTagGatewayToggle should render in disabled state if server requirements are not met 1`] = `
+exports[`GoogleTagGatewayToggle > should render in disabled state if server requirements are not met 1`] = `
 <div>
   <div
     class="googlesitekit-google-tag-gateway-toggle"
@@ -196,7 +196,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
 </div>
 `;
 
-exports[`GoogleTagGatewayToggle should render in loading state if the server requirement status is still loading 1`] = `
+exports[`GoogleTagGatewayToggle > should render in loading state if the server requirement status is still loading 1`] = `
 <div>
   <div
     class="googlesitekit-google-tag-gateway-toggle"

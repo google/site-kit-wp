@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complete setup" should render the CTA when Analytics is not connected 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > Activate Analytics CTA with button "Complete setup" > should render the CTA when Analytics is not connected 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-search-console-site-stats"
@@ -101,7 +101,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Complet
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up Google Analytics" should render the CTA when Analytics is not active 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > Activate Analytics CTA with button "Set up Google Analytics" > should render the CTA when Analytics is not active 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-search-console-site-stats"
@@ -202,7 +202,7 @@ exports[`SearchFunnelWidgetGA4 Chart Activate Analytics CTA with button "Set up 
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Analytics Unique Visitors stats when selectedStats is 2 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > stats rendering > should render Analytics Unique Visitors stats when selectedStats is 2 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-analytics-site-stats"
@@ -224,7 +224,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Analytics Uni
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Console Clicks stats when selectedStats is 1 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > stats rendering > should render Search Console Clicks stats when selectedStats is 1 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-search-console-site-stats"
@@ -246,7 +246,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Consol
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Console Impressions stats when selectedStats is 0 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > stats rendering > should render Search Console Impressions stats when selectedStats is 0 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-search-console-site-stats"
@@ -268,7 +268,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering should render Search Consol
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 should render the Analytics Key Events stats when canViewSharedAnalytics4 is true 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > stats rendering > when selectedStats is 3 > should render the Analytics Key Events stats when canViewSharedAnalytics4 is true 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-analytics-site-stats"
@@ -290,7 +290,7 @@ exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 3 sho
 </div>
 `;
 
-exports[`SearchFunnelWidgetGA4 Chart stats rendering when selectedStats is 4 should render the Analytics Engagement Rate % stats when canViewSharedAnalytics4 is true 1`] = `
+exports[`SearchFunnelWidgetGA4 Chart > stats rendering > when selectedStats is 4 > should render the Analytics Engagement Rate % stats when canViewSharedAnalytics4 is true 1`] = `
 <div>
   <div
     class="mdc-layout-grid googlesitekit-analytics-site-stats"

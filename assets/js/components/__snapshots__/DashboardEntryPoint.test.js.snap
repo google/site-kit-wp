@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`DashboardEntryPoint should render the module setup component when the setupModuleSlug prop is passed 1`] = `
+exports[`DashboardEntryPoint > should render the module setup component when the setupModuleSlug prop is passed 1`] = `
 <div>
   <div>
     ModuleSetup
@@ -9,7 +9,7 @@ exports[`DashboardEntryPoint should render the module setup component when the s
 </div>
 `;
 
-exports[`DashboardEntryPoint should render the unified dashboard 1`] = `
+exports[`DashboardEntryPoint > should render the unified dashboard 1`] = `
 <div>
   <div>
     DashboardMainApp

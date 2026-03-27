@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AudienceTileError should correctly render the generic error variant 1`] = `
+exports[`AudienceTileError > should correctly render the generic error variant 1`] = `
 <div>
   <div
     class="googlesitekit-audience-segmentation-tile-error"
@@ -45,7 +45,7 @@ exports[`AudienceTileError should correctly render the generic error variant 1`]
 </div>
 `;
 
-exports[`AudienceTileError should correctly render the insufficient permissions variant 1`] = `
+exports[`AudienceTileError > should correctly render the insufficient permissions variant 1`] = `
 <div>
   <div
     class="googlesitekit-audience-segmentation-tile-error"

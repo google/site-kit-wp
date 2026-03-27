@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AudienceSegmentationErrorWidget default error state should render correctly 1`] = `
+exports[`AudienceSegmentationErrorWidget > default error state > should render correctly 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
@@ -53,7 +53,7 @@ exports[`AudienceSegmentationErrorWidget default error state should render corre
 </div>
 `;
 
-exports[`AudienceSegmentationErrorWidget insufficient permissions error state should render correctly 1`] = `
+exports[`AudienceSegmentationErrorWidget > insufficient permissions error state > should render correctly 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"
@@ -127,7 +127,7 @@ exports[`AudienceSegmentationErrorWidget insufficient permissions error state sh
 </div>
 `;
 
-exports[`AudienceSegmentationErrorWidget should render a retry button when \`onRetry\` and \`showRetryButton\` props are passed 1`] = `
+exports[`AudienceSegmentationErrorWidget > should render a retry button when \`onRetry\` and \`showRetryButton\` props are passed 1`] = `
 <div>
   <div
     class="googlesitekit-widget googlesitekit-widget--audienceSegmentationErrorWidget googlesitekit-widget--no-padding googlesitekit-audience-segmentation-error-widget"

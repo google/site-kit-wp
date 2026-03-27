@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics notice when the Analytics module is not available 1`] = `
+exports[`SetupUsingProxyWithSignIn > should not render the Activate Analytics notice when the Analytics module is not available 1`] = `
 <div>
   <header
     class="googlesitekit-header"
@@ -337,7 +337,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
 </div>
 `;
 
-exports[`SetupUsingProxyWithSignIn should render the setup page, including the Activate Analytics notice 1`] = `
+exports[`SetupUsingProxyWithSignIn > should render the setup page, including the Activate Analytics notice 1`] = `
 <div>
   <header
     class="googlesitekit-header"

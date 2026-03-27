@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`AdBlockingRecoverySetupSuccessNotification should render notification and trigger tracking events and ACR survey 1`] = `
+exports[`AdBlockingRecoverySetupSuccessNotification > should render notification and trigger tracking events and ACR survey 1`] = `
 <div>
   <section
     id="adsense-abr-success-notification"
