@@ -387,8 +387,8 @@ class REST_Email_Reporting_Controller {
 
 		$template_renderer = new Email_Template_Renderer();
 		$template_data     = $this->prepare_invitation_template_data();
-		$html_content      = $template_renderer->render( 'invitation-email', $template_data );
-		$text_content      = $template_renderer->render_text( 'invitation-email', $template_data );
+		$html_content      = $template_renderer->render( 'simple-email', $template_data );
+		$text_content      = $template_renderer->render_text( 'simple-email', $template_data );
 
 		if ( '' === trim( $html_content ) || '' === trim( $text_content ) ) {
 			return $this->invite_error(
@@ -588,6 +588,8 @@ class REST_Email_Reporting_Controller {
 			'footer'                 => array(
 				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'invitation-email' ),
+			'footer_type'            => 'inline',
 		);
 	}
 

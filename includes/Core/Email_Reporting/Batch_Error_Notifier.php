@@ -147,8 +147,8 @@ class Batch_Error_Notifier {
 		$template_data = $this->build_template_data( $content_key );
 
 		$renderer     = new Email_Template_Renderer();
-		$html_content = $renderer->render( 'error-email', $template_data );
-		$text_content = $renderer->render_text( 'error-email', $template_data );
+		$html_content = $renderer->render( 'simple-email', $template_data );
+		$text_content = $renderer->render_text( 'simple-email', $template_data );
 
 		if ( is_wp_error( $html_content ) || is_wp_error( $text_content ) ) {
 			return;
@@ -309,6 +309,8 @@ class Batch_Error_Notifier {
 					),
 				),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
+			'footer_type'            => 'standard',
 		);
 	}
 

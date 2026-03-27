@@ -431,6 +431,8 @@ class Email_Template_Formatter {
 					),
 				),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'subscription-confirmation' ),
+			'footer_type'            => 'standard',
 		);
 	}
 

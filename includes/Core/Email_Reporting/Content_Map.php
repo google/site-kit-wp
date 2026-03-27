@@ -98,6 +98,54 @@ class Content_Map {
 	}
 
 	/**
+	 * Gets the graphic configuration for a template.
+	 *
+	 * Returns layout and rendering config for the graphic/icon used in
+	 * simple email templates. The config controls the asset slug, position
+	 * within the content card, dimensions, and title escape strategy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $template_name The original template name (e.g. 'invitation-email').
+	 * @return array {
+	 *     Graphic configuration array, or empty array if unknown template.
+	 *
+	 *     @type string $slug         Asset slug for get_asset_url().
+	 *     @type string $position     Position within card: 'top-center', 'top-left', or 'bottom-center'.
+	 *     @type int    $width        Image width in pixels.
+	 *     @type int    $height       Image height in pixels.
+	 *     @type string $title_escape Title escape strategy: 'raw' (pre-escaped HTML) or 'esc_html'.
+	 * }
+	 */
+	public static function get_graphic_config( $template_name ) {
+		$configs = array(
+			'invitation-email'          => array(
+				'slug'         => 'invitation-envelope-graphic',
+				'position'     => 'bottom-center',
+				'width'        => 209,
+				'height'       => 163,
+				'title_escape' => 'raw',
+			),
+			'subscription-confirmation' => array(
+				'slug'         => 'subscription-envelope-graphic',
+				'position'     => 'top-center',
+				'width'        => 177,
+				'height'       => 143,
+				'title_escape' => 'esc_html',
+			),
+			'error-email'               => array(
+				'slug'         => 'warning-icon',
+				'position'     => 'top-left',
+				'width'        => 32,
+				'height'       => 32,
+				'title_escape' => 'esc_html',
+			),
+		);
+
+		return $configs[ $template_name ] ?? array();
+	}
+
+	/**
 	 * Gets all template title mappings.
 	 *
 	 * @since 1.174.0
