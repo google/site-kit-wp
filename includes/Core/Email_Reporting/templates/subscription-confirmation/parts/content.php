@@ -44,8 +44,8 @@ $envelope_url = $get_asset_url( 'subscription-envelope-graphic' );
 			</h1>
 
 			<?php /* Body paragraphs from Content_Map. */ ?>
-			<?php foreach ( $body as $paragraph ) : ?>
-			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+			<?php foreach ( $body as $index => $paragraph ) : ?>
+			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 <?php echo count( $body ) - 1 === $index ? '20px' : '16px'; ?> 0;">
 				<?php echo wp_kses( $paragraph, array( 'strong' => array() ) ); ?>
 			</p>
 			<?php endforeach; ?>

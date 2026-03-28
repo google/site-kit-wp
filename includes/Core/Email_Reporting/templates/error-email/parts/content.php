@@ -50,8 +50,8 @@ $warning_icon_url = $get_asset_url( 'warning-icon' );
 			 * and to future-proof if HTML tags are added to content later.
 			 */
 			?>
-			<?php foreach ( $body as $paragraph ) : ?>
-			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 16px 0;">
+			<?php foreach ( $body as $index => $paragraph ) : ?>
+			<p class="text-primary" style="font-size: 14px; line-height: 20px; font-weight: 400; color: #161B18; margin: 0 0 <?php echo count( $body ) - 1 === $index ? '20px' : '16px'; ?> 0;">
 				<?php
 				echo wp_kses(
 					$paragraph,
