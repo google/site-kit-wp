@@ -81,6 +81,7 @@ module.exports = {
 	addons: [
 		getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
 		getModuleAbsolutePath( '@storybook/addon-viewport' ),
+		'./addons/sitekit-toolbar/preset.js',
 	],
 	previewHead( head ) {
 		if ( process.env.VRT === '1' ) {
