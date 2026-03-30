@@ -162,27 +162,8 @@ class Email_Template_Renderer {
 			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 
-		// Render email report including sections.
 		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
-
-		$output = Plain_Text_Formatter::format_header(
-			$data['site']['domain'] ?? '',
-			$data['date_range']['label'] ?? ''
-		);
-
-		foreach ( $sections as $section_key => $section ) {
-			if ( empty( $section['section_parts'] ) ) {
-				continue;
-			}
-			$output .= Plain_Text_Formatter::format_section( $section );
-		}
-
-		$output .= Plain_Text_Formatter::format_footer(
-			$data['primary_call_to_action'] ?? array(),
-			$data['footer'] ?? array()
-		);
-
-		return $output;
+		return Plain_Text_Formatter::format_report( $data, $sections );
 	}
 
 	/**

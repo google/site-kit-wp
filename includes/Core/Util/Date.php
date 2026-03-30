@@ -26,7 +26,7 @@ class Date {
 	 *
 	 * @param string $range         Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
 	 *                              'last-28-days' (default).
-	 * @param string $multiplier    Optional. How many times the date range to get. This value can be specified if the
+	 * @param int    $multiplier    Optional. How many times the date range to get. This value can be specified if the
 	 *                              range should be request multiple times back. Default 1.
 	 * @param int    $offset        Days the range should be offset by. Default 1. Used by Search Console where
 	 *                              data is delayed by two days.
