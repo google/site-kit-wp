@@ -30,20 +30,22 @@ add_filter(
 );
 
 /**
- * Provide a placeholder site verification meta to fake an authenticated state.
+ * Set Search Console property ID to localhost:9002 and fake site verification.
  */
 add_action(
 	'init',
 	function () {
+		$settings = get_option( Search_Console_Settings::OPTION );
+		if ( empty( $settings['propertyID'] ) || 'http://localhost:9002' !== $settings['propertyID'] ) {
+			$settings['propertyID'] = 'http://localhost:9002';
+			update_option( Search_Console_Settings::OPTION, $settings );
+		}
+
 		update_user_option(
 			get_current_user_id(),
 			'googlesitekit_site_verified_meta',
 			'verified'
 		);
-
-		$settings               = get_option( Search_Console_Settings::OPTION );
-		$settings['propertyID'] = 'http://localhost:9002';
-		update_option( Search_Console_Settings::OPTION, $settings );
 	}
 );
 
