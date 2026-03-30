@@ -131,7 +131,7 @@ class User_Input implements Provides_Feature_Metrics {
 	 * @return array The user input questions.
 	 */
 	public static function get_questions() {
-		return static::$questions;
+		return self::$questions;
 	}
 
 	/**
@@ -142,7 +142,7 @@ class User_Input implements Provides_Feature_Metrics {
 	 * @return array|WP_Error User input answers.
 	 */
 	public function get_answers() {
-		$questions    = static::$questions;
+		$questions    = self::$questions;
 		$site_answers = $this->site_specific_answers->get();
 		$user_answers = $this->user_specific_answers->get();
 
@@ -238,7 +238,7 @@ class User_Input implements Provides_Feature_Metrics {
 		foreach ( $settings as $setting_key => $answers ) {
 			$setting_data           = array();
 			$setting_data['values'] = $answers;
-			$setting_data['scope']  = static::$questions[ $setting_key ]['scope'];
+			$setting_data['scope']  = self::$questions[ $setting_key ]['scope'];
 
 			if ( 'site' === $setting_data['scope'] ) {
 				$existing_answers = $this->get_answers();

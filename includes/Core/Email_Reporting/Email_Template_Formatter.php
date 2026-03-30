@@ -189,10 +189,6 @@ class Email_Template_Formatter {
 		$change_context = $this->get_change_context_label( $date_range );
 
 		foreach ( $sections as $section ) {
-			if ( ! $section instanceof Email_Report_Data_Section_Part ) {
-				continue;
-			}
-
 			$values           = $section->get_values();
 			$labels           = $section->get_labels();
 			$trends           = $section->get_trends();

@@ -10,13 +10,13 @@
 
 namespace Google\Site_Kit\Core\Site_Health;
 
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Environment_Type_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Modules\Analytics_4;
 
 /**
  * Class for integrating status tab information with Site Health.
@@ -212,9 +212,9 @@ class Tag_Placement {
 	 *
 	 * @since 1.119.0
 	 *
-	 * @param Module_With_Tag $module  Module instance.
-	 * @param string          $content Content to search for the tags.
-	 * @param string          $module_label Content URL page name appended to the module name to identify multiple tags for a module.
+	 * @param Module_With_Tag|Module $module  Module instance.
+	 * @param string                 $content Content to search for the tags.
+	 * @param string                 $module_label Content URL page name appended to the module name to identify multiple tags for a module.
 	 *
 	 * @return bool TRUE if tag is found, FALSE if not.
 	 */

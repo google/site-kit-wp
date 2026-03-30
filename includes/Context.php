@@ -257,7 +257,7 @@ class Context {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_Post $post Optional. Post ID or post object. Default is the global `$post`.
+	 * @param int|\WP_Post $post Optional. Post ID or post object. Default is the global `$post`.
 	 *
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */

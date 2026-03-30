@@ -31,6 +31,69 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( str_repeat( '-', 50 ), $result, 'Header should contain separator line.' );
 	}
 
+	public function test_format_report_matches_previous_inline_email_report_assembly() {
+		$data = array(
+			'site'                   => array(
+				'domain' => 'example.com',
+			),
+			'date_range'             => array(
+				'label' => 'Dec 9 – Dec 15',
+			),
+			'primary_call_to_action' => array(
+				'label' => 'View dashboard',
+				'url'   => 'https://example.com/dashboard',
+			),
+			'footer'                 => array(
+				'copy'            => 'Footer copy',
+				'unsubscribe_url' => 'https://example.com/unsubscribe',
+				'links'           => array(),
+			),
+		);
+
+		$sections = array(
+			'visitors' => array(
+				'title'            => 'How many people are finding my site?',
+				'section_template' => 'section-metrics',
+				'section_parts'    => array(
+					'total_visitors' => array(
+						'data' => array(
+							'label'          => 'Total visitors',
+							'value'          => '1.2K',
+							'change'         => 12.5,
+							'change_context' => 'Compared to previous 7 days',
+						),
+					),
+				),
+			),
+			'empty'    => array(
+				'title'            => 'Empty section',
+				'section_template' => 'section-metrics',
+				'section_parts'    => array(),
+			),
+		);
+
+		$expected = Plain_Text_Formatter::format_header(
+			$data['site']['domain'],
+			$data['date_range']['label']
+		);
+
+		foreach ( $sections as $section ) {
+			if ( empty( $section['section_parts'] ) ) {
+				continue;
+			}
+			$expected .= Plain_Text_Formatter::format_section( $section );
+		}
+
+		$expected .= Plain_Text_Formatter::format_footer(
+			$data['primary_call_to_action'],
+			$data['footer']
+		);
+
+		$result = Plain_Text_Formatter::format_report( $data, $sections );
+
+		$this->assertSame( $expected, $result, 'Expected format_report output to match previous inline renderer assembly.' );
+	}
+
 	public function test_format_section_heading() {
 		$title = 'Test Section';
 
