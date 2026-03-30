@@ -70,7 +70,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_default() {
 		return array(
 			'contentPolicyState'                => '',
-			'policyInfoLink'                    => null,
+			'policyInfoLink'                    => '',
 			'ownerID'                           => 0,
 			'publicationID'                     => '',
 			'publicationOnboardingState'        => '',
@@ -187,8 +187,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				$option['contentPolicyState'] = '';
 			}
 
-			if ( isset( $option['policyInfoLink'] ) && ! is_string( $option['policyInfoLink'] ) && null !== $option['policyInfoLink'] ) {
-				$option['policyInfoLink'] = null;
+			if ( isset( $option['policyInfoLink'] ) && ! is_string( $option['policyInfoLink'] ) ) {
+				$option['policyInfoLink'] = '';
 			}
 
 			return $option;
