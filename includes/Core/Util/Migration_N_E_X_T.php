@@ -121,7 +121,7 @@ class Migration_N_E_X_T {
 		$content_policy_status = (array) $rrm_settings['contentPolicyStatus'];
 
 		$rrm_settings['contentPolicyState'] = $content_policy_status['contentPolicyState'] ?? '';
-		$rrm_settings['policyInfoLink']     = $content_policy_status['policyInfoLink'] ?? null;
+		$rrm_settings['policyInfoLink']     = $content_policy_status['policyInfoLink'] ?? '';
 
 		unset( $rrm_settings['contentPolicyStatus'] );
 
