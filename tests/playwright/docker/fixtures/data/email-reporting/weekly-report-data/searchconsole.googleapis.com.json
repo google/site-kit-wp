@@ -2976,6 +2976,20 @@
 				],
 				"responseAggregationType": "byProperty"
 			}
+		},
+		"POST::{\"datastate\":\"all\",\"enddate\":\"2026-01-01\",\"rowlimit\":1,\"startdate\":\"2026-01-01\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"clicks": 17,
+						"impressions": 1253,
+						"ctr": 0.0144325572801182557,
+						"position": 15.248337028824835
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
 		}
 	}
 }
