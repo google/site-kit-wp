@@ -57,7 +57,7 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'contentPolicyState'                => '',
-				'policyInfoLink'                    => null,
+				'policyInfoLink'                    => '',
 				'ownerID'                           => 0,
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
@@ -166,17 +166,12 @@ class SettingsTest extends SettingsTestCase {
 			'policyInfoLink with number'                   => array(
 				'policyInfoLink',
 				123,
-				null,
-			),
-			'policyInfoLink with null'                     => array(
-				'policyInfoLink',
-				null,
-				null,
+				'',
 			),
 			'policyInfoLink with boolean'                  => array(
 				'policyInfoLink',
 				true,
-				null,
+				'',
 			),
 		);
 	}

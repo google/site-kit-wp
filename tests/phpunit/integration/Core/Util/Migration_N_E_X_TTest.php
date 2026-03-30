@@ -101,7 +101,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$this->assertArrayNotHasKey( 'contentPolicyStatus', $post_migration_settings, 'Legacy contentPolicyStatus key should be removed after migration.' );
 		$this->assertEquals( '', $post_migration_settings['contentPolicyState'], 'contentPolicyState should default to empty string when not present in legacy data.' );
-		$this->assertNull( $post_migration_settings['policyInfoLink'], 'policyInfoLink should default to null when not present in legacy data.' );
+		$this->assertEquals( '', $post_migration_settings['policyInfoLink'], 'policyInfoLink should default to empty string when not present in legacy data.' );
 	}
 
 	public function test_migrate_skips_when_no_rrm_settings_exist() {

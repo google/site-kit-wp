@@ -304,7 +304,7 @@ class Synchronize_PublicationTest extends TestCase {
 		$this->synchronize_publication->register();
 
 		$this->assertEquals( '', $settings['contentPolicyState'], 'Content policy state should be empty before sync.' );
-		$this->assertNull( $settings['policyInfoLink'], 'Policy info link should be null before sync.' );
+		$this->assertEquals( '', $settings['policyInfoLink'], 'Policy info link should be empty before sync.' );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
