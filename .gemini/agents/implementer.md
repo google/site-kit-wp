@@ -6,7 +6,6 @@ description: >
   running lint/test verification. Returns a structured implementation summary.
 tools:
   - "*"
-  - "mcp_*"
 temperature: 0.3
 max_turns: 60
 timeout_mins: 30

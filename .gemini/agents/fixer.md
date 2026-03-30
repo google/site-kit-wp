@@ -6,7 +6,6 @@ description: >
   recommendations, then re-runs lint and tests.
 tools:
   - "*"
-  - "mcp_*"
 temperature: 0.3
 max_turns: 40
 timeout_mins: 20
