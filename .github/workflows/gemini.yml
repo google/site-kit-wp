@@ -44,8 +44,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "7.4"
           extensions: mysqli, runkit7, uopz
+          tools: composer:2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get Composer Cache Directory
