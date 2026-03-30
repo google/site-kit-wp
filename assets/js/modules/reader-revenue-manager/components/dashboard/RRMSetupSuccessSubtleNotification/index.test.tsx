@@ -686,7 +686,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					paymentOption: 'subscriptions',
 					productID: 'basic',
 					contentPolicyState,
-					policyInfoLink: null,
+					policyInfoLink: '',
 				} );
 
 			const { getByText, queryByRole, queryByText } = render(
