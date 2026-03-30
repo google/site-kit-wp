@@ -198,16 +198,6 @@ class Plain_Text_FormatterTest extends TestCase {
 		$footer = array(
 			'copy'            => 'You received this email because you signed up.',
 			'unsubscribe_url' => 'https://example.com/unsubscribe',
-			'links'           => array(
-				array(
-					'label' => 'Help center',
-					'url'   => 'https://example.com/help',
-				),
-				array(
-					'label' => 'Privacy Policy',
-					'url'   => 'https://example.com/privacy',
-				),
-			),
 		);
 
 		$result = Plain_Text_Formatter::format_footer( $cta, $footer );
@@ -216,8 +206,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
 		$this->assertStringContainsString( 'Unsubscribe: https://example.com/unsubscribe', $result, 'Footer should contain unsubscribe link as separate line.' );
-		$this->assertStringContainsString( 'Help center: https://example.com/help', $result, 'Footer should contain help center link.' );
-		$this->assertStringContainsString( 'Privacy Policy: https://example.com/privacy', $result, 'Footer should contain privacy policy link.' );
+		$this->assertStringContainsString( 'Manage subscription: https://example.com/unsubscribe', $result, 'Footer should contain hardcoded manage subscription link.' );
+		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Footer should contain hardcoded privacy policy link.' );
+		$this->assertStringContainsString( 'Help center:', $result, 'Footer should contain hardcoded help center link.' );
 	}
 
 	public function test_format_section_dispatches_to_metrics_section() {
