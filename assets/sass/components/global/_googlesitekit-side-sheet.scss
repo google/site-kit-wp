@@ -20,7 +20,9 @@
 
 	.googlesitekit-side-sheet {
 		background-color: $c-surfaces-surface;
-		bottom: 0;
+		bottom: auto;
+		height: calc(100vh - var(--googlesitekit-side-sheet-top, 0));
+		height: calc(100dvh - var(--googlesitekit-side-sheet-top, 0));
 		overflow: hidden;
 		position: fixed;
 		right: 0;
