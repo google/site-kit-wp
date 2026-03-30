@@ -8,7 +8,7 @@ exports[`SetupForm should not silently fail when there is an error 1`] = `
     >
       <div
         class="googlesitekit-notice googlesitekit-notice--error"
-        role="alert"
+        role="status"
       >
         <div
           class="googlesitekit-notice__icon"

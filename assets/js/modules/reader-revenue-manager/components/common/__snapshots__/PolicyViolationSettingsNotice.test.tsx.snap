@@ -7,7 +7,7 @@ exports[`PolicyViolationSettingsNotice should render error notice with extreme v
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--error googlesitekit-policy-violation-settings-notice"
-      role="alert"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -58,7 +58,7 @@ exports[`PolicyViolationSettingsNotice should render warning notice with pending
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-policy-violation-settings-notice"
-      role="alert"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"

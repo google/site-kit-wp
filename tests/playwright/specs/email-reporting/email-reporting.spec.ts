@@ -66,7 +66,7 @@ test.describe(
 						.click();
 					await expect(
 						root
-							.getByRole( 'alert' )
+							.getByRole( 'status' )
 							.filter( { hasText: 'successfully subscribed' } )
 					).toBeVisible( { timeout: 10_000 } );
 				} );
@@ -161,7 +161,7 @@ test.describe(
 				await root.getByRole( 'button', { name: 'Subscribe' } ).click();
 
 				const notice = root
-					.getByRole( 'alert' )
+					.getByRole( 'status' )
 					.filter( { hasText: 'successfully subscribed' } );
 				await expect( notice ).toBeVisible( { timeout: 10_000 } );
 			} );

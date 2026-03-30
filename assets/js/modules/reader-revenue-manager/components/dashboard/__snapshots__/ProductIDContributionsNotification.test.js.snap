@@ -19,7 +19,7 @@ exports[`ProductIDContributionsNotification should render correctly 1`] = `
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--new"
-              role="alert"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"

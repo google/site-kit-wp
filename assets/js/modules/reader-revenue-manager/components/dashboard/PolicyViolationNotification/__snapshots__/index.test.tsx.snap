@@ -19,7 +19,7 @@ exports[`PolicyViolationNotification should render error notification for immedi
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--error"
-              role="alert"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"
@@ -96,7 +96,7 @@ exports[`PolicyViolationNotification should render warning notification for pend
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--warning"
-              role="alert"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"

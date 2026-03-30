@@ -19,7 +19,7 @@ exports[`Ads EnhancedConversionsNotification should render the notification 1`] 
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--info-alt"
-              role="alert"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"

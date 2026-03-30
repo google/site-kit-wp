@@ -7,7 +7,7 @@ exports[`EmailReportingErrorNotices should render the permissions error notice w
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
-      role="alert"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -57,7 +57,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
-      role="alert"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
