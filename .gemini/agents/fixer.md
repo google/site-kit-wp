@@ -25,11 +25,9 @@ You will receive a list of violations from a code review. Your job is to:
 
 ## Context Documentation
 
-If you need to understand the conventions behind a violation, load the relevant context doc.
-
-**JS context** (`docs/context/js/`): component-conventions.md, module-architecture.md, state-management.md, hooks.md, tests.md, jsdoc.md, event-tracking.md, feature-flags.md, feature-tours.md, notifications.md, widgets.md, storybook.md, utils.md
-
-**PHP context** (`docs/context/php/`): module-architecture.md, settings-management.md, dependency-injection.md, context-pattern.md, admin-features.md, rest-api.md, asset-management.md, storage-patterns.md, prompts-and-dismissals.md, trait-composition.md, naming-conventions.md, phpunit.md
+If you need to understand the conventions behind a violation, load the relevant context docs from:
+- **JS**: `docs/context/js/`
+- **PHP**: `docs/context/php/`
 
 ## Fix Process
 

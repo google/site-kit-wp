@@ -27,10 +27,8 @@ You will receive an issue title, acceptance criteria, and implementation brief. 
 ## Context Documentation
 
 Load **only** the docs relevant to this issue. DO NOT read all files.
-
-**JS context** (`docs/context/js/`): component-conventions.md, module-architecture.md, state-management.md, hooks.md, tests.md, jsdoc.md, event-tracking.md, feature-flags.md, feature-tours.md, notifications.md, widgets.md, storybook.md, utils.md
-
-**PHP context** (`docs/context/php/`): module-architecture.md, settings-management.md, dependency-injection.md, context-pattern.md, admin-features.md, rest-api.md, asset-management.md, storage-patterns.md, prompts-and-dismissals.md, trait-composition.md, naming-conventions.md, phpunit.md
+- **JS**: `docs/context/js/`
+- **PHP**: `docs/context/php/`
 
 **CRITICAL**: The context files you read define MANDATORY conventions. Any deviation is a critical violation.
 
