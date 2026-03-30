@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -27,6 +28,7 @@ import PropTypes from 'prop-types';
 import {
 	createInterpolateElement,
 	useEffect,
+	useRef,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -46,14 +48,28 @@ import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { useFeature } from '@/js/hooks/useFeature';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import Link from '@/js/components/Link';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
 export default function ActivateAnalyticsCTA( {
 	children,
 	dismissedItemSlug,
+	analyticsEventLabel,
 } ) {
+	const trackingRef = useRef();
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const trackEvents = useNotificationEvents(
+		'activate-analytics-cta',
+		undefined,
+		{
+			viewAction: 'view_cta',
+			confirmAction: 'confirm_cta',
+			dismissAction: 'dismiss_cta',
+			clickLearnMoreAction: 'click_learn_more_link',
+		}
+	);
 
 	const isDismissed = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
@@ -129,7 +145,26 @@ export default function ActivateAnalyticsCTA( {
 		}
 	}, [ isActivating, isNavigatingToReauthURL, debouncedSetInProgress ] );
 
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			trackEvents.view( analyticsEventLabel );
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, hasBeenInView, trackEvents, analyticsEventLabel ] );
+
 	const { dismissItem } = useDispatch( CORE_USER );
+
+	function handleDismiss() {
+		trackEvents.dismiss( analyticsEventLabel );
+		dismissItem( dismissedItemSlug );
+	}
 
 	const onClickCallback = analyticsModuleActive
 		? completeModuleActivationCallback
@@ -174,7 +209,10 @@ export default function ActivateAnalyticsCTA( {
 	}
 
 	return (
-		<div className="googlesitekit-activate-analytics-cta">
+		<div
+			className="googlesitekit-activate-analytics-cta"
+			ref={ trackingRef }
+		>
 			<div className="googlesitekit-activate-analytics-cta__top">
 				<div className="googlesitekit-activate-analytics-cta__icon">
 					<AnalyticsIcon width={ 28 } height={ 31 } />
@@ -186,7 +224,17 @@ export default function ActivateAnalyticsCTA( {
 							'google-site-kit'
 						),
 						{
-							a: <Link href={ documentationURL } external />,
+							a: (
+								<Link
+									href={ documentationURL }
+									onClick={ () => {
+										trackEvents.clickLearnMore(
+											analyticsEventLabel
+										);
+									} }
+									external
+								/>
+							),
 						}
 					) }
 				</p>
@@ -194,14 +242,17 @@ export default function ActivateAnalyticsCTA( {
 			<div className="googlesitekit-activate-analytics-cta__actions">
 				<Button
 					className="googlesitekit-activate-analytics-cta__button--secondary"
-					onClick={ () => dismissItem( dismissedItemSlug ) }
+					onClick={ handleDismiss }
 					tertiary
 				>
 					{ __( 'Maybe later', 'google-site-kit' ) }
 				</Button>
 				<SpinnerButton
 					className="googlesitekit-activate-analytics-cta__button--primary"
-					onClick={ onClickCallback }
+					onClick={ () => {
+						onClickCallback();
+						trackEvents.confirm( analyticsEventLabel );
+					} }
 					isSaving={ inProgress }
 					disabled={ inProgress }
 				>
@@ -217,4 +268,5 @@ export default function ActivateAnalyticsCTA( {
 ActivateAnalyticsCTA.propTypes = {
 	children: PropTypes.node,
 	dismissedItemSlug: PropTypes.string.isRequired,
+	analyticsEventLabel: PropTypes.string,
 };

@@ -49,8 +49,8 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
 function shouldCombineAllWidgets( widgets, widgetStates ) {
 	const states = {};
 
-	for ( let i = 0; i < widgets.length; i++ ) {
-		const widget = widgets[ i ];
+	for ( let index = 0; index < widgets.length; index++ ) {
+		const widget = widgets[ index ];
 		const widgetState = widgetStates?.[ widget.slug ];
 
 		const state = widgetState?.Component;
@@ -136,28 +136,28 @@ export function combineWidgets(
 		};
 	}
 
-	widgets.forEach( ( widget, i ) => {
+	widgets.forEach( ( widget, index ) => {
 		overrideComponents.push( null );
 
 		currentState = widgetStates[ widget.slug ];
-		currentRowIndex = rowIndexes[ i ];
+		currentRowIndex = rowIndexes[ index ];
 
 		// If the current widget has a special state...
 		if ( currentState ) {
 			if (
 				stateAndRowMatch(
 					currentState,
-					widgetStates[ widgets[ i + 1 ]?.slug ],
+					widgetStates[ widgets[ index + 1 ]?.slug ],
 					currentRowIndex,
-					rowIndexes[ i + 1 ]
+					rowIndexes[ index + 1 ]
 				)
 			) {
 				// If the current widget state and row index match the next
 				// state and row index, hide the widget entirely. Only the last
 				// similar instance will be rendered in this case.
-				columnWidthsBuffer.push( columnWidths[ i ] );
+				columnWidthsBuffer.push( columnWidths[ index ] );
 				// Mark this column as width = 0, so we can hide it
-				gridColumnWidths[ i ] = 0;
+				gridColumnWidths[ index ] = 0;
 			} else if ( columnWidthsBuffer.length > 0 ) {
 				// If the state and row index do not match the next ones and
 				// there are already similar instances (from previous
@@ -165,7 +165,7 @@ export function combineWidgets(
 				// combined version will need to be displayed instead of the
 				// widget. The combined version will use the common Component
 				// and pass all common metadata as props.
-				columnWidthsBuffer.push( columnWidths[ i ] );
+				columnWidthsBuffer.push( columnWidths[ index ] );
 
 				// Get total (desktop) column width. For tablet and phone,
 				// the component should span the full width as by definition
@@ -175,10 +175,10 @@ export function combineWidgets(
 					0
 				);
 
-				overrideComponents[ i ] = currentState;
+				overrideComponents[ index ] = currentState;
 
 				// This final column should have the combined width
-				gridColumnWidths[ i ] = combinedColumnWidth;
+				gridColumnWidths[ index ] = combinedColumnWidth;
 
 				// Reset the columnWidthsBuffer variable.
 				columnWidthsBuffer = [];

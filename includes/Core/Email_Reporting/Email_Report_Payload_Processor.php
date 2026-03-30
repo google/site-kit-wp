@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Util\BC_Functions;
+
 /**
  * Helper class to normalize and process report payloads for email sections.
  *
@@ -94,7 +96,7 @@ class Email_Report_Payload_Processor {
 		}
 
 		// Ensure dates are localized strings (Y-m-d) using site timezone.
-		$timezone = function_exists( 'wp_timezone' ) ? wp_timezone() : null;
+		$timezone = BC_Functions::wp_timezone();
 		if ( function_exists( 'wp_date' ) && $timezone ) {
 			$start_timestamp = strtotime( $start );
 			$end_timestamp   = strtotime( $end );
@@ -173,7 +175,7 @@ class Email_Report_Payload_Processor {
 				}
 				$metadata['metrics'][] = array(
 					'name' => $metric['name'],
-					'type' => isset( $metric['type'] ) ? $metric['type'] : 'TYPE_INTEGER',
+					'type' => $metric['type'] ?? 'TYPE_INTEGER',
 				);
 			}
 		}
@@ -182,7 +184,7 @@ class Email_Report_Payload_Processor {
 			$metadata['title'] = $report['title'];
 		}
 
-		$metadata['row_count'] = isset( $report['rowCount'] ) ? $report['rowCount'] : 0;
+		$metadata['row_count'] = $report['rowCount'] ?? 0;
 
 		return $metadata;
 	}

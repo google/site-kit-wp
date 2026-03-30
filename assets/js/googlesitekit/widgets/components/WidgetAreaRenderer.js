@@ -174,19 +174,19 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	);
 
 	// Render all widgets.
-	const widgetsOutput = widgets.map( ( widget, i ) => (
+	const widgetsOutput = widgets.map( ( widget, index ) => (
 		<WidgetCellWrapper
 			key={ `${ widget.slug }-wrapper` }
-			gridColumnWidth={ gridColumnWidths[ i ] }
+			gridColumnWidth={ gridColumnWidths[ index ] }
 		>
 			<WidgetContextProvider value={ widget }>
 				<WidgetErrorHandler slug={ widget.slug }>
 					<WidgetRenderer
 						OverrideComponent={
-							overrideComponents[ i ]
+							overrideComponents[ index ]
 								? () => {
 										const { Component, metadata } =
-											overrideComponents[ i ];
+											overrideComponents[ index ];
 										return <Component { ...metadata } />;
 								  }
 								: undefined

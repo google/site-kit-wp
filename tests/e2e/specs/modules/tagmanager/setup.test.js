@@ -274,8 +274,8 @@ describe( 'Tag Manager module setup', () => {
 				await page.$$eval(
 					'.mdc-menu-surface--open .mdc-list-item',
 					( nodes ) =>
-						!! nodes.find( ( e ) =>
-							e.textContent.match( /test amp container/i )
+						!! nodes.find( ( element ) =>
+							element.textContent.match( /test amp container/i )
 						)
 				)
 			).toStrictEqual( false );

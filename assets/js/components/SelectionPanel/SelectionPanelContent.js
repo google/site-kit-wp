@@ -1,5 +1,5 @@
 /**
- * CoreModuleSetupEffects component.
+ * Selection Panel Content component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,12 +17,25 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
-export default function CoreModuleSetupEffects() {
-	useOpenEmailReportingSelectionPanelEffect();
-
-	return null;
+export default function SelectionPanelContent( { children, className } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-selection-panel__content',
+				className
+			) }
+		>
+			{ children }
+		</div>
+	);
 }
+
+SelectionPanelContent.propTypes = {
+	children: PropTypes.node,
+	className: PropTypes.string,
+};

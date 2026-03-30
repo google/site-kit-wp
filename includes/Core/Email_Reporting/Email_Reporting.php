@@ -232,6 +232,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		$this->user_settings          = new User_Email_Reporting_Settings( $this->user_options );
 		$conversion_tracking_settings = new Conversion_Tracking_Settings( $this->options );
 		$conversion_tracking          = new Conversion_Tracking( $this->context, $this->options );
+		$frequency_planner            = new Frequency_Planner();
+		$this->scheduler              = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->email_notices          = new Email_Notices(
 			$this->context,
 			$this->golinks,
@@ -241,11 +243,11 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			)
 		);
 
-		$frequency_planner            = new Frequency_Planner();
 		$this->subscribed_users_query = new Subscribed_Users_Query( $this->user_settings, $this->modules );
 		$eligible_subscribers_query   = new Eligible_Subscribers_Query( $this->modules, $this->user_options );
 		$max_execution_limiter        = new Max_Execution_Limiter( (int) ini_get( 'max_execution_time' ) );
 		$this->email_log_batch_query  = new Email_Log_Batch_Query();
+		$health_check                 = new Cron_Health_Check( $this->email_log_batch_query, $this->scheduler );
 		$email_sender                 = new Email();
 		$section_builder              = new Email_Report_Section_Builder( $this->context );
 		$template_formatter           = new Email_Template_Formatter( $this->context, $section_builder, $this->golinks, $this->email_notices );
@@ -259,10 +261,10 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$this->user_settings,
 			$eligible_subscribers_query,
 			$email_sender,
-			$this->golinks
+			$this->golinks,
+			$health_check
 		);
 		$this->email_log         = new Email_Log();
-		$this->scheduler         = new Email_Reporting_Scheduler( $frequency_planner );
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );
 		$notifier                = new Batch_Error_Notifier( $this->email_log_batch_query, $email_sender, $this->context, $this->golinks );
 		$this->worker_task       = new Worker_Task(
@@ -271,7 +273,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$this->scheduler,
 			$log_processor,
 			$this->data_requests,
-			$notifier
+			$notifier,
+			$health_check
 		);
 		$this->fallback_task     = new Fallback_Task( $this->email_log_batch_query, $this->scheduler, $this->worker_task, $notifier );
 		$this->monitor_task      = new Monitor_Task( $this->scheduler, $this->settings );
@@ -303,7 +306,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$this->scheduler->schedule_monitor();
 			$this->scheduler->schedule_cleanup();
 
-			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 1 );
+			add_action( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $this->initiator_task, 'handle_callback_action' ), 10, 2 );
 			add_action( Email_Reporting_Scheduler::ACTION_MONITOR, array( $this->monitor_task, 'handle_monitor_action' ) );
 			add_action( Email_Reporting_Scheduler::ACTION_WORKER, array( $this->worker_task, 'handle_callback_action' ), 10, 3 );
 			add_action( Email_Reporting_Scheduler::ACTION_FALLBACK, array( $this->fallback_task, 'handle_fallback_action' ), 10, 3 );

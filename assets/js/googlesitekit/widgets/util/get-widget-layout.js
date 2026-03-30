@@ -41,24 +41,24 @@ function resizeColumns( columnWidths, counter ) {
 	columnWidths = [ ...columnWidths ];
 
 	// Start counting backwards from the last item.
-	let i = columnWidths.length - 1;
+	let index = columnWidths.length - 1;
 
 	// Go back until counter is 0. The i >= 0 check is an extra safeguard that, with
 	// correct usage should never apply, but is still useful to avoid infinite loops
 	// if the function was used incorrectly.
-	while ( counter !== 0 && i >= 0 ) {
+	while ( counter !== 0 && index >= 0 ) {
 		// Replace the 3-column width with a 4-column width, or the 6-column
 		// width with an 8-column width so that the overall row expands from
 		// 9 to the full 12 columns.
-		if ( columnWidths[ i ] === 3 ) {
+		if ( columnWidths[ index ] === 3 ) {
 			counter -= 3;
-			columnWidths[ i ] = 4; // Correct the column width.
-		} else if ( columnWidths[ i ] === 6 ) {
+			columnWidths[ index ] = 4; // Correct the column width.
+		} else if ( columnWidths[ index ] === 6 ) {
 			counter -= 6;
-			columnWidths[ i ] = 8; // Correct the column width.
+			columnWidths[ index ] = 8; // Correct the column width.
 		}
 
-		i--;
+		index--;
 	}
 
 	return [ columnWidths, counter ];
@@ -138,7 +138,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		return width <= 12;
 	}
 
-	widgets.forEach( ( widget, i ) => {
+	widgets.forEach( ( widget, index ) => {
 		// If a widget is inactive, we set null / 0 values and don't need to calculate a layout.
 
 		if ( isInactiveWidgetState( widgetStates[ widget.slug ] ) ) {
@@ -152,7 +152,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 		// Get the next active widget to help determine the best width for this widget.
 		const nextActiveWidget = getNextActiveWidget(
-			i,
+			index,
 			widgets,
 			widgetStates
 		);
@@ -192,7 +192,7 @@ export function getWidgetLayout( widgets, widgetStates ) {
 
 			// Correct the previously added row index for this widget as it
 			// will end up in the following row.
-			rowIndexes[ i ]++;
+			rowIndexes[ index ]++;
 
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.

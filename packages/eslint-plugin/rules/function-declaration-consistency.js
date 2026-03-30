@@ -65,18 +65,18 @@ module.exports = {
 					if ( key === 'parent' ) {
 						continue;
 					}
-					const val = n[ key ];
-					if ( ! val ) {
+					const value = n[ key ];
+					if ( ! value ) {
 						continue;
 					}
-					if ( Array.isArray( val ) ) {
-						for ( const el of val ) {
-							if ( el && typeof el.type === 'string' ) {
-								visit( el );
+					if ( Array.isArray( value ) ) {
+						for ( const element of value ) {
+							if ( element && typeof element.type === 'string' ) {
+								visit( element );
 							}
 						}
-					} else if ( val && typeof val.type === 'string' ) {
-						visit( val );
+					} else if ( value && typeof value.type === 'string' ) {
+						visit( value );
 					}
 				}
 			}

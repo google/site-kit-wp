@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { useIntersection as mockUseIntersection } from 'react-use';
+
+/**
+ * Internal dependencies
+ */
 import {
 	render,
 	createTestRegistry,
@@ -23,20 +31,38 @@ import {
 	provideUserCapabilities,
 	muteFetch,
 	provideUserAuthentication,
+	fireEvent,
 } from '../../../../tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+
+jest.mock( 'react-use', () => ( {
+	...jest.requireActual( 'react-use' ),
+	useIntersection: jest.fn(),
+} ) );
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AdminBarWidgets', () => {
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: false,
+			intersectionRatio: 0,
+		} ) );
 
 		provideModules( registry );
 		provideUserCapabilities( registry );
@@ -49,6 +75,8 @@ describe( 'AdminBarWidgets', () => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		fetchMock.get(
 			new RegExp(
@@ -71,6 +99,10 @@ describe( 'AdminBarWidgets', () => {
 				'^/google-site-kit/v1/modules/search-console/data/data-available'
 			)
 		);
+	} );
+
+	afterEach( () => {
+		jest.resetAllMocks();
 	} );
 
 	it( 'should render the Admin Bar Widgets, including the Activate Analytics CTA', async () => {
@@ -149,5 +181,98 @@ describe( 'AdminBarWidgets', () => {
 		await waitForRegistry();
 
 		expect( queryByText( /total impressions/i ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
+		const { waitForRegistry, rerender } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		mockUseIntersection.mockImplementation( () => ( {
+			isIntersecting: true,
+			intersectionRatio: 1,
+		} ) );
+
+		rerender( <AdminBarWidgets /> );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'view_cta',
+			'admin_bar'
+		);
+	} );
+
+	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Maybe later' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'dismiss_cta',
+			'admin_bar'
+		);
+	} );
+
+	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up Analytics' } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'confirm_cta',
+			'admin_bar'
+		);
+	} );
+
+	it( 'should track the `click_learn_more_link` event when the "Learn more" link is clicked in the Activate Analytics CTA', async () => {
+		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+			features: [ 'setupFlowRefresh' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+		fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_activate-analytics-cta`,
+			'click_learn_more_link',
+			'admin_bar'
+		);
 	} );
 } );

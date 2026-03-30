@@ -130,6 +130,7 @@ function getActivateAnalyticsStep() {
  * @param {boolean} params.canAuthenticate                        Whether the user can authenticate.
  * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
  * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
+ * @param {number}  params.windowHeight                           The height of the window.
  * @return {Object} The welcome tour configuration object.
  */
 export function getWelcomeTour( {
@@ -137,18 +138,23 @@ export function getWelcomeTour( {
 	canAuthenticate,
 	isAnalyticsConnected,
 	isActivateAnalyticsNotificationPresent,
+	windowHeight,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
 	isAnalyticsConnected: boolean;
 	isActivateAnalyticsNotificationPresent: boolean;
+	windowHeight?: number;
 } ) {
 	if ( ! isAnalyticsConnected ) {
 		const steps = [
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
-					target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+					target:
+						typeof windowHeight === 'number' && windowHeight < 930
+							? '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart'
+							: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
 				},
 				title: __(
 					'Track Search traffic trends, identify baselines',

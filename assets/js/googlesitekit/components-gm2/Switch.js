@@ -36,9 +36,9 @@ import { MDCSwitch } from '@/js/material-components';
 
 function Switch( { onClick, label, checked, disabled, hideLabel } ) {
 	const instanceID = useInstanceId( Switch );
-	const switchRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			MDCSwitch.attachTo( el );
+	const switchRef = useCallback( ( element ) => {
+		if ( element !== null ) {
+			MDCSwitch.attachTo( element );
 		}
 	}, [] );
 

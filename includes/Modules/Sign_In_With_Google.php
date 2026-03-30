@@ -66,6 +66,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
+	/**
+	 * Declare the type of the `Module_Settings` subclass to be used by the trait.
+	 *
+	 * @use Module_With_Settings_Trait<Settings>
+	 */
 	use Module_With_Settings_Trait;
 	use Module_With_Tag_Trait;
 	use Module_With_Inline_Data_Trait;

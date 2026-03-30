@@ -109,10 +109,11 @@ export default function TourTooltips( {
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
 	);
 	const run = useSelect( ( select ) => {
-		return (
-			select( CORE_UI ).getValue( runKey ) &&
-			select( CORE_USER ).isTourDismissed( tourID ) === false
-		);
+		const notDismissedOrRepeatable =
+			isRepeatable ||
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+
+		return select( CORE_UI ).getValue( runKey ) && notDismissedOrRepeatable;
 	} );
 
 	function getStepClassName( index ) {
@@ -249,11 +250,11 @@ export default function TourTooltips( {
 
 		// Center the target in the viewport when transitioning to the step.
 		if ( EVENTS.STEP_BEFORE === type ) {
-			let el = step.target;
+			let element = step.target;
 			if ( 'string' === typeof step.target ) {
-				el = global.document.querySelector( step.target );
+				element = global.document.querySelector( step.target );
 			}
-			el?.scrollIntoView?.( { block: 'center' } );
+			element?.scrollIntoView?.( { block: 'center' } );
 		}
 
 		if ( shouldChangeStep ) {

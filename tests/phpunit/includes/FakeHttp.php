@@ -27,7 +27,7 @@ class FakeHttp {
 	 *
 	 * @see \Google\Site_Kit_Dependencies\GuzzleHttp\HandlerStack::__invoke
 	 */
-	public static function fake_google_http_handler( Google_Client $google_client, callable $handler = null ) {
+	public static function fake_google_http_handler( Google_Client $google_client, ?callable $handler = null ) {
 		$config = $google_client->getHttpClient()->getConfig();
 
 		// The given handler technically only needs to be a callable,

@@ -60,7 +60,7 @@ export function getStickyHeaderHeight( breakpoint ) {
 	);
 
 	headerHeight += Array.from( navigation ).reduce(
-		( height, el ) => height + el.offsetHeight,
+		( height, element ) => height + element.offsetHeight,
 		0
 	);
 

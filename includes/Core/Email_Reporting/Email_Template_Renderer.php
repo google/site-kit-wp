@@ -51,7 +51,7 @@ class Email_Template_Renderer {
 	 *
 	 * @param Sections_Map|null $sections_map The sections map instance, or null for simple templates.
 	 */
-	public function __construct( Sections_Map $sections_map = null ) {
+	public function __construct( ?Sections_Map $sections_map = null ) {
 		$this->sections_map  = $sections_map;
 		$this->templates_dir = realpath( __DIR__ . '/templates' );
 	}
@@ -157,32 +157,13 @@ class Email_Template_Renderer {
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		// Handle simple email templates (invitation-email, subscription-confirmation, etc.).
-		if ( 'email-report' !== $template_name ) {
+		// Handle simple email templates with the single simple formatter.
+		if ( 'simple-email' === $template_name ) {
 			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 
-		// Render email report including sections.
 		$sections = $this->sections_map ? $this->sections_map->get_sections() : array();
-
-		$output = Plain_Text_Formatter::format_header(
-			$data['site']['domain'] ?? '',
-			$data['date_range']['label'] ?? ''
-		);
-
-		foreach ( $sections as $section_key => $section ) {
-			if ( empty( $section['section_parts'] ) ) {
-				continue;
-			}
-			$output .= Plain_Text_Formatter::format_section( $section );
-		}
-
-		$output .= Plain_Text_Formatter::format_footer(
-			$data['primary_call_to_action'] ?? array(),
-			$data['footer'] ?? array()
-		);
-
-		return $output;
+		return Plain_Text_Formatter::format_report( $data, $sections );
 	}
 
 	/**

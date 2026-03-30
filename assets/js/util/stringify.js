@@ -43,11 +43,15 @@ function sortObjectProperties( obj ) {
 	Object.keys( obj )
 		.sort()
 		.forEach( ( key ) => {
-			let val = obj[ key ];
-			if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-				val = sortObjectProperties( val );
+			let value = obj[ key ];
+			if (
+				value &&
+				'object' === typeof value &&
+				! Array.isArray( value )
+			) {
+				value = sortObjectProperties( value );
 			}
-			orderedData[ key ] = val;
+			orderedData[ key ] = value;
 		} );
 	return orderedData;
 }

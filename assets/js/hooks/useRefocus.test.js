@@ -93,7 +93,7 @@ describe( 'useRefocus', () => {
 
 		const refocusCount = 5;
 
-		for ( let i = 0; i < refocusCount; i++ ) {
+		for ( let index = 0; index < refocusCount; index++ ) {
 			act( () => {
 				global.window.dispatchEvent( new Event( 'blur' ) );
 			} );
@@ -102,7 +102,7 @@ describe( 'useRefocus', () => {
 				global.window.dispatchEvent( new Event( 'focus' ) );
 			} );
 
-			expect( resetSpy ).toHaveBeenCalledTimes( i + 1 );
+			expect( resetSpy ).toHaveBeenCalledTimes( index + 1 );
 		}
 
 		expect( resetSpy ).toHaveBeenCalledTimes( refocusCount );
