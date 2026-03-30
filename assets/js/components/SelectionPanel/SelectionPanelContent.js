@@ -1,7 +1,7 @@
 /**
- * Selection Panel components.
+ * Selection Panel Content component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,25 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import SelectionPanel from './SelectionPanel';
-export { default as SelectionPanelHeader } from './SelectionPanelHeader';
-export { default as SelectionPanelItem } from './SelectionPanelItem';
-export { default as SelectionPanelItems } from './SelectionPanelItems';
-export { default as SelectionPanelFooter } from './SelectionPanelFooter';
-export { default as SelectionPanelContent } from './SelectionPanelContent';
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
-export default SelectionPanel;
+export default function SelectionPanelContent( { children, className } ) {
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-selection-panel__content',
+				className
+			) }
+		>
+			{ children }
+		</div>
+	);
+}
+
+SelectionPanelContent.propTypes = {
+	children: PropTypes.node,
+	className: PropTypes.string,
+};
