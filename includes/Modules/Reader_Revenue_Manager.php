@@ -518,7 +518,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		if ( $content_policy_status ) {
 			$new_settings['contentPolicyState'] = $content_policy_status->getContentPolicyState() ?? '';
-			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoLink() ?? null;
+			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoLink() ?? '';
 		}
 
 		if ( $new_onboarding_state !== $onboarding_state ) {
