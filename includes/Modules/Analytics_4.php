@@ -68,6 +68,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
@@ -702,11 +703,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					},
 				)
 			),
-			'GET:container-lookup'                      => array(
-				'service' => 'tagmanager',
-				'scopes'  => array(
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			'GET:container-lookup'                      => new Get_Container_Lookup(
+				array(
+					'service' => function () {
+						return $this->get_service( 'tagmanager' );
+					},
+					'scopes'  => array(
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					),
+				)
 			),
 			'GET:container-destinations'                => array(
 				'service' => 'tagmanager',
@@ -1491,17 +1496,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return function () use ( $data ) {
 					return $this->resource_data_availability_date->set_resource_date( $data['resourceSlug'], $data['resourceType'], $data['date'] );
 				};
-			case 'GET:container-lookup':
-				if ( ! isset( $data['destinationID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinationID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
 			case 'GET:container-destinations':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
