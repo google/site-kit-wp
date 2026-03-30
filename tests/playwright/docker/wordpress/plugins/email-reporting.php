@@ -31,12 +31,7 @@ add_action(
 						);
 					}
 
-					add_filter(
-						'googlesitekit_email_reporting_batch_id',
-						function () {
-							return 'test-batch-id';
-						}
-					);
+					add_filter( 'googlesitekit_email_reporting_batch_id', fn() => 'test-batch-id' );
 
 					do_action_ref_array( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
 					do_action_ref_array( Email_Reporting_Scheduler::ACTION_WORKER, array( 'test-batch-id', $frequency, time() ) );

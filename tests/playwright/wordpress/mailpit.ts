@@ -167,11 +167,11 @@ export class Mailpit {
 	): Promise< MailpitMessage > {
 		this.interacted = true;
 
-		const now = Date.now(); // eslint-disable-line sitekit/no-direct-date
 		const { query, timeout = 2_500, interval = 250 } = options ?? {};
+		const deadline = Date.now() + timeout; // eslint-disable-line sitekit/no-direct-date
 
-		const deadline = now + timeout;
-		while ( now < deadline ) {
+		// eslint-disable-next-line sitekit/no-direct-date
+		while ( Date.now() < deadline ) {
 			const messages = await this.getMessages( query );
 			if ( messages.length > 0 ) {
 				return messages[ 0 ];

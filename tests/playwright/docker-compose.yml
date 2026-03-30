@@ -104,6 +104,7 @@ services:
           - subscribewithgoogle.googleapis.com
           - www.googleapis.com
           - storage.googleapis.com
+          - people.googleapis.com
 
 networks:
   sitekit:
