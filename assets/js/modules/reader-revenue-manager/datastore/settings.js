@@ -142,7 +142,7 @@ export function validateCanSubmitChanges( select ) {
 	).getPolicyInfoLink();
 
 	invariant(
-		typeof policyInfoLink === 'string' || policyInfoLink === null,
+		typeof policyInfoLink === 'string',
 		INVARIANT_INVALID_POLICY_INFO_LINK
 	);
 }

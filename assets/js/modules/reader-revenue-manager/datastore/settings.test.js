@@ -47,7 +47,7 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
 		publicationOnboardingStateChanged: false,
 		contentPolicyState: '',
-		policyInfoLink: null,
+		policyInfoLink: '',
 		snippetMode: 'post_types',
 		postTypes: [ 'post' ],
 		productID: 'valid-id',

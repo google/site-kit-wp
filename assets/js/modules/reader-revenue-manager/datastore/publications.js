@@ -388,7 +388,7 @@ const baseSelectors = {
 	 * @since 1.171.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|null|undefined)} The policy info URL wrapped with the account chooser URL; `null` if `policyInfoLink` is empty or `null`; `undefined` if not available.
+	 * @return {(string|null|undefined)} The policy info URL wrapped with the account chooser URL; `null` if `policyInfoLink` is empty; `undefined` if not available.
 	 */
 	getPolicyInfoURL: createRegistrySelector( ( select ) => () => {
 		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
