@@ -41,6 +41,37 @@ class Plain_Text_Formatter {
 	}
 
 	/**
+	 * Formats the full email report as plain text.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data     Template data.
+	 * @param array $sections Sections map.
+	 * @return string Formatted plain text email report.
+	 */
+	public static function format_report( $data, $sections ) {
+		$output = self::format_header(
+			$data['site']['domain'] ?? '',
+			$data['date_range']['label'] ?? ''
+		);
+
+		foreach ( $sections as $section ) {
+			if ( empty( $section['section_parts'] ) ) {
+				continue;
+			}
+
+			$output .= self::format_section( $section );
+		}
+
+		$output .= self::format_footer(
+			$data['primary_call_to_action'] ?? array(),
+			$data['footer'] ?? array()
+		);
+
+		return $output;
+	}
+
+	/**
 	 * Formats a simple email as plain text.
 	 *
 	 * Simple emails share a common structure with customizable content.

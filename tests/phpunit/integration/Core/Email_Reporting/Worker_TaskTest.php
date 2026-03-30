@@ -565,13 +565,13 @@ class Worker_TaskTest extends TestCase {
 			)
 		);
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
-		$this->template_renderer->method( 'render' )->willReturn( new WP_Error( 'render_failed', 'Render failed' ) );
+		$this->template_renderer->method( 'render' )->willReturn( '' );
 
 		$task = $this->create_worker_task( $this->real_batch_query );
 		$task->handle_callback_action( $batch_id, Email_Reporting_Settings::FREQUENCY_WEEKLY, time() );
 
 		$this->assertSame( Email_Log::STATUS_FAILED, get_post_status( $post_id ), 'Post should be marked failed when rendering fails.' );
-		$this->assertStringContainsString( 'render_failed', get_post_meta( $post_id, Email_Log::META_ERROR_DETAILS, true ), 'Render failure should be stored.' );
+		$this->assertStringContainsString( 'email_report_render_failed', get_post_meta( $post_id, Email_Log::META_ERROR_DETAILS, true ), 'Render failure should be stored.' );
 	}
 
 	public function test_send_failure_marks_failed() {

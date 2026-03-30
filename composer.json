@@ -129,7 +129,7 @@
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
-    "analyze": "phpstan --memory-limit=2G",
+    "analyze": "phpstan analyze --memory-limit=2G",
     "lint": "phpcs",
     "lint-fix": "phpcbf",
     "test": "phpunit",

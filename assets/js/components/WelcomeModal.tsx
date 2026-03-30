@@ -149,8 +149,8 @@ export default function WelcomeModal() {
 		setNotification( undefined );
 	}, [ modalVariant, setNotification, dismissItem ] );
 
-	const closeAndDismissModalWithTooltip = useCallback( async () => {
-		await closeAndDismissModal();
+	const closeAndDismissModalWithTooltip = useCallback( () => {
+		closeAndDismissModal();
 
 		if ( modalVariant !== MODAL_VARIANT.GATHERING_DATA ) {
 			showTooltip();

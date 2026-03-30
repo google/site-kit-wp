@@ -33,7 +33,7 @@ class Request extends Report {
 	 *
 	 * @param Data_Request $data           Data request object.
 	 * @param bool         $is_shared_request Determines whether the current request is shared or not.
-	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
+	 * @return Google_Service_AnalyticsData_RunReportRequest|WP_Error Request object on success, or WP_Error on failure.
 	 */
 	public function create_request( Data_Request $data, $is_shared_request ) {
 		$request_helpers = new RequestHelpers( $this->context );

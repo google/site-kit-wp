@@ -209,7 +209,7 @@ class REST_Email_Reporting_Controller {
 
 							return new WP_REST_Response( $this->settings->get() );
 						},
-						'permission_callback' => $can_access,
+						'permission_callback' => $can_manage,
 						'args'                => array(
 							'data' => array(
 								'type'       => 'object',

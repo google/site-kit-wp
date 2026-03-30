@@ -48,7 +48,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
+	 * @return bool|\WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate() {
 		$settings     = $this->settings->get();

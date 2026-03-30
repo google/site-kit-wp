@@ -109,10 +109,11 @@ export default function TourTooltips( {
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
 	);
 	const run = useSelect( ( select ) => {
-		return (
-			select( CORE_UI ).getValue( runKey ) &&
-			select( CORE_USER ).isTourDismissed( tourID ) === false
-		);
+		const notDismissedOrRepeatable =
+			isRepeatable ||
+			select( CORE_USER ).isTourDismissed( tourID ) === false;
+
+		return select( CORE_UI ).getValue( runKey ) && notDismissedOrRepeatable;
 	} );
 
 	function getStepClassName( index ) {
