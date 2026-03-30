@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Core\Email_Reporting\Cron_Health_Check;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Eligible_Subscribers_Query;
@@ -121,6 +123,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 		$golinks = new Golinks( $this->context );
 		$golinks->register_handler( 'manage-subscription-email-reporting', new Email_Reporting_Golink_Handler() );
+		$health_check = $this->createMock( Cron_Health_Check::class );
 
 		$this->controller              = new REST_Email_Reporting_Controller(
 			$this->settings,
@@ -128,7 +131,8 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			$this->user_settings,
 			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
 			new Email(),
-			$golinks
+			$golinks,
+			$health_check
 		);
 		$this->original_sharing_option = get_option( Module_Sharing_Settings::OPTION );
 	}
@@ -169,6 +173,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$routes     = array(
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-invite-user',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
@@ -372,6 +377,58 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertSame( array(), $data['users'], 'Non-matching search should return no users.' );
 		$this->assertSame( 0, $data['total'], 'Non-matching search should return total of zero.' );
 		$this->assertSame( 0, $data['totalPages'], 'Non-matching search should return zero total pages.' );
+	}
+
+	public function test_get_email_reporting_errors_runs_health_check_before_reading_latest_batch_error() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$call_order = array();
+
+		$health_check = $this->createMock( Cron_Health_Check::class );
+		$health_check->expects( $this->once() )
+			->method( 'check_stale_tasks' )
+			->willReturnCallback(
+				function () use ( &$call_order ) {
+					$call_order[] = 'health_check';
+				}
+			);
+
+		$controller = new REST_Email_Reporting_Controller(
+			$this->settings,
+			$this->modules,
+			$this->user_settings,
+			new Eligible_Subscribers_Query( $this->modules, $this->user_options ),
+			new Email(),
+			new Golinks( $this->context ),
+			$health_check
+		);
+
+		$batch_query = $this->createMock( Email_Log_Batch_Query::class );
+		$batch_query->expects( $this->once() )
+			->method( 'get_latest_batch_error' )
+			->willReturnCallback(
+				function () use ( &$call_order ) {
+					$call_order[] = 'latest_batch_error';
+					return '{"errors":{"cron_scheduler_error":["Cron issue"]},"error_data":{"cron_scheduler_error":{"category_id":"cron_scheduler_error"}}}';
+				}
+			);
+
+		$reflection = new \ReflectionProperty( REST_Email_Reporting_Controller::class, 'email_log_batch_query' );
+		$reflection->setAccessible( true );
+		$reflection->setValue( $controller, $batch_query );
+
+		$controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'Email reporting errors endpoint should return 200.' );
+		$this->assertSame(
+			array( 'health_check', 'latest_batch_error' ),
+			$call_order,
+			'Cron health check should run before reading latest batch error.'
+		);
 	}
 
 	public function test_get_eligible_subscribers_includes_invited_field() {

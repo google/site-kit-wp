@@ -94,8 +94,6 @@ class Synchronize_AdsLinked {
 	 * Synchronize the adsLinked status.
 	 *
 	 * @since 1.124.0
-	 *
-	 * @return null
 	 */
 	protected function synchronize_ads_linked_status() {
 		$settings_ga4       = $this->analytics_4->get_settings()->get();

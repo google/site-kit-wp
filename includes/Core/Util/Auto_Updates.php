@@ -41,7 +41,7 @@ class Auto_Updates {
 	 * Auto updated not forced.
 	 *
 	 * @since 1.93.0
-	 * @var false
+	 * @var null
 	 */
 	const AUTO_UPDATE_NOT_FORCED = null;
 
