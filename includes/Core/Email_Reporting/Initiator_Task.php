@@ -117,11 +117,14 @@ class Initiator_Task {
 
 		$period_lengths = array(
 			Email_Reporting_Settings::FREQUENCY_WEEKLY    => 7,
-			Email_Reporting_Settings::FREQUENCY_MONTHLY   => 30,
 			Email_Reporting_Settings::FREQUENCY_QUARTERLY => 90,
 		);
 
 		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
+
+		if ( Email_Reporting_Settings::FREQUENCY_MONTHLY === $frequency ) {
+			$period_days = (int) $send_date->format( 't' );
+		}
 
 		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
 		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
