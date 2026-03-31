@@ -157,7 +157,7 @@ class Content_Map {
 			/* translators: 1: opening anchor tag with mailto link, 2: inviter email address, 3: closing anchor tag */
 			'invitation-email'           => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
 			'subscription-confirmation'  => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
-			'error-email'                => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'error-email'                => __( 'Email reports are failing to send', 'google-site-kit' ),
 			'error-email-cron-scheduler' => __( 'Email reports are failing to send', 'google-site-kit' ),
 		);
 	}
