@@ -705,14 +705,17 @@ class REST_Modules_Controller {
 									continue;
 								}
 
-								// Update the module's ownerID to the ID of the user making the request.
-								$module_setting_updates = array(
-									'ownerID' => get_current_user_id(),
-								);
-								$recovered_module = $module->get_settings()->merge( $module_setting_updates );
+								if ( $module instanceof Module_With_Settings ) {
+									// Update the module's ownerID to the ID of the user making the request.
+									$module_setting_updates = array(
+										'ownerID' => get_current_user_id(),
+									);
 
-								if ( $recovered_module ) {
-									$response['success'][ $slug ] = true;
+									$recovered_module = $module->get_settings()->merge( $module_setting_updates );
+
+									if ( $recovered_module ) {
+										$response['success'][ $slug ] = true;
+									}
 								}
 							}
 
