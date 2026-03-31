@@ -201,7 +201,7 @@ class Initiator_TaskTest extends TestCase {
 	/**
 	 * @dataProvider data_build_reference_dates_uses_expected_period_length
 	 */
-	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days ) {
+	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days, $timestamp ) {
 		$original_timezone_string = get_option( 'timezone_string' );
 		$original_gmt_offset      = get_option( 'gmt_offset' );
 
@@ -209,8 +209,6 @@ class Initiator_TaskTest extends TestCase {
 		update_option( 'gmt_offset', 0 );
 
 		try {
-			$timestamp = strtotime( '2026-03-16 00:00:00 UTC' );
-
 			$reference_dates = Initiator_Task::build_reference_dates(
 				$frequency,
 				$timestamp
@@ -226,6 +224,36 @@ class Initiator_TaskTest extends TestCase {
 
 			$this->assertSame( $expected_days, $current_days, 'Expected current reference range to use inclusive period length.' );
 			$this->assertSame( $expected_days, $compare_days, 'Expected compare reference range to use inclusive period length.' );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+			update_option( 'gmt_offset', $original_gmt_offset );
+		}
+	}
+
+	/**
+	 * @dataProvider data_build_reference_dates_monthly_uses_previous_month_window
+	 */
+	public function test_build_reference_dates_monthly_uses_previous_month_window( $scheduled_timestamp, $expected_start, $expected_send, $expected_days ) {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', 'UTC' );
+		update_option( 'gmt_offset', 0 );
+
+		try {
+			$reference_dates = Initiator_Task::build_reference_dates(
+				Email_Reporting_Settings::FREQUENCY_MONTHLY,
+				$scheduled_timestamp
+			);
+
+			$this->assertSame( $expected_start, $reference_dates['startDate'], 'Expected monthly startDate to be first day of previous month.' );
+			$this->assertSame( $expected_send, $reference_dates['sendDate'], 'Expected monthly sendDate to be last day of previous month.' );
+
+			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
+
+			$this->assertSame( $expected_days, $current_days, 'Expected monthly range length to match previous month day count.' );
 		} finally {
 			update_option( 'timezone_string', $original_timezone_string );
 			update_option( 'gmt_offset', $original_gmt_offset );
@@ -256,9 +284,18 @@ class Initiator_TaskTest extends TestCase {
 
 	public function data_build_reference_dates_uses_expected_period_length() {
 		return array(
-			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7 ),
-			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 30 ),
-			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90 ),
+			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7, strtotime( '2026-03-16 00:00:00 UTC' ) ),
+			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 28, strtotime( '2026-03-01 00:00:00 UTC' ) ),
+			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90, strtotime( '2026-03-16 00:00:00 UTC' ) ),
+		);
+	}
+
+	public function data_build_reference_dates_monthly_uses_previous_month_window() {
+		return array(
+			'previous month has 28 days'             => array( strtotime( '2026-03-01 00:00:00 UTC' ), '2026-02-01', '2026-02-28', 28 ),
+			'previous month has 29 days (leap year)' => array( strtotime( '2024-03-01 00:00:00 UTC' ), '2024-02-01', '2024-02-29', 29 ),
+			'previous month has 30 days'             => array( strtotime( '2026-05-01 00:00:00 UTC' ), '2026-04-01', '2026-04-30', 30 ),
+			'previous month has 31 days'             => array( strtotime( '2026-08-01 00:00:00 UTC' ), '2026-07-01', '2026-07-31', 31 ),
 		);
 	}
 }
