@@ -115,15 +115,10 @@ class Get_Google_Tag_SettingsTest extends TestCase {
 		$request = $this->datapoint->create_request( $data_request );
 		$this->analytics->get_client()->execute( $request );
 
-		$this->assertStringContainsString(
-			'tagmanager.googleapis.com',
-			$this->tag_settings_request->getUri()->getHost(),
-			'The request should be made to the Tag Manager API.'
-		);
-		$this->assertStringContainsString(
-			'G-12345',
-			$this->tag_settings_request->getUri()->getQuery(),
-			'The request should pass the measurementID as a destinationId parameter.'
+		$this->assertEquals(
+			'https://tagmanager.googleapis.com/tagmanager/v2/accounts/containers:lookup?destinationId=G-12345',
+			(string) $this->tag_settings_request->getUri(),
+			'The request should be made to the correct GTM container lookup endpoint.'
 		);
 	}
 

@@ -815,14 +815,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:set-google-tag-id-mismatch'           => new Set_Google_Tag_ID_Mismatch(
 				array(
 					'transients' => $this->transients,
-					'service'    => '',
 				)
 			),
 			'POST:set-is-web-data-stream-unavailable'   => new Set_Is_Web_Data_Stream_Unavailable(
 				array(
 					'transients' => $this->transients,
 					'settings'   => $this->get_settings(),
-					'service'    => '',
 				)
 			),
 			'POST:create-audience'                      => array(
@@ -833,7 +831,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'POST:save-resource-data-availability-date' => new Save_Resource_Data_Availability_Date(
 				array(
 					'resource_data_availability_date' => $this->resource_data_availability_date,
-					'service'                         => '',
 				)
 			),
 			'POST:sync-audiences'                       => array(
