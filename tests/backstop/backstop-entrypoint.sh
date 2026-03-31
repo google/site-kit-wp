@@ -9,8 +9,8 @@ if [ ! -f /src/dist/iframe.html ]; then
     exit 1
 fi
 
-# Start a Python HTTP server in the background.
-python3 -m http.server 3000 --directory /src/dist > /dev/null 2>&1 &
+# Start a Node HTTP server in the background.
+npx http-server /src/dist -p 3000 --silent -c-1 &
 SERVER_PID=$!
 
 # Function to stop the server on exit.
