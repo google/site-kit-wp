@@ -22,8 +22,6 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaAdSenseLink;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdminV1alpha\GoogleAnalyticsAdminV1alphaListAdSenseLinksResponse;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaGoogleAdsLink;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListGoogleAdsLinksResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
@@ -44,7 +42,7 @@ class Get_Adsense_LinksTest extends TestCase {
 	private $datapoint;
 
 	/**
-	 * Get adsense links request instance.
+	 * Get AdSense links request instance.
 	 *
 	 * @var Request
 	 */
@@ -98,9 +96,9 @@ class Get_Adsense_LinksTest extends TestCase {
 
 		try {
 			$this->datapoint->create_request( $data_request );
-			$this->fail( 'Expected Missing_Required_Param_Exception to be thrown.' );
+			$this->fail( 'Expected `Missing_Required_Param_Exception` to be thrown.' );
 		} catch ( \Exception $e ) {
-			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw Missing_Required_Param_Exception when the `propertyID` parameter is missing.' );
+			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw `Missing_Required_Param_Exception` when the `propertyID` parameter is missing.' );
 		}
 	}
 
@@ -135,7 +133,7 @@ class Get_Adsense_LinksTest extends TestCase {
 		$this->assertEquals(
 			$response,
 			$adsense_links_response->getAdsenseLinks(),
-			'The datapoint should return an array of adsense links.'
+			'The datapoint should return an array of AdSense links.'
 		);
 	}
 }

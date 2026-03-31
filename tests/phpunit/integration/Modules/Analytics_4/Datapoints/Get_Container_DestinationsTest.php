@@ -89,7 +89,7 @@ class Get_Container_DestinationsTest extends TestCase {
 		);
 	}
 
-	public function required_parameters() {
+	public function data_required_parameters() {
 		return array(
 			array( 'accountID' ),
 			array( 'containerID' ),
@@ -97,7 +97,7 @@ class Get_Container_DestinationsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider required_parameters
+	 * @dataProvider data_required_parameters
 	 */
 	public function test_create_request__validates_required_params( $required_param ) {
 		$data = array(

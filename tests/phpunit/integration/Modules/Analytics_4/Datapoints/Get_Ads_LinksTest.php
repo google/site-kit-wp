@@ -42,7 +42,7 @@ class Get_Ads_LinksTest extends TestCase {
 	private $datapoint;
 
 	/**
-	 * Get ads links request instance.
+	 * Get Ads links request instance.
 	 *
 	 * @var Request
 	 */
@@ -96,9 +96,9 @@ class Get_Ads_LinksTest extends TestCase {
 
 		try {
 			$this->datapoint->create_request( $data_request );
-			$this->fail( 'Expected Missing_Required_Param_Exception to be thrown.' );
+			$this->fail( 'Expected `Missing_Required_Param_Exception` to be thrown.' );
 		} catch ( \Exception $e ) {
-			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw Missing_Required_Param_Exception when the `propertyID` parameter is missing.' );
+			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw `Missing_Required_Param_Exception` when the `propertyID` parameter is missing.' );
 		}
 	}
 
@@ -133,7 +133,7 @@ class Get_Ads_LinksTest extends TestCase {
 		$this->assertEquals(
 			$response,
 			$ads_links_response->getGoogleAdsLinks(),
-			'The datapoint should return an array of ads links.'
+			'The datapoint should return an array of Ads links.'
 		);
 	}
 }

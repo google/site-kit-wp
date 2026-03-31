@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Destination;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListDestinationsResponse;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -32,7 +33,7 @@ class Get_Container_Destinations extends Datapoint implements Executable_Datapoi
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
-	 * @return mixed Request object on success, or WP_Error on failure.
+	 * @return RequestInterface|WP_Error Request object on success, or WP_Error on failure.
 	 */
 	public function create_request( Data_Request $data ) {
 		if ( ! isset( $data['accountID'] ) ) {

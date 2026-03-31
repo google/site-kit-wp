@@ -17,9 +17,10 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaGoogleAdsLink;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaListGoogleAdsLinksResponse;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 
 /**
- * Get ads links datapoint class.
+ * Get Ads links datapoint class.
  *
  * @since n.e.x.t
  * @access private
@@ -34,6 +35,7 @@ class Get_Ads_Links extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
+	 * @return RequestInterface Request object.
 	 */
 	public function create_request( Data_Request $data ) {
 		if ( empty( $data['propertyID'] ) ) {
