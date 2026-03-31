@@ -33,7 +33,6 @@ import {
 	UI_ALL_TRAFFIC_LOADED,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { DAY_IN_SECONDS } from '@/js/util';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -46,7 +45,6 @@ import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import useAllTrafficWidgetReport from '@/js/modules/analytics-4/hooks/useAllTrafficWidgetReport';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
@@ -285,13 +283,6 @@ function DashboardAllTrafficWidgetGA4( props ) {
 					</Cell>
 				</Row>
 			</Grid>
-
-			{ ! viewOnly && (
-				<SurveyViewTrigger
-					triggerID="view_ga4_dashboard"
-					ttl={ DAY_IN_SECONDS }
-				/>
-			) }
 		</Widget>
 	);
 }

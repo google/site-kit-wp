@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  *
  * @var array    $cta               Primary CTA configuration with 'url' and 'label'.
- * @var array    $footer            Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
+ * @var array    $footer            Footer configuration with 'copy' and 'unsubscribe_url'.
  * @var callable $render_shared_part Function to render a shared part by name.
  */
 
@@ -45,12 +45,29 @@
 					?>
 				</p>
 			<?php endif; ?>
-			<?php if ( ! empty( $footer['links'] ) && is_array( $footer['links'] ) ) : ?>
+			<?php
+			// Footer links are hardcoded to ensure consistent order across all email types.
+			$footer_links = array(
+				array(
+					'label' => __( 'Manage subscription', 'google-site-kit' ),
+					'url'   => $footer['unsubscribe_url'] ?? '',
+				),
+				array(
+					'label' => __( 'Privacy Policy', 'google-site-kit' ),
+					'url'   => 'https://policies.google.com/privacy',
+				),
+				array(
+					'label' => __( 'Help center', 'google-site-kit' ),
+					'url'   => add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+				),
+			);
+			?>
+			<?php if ( ! empty( $footer['unsubscribe_url'] ) ) : ?>
 				<table role="presentation" width="100%" style="font-size:12px; line-height:18px;">
 					<tr>
 						<?php
 						$alignments = array( 'left', 'center', 'right' );
-						foreach ( $footer['links'] as $index => $footer_link ) :
+						foreach ( $footer_links as $index => $footer_link ) :
 							$align = isset( $alignments[ $index ] ) ? $alignments[ $index ] : 'center';
 							?>
 							<td width="33.33%" style="text-align:<?php echo esc_attr( $align ); ?>;">
