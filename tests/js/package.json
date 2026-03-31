@@ -5,6 +5,8 @@
 		"test:js:watch": "npm run test:js -- --watch"
 	},
 	"dependencies": {
+		"@swc/core": "^1.15.21",
+		"@swc/jest": "^0.2.39",
 		"@wordpress/element": "^2.20.3",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12"
