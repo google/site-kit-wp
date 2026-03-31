@@ -43,7 +43,6 @@ const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 	storeName: MODULES_ANALYTICS_4,
 	settingSlugs: [
 		'accountID',
-		'adsConversionID',
 		'adSenseLinked',
 		'adSenseLinkedLastSyncedAt',
 		'propertyID',
@@ -59,7 +58,6 @@ const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 		'availableCustomDimensions',
 		'propertyCreateTime',
 		'trackingDisabled',
-		'adsConversionIDMigratedAtMs',
 		'adsLinked',
 		'adsLinkedLastSyncedAt',
 		'detectedEvents',
