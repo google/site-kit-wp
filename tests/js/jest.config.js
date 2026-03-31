@@ -16,6 +16,8 @@
 
 const path = require( 'path' );
 
+const swcTransform = path.resolve( __dirname, 'swc-jest-compat.js' );
+
 function getModuleAbsolutePath( packageName ) {
 	return path.dirname(
 		require.resolve( path.join( packageName, 'package.json' ) )
@@ -30,8 +32,31 @@ module.exports = {
 			rootDir: '../../',
 			preset: getModuleAbsolutePath( '@wordpress/jest-preset-default' ),
 			transform: {
-				'^.+\\.(js|jsx|ts|tsx)$':
-					'<rootDir>/tests/js/babel-transform.js',
+				'^.+\\.(js|jsx)$': [
+					swcTransform,
+					{
+						jsc: {
+							parser: { jsx: true },
+							transform: { react: { runtime: 'automatic' } },
+							loose: true,
+						},
+						module: { type: 'commonjs' },
+					},
+				],
+				'^.+\\.(ts|tsx)$': [
+					swcTransform,
+					{
+						jsc: {
+							parser: {
+								syntax: 'typescript',
+								tsx: true,
+							},
+							transform: { react: { runtime: 'automatic' } },
+							loose: true,
+						},
+						module: { type: 'commonjs' },
+					},
+				],
 			},
 			setupFiles: [
 				'<rootDir>/tests/js/setup-globals',
@@ -83,8 +108,31 @@ module.exports = {
 			rootDir: '../../',
 			testEnvironment: 'node',
 			transform: {
-				'^.+\\.(js|jsx|ts|tsx)$':
-					'<rootDir>/tests/js/babel-transform.js',
+				'^.+\\.(js|jsx)$': [
+					swcTransform,
+					{
+						jsc: {
+							parser: { jsx: true },
+							transform: { react: { runtime: 'automatic' } },
+							loose: true,
+						},
+						module: { type: 'commonjs' },
+					},
+				],
+				'^.+\\.(ts|tsx)$': [
+					swcTransform,
+					{
+						jsc: {
+							parser: {
+								syntax: 'typescript',
+								tsx: true,
+							},
+							transform: { react: { runtime: 'automatic' } },
+							loose: true,
+						},
+						module: { type: 'commonjs' },
+					},
+				],
 			},
 			testMatch: [
 				'<rootDir>/packages/eslint-plugin/**/?(*.)test.{js,jsx,ts,tsx}',
