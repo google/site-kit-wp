@@ -20,11 +20,10 @@
 
 	.googlesitekit-invite-others-to-subscribe {
 		display: flex;
-		flex: 1 1 0;
+		flex: 1 0 auto;
 		flex-direction: column;
 		margin-top: 70px;
 		min-height: 0;
-		overflow: hidden;
 
 		@media (height < 800px) {
 			margin-top: $grid-gap-phone;
@@ -78,6 +77,7 @@
 
 	.googlesitekit-invite-user-list {
 		flex: 1 1 auto;
+		max-height: 200px;
 		min-height: 0;
 		overflow-y: auto;
 	}

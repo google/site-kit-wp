@@ -175,7 +175,7 @@ class Email_Report_Payload_Processor {
 				}
 				$metadata['metrics'][] = array(
 					'name' => $metric['name'],
-					'type' => isset( $metric['type'] ) ? $metric['type'] : 'TYPE_INTEGER',
+					'type' => $metric['type'] ?? 'TYPE_INTEGER',
 				);
 			}
 		}
@@ -184,7 +184,7 @@ class Email_Report_Payload_Processor {
 			$metadata['title'] = $report['title'];
 		}
 
-		$metadata['row_count'] = isset( $report['rowCount'] ) ? $report['rowCount'] : 0;
+		$metadata['row_count'] = $report['rowCount'] ?? 0;
 
 		return $metadata;
 	}

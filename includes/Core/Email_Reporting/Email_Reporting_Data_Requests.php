@@ -454,29 +454,6 @@ class Email_Reporting_Data_Requests {
 	}
 
 	/**
-	 * Gets the connected AdSense account ID if available.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @param object $module Module instance.
-	 * @return string Account ID or empty string if unavailable.
-	 */
-	private function get_adsense_account_id( $module ) {
-		if ( ! method_exists( $module, 'get_settings' ) ) {
-			return '';
-		}
-
-		$settings = $module->get_settings();
-		if ( ! is_object( $settings ) || ! method_exists( $settings, 'get' ) ) {
-			return '';
-		}
-
-		$values = $settings->get();
-
-		return isset( $values['accountID'] ) ? (string) $values['accountID'] : '';
-	}
-
-	/**
 	 * Determines whether audience segmentation is enabled.
 	 *
 	 * @since 1.168.0

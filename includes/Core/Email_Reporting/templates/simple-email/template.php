@@ -1,8 +1,10 @@
 <?php
 /**
- * Base template for the subscription-confirmation email.
+ * Base template for simple emails.
  *
- * This template is used to confirm when users subscribe to periodic performance reports.
+ * A unified template for all simple email types (invitation, subscription
+ * confirmation, error notification). Variable content is controlled through
+ * the $data array, including graphic configuration and footer type.
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC
@@ -21,6 +23,8 @@ $email_title        = $data['title'];
 $body               = $data['body'];
 $cta                = $data['primary_call_to_action'];
 $footer             = $data['footer'];
+$graphic            = $data['graphic'] ?? array();
+$footer_type        = $data['footer_type'] ?? 'standard';
 $get_asset_url      = $data['get_asset_url'];
 $render_part        = $data['render_part'];
 $render_shared_part = $data['render_shared_part'];
@@ -72,7 +76,7 @@ $render_shared_part = $data['render_shared_part'];
 							);
 							?>
 							<?php
-							// Render content (envelope, domain, title, body, CTA).
+							// Render content card with graphic config.
 							$render_part(
 								'content',
 								array(
@@ -81,22 +85,37 @@ $render_shared_part = $data['render_shared_part'];
 									'title'              => $email_title,
 									'body'               => $body,
 									'cta'                => $cta,
+									'graphic'            => $graphic,
+									'learn_more_url'     => $data['learn_more_url'] ?? '',
 									'get_asset_url'      => $get_asset_url,
 									'render_shared_part' => $render_shared_part,
 								)
 							);
 							?>
-							<?php
-							// Render full footer (unsubscribe, links) without CTA since it's already in the content.
-							$render_shared_part(
-								'footer',
-								array(
-									'cta'                => array(), // CTA is in content, not footer.
-									'footer'             => $footer,
-									'render_shared_part' => $render_shared_part,
-								)
-							);
-							?>
+							<?php if ( 'inline' === $footer_type ) : ?>
+								<?php /* Inline footer (invitation-email style: just copy text, no unsubscribe/links). */ ?>
+							<table role="presentation" width="100%" style="margin-top: 12px;">
+								<tr>
+									<td style="text-align: left;">
+										<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
+											<?php echo esc_html( $footer['copy'] ?? '' ); ?>
+										</p>
+									</td>
+								</tr>
+							</table>
+							<?php else : ?>
+								<?php
+								// Standard shared footer with unsubscribe and links.
+								$render_shared_part(
+									'footer',
+									array(
+										'cta'    => array(), // CTA is in content, not footer.
+										'footer' => $footer,
+										'render_shared_part' => $render_shared_part,
+									)
+								);
+								?>
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>

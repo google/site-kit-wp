@@ -1,9 +1,10 @@
 includes:
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - tests/phpstan/phpstan-baseline.neon
 
 parameters:
-    level: 1
+    level: 3
     treatPhpDocTypesAsCertain: false
     inferPrivatePropertyTypeFromConstructor: true
     paths:
@@ -11,9 +12,16 @@ parameters:
         - %currentWorkingDirectory%/includes/
     bootstrapFiles:
         - %currentWorkingDirectory%/google-site-kit.php
-        - %currentWorkingDirectory%/tests/phpstan/constants.php
         - %currentWorkingDirectory%/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - %currentWorkingDirectory%/vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+    ignoreErrors:
+        -
+            identifier: include.fileNotFound
+            message: '#^Path in include\(\) "dist/config\.php" is not a file or it does not exist\.$#'
+            path: includes/Plugin.php
+            reportUnmatched: false
+        - '#property.*Google\\Site_Kit_Dependencies\\Google\\Service.*#'
     scanDirectories:
         - %currentWorkingDirectory%/gtg
         - %currentWorkingDirectory%/third-party
+        - %currentWorkingDirectory%/tests/phpstan
