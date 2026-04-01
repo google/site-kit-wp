@@ -241,7 +241,7 @@ describe( 'TourTooltips', () => {
 		// This error is caused by the `react-select` component trying to update
 		// state after the component has unmounted, so we can't fix it ourselves.
 		expect( console ).toHaveErrored(
-			'Warning: Can\'t perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s"'
+			"Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s"
 		);
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
