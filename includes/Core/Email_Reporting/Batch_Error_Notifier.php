@@ -147,8 +147,8 @@ class Batch_Error_Notifier {
 		$template_data = $this->build_template_data( $content_key );
 
 		$renderer     = new Email_Template_Renderer();
-		$html_content = $renderer->render( 'error-email', $template_data );
-		$text_content = $renderer->render_text( 'error-email', $template_data );
+		$html_content = $renderer->render( 'simple-email', $template_data );
+		$text_content = $renderer->render_text( 'simple-email', $template_data );
 
 		if ( is_wp_error( $html_content ) || is_wp_error( $text_content ) ) {
 			return;
@@ -276,7 +276,6 @@ class Batch_Error_Notifier {
 		$domain    = $this->get_site_domain();
 
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
-		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => $title,
@@ -294,21 +293,9 @@ class Batch_Error_Notifier {
 			'footer'                 => array(
 				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
 				'unsubscribe_url' => $email_settings_url,
-				'links'           => array(
-					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => $email_settings_url,
-					),
-					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => $help_center_url,
-					),
-					array(
-						'label' => __( 'Privacy Policy', 'google-site-kit' ),
-						'url'   => 'https://policies.google.com/privacy',
-					),
-				),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
+			'footer_type'            => 'standard',
 		);
 	}
 

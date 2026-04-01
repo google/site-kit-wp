@@ -637,7 +637,7 @@ class Worker_TaskTest extends TestCase {
 
 		$this->template_renderer->expects( $this->once() )
 			->method( 'render' )
-			->with( 'subscription-confirmation', $this->arrayHasKey( 'subject' ) )
+			->with( 'simple-email', $this->arrayHasKey( 'subject' ) )
 			->willReturn( '<html>Subscription confirmation email</html>' );
 
 		$this->template_renderer->method( 'render_text' )->willReturn( 'Subscription confirmation email' );

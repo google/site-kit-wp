@@ -29,10 +29,8 @@
 
 		.googlesitekit-user-settings-selection__panel-content {
 			display: flex;
-			flex: 1 1 0;
 			flex-direction: column;
-			min-height: 200px;
-			overflow: auto;
+			min-height: 0;
 			padding: 0 $grid-gap-phone;
 
 			@media (min-width: $bp-tablet) {
