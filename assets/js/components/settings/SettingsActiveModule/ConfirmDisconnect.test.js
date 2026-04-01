@@ -24,6 +24,7 @@ import ConfirmDisconnect from '.';
 import {
 	render,
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideUserAuthentication,
 } from '../../../../../tests/js/test-utils';
@@ -57,6 +58,8 @@ describe( 'ConfirmDisconnect', () => {
 				SettingsDisconnectNoteComponent: SettingsDisconnectNote,
 			},
 		] );
+		provideModuleRegistrations( registry );
+
 		const mockAccountOverviewURL =
 			'https://example.com/account/overview/url';
 
@@ -92,6 +95,7 @@ describe( 'ConfirmDisconnect', () => {
 				],
 			},
 		] );
+
 		const mockAccountOverviewURL =
 			'https://example.com/account/overview/url';
 
