@@ -46,12 +46,16 @@ export function useWelcomeTour() {
 	const viewContext = useViewContext();
 	const windowHeight = useWindowHeight();
 
-	const canAuthenticate = useSelect( ( select: Select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	const canAuthenticate = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE ),
+		[]
 	);
 
-	const isAnalyticsConnected = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	const isAnalyticsConnected = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+		[]
 	);
 
 	const isActivateAnalyticsNotificationPresent = useSelect(
@@ -71,7 +75,8 @@ export function useWelcomeTour() {
 				queuedNotifications?.[ 0 ]?.id ===
 				'activate-analytics-notification'
 			);
-		}
+		},
+		[ viewContext ]
 	);
 
 	return getWelcomeTour( {

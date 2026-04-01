@@ -80,25 +80,34 @@ export default function WelcomeModal() {
 
 	const [ isOpen, setIsOpen ] = useState( true );
 
-	const analyticsConnected = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	const analyticsConnected = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+		[]
 	);
 
-	const analyticsGatheringData = useSelect( ( select: Select ) => {
-		if ( ! analyticsConnected ) {
-			return false;
-		}
-		return select( MODULES_ANALYTICS_4 ).isGatheringData();
-	} );
-
-	const searchConsoleGatheringData = useSelect( ( select: Select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const analyticsGatheringData = useSelect(
+		( select: Select ) => {
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+			return select( MODULES_ANALYTICS_4 ).isGatheringData();
+		},
+		[ analyticsConnected ]
 	);
 
-	const isGatheringDataVariantDismissed = useSelect( ( select: Select ) =>
-		select( CORE_USER ).isItemDismissed(
-			WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
-		)
+	const searchConsoleGatheringData = useSelect(
+		( select: Select ) =>
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData(),
+		[]
+	);
+
+	const isGatheringDataVariantDismissed = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
+			),
+		[]
 	);
 
 	const showGatheringDataModal = analyticsConnected
@@ -224,8 +233,10 @@ export default function WelcomeModal() {
 		);
 	}, [ viewContext, modalVariant ] );
 
-	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
-		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	const isDataGatheringCompleteModalActive = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isDataGatheringCompleteModalActive(),
+		[]
 	);
 
 	if (
