@@ -183,14 +183,15 @@ describe( 'AMPContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		);
 
-		await act( async () => {
+		await act( () => {
 			fireEvent.click(
 				getByText( new RegExp( ampContainer.name, 'i' ) )
 			);
-			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
 		} );
+
+		await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
+			accountID
+		);
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
