@@ -106,7 +106,7 @@ class Content_Map {
 	 * simple email templates. The config controls the asset slug, position
 	 * within the content card, dimensions, and title escape strategy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $template_name The original template name (e.g. 'invitation-email').
 	 * @return array {
@@ -222,7 +222,7 @@ class Content_Map {
 	 * `%s` / `%1$s` / `%2$s` placeholders. Keys without placeholders
 	 * return an empty array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string  $content_key Content key (e.g. 'error-email-report-analytics-4').
 	 * @param Golinks $golinks     Golinks instance for building URLs.
