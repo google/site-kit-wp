@@ -161,8 +161,8 @@ export class WordPress {
 		if ( errors.length > 0 ) {
 			const summary = errors
 				.map(
-					( e ) =>
-						`[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`
+					( error ) =>
+						`[${ error.level }] ${ error.message } (${ error.file }:${ error.line })`
 				)
 				.join( '\n' );
 

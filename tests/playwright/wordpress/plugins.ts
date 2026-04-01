@@ -36,8 +36,8 @@ import { PLUGINS_SEPARATOR } from './options';
 function phpSerializeStringArray( arr: string[] ): string {
 	const items = arr
 		.map(
-			( v, i ) =>
-				`i:${ i };s:${ Buffer.byteLength( v, 'utf8' ) }:"${ v }";`
+			( v, index ) =>
+				`i:${ index };s:${ Buffer.byteLength( v, 'utf8' ) }:"${ v }";`
 		)
 		.join( '' );
 	return `a:${ arr.length }:{${ items }}`;
