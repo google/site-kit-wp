@@ -123,7 +123,10 @@ class TestCase extends WP_UnitTestCase {
 	 */
 	protected function force_set_property( $class_instance, $property, $value ) {
 		$reflection_property = new \ReflectionProperty( $class_instance, $property );
-		$reflection_property->setAccessible( true );
+		// PHP < 8.1 requires this for private properties; 8.1+ ignores it; 8.5+ deprecates it.
+		if ( \PHP_VERSION_ID < 80100 ) {
+			$reflection_property->setAccessible( true );
+		}
 		$target = is_string( $class_instance ) ? null : $class_instance;
 		$reflection_property->setValue( $target, $value );
 	}
@@ -139,9 +142,13 @@ class TestCase extends WP_UnitTestCase {
 	 */
 	protected function force_get_property( $class_instance, $property ) {
 		$reflection_property = new \ReflectionProperty( $class_instance, $property );
-		$reflection_property->setAccessible( true );
+		// PHP < 8.1 requires this for private properties; 8.1+ ignores it; 8.5+ deprecates it.
+		if ( \PHP_VERSION_ID < 80100 ) {
+			$reflection_property->setAccessible( true );
+		}
+		$target = is_string( $class_instance ) ? null : $class_instance;
 
-		return $reflection_property->getValue( $class_instance );
+		return $reflection_property->getValue( $target );
 	}
 
 	/**

@@ -66,6 +66,10 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Custom_Dimension;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Create_Webdatastream;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
@@ -689,19 +693,39 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$datapoints = array(
 			'GET:account-summaries'                     => array( 'service' => 'analyticsadmin' ),
 			'GET:accounts'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:ads-links'                             => array( 'service' => 'analyticsadmin' ),
-			'GET:adsense-links'                         => array( 'service' => 'analyticsadmin-v1alpha' ),
-			'GET:container-lookup'                      => array(
-				'service' => 'tagmanager',
-				'scopes'  => array(
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			'GET:ads-links'                             => new Get_Ads_Links(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+				)
 			),
-			'GET:container-destinations'                => array(
-				'service' => 'tagmanager',
-				'scopes'  => array(
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
+			'GET:adsense-links'                         => new Get_Adsense_Links(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsadmin-v1alpha' );
+					},
+				)
+			),
+			'GET:container-lookup'                      => new Get_Container_Lookup(
+				array(
+					'service' => function () {
+						return $this->get_service( 'tagmanager' );
+					},
+					'scopes'  => array(
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					),
+				)
+			),
+			'GET:container-destinations'                => new Get_Container_Destinations(
+				array(
+					'service' => function () {
+						return $this->get_service( 'tagmanager' );
+					},
+					'scopes'  => array(
+						'https://www.googleapis.com/auth/tagmanager.readonly',
+					),
+				)
 			),
 			'GET:key-events'                            => array(
 				'service'   => 'analyticsadmin',
@@ -1225,24 +1249,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 						'pageToken' => $data['pageToken'],
 					)
 				);
-			case 'GET:ads-links':
-				if ( empty( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				$parent = self::normalize_property_id( $data['propertyID'] );
-
-				return $this->get_service( 'analyticsadmin' )->properties_googleAdsLinks->listPropertiesGoogleAdsLinks( $parent );
-			case 'GET:adsense-links':
-				if ( empty( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				$parent = self::normalize_property_id( $data['propertyID'] );
-
-				return $this->get_analyticsadminv1alpha_service()
-					->properties_adSenseLinks
-					->listPropertiesAdSenseLinks( $parent );
 			case 'POST:create-audience':
 				$settings = $this->get_settings()->get();
 				if ( ! isset( $settings['propertyID'] ) ) {
@@ -1481,38 +1487,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				return $this->get_analyticsadminv1alpha_service()
 					->properties_audiences
 					->listPropertiesAudiences( $property_id );
-			case 'GET:container-lookup':
-				if ( ! isset( $data['destinationID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'destinationID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				return $this->get_tagmanager_service()->accounts_containers->lookup( array( 'destinationId' => $data['destinationID'] ) );
-			case 'GET:container-destinations':
-				if ( ! isset( $data['accountID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-						array( 'status' => 400 )
-					);
-				}
-				if ( ! isset( $data['containerID'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				return $this->get_tagmanager_service()->accounts_containers_destinations->listAccountsContainersDestinations(
-					"accounts/{$data['accountID']}/containers/{$data['containerID']}"
-				);
 			case 'GET:key-events':
 				$settings = $this->get_settings()->get();
 				if ( empty( $settings['propertyID'] ) ) {
@@ -1548,10 +1522,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
-			case 'GET:ads-links':
-				return (array) $response->getGoogleAdsLinks();
-			case 'GET:adsense-links':
-				return (array) $response->getAdsenseLinks();
 			case 'GET:properties':
 				return Sort::case_insensitive_list_sort(
 					array_map( array( self::class, 'filter_property_with_ids' ), $response->getProperties() ),
@@ -1559,8 +1529,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
-			case 'GET:container-destinations':
-				return (array) $response->getDestination();
 			case 'GET:key-events':
 				return (array) $response->getKeyEvents();
 			case 'GET:report':
