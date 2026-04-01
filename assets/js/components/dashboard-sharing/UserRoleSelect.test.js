@@ -29,7 +29,9 @@ import {
 	render,
 	fireEvent,
 	createTestRegistry,
+	act,
 } from '../../../../tests/js/test-utils';
+import { waitForTimeouts } from '../../../../tests/js/utils';
 import UserRoleSelect from './UserRoleSelect';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
@@ -224,9 +226,14 @@ describe( 'CurrentSurvey', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click(
-			container.querySelector( '.googlesitekit-user-role-select__button' )
-		);
+		await act( async () => {
+			fireEvent.click(
+				container.querySelector(
+					'.googlesitekit-user-role-select__button'
+				)
+			);
+			await waitForTimeouts( 100 );
+		} );
 
 		expect(
 			container.querySelector(

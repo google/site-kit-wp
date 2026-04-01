@@ -33,6 +33,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	untilResolved,
+	waitForTimeouts,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -46,6 +47,28 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
+	} );
+
+	afterEach( async () => {
+		// react-select can schedule a state update after the menu closes; flush so
+		// @wordpress/jest-console does not see it in the next test's beforeEach.
+		await act( async () => {
+			await waitForTimeouts( 150 );
+		} );
+		// eslint-disable-next-line no-console
+		const hasReactSelectUnmountWarning = console.error.mock.calls.some(
+			( call ) =>
+				call.some(
+					( arg ) =>
+						typeof arg === 'string' &&
+						arg.includes(
+							"Can't perform a React state update on an unmounted component"
+						)
+				)
+		);
+		if ( hasReactSelectUnmountWarning ) {
+			expect( console ).toHaveErrored();
+		}
 	} );
 
 	it( 'should render an option for each AMP container of the currently selected account.', () => {
@@ -183,15 +206,14 @@ describe( 'AMPContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		);
 
-		await act( () => {
+		await act( async () => {
 			fireEvent.click(
 				getByText( new RegExp( ampContainer.name, 'i' ) )
 			);
+			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
+				accountID
+			);
 		} );
-
-		await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
-			accountID
-		);
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -199,12 +221,6 @@ describe( 'AMPContainerSelect', () => {
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
-
-		// This error is caused by the `react-select` component trying to update
-		// state after the component has unmounted, so we can't fix it ourselves.
-		expect( console ).toHaveErrored(
-			'Warning: Can\'t perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s"'
-		);
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

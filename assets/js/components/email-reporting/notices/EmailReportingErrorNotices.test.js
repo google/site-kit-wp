@@ -28,6 +28,8 @@ import {
 	provideModules,
 } from '../../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { defaultSettings as analytics4DefaultSettings } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
@@ -76,6 +78,9 @@ describe( 'EmailReportingErrorNotices', () => {
 
 	it( 'should render the permissions error notice when email reporting is enabled, user is not view-only, and there is a permissions_error category ID and a module slug', () => {
 		provideModules( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( analytics4DefaultSettings );
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
 			enabled: true,
 		} );
