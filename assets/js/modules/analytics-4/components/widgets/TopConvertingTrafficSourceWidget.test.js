@@ -70,7 +70,7 @@ describe( 'TopConvertingTrafficSourceWidget', () => {
 		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 
 		fetchMock.getOnce( analytics4SettingsEndpoint, {
-			dy: analyticsFixtures.defaultSettings,
+			body: analyticsFixtures.defaultSettings,
 		} );
 	} );
 
