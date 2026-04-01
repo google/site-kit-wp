@@ -271,7 +271,7 @@ class Batch_Error_Notifier {
 			$title = Content_Map::get_title( 'error-email' );
 		}
 
-		$body_args = $this->get_body_args( $content_key );
+		$body_args = Content_Map::get_body_args( $content_key, $this->golinks );
 		$body      = Content_Map::get_body_with_args( $content_key, $body_args );
 		$domain    = $this->get_site_domain();
 
@@ -297,55 +297,6 @@ class Batch_Error_Notifier {
 			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
 			'footer_type'            => 'standard',
 		);
-	}
-
-	/**
-	 * Gets sprintf arguments for Content_Map body placeholders.
-	 *
-	 * Maps each content key to the URLs that fill its `%s` / `%1$s` / `%2$s`
-	 * placeholders. Keys without placeholders return an empty array.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param string $content_key Content_Map key.
-	 * @return array Ordered sprintf arguments for the body paragraphs.
-	 */
-	private function get_body_args( $content_key ) {
-		$link_style = 'color:#108080;';
-		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
-
-		// URLs are internally generated (golinks, add_query_arg) and safe.
-		// Escaping is handled by wp_kses() in the HTML template and
-		// wp_strip_all_tags() in the plain text renderer.
-		switch ( $content_key ) {
-			case 'error-email-report-search-console':
-				$settings_url = add_query_arg( 'module', 'search-console', $this->golinks->get_url( 'settings' ) );
-				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			case 'error-email-report-analytics-4':
-				$settings_url = add_query_arg( 'module', 'analytics-4', $this->golinks->get_url( 'settings' ) );
-				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			case 'error-email-permissions-search-console':
-			case 'error-email-permissions-analytics-4':
-				return array(
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			default:
-				return array();
-		}
 	}
 
 	/**
