@@ -24,6 +24,7 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -117,6 +118,8 @@ describe( 'EngagedTrafficSourceWidget', () => {
 	} );
 
 	it( 'should render the generic error variant when the report fetch fails', async () => {
+		provideModuleRegistrations( registry );
+
 		const errorResponse = {
 			code: ERROR_INTERNAL_SERVER_ERROR,
 			message: 'Internal server error',

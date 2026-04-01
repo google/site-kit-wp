@@ -295,6 +295,8 @@ describe( 'TopTrafficSourceWidget', () => {
 	} );
 
 	it( 'should render the generic error variant when the report fetch fails', async () => {
+		provideModuleRegistrations( registry );
+
 		const errorResponse = {
 			code: ERROR_INTERNAL_SERVER_ERROR,
 			message: 'Internal server error',
