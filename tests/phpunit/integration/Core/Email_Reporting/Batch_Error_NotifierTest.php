@@ -305,8 +305,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category_and_module( $category_id, $module_slug );
 
-		// Module-specific titles were removed; all error emails use the generic error-email title.
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_title( $expected_content_key );
 
 		$this->batch_query->expects( $this->once() )
 			->method( 'mark_batch_admin_notified' )
