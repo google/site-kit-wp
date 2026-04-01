@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Email_Reporting;
 
+use Google\Site_Kit\Core\Golinks\Golinks;
+
 /**
  * Class for mapping email template content (titles and body).
  *
@@ -158,10 +160,10 @@ class Content_Map {
 			'invitation-email'                       => __( '%1$s%2$s%3$s invited you to receive periodic performance reports', 'google-site-kit' ),
 			'subscription-confirmation'              => __( 'Success! You’re subscribed to Site Kit reports', 'google-site-kit' ),
 			'error-email'                            => __( 'Email reports are failing to send', 'google-site-kit' ),
-			'error-email-permissions-search-console' => __( 'Action needed: your Site Kit report couldn\'t be generated', 'google-site-kit' ),
-			'error-email-permissions-analytics-4'    => __( 'Action needed: your Site Kit report couldn\'t be generated', 'google-site-kit' ),
-			'error-email-report-search-console'      => __( 'Action needed: your Site Kit report couldn\'t be generated', 'google-site-kit' ),
-			'error-email-report-analytics-4'         => __( 'Action needed: your Site Kit report couldn\'t be generated', 'google-site-kit' ),
+			'error-email-permissions-search-console' => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'error-email-permissions-analytics-4'    => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'error-email-report-search-console'      => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
+			'error-email-report-analytics-4'         => __( 'Action needed: your Site Kit report couldn’t be generated', 'google-site-kit' ),
 		);
 	}
 
@@ -211,5 +213,53 @@ class Content_Map {
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 		);
+	}
+
+	/**
+	 * Gets sprintf arguments for body placeholders.
+	 *
+	 * Maps each content key to the styled anchor tags that fill its
+	 * `%s` / `%1$s` / `%2$s` placeholders. Keys without placeholders
+	 * return an empty array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string  $content_key Content key (e.g. 'error-email-report-analytics-4').
+	 * @param Golinks $golinks     Golinks instance for building URLs.
+	 * @return array Ordered sprintf arguments for the body paragraphs.
+	 */
+	public static function get_body_args( $content_key, Golinks $golinks ) {
+		$link_style = 'color:#108080;';
+		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
+
+		switch ( $content_key ) {
+			case 'error-email-report-search-console':
+				$settings_url = add_query_arg( 'module', 'search-console', $golinks->get_url( 'settings' ) );
+				return array(
+					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
+					'</a>',
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
+				);
+
+			case 'error-email-report-analytics-4':
+				$settings_url = add_query_arg( 'module', 'analytics-4', $golinks->get_url( 'settings' ) );
+				return array(
+					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
+					'</a>',
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
+				);
+
+			case 'error-email-permissions-search-console':
+			case 'error-email-permissions-analytics-4':
+				return array(
+					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'</a>',
+				);
+
+			default:
+				return array();
+		}
 	}
 }
