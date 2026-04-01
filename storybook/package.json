@@ -20,7 +20,7 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react-webpack5": "^8.6.12",
 		"@storybook/test": "^8.6.12",
-		"@storybook/test-runner": "^0.24.3",
+		"@storybook/test-runner": "^0.23.0",
 		"css-loader": "^7.1.2",
 		"fetch-mock": "^9.11.0",
 		"mini-css-extract-plugin": "^2.9.2",
@@ -29,6 +29,7 @@
 		"sass-loader": "^16.0.5",
 		"storybook": "^8.6.12",
 		"url-loader": "^4.1.1",
+		"playwright": "^1.59.0",
 		"webpack": "^5.99.7"
 	}
 }
