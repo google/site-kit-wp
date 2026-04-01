@@ -35,7 +35,6 @@ class Batch_Error_Notifier {
 	const NON_SENDABLE_CATEGORIES = array(
 		'sending_error',
 		'cron_scheduler_error',
-		'other_error',
 	);
 
 	/**
@@ -47,7 +46,6 @@ class Batch_Error_Notifier {
 	const CATEGORY_CONTENT_MAP = array(
 		'permissions_error' => 'permissions',
 		'report_error'      => 'report',
-		'network_error'     => 'network',
 		'server_error'      => 'server',
 	);
 
