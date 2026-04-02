@@ -113,18 +113,18 @@ class Initiator_Task {
 			->setTime( 0, 0, 0 );
 		// Initiators are scheduled at period-boundary midnight in site timezone.
 		// The reporting window should end on "yesterday" (inclusive end date), so subtract one day.
-		$send_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
+		$end_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
 
 		$period_days = 7;
 
 		if ( Email_Reporting_Settings::FREQUENCY_MONTHLY === $frequency ) {
-			$period_days = (int) $send_date->format( 't' );
+			$period_days = (int) $end_date->format( 't' );
 		} elseif ( Email_Reporting_Settings::FREQUENCY_QUARTERLY === $frequency ) {
-			$period_days = self::get_days_in_quarter( $send_date );
+			$period_days = self::get_days_in_quarter( $end_date );
 		}
 
 		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
-		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
+		$start_date         = $end_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
 		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
 		$compare_start_date = $compare_end_date->sub(
 			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
@@ -132,7 +132,7 @@ class Initiator_Task {
 
 		return array(
 			'startDate'        => $start_date->format( 'Y-m-d' ),
-			'endDate'          => $send_date->format( 'Y-m-d' ),
+			'endDate'          => $end_date->format( 'Y-m-d' ),
 			'compareStartDate' => $compare_start_date->format( 'Y-m-d' ),
 			'compareEndDate'   => $compare_end_date->format( 'Y-m-d' ),
 		);
