@@ -67,8 +67,25 @@ return array(
 				);
 			}
 			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
-				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3\\\\', $contents );
-				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3', $contents );
+				// phpseclib dynamically constructs FQCNs from partial strings that
+				// PHP-Scoper can't automatically prefix, e.g.:
+				// $fqmain = 'phpseclib3\Math\BigInteger\Engines\' . $main
+				//
+				// This prefixes any string-quoted 'phpseclib3' namespace reference,
+				// handling both single (\) and double (\\) backslash escaping forms
+				// that may result from php-parser's normalization of single-quoted strings.
+				//
+				// Pattern (regex):  /'\\{0,2}phpseclib3(?=\\)/
+				// '           — opening single quote of the string literal
+				// \\{0,2}     — 0, 1, or 2 literal backslashes (covers all escaping forms)
+				// phpseclib3  — the namespace root.
+				// (?=\\)      — lookahead: must be followed by a backslash (avoids false matches).
+				$prefixed_ns = str_replace( '\\', '\\\\', "\\{$prefix}\\phpseclib3" );
+				$contents    = preg_replace_callback(
+					"/'\\\\{0,2}phpseclib3(?=\\\\)/",
+					fn() => "'" . $prefixed_ns,
+					$contents
+				);
 			}
 
 			return $contents;

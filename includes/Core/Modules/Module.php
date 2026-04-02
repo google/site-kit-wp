@@ -785,11 +785,11 @@ abstract class Module {
 		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
 			$datapoints = $this->get_datapoint_definitions();
 			foreach ( $datapoints as $datapoint ) {
-				if ( $datapoint instanceof Shareable_Datapoint ) {
-					return $datapoint->is_shareable();
+				if ( $datapoint instanceof Datapoint && $datapoint->is_shareable() ) {
+					return true;
 				}
 
-				if ( ! empty( $datapoint['shareable'] ) ) {
+				if ( is_array( $datapoint ) && ! empty( $datapoint['shareable'] ) ) {
 					return true;
 				}
 			}

@@ -43,7 +43,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the full email report as plain text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param array $data     Template data.
 	 * @param array $sections Sections map.

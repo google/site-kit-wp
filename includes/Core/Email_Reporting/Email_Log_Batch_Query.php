@@ -323,7 +323,7 @@ class Email_Log_Batch_Query {
 	/**
 	 * Checks if any scheduled email logs are stale (older than one day).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @return bool True when at least one stale scheduled log exists.
 	 */

@@ -156,7 +156,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_timezone_string function introduced in WordPress 5.3.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @return string PHP timezone string or a ±HH:MM offset.
 	 */
@@ -182,7 +182,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_timezone function introduced in WordPress 5.3.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @return \DateTimeZone Site timezone.
 	 */

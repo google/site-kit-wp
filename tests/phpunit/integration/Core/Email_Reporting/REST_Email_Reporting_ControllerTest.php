@@ -335,6 +335,63 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertEqualSets( array( $alpha_user, $mail_user ), wp_list_pluck( $data['users'], 'id' ), 'Search should match display names and emails.' );
 	}
 
+	public function test_get_eligible_subscribers_search_filters_by_shared_role_slug() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$editor_user   = self::factory()->user->create(
+			array(
+				'role'         => 'editor',
+				'user_login'   => 'shared-role-user',
+				'display_name' => 'Shared Role User',
+				'user_email'   => 'shared-role-user@example.com',
+			)
+		);
+
+		$this->modules->get_module_sharing_settings()->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+				),
+			)
+		);
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$request->set_param( 'search', 'editor' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 1, $data['total'], 'Role slug search should return matching shared-role users in total.' );
+		$this->assertSame( 1, $data['totalPages'], 'Role slug search should report expected total pages.' );
+		$this->assertSame( array( $editor_user ), wp_list_pluck( $data['users'], 'id' ), 'Role slug search should return matching shared-role users.' );
+	}
+
+	public function test_get_eligible_subscribers_search_filters_by_administrator_role_slug() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$admin_user    = $this->create_admin_with_token( 'manager-user', 'Manager User', 'manager-user@example.com' );
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$request->set_param( 'search', 'administrator' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertSame( 1, $data['total'], 'Administrator role slug search should return matching admins in total.' );
+		$this->assertSame( 1, $data['totalPages'], 'Administrator role slug search should report expected total pages.' );
+		$this->assertSame( array( $admin_user ), wp_list_pluck( $data['users'], 'id' ), 'Administrator role slug search should return matching admins.' );
+	}
+
 	public function test_get_eligible_subscribers_response_has_expected_shape() {
 		$current_admin = $this->create_admin_with_token( 'admin-current' );
 		$this->create_admin_with_token( 'admin-other' );
