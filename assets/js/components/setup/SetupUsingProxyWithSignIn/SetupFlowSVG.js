@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { lazy, Suspense } from '@wordpress/element';
+import { Fragment, lazy, Suspense, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,22 +27,68 @@ import { __ } from '@wordpress/i18n';
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
+import { useWindowHeight } from '@/js/hooks/useWindowSize';
 
-const LazySVGComponent = lazy( () =>
-	import( '../../../../svg/graphics/splash-screenshot.svg' )
-);
+const lazyChunks = [
+	lazy( () =>
+		import( '../../../../svg/graphics/splash-screenshot-optimised-0.svg' )
+	),
+	lazy( () =>
+		import( '../../../../svg/graphics/splash-screenshot-optimised-1.svg' )
+	),
+	lazy( () =>
+		import( '../../../../svg/graphics/splash-screenshot-optimised-2.svg' )
+	),
+	lazy( () =>
+		import( '../../../../svg/graphics/splash-screenshot-optimised-3.svg' )
+	),
+	lazy( () =>
+		import( '../../../../svg/graphics/splash-screenshot-optimised-4.svg' )
+	),
+];
+
+const HEIGHT_THRESHOLDS = [ 0, 620, 800, 960, 1100 ];
+
+function getChunksToShow( viewportHeight ) {
+	let count = 1;
+	for (
+		let threshold = 1;
+		threshold < HEIGHT_THRESHOLDS.length;
+		threshold++
+	) {
+		if ( viewportHeight >= HEIGHT_THRESHOLDS[ threshold ] ) {
+			count = threshold + 1;
+		}
+	}
+	return count;
+}
 
 export default function SetupFlowSVG() {
+	const windowHeight = useWindowHeight();
+	const chunksToShow = useMemo(
+		() => getChunksToShow( windowHeight ),
+		[ windowHeight ]
+	);
+
+	const errorMessage = __( 'Failed to load graphic', 'google-site-kit' );
+
 	return (
-		<Suspense fallback={ <PreviewBlock width="100%" height="100%" /> }>
-			<MediaErrorHandler
-				errorMessage={ __(
-					'Failed to load graphic',
-					'google-site-kit'
-				) }
-			>
-				<LazySVGComponent />
-			</MediaErrorHandler>
-		</Suspense>
+		<Fragment>
+			{ lazyChunks.slice( 0, chunksToShow ).map( ( ChunkSVG, index ) => (
+				<Suspense
+					key={ index }
+					fallback={ <PreviewBlock width="100%" height="100%" /> }
+				>
+					<MediaErrorHandler errorMessage={ errorMessage }>
+						<ChunkSVG
+							style={ {
+								display: 'block',
+								width: '100%',
+							} }
+						/>
+					</MediaErrorHandler>
+				</Suspense>
+			) ) }
+		</Fragment>
 	);
 }
