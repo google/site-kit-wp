@@ -20,7 +20,7 @@ use WP_Error;
 /**
  * Class for the enhanced measurement settings update datapoint.
  *
- * @since n.e.x.t
+ * @since 1.176.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Update_Enhanced_Measurement_Settings extends Datapoint implements Executab
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -111,7 +111,7 @@ class Update_Enhanced_Measurement_Settings extends Datapoint implements Executab
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
