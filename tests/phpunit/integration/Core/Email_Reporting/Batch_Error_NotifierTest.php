@@ -98,7 +98,6 @@ class Batch_Error_NotifierTest extends TestCase {
 		return array(
 			'sending_error'        => array( 'sending_error' ),
 			'cron_scheduler_error' => array( 'cron_scheduler_error' ),
-			'other_error'          => array( 'other_error' ),
 		);
 	}
 
@@ -133,7 +132,6 @@ class Batch_Error_NotifierTest extends TestCase {
 		return array(
 			'permissions_error' => array( 'permissions_error', 'error-email' ),
 			'report_error'      => array( 'report_error', 'error-email' ),
-			'network_error'     => array( 'network_error', 'error-email' ),
 			'server_error'      => array( 'server_error', 'error-email' ),
 		);
 	}
@@ -305,8 +303,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category_and_module( $category_id, $module_slug );
 
-		// Module-specific titles were removed; all error emails use the generic error-email title.
-		$expected_subject = Content_Map::get_title( 'error-email' );
+		$expected_subject = Content_Map::get_title( $expected_content_key );
 
 		$this->batch_query->expects( $this->once() )
 			->method( 'mark_batch_admin_notified' )
@@ -358,9 +355,9 @@ class Batch_Error_NotifierTest extends TestCase {
 
 	public function test_falls_back_to_generic_error_for_unknown_module() {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
-		$this->set_up_batch_with_category_and_module( 'network_error', 'some-unknown-module' );
+		$this->set_up_batch_with_category_and_module( 'server_error', 'some-unknown-module' );
 
-		// No module-specific body for network_error + some-unknown-module, falls back to generic error-email.
+		// No module-specific body for server_error + some-unknown-module, falls back to generic error-email.
 		$expected_subject = Content_Map::get_title( 'error-email' );
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );

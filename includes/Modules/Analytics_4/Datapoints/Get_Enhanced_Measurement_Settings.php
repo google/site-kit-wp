@@ -19,7 +19,7 @@ use WP_Error;
 /**
  * Class for the enhanced measurement settings read datapoint.
  *
- * @since n.e.x.t
+ * @since 1.176.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Enhanced_Measurement_Settings extends Datapoint implements Executable_
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -64,7 +64,7 @@ class Get_Enhanced_Measurement_Settings extends Datapoint implements Executable_
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

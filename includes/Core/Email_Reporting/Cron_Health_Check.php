@@ -16,7 +16,7 @@ use WP_Query;
 /**
  * Handles cron health checks for email reporting.
  *
- * @since n.e.x.t
+ * @since 1.176.0
  * @access private
  * @ignore
  */
@@ -25,14 +25,14 @@ class Cron_Health_Check {
 	/**
 	 * Consecutive zero-send threshold before marking cron scheduler errors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 */
 	const ZERO_SEND_THRESHOLD = 3;
 
 	/**
 	 * Batch query helper.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @var Email_Log_Batch_Query
 	 */
@@ -41,7 +41,7 @@ class Cron_Health_Check {
 	/**
 	 * Scheduler instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @var Email_Reporting_Scheduler
 	 */
@@ -50,7 +50,7 @@ class Cron_Health_Check {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param Email_Log_Batch_Query     $batch_query Batch query helper.
 	 * @param Email_Reporting_Scheduler $scheduler  Scheduler instance.
@@ -63,7 +63,7 @@ class Cron_Health_Check {
 	/**
 	 * Checks for stale cron-related work and marks logs with cron errors when found.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 */
 	public function check_stale_tasks() {
 		$now                    = time();
@@ -99,7 +99,7 @@ class Cron_Health_Check {
 	/**
 	 * Tracks worker progress by frequency and marks cron errors when retries stall.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $frequency        Frequency slug.
 	 * @param int    $emails_processed Number of emails sent in the worker run.
@@ -129,7 +129,7 @@ class Cron_Health_Check {
 	/**
 	 * Marks all pending logs in the given batch as failed due to cron scheduler issues.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $batch_id Batch identifier.
 	 */
@@ -155,7 +155,7 @@ class Cron_Health_Check {
 	/**
 	 * Marks stale scheduled logs as failed with cron scheduler errors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 */
 	public function mark_stale_logs_cron_error() {
 		$stale_ids = $this->get_stale_pending_log_ids();
@@ -173,7 +173,7 @@ class Cron_Health_Check {
 	/**
 	 * Marks latest batch pending logs with cron scheduler errors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 */
 	private function set_cron_scheduler_error() {
 		$latest_batch_post_ids = $this->batch_query->get_latest_batch_post_ids();
@@ -194,7 +194,7 @@ class Cron_Health_Check {
 	/**
 	 * Builds the transient key for zero-send tracking.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return string
@@ -206,7 +206,7 @@ class Cron_Health_Check {
 	/**
 	 * Gets stale pending log IDs older than one day.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @return array<int>
 	 */
@@ -236,7 +236,7 @@ class Cron_Health_Check {
 	/**
 	 * Gets error details payload for cron scheduler errors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @return string
 	 */
@@ -262,7 +262,7 @@ class Cron_Health_Check {
 	/**
 	 * Marks a single log post as failed due to cron scheduler error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param int    $post_id       Email log post ID.
 	 * @param string $error_details Encoded cron scheduler error payload.
