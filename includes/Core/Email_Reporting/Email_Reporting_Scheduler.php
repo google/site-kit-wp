@@ -100,7 +100,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Checks whether an initiator event exists for the provided frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return bool Whether an initiator event is already scheduled for this frequency.
@@ -118,7 +118,7 @@ class Email_Reporting_Scheduler {
 	 * exact args match, but here we only need to know whether *any* initiator
 	 * exists for a given frequency regardless of its scheduled timestamp.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return int|false Timestamp if found, otherwise false.
