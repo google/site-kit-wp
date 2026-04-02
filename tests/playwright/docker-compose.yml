@@ -105,6 +105,7 @@ services:
           - www.googleapis.com
           - storage.googleapis.com
           - people.googleapis.com
+          - googleads.googleapis.com
 
 networks:
   sitekit:

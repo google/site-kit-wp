@@ -39,7 +39,7 @@ test.describe(
 			'should deliver a weekly email report',
 			{
 				annotation: [
-					withPlugins( 'mailpit.php', 'email-reporting.php' ),
+					withPlugins( 'email-reporting.php' ),
 					withFixtures( 'email-reporting/weekly-report-data' ),
 				],
 			},

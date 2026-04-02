@@ -25,7 +25,14 @@ require_once __DIR__ . '/proxy-credentials.php';
 add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
-		return ( new Data_Encryption() )->encrypt( 'test-access-token' );
+		$client_id = '';
+
+		$params = apply_filters( 'googlesitekit_e2e_oauth_params', array() );
+		foreach ( $params as $key => $value ) {
+			$client_id .= "$key:$value;";
+		}
+
+		return ( new Data_Encryption() )->encrypt( $client_id );
 	}
 );
 

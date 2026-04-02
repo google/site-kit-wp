@@ -175,12 +175,17 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	const method = req.method || 'GET';
 	const url = req.url || '/';
 
-	const jsonContentType = { 'Content-Type': 'application/json' };
+	const params = req.headers.authorization
+		?.split( ' ' )[ 1 ]
+		?.split( ';' )
+		?.reduce( ( acc, param ) => {
+			const [ key, value ] = param.split( ':' );
+			acc[ key ] = value;
+			return acc;
+		}, {} as Record< string, string > );
 
-	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
-	const fixtures = Array.isArray( fixturesHeader )
-		? fixturesHeader[ 0 ]
-		: fixturesHeader;
+	const jsonContentType = { 'Content-Type': 'application/json' };
+	const fixtures = params?.fixtures;
 
 	// If no fixtures are specified, return an empty response.
 	if ( ! fixtures ) {
@@ -258,9 +263,6 @@ function startServers() {
 try {
 	startServers();
 } catch ( err ) {
-	global.console.error(
-		'Failed to start HTTPS server:',
-		err instanceof Error ? err.message : String( err )
-	);
-	global.console.log( 'Continuing with HTTP only.' );
+	const msg = err instanceof Error ? err.message : String( err );
+	global.console.error( 'Failed to start HTTPS server:', msg );
 }
