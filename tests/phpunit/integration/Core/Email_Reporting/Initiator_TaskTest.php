@@ -260,6 +260,36 @@ class Initiator_TaskTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider data_build_reference_dates_quarterly_uses_previous_quarter_window
+	 */
+	public function test_build_reference_dates_quarterly_uses_previous_quarter_window( $scheduled_timestamp, $expected_start, $expected_send, $expected_days ) {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', 'UTC' );
+		update_option( 'gmt_offset', 0 );
+
+		try {
+			$reference_dates = Initiator_Task::build_reference_dates(
+				Email_Reporting_Settings::FREQUENCY_QUARTERLY,
+				$scheduled_timestamp
+			);
+
+			$this->assertSame( $expected_start, $reference_dates['startDate'], 'Expected quarterly startDate to be first day of previous quarter.' );
+			$this->assertSame( $expected_send, $reference_dates['sendDate'], 'Expected quarterly sendDate to be last day of previous quarter.' );
+
+			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
+
+			$this->assertSame( $expected_days, $current_days, 'Expected quarterly range length to match previous quarter day count.' );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+			update_option( 'gmt_offset', $original_gmt_offset );
+		}
+	}
+
 	public function test_build_reference_dates_uses_previous_day_as_send_date() {
 		$original_timezone_string = get_option( 'timezone_string' );
 		$original_gmt_offset      = get_option( 'gmt_offset' );
@@ -286,7 +316,7 @@ class Initiator_TaskTest extends TestCase {
 		return array(
 			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7, strtotime( '2026-03-16 00:00:00 UTC' ) ),
 			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 28, strtotime( '2026-03-01 00:00:00 UTC' ) ),
-			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90, strtotime( '2026-03-16 00:00:00 UTC' ) ),
+			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 92, strtotime( '2026-01-01 00:00:00 UTC' ) ),
 		);
 	}
 
@@ -296,6 +326,16 @@ class Initiator_TaskTest extends TestCase {
 			'previous month has 29 days (leap year)' => array( strtotime( '2024-03-01 00:00:00 UTC' ), '2024-02-01', '2024-02-29', 29 ),
 			'previous month has 30 days'             => array( strtotime( '2026-05-01 00:00:00 UTC' ), '2026-04-01', '2026-04-30', 30 ),
 			'previous month has 31 days'             => array( strtotime( '2026-08-01 00:00:00 UTC' ), '2026-07-01', '2026-07-31', 31 ),
+		);
+	}
+
+	public function data_build_reference_dates_quarterly_uses_previous_quarter_window() {
+		return array(
+			'previous quarter has 90 days'        => array( strtotime( '2026-04-01 00:00:00 UTC' ), '2026-01-01', '2026-03-31', 90 ),
+			'previous quarter has 91 days (leap)' => array( strtotime( '2024-04-01 00:00:00 UTC' ), '2024-01-01', '2024-03-31', 91 ),
+			'previous quarter has 91 days (Q2)'   => array( strtotime( '2026-07-01 00:00:00 UTC' ), '2026-04-01', '2026-06-30', 91 ),
+			'previous quarter has 92 days'        => array( strtotime( '2026-10-01 00:00:00 UTC' ), '2026-07-01', '2026-09-30', 92 ),
+			'previous quarter has 92 days (Q4)'   => array( strtotime( '2026-01-01 00:00:00 UTC' ), '2025-10-01', '2025-12-31', 92 ),
 		);
 	}
 }

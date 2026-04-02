@@ -115,15 +115,12 @@ class Initiator_Task {
 		// The reporting window should end on "yesterday" (inclusive end date), so subtract one day.
 		$send_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
 
-		$period_lengths = array(
-			Email_Reporting_Settings::FREQUENCY_WEEKLY    => 7,
-			Email_Reporting_Settings::FREQUENCY_QUARTERLY => 90,
-		);
-
-		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
+		$period_days = 7;
 
 		if ( Email_Reporting_Settings::FREQUENCY_MONTHLY === $frequency ) {
 			$period_days = (int) $send_date->format( 't' );
+		} elseif ( Email_Reporting_Settings::FREQUENCY_QUARTERLY === $frequency ) {
+			$period_days = self::get_days_in_quarter( $send_date );
 		}
 
 		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
@@ -139,5 +136,26 @@ class Initiator_Task {
 			'compareStartDate' => $compare_start_date->format( 'Y-m-d' ),
 			'compareEndDate'   => $compare_end_date->format( 'Y-m-d' ),
 		);
+	}
+
+	/**
+	 * Gets the number of days in the quarter for a date.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param DateTimeImmutable $date Date in the target quarter.
+	 * @return int Days in the quarter.
+	 */
+	private static function get_days_in_quarter( DateTimeImmutable $date ) {
+		$year                = (int) $date->format( 'Y' );
+		$month               = (int) $date->format( 'n' );
+		$quarter_start_month = (int) ( floor( ( $month - 1 ) / 3 ) * 3 + 1 );
+
+		$quarter_start = $date->setDate( $year, $quarter_start_month, 1 );
+		$quarter_end   = $quarter_start
+			->add( new DateInterval( 'P3M' ) )
+			->sub( new DateInterval( 'P1D' ) );
+
+		return (int) $quarter_start->diff( $quarter_end )->days + 1;
 	}
 }
