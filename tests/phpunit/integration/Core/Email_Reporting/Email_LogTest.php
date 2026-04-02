@@ -191,7 +191,7 @@ class Email_LogTest extends TestCase {
 			$reference_callback,
 			array(
 				'startDate'        => '1700000000',
-				'sendDate'         => 1800000000,
+				'endDate'          => 1800000000,
 				'compareStartDate' => 'not-a-number',
 			)
 		);
@@ -200,7 +200,7 @@ class Email_LogTest extends TestCase {
 		$this->assertSame(
 			array(
 				'startDate'        => 1700000000,
-				'sendDate'         => 1800000000,
+				'endDate'          => 1800000000,
 				'compareStartDate' => 0,
 				'compareEndDate'   => 0,
 			),
@@ -224,7 +224,7 @@ class Email_LogTest extends TestCase {
 			Email_Log::META_REPORT_REFERENCE_DATES,
 			array(
 				'startDate'        => strtotime( '2024-07-01' ),
-				'sendDate'         => strtotime( '2024-07-31' ),
+				'endDate'          => strtotime( '2024-07-31' ),
 				'compareStartDate' => strtotime( '2024-06-01' ),
 				'compareEndDate'   => strtotime( '2024-06-30' ),
 			)
@@ -239,7 +239,7 @@ class Email_LogTest extends TestCase {
 			'compareEndDate'   => gmdate( 'Y-m-d', strtotime( '2024-06-30' ) ),
 		);
 
-		$this->assertSame( $expected, $date_range, 'Date range should be normalized to Y-m-d strings with endDate from sendDate.' );
+		$this->assertSame( $expected, $date_range, 'Date range should be normalized to Y-m-d strings with explicit endDate.' );
 	}
 
 	public function test_get_date_range_from_log_returns_null_when_incomplete() {
@@ -261,7 +261,7 @@ class Email_LogTest extends TestCase {
 		update_post_meta(
 			$post_id,
 			Email_Log::META_REPORT_REFERENCE_DATES,
-			wp_json_encode( array( 'sendDate' => strtotime( '2024-07-31' ) ) )
+			wp_json_encode( array( 'endDate' => strtotime( '2024-07-31' ) ) )
 		);
 
 		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Missing start date should return null.' );

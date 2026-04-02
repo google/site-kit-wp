@@ -151,7 +151,7 @@ class Initiator_TaskTest extends TestCase {
 			$reference_dates = get_post_meta( $post->ID, Email_Log::META_REPORT_REFERENCE_DATES, true );
 			$this->assertIsArray( $reference_dates, 'Reference dates should decode to an array.' );
 			$this->assertArrayHasKey( 'startDate', $reference_dates, 'Reference dates should include start date.' );
-			$this->assertArrayHasKey( 'sendDate', $reference_dates, 'Reference dates should include send date.' );
+			$this->assertArrayHasKey( 'endDate', $reference_dates, 'Reference dates should include end date.' );
 			$this->assertArrayHasKey( 'compareStartDate', $reference_dates, 'Reference dates should include compare start date.' );
 			$this->assertArrayHasKey( 'compareEndDate', $reference_dates, 'Reference dates should include compare end date.' );
 		}
@@ -215,7 +215,7 @@ class Initiator_TaskTest extends TestCase {
 			);
 
 			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
-			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['endDate'] );
 			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
 
 			$compare_start = new \DateTimeImmutable( $reference_dates['compareStartDate'] );
@@ -247,10 +247,10 @@ class Initiator_TaskTest extends TestCase {
 			);
 
 			$this->assertSame( $expected_start, $reference_dates['startDate'], 'Expected monthly startDate to be first day of previous month.' );
-			$this->assertSame( $expected_send, $reference_dates['sendDate'], 'Expected monthly sendDate to be last day of previous month.' );
+			$this->assertSame( $expected_send, $reference_dates['endDate'], 'Expected monthly endDate to be last day of previous month.' );
 
 			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
-			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['endDate'] );
 			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
 
 			$this->assertSame( $expected_days, $current_days, 'Expected monthly range length to match previous month day count.' );
@@ -277,10 +277,10 @@ class Initiator_TaskTest extends TestCase {
 			);
 
 			$this->assertSame( $expected_start, $reference_dates['startDate'], 'Expected quarterly startDate to be first day of previous quarter.' );
-			$this->assertSame( $expected_send, $reference_dates['sendDate'], 'Expected quarterly sendDate to be last day of previous quarter.' );
+			$this->assertSame( $expected_send, $reference_dates['endDate'], 'Expected quarterly endDate to be last day of previous quarter.' );
 
 			$current_start = new \DateTimeImmutable( $reference_dates['startDate'] );
-			$current_end   = new \DateTimeImmutable( $reference_dates['sendDate'] );
+			$current_end   = new \DateTimeImmutable( $reference_dates['endDate'] );
 			$current_days  = (int) $current_start->diff( $current_end )->days + 1;
 
 			$this->assertSame( $expected_days, $current_days, 'Expected quarterly range length to match previous quarter day count.' );
@@ -304,8 +304,8 @@ class Initiator_TaskTest extends TestCase {
 				$timestamp
 			);
 
-			$this->assertSame( '2026-03-18', $reference_dates['sendDate'], 'Expected sendDate to be one day before the scheduled boundary date.' );
-			$this->assertSame( '2026-03-12', $reference_dates['startDate'], 'Expected weekly startDate to be a 7-day inclusive range ending on sendDate.' );
+			$this->assertSame( '2026-03-18', $reference_dates['endDate'], 'Expected endDate to be one day before the scheduled boundary date.' );
+			$this->assertSame( '2026-03-12', $reference_dates['startDate'], 'Expected weekly startDate to be a 7-day inclusive range ending on endDate.' );
 		} finally {
 			update_option( 'timezone_string', $original_timezone_string );
 			update_option( 'gmt_offset', $original_gmt_offset );

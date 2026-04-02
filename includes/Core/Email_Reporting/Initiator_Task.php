@@ -132,7 +132,7 @@ class Initiator_Task {
 
 		return array(
 			'startDate'        => $start_date->format( 'Y-m-d' ),
-			'sendDate'         => $send_date->format( 'Y-m-d' ),
+			'endDate'          => $send_date->format( 'Y-m-d' ),
 			'compareStartDate' => $compare_start_date->format( 'Y-m-d' ),
 			'compareEndDate'   => $compare_end_date->format( 'Y-m-d' ),
 		);
@@ -149,7 +149,7 @@ class Initiator_Task {
 	private static function get_days_in_quarter( DateTimeImmutable $date ) {
 		$year                = (int) $date->format( 'Y' );
 		$month               = (int) $date->format( 'n' );
-		$quarter_start_month = (int) ( floor( ( $month - 1 ) / 3 ) * 3 + 1 );
+		$quarter_start_month = floor( ( $month - 1 ) / 3 ) * 3 + 1;
 
 		$quarter_start = $date->setDate( $year, $quarter_start_month, 1 );
 		$quarter_end   = $quarter_start
