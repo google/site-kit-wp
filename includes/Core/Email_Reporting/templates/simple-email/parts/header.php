@@ -1,9 +1,9 @@
 <?php
 /**
- * Header section for the subscription-confirmation email template.
+ * Header section for the simple-email template.
  *
- * A simplified header with just the Site Kit logo, matching
- * the invitation-email header style.
+ * A simplified header with just the Site Kit logo, shared across
+ * all simple email types (invitation, subscription confirmation, error).
  *
  * @package   Google\Site_Kit\Core\Email_Reporting
  * @copyright 2026 Google LLC

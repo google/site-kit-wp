@@ -141,4 +141,61 @@ class Content_MapTest extends TestCase {
 		$this->assertStringContainsString( 'report', $title, 'Error email title should mention report.' );
 		$this->assertNotEmpty( $body, 'Error email should have body content.' );
 	}
+
+	public function test_get_graphic_config_returns_correct_config_for_invitation_email() {
+		$config = Content_Map::get_graphic_config( 'invitation-email' );
+
+		$this->assertSame( 'invitation-envelope-graphic', $config['slug'], 'Invitation email should use envelope graphic slug.' );
+		$this->assertSame( 'bottom-center', $config['position'], 'Invitation email graphic should be bottom-center.' );
+		$this->assertSame( 209, $config['width'], 'Invitation email graphic width should be 209.' );
+		$this->assertSame( 163, $config['height'], 'Invitation email graphic height should be 163.' );
+		$this->assertSame( 'raw', $config['title_escape'], 'Invitation email title should use raw escape for mailto link.' );
+	}
+
+	public function test_get_graphic_config_returns_correct_config_for_subscription_confirmation() {
+		$config = Content_Map::get_graphic_config( 'subscription-confirmation' );
+
+		$this->assertSame( 'subscription-envelope-graphic', $config['slug'], 'Subscription confirmation should use envelope graphic slug.' );
+		$this->assertSame( 'top-center', $config['position'], 'Subscription confirmation graphic should be top-center.' );
+		$this->assertSame( 177, $config['width'], 'Subscription confirmation graphic width should be 177.' );
+		$this->assertSame( 143, $config['height'], 'Subscription confirmation graphic height should be 143.' );
+		$this->assertSame( 'esc_html', $config['title_escape'], 'Subscription confirmation title should use esc_html escape.' );
+	}
+
+	public function test_get_graphic_config_returns_correct_config_for_error_email() {
+		$config = Content_Map::get_graphic_config( 'error-email' );
+
+		$this->assertSame( 'warning-icon', $config['slug'], 'Error email should use warning icon slug.' );
+		$this->assertSame( 'top-left', $config['position'], 'Error email graphic should be top-left.' );
+		$this->assertSame( 32, $config['width'], 'Error email graphic width should be 32.' );
+		$this->assertSame( 32, $config['height'], 'Error email graphic height should be 32.' );
+		$this->assertSame( 'esc_html', $config['title_escape'], 'Error email title should use esc_html escape.' );
+	}
+
+	public function test_get_graphic_config_returns_empty_array_for_unknown_template() {
+		$config = Content_Map::get_graphic_config( 'unknown-template' );
+
+		$this->assertIsArray( $config, 'Graphic config should be an array for unknown template.' );
+		$this->assertEmpty( $config, 'Graphic config should be empty for unknown template.' );
+	}
+
+	/**
+	 * @dataProvider data_graphic_config_templates
+	 */
+	public function test_get_graphic_config_has_required_keys( $template_name ) {
+		$config        = Content_Map::get_graphic_config( $template_name );
+		$required_keys = array( 'slug', 'position', 'width', 'height', 'title_escape' );
+
+		foreach ( $required_keys as $key ) {
+			$this->assertArrayHasKey( $key, $config, "Graphic config for '$template_name' should have key '$key'." );
+		}
+	}
+
+	public function data_graphic_config_templates() {
+		return array(
+			'invitation-email'          => array( 'invitation-email' ),
+			'subscription-confirmation' => array( 'subscription-confirmation' ),
+			'error-email'               => array( 'error-email' ),
+		);
+	}
 }

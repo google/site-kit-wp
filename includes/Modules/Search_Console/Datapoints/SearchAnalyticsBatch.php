@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryResponse;
 use WP_Error;
 
@@ -36,7 +37,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	 * Callback to obtain the Search Console service.
 	 *
 	 * @since 1.170.0
-	 * @var callable|Closure
+	 * @var callable|\Closure
 	 */
 	private $get_service;
 
@@ -44,7 +45,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	 * Callback to prepare single search analytics request arguments.
 	 *
 	 * @since 1.170.0
-	 * @var callable|Closure
+	 * @var callable|\Closure
 	 */
 	private $prepare_args;
 
@@ -52,7 +53,7 @@ class SearchAnalyticsBatch extends Datapoint implements Executable_Datapoint {
 	 * Callback to build a search analytics request.
 	 *
 	 * @since 1.170.0
-	 * @var callable|Closure
+	 * @var callable|\Closure
 	 */
 	private $create_request;
 

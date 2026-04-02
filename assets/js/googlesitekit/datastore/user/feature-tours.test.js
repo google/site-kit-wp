@@ -324,6 +324,24 @@ describe( 'core/user feature-tours', () => {
 				expect( store.getState().currentTour ).toBeUndefined();
 			} );
 
+			it( 'triggers a repeatable tour even if it has been dismissed', async () => {
+				const repeatableTour = { ...testTourA, isRepeatable: true };
+
+				expect( store.getState().currentTour ).toBeUndefined();
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetDismissedTours( [ testTourA.slug ] );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerOnDemandTour( repeatableTour );
+
+				expect( store.getState().currentTour ).toEqual(
+					repeatableTour
+				);
+			} );
+
 			it( 'will trigger the given tour even when tours are on cooldown', async () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 				registry

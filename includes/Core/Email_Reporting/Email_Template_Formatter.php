@@ -189,10 +189,6 @@ class Email_Template_Formatter {
 		$change_context = $this->get_change_context_label( $date_range );
 
 		foreach ( $sections as $section ) {
-			if ( ! $section instanceof Email_Report_Data_Section_Part ) {
-				continue;
-			}
-
 			$values           = $section->get_values();
 			$labels           = $section->get_labels();
 			$trends           = $section->get_trends();
@@ -340,7 +336,6 @@ class Email_Template_Formatter {
 		$site_domain        = $this->get_site_domain();
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
-		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		$data = array(
 			'subject'                => $subject,
@@ -357,20 +352,6 @@ class Email_Template_Formatter {
 			'footer'                 => array(
 				'copy'            => $email_data['footer_copy'] ?? '',
 				'unsubscribe_url' => $email_settings_url,
-				'links'           => array(
-					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => $email_settings_url,
-					),
-					array(
-						'label' => __( 'Privacy Policy', 'google-site-kit' ),
-						'url'   => 'https://policies.google.com/privacy',
-					),
-					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => $help_center_url,
-					),
-				),
 			),
 		);
 
@@ -391,7 +372,6 @@ class Email_Template_Formatter {
 		$first_report_date  = $this->get_first_report_date_label( $frequency );
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
-		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => sprintf(
@@ -420,21 +400,9 @@ class Email_Template_Formatter {
 			'footer'                 => array(
 				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
 				'unsubscribe_url' => $email_settings_url,
-				'links'           => array(
-					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => $email_settings_url,
-					),
-					array(
-						'label' => __( 'Privacy Policy', 'google-site-kit' ),
-						'url'   => 'https://policies.google.com/privacy',
-					),
-					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => $help_center_url,
-					),
-				),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'subscription-confirmation' ),
+			'footer_type'            => 'standard',
 		);
 	}
 
@@ -452,7 +420,6 @@ class Email_Template_Formatter {
 	private function prepare_template_data( $frequency, $date_range, WP_User $user, array $section_notices ) {
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
-		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => $this->build_subject( $frequency ),
@@ -474,20 +441,6 @@ class Email_Template_Formatter {
 			'footer'                 => array(
 				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ), // The space and unsubscribe link are handled in the template.
 				'unsubscribe_url' => $email_settings_url,
-				'links'           => array(
-					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => $email_settings_url,
-					),
-					array(
-						'label' => __( 'Privacy Policy', 'google-site-kit' ),
-						'url'   => 'https://policies.google.com/privacy',
-					),
-					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => $help_center_url,
-					),
-				),
 			),
 		);
 	}

@@ -128,7 +128,6 @@ class Sections_Map {
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
-			$this->get_growth_drivers_section(),
 			$this->get_growth_drivers_section()
 		);
 	}

@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
+
 /**
  * Class representing a datapoint definition.
  *
@@ -93,11 +95,11 @@ class Datapoint {
 	}
 
 	/**
-	 * Gets the service identifier.
+	 * Gets the service identifier or object.
 	 *
 	 * @since 1.77.0
 	 *
-	 * @return string
+	 * @return string|Google_Service
 	 */
 	protected function get_service() {
 		$service = $this->service;

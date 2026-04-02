@@ -17,8 +17,8 @@ $non_dev_packages = array_filter(
 );
 
 return array(
-	'prefix'                     => 'Google\\Site_Kit_Dependencies',
-	'finders'                    => array(
+	'prefix'                  => 'Google\\Site_Kit_Dependencies',
+	'finders'                 => array(
 		// All non-dev dependency package files.
 		Finder::create()
 			->files()
@@ -38,11 +38,11 @@ return array(
 				)
 			),
 	),
-	'files-whitelist'            => array(
+	'exclude-files'           => array(
 		// This dependency is a global function which should remain global.
 		'vendor/ralouphie/getallheaders/src/getallheaders.php',
 	),
-	'patchers'                   => array(
+	'patchers'                => array(
 		function ( $file_path, $prefix, $contents ) {
 			// Avoid prefixing the `static` keyword in some places.
 			$contents = str_replace( "\\$prefix\\static", 'static', $contents );
@@ -67,23 +67,32 @@ return array(
 				);
 			}
 			if ( false !== strpos( $file_path, 'phpseclib' ) ) {
-				$contents = str_replace( "'phpseclib3\\\\", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3\\\\', $contents );
-				$contents = str_replace( "'\\\\phpseclib3", "'\\\\" . $doubled_backslash_prefix . '\\\\phpseclib3', $contents );
+				// phpseclib dynamically constructs FQCNs from partial strings that
+				// PHP-Scoper can't automatically prefix, e.g.:
+				// $fqmain = 'phpseclib3\Math\BigInteger\Engines\' . $main
+				//
+				// This prefixes any string-quoted 'phpseclib3' namespace reference,
+				// handling both single (\) and double (\\) backslash escaping forms
+				// that may result from php-parser's normalization of single-quoted strings.
+				//
+				// Pattern (regex):  /'\\{0,2}phpseclib3(?=\\)/
+				// '           — opening single quote of the string literal
+				// \\{0,2}     — 0, 1, or 2 literal backslashes (covers all escaping forms)
+				// phpseclib3  — the namespace root.
+				// (?=\\)      — lookahead: must be followed by a backslash (avoids false matches).
+				$prefixed_ns = str_replace( '\\', '\\\\', "\\{$prefix}\\phpseclib3" );
+				$contents    = preg_replace_callback(
+					"/'\\\\{0,2}phpseclib3(?=\\\\)/",
+					fn() => "'" . $prefixed_ns,
+					$contents
+				);
 			}
 
-			if (
-				// Bootstrap files polyfill global functions using namespaced implementations.
-				preg_match( '#vendor/symfony/polyfill-.*/bootstrap\.php$#', $file_path )
-				// The classes under Resources/stubs polyfill classes in the global namespace loaded via classmap.
-				|| preg_match( '#vendor/symfony/polyfill-.*/Resources/stubs/.*\.php$#', $file_path )
-			) {
-				$contents = str_replace( "namespace $prefix;", "/* namespace $prefix intentionally removed */", $contents );
-			}
 			return $contents;
 		},
 	),
-	'whitelist'                  => array(),
-	'whitelist-global-constants' => false,
-	'whitelist-global-classes'   => false,
-	'whitelist-global-functions' => false,
+	'expose-namespaces'       => array(),
+	'expose-global-constants' => false,
+	'expose-global-classes'   => false,
+	'expose-global-functions' => false,
 );

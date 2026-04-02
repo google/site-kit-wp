@@ -79,7 +79,7 @@ class Worker_Task {
 	/**
 	 * Cron health check service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @var Cron_Health_Check
 	 */

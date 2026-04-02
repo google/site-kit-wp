@@ -46,7 +46,7 @@ class Tag_Verify_Guard implements Guard_Interface {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
+	 * @return bool|\WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
 	 */
 	public function can_activate() {
 		return ! $this->input->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN );

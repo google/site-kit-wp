@@ -321,7 +321,7 @@ final class Plugin {
 		}
 
 		if ( file_exists( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php' ) ) {
-			$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php'; // @phpstan-ignore include.fileNotFound
+			$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
 			Feature_Flags::set_features( (array) $config['features'] );
 		}
 
