@@ -383,7 +383,7 @@ final class Admin_Bar {
 								$this->admin_bar_enabled->set( ! empty( $data['enabled'] ) );
 							}
 
-							return $settings_callback( $request );
+							return $settings_callback();
 						},
 						'permission_callback' => $can_authenticate,
 						'args'                => array(

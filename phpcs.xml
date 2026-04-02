@@ -107,6 +107,7 @@
 	<exclude-pattern>dist/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>packages/apiclient-services-*</exclude-pattern>
+	<exclude-pattern>tests/phpstan/*</exclude-pattern>
 	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>gtg/measurement.php</exclude-pattern>

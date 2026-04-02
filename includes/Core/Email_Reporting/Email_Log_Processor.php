@@ -164,7 +164,7 @@ class Email_Log_Processor {
 			$user,
 			array(),
 			$template_data,
-			'subscription-confirmation'
+			'simple-email'
 		);
 
 		if ( is_wp_error( $send_result ) ) {

@@ -120,7 +120,7 @@ class REST_Tracking_Consent_Controller {
 
 								$this->consent->set( $enabled );
 
-								return $tracking_callback( $request );
+								return $tracking_callback();
 							},
 							'permission_callback' => $can_access_tracking,
 							'args'                => array(

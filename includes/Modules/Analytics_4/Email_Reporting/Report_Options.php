@@ -164,7 +164,7 @@ class Report_Options extends Base_Report_Options {
 			return (bool) $this->audience_segmentation_enabled;
 		}
 
-		$settings = $this->audience_config->get_module_settings();
+		$settings = $this->audience_config->get_module_settings(); // @phpstan-ignore method.notFound
 		return ! empty( $settings['audienceSegmentationSetupCompletedBy'] );
 	}
 

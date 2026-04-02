@@ -189,6 +189,87 @@ class Eligible_Subscribers_QueryTest extends TestCase {
 		$this->assertNotContains( $other_user_id, wp_list_pluck( $name_results, 'ID' ), 'Search results should exclude non-matching users.' );
 	}
 
+	public function test_get_eligible_users_search_filters_by_shared_role_slug() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$editor_id     = self::factory()->user->create(
+			array(
+				'role'         => 'editor',
+				'user_login'   => 'shared-role-user',
+				'display_name' => 'Shared Role User',
+				'user_email'   => 'shared-role-user@example.com',
+			)
+		);
+
+		self::factory()->user->create(
+			array(
+				'role'         => 'author',
+				'user_login'   => 'author-user',
+				'display_name' => 'Author User',
+				'user_email'   => 'author-user@example.com',
+			)
+		);
+
+		$this->modules->get_module_sharing_settings()->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+				),
+			)
+		);
+
+		wp_set_current_user( $current_admin );
+
+		$results = $this->query->get_eligible_users(
+			$current_admin,
+			array(
+				'search' => 'editor',
+			)
+		);
+
+		$this->assertSame(
+			array( $editor_id ),
+			wp_list_pluck( $results, 'ID' ),
+			'Role-based search should return shared-role users even when name/email do not match.'
+		);
+	}
+
+	public function test_get_eligible_users_search_filters_by_administrator_role_slug() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$admin_id      = $this->create_admin_with_token( 'manager-user', 'Manager User', 'manager-user@example.com' );
+		$editor_id     = self::factory()->user->create(
+			array(
+				'role'         => 'editor',
+				'user_login'   => 'editor-user',
+				'display_name' => 'Editor User',
+				'user_email'   => 'editor-user@example.com',
+			)
+		);
+
+		$this->modules->get_module_sharing_settings()->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+				),
+			)
+		);
+
+		wp_set_current_user( $current_admin );
+
+		$results = $this->query->get_eligible_users(
+			$current_admin,
+			array(
+				'search' => 'administrator',
+			)
+		);
+
+		$this->assertContains(
+			$admin_id,
+			wp_list_pluck( $results, 'ID' ),
+			'Role-based search should return authenticated admins even when name/email do not match.'
+		);
+		$this->assertNotContains( $editor_id, wp_list_pluck( $results, 'ID' ), 'Administrator role search should not include shared non-admin roles unless they also match name/email.' );
+	}
+
 	public function test_get_eligible_users_count_returns_total_matching_users() {
 		$current_admin = $this->create_admin_with_token( 'admin-current' );
 		$this->create_admin_with_token( 'alpha-1', 'Alpha One', 'alpha-one@example.com' );

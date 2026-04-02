@@ -62,7 +62,7 @@ class Email_Template_Renderer_Factory {
 	 * @param array $sections_payload Sections payload.
 	 * @return Email_Template_Renderer Template renderer instance.
 	 */
-	public function create( array $sections_payload ) {
+	public function create( array $sections_payload ): Email_Template_Renderer {
 		return new Email_Template_Renderer( new Sections_Map( $this->context, $sections_payload, $this->golinks ) );
 	}
 }
