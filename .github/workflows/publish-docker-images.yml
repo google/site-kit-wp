@@ -102,7 +102,7 @@ jobs:
         uses: ./.github/actions/build-push-docker-image
         with:
           # Update the version number here when updating the Backstop version within the Dockerfile.
-          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22-chrome146.0.7680.80
+          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22-chrome146.0.7680.164
           context: ./tests/backstop
           labels: org.opencontainers.image.description=Docker image used to run visual regression tests for Site Kit.
           registry-username: "github-actions[bot]"
