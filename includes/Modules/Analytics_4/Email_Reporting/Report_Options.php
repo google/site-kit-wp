@@ -218,6 +218,30 @@ class Report_Options extends Base_Report_Options {
 				'metrics'          => array(
 					array( 'name' => 'eventCount' ),
 				),
+				'dimensionFilters' => array(
+					'eventName' => array(
+						'value' => $event_name,
+					),
+				),
+				'keepEmptyRows'    => true,
+			)
+		);
+	}
+
+	/**
+	 * Gets report options for top conversion channel by event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $event_name Conversion event name.
+	 * @return array Report request options array.
+	 */
+	public function get_conversion_event_top_channel_options( string $event_name ) {
+		return $this->with_current_range(
+			array(
+				'metrics'          => array(
+					array( 'name' => 'eventCount' ),
+				),
 				'dimensions'       => array(
 					array( 'name' => 'sessionDefaultChannelGroup' ),
 				),
