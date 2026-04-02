@@ -141,6 +141,11 @@
 				margin-bottom: $grid-gap-desktop;
 				overflow: hidden;
 			}
+
+			@media (min-width: $bp-nonTablet) {
+				max-height: var(--googlesitekit-splash-available-height);
+				overflow: hidden;
+			}
 		}
 
 		.googlesitekit-setup__content {
@@ -149,6 +154,7 @@
 			}
 
 			@media (min-width: $bp-nonTablet) {
+				min-height: var(--googlesitekit-splash-available-height);
 				padding-bottom: $grid-gap-desktop;
 			}
 		}
