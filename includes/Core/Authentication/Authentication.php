@@ -723,7 +723,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * @since 1.32.0 Moved connect and disconnect actions to dedicated handlers.
 	 */
 	private function handle_oauth() {
-		if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
 
@@ -830,7 +830,6 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['isOwner']             = current_user_can( Permissions::MANAGE_OPTIONS );
 		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
