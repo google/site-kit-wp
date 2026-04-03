@@ -73,14 +73,26 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		} );
 	} );
 
+	const enhancedMeasurementSettings = useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
 	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
+		if (
+			isLoadingPropertySummaries ||
+			isLoadingWebDataStreams ||
+			enhancedMeasurementSettings === undefined
+		) {
 			return undefined;
 		}
 
 		if (
 			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID )
+			! isValidWebDataStreamID( webDataStreamID ) ||
+			! enhancedMeasurementSettings
 		) {
 			return null;
 		}
@@ -137,10 +149,8 @@ export default function SettingsEnhancedMeasurementSwitch( {
 				'getEnhancedMeasurementSettings',
 				[ propertyID, webDataStreamID ]
 			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'isEnhancedMeasurementStreamAlreadyEnabled',
-				[ propertyID, webDataStreamID ]
-			)
+			isEnhancedMeasurementStreamEnabled === undefined ||
+			isEnhancedMeasurementAlreadyEnabled === undefined
 		);
 	} );
 
@@ -157,6 +167,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	useEffect( () => {
 		if (
 			initialValues.current.isEnhancedMeasurementEnabled !== undefined &&
+			initialValues.current.isEnhancedMeasurementEnabled !== null &&
 			initialValues.current.webDataStreamID === webDataStreamID &&
 			initialValues.current.propertyID === propertyID
 		) {
@@ -165,6 +176,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 		if (
 			isEnhancedMeasurementStreamEnabled === undefined ||
+			isEnhancedMeasurementStreamEnabled === null ||
 			! isValidPropertySelection( propertyID ) ||
 			! isValidWebDataStreamSelection( webDataStreamID )
 		) {
