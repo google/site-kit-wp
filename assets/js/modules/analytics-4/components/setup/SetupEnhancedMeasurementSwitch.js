@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -67,6 +67,13 @@ export default function SetupEnhancedMeasurementSwitch() {
 		} )
 	);
 
+	useSelect( ( select ) => {
+		return select( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
+			propertyID,
+			webDataStreamID
+		);
+	} );
+
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
 			return undefined;
@@ -87,7 +94,7 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isLoading = useSelect( ( select ) => {
+	const isLoading = useMemo( () => {
 		if (
 			! isValidPropertySelection( propertyID ) ||
 			! isValidWebDataStreamSelection( webDataStreamID ) ||
@@ -104,11 +111,14 @@ export default function SetupEnhancedMeasurementSwitch() {
 			return false;
 		}
 
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'isEnhancedMeasurementStreamAlreadyEnabled',
-			[ propertyID, webDataStreamID ]
-		);
-	} );
+		return isEnhancedMeasurementAlreadyEnabled === undefined;
+	}, [
+		isEnhancedMeasurementAlreadyEnabled,
+		isLoadingPropertySummaries,
+		isLoadingWebDataStreams,
+		propertyID,
+		webDataStreamID,
+	] );
 
 	const isAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 
