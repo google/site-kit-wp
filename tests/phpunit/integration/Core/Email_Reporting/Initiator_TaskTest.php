@@ -201,7 +201,7 @@ class Initiator_TaskTest extends TestCase {
 	/**
 	 * @dataProvider data_build_reference_dates_uses_expected_period_length
 	 */
-	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days ) {
+	public function test_build_reference_dates_uses_expected_period_length( $frequency, $expected_days, $timestamp_string ) {
 		$original_timezone_string = get_option( 'timezone_string' );
 		$original_gmt_offset      = get_option( 'gmt_offset' );
 
@@ -209,7 +209,7 @@ class Initiator_TaskTest extends TestCase {
 		update_option( 'gmt_offset', 0 );
 
 		try {
-			$timestamp = strtotime( '2026-03-16 00:00:00 UTC' );
+			$timestamp = strtotime( $timestamp_string );
 
 			$reference_dates = Initiator_Task::build_reference_dates(
 				$frequency,
@@ -256,9 +256,12 @@ class Initiator_TaskTest extends TestCase {
 
 	public function data_build_reference_dates_uses_expected_period_length() {
 		return array(
-			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7 ),
-			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 30 ),
-			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90 ),
+			'weekly'               => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7, '2026-03-16 00:00:00 UTC' ),
+			'monthly_31_day_month' => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 31, '2026-04-01 00:00:00 UTC' ),
+			'monthly_30_day_month' => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 30, '2026-07-01 00:00:00 UTC' ),
+			'monthly_28_day_month' => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 28, '2026-03-01 00:00:00 UTC' ),
+			'monthly_29_day_leap'  => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 29, '2028-03-01 00:00:00 UTC' ),
+			'quarterly'            => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 90, '2026-03-16 00:00:00 UTC' ),
 		);
 	}
 }

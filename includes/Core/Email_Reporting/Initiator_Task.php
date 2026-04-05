@@ -117,7 +117,7 @@ class Initiator_Task {
 
 		$period_lengths = array(
 			Email_Reporting_Settings::FREQUENCY_WEEKLY    => 7,
-			Email_Reporting_Settings::FREQUENCY_MONTHLY   => 30,
+			Email_Reporting_Settings::FREQUENCY_MONTHLY   => (int) $send_date->format( 't' ),
 			Email_Reporting_Settings::FREQUENCY_QUARTERLY => 90,
 		);
 
