@@ -38,6 +38,7 @@ import {
 	createStrictSelect,
 	createValidationSelector,
 } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 // Actions
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
@@ -196,6 +197,10 @@ const baseActions = {
 			}
 		}
 
+		if ( ! error ) {
+			registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+		}
+
 		yield {
 			type: FINISH_SUBMIT_SHARING_CHANGES,
 			payload: {},
@@ -221,6 +226,11 @@ const baseActions = {
 
 		const { response, error } =
 			yield fetchResetSharingSettingsStore.actions.fetchResetSharingSettings();
+
+		if ( ! error ) {
+			const registry = yield commonActions.getRegistry();
+			registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+		}
 
 		yield {
 			type: FINISH_SUBMIT_SHARING_CHANGES,
