@@ -110,14 +110,34 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 			'Conversion event report should request eventCount.'
 		);
 		$this->assertSame(
+			array( 'value' => 'begin_checkout' ),
+			$options['dimensionFilters']['eventName'],
+			'Conversion event report should filter by the requested event name.'
+		);
+		$this->assertArrayNotHasKey( 'dimensions', $options, 'Conversion event report should not group by channel dimensions.' );
+		$this->assertArrayNotHasKey( 'orderby', $options, 'Conversion event report should not order by channel metric.' );
+		$this->assertArrayNotHasKey( 'limit', $options, 'Conversion event report should not limit rows by top channel.' );
+		$this->assertTrue( $options['keepEmptyRows'], 'Conversion event report should include empty rows.' );
+	}
+
+	public function test_conversion_event_top_channel_options__builds_expected_request() {
+		$builder = $this->create_builder();
+		$options = $builder->get_conversion_event_top_channel_options( 'begin_checkout' );
+
+		$this->assertSame(
+			array( array( 'name' => 'eventCount' ) ),
+			$options['metrics'],
+			'Top channel report should request eventCount.'
+		);
+		$this->assertSame(
 			array( array( 'name' => 'sessionDefaultChannelGroup' ) ),
 			$options['dimensions'],
-			'Conversion event report should group by sessionDefaultChannelGroup.'
+			'Top channel report should group by sessionDefaultChannelGroup.'
 		);
 		$this->assertSame(
 			array( 'value' => 'begin_checkout' ),
 			$options['dimensionFilters']['eventName'],
-			'Conversion event report should filter by the requested event name.'
+			'Top channel report should filter by the requested event name.'
 		);
 		$this->assertSame(
 			array(
@@ -127,10 +147,10 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 				),
 			),
 			$options['orderby'],
-			'Conversion event report should order rows by event count descending.'
+			'Top channel report should order rows by event count descending.'
 		);
-		$this->assertSame( 1, $options['limit'], 'Conversion event report should limit to one top row.' );
-		$this->assertTrue( $options['keepEmptyRows'], 'Conversion event report should include empty rows.' );
+		$this->assertSame( 1, $options['limit'], 'Top channel report should limit to one top row.' );
+		$this->assertTrue( $options['keepEmptyRows'], 'Top channel report should include empty rows.' );
 	}
 
 	public function test_top_categories_uses_custom_dimension() {

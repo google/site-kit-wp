@@ -69,6 +69,7 @@ class Report_Request_Assembler {
 				}
 
 				$requests[ $request_key ] = $this->report_options->get_conversion_event_options( $event_name );
+				$requests[ sprintf( 'conversion_event_top_channel_%s', $event_name_slug ) ] = $this->report_options->get_conversion_event_top_channel_options( $event_name );
 			}
 		}
 
