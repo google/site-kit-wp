@@ -10,6 +10,7 @@
  */
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 
 add_filter(
@@ -43,10 +44,21 @@ add_action(
 						);
 					}
 
-					add_filter( 'googlesitekit_email_reporting_batch_id', fn() => 'test-batch-id' );
-
+					// Trigger the initiator action which creates the batch.
 					do_action_ref_array( Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
-					do_action_ref_array( Email_Reporting_Scheduler::ACTION_WORKER, array( 'test-batch-id', $frequency, time() ) );
+
+					// Get the batch ID from the database.
+					$batch_id = get_batch_id_from_database( $frequency );
+					if ( ! $batch_id ) {
+						return new WP_Error(
+							'batch_id_not_found',
+							'Batch ID not found in database.',
+							array( 'status' => 500 )
+						);
+					}
+
+					// Trigger the worker action with the retrieved batch ID.
+					do_action_ref_array( Email_Reporting_Scheduler::ACTION_WORKER, array( $batch_id, $frequency, time() ) );
 
 					return array( 'success' => true );
 				},
@@ -54,3 +66,25 @@ add_action(
 		);
 	}
 );
+
+function get_batch_id_from_database( $frequency ) {
+	$posts = get_posts(
+		array(
+			'post_type'      => Email_Log::POST_TYPE,
+			'post_status'    => Email_Log::STATUS_SCHEDULED,
+			'meta_key'       => Email_Log::META_REPORT_FREQUENCY,
+			'meta_value'     => $frequency,
+			'posts_per_page' => 1,
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+			'fields'         => 'ids',
+		)
+	);
+
+	if ( empty( $posts ) ) {
+		return false;
+	}
+
+	$batch_id = get_post_meta( $posts[0], Email_Log::META_BATCH_ID, true );
+	return $batch_id ?: false;
+}

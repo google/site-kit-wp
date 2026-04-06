@@ -68,14 +68,7 @@ class Initiator_Task {
 
 		$this->scheduler->schedule_next_initiator( $frequency, $timestamp );
 
-		/**
-		 * Filter the unique ID to use for the current batch of emails.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $batch_id The batch ID.
-		 */
-		$batch_id = apply_filters( 'googlesitekit_email_reporting_batch_id', wp_generate_uuid4() );
+		$batch_id = wp_generate_uuid4();
 		$user_ids = $this->subscribed_users_query->for_frequency( $frequency );
 
 		$reference_dates = self::build_reference_dates( $frequency, $timestamp );
