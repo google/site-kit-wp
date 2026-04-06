@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import DashboardPageSpeed from '.';
@@ -81,8 +76,6 @@ describe( 'DashboardPageSpeed', () => {
 			currentEntityURL: null,
 		} );
 	} );
-
-	afterEach( fetchMock.mockClear );
 
 	function setupRegistryNoFieldDataDesktop() {
 		registry = createTestRegistry();
@@ -307,6 +300,70 @@ describe( 'DashboardPageSpeed', () => {
 		} );
 	} );
 
+	it( 'does not reset the selected tab when switching from mobile to desktop and back', () => {
+		const { getByLabelText } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+	} );
+
+	it( 'does not reset the selected tab when switching from desktop to mobile and back', () => {
+		const { getByLabelText } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+	} );
+
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
 		setupRegistryNoFieldDataDesktop();
 
@@ -487,7 +544,7 @@ describe( 'DashboardPageSpeed', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the `How to improve` tab when recommendations exist', async () => {
+	it( 'renders the `How to improve` tab when recommendations exist', () => {
 		registry = createTestRegistry();
 		const { dispatch } = registry;
 
@@ -523,71 +580,5 @@ describe( 'DashboardPageSpeed', () => {
 		expect(
 			getByRole( 'tab', { name: /How to improve/i } )
 		).toBeInTheDocument();
-
-		await act( async () => {} );
-	} );
-
-	it( 'does not reset the selected tab when switching from mobile to desktop and back', () => {
-		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			registry,
-		} );
-
-		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-
-		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
-
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-		expect(
-			getByLabelText( /In the Field/i ).closest( 'button' )
-		).not.toHaveClass( activeClass );
-
-		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
-
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-		expect(
-			getByLabelText( /In the Field/i ).closest( 'button' )
-		).not.toHaveClass( activeClass );
-	} );
-
-	it( 'does not reset the selected tab when switching from desktop to mobile and back', () => {
-		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			registry,
-		} );
-
-		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
-
-		expect(
-			getByLabelText( /In the Field/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-
-		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-
-		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
-
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-		expect(
-			getByLabelText( /In the Field/i ).closest( 'button' )
-		).not.toHaveClass( activeClass );
-
-		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
-
-		expect(
-			getByLabelText( /In the Lab/i ).closest( 'button' )
-		).toHaveClass( activeClass );
-		expect(
-			getByLabelText( /In the Field/i ).closest( 'button' )
-		).not.toHaveClass( activeClass );
 	} );
 } );
