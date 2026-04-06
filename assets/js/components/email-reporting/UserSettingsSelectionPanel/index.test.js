@@ -282,6 +282,56 @@ describe( 'UserSettingsSelectionPanel', () => {
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
 	} );
 
+	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {
+		jest.useFakeTimers();
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [ 'Module report error.' ],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		const goToSettingsButton = getByRole( 'button', {
+			name: 'Go to settings',
+		} );
+		goToSettingsButton.setAttribute( 'href', '#' );
+		fireEvent.click( goToSettingsButton );
+
+		await waitFor( () =>
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( false )
+		);
+
+		act( () => {
+			jest.runOnlyPendingTimers();
+		} );
+
+		jest.useRealTimers();
+	} );
+
 	it( 'resets email reporting settings when the panel closes', async () => {
 		const coreUserDispatch = registry.dispatch( CORE_USER );
 		coreUserDispatch.receiveGetEmailReportingSettings( {
