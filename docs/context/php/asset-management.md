@@ -514,7 +514,6 @@ private function get_inline_base_data() {
         'postTypes'            => $this->get_post_types(),
         'storagePrefix'        => $this->get_storage_prefix(),
         'userRoles'            => $this->get_user_roles(),
-        'isOwner'              => current_user_can( Permissions::MANAGE_OPTIONS ),
         'splashURL'            => $this->context->admin_url( 'splash' ),
     );
 }
