@@ -160,10 +160,12 @@ export class WordPress {
 
 		if ( errors.length > 0 ) {
 			const uniqueErrors: string[] = [];
-			errors.forEach( ( e ) => {
-				let msg = `[${ e.level }] ${ e.message } (${ e.file }:${ e.line })`;
-				if ( e.backtrace ) {
-					msg += `\n\t${ e.backtrace.split( '\n' ).join( '\n\t' ) }`;
+			errors.forEach( ( err ) => {
+				let msg = `[${ err.level }] ${ err.message } (${ err.file }:${ err.line })`;
+				if ( err.backtrace ) {
+					msg += `\n\t${ err.backtrace
+						.split( '\n' )
+						.join( '\n\t' ) }`;
 				}
 
 				if ( ! uniqueErrors.includes( msg ) ) {
@@ -308,8 +310,8 @@ export class WordPress {
 		init: Omit< RequestInit, 'method' > = {}
 	): Promise< unknown > {
 		return this.page.evaluate(
-			async ( { url, method: m, init: i } ) => {
-				const response = await fetch( url, { method: m, ...i } );
+			async ( { url, method: m, init: index } ) => {
+				const response = await fetch( url, { method: m, ...index } );
 				return response.json();
 			},
 			{
