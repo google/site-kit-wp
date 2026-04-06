@@ -18,13 +18,6 @@ add_filter(
 	}
 );
 
-add_filter(
-	'wp_mail_from_name',
-	function () {
-		return 'Site Kit E2E Tests';
-	}
-);
-
 add_action(
 	'phpmailer_init',
 	function ( $phpmailer ) {
