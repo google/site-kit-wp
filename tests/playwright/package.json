@@ -1,4 +1,5 @@
 {
+	"name": "@google/site-kit-playwright-tests",
 	"scripts": {
 		"pretest": "docker compose --profile test ps --services --filter status=running | grep -q wp || npm run start --silent",
 		"test": "playwright test --config=playwright.config.ts",
