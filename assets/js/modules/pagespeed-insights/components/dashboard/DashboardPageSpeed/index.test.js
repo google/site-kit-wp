@@ -35,11 +35,8 @@ import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
 	STRATEGY_DESKTOP,
-	DATA_SRC_LAB,
-	UI_DATA_SOURCE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import {
 	createTestRegistry,
@@ -490,7 +487,7 @@ describe( 'DashboardPageSpeed', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the `How to improve` tab when recommendations exist', () => {
+	it( 'renders the `How to improve` tab when recommendations exist', async () => {
 		registry = createTestRegistry();
 		const { dispatch } = registry;
 
@@ -526,45 +523,65 @@ describe( 'DashboardPageSpeed', () => {
 		expect(
 			getByRole( 'tab', { name: /How to improve/i } )
 		).toBeInTheDocument();
+
+		await act( async () => {} );
 	} );
 
-	it( 'sets the data source to Field by default when no data source is selected and field data is available', () => {
-		// Verify no data source is explicitly set before rendering (selectedDataSrc is undefined).
+	it( 'does not reset the selected tab when switching from mobile to desktop and back', () => {
+		const { getByLabelText } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
 		expect(
-			registry.select( CORE_UI ).getValue( UI_DATA_SOURCE )
-		).toBeUndefined();
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
 
-		// The default registry in beforeEach has no explicit UI_DATA_SOURCE set and
-		// the mobile fixture has field data, so the effect should set it to Field.
-		const { getByLabelText } = render( <DashboardPageSpeed />, {
-			registry,
-		} );
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
 
-		act( () => {
-			expect(
-				getByLabelText( /In the Field/i ).closest( 'button' )
-			).toHaveClass( activeClass );
-		} );
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
 	} );
 
-	it( 'does not override a manually selected data source when report data loads', () => {
-		// Manually set the data source to Lab before rendering.
-		registry
-			.dispatch( CORE_UI )
-			.setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } );
-
+	it( 'does not reset the selected tab when switching from desktop to mobile and back', () => {
 		const { getByLabelText } = render( <DashboardPageSpeed />, {
 			registry,
 		} );
 
-		// The effect should not override the user's explicit Lab selection even though
-		// field data is available in the mobile report.
-		expect( registry.select( CORE_UI ).getValue( UI_DATA_SOURCE ) ).toBe(
-			DATA_SRC_LAB
-		);
-		expect( registry.select( CORE_UI ).getValue( UI_DATA_SOURCE ) ).toBe(
-			DATA_SRC_LAB
-		);
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /In the Lab/i ).closest( 'button' ) );
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /mobile/i ).closest( 'button' ) );
+
+		expect(
+			getByLabelText( /In the Lab/i ).closest( 'button' )
+		).toHaveClass( activeClass );
+		expect(
+			getByLabelText( /In the Field/i ).closest( 'button' )
+		).not.toHaveClass( activeClass );
+
+		fireEvent.click( getByLabelText( /desktop/i ).closest( 'button' ) );
 
 		expect(
 			getByLabelText( /In the Lab/i ).closest( 'button' )
