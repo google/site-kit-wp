@@ -18,169 +18,105 @@
  * Internal dependencies
  */
 import { test, expect } from '../../playwright';
+import { asUser, withPlugins, withFixtures } from '../../wordpress';
 import {
-	asUser,
-	withPlugins,
-	withFeatureFlags,
-	withFixtures,
-} from '../../wordpress';
+	EmailReportingPage,
+	VerifyPanelStateOptions,
+} from './email-reporting-page';
 
-test.describe(
-	'Email Reporting',
-	{
-		annotation: [
-			asUser( 'admin' ),
-			withPlugins( 'proxy-auth.php' ),
-			withFeatureFlags( 'proactiveUserEngagement' ),
-		],
-	},
-	() => {
-		test(
-			'should deliver a weekly email report',
-			{
-				annotation: [
-					withPlugins( 'email-reporting.php' ),
-					withFixtures( 'email-reporting/weekly-report-data' ),
-				],
-			},
-			async ( { wp } ) => {
-				// Go to the Site Kit dashboard page.
-				await wp.visitDashboard();
+const user = asUser( 'admin' );
+const plugins = withPlugins( 'proxy-auth.php', 'email-reporting.php' );
 
-				// Quickly open the email reporting settings panel and select the weekly subscription.
-				await test.step( 'Subscribe to weekly reports', async () => {
-					await wp.page
-						.getByRole( 'button', { name: 'Account' } )
-						.click();
-					await wp.page
-						.getByRole( 'menuitem', {
-							name: 'Manage email reports',
-						} )
-						.click();
-
-					const root = wp.page.locator(
-						'.googlesitekit-email-reporting-settings'
-					);
-					await root
-						.getByRole( 'button', { name: 'Subscribe' } )
-						.click();
-					await expect(
-						root
-							.getByRole( 'status' )
-							.filter( { hasText: 'successfully subscribed' } )
-					).toBeVisible( { timeout: 10_000 } );
-				} );
-
-				// Trigger the email pipeline to send the weekly report.
-				await test.step( 'Trigger email pipeline', async () => {
-					const response = await wp.restRequest(
-						'POST',
-						'google-site-kit/v1/e2e/email-reporting/trigger-cron',
-						{
-							body: JSON.stringify( { frequency: 'weekly' } ),
-							headers: { 'Content-Type': 'application/json' },
-						}
-					);
-
-					await expect( response ).toEqual( { success: true } );
-				} );
-
-				// Verify the email was sent and has the correct content.
-				await test.step( 'Verify email', async () => {
-					const message = await wp.mailpit.waitForMessage();
-					expect( message.Subject ).toContain(
-						'Your weekly Site Kit report'
-					);
-
-					const detail = await wp.mailpit.getMessage( message.ID );
-					await wp.page.setContent( detail.HTML );
-					await expect( wp.page ).toHaveScreenshot( {
-						fullPage: true,
-					} );
-				} );
-			}
-		);
-
-		test( 'should let user select a subscription', async ( { wp } ) => {
+test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
+	test(
+		'should deliver a weekly email report',
+		{
+			annotation: [
+				withFixtures( 'email-reporting/weekly-report-data' ),
+			],
+		},
+		async ( { wp } ) => {
 			// Go to the Site Kit dashboard page.
 			await wp.visitDashboard();
 
-			// Open the email reporting settings panel.
-			await test.step( 'Open settings page', async () => {
-				const itemName = 'Manage email reports';
-				await wp.page
-					.getByRole( 'button', { name: 'Account' } )
-					.click();
-				await wp.page
-					.getByRole( 'menuitem', { name: itemName } )
-					.click();
+			// Quickly open the email reporting settings panel and select the weekly subscription.
+			await test.step( 'Subscribe to weekly reports', async () => {
+				const pageObject = new EmailReportingPage( wp.page );
+				await pageObject.openSettings();
+				await pageObject.subscribe();
+				await pageObject.verifySubscriptionSuccess();
 			} );
 
-			// Get the root element of the Email Reporting settings panel.
-			const root = wp.page.locator(
-				'.googlesitekit-email-reporting-settings'
-			);
+			// Trigger the email pipeline to send the weekly report.
+			await test.step( 'Trigger email pipeline', async () => {
+				const response = await wp.restRequest(
+					'POST',
+					'google-site-kit/v1/e2e/email-reporting/trigger-cron',
+					{
+						body: JSON.stringify( { frequency: 'weekly' } ),
+						headers: { 'Content-Type': 'application/json' },
+					}
+				);
 
-			const panelTitle = root.getByRole( 'heading', {
-				name: 'Email reports subscription',
+				await expect( response ).toEqual( { success: true } );
 			} );
 
-			const currentSubscription = root.locator(
-				'.googlesitekit-frequency-selector__current-subscription'
-			);
+			// Verify the email was sent and has the correct content.
+			await test.step( 'Verify email', async () => {
+				const message = await wp.mailpit.waitForMessage();
+				expect( message.Subject ).toContain(
+					'Your weekly Site Kit report'
+				);
 
-			const weekly = root.getByRole( 'radio', { name: 'Weekly' } );
-			const monthly = root.getByRole( 'radio', { name: 'Monthly' } );
-			const quarterly = root.getByRole( 'radio', {
-				name: 'Quarterly',
-			} );
-
-			// Verify the settings panel state.
-			await test.step( 'Verify settings panel state', async () => {
-				// The panel title is visible.
-				await expect( panelTitle ).toBeVisible();
-
-				// The current subscription badge is not visible.
-				await expect( currentSubscription ).not.toBeVisible();
-
-				// Frequency options are visible.
-				await expect( weekly ).toBeVisible();
-				await expect( monthly ).toBeVisible();
-				await expect( quarterly ).toBeVisible();
-
-				// Weekly option is checked by default.
-				await expect( weekly ).toBeChecked();
-			} );
-
-			// Verify the monthly option can be selected.
-			await test.step( 'Set monthly option', async () => {
-				await monthly.click();
-				await expect( weekly ).not.toBeChecked();
-				await expect( monthly ).toBeChecked();
-
-				await root.getByRole( 'button', { name: 'Subscribe' } ).click();
-
-				const notice = root
-					.getByRole( 'status' )
-					.filter( { hasText: 'successfully subscribed' } );
-				await expect( notice ).toBeVisible( { timeout: 10_000 } );
-			} );
-
-			// Verify the settings panel state changed.
-			await test.step( 'Verify settings state changed', async () => {
-				const unsubscribe = root.getByRole( 'button', {
-					name: 'Unsubscribe',
+				const detail = await wp.mailpit.getMessage( message.ID );
+				await wp.page.setContent( detail.HTML );
+				await expect( wp.page ).toHaveScreenshot( {
+					fullPage: true,
 				} );
-				const update = root.getByRole( 'button', {
-					name: 'Update settings',
-				} );
-
-				await expect( currentSubscription ).toBeVisible();
-				await expect( weekly ).not.toBeChecked();
-				await expect( monthly ).toBeChecked();
-				await expect( unsubscribe ).toBeVisible();
-				await expect( update ).toBeVisible();
 			} );
+		}
+	);
+
+	test( 'should let user select a subscription', async ( { wp } ) => {
+		// Go to the Site Kit dashboard page.
+		await wp.visitDashboard();
+
+		const pageObject = new EmailReportingPage( wp.page );
+
+		// Define panel state options for initial state.
+		const initialPanelState: VerifyPanelStateOptions = {
+			expectedCheckedFrequency: 'Weekly',
+			shouldShowSubscribeButton: true,
+		};
+
+		// Define panel state options for subscribed state.
+		const subscribedPanelState: VerifyPanelStateOptions = {
+			shouldShowCurrentSubscription: true,
+			expectedCheckedFrequency: 'Monthly',
+			shouldShowUnsubscribeButton: true,
+			shouldShowUpdateButton: true,
+		};
+
+		// Open the email reporting settings panel.
+		await test.step( 'Open settings page', async () => {
+			await pageObject.openSettings();
 		} );
-	}
-);
+
+		// Verify the settings panel state.
+		await test.step( 'Verify settings panel state', async () => {
+			await pageObject.verifyPanelState( initialPanelState );
+		} );
+
+		// Verify the monthly option can be selected.
+		await test.step( 'Set monthly option', async () => {
+			await pageObject.selectFrequency( 'Monthly' );
+			await pageObject.subscribe();
+			await pageObject.verifySubscriptionSuccess();
+		} );
+
+		// Verify the settings panel state changed.
+		await test.step( 'Verify settings state changed', async () => {
+			await pageObject.verifyPanelState( subscribedPanelState );
+		} );
+	} );
+} );

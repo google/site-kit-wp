@@ -15,12 +15,12 @@ add_filter( 'https_ssl_verify', '__return_false' );
 
 // Forward the test fixture cookie as a header on all outbound Google API requests.
 add_filter(
-	'googlesitekit_e2e_oauth_params',
-	function ( $params ) {
+	'googlesitekit_http_client_config',
+	function ( $config ) {
 		if ( ! empty( $_COOKIE['_wp_test_fixtures'] ) ) {
-			$params['fixtures'] = $_COOKIE['_wp_test_fixtures'];
+			$config['headers']['X-WP-Test-Fixtures'] = $_COOKIE['_wp_test_fixtures'];
 		}
 
-		return $params;
+		return $config;
 	}
 );

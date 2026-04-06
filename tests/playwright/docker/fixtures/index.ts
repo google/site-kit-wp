@@ -175,17 +175,12 @@ function handler( req: IncomingMessage, res: ServerResponse ) {
 	const method = req.method || 'GET';
 	const url = req.url || '/';
 
-	const params = req.headers.authorization
-		?.split( ' ' )[ 1 ]
-		?.split( ';' )
-		?.reduce( ( acc, param ) => {
-			const [ key, value ] = param.split( ':' );
-			acc[ key ] = value;
-			return acc;
-		}, {} as Record< string, string > );
-
 	const jsonContentType = { 'Content-Type': 'application/json' };
-	const fixtures = params?.fixtures;
+
+	const fixturesHeader = req.headers[ 'x-wp-test-fixtures' ];
+	const fixtures = Array.isArray( fixturesHeader )
+		? fixturesHeader[ 0 ]
+		: fixturesHeader;
 
 	// If no fixtures are specified, return an empty response.
 	if ( ! fixtures ) {

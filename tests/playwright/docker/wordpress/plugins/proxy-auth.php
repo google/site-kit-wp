@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: E2E Tests Proxy Auth Plugin
+ * Plugin Name: E2E Tests Auto-Authentication Plugin
  * Description: Utility plugin for bypassing set up and authentication during E2E tests.
  *
  * @package   Google\Site_Kit
@@ -25,14 +25,7 @@ require_once __DIR__ . '/proxy-credentials.php';
 add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
-		$client_id = '';
-
-		$params = apply_filters( 'googlesitekit_e2e_oauth_params', array() );
-		foreach ( $params as $key => $value ) {
-			$client_id .= "$key:$value;";
-		}
-
-		return ( new Data_Encryption() )->encrypt( $client_id );
+		return ( new Data_Encryption() )->encrypt( 'test-access-token' );
 	}
 );
 

@@ -12,6 +12,18 @@
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Scheduler;
 
+add_filter(
+	'googlesitekit_is_feature_enabled',
+	function ( $enabled, $feature ) {
+		if ( 'proactiveUserEngagement' === $feature ) {
+			return true;
+		}
+		return $enabled;
+	},
+	999,
+	2
+);
+
 add_action(
 	'rest_api_init',
 	function () {
