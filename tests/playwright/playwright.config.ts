@@ -52,7 +52,10 @@ export default defineConfig( {
 		screenshot: 'on',
 	},
 	projects: [
-		withMobileViewport( 'chrome::mobile', DESKTOP_CHROME ),
+		{
+			...withMobileViewport( 'chrome::mobile', DESKTOP_CHROME ),
+			testIgnore: [ 'specs/golinks.spec.ts' ],
+		},
 		withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
 	],
 } );
