@@ -95,7 +95,7 @@ class Datapoint {
 	}
 
 	/**
-	 * Gets the service identifier.
+	 * Gets the service identifier or object.
 	 *
 	 * @since 1.77.0
 	 *

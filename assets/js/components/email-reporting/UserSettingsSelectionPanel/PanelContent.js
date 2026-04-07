@@ -45,6 +45,7 @@ import { TYPES } from '@/js/components/Notice/constants';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 
 export default function PanelContent( {
 	notice,
@@ -89,7 +90,7 @@ export default function PanelContent( {
 	return (
 		<Fragment>
 			<Header closePanel={ closePanel } isLoading={ isLoading } />
-			<div className="googlesitekit-user-settings-selection__panel-content">
+			<SelectionPanelContent className="googlesitekit-user-settings-selection__panel-content">
 				<Notices isLoading={ isLoading } />
 
 				<div className="googlesitekit-user-settings-selection__panel-description">
@@ -131,7 +132,7 @@ export default function PanelContent( {
 				{ isEmailReportingEnabled && ! isViewOnly && (
 					<InviteOthersToSubscribe />
 				) }
-			</div>
+			</SelectionPanelContent>
 
 			{ isEmailReportingEnabled && (
 				<SelectionPanelFooter

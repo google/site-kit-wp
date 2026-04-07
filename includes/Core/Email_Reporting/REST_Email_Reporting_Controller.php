@@ -91,7 +91,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Cron health check instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 * @var Cron_Health_Check
 	 */
 	private $health_check;
@@ -119,7 +119,7 @@ class REST_Email_Reporting_Controller {
 	 * @since 1.170.0 Added modules and user email reporting settings dependencies.
 	 * @since 1.173.0 Added eligible subscribers query and email sender dependencies and removed unused user options dependency.
 	 * @since 1.174.0 Added golinks dependency.
-	 * @since n.e.x.t Added cron health check dependency.
+	 * @since 1.176.0 Added cron health check dependency.
 	 *
 	 * @param Email_Reporting_Settings      $settings                       Email_Reporting_Settings instance.
 	 * @param Modules                       $modules                        Modules instance.
@@ -387,8 +387,8 @@ class REST_Email_Reporting_Controller {
 
 		$template_renderer = new Email_Template_Renderer();
 		$template_data     = $this->prepare_invitation_template_data();
-		$html_content      = $template_renderer->render( 'invitation-email', $template_data );
-		$text_content      = $template_renderer->render_text( 'invitation-email', $template_data );
+		$html_content      = $template_renderer->render( 'simple-email', $template_data );
+		$text_content      = $template_renderer->render_text( 'simple-email', $template_data );
 
 		if ( '' === trim( $html_content ) || '' === trim( $text_content ) ) {
 			return $this->invite_error(
@@ -588,6 +588,8 @@ class REST_Email_Reporting_Controller {
 			'footer'                 => array(
 				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'invitation-email' ),
+			'footer_type'            => 'inline',
 		);
 	}
 

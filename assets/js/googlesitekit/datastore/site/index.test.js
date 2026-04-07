@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { CORE_SITE } from './constants';
 
@@ -37,6 +40,33 @@ describe( 'core/site store', () => {
 			const state = store.getState();
 
 			expect( state ).toEqual( initialState );
+		} );
+	} );
+
+	describe( 'snapshot and restore', () => {
+		it( 'does not overwrite siteInfo when restoring a snapshot', async () => {
+			provideSiteInfo( registry, {
+				setupErrorMessage: null,
+				setupErrorCode: null,
+			} );
+
+			await registry.dispatch( CORE_SITE ).createSnapshot();
+
+			// Simulate the page reload after OAuth error by providing
+			// site info with an error message.
+			provideSiteInfo( registry, {
+				setupErrorMessage: 'An error occurred',
+				setupErrorCode: 'access_denied',
+			} );
+
+			// Restore the snapshot (simulating what happens on page load).
+			await registry.dispatch( CORE_SITE ).restoreSnapshot();
+
+			// The setupErrorMessage should still be present because
+			// the snapshot only includes conversionTracking, not siteInfo.
+			expect( registry.select( CORE_SITE ).getSetupErrorMessage() ).toBe(
+				'An error occurred'
+			);
 		} );
 	} );
 } );

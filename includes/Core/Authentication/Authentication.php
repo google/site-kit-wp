@@ -156,14 +156,6 @@ final class Authentication implements Provides_Feature_Metrics {
 	protected $token;
 
 	/**
-	 * Owner_ID instance.
-	 *
-	 * @since 1.16.0
-	 * @var Owner_ID
-	 */
-	protected $owner_id;
-
-	/**
 	 * Has_Connected_Admins instance.
 	 *
 	 * @since 1.14.0
@@ -257,7 +249,6 @@ final class Authentication implements Provides_Feature_Metrics {
 		$this->verification_file              = new Verification_File( $this->user_options );
 		$this->profile                        = new Profile( $this->user_options );
 		$this->token                          = new Token( $this->user_options );
-		$this->owner_id                       = new Owner_ID( $this->options );
 		$this->has_connected_admins           = new Has_Connected_Admins( $this->options, $this->user_options );
 		$this->has_multiple_admins            = new Has_Multiple_Admins( $this->transients );
 		$this->connected_proxy_url            = new Connected_Proxy_URL( $this->options );
@@ -278,7 +269,6 @@ final class Authentication implements Provides_Feature_Metrics {
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
 		$this->has_multiple_admins->register();
-		$this->owner_id->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->initial_version->register();
@@ -840,7 +830,6 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_base_data( $data ) {
-		$data['isOwner']             = $this->owner_id->get() === get_current_user_id();
 		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
@@ -1386,17 +1375,6 @@ final class Authentication implements Provides_Feature_Metrics {
 	 */
 	public function get_has_multiple_admins_instance() {
 		return $this->has_multiple_admins;
-	}
-
-	/**
-	 * Helper method to return owner_id property.
-	 *
-	 * @since 1.131.0
-	 *
-	 * @return Owner_ID
-	 */
-	public function get_owner_id_instance() {
-		return $this->owner_id;
 	}
 
 	/**

@@ -1,5 +1,24 @@
 == Changelog ==
 
+= 1.176.0 =
+
+**Enhanced**
+
+* Remove the "New" badge from the Audience groups widget. See [#12290](https://github.com/google/site-kit-wp/issues/12290).
+* Ensure the Email reporting panel is open after completing GA4 module setup if the setup was started with the Email reporting panel open. See [#12257](https://github.com/google/site-kit-wp/issues/12257).
+* Avoid a delay when showing the Welcome modal's dashboard tour and its tooltip. See [#12252](https://github.com/google/site-kit-wp/issues/12252).
+* Fix tooltip visibility for the Search Console-only dashboard tour on shorter desktop screens. See [#12241](https://github.com/google/site-kit-wp/issues/12241).
+* Add error notices when email CRON tasks encounter errors. See [#12133](https://github.com/google/site-kit-wp/issues/12133).
+* Add GA event tracking for user interaction with the Analytics setup CTA. See [#12031](https://github.com/google/site-kit-wp/issues/12031).
+* Add a "Start setup" link for Site Kit in the WordPress plugin screen. See [#8679](https://github.com/google/site-kit-wp/issues/8679).
+
+**Fixed**
+
+* Fix scrolling issues in sidesheet panels. See [#12360](https://github.com/google/site-kit-wp/issues/12360).
+* Fix layout bug when email reports have multiple notices. See [#12279](https://github.com/google/site-kit-wp/issues/12279).
+* Show a Search Console-specific error message in Email reporting when a permissions issue is encountered. See [#12276](https://github.com/google/site-kit-wp/issues/12276).
+* Fix timezone bugs with scheduled emails. See [#12102](https://github.com/google/site-kit-wp/issues/12102).
+
 = 1.175.0 =
 
 **Enhanced**

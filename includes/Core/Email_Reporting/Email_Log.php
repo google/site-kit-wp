@@ -131,7 +131,7 @@ final class Email_Log {
 		$normalized = array();
 		$keys       = array(
 			'startDate'        => 'startDate',
-			'sendDate'         => 'endDate',
+			'endDate'          => 'endDate',
 			'compareStartDate' => 'compareStartDate',
 			'compareEndDate'   => 'compareEndDate',
 		);
@@ -573,7 +573,7 @@ final class Email_Log {
 	 * @return array Normalized timestamps keyed by meta field.
 	 */
 	protected static function normalize_reference_dates( array $raw_dates ) {
-		$keys       = array( 'startDate', 'sendDate', 'compareStartDate', 'compareEndDate' );
+		$keys       = array( 'startDate', 'endDate', 'compareStartDate', 'compareEndDate' );
 		$normalized = array();
 
 		foreach ( $keys as $key ) {

@@ -41,6 +41,13 @@ import {
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
 
+// This suite tests panel behavior; mock the invite list to avoid async datastore
+// updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
+jest.mock(
+	'@/js/components/email-reporting/InviteOthersToSubscribe',
+	() => () => null
+);
+
 describe( 'UserSettingsSelectionPanel', () => {
 	const features = [ 'proactiveUserEngagement' ];
 	const emailReportingSettingsEndpoint = new RegExp(

@@ -20,6 +20,16 @@
 
 	.googlesitekit-audience-selection-panel {
 
+		.googlesitekit-audience-selection-panel__content {
+			overflow: hidden;
+		}
+
+		.googlesitekit-selection-panel-items {
+			flex: 1 1 auto;
+			min-height: 0;
+			overflow-y: auto;
+		}
+
 		.googlesitekit-selection-box {
 
 			.googlesitekit-badge-with-tooltip {
