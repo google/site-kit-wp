@@ -18,7 +18,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Health;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
@@ -187,8 +189,9 @@ class Tag_ManagerTest extends TestCase {
 	/**
 	 * @dataProvider gtg_status_provider
 	 * @param array $gtg_settings
+	 * @param array $gtg_health
 	 */
-	public function test_register__template_redirect_non_amp_google_tag_gateway( array $gtg_settings ) {
+	public function test_register__template_redirect_non_amp_google_tag_gateway( array $gtg_settings, array $gtg_health ) {
 		self::enable_feature( 'googleTagGateway' );
 
 		// Prevent test from failing in CI with deprecation notice.
@@ -216,11 +219,16 @@ class Tag_ManagerTest extends TestCase {
 		$google_tag_gateway_settings->register();
 		$google_tag_gateway_settings->set( $gtg_settings );
 
+		$google_tag_gateway_health = new Google_Tag_Gateway_Health( $options );
+		$google_tag_gateway_health->register();
+		$google_tag_gateway_health->set( $gtg_health );
+
 		do_action( 'template_redirect' );
 
 		$head_html = $this->capture_action( 'wp_head' );
 
-		if ( $google_tag_gateway_settings->is_google_tag_gateway_active() ) {
+		$google_tag_gateway = new Google_Tag_Gateway( $context, $options );
+		if ( $google_tag_gateway->is_ready_and_active() ) {
 			$this->assertTrue(
 				has_action( 'googlesitekit_setup_gtag' ),
 				'gtag setup action should be present when Google tag gateway is active.'
@@ -264,17 +272,17 @@ class Tag_ManagerTest extends TestCase {
 	public function gtg_status_provider() {
 		return array(
 			'Google tag gateway active'     => array(
-				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => true,
+				array( 'isEnabled' => true ), // settings
+				array( // health
+					'isUpstreamHealthy' => true,
+					'isMpathHealthy'    => true,
 				),
 			),
 			'Google tag gateway not active' => array(
-				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => false,
-					'isScriptAccessEnabled' => false,
+				array( 'isEnabled' => false ), // settings
+				array( // health
+					'isUpstreamHealthy' => false,
+					'isMpathHealthy'    => false,
 				),
 			),
 		);

@@ -47,6 +47,14 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	protected $google_tag_gateway_settings;
 
 	/**
+	 * Google_Tag_Gateway_Health instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Tag_Gateway_Health
+	 */
+	protected $health_state;
+
+	/**
 	 * REST_Google_Tag_Gateway_Controller instance.
 	 *
 	 * @since 1.141.0
@@ -66,6 +74,7 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * Constructor.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Added health state instance.
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Options $options Optional. Option API instance. Default is a new instance.
@@ -74,7 +83,8 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 		$this->context                     = $context;
 		$options                           = $options ?: new Options( $context );
 		$this->google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $options );
-		$this->rest_controller             = new REST_Google_Tag_Gateway_Controller( $this, $this->google_tag_gateway_settings );
+		$this->health_state                = new Google_Tag_Gateway_Health( $options );
+		$this->rest_controller             = new REST_Google_Tag_Gateway_Controller( $this, $this->google_tag_gateway_settings, $this->health_state );
 		$this->cron                        = new Google_Tag_Gateway_Cron(
 			$this->google_tag_gateway_settings,
 			array( $this, 'healthcheck' )
@@ -85,9 +95,11 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * Registers the settings and REST controller.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Register health state.
 	 */
 	public function register() {
 		$this->google_tag_gateway_settings->register();
+		$this->health_state->register();
 		$this->rest_controller->register();
 		$this->cron->register();
 		$this->register_feature_metrics();
@@ -99,15 +111,17 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * Gets an array of internal feature metrics.
 	 *
 	 * @since 1.162.0
+	 * @since n.e.x.t Updated to use separated health state.
 	 *
 	 * @return array
 	 */
 	public function get_feature_metrics() {
-		$settings = $this->google_tag_gateway_settings->get();
+		$settings    = $this->google_tag_gateway_settings->get();
+		$health_data = $this->health_state->get();
 
 		return array(
 			'gtg_enabled' => (bool) isset( $settings['isEnabled'] ) && $settings['isEnabled'],
-			'gtg_healthy' => $this->get_health_check_feature_metric( $settings ),
+			'gtg_healthy' => $this->get_health_check_feature_metric( $settings, $health_data ),
 		);
 	}
 
@@ -116,20 +130,22 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * for internal feature metrics tracking.
 	 *
 	 * @since 1.162.0
+	 * @since n.e.x.t Updated to use separated health data.
 	 *
-	 * @param mixed $settings Settings array.
+	 * @param mixed $settings    Settings array.
+	 * @param mixed $health_data Health data array.
 	 * @return string
 	 */
-	private function get_health_check_feature_metric( $settings ) {
+	private function get_health_check_feature_metric( $settings, $health_data ) {
 		if ( ! isset( $settings['isEnabled'] ) || ! $settings['isEnabled'] ) {
 			return '';
 		}
 
 		if (
-			isset( $settings['isGTGHealthy'] ) &&
-			true === $settings['isGTGHealthy'] &&
-			isset( $settings['isScriptAccessEnabled'] ) &&
-			true === $settings['isScriptAccessEnabled']
+			isset( $health_data['isUpstreamHealthy'] ) &&
+			true === $health_data['isUpstreamHealthy'] &&
+			isset( $health_data['isMpathHealthy'] ) &&
+			true === $health_data['isMpathHealthy']
 		) {
 			return 'yes';
 		}
@@ -177,30 +193,31 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * @since 1.142.0
 	 * @since 1.162.0 Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active()
 	 * instead of inline logic to determine effective GTG status.
+	 * @since n.e.x.t Updated to use separated health state.
 	 *
 	 * @return array
 	 */
 	public function get_debug_fields() {
-		$settings = $this->google_tag_gateway_settings->get();
+		$health_data = $this->health_state->get();
 
 		// Determine effective GTG status based on settings and health checks.
-		$is_gtg_effectively_enabled = $this->google_tag_gateway_settings->is_google_tag_gateway_active();
+		$is_gtg_effectively_enabled = $this->is_ready_and_active();
 
 		return array(
-			'google_tag_gateway_is_enabled'               => array(
+			'google_tag_gateway_is_enabled'          => array(
 				'label' => __( 'Google tag gateway for advertisers', 'google-site-kit' ),
 				'value' => $is_gtg_effectively_enabled ? __( 'Enabled', 'google-site-kit' ) : __( 'Disabled', 'google-site-kit' ),
 				'debug' => $this->health_check_debug_field_debug( $is_gtg_effectively_enabled ),
 			),
-			'google_tag_gateway_is_gtg_healthy'           => array(
+			'google_tag_gateway_is_upstream_healthy' => array(
 				'label' => __( 'Google tag gateway for advertisers: Service healthy', 'google-site-kit' ),
-				'value' => $this->health_check_debug_field_value( $settings['isGTGHealthy'] ),
-				'debug' => $this->health_check_debug_field_debug( $settings['isGTGHealthy'] ),
+				'value' => $this->health_check_debug_field_value( $health_data['isUpstreamHealthy'] ),
+				'debug' => $this->health_check_debug_field_debug( $health_data['isUpstreamHealthy'] ),
 			),
-			'google_tag_gateway_is_script_access_enabled' => array(
+			'google_tag_gateway_is_mpath_healthy'    => array(
 				'label' => __( 'Google tag gateway for advertisers: Script accessible', 'google-site-kit' ),
-				'value' => $this->health_check_debug_field_value( $settings['isScriptAccessEnabled'] ),
-				'debug' => $this->health_check_debug_field_debug( $settings['isScriptAccessEnabled'] ),
+				'value' => $this->health_check_debug_field_value( $health_data['isMpathHealthy'] ),
+				'debug' => $this->health_check_debug_field_debug( $health_data['isMpathHealthy'] ),
 			),
 		);
 	}
@@ -209,19 +226,39 @@ class Google_Tag_Gateway implements Module_With_Debug_Fields, Provides_Feature_M
 	 * Checks the health of Google Tag Gateway server requirements.
 	 *
 	 * @since 1.142.0
+	 * @since n.e.x.t Updated to save health data to health state.
 	 *
 	 * @return void
 	 */
 	public function healthcheck() {
-		$is_gtg_healthy           = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
-		$is_script_access_enabled = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$is_upstream_healthy = $this->is_endpoint_healthy( 'https://g-1234.fps.goog/mpath/healthy' );
+		$is_mpath_healthy    = $this->is_endpoint_healthy( add_query_arg( 'healthCheck', '1', plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 
-		$this->google_tag_gateway_settings->merge(
+		$this->health_state->merge(
 			array(
-				'isGTGHealthy'          => $is_gtg_healthy,
-				'isScriptAccessEnabled' => $is_script_access_enabled,
+				'isUpstreamHealthy' => $is_upstream_healthy,
+				'isMpathHealthy'    => $is_mpath_healthy,
 			)
 		);
+	}
+
+	/**
+	 * Checks if Google Tag Gateway is ready and active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if GTG is ready and active, false otherwise.
+	 */
+	public function is_ready_and_active() {
+		$settings = $this->google_tag_gateway_settings->get();
+
+		// Check if GTG is enabled in settings.
+		if ( ! isset( $settings['isEnabled'] ) || ! $settings['isEnabled'] ) {
+			return false;
+		}
+
+		// Check if health checks pass.
+		return $this->health_state->is_healthy();
 	}
 
 	/**

@@ -48,9 +48,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		$default_settings = get_option( $this->get_option_name() );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => false,
-				'isGTGHealthy'          => null,
-				'isScriptAccessEnabled' => null,
+				'isEnabled' => false,
 			),
 			$default_settings
 		);
@@ -58,56 +56,26 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 
 	public function data_google_tag_gateway_settings() {
 		return array(
-			'all properties false'  => array(
+			'isEnabled false'       => array(
 				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => false,
-					'isScriptAccessEnabled' => false,
+					'isEnabled' => false,
 				),
 				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => false,
-					'isScriptAccessEnabled' => false,
+					'isEnabled' => false,
 				),
 			),
 			'empty settings'        => array(
 				array(),
 				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => null,
-					'isScriptAccessEnabled' => null,
-				),
-			),
-			'all properties true'   => array(
-				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => true,
-				),
-				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => true,
-					'isScriptAccessEnabled' => true,
-				),
-			),
-			'only isEnabled false'  => array(
-				array(
 					'isEnabled' => false,
 				),
-				array(
-					'isEnabled'             => false,
-					'isGTGHealthy'          => null,
-					'isScriptAccessEnabled' => null,
-				),
 			),
-			'only isEnabled true'   => array(
+			'isEnabled true'        => array(
 				array(
 					'isEnabled' => true,
 				),
 				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => null,
-					'isScriptAccessEnabled' => null,
+					'isEnabled' => true,
 				),
 			),
 			'isEnabled non-boolean' => array(
@@ -115,9 +83,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 					'isEnabled' => 123,
 				),
 				array(
-					'isEnabled'             => true,
-					'isGTGHealthy'          => null,
-					'isScriptAccessEnabled' => null,
+					'isEnabled' => true,
 				),
 			),
 		);
@@ -136,15 +102,11 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 
 	public function test_merge() {
 		$original_settings = array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => false,
-			'isScriptAccessEnabled' => false,
+			'isEnabled' => false,
 		);
 
 		$changed_settings = array(
-			'isEnabled'             => true,
-			'isGTGHealthy'          => true,
-			'isScriptAccessEnabled' => true,
+			'isEnabled' => true,
 		);
 
 		// Make sure settings can be updated even without having them set initially.
@@ -155,32 +117,10 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 		$this->settings->merge( array( 'test_key' => 'test_value' ) );
 		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 
-		// Make sure that we can update settings partially.
-		$this->settings->set( $original_settings );
-		$this->settings->merge( array( 'isGTGHealthy' => true ) );
-		$this->assertEqualSetsWithIndex(
-			array(
-				'isEnabled'             => false,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => false,
-			),
-			$this->settings->get()
-		);
-
-		// Make sure that we can update all settings at once.
+		// Make sure that we can update settings.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( $changed_settings );
 		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get() );
-
-		// Make sure that we can't set null for the isGTGHealthy property.
-		$this->settings->set( $original_settings );
-		$this->settings->merge( array( 'isGTGHealthy' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
-
-		// Make sure that we can't set null for the isScriptAccessEnabled property.
-		$this->settings->set( $original_settings );
-		$this->settings->merge( array( 'isScriptAccessEnabled' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
 
 		// Make sure that we can't set null for the isEnabled property.
 		$this->settings->set( $original_settings );
@@ -189,47 +129,25 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_is_google_tag_gateway_active() {
+		$this->setExpectedDeprecated( Google_Tag_Gateway_Settings::class . '::is_google_tag_gateway_active' );
+
 		// By default, GTG should be inactive.
 		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive by default.' );
 
-		// GTG should be inactive if only isEnabled is true.
+		// GTG should be inactive if isEnabled is false.
 		$this->settings->set(
 			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => false,
+				'isEnabled' => false,
 			)
 		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled is true.' );
+		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if isEnabled is false.' );
 
-		// GTG should be inactive if only isEnabled and isGTGHealthy are true.
+		// GTG should be active (based on settings alone) if isEnabled is true.
 		$this->settings->set(
 			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => false,
+				'isEnabled' => true,
 			)
 		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled and isGTGHealthy are true.' );
-
-		// GTG should be inactive if only isEnabled and isScriptAccessEnabled are true.
-		$this->settings->set(
-			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => false,
-				'isScriptAccessEnabled' => true,
-			)
-		);
-		$this->assertFalse( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be inactive if only isEnabled and isScriptAccessEnabled are true.' );
-
-		// GTG should be active if all settings are true.
-		$this->settings->set(
-			array(
-				'isEnabled'             => true,
-				'isGTGHealthy'          => true,
-				'isScriptAccessEnabled' => true,
-			)
-		);
-		$this->assertTrue( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be active when all settings are true.' );
+		$this->assertTrue( $this->settings->is_google_tag_gateway_active(), 'Google tag gateway should be active when isEnabled is true.' );
 	}
 }

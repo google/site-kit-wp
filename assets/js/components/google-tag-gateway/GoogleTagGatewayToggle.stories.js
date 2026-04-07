@@ -36,8 +36,8 @@ function Template() {
 	);
 }
 
-const serverRequirementStatusEndpoint = new RegExp(
-	'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+const healthChecksEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/site/data/gtg-health-checks'
 );
 
 export const Default = Template.bind( {} );
@@ -48,11 +48,10 @@ export const ServerRequirementsFail = Template.bind( {} );
 ServerRequirementsFail.storyName = 'Server requirements fail';
 ServerRequirementsFail.args = {
 	setupRegistry: () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
 			},
 			status: 200,
 		} );
@@ -64,7 +63,7 @@ export const ServerRequirementsLoading = Template.bind( {} );
 ServerRequirementsLoading.storyName = 'Server requirements loading';
 ServerRequirementsLoading.args = {
 	setupRegistry: () => {
-		freezeFetch( serverRequirementStatusEndpoint );
+		freezeFetch( healthChecksEndpoint );
 	},
 };
 

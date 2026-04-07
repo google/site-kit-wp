@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Health;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\REST_Google_Tag_Gateway_Controller;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
@@ -35,6 +36,13 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 	 * @var Google_Tag_Gateway_Settings
 	 */
 	private $settings;
+
+	/**
+	 * Google_Tag_Gateway_Health instance.
+	 *
+	 * @var Google_Tag_Gateway_Health
+	 */
+	private $health;
 
 	/**
 	 * REST_Google_Tag_Gateway_Controller instance.
@@ -61,7 +69,8 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		$google_tag_gateway = new Google_Tag_Gateway( $this->context );
 		$this->settings     = new Google_Tag_Gateway_Settings( $options );
-		$this->controller   = new REST_Google_Tag_Gateway_Controller( $google_tag_gateway, $this->settings );
+		$this->health       = new Google_Tag_Gateway_Health( $options );
+		$this->controller   = new REST_Google_Tag_Gateway_Controller( $google_tag_gateway, $this->settings, $this->health );
 	}
 
 	public function tear_down() {
@@ -88,9 +97,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
 		);
 
 		$this->settings->register();
@@ -108,9 +115,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
 		);
 
 		$this->settings->register();
@@ -132,15 +137,11 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->grant_manage_options_permission();
 
 		$original_settings = array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
 		);
 
 		$changed_settings = array(
-			'isEnabled'             => true,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => true,
 		);
 
 		$this->settings->register();
@@ -167,9 +168,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$this->register_rest_routes();
 
 		$original_settings = array(
-			'isEnabled'             => false,
-			'isGTGHealthy'          => null,
-			'isScriptAccessEnabled' => null,
+			'isEnabled' => false,
 		);
 
 		$this->settings->register();
@@ -230,11 +229,11 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider provider_gtg_server_requirement_status_data
+	 * @dataProvider provider_gtg_health_checks_data
 	 */
-	public function test_get_gtg_server_requirement_status( $data ) {
+	public function test_post_gtg_health_checks( $data ) {
 		$endpoint_responses = $data['endpoint_responses'];
-		$expected_settings  = $data['expected_settings'];
+		$expected_health    = $data['expected_health'];
 
 		// Here we mock the `is_endpoint_healthy()` method of the controller. This is necessary because, although we could
 		// mock `file_get_contents()`, it's not possible to mock the `$http_response_header` variable used within the scope
@@ -277,22 +276,21 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		// Set up the site and admin user to make a successful REST request.
 		$this->grant_manage_options_permission();
 
-		$this->settings->register();
+		$this->health->register();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-server-requirement-status' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-health-checks' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'isEnabled'             => false,
-				'isGTGHealthy'          => $expected_settings['isGTGHealthy'],
-				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
+				'isUpstreamHealthy' => $expected_health['isUpstreamHealthy'],
+				'isMpathHealthy'    => $expected_health['isMpathHealthy'],
 			),
 			$response->get_data()
 		);
 	}
 
-	public function provider_gtg_server_requirement_status_data() {
+	public function provider_gtg_health_checks_data() {
 		$measurement_health_check_url = plugins_url( 'gtg/measurement.php', GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . '?healthCheck=1';
 
 		return array(
@@ -302,9 +300,9 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 						'https://g-1234.fps.goog/mpath/healthy' => true,
 						$measurement_health_check_url => true,
 					),
-					'expected_settings'  => array(
-						'isGTGHealthy'          => true,
-						'isScriptAccessEnabled' => true,
+					'expected_health'    => array(
+						'isUpstreamHealthy' => true,
+						'isMpathHealthy'    => true,
 					),
 				),
 			),
@@ -314,9 +312,9 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 						'https://g-1234.fps.goog/mpath/healthy' => true,
 						$measurement_health_check_url => false,
 					),
-					'expected_settings'  => array(
-						'isGTGHealthy'          => true,
-						'isScriptAccessEnabled' => false,
+					'expected_health'    => array(
+						'isUpstreamHealthy' => true,
+						'isMpathHealthy'    => false,
 					),
 				),
 			),
@@ -326,9 +324,9 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 						'https://g-1234.fps.goog/mpath/healthy' => false,
 						$measurement_health_check_url => true,
 					),
-					'expected_settings'  => array(
-						'isGTGHealthy'          => false,
-						'isScriptAccessEnabled' => true,
+					'expected_health'    => array(
+						'isUpstreamHealthy' => false,
+						'isMpathHealthy'    => true,
 					),
 				),
 			),
@@ -338,21 +336,21 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 						'https://g-1234.fps.goog/mpath/healthy' => false,
 						$measurement_health_check_url => false,
 					),
-					'expected_settings'  => array(
-						'isGTGHealthy'          => false,
-						'isScriptAccessEnabled' => false,
+					'expected_health'    => array(
+						'isUpstreamHealthy' => false,
+						'isMpathHealthy'    => false,
 					),
 				),
 			),
 		);
 	}
 
-	public function test_get_gtg_server_requirement_status__requires_authenticated_admin() {
+	public function test_post_gtg_health_checks__requires_authenticated_admin() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-server-requirement-status' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-health-checks' );
 		$response = rest_get_server()->dispatch( $request );
 
 		// This request is made by a user who is not authenticated with dashboard

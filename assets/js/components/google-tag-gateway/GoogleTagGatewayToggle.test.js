@@ -48,8 +48,8 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'GoogleTagGatewayToggle', () => {
 	let registry;
 
-	const serverRequirementStatusEndpoint = new RegExp(
-		'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
+	const healthChecksEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/site/data/gtg-health-checks'
 	);
 
 	beforeEach( () => {
@@ -62,8 +62,6 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		registry.dispatch( CORE_SITE ).receiveGetGoogleTagGatewaySettings( {
 			isEnabled: false,
-			isGTGHealthy: null,
-			isScriptAccessEnabled: null,
 		} );
 	} );
 
@@ -71,8 +69,8 @@ describe( 'GoogleTagGatewayToggle', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should make a request to fetch the server requirement status', async () => {
-		muteFetch( serverRequirementStatusEndpoint );
+	it( 'should make a request to run health checks', async () => {
+		muteFetch( healthChecksEndpoint );
 
 		const { waitForRegistry } = render( <GoogleTagGatewayToggle />, {
 			registry,
@@ -80,11 +78,11 @@ describe( 'GoogleTagGatewayToggle', () => {
 
 		await waitForRegistry();
 
-		expect( fetchMock ).toHaveFetched( serverRequirementStatusEndpoint );
+		expect( fetchMock ).toHaveFetched( healthChecksEndpoint );
 	} );
 
-	it( 'should render in loading state if the server requirement status is still loading', async () => {
-		freezeFetch( serverRequirementStatusEndpoint );
+	it( 'should render in loading state if health checks are still loading', async () => {
+		freezeFetch( healthChecksEndpoint );
 
 		const { container, getByRole, waitForRegistry } = render(
 			<GoogleTagGatewayToggle />,
@@ -101,11 +99,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should render in default state', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );
@@ -127,11 +124,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should render in disabled state if server requirements are not met', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
 			},
 			status: 200,
 		} );
@@ -157,11 +153,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should not track an event when the toggle is viewed with no warning notice', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );
@@ -196,11 +191,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should track an event when the warning notice is viewed', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
 			},
 			status: 200,
 		} );
@@ -241,11 +235,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should track an event when the `Learn more` link is clicked in the toggle description', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );
@@ -276,11 +269,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should track an event when the `Learn more` link is clicked in the warning notice', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: false,
-				isScriptAccessEnabled: false,
+				isUpstreamHealthy: false,
+				isMpathHealthy: false,
 			},
 			status: 200,
 		} );
@@ -310,18 +302,17 @@ describe( 'GoogleTagGatewayToggle', () => {
 		);
 	} );
 
-	it.each( [ 'isGTGHealthy', 'isScriptAccessEnabled' ] )(
+	it.each( [ 'isUpstreamHealthy', 'isMpathHealthy' ] )(
 		'should not render in disabled state unless %s is explicitly false',
 		async ( requirement ) => {
 			const response = {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			};
 
 			response[ requirement ] = null;
 
-			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			fetchMock.postOnce( healthChecksEndpoint, {
 				body: response,
 				status: 200,
 			} );
@@ -341,18 +332,17 @@ describe( 'GoogleTagGatewayToggle', () => {
 		}
 	);
 
-	it.each( [ 'isGTGHealthy', 'isScriptAccessEnabled' ] )(
+	it.each( [ 'isUpstreamHealthy', 'isMpathHealthy' ] )(
 		'should render in disabled state if %s is false',
 		async ( requirement ) => {
 			const response = {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			};
 
 			response[ requirement ] = false;
 
-			fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			fetchMock.postOnce( healthChecksEndpoint, {
 				body: response,
 				status: 200,
 			} );
@@ -373,11 +363,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	);
 
 	it( 'should toggle Google tag gateway for advertisers on click', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );
@@ -426,11 +415,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should track an event when the toggle is clicked', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );
@@ -473,11 +461,10 @@ describe( 'GoogleTagGatewayToggle', () => {
 	} );
 
 	it( 'should render a "Beta" badge', async () => {
-		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+		fetchMock.postOnce( healthChecksEndpoint, {
 			body: {
-				isEnabled: false,
-				isGTGHealthy: true,
-				isScriptAccessEnabled: true,
+				isUpstreamHealthy: true,
+				isMpathHealthy: true,
 			},
 			status: 200,
 		} );

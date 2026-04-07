@@ -527,9 +527,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry
 					.dispatch( CORE_USER )
@@ -564,8 +566,6 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -592,9 +592,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -633,9 +635,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				const validSettings = {
 					accountID: fixtures.createProperty._accountID,
@@ -671,9 +675,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -702,8 +708,6 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -743,9 +747,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -774,8 +780,6 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -806,9 +810,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: true,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
@@ -837,8 +843,6 @@ describe( 'modules/analytics-4 settings', () => {
 					return {
 						body: {
 							isEnabled, // Return the `isEnabled` value passed to the API.
-							isGTGHealthy: true,
-							isScriptAccessEnabled: true,
 						},
 						status: 200,
 					};
@@ -976,9 +980,11 @@ describe( 'modules/analytics-4 settings', () => {
 					.dispatch( CORE_SITE )
 					.receiveGetGoogleTagGatewaySettings( {
 						isEnabled: false,
-						isGTGHealthy: true,
-						isScriptAccessEnabled: true,
 					} );
+				registry.dispatch( CORE_SITE ).receiveGetGTGHealth( {
+					isUpstreamHealthy: true,
+					isMpathHealthy: true,
+				} );
 
 				registry
 					.dispatch( CORE_SITE )

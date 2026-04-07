@@ -10,7 +10,9 @@
 
 namespace Google\Site_Kit\Core\Tags;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway;
 use Google\Site_Kit\Core\Tags\Google_Tag_Gateway\Google_Tag_Gateway_Settings;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
@@ -319,6 +321,7 @@ JS;
 	 * @since 1.142.0
 	 * @since 1.162.0 Updated to use Google_Tag_Gateway_Settings->is_google_tag_gateway_active
 	 * instead of inline logic.
+	 * @since n.e.x.t Updated to use Google_Tag_Gateway::is_ready_and_active() for proper health checks.
 	 *
 	 * @return bool True if Google tag gateway is active, false otherwise.
 	 */
@@ -327,9 +330,9 @@ JS;
 			return false;
 		}
 
-		$google_tag_gateway_settings = new Google_Tag_Gateway_Settings( $this->options );
+		$google_tag_gateway = new Google_Tag_Gateway( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $this->options );
 
-		return $google_tag_gateway_settings->is_google_tag_gateway_active();
+		return $google_tag_gateway->is_ready_and_active();
 	}
 
 	/**

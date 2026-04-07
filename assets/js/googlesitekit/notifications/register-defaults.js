@@ -693,22 +693,23 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
+			await resolveSelect( CORE_SITE ).getGoogleTagGatewayHealthStatus();
 
 			const {
 				isGoogleTagGatewayEnabled,
-				isGTGHealthy,
-				isScriptAccessEnabled,
+				isUpstreamHealthy,
+				isMpathHealthy,
 			} = select( CORE_SITE );
 
 			if ( isGoogleTagGatewayEnabled() ) {
 				return false;
 			}
 
-			const isHealthy = isGTGHealthy();
-			const isAccessEnabled = isScriptAccessEnabled();
+			const isHealthy = isUpstreamHealthy();
+			const isAccessEnabled = isMpathHealthy();
 
 			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
-				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
+				dispatch( CORE_SITE ).fetchPostGTGHealthChecks();
 				return false;
 			}
 
@@ -730,16 +731,17 @@ export const DEFAULT_NOTIFICATIONS = {
 			}
 
 			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
+			await resolveSelect( CORE_SITE ).getGoogleTagGatewayHealthStatus();
 
 			const {
 				isGoogleTagGatewayEnabled,
-				isGTGHealthy,
-				isScriptAccessEnabled,
+				isUpstreamHealthy,
+				isMpathHealthy,
 			} = select( CORE_SITE );
 
 			return (
 				isGoogleTagGatewayEnabled() &&
-				( ! isGTGHealthy() || ! isScriptAccessEnabled() )
+				( ! isUpstreamHealthy() || ! isMpathHealthy() )
 			);
 		},
 		isDismissible: true,

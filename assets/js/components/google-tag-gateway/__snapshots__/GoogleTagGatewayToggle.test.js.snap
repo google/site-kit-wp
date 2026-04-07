@@ -200,7 +200,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
 </div>
 `;
 
-exports[`GoogleTagGatewayToggle should render in loading state if the server requirement status is still loading 1`] = `
+exports[`GoogleTagGatewayToggle should render in loading state if health checks are still loading 1`] = `
 <div>
   <div
     class="googlesitekit-google-tag-gateway-toggle"

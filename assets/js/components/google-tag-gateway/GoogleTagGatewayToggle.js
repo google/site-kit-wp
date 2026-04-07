@@ -51,15 +51,15 @@ export default function GoogleTagGatewayToggle( { className } ) {
 		select( CORE_SITE ).isGoogleTagGatewayEnabled()
 	);
 	const isLoading = useSelect( ( select ) =>
-		select( CORE_SITE ).isFetchingGetGTGServerRequirementStatus()
+		select( CORE_SITE ).isFetchingPostGTGHealthChecks()
 	);
 	const hasMetServerRequirements = useSelect( ( select ) => {
-		const { isGTGHealthy, isScriptAccessEnabled } = select( CORE_SITE );
+		const { isUpstreamHealthy, isMpathHealthy } = select( CORE_SITE );
 
-		return isGTGHealthy() !== false && isScriptAccessEnabled() !== false;
+		return isUpstreamHealthy() !== false && isMpathHealthy() !== false;
 	} );
 
-	const { fetchGetGTGServerRequirementStatus, setGoogleTagGatewayEnabled } =
+	const { fetchPostGTGHealthChecks, setGoogleTagGatewayEnabled } =
 		useDispatch( CORE_SITE );
 
 	const learnMoreURL = useSelect( ( select ) => {
@@ -74,8 +74,8 @@ export default function GoogleTagGatewayToggle( { className } ) {
 		);
 	} );
 
-	// Fetch the server requirement status on mount.
-	useMount( fetchGetGTGServerRequirementStatus );
+	// Fetch the GTG health status on mount.
+	useMount( fetchPostGTGHealthChecks );
 
 	const handleClick = useCallback( () => {
 		const action = isGoogleTagGatewayEnabled
