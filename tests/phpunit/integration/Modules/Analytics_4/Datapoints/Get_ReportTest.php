@@ -60,7 +60,7 @@ class Get_ReportTest extends TestCase {
 	 *
 	 * @var Analytics_4_Report_Response
 	 */
-	private $reportResponse;
+	private $report_response;
 
 	public function set_up() {
 		parent::set_up();
@@ -75,14 +75,13 @@ class Get_ReportTest extends TestCase {
 		$this->analytics->get_client()->withDefer( true );
 		$service = new Google_Service_AnalyticsData( $this->analytics->get_client() );
 
-		$this->reportResponse = new Analytics_4_Report_Response( $context );
+		$this->report_response = new Analytics_4_Report_Response( $context );
 
 		$this->datapoint = new Get_Report(
 			array(
 				'service'           => function () use ( $service ) {
 					return $service;
 				},
-				'shareable'         => true,
 				'settings'          => $this->analytics->get_settings(),
 				'context'           => $context,
 				'is_shared_request' => function () {
@@ -168,7 +167,7 @@ class Get_ReportTest extends TestCase {
 
 		$this->assertEquals(
 			$response,
-			$this->reportResponse->parse_response( $data_request, new Google_Service_AnalyticsData_RunReportResponse() ),
+			$this->report_response->parse_response( $data_request, new Google_Service_AnalyticsData_RunReportResponse() ),
 			'The datapoint should parse the response using Analytics_4_Report_Response.'
 		);
 	}

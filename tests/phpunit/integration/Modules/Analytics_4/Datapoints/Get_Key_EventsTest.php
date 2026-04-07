@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
-use Google\Site_Kit\Modules\Analytics_4\Report\Response as ReportResponse;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;

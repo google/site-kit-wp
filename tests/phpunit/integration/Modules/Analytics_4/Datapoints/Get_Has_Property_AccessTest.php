@@ -54,7 +54,6 @@ class Get_Has_Property_AccessTest extends TestCase {
 	 */
 	private $analytics;
 
-
 	public function set_up() {
 		parent::set_up();
 
@@ -103,7 +102,6 @@ class Get_Has_Property_AccessTest extends TestCase {
 			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw Missing_Required_Param_Exception when the `propertyID` parameter is missing.' );
 		}
 	}
-
 
 	public function test_create_request() {
 		$this->get_report_request = null;
