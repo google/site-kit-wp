@@ -137,6 +137,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should be included.' );
 		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Add to cart conversion event payload should be included.' );
 		$this->assertArrayHasKey( 'conversion_event_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Purchase conversion event payload should be included.' );
+		$this->assertArrayHasKey( 'conversion_event_top_channel_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Add to cart top channel payload should be included.' );
+		$this->assertArrayHasKey( 'conversion_event_top_channel_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Purchase top channel payload should be included.' );
 		$this->assertArrayHasKey( 'total_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Total visitors payload should be included.' );
 		$this->assertArrayHasKey( 'traffic_channels', $payload[ Analytics_4::MODULE_SLUG ], 'Traffic channels payload should be included.' );
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
@@ -265,6 +267,8 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see conversion events.' );
 		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see add to cart conversion event data.' );
 		$this->assertArrayHasKey( 'conversion_event_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchase conversion event data.' );
+		$this->assertArrayHasKey( 'conversion_event_top_channel_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see add to cart top channel data.' );
+		$this->assertArrayHasKey( 'conversion_event_top_channel_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchase top channel data.' );
 		$this->assertArrayNotHasKey( 'new_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
 		$this->assertArrayNotHasKey( 'returning_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
 		$this->assertArrayNotHasKey( 'top_authors', $payload[ Analytics_4::MODULE_SLUG ], 'Custom dimension authors data should be absent.' );

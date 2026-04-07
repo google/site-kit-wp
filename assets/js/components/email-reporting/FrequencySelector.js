@@ -99,7 +99,7 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		},
 		monthly: {
 			label: __( 'Monthly', 'google-site-kit' ),
-			period: __( 'Last 28 days', 'google-site-kit' ),
+			period: __( 'Last month', 'google-site-kit' ),
 			description: __(
 				'Sent on the 1st of each month',
 				'google-site-kit'
@@ -107,7 +107,7 @@ export default function FrequencySelector( { isUserSubscribed, isLoading } ) {
 		},
 		quarterly: {
 			label: __( 'Quarterly', 'google-site-kit' ),
-			period: __( 'Last 90 days', 'google-site-kit' ),
+			period: __( 'Last quarter', 'google-site-kit' ),
 			description: __(
 				'Sent on the 1st of each quarter',
 				'google-site-kit'

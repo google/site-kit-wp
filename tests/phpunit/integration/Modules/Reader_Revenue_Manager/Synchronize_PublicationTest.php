@@ -303,18 +303,21 @@ class Synchronize_PublicationTest extends TestCase {
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->synchronize_publication->register();
 
-		$this->assertEquals( (object) array(), $settings['contentPolicyStatus'], 'Content policy status should be empty before sync.' );
+		$this->assertEquals( '', $settings['contentPolicyState'], 'Content policy state should be empty before sync.' );
+		$this->assertEquals( '', $settings['policyInfoLink'], 'Policy info link should be empty before sync.' );
 
 		do_action( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
 
 		$settings = $this->reader_revenue_manager->get_settings()->get();
 		$this->assertEquals(
-			array(
-				'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_ACTIVE',
-				'policyInfoLink'     => 'https://example.com/policy-info',
-			),
-			$settings['contentPolicyStatus'],
-			'Content policy status should be updated after sync.'
+			'CONTENT_POLICY_VIOLATION_ACTIVE',
+			$settings['contentPolicyState'],
+			'Content policy state should be updated after sync.'
+		);
+		$this->assertEquals(
+			'https://example.com/policy-info',
+			$settings['policyInfoLink'],
+			'Policy info link should be updated after sync.'
 		);
 	}
 

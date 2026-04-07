@@ -267,14 +267,14 @@ export default {
 						publicationOnboardingState:
 							parameters.publicationOnboardingState,
 						productIDs: [ 'product-a', 'product-b' ],
-						contentPolicyStatus: parameters.contentPolicyState
+						...( parameters.contentPolicyState
 							? {
 									contentPolicyState:
 										parameters.contentPolicyState,
 									policyInfoLink:
 										'https://example.com/policy-info',
 							  }
-							: undefined,
+							: {} ),
 					} );
 
 				args?.setupRegistry?.( registry );
