@@ -73,35 +73,30 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		} );
 	} );
 
-	const enhancedMeasurementSettings = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
+	const isEnhancedMeasurementStreamEnabled = useSelect(
+		( select ) => {
+			if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
+				return undefined;
+			}
+
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID )
+			) {
+				return null;
+			}
+
+			return select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+		},
+		[
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
 			propertyID,
-			webDataStreamID
-		);
-	} );
-
-	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if (
-			isLoadingPropertySummaries ||
-			isLoadingWebDataStreams ||
-			enhancedMeasurementSettings === undefined
-		) {
-			return undefined;
-		}
-
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID ) ||
-			! enhancedMeasurementSettings
-		) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
-			propertyID,
-			webDataStreamID
-		);
-	} );
+			webDataStreamID,
+		]
+	);
 
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if (

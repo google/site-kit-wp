@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useMemo } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -67,13 +67,6 @@ export default function SetupEnhancedMeasurementSwitch() {
 		} )
 	);
 
-	useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS_4 ).getEnhancedMeasurementSettings(
-			propertyID,
-			webDataStreamID
-		);
-	} );
-
 	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
 		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
 			return undefined;
@@ -94,31 +87,37 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isLoading = useMemo( () => {
-		if (
-			! isValidPropertySelection( propertyID ) ||
-			! isValidWebDataStreamSelection( webDataStreamID ) ||
-			isLoadingPropertySummaries ||
-			isLoadingWebDataStreams
-		) {
-			return true;
-		}
+	const isLoading = useSelect(
+		( select ) => {
+			if (
+				! isValidPropertySelection( propertyID ) ||
+				! isValidWebDataStreamSelection( webDataStreamID ) ||
+				isLoadingPropertySummaries ||
+				isLoadingWebDataStreams
+			) {
+				return true;
+			}
 
-		if (
-			propertyID === PROPERTY_CREATE ||
-			webDataStreamID === WEBDATASTREAM_CREATE
-		) {
-			return false;
-		}
+			if (
+				propertyID === PROPERTY_CREATE ||
+				webDataStreamID === WEBDATASTREAM_CREATE
+			) {
+				return false;
+			}
 
-		return isEnhancedMeasurementAlreadyEnabled === undefined;
-	}, [
-		isEnhancedMeasurementAlreadyEnabled,
-		isLoadingPropertySummaries,
-		isLoadingWebDataStreams,
-		propertyID,
-		webDataStreamID,
-	] );
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isEnhancedMeasurementStreamAlreadyEnabled',
+				[ propertyID, webDataStreamID ]
+			);
+		},
+		[
+			isEnhancedMeasurementAlreadyEnabled,
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
+			propertyID,
+			webDataStreamID,
+		]
+	);
 
 	const isAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 
