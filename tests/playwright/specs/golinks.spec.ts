@@ -18,7 +18,7 @@
  * Internal dependencies
  */
 import { test, expect } from '../playwright';
-import { asUser, withPlugins } from '../wordpress';
+import { asUser, withFeatureFlags, withPlugins } from '../wordpress';
 
 const user = asUser( 'admin' );
 const plugins = withPlugins( 'proxy-auth.php' );
@@ -32,4 +32,77 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 			} )
 		).toBeVisible();
 	} );
+
+	test( 'should forward URL parameters', async ( { wp } ) => {
+		await wp.visitAdmin(
+			'index.php?action=googlesitekit_go&to=dashboard&slug=analytics-4&reAuth=true&permaLink=http%3A%2F%2Flocalhost%3A9002%2Fhello-world%2F'
+		);
+		await expect(
+			wp.page.getByRole( 'heading', {
+				name: 'Find out how your audience is growing',
+			} )
+		).toBeVisible();
+		await expect( wp.page ).toHaveURL( /slug=analytics-4/ );
+		await expect( wp.page ).toHaveURL( /reAuth=true/ );
+		await expect( wp.page ).toHaveURL(
+			/permaLink=http%3A%2F%2Flocalhost%3A9002%2Fhello-world%2F/
+		);
+	} );
+
+	test( 'should fail if the link is invalid', async ( { wp } ) => {
+		await wp.visitAdmin(
+			'index.php?action=googlesitekit_go&to=invalid-key'
+		);
+		await expect(
+			wp.page.locator( 'p', {
+				hasText: 'The link you followed is invalid.',
+			} )
+		).toBeVisible();
+	} );
+
+	test( 'should fail if the PUE feature flag is not enabled', async ( {
+		wp,
+	} ) => {
+		await wp.visitAdmin(
+			'index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
+		);
+		await expect(
+			wp.page.locator( 'p', {
+				hasText: 'The link you followed is invalid.',
+			} )
+		).toBeVisible();
+	} );
+
+	test(
+		'should redirect and open the email reporting panel if the PUE feature flag is enabled',
+		{ annotation: [ withFeatureFlags( 'proactiveUserEngagement' ) ] },
+		async ( { wp } ) => {
+			await wp.visitAdmin(
+				'index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
+			);
+			await expect(
+				wp.page.getByRole( 'heading', {
+					name: 'Email reports subscription',
+				} )
+			).toBeVisible();
+		}
+	);
+
+	test(
+		'should redirect to settings page if the PUE feature flag is enabled',
+		{ annotation: [ withFeatureFlags( 'proactiveUserEngagement' ) ] },
+		async ( { wp } ) => {
+			await wp.visitAdmin(
+				'index.php?action=googlesitekit_go&to=settings&module=analytics-4'
+			);
+			await expect(
+				wp.page.getByRole( 'heading', {
+					name: 'Settings',
+				} )
+			).toBeVisible();
+			await expect( wp.page ).toHaveURL(
+				/connected-services\/analytics-4/
+			);
+		}
+	);
 } );
