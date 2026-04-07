@@ -280,10 +280,9 @@ export default function KeyMetricsSetupApp() {
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 	) : null;
 
-	// Avoid a situation where both buttons are loading.
 	const isCompleteSetupLoading =
 		isSavingUserInput ||
-		( ! saveUserInputError && isSavingInitialSetup ) ||
+		( ! saveUserInputError && isSavingInitialSetup ) || // Avoid a situation where both buttons are loading.
 		isSyncing;
 
 	return (
