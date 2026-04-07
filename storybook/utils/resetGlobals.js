@@ -38,7 +38,6 @@ export function resetGlobals() {
 		ampMode: false,
 		isNetworkMode: false,
 		activeModules: [],
-		isOwner: true,
 		splashURL:
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
 		proxySetupURL:
