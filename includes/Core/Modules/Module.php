@@ -502,7 +502,14 @@ abstract class Module {
 	 * @return OAuth_Client OAuth_Client instance.
 	 */
 	private function get_oauth_client_for_datapoint( Datapoint $datapoint ) {
-		if ( $this instanceof Module_With_Owner && $this->is_shared_datapoint_request( $datapoint ) ) {
+		if (
+			$this instanceof Module_With_Owner
+			&& $this->is_shareable()
+			&& $datapoint->is_shareable()
+			&& $this->get_owner_id() !== get_current_user_id()
+			&& ! $this->is_recoverable()
+			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
+		) {
 			$oauth_client = $this->get_owner_oauth_client();
 
 			try {
@@ -760,12 +767,13 @@ abstract class Module {
 	 * @return bool TRUE if the request is for shared data, otherwise FALSE.
 	 */
 	protected function is_shared_datapoint_request( Datapoint $datapoint ) {
-		return $this instanceof Module_With_Owner
-			&& $this->is_shareable()
-			&& $datapoint->is_shareable()
-			&& $this->get_owner_id() !== get_current_user_id()
-			&& ! $this->is_recoverable()
-			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug );
+		$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
+
+		if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
