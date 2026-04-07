@@ -17,7 +17,13 @@
 /**
  * External dependencies
  */
-import { test, Response, type Page, type TestInfo } from '@playwright/test';
+import {
+	test,
+	Response,
+	type Page,
+	type TestInfo,
+	type TestStepInfo,
+} from '@playwright/test';
 
 /**
  * Internal dependencies
@@ -320,5 +326,22 @@ export class WordPress {
 				init,
 			}
 		);
+	}
+
+	/**
+	 * Declares a test step that is shown in the report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  title Step name.
+	 * @param  body  Step body.
+	 * @return {Promise<void>} A promise that resolves when the step is finished.
+	 */
+	async step(
+		title: string,
+		body: ( step: TestStepInfo ) => Promise< void >
+	) {
+		await this.page.screencast.showChapter( title );
+		await test.step( title, body );
 	}
 }

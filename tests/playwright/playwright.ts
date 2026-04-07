@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import path from 'node:path';
+import * as path from 'path';
 import { test as base } from '@playwright/test';
 import { createConnection } from 'mysql2/promise';
 
@@ -83,6 +83,7 @@ export const test = base.extend< WordPressFixture >( {
 			// Start screencast recording.
 			const video = path.join( testInfo.outputDir, 'screencast.webm' );
 			await page.screencast.start( { path: video } );
+			await page.screencast.showActions( { position: 'top-right' } );
 
 			// Use the WordPress fixture.
 			await use( wp );
