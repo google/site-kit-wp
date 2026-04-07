@@ -33,7 +33,7 @@ import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
 import { TYPES } from '@/js/components/Notice/constants';
 
 export default function UserSettingsSelectionPanel() {
@@ -72,8 +72,11 @@ export default function UserSettingsSelectionPanel() {
 	const [ notice, setNotice ] = useState( null );
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { saveEmailReportingSettings, resetEmailReportingSettings } =
-		useDispatch( CORE_USER );
+	const {
+		saveEmailReportingSettings,
+		resetEmailReportingSettings,
+		triggerSurvey,
+	} = useDispatch( CORE_USER );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
@@ -129,6 +132,8 @@ export default function UserSettingsSelectionPanel() {
 		);
 
 		if ( ! error ) {
+			triggerSurvey( 'view_pue_subscribed' );
+
 			setNotice( {
 				type: TYPES.SUCCESS,
 				title: __(
@@ -148,7 +153,7 @@ export default function UserSettingsSelectionPanel() {
 					__( 'An error occurred.', 'google-site-kit' ),
 			} );
 		}
-	}, [ saveEmailReportingSettings, viewContext, frequency ] );
+	}, [ saveEmailReportingSettings, triggerSurvey, viewContext, frequency ] );
 
 	const onUnsubscribe = useCallback( async () => {
 		const { error } = await saveEmailReportingSettings( {
@@ -183,8 +188,9 @@ export default function UserSettingsSelectionPanel() {
 	useEffect( () => {
 		if ( ! previousIsOpen && isOpen ) {
 			setValue( 'admin-screen-tooltip', { isTooltipVisible: false } );
+			triggerSurvey( 'view_pue', { ttl: DAY_IN_SECONDS } );
 		}
-	}, [ isOpen, previousIsOpen, setValue ] );
+	}, [ isOpen, previousIsOpen, setValue, triggerSurvey ] );
 
 	return (
 		<SelectionPanel

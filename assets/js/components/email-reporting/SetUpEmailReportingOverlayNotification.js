@@ -37,6 +37,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { DAY_IN_SECONDS } from '@/js/util';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 import EmailReportingOverlayGraphicDesktop from '@/svg/graphics/email-reporting-overlay-desktop.svg';
 import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-overlay-mobile.svg';
@@ -55,6 +56,11 @@ export default function SetUpEmailReportingOverlayNotification( {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		triggerSurvey( 'view_pue_setup_cta', { ttl: DAY_IN_SECONDS } );
+	}, [ triggerSurvey ] );
 
 	const onSetupCallback = useCallback( () => {
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );

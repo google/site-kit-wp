@@ -29,6 +29,8 @@ import SetUpEmailReportingOverlayNotification, {
 } from './SetUpEmailReportingOverlayNotification';
 import {
 	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 	fireEvent,
 	act,
@@ -50,6 +52,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 
 const fetchDismissItem = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -248,6 +254,8 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		beforeEach( () => {
 			registry = createTestRegistry();
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
@@ -264,11 +272,42 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				);
 		} );
 
+		it( 'dispatches the view_pue_setup_cta survey trigger on render', async () => {
+			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+			mockSurveyEndpoints();
+
+			const { waitForRegistry } = render(
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'proactiveUserEngagement' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					surveyTriggerEndpoint,
+					expect.objectContaining( {
+						body: {
+							data: { triggerID: 'view_pue_setup_cta' },
+						},
+					} )
+				)
+			);
+		} );
+
 		it( 'shows the tooltip when the dismiss button is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
 			} );
+			mockSurveyEndpoints();
 
 			const { getByRole, waitForRegistry } = render(
 				<Notifications
@@ -304,6 +343,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
 			} );
+			mockSurveyEndpoints();
 
 			render( <NotificationComponent />, {
 				registry,
