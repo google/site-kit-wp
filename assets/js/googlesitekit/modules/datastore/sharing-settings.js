@@ -198,7 +198,9 @@ const baseActions = {
 		}
 
 		if ( ! error ) {
-			registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+			commonActions.await(
+				registry.dispatch( CORE_SITE ).resetEligibleSubscribers()
+			);
 		}
 
 		yield {
@@ -229,7 +231,9 @@ const baseActions = {
 
 		if ( ! error ) {
 			const registry = yield commonActions.getRegistry();
-			registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+			commonActions.await(
+				registry.dispatch( CORE_SITE ).resetEligibleSubscribers()
+			);
 		}
 
 		yield {
