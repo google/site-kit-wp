@@ -40,6 +40,7 @@ import { stringifyObject } from '@/js/util';
 
 const START_INVITING_USER = 'START_INVITING_USER';
 const FINISH_INVITING_USER = 'FINISH_INVITING_USER';
+const RESET_ELIGIBLE_SUBSCRIBERS = 'RESET_ELIGIBLE_SUBSCRIBERS';
 const DEFAULT_ELIGIBLE_SUBSCRIBERS_ARGS = {
 	page: 1,
 	search: '',
@@ -301,6 +302,26 @@ const baseActions = {
 			payload: { userID },
 		};
 	},
+
+	/**
+	 * Resets the eligible subscribers cache.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetEligibleSubscribers() {
+		const { dispatch } = yield commonActions.getRegistry();
+
+		yield {
+			type: RESET_ELIGIBLE_SUBSCRIBERS,
+			payload: {},
+		};
+
+		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector(
+			'getEligibleSubscribers'
+		);
+	},
 };
 
 export const baseReducer = createReducer( ( state, action ) => {
@@ -320,6 +341,11 @@ export const baseReducer = createReducer( ( state, action ) => {
 		}
 		case FINISH_INVITING_USER: {
 			state.emailReporting.invitingUsers[ payload.userID ] = false;
+			break;
+		}
+		case RESET_ELIGIBLE_SUBSCRIBERS: {
+			state.emailReporting.eligibleSubscribers =
+				baseInitialState.emailReporting.eligibleSubscribers;
 			break;
 		}
 
