@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { useIntersection as mockUseIntersection } from 'react-use';
 import { getByText as domGetByText } from '@testing-library/dom';
 
@@ -26,6 +27,7 @@ import { getByText as domGetByText } from '@testing-library/dom';
  * Internal dependencies
  */
 import AudienceTile from '.';
+import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal';
 import {
 	act,
 	fireEvent,
@@ -586,7 +588,10 @@ describe( 'AudienceTile', () => {
 				} );
 
 				( { getByRole, getByText } = render(
-					<WidgetWithComponentProps { ...props } />,
+					<Fragment>
+						<WidgetWithComponentProps { ...props } />
+						<CustomDimensionErrorModal />
+					</Fragment>,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -684,7 +689,10 @@ describe( 'AudienceTile', () => {
 				} );
 
 				( { getByRole, getByText } = render(
-					<WidgetWithComponentProps { ...props } />,
+					<Fragment>
+						<WidgetWithComponentProps { ...props } />
+						<CustomDimensionErrorModal />
+					</Fragment>,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -770,7 +778,10 @@ describe( 'AudienceTile', () => {
 				} );
 
 				( { getByRole, getByText } = render(
-					<WidgetWithComponentProps { ...props } />,
+					<Fragment>
+						<WidgetWithComponentProps { ...props } />
+						<CustomDimensionErrorModal />
+					</Fragment>,
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
