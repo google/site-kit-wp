@@ -15,7 +15,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -42,14 +41,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	const OPTION_REDIRECT_URL           = 'googlesitekit_redirect_url';
 	const OPTION_ERROR_REDIRECT_URL     = 'googlesitekit_error_redirect_url';
 	const CRON_REFRESH_PROFILE_DATA     = 'googlesitekit_cron_refresh_profile_data';
-
-	/**
-	 * Owner_ID instance.
-	 *
-	 * @since 1.16.0
-	 * @var Owner_ID
-	 */
-	private $owner_id;
 
 	/**
 	 * Transients instance.
@@ -101,7 +92,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token
 		);
 
-		$this->owner_id        = new Owner_ID( $this->options );
 		$this->transients      = $transients ?: new Transients( $this->context );
 		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 	}
@@ -510,13 +500,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		 */
 		do_action( 'googlesitekit_authorize_user', $token_response, $scopes, $previous_scopes );
 
-		// This must happen after googlesitekit_authorize_user as the permissions checks depend on
-		// values set which affect the meta capability mapping.
-		$current_user_id = get_current_user_id();
-		if ( $this->should_update_owner_id( $current_user_id ) ) {
-			$this->owner_id->set( $current_user_id );
-		}
-
 		$redirect_url = $this->get_authorize_user_redirect_url();
 
 		// Store the redirect URL in transients using the authorization code hash as the key.
@@ -576,31 +559,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		} finally {
 			$restore_defer();
 		}
-	}
-
-	/**
-	 * Determines whether the current owner ID must be changed or not.
-	 *
-	 * @since 1.16.0
-	 *
-	 * @param int $user_id Current user ID.
-	 * @return bool TRUE if owner needs to be changed, otherwise FALSE.
-	 */
-	private function should_update_owner_id( $user_id ) {
-		$current_owner_id = $this->owner_id->get();
-		if ( $current_owner_id === $user_id ) {
-			return false;
-		}
-
-		if ( ! empty( $current_owner_id ) && user_can( $current_owner_id, Permissions::MANAGE_OPTIONS ) ) {
-			return false;
-		}
-
-		if ( ! user_can( $user_id, Permissions::MANAGE_OPTIONS ) ) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**

@@ -876,7 +876,7 @@ class Worker_TaskTest extends TestCase {
 	private function get_reference_dates_meta() {
 		return array(
 			'startDate'        => strtotime( '2024-01-01' ),
-			'sendDate'         => strtotime( '2024-01-07' ),
+			'endDate'          => strtotime( '2024-01-07' ),
 			'compareStartDate' => strtotime( '2023-12-25' ),
 			'compareEndDate'   => strtotime( '2023-12-31' ),
 		);

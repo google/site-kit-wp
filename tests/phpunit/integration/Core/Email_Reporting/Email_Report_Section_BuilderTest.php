@@ -38,7 +38,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$date_range_meta = array(
 			'startDate'        => strtotime( '2024-09-01' ),
-			'sendDate'         => strtotime( '2024-10-01' ),
+			'endDate'          => strtotime( '2024-10-01' ),
 			'compareStartDate' => strtotime( '2024-08-01' ),
 			'compareEndDate'   => strtotime( '2024-08-31' ),
 		);
@@ -56,7 +56,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$expected_date_range = array(
 			'startDate'        => $format_date( $date_range_meta['startDate'] ),
-			'endDate'          => $format_date( $date_range_meta['sendDate'] ),
+			'endDate'          => $format_date( $date_range_meta['endDate'] ),
 			'compareStartDate' => $format_date( $date_range_meta['compareStartDate'] ),
 			'compareEndDate'   => $format_date( $date_range_meta['compareEndDate'] ),
 		);

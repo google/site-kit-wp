@@ -206,7 +206,7 @@ class Cron_Health_CheckTest extends TestCase {
 			Email_Log::META_REPORT_REFERENCE_DATES,
 			array(
 				'startDate' => time() - DAY_IN_SECONDS,
-				'sendDate'  => time(),
+				'endDate'   => time(),
 			)
 		);
 

@@ -11,7 +11,8 @@
 		"prebuild": "npm run remove-dist",
 		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
 		"start": "storybook dev -p 9001 -c . --no-version-updates",
-		"remove-dist": "rimraf ../dist/"
+		"remove-dist": "rimraf ../dist/",
+		"test": "./bin/run-tests.sh"
 	},
 	"devDependencies": {
 		"@babel/preset-react": "^7.26.3",
@@ -19,6 +20,7 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react-webpack5": "^8.6.12",
 		"@storybook/test": "^8.6.12",
+		"@storybook/test-runner": "^0.23.0",
 		"css-loader": "^7.1.2",
 		"fetch-mock": "^9.11.0",
 		"mini-css-extract-plugin": "^2.9.2",
