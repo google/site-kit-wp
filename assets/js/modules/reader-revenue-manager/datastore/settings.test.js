@@ -23,8 +23,9 @@ import { setUsingCache } from 'googlesitekit-api';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
-	INVARIANT_INVALID_CONTENT_POLICY_STATUS,
+	INVARIANT_INVALID_CONTENT_POLICY_STATE,
 	INVARIANT_INVALID_PAYMENT_OPTION,
+	INVARIANT_INVALID_POLICY_INFO_LINK,
 	INVARIANT_INVALID_POST_TYPES,
 	INVARIANT_INVALID_PRODUCT_ID,
 	INVARIANT_INVALID_PRODUCT_IDS,
@@ -45,6 +46,8 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		publicationID: 'ABCDEFGH',
 		publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
 		publicationOnboardingStateChanged: false,
+		contentPolicyState: '',
+		policyInfoLink: '',
 		snippetMode: 'post_types',
 		postTypes: [ 'post' ],
 		productID: 'valid-id',
@@ -246,10 +249,10 @@ describe( 'modules/reader-revenue-manager settings', () => {
 			);
 		} );
 
-		it( 'should throw invariant error for invalid content policy status', () => {
+		it( 'should throw invariant error for invalid content policy state', () => {
 			const settings = {
 				...validSettings,
-				contentPolicyStatus: 'not-an-object',
+				contentPolicyState: 123,
 			};
 
 			registry
@@ -257,7 +260,23 @@ describe( 'modules/reader-revenue-manager settings', () => {
 				.setSettings( settings );
 
 			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				INVARIANT_INVALID_CONTENT_POLICY_STATUS
+				INVARIANT_INVALID_CONTENT_POLICY_STATE
+			);
+		} );
+
+		it( 'should throw invariant error for invalid policy info link', () => {
+			const settings = {
+				...validSettings,
+				contentPolicyState: '',
+				policyInfoLink: 123,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( settings );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_POLICY_INFO_LINK
 			);
 		} );
 	} );
