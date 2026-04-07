@@ -81,7 +81,7 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.setShowErrorModal( true );
 			} );
 
@@ -94,11 +94,11 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.setShowErrorModal( true );
 			} );
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.setShowErrorModal( false );
 			} );
 
@@ -126,7 +126,7 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.onCreateCustomDimension();
 			} );
 
@@ -146,7 +146,7 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.onCreateCustomDimension( { isRetrying: true } );
 			} );
 
@@ -170,7 +170,7 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.onCreateCustomDimension();
 			} );
 
@@ -191,7 +191,7 @@ describe( 'useCreateCustomDimension', () => {
 				{ registry }
 			);
 
-			await actHook( () => {
+			actHook( () => {
 				result.current.onCreateCustomDimension();
 			} );
 
