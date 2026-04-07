@@ -51,7 +51,6 @@ import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
-import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
@@ -64,11 +63,11 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
-import WarningSVG from '@/svg/icons/warning.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import Notice from '@/js/components/Notice';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -82,14 +81,16 @@ export default function KeyMetricsSetupApp() {
 		select( CORE_USER ).getUserInputSettings()
 	);
 
-	const isBusy = useSelect( ( select ) => {
-		const isSavingSettings =
-			select( CORE_USER ).isSavingUserInputSettings( settings );
-
-		const isNavigating = select( CORE_LOCATION ).isNavigating();
-
-		return isSavingSettings || isNavigating;
+	const isSavingUserInput = useSelect( ( select ) => {
+		return select( CORE_USER ).isSavingUserInputSettings( settings );
 	} );
+
+	const isSavingInitialSetup = useSelect(
+		( select ) =>
+			select( CORE_USER ).isFetchingSaveInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
+			} ) || select( CORE_LOCATION ).isNavigating()
+	);
 
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
@@ -99,8 +100,16 @@ export default function KeyMetricsSetupApp() {
 		( select ) => select( MODULES_ANALYTICS_4 ).getSettings() !== undefined
 	);
 
-	const error = useSelect( ( select ) =>
+	const saveUserInputError = useSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'saveUserInputSettings', [] )
+	);
+
+	const saveInitialSetupError = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'saveInitialSetupSettings', [
+			{
+				isAnalyticsSetupComplete: true,
+			},
+		] )
 	);
 
 	const values = useSelect(
@@ -110,7 +119,7 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
-	const { saveUserInputSettings, saveInitialSetupSettings } =
+	const { saveUserInputSettings, saveInitialSetupSettings, clearError } =
 		useDispatch( CORE_USER );
 
 	// Trigger resolution of data availability state before the user proceeds to the dashboard.
@@ -163,35 +172,50 @@ export default function KeyMetricsSetupApp() {
 		}
 	} );
 
-	const submitChanges = useCallback( async () => {
-		const response = await saveUserInputSettings();
-		if ( ! response.error ) {
-			const url = new URL( dashboardURL );
-			await saveInitialSetupSettings( {
-				isAnalyticsSetupComplete: true,
-			} );
+	const saveInitialSetup = useCallback( async () => {
+		const response = await saveInitialSetupSettings( {
+			isAnalyticsSetupComplete: true,
+		} );
 
-			url.searchParams.set(
-				'notification',
-				isInitialSetupFlow
-					? 'initial_setup_success'
-					: 'authentication_success'
-			);
-
-			if ( ! isInitialSetupFlow ) {
-				url.searchParams.set( 'slug', 'analytics-4' );
-			}
-
-			navigateTo( addQueryArgs( url.toString(), forwardableParams ) );
+		if ( response.error ) {
+			return;
 		}
+
+		const url = new URL( dashboardURL );
+
+		url.searchParams.set(
+			'notification',
+			isInitialSetupFlow
+				? 'initial_setup_success'
+				: 'authentication_success'
+		);
+
+		if ( ! isInitialSetupFlow ) {
+			url.searchParams.set( 'slug', 'analytics-4' );
+		}
+
+		navigateTo( addQueryArgs( url.toString(), forwardableParams ) );
 	}, [
-		saveUserInputSettings,
 		dashboardURL,
 		saveInitialSetupSettings,
 		navigateTo,
 		forwardableParams,
 		isInitialSetupFlow,
 	] );
+
+	const submitChanges = useCallback( async () => {
+		clearError( 'saveInitialSetupSettings', [
+			{
+				isAnalyticsSetupComplete: true,
+			},
+		] );
+
+		const response = await saveUserInputSettings();
+
+		if ( ! response.error ) {
+			await saveInitialSetup();
+		}
+	}, [ saveUserInputSettings, saveInitialSetup, clearError ] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -210,7 +234,7 @@ export default function KeyMetricsSetupApp() {
 	] );
 
 	const onSaveClick = useCallback( () => {
-		if ( isBusy || isSyncing ) {
+		if ( isSavingUserInput || isSyncing ) {
 			return;
 		}
 
@@ -224,7 +248,13 @@ export default function KeyMetricsSetupApp() {
 		}
 
 		submitChanges();
-	}, [ isBusy, isInitialSetupFlow, isSyncing, submitChanges, viewContext ] );
+	}, [
+		isSavingUserInput,
+		isInitialSetupFlow,
+		isSyncing,
+		submitChanges,
+		viewContext,
+	] );
 
 	let gaTrackingEventArgs;
 
@@ -249,6 +279,12 @@ export default function KeyMetricsSetupApp() {
 	const subHeader = isInitialSetupFlow ? (
 		<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 	) : null;
+
+	// Avoid a situation where both buttons are loading.
+	const isCompleteSetupLoading =
+		isSavingUserInput ||
+		( ! saveUserInputError && isSavingInitialSetup ) ||
+		isSyncing;
 
 	return (
 		<Fragment>
@@ -331,19 +367,43 @@ export default function KeyMetricsSetupApp() {
 											}
 										/>
 
-										{ error && (
+										{ saveInitialSetupError && (
 											<div className="googlesitekit-user-input__error">
-												<ErrorNotice
-													error={ error }
-													Icon={ WarningSVG }
+												<Notice
+													description={ __(
+														'Something went wrong, please try again',
+														'google-site-kit'
+													) }
+													type={ Notice.TYPES.ERROR }
 												/>
 											</div>
 										) }
 
+										{ ! saveInitialSetupError &&
+											!! saveUserInputError && (
+												<div className="googlesitekit-user-input__error">
+													<Notice
+														title={ __(
+															'Saving your answer failed',
+															'google-site-kit'
+														) }
+														description={ __(
+															'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.',
+															'google-site-kit'
+														) }
+														type={
+															Notice.TYPES.ERROR
+														}
+													/>
+												</div>
+											) }
+
 										<div className="googlesitekit-user-input__footer">
 											<SpinnerButton
 												onClick={ onSaveClick }
-												isSaving={ isBusy || isSyncing }
+												isSaving={
+													isCompleteSetupLoading
+												}
 												disabled={
 													hasErrorForAnswer(
 														values
@@ -355,6 +415,20 @@ export default function KeyMetricsSetupApp() {
 													'google-site-kit'
 												) }
 											</SpinnerButton>
+											{ saveUserInputError && (
+												<SpinnerButton
+													onClick={ saveInitialSetup }
+													isSaving={
+														isSavingInitialSetup
+													}
+													tertiary
+												>
+													{ __(
+														'Continue without saving',
+														'google-site-kit'
+													) }
+												</SpinnerButton>
+											) }
 										</div>
 									</Cell>
 								</Row>
