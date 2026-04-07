@@ -78,7 +78,7 @@ const fetchGetPublicationsStore = createFetchStore( {
 					newSettings.contentPolicyState =
 						publication.contentPolicyStatus.contentPolicyState;
 					newSettings.policyInfoLink =
-						publication.contentPolicyStatus.policyInfoLink;
+						publication.contentPolicyStatus.policyInfoLink || '';
 				}
 
 				Object.assign( state.settings, newSettings );
@@ -296,7 +296,8 @@ const baseActions = {
 			if ( contentPolicyStatus ) {
 				settings.contentPolicyState =
 					contentPolicyStatus.contentPolicyState;
-				settings.policyInfoLink = contentPolicyStatus.policyInfoLink;
+				settings.policyInfoLink =
+					contentPolicyStatus.policyInfoLink || '';
 			}
 
 			return registry
