@@ -25,6 +25,7 @@ import { createConnection } from 'mysql2/promise';
  * Internal dependencies
  */
 import { WordPress, type WordPressArgs } from './wordpress';
+import { getSplashHTML } from './wordpress/splash';
 
 /**
  * Re-export parts of @playwright/test.
@@ -79,6 +80,11 @@ export const test = base.extend< WordPressFixture >( {
 		try {
 			// Prepare the WordPress environment.
 			await wp.setUp();
+
+			// Show a branded splash screen as the first frame of the screencast.
+			await page.setContent(
+				getSplashHTML( testInfo.titlePath.slice( 1 ).join( ' ' ) )
+			);
 
 			// Start screencast recording.
 			const video = path.join( testInfo.outputDir, 'screencast.webm' );
