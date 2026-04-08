@@ -1,5 +1,5 @@
 diff --git a/node_modules/@wordpress/data/build-module/components/use-select/index.js b/node_modules/@wordpress/data/build-module/components/use-select/index.js
-index 1ca17cb..3669cc0 100644
+index 1ca17cb..ea82e8b 100644
 --- a/node_modules/@wordpress/data/build-module/components/use-select/index.js
 +++ b/node_modules/@wordpress/data/build-module/components/use-select/index.js
 @@ -129,8 +129,7 @@ export default function useSelect(mapSelect, deps) {
@@ -17,53 +17,79 @@ index 1ca17cb..3669cc0 100644
      if (hasReplacedRegistry || hasReplacedMapSelect || hasLeftAsyncMode || lastMapSelectFailed) {
        try {
 -        mapOutput = wrapSelect(_mapSelect);
-+        mapOutput = mapSelect( registry.select, registry );
++        mapOutput = mapSelect(registry.select, registry);
          selectorRan = true;
        } catch (error) {
          let errorMessage = `An error occurred while running 'mapSelect': ${error.message}`;
-@@ -309,7 +308,10 @@ export function useSuspenseSelect(mapSelect, deps) {
-   useIsomorphicLayoutEffect(() => {
+@@ -194,7 +193,7 @@ export default function useSelect(mapSelect, deps) {
+ 
      const onStoreChange = () => {
        try {
 -        const newMapOutput = wrapSelect(latestMapSelect.current);
-+        var newMapOutput = latestMapSelect.current(
-+          registry.select,
-+          registry
-+        );
++        const newMapOutput = latestMapSelect.current(registry.select, registry);
  
          if (isShallowEqual(latestMapOutput.current, newMapOutput)) {
            return;
-@@ -323,30 +325,23 @@ export function useSuspenseSelect(mapSelect, deps) {
-       forceRender();
-     };
+@@ -223,17 +222,16 @@ export default function useSelect(mapSelect, deps) {
  
--    const onChange = () => {
--      if (!isMounted.current) {
--        return;
--      }
--
--      if (latestIsAsync.current) {
--        renderQueue.add(queueContext, onStoreChange);
-+    var unsubscribe = registry.subscribe( () => {
-+      if ( latestIsAsync.current ) {
-+        renderQueue.add( queueContext, onStoreChange );
-       } else {
-         onStoreChange();
-       }
--    }; // catch any possible state changes during mount before the subscription
--    // could be set.
-+    } );
  
--
--    onStoreChange();
+     onStoreChange();
 -    const unsubscribers = listeningStores.current.map(storeName => registry.__unstableSubscribeStore(storeName, onChange));
-+    // onStoreChange();
++    const unsubscribe = registry.subscribe(onChange);
      isMounted.current = true;
      return () => {
 -      // The return value of the subscribe function could be undefined if the store is a custom generic store.
 -      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
 +      unsubscribe();
-+
+       renderQueue.cancel(queueContext);
+       isMounted.current = false;
+     }; // If you're tempted to eliminate the spread dependencies below don't do it!
+     // We're passing these in from the calling function and want to make sure we're
+     // examining every individual value inside the `deps` array.
+-  }, [registry, wrapSelect, hasMappingFunction, depsChangedFlag]);
++  }, [registry, hasMappingFunction, depsChangedFlag]);
+   useDebugValue(mapOutput);
+   return hasMappingFunction ? mapOutput : registry.select(mapSelect);
+ }
+@@ -265,8 +263,7 @@ export function useSuspenseSelect(mapSelect, deps) {
+   const latestMapOutputError = useRef(); // Keep track of the stores being selected in the `mapSelect` function,
+   // and only subscribe to those stores later.
+ 
+-  const listeningStores = useRef([]);
+-  const wrapSelect = useCallback(callback => registry.__unstableMarkListeningStores(() => callback(registry.suspendSelect, registry), listeningStores), [registry]); // Generate a "flag" for used in the effect dependency array.
++  // Generate a "flag" for used in the effect dependency array.
+   // It's different than just using `mapSelect` since deps could be undefined,
+   // in that case, we would still want to memoize it.
+ 
+@@ -280,7 +277,7 @@ export function useSuspenseSelect(mapSelect, deps) {
+ 
+   if (hasReplacedRegistry || hasReplacedMapSelect || hasLeftAsyncMode) {
+     try {
+-      mapOutput = wrapSelect(_mapSelect);
++      mapOutput = mapSelect(registry.suspendSelect, registry);
+       selectorRan = true;
+     } catch (error) {
+       mapOutputError = error;
+@@ -309,7 +306,7 @@ export function useSuspenseSelect(mapSelect, deps) {
+   useIsomorphicLayoutEffect(() => {
+     const onStoreChange = () => {
+       try {
+-        const newMapOutput = wrapSelect(latestMapSelect.current);
++        const newMapOutput = latestMapSelect.current(registry.suspendSelect, registry);
+ 
+         if (isShallowEqual(latestMapOutput.current, newMapOutput)) {
+           return;
+@@ -338,15 +335,14 @@ export function useSuspenseSelect(mapSelect, deps) {
+ 
+ 
+     onStoreChange();
+-    const unsubscribers = listeningStores.current.map(storeName => registry.__unstableSubscribeStore(storeName, onChange));
++    const unsubscribe = registry.subscribe(onChange);
+     isMounted.current = true;
+     return () => {
+-      // The return value of the subscribe function could be undefined if the store is a custom generic store.
+-      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
++      unsubscribe();
        renderQueue.cancel(queueContext);
        isMounted.current = false;
      };
@@ -73,7 +99,7 @@ index 1ca17cb..3669cc0 100644
    if (mapOutputError) {
      throw mapOutputError;
 diff --git a/node_modules/@wordpress/data/build/components/use-select/index.js b/node_modules/@wordpress/data/build/components/use-select/index.js
-index 4e94ea0..a751ae1 100644
+index 4e94ea0..58388d3 100644
 --- a/node_modules/@wordpress/data/build/components/use-select/index.js
 +++ b/node_modules/@wordpress/data/build/components/use-select/index.js
 @@ -145,8 +145,7 @@ function useSelect(mapSelect, deps) {
@@ -91,7 +117,7 @@ index 4e94ea0..a751ae1 100644
      if (hasReplacedRegistry || hasReplacedMapSelect || hasLeftAsyncMode || lastMapSelectFailed) {
        try {
 -        mapOutput = wrapSelect(_mapSelect);
-+        mapOutput = mapSelect( registry.select, registry );
++        mapOutput = mapSelect(registry.select, registry);
          selectorRan = true;
        } catch (error) {
          let errorMessage = `An error occurred while running 'mapSelect': ${error.message}`;
@@ -104,39 +130,17 @@ index 4e94ea0..a751ae1 100644
  
          if ((0, _isShallowEqual.default)(latestMapOutput.current, newMapOutput)) {
            return;
-@@ -224,32 +223,24 @@ function useSelect(mapSelect, deps) {
-       forceRender();
-     };
+@@ -239,17 +238,16 @@ function useSelect(mapSelect, deps) {
  
--    const onChange = () => {
--      if (!isMounted.current) {
--        return;
--      }
-+    var unsubscribe = registry.subscribe( () => {
-+			if ( latestIsAsync.current ) {
-+				renderQueue.add( queueContext, onStoreChange );
-+			} else {
-+				onStoreChange();
-+			}
-+		} );
  
--      if (latestIsAsync.current) {
--        renderQueue.add(queueContext, onStoreChange);
--      } else {
--        onStoreChange();
--      }
--    }; // Catch any possible state changes during mount before the subscription
--    // could be set.
--
--
--    onStoreChange();
+     onStoreChange();
 -    const unsubscribers = listeningStores.current.map(storeName => registry.__unstableSubscribeStore(storeName, onChange));
++    const unsubscribe = registry.subscribe(onChange);
      isMounted.current = true;
      return () => {
 -      // The return value of the subscribe function could be undefined if the store is a custom generic store.
 -      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
 +      unsubscribe();
-+
        renderQueue.cancel(queueContext);
        isMounted.current = false;
      }; // If you're tempted to eliminate the spread dependencies below don't do it!
@@ -147,3 +151,50 @@ index 4e94ea0..a751ae1 100644
    (0, _element.useDebugValue)(mapOutput);
    return hasMappingFunction ? mapOutput : registry.select(mapSelect);
  }
+@@ -282,8 +280,7 @@ function useSuspenseSelect(mapSelect, deps) {
+   const latestMapOutputError = (0, _element.useRef)(); // Keep track of the stores being selected in the `mapSelect` function,
+   // and only subscribe to those stores later.
+ 
+-  const listeningStores = (0, _element.useRef)([]);
+-  const wrapSelect = (0, _element.useCallback)(callback => registry.__unstableMarkListeningStores(() => callback(registry.suspendSelect, registry), listeningStores), [registry]); // Generate a "flag" for used in the effect dependency array.
++  // Generate a "flag" for used in the effect dependency array.
+   // It's different than just using `mapSelect` since deps could be undefined,
+   // in that case, we would still want to memoize it.
+ 
+@@ -297,7 +294,7 @@ function useSuspenseSelect(mapSelect, deps) {
+ 
+   if (hasReplacedRegistry || hasReplacedMapSelect || hasLeftAsyncMode) {
+     try {
+-      mapOutput = wrapSelect(_mapSelect);
++      mapOutput = mapSelect(registry.suspendSelect, registry);
+       selectorRan = true;
+     } catch (error) {
+       mapOutputError = error;
+@@ -326,7 +323,7 @@ function useSuspenseSelect(mapSelect, deps) {
+   (0, _compose.useIsomorphicLayoutEffect)(() => {
+     const onStoreChange = () => {
+       try {
+-        const newMapOutput = wrapSelect(latestMapSelect.current);
++        const newMapOutput = latestMapSelect.current(registry.suspendSelect, registry);
+ 
+         if ((0, _isShallowEqual.default)(latestMapOutput.current, newMapOutput)) {
+           return;
+@@ -355,15 +352,14 @@ function useSuspenseSelect(mapSelect, deps) {
+ 
+ 
+     onStoreChange();
+-    const unsubscribers = listeningStores.current.map(storeName => registry.__unstableSubscribeStore(storeName, onChange));
++    const unsubscribe = registry.subscribe(onChange);
+     isMounted.current = true;
+     return () => {
+-      // The return value of the subscribe function could be undefined if the store is a custom generic store.
+-      unsubscribers.forEach(unsubscribe => unsubscribe === null || unsubscribe === void 0 ? void 0 : unsubscribe());
++      unsubscribe();
+       renderQueue.cancel(queueContext);
+       isMounted.current = false;
+     };
+-  }, [registry, wrapSelect, depsChangedFlag]);
++  }, [registry, depsChangedFlag]);
+ 
+   if (mapOutputError) {
+     throw mapOutputError;
