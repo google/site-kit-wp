@@ -24,7 +24,8 @@
 	const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
 
 	body.on( 'edd_cart_item_added', ( event, details ) => {
-		const { id, name, value } = parseCartItemHTML( details.cart_item );
+		const value = parseAmount( details.total );
+		const { id, name, price } = parseCartItemHTML( details.cart_item );
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
 			currency,
@@ -33,7 +34,7 @@
 				{
 					item_id: id,
 					item_name: name,
-					price: value,
+					price,
 				},
 			],
 		} );
@@ -53,7 +54,7 @@
  * @since 1.153.0
  *
  * @param {string} cartItemHTML The HTML string for the cart item.
- * @return {Object} `title` and `value` keys.
+ * @return {Object} An object containing the item's `title`, `value` and `price`.
  */
 export function parseCartItemHTML( cartItemHTML ) {
 	const parser = new DOMParser();
@@ -67,7 +68,23 @@ export function parseCartItemHTML( cartItemHTML ) {
 	const price =
 		doc.querySelector( '.edd-cart-item-price' )?.textContent.trim() || '';
 
-	let normalizedNumericPrice = price.replace( /[^\d.,]/g, '' ).trim();
+	return {
+		id,
+		name,
+		price: parseAmount( price ),
+	};
+}
+
+/**
+ * Parses the provided amount string to a number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} amount The amount string.
+ * @return {number} The amount as a number.
+ */
+function parseAmount( amount ) {
+	let normalizedNumericPrice = amount.replace( /[^\d.,]/g, '' ).trim();
 
 	const lastComma = normalizedNumericPrice.lastIndexOf( ',' );
 	const lastDot = normalizedNumericPrice.lastIndexOf( '.' );
@@ -102,11 +119,5 @@ export function parseCartItemHTML( cartItemHTML ) {
 		}
 	}
 
-	const value = parseFloat( normalizedNumericPrice ) || 0;
-
-	return {
-		id,
-		name,
-		value,
-	};
+	return parseFloat( normalizedNumericPrice ) || 0;
 }

@@ -30,7 +30,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Test Product' );
-		expect( result.value ).toBe( 123.45 );
+		expect( result.price ).toBe( 123.45 );
 	} );
 
 	it( 'should return empty name and value 0 if elements are missing', () => {
@@ -39,7 +39,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( '' );
-		expect( result.value ).toBe( 0 );
+		expect( result.price ).toBe( 0 );
 	} );
 
 	it( 'should return value 0 if price text is empty', () => {
@@ -53,7 +53,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Test Product' );
-		expect( result.value ).toBe( 0 );
+		expect( result.price ).toBe( 0 );
 	} );
 
 	it( 'should handle non-numeric price gracefully', () => {
@@ -67,7 +67,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Test' );
-		expect( result.value ).toBe( 0 );
+		expect( result.price ).toBe( 0 );
 	} );
 
 	it( 'should correctly parse comma and dot formatted prices', () => {
@@ -81,7 +81,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Product Title' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse price correctly when value is a plain integer without decimal or separator', () => {
@@ -95,7 +95,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Basic Product' );
-		expect( result.value ).toBe( 19 );
+		expect( result.price ).toBe( 19 );
 	} );
 
 	it( 'should parse European-style price with dot as thousand separator and comma as decimal', () => {
@@ -109,7 +109,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse European-style price with dot as thousand separator and comma as decimal, with trailing Euro symbol', () => {
@@ -123,7 +123,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse European-style price with comma as thousand separator and period as decimal', () => {
@@ -137,7 +137,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse European-style price with comma as thousand separator and period as decimal, with trailing Euro symbol', () => {
@@ -151,7 +151,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse large price with thousands and decimals in US format', () => {
@@ -165,7 +165,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Enterprise Plan' );
-		expect( result.value ).toBe( 100000.99 );
+		expect( result.price ).toBe( 100000.99 );
 	} );
 
 	it( 'should parse large price in European format with no decimals', () => {
@@ -179,7 +179,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should parse large price in European format with no decimals, with trailing Euro symbol', () => {
@@ -193,7 +193,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should parse large price in European format with commas', () => {
@@ -207,7 +207,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should parse large price in European format with commas, with trailing Euro symbol', () => {
@@ -221,7 +221,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should parse large price in European format with spaces', () => {
@@ -235,7 +235,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should parse large price in European format with spaces, with trailing Euro symbol', () => {
@@ -249,7 +249,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Big Price' );
-		expect( result.value ).toBe( 100000 );
+		expect( result.price ).toBe( 100000 );
 	} );
 
 	it( 'should handle prices with trailing whitespace and symbol', () => {
@@ -263,7 +263,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Whitespaced' );
-		expect( result.value ).toBe( 42.0 );
+		expect( result.price ).toBe( 42.0 );
 	} );
 
 	it( 'should parse Yen symbol and convert correctly', () => {
@@ -277,7 +277,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Yen Product' );
-		expect( result.value ).toBe( 12345 );
+		expect( result.price ).toBe( 12345 );
 	} );
 
 	it( 'should parse European-style price with space as thousands separator and comma as decimal', () => {
@@ -291,7 +291,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Euro Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse Swiss-style price with apostrophe as thousands separator', () => {
@@ -305,7 +305,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Swiss Product' );
-		expect( result.value ).toBe( 1234.56 );
+		expect( result.price ).toBe( 1234.56 );
 	} );
 
 	it( 'should parse Indian-style price format', () => {
@@ -319,7 +319,7 @@ describe( 'parseCartItemHTML', () => {
 		const result = parseCartItemHTML( html );
 
 		expect( result.name ).toBe( 'Indian Product' );
-		expect( result.value ).toBe( 123456.78 );
+		expect( result.price ).toBe( 123456.78 );
 	} );
 
 	it( 'should extract the item id from valid HTML', () => {
