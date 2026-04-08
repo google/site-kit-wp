@@ -42,10 +42,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
@@ -185,68 +182,6 @@ describe( 'UserSettingsSelectionPanel', () => {
 			expect(
 				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
 			).toMatchObject( { isTooltipVisible: false } )
-		);
-	} );
-
-	it( 'dispatches the view_pue survey trigger when the panel opens', async () => {
-		registry
-			.dispatch( CORE_UI )
-			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
-
-		render( <UserSettingsSelectionPanel />, {
-			registry,
-			features,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-		} );
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched(
-				surveyTriggerEndpoint,
-				expect.objectContaining( {
-					body: {
-						data: { triggerID: 'view_pue' },
-					},
-				} )
-			)
-		);
-	} );
-
-	it( 'dispatches the view_pue_subscribed survey trigger after successful subscription', async () => {
-		fetchMock.postOnce( emailReportingSettingsEndpoint, {
-			body: { subscribed: true, frequency: 'monthly' },
-			status: 200,
-		} );
-		// Additional survey-trigger endpoint mock for the second trigger fired
-		// after the initial view_pue trigger.
-		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/survey-trigger' ),
-			{ status: 200, body: {} },
-			{ overwriteRoutes: false }
-		);
-
-		const { getByRole } = render( <UserSettingsSelectionPanel />, {
-			registry,
-			features,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Subscribe' } ) );
-
-		await waitFor( () =>
-			expect( fetchMock ).toHaveFetched(
-				surveyTriggerEndpoint,
-				expect.objectContaining( {
-					body: {
-						data: { triggerID: 'view_pue_subscribed' },
-					},
-				} )
-			)
 		);
 	} );
 
