@@ -21,16 +21,17 @@
 	}
 
 	const body = jQuery( 'body' );
+	const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
 
 	body.on( 'edd_cart_item_added', ( event, details ) => {
-		const { name, value } = parseCartItemHTML( details.cart_item );
-		const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
+		const { id, name, value } = parseCartItemHTML( details.cart_item );
 
 		global._googlesitekit?.gtagEvent?.( 'add_to_cart', {
 			currency,
 			value,
 			items: [
 				{
+					item_id: id,
 					item_name: name,
 					price: value,
 				},
@@ -38,12 +39,10 @@
 		} );
 	} );
 
-	if (
-		global._googlesitekit?.gtagUserData &&
-		global._googlesitekit?.edddata?.purchase?.user_data
-	) {
+	if ( global._googlesitekit?.edddata?.purchase ) {
 		global._googlesitekit?.gtagEvent?.( 'purchase', {
-			user_data: global._googlesitekit.edddata.purchase.user_data,
+			currency,
+			...global._googlesitekit.edddata.purchase,
 		} );
 	}
 } )( global.jQuery );
@@ -60,6 +59,9 @@ export function parseCartItemHTML( cartItemHTML ) {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
 
+	const id =
+		// eslint-disable-next-line sitekit/acronym-case
+		doc.querySelector( '.edd-remove-from-cart' )?.dataset.downloadId || '';
 	const name =
 		doc.querySelector( '.edd-cart-item-title' )?.textContent.trim() || '';
 	const price =
@@ -103,6 +105,7 @@ export function parseCartItemHTML( cartItemHTML ) {
 	const value = parseFloat( normalizedNumericPrice ) || 0;
 
 	return {
+		id,
 		name,
 		value,
 	};

@@ -48,13 +48,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @return array List of event names.
 	 */
 	public function get_event_names() {
-		$event_names = array( 'add_to_cart' );
-
-		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
-			$event_names[] = 'purchase';
-		}
-
-		return $event_names;
+		return array( 'add_to_cart', 'purchase' );
 	}
 
 	/**
@@ -96,12 +90,10 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * @since 1.164.0
 	 */
 	public function register_hooks() {
-		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
-			add_action(
-				'wp_footer',
-				$this->get_method_proxy( 'maybe_add_purchase_data_from_session' )
-			);
-		}
+		add_action(
+			'wp_footer',
+			$this->get_method_proxy( 'maybe_add_purchase_data_from_session' )
+		);
 	}
 
 	/**
@@ -145,15 +137,19 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 			return array();
 		}
 
-		$user_data = $this->extract_user_data_from_session( $session_data );
+		$enhanced_conversions_data = array(
+			'items' => $this->extract_items_data_from_session( $session_data ),
+			'value' => $session_data['price'],
+		);
 
-		if ( empty( $user_data ) ) {
-			return array();
+		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
+			$user_data = $this->extract_user_data_from_session( $session_data );
+			if ( ! empty( $user_data ) ) {
+				$enhanced_conversions_data['user_data'] = $user_data;
+			}
 		}
 
-		return array(
-			'user_data' => $user_data,
-		);
+		return $enhanced_conversions_data;
 	}
 
 
@@ -225,5 +221,32 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		}
 
 		return $user_data;
+	}
+
+	/**
+	 * Extracts purchased items' data from an EDD session.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $session_data An array containing EDD purchase session data.
+	 *
+	 * @return array
+	 */
+	protected function extract_items_data_from_session( $session_data ) {
+		$items = array();
+
+		if ( ! isset( $session_data['cart_details'] ) || ! is_array( $session_data['cart_details'] ) ) {
+			return $items;
+		}
+
+		foreach ( $session_data['cart_details'] as $item_data ) {
+			$items[] = array(
+				'item_id'   => $item_data['id'],
+				'item_name' => $item_data['name'],
+				'price'     => $item_data['item_price'],
+			);
+		}
+
+		return $items;
 	}
 }
