@@ -321,4 +321,28 @@ describe( 'parseCartItemHTML', () => {
 		expect( result.name ).toBe( 'Indian Product' );
 		expect( result.value ).toBe( 123456.78 );
 	} );
+
+	it( 'should extract the item id from valid HTML', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-remove-from-cart" data-download-id="1234"></span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.id ).toBe( '1234' );
+	} );
+
+	it( 'should default the id to an empty string when extracting it is not possible', () => {
+		const html = `
+			<li class="edd-cart-item">
+				<span class="edd-remove-from-cart" data-missing-download-id="1234"></span>
+			</li>
+		`;
+
+		const result = parseCartItemHTML( html );
+
+		expect( result.id ).toBe( '' );
+	} );
 } );
