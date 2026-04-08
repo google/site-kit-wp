@@ -248,11 +248,9 @@ describe( 'useCreateCustomDimension', () => {
 		it( 'returns true when syncing available custom dimensions is in progress', async () => {
 			fetchMock.postOnce(
 				new RegExp( 'analytics-4/data/sync-custom-dimensions' ),
-				// Return a promise that never resolves to keep the "syncing" state active.
 				new Promise( () => {} )
 			);
 
-			// Trigger a fetch that sets isFetchingSyncAvailableCustomDimensions.
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.fetchSyncAvailableCustomDimensions();
