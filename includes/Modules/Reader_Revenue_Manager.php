@@ -517,7 +517,8 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		$content_policy_status = $publication->getContentPolicyStatus();
 
 		if ( $content_policy_status ) {
-			$new_settings['contentPolicyStatus'] = (array) $content_policy_status->toSimpleObject();
+			$new_settings['contentPolicyState'] = $content_policy_status->getContentPolicyState() ?? '';
+			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoLink() ?? '';
 		}
 
 		if ( $new_onboarding_state !== $onboarding_state ) {
@@ -931,16 +932,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 			);
 		}
 
-		if ( isset( $settings['contentPolicyStatus'] ) ) {
-			$content_policy_status = (array) $settings['contentPolicyStatus'];
-			$content_policy_state  = $content_policy_status['contentPolicyState'] ?? '';
+		$content_policy_state = $settings['contentPolicyState'] ?? '';
 
-			$debug_fields['reader_revenue_manager_content_policy_state'] = array(
-				'label' => __( 'Reader Revenue Manager: Content policy state', 'google-site-kit' ),
-				'value' => $content_policy_state,
-				'debug' => $content_policy_state,
-			);
-		}
+		$debug_fields['reader_revenue_manager_content_policy_state'] = array(
+			'label' => __( 'Reader Revenue Manager: Content policy state', 'google-site-kit' ),
+			'value' => $content_policy_state,
+			'debug' => $content_policy_state,
+		);
 
 		return $debug_fields;
 	}

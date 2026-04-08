@@ -126,7 +126,7 @@ final class Dashboard {
 
 		wp_add_dashboard_widget(
 			'google_dashboard_widget',
-			__( 'Site Kit Summary', 'google-site-kit' ),
+			__( 'Site Kit Summary – last 28 days', 'google-site-kit' ),
 			function () {
 				$this->render_googlesitekit_wp_dashboard();
 			}
