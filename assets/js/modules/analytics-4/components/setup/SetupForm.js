@@ -65,8 +65,14 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
-	const canSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
+	const settings = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getSettings()
+	);
+	const canSubmitChanges = useSelect(
+		( select ) => {
+			return select( MODULES_ANALYTICS_4 ).canSubmitChanges();
+		},
+		[ settings ]
 	);
 	const isSaving = useSelect(
 		( select ) =>
