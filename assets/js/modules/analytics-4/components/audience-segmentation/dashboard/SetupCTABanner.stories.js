@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTABanner Component Stories.
+ * SetupCTABanner Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -28,16 +28,16 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import AudienceSegmentationSetupCTABanner, {
+import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTABanner';
+} from './SetupCTABanner';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-)( AudienceSegmentationSetupCTABanner );
+)( SetupCTABanner );
 
 function Template() {
 	return <NotificationWithComponentProps />;

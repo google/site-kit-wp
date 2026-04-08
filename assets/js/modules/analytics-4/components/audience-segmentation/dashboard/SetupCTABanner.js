@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTABanner component.
+ * SetupCTABanner component.
  *
  * Site Kit by Google, Copyright 2025 Google LLC
  *
@@ -52,16 +52,16 @@ import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-c
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import AudienceSegmentationSetupSuccessSubtleNotification, {
+import SetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
-} from './AudienceSegmentationSetupSuccessSubtleNotification';
+} from './SetupSuccessSubtleNotification';
 import useFormValue from '@/js/hooks/useFormValue';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
 
-function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
+function SetupCTABanner( { id, Notification } ) {
 	const viewContext = useViewContext();
 	const trackEventCategory = `${ viewContext }_audiences-setup-cta-dashboard`;
 
@@ -103,7 +103,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 		registerNotification(
 			AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 			{
-				Component: AudienceSegmentationSetupSuccessSubtleNotification,
+				Component: SetupSuccessSubtleNotification,
 				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 			}
 		);
@@ -216,7 +216,7 @@ function AudienceSegmentationSetupCTABanner( { id, Notification } ) {
 	);
 }
 
-AudienceSegmentationSetupCTABanner.propTypes = {
+SetupCTABanner.propTypes = {
 	id: PropTypes.string,
 	Notification: PropTypes.elementType,
 };
@@ -224,4 +224,4 @@ AudienceSegmentationSetupCTABanner.propTypes = {
 export default compose(
 	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } ),
 	withWidgetComponentProps( 'audienceSegmentationSetupCTA' )
-)( AudienceSegmentationSetupCTABanner );
+)( SetupCTABanner );

@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationIntroductoryOverlayNotification component.
+ * IntroductoryOverlayNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -41,7 +41,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 export const AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION =
 	'audienceSegmentationIntroductoryOverlayNotification';
 
-export default function AudienceSegmentationIntroductoryOverlayNotification( {
+export default function IntroductoryOverlayNotification( {
 	id,
 	Notification,
 } ) {
@@ -92,7 +92,7 @@ export default function AudienceSegmentationIntroductoryOverlayNotification( {
 	);
 }
 
-AudienceSegmentationIntroductoryOverlayNotification.propTypes = {
+IntroductoryOverlayNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };

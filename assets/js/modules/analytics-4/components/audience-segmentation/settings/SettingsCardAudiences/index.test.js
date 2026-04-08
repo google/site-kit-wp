@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups component tests.
+ * SettingsCardAudiences component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -30,12 +30,12 @@ import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
-import SettingsCardVisitorGroups from './';
+import SettingsCardAudiences from './';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'SettingsCardVisitorGroups', () => {
+describe( 'SettingsCardAudiences', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -59,7 +59,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 			audienceSegmentationSetupCompletedBy: null,
 		} );
 
-		const { getByRole } = render( <SettingsCardVisitorGroups />, {
+		const { getByRole } = render( <SettingsCardAudiences />, {
 			registry,
 		} );
 
@@ -86,7 +86,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 			);
 
 		const { getByText, waitForRegistry } = render(
-			<SettingsCardVisitorGroups />,
+			<SettingsCardAudiences />,
 			{
 				registry,
 			}
@@ -110,7 +110,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 			audienceSegmentationSetupCompletedBy: null,
 		} );
 
-		const { getByLabelText } = render( <SettingsCardVisitorGroups />, {
+		const { getByLabelText } = render( <SettingsCardAudiences />, {
 			registry,
 		} );
 
@@ -173,7 +173,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 		it( 'should toggle on click and save the audience settings', async () => {
 			const { getByLabelText, waitForRegistry } = render(
-				<SettingsCardVisitorGroups />,
+				<SettingsCardAudiences />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_SETTINGS,
@@ -212,7 +212,7 @@ describe( 'SettingsCardVisitorGroups', () => {
 
 		it( 'should track an event when toggled', async () => {
 			const { getByLabelText, waitForRegistry } = render(
-				<SettingsCardVisitorGroups />,
+				<SettingsCardAudiences />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_SETTINGS,

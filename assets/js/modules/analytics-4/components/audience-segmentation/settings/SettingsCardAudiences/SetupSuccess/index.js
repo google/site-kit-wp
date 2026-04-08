@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups SetupSuccess component.
+ * SettingsCardAudiences SetupSuccess component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

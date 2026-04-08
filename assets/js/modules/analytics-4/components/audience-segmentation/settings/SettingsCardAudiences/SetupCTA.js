@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups SetupCTA component.
+ * SettingsCardAudiences SetupCTA component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *

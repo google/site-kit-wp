@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupSuccessSubtleNotification component.
+ * SetupSuccessSubtleNotification component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -41,10 +41,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-audiences';
 
-export default function AudienceSegmentationSetupSuccessSubtleNotification( {
-	id,
-	Notification,
-} ) {
+export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 	const isAudienceSegmentationWidgetHidden = useSelect( ( select ) =>
@@ -102,7 +99,7 @@ export default function AudienceSegmentationSetupSuccessSubtleNotification( {
 	);
 }
 
-AudienceSegmentationSetupSuccessSubtleNotification.propTypes = {
+SetupSuccessSubtleNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	Notification: PropTypes.elementType.isRequired,
 };

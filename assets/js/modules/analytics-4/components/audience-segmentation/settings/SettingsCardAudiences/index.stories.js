@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups component stories.
+ * SettingsCardAudiences component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -29,10 +29,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION } from './SetupSuccess';
 import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
-import SettingsCardVisitorGroups from './';
+import SettingsCardAudiences from './';
 
 function Template() {
-	return <SettingsCardVisitorGroups />;
+	return <SettingsCardAudiences />;
 }
 
 export const Default = Template.bind( {} );
@@ -66,7 +66,7 @@ WithSetupSuccessNotification.args = {
 WithSetupSuccessNotification.scenario = {};
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardVisitorGroups',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Settings/SettingsCardAudiences',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {

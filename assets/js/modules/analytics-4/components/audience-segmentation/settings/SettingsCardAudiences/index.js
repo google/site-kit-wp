@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups component.
+ * SettingsCardAudiences component.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -40,7 +40,7 @@ import SetupSuccess, {
 } from './SetupSuccess';
 import useScrollToID from '@/js/hooks/useScrollToID';
 
-export default function SettingsCardVisitorGroups() {
+export default function SettingsCardAudiences() {
 	const viewContext = useViewContext();
 
 	const audienceSegmentationWidgetHidden = useSelect( ( select ) =>

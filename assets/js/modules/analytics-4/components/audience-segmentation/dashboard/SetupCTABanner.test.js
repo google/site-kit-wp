@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupCTABanner component tests.
+ * SetupCTABanner component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -62,9 +62,9 @@ import {
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
-import AudienceSegmentationSetupCTABanner, {
+import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from './AudienceSegmentationSetupCTABanner';
+} from './SetupCTABanner';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -83,7 +83,7 @@ jest.mock( 'react-use', () => ( {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'AudienceSegmentationSetupCTABanner', () => {
+describe( 'SetupCTABanner', () => {
 	let registry;
 
 	const notification =
@@ -94,7 +94,7 @@ describe( 'AudienceSegmentationSetupCTABanner', () => {
 	const AudienceSegmentationSetupCTAComponent =
 		withNotificationComponentProps(
 			AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION
-		)( AudienceSegmentationSetupCTABanner );
+		)( SetupCTABanner );
 
 	const audienceSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/audience-settings'

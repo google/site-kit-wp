@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationIntroductoryOverlayNotification component tests.
+ * IntroductoryOverlayNotification component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -36,9 +36,9 @@ import {
 	setEnabledFeatures,
 } from '../../../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import AudienceSegmentationIntroductoryOverlayNotification, {
+import IntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-} from './AudienceSegmentationIntroductoryOverlayNotification';
+} from './IntroductoryOverlayNotification';
 import * as scrollUtils from '@/js/util/scroll';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -61,13 +61,13 @@ const getNavigationalScrollTopSpy = jest.spyOn(
 );
 const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
-describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
+describe( 'IntroductoryOverlayNotification', () => {
 	mockLocation();
 
-	const AudienceSegmentationIntroductoryOverlayNotificationComponent =
+	const IntroductoryOverlayNotificationComponent =
 		withNotificationComponentProps(
 			AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-		)( AudienceSegmentationIntroductoryOverlayNotification );
+		)( IntroductoryOverlayNotification );
 
 	const notification =
 		ANALYTICS_4_NOTIFICATIONS[
@@ -126,7 +126,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByText, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
+			<IntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -146,7 +146,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
+			<IntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -188,7 +188,7 @@ describe( 'AudienceSegmentationIntroductoryOverlayNotification', () => {
 		);
 
 		const { getByRole, waitForRegistry } = render(
-			<AudienceSegmentationIntroductoryOverlayNotificationComponent />,
+			<IntroductoryOverlayNotificationComponent />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

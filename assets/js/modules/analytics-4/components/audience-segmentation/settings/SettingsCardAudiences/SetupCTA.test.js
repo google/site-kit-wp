@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups SetupCTA component tests.
+ * SettingsCardAudiences SetupCTA component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -49,7 +49,7 @@ import SetupCTA from './SetupCTA';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'SettingsCardVisitorGroups SetupCTA', () => {
+describe( 'SettingsCardAudiences SetupCTA', () => {
 	let registry;
 
 	const audienceSettingsEndpoint = new RegExp(

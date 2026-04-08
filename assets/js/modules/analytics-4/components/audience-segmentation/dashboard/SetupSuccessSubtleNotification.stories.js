@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationSetupSuccessSubtleNotification Component Stories.
+ * SetupSuccessSubtleNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import AudienceSegmentationSetupSuccessSubtleNotification from './AudienceSegmentationSetupSuccessSubtleNotification';
+import SetupSuccessSubtleNotification from './SetupSuccessSubtleNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-audiences'
-)( AudienceSegmentationSetupSuccessSubtleNotification );
+)( SetupSuccessSubtleNotification );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 export const Default = Template.bind( {} );
-Default.storyName = 'AudienceSegmentationSetupSuccessSubtleNotification';
+Default.storyName = 'SetupSuccessSubtleNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupSuccessSubtleNotification',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SetupSuccessSubtleNotification',
 	decorators: [
 		( Story ) => {
 			function setupRegistry( registry ) {

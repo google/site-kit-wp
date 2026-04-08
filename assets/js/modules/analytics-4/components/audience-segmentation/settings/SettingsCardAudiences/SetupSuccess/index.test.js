@@ -1,5 +1,5 @@
 /**
- * SettingsCardVisitorGroups SetupSuccess component tests.
+ * SettingsCardAudiences SetupSuccess component tests.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -56,7 +56,7 @@ jest.mock( 'react-use', () => ( {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-describe( 'SettingsCardVisitorGroups SetupSuccess', () => {
+describe( 'SettingsCardAudiences SetupSuccess', () => {
 	let registry;
 	let dismissItemSpy;
 

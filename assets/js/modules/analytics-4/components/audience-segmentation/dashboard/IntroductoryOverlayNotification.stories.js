@@ -1,5 +1,5 @@
 /**
- * AudienceSegmentationIntroductoryOverlayNotification component stories.
+ * IntroductoryOverlayNotification component stories.
  *
  * Site Kit by Google, Copyright 2024 Google LLC
  *
@@ -19,23 +19,23 @@
 /**
  * Internal dependencies
  */
-import AudienceSegmentationIntroductoryOverlayNotification, {
+import IntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-} from './AudienceSegmentationIntroductoryOverlayNotification';
+} from './IntroductoryOverlayNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION
-)( AudienceSegmentationIntroductoryOverlayNotification );
+)( IntroductoryOverlayNotification );
 
 function Template() {
 	return <NotificationWithComponentProps />;
 }
 
 export const Default = Template.bind( {} );
-Default.storyName = 'AudienceSegmentationIntroductoryOverlayNotification';
+Default.storyName = 'IntroductoryOverlayNotification';
 Default.scenario = {};
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationIntroductoryOverlayNotification',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/IntroductoryOverlayNotification',
 };
