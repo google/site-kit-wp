@@ -54,7 +54,7 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 			'index.php?action=googlesitekit_go&to=invalid-key'
 		);
 		await expect(
-			wp.page.locator( 'p', {
+			wp.page.locator( '.wp-die-message,p', {
 				hasText: 'The link you followed is invalid.',
 			} )
 		).toBeVisible();
@@ -67,7 +67,7 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 			'index.php?action=googlesitekit_go&to=manage-subscription-email-reporting'
 		);
 		await expect(
-			wp.page.locator( 'p', {
+			wp.page.locator( '.wp-die-message,p', {
 				hasText: 'The link you followed is invalid.',
 			} )
 		).toBeVisible();
