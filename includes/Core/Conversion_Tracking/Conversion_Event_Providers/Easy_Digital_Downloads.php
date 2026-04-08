@@ -139,7 +139,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 
 		$enhanced_conversions_data = array(
 			'items' => $this->extract_items_data_from_session( $session_data ),
-			'value' => $session_data['price'],
+			'value' => $this->extract_cart_total_from_session( $session_data ),
 		);
 
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
@@ -248,5 +248,23 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Extracts the cart's total from an EDD session.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $session_data An array containing EDD purchase session data.
+	 *
+	 * @return float|null The cart's total.
+	 */
+	protected function extract_cart_total_from_session( $session_data ) {
+		if ( isset( $session_data['price'] ) ) {
+			return $session_data['price'];
+		}
+
+		// Mimic the client side's way of defaulting to 0.
+		return 0;
 	}
 }
