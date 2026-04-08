@@ -27,7 +27,7 @@ import { getByText as domGetByText } from '@testing-library/dom';
  * Internal dependencies
  */
 import AudienceTile from '.';
-import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal';
+import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
 import {
 	act,
 	fireEvent,

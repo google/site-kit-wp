@@ -48,7 +48,7 @@ import Body from './Body';
 import Header from './Header';
 import useAudienceTilesReports from '@/js/modules/analytics-4/hooks/useAudienceTilesReports';
 import { isInvalidCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal';
+import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
 import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 
 function hasZeroDataForAudience( report, dimensionName ) {

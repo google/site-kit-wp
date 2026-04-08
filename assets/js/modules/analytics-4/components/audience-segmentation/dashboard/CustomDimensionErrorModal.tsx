@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+import { FC } from 'react';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
@@ -28,43 +29,64 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import type { Select } from '@/js/googlesitekit/data/types';
 import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 
-export default function CustomDimensionErrorModal() {
-	const viewContext = useViewContext();
+interface ErrorObject {
+	[ key: string ]: unknown;
+}
 
-	const postTypeDimension =
+const CustomDimensionErrorModal: FC = () => {
+	const viewContext: string = useViewContext();
+
+	const postTypeDimension: string =
 		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
 
-	const customDimensionError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
-			postTypeDimension
-		)
+	const customDimensionError: ErrorObject | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
+				postTypeDimension
+			)
 	);
 
-	const autoSubmit = useFormValue(
+	const autoSubmit:
+		| string
+		| number
+		| boolean
+		| unknown[]
+		| object
+		| undefined = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);
 
-	const setupErrorCode = useSelect( ( select ) =>
+	const setupErrorCode: string | null = useSelect( ( select: Select ) =>
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
+	const hasOAuthError: boolean = !! (
+		autoSubmit && setupErrorCode === 'access_denied'
+	);
 
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
-	const propertyID = useSelect( ( select ) =>
+	const propertyID: string = useSelect( ( select: Select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const { onCreateCustomDimension, isSaving, setShowErrorModal } =
-		useCreateCustomDimension();
+	const {
+		onCreateCustomDimension,
+		isSaving,
+		setShowErrorModal,
+	}: {
+		onCreateCustomDimension: ( options?: { isRetrying?: boolean } ) => void;
+		isSaving: boolean;
+		setShowErrorModal: ( value: boolean ) => void;
+	} = useCreateCustomDimension();
 
 	const onCancel = useCallback( () => {
 		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
@@ -102,4 +124,6 @@ export default function CustomDimensionErrorModal() {
 			trackEventCategory={ `${ viewContext }_audiences-top-content-cta` }
 		/>
 	);
-}
+};
+
+export default CustomDimensionErrorModal;
