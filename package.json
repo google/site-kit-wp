@@ -94,6 +94,7 @@
 	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
+		"@types/node": "^22.0.0",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@wordpress/browserslist-config": "^5.40.0",
