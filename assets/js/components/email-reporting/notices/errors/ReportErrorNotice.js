@@ -51,7 +51,9 @@ export default function ReportErrorNotice( { moduleSlug, onGoToSettings } ) {
 	);
 
 	const getHelpURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'email-reporting-module-issues'
+		)
 	);
 
 	return (

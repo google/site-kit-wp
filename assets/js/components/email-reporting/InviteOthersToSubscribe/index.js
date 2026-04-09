@@ -117,7 +117,9 @@ export default function InviteOthersToSubscribe() {
 	);
 
 	const emailReportingDocumentationURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'email-reporting-inviting-others'
+		)
 	);
 
 	// Reset state when panel opens so layout changes happen while

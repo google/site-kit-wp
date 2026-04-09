@@ -1,5 +1,5 @@
 /**
- * CronSchedulerErrorNotice component tests.
+ * ServerErrorNotice component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import CronSchedulerErrorNotice from './CronSchedulerErrorNotice';
+import ServerErrorNotice from './ServerErrorNotice';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
 
-describe( 'CronSchedulerErrorNotice', () => {
+describe( 'ServerErrorNotice', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -34,30 +34,12 @@ describe( 'CronSchedulerErrorNotice', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'renders expected title and description', () => {
-		const { getByText } = render( <CronSchedulerErrorNotice />, {
-			registry,
-		} );
-
-		expect(
-			getByText( 'Email reports are failing to send' )
-		).toBeInTheDocument();
-		expect(
-			getByText(
-				'We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site’s system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.'
-			)
-		).toBeInTheDocument();
-	} );
-
-	it( 'renders a "Get help" link to the scheduler issues doc', () => {
-		const { getByRole } = render( <CronSchedulerErrorNotice />, {
-			registry,
-		} );
+	it( 'renders a "Get help" link to the server issues doc', () => {
+		const { getByRole } = render( <ServerErrorNotice />, { registry } );
 
 		const helpLink = getByRole( 'button', { name: /get help/i } );
-		expect( helpLink ).toBeInTheDocument();
 		expect( helpLink.getAttribute( 'href' ) ).toContain(
-			'doc=email-reporting-scheduler-issues'
+			'doc=email-reporting-server-issues'
 		);
 	} );
 } );

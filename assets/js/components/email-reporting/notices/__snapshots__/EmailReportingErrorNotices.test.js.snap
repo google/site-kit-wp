@@ -82,7 +82,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
         <a
           aria-label="Get help (opens in a new tab)"
           class="mdc-button mdc-button--tertiary"
-          href="undefined?doc=email-reporting"
+          href="undefined?doc=email-reporting-module-issues"
           role="button"
           target="_blank"
         >

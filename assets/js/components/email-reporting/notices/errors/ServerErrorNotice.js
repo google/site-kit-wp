@@ -24,6 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
 import { TYPES } from '@/js/components/Notice/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
@@ -39,6 +41,12 @@ export default function ServerErrorNotice() {
 		EMAIL_REPORTS_SERVER_ERROR_NOTICE
 	);
 
+	const getHelpURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'email-reporting-server-issues'
+		)
+	);
+
 	return (
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
@@ -52,6 +60,12 @@ export default function ServerErrorNotice() {
 				'google-site-kit'
 			) }
 			onInView={ trackEvents.view }
+			dismissButton={ {
+				label: __( 'Get help', 'google-site-kit' ),
+				onClick: trackEvents.dismiss,
+				href: getHelpURL,
+				external: true,
+			} }
 		/>
 	);
 }
