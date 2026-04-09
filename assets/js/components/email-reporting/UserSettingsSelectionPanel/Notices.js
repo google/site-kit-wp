@@ -35,14 +35,14 @@ import EmailReportingDisabledViewOnlyNotice from '@/js/components/email-reportin
 import EmailReportingErrorNotices from '@/js/components/email-reporting/notices/EmailReportingErrorNotices';
 import SetupAnalyticsNotice from '@/js/components/email-reporting/notices/SetupAnalyticsNotice';
 
-export default function Notices( { isLoading } ) {
+export default function Notices( { isLoading, onGoToSettings } ) {
 	if ( isLoading ) {
 		return null;
 	}
 
 	return (
 		<Fragment>
-			<EmailReportingErrorNotices />
+			<EmailReportingErrorNotices onGoToSettings={ onGoToSettings } />
 			<AnalyticsDisconnectedNotice />
 			<SetupAnalyticsNotice />
 			<EmailReportingDisabledNotice />
@@ -53,4 +53,5 @@ export default function Notices( { isLoading } ) {
 
 Notices.propTypes = {
 	isLoading: PropTypes.bool,
+	onGoToSettings: PropTypes.func,
 };
