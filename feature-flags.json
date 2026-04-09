@@ -2,5 +2,6 @@
 	"googleTagGateway",
 	"gtagUserData",
 	"proactiveUserEngagement",
-	"setupFlowRefresh"
+	"setupFlowRefresh",
+  "siteGoals"
 ]
