@@ -93,6 +93,75 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$second = $this->scheduler->get_initiator_timestamp( $frequency );
 
 		$this->assertSame( $first, $second, 'Scheduling initiator twice should not change the event timestamp for frequency "' . $frequency . '".' );
+		$this->assertCount( 1, $this->get_initiator_events_for_frequency( $frequency ), 'Scheduling initiator twice should not create duplicate events.' );
+	}
+
+	public function test_schedule_initiator_once_reconciles_mismatched_timestamp() {
+		$frequency             = Email_Reporting_Settings::FREQUENCY_WEEKLY;
+		$existing_timestamp    = time() + 5_000;
+		$expected_minimum_next = time() + $this->offsets[ $frequency ];
+
+		wp_schedule_single_event( $existing_timestamp, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $existing_timestamp ) );
+
+		$this->scheduler->schedule_initiator_once( $frequency );
+
+		$scheduled_timestamp = $this->scheduler->get_initiator_timestamp( $frequency );
+		$events              = $this->get_initiator_events_for_frequency( $frequency );
+
+		$this->assertCount( 1, $events, 'Mismatched frequency initiator should be replaced with one canonical event.' );
+		$this->assertNotSame( $existing_timestamp, $scheduled_timestamp, 'Existing mismatched frequency initiator should be replaced.' );
+		$this->assertGreaterThanOrEqual( $expected_minimum_next, $scheduled_timestamp, 'Reconciled initiator should use current planner timestamp.' );
+		$this->assertSame( array( $frequency, $scheduled_timestamp ), $events[0]['args'], 'Reconciled initiator should use canonical args.' );
+	}
+
+	public function test_schedule_initiator_once_dedupes_multiple_events_for_frequency() {
+		$frequency = Email_Reporting_Settings::FREQUENCY_MONTHLY;
+		$first     = time() + 1_000;
+		$second    = time() + 2_000;
+
+		wp_schedule_single_event( $first, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $first ) );
+		wp_schedule_single_event( $second, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $second ) );
+
+		$this->scheduler->schedule_initiator_once( $frequency );
+
+		$events = $this->get_initiator_events_for_frequency( $frequency );
+
+		$this->assertCount( 1, $events, 'Multiple frequency initiators should be deduplicated into one canonical event.' );
+		$this->assertSame(
+			array( $frequency, $events[0]['timestamp'] ),
+			$events[0]['args'],
+			'Deduplicated frequency initiator should keep canonical args.'
+		);
+	}
+
+	public function test_get_initiator_timestamp_matches_frequency_with_noncanonical_args() {
+		$frequency          = Email_Reporting_Settings::FREQUENCY_QUARTERLY;
+		$noncanonical_first = time() + 1_000;
+		$noncanonical_next  = $noncanonical_first + 100;
+
+		wp_schedule_single_event( $noncanonical_next, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $noncanonical_next, 'extra' ) );
+		wp_schedule_single_event( $noncanonical_first, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency ) );
+
+		$this->assertSame(
+			$noncanonical_first,
+			$this->scheduler->get_initiator_timestamp( $frequency ),
+			'Frequency initiator lookup should match by first argument and return earliest timestamp regardless of args shape.'
+		);
+	}
+
+	public function test_schedule_initiator_once_keeps_due_event_for_execution() {
+		$frequency     = Email_Reporting_Settings::FREQUENCY_WEEKLY;
+		$due_timestamp = time() - 60;
+
+		wp_schedule_single_event( $due_timestamp, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $due_timestamp ) );
+
+		$this->scheduler->schedule_initiator_once( $frequency );
+
+		$events = $this->get_initiator_events_for_frequency( $frequency );
+
+		$this->assertCount( 1, $events, 'Due initiator should not be replaced before it gets a chance to run.' );
+		$this->assertSame( $due_timestamp, $events[0]['timestamp'], 'Due initiator timestamp should remain unchanged.' );
+		$this->assertSame( array( $frequency, $due_timestamp ), $events[0]['args'], 'Due initiator args should remain unchanged.' );
 	}
 
 	public function test_schedule_next_initiator_always_schedules_new_event() {
@@ -198,5 +267,40 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 	private function remove_monthly_schedule_filter() {
 		remove_filter( 'cron_schedules', array( Email_Reporting_Scheduler::class, 'register_monthly_schedule' ) );
+	}
+
+	/**
+	 * Gets all initiator events for a frequency from the cron array.
+	 *
+	 * @param string $frequency Frequency slug.
+	 * @return array
+	 */
+	private function get_initiator_events_for_frequency( $frequency ) {
+		$cron = _get_cron_array();
+
+		if ( ! is_array( $cron ) ) {
+			return array();
+		}
+
+		$events = array();
+
+		foreach ( $cron as $timestamp => $hooks ) {
+			if ( empty( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) || ! is_array( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] ) ) {
+				continue;
+			}
+
+			foreach ( $hooks[ Email_Reporting_Scheduler::ACTION_INITIATOR ] as $event ) {
+				if ( empty( $event['args'][0] ) || $frequency !== $event['args'][0] ) {
+					continue;
+				}
+
+				$events[] = array(
+					'timestamp' => (int) $timestamp,
+					'args'      => $event['args'],
+				);
+			}
+		}
+
+		return $events;
 	}
 }
