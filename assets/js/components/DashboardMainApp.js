@@ -50,6 +50,7 @@ import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import WelcomeModal from './WelcomeModal';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
@@ -355,7 +356,12 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ emailReportingEnabled && <UserSettingsSelectionPanel /> }
+			{ emailReportingEnabled && (
+				<Fragment>
+					<UserSettingsSelectionPanel />
+					<PUESurveyTriggers />
+				</Fragment>
+			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 

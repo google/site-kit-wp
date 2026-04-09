@@ -25,6 +25,8 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
@@ -40,6 +42,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
@@ -59,6 +62,8 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		provideModules( registry );
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
 		provideUserCapabilities( registry );
 
@@ -77,6 +82,8 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
 	} );
 
 	afterEach( () => {
