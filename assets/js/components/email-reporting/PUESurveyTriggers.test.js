@@ -30,7 +30,10 @@ import { waitFor } from '@testing-library/react';
  * Internal dependencies
  */
 import PUESurveyTriggers from './PUESurveyTriggers';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from './SetUpEmailReportingOverlayNotification';
+import {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+} from './SetUpEmailReportingOverlayNotification';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -47,29 +50,25 @@ import {
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
 
-const fetchGetDismissedItems = new RegExp(
-	'^/google-site-kit/v1/core/user/data/dismissed-items'
-);
-
 describe( 'PUESurveyTriggers', () => {
 	const notification =
 		DEFAULT_NOTIFICATIONS[ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ];
 
 	let registry;
 
-	function setup( { subscribed, dismissedCTA } ) {
+	function setup( { subscribed, clickedSetupCTA, overlaySeen } ) {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 
 		// IMPORTANT: seed dismissed state BEFORE registering the
-		// notification so that `registerNotification`'s internal
+		// notification so `registerNotification`'s internal
 		// `resolveSelect( CORE_USER ).getDismissedItems()` short-circuits.
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetDismissedItems(
-				dismissedCTA
-					? [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ]
+				clickedSetupCTA
+					? [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA ]
 					: []
 			);
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
@@ -88,6 +87,17 @@ describe( 'PUESurveyTriggers', () => {
 				SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 				notification
 			);
+
+		// `markNotificationSeen` must be dispatched AFTER the
+		// notification is registered — the action no-ops if the
+		// notification is not yet in the datastore.
+		if ( overlaySeen ) {
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.markNotificationSeen(
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION
+				);
+		}
 	}
 
 	function renderComponent() {
@@ -116,8 +126,11 @@ describe( 'PUESurveyTriggers', () => {
 	} );
 
 	it( 'dispatches the view_pue survey trigger when the user is subscribed', async () => {
-		setup( { subscribed: true, dismissedCTA: false } );
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+		setup( {
+			subscribed: true,
+			clickedSetupCTA: false,
+			overlaySeen: false,
+		} );
 		mockSurveyEndpoints();
 
 		const { waitForRegistry } = renderComponent();
@@ -126,10 +139,14 @@ describe( 'PUESurveyTriggers', () => {
 		await expectTriggerFetch( 'view_pue' );
 	} );
 
-	it( 'dispatches the view_pue_not_subscribed survey trigger when the user has seen the setup CTA but is not subscribed', async () => {
-		setup( { subscribed: false, dismissedCTA: true } );
-		fetchMock.getOnce( fetchGetDismissedItems, {
-			body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
+	it( 'dispatches the view_pue_not_subscribed survey trigger when the user has clicked Set up but is not subscribed (priority over segment 2)', async () => {
+		// Seed BOTH the setup-cta flag AND seen state to enforce the
+		// priority ordering: segment 3 must win when both inputs
+		// would otherwise satisfy segments 2 and 3.
+		setup( {
+			subscribed: false,
+			clickedSetupCTA: true,
+			overlaySeen: true,
 		} );
 		mockSurveyEndpoints();
 
@@ -139,9 +156,26 @@ describe( 'PUESurveyTriggers', () => {
 		await expectTriggerFetch( 'view_pue_not_subscribed' );
 	} );
 
-	it( 'does not dispatch any survey trigger when the user is not subscribed and has not seen the setup CTA', async () => {
-		setup( { subscribed: false, dismissedCTA: false } );
-		fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+	it( 'dispatches the view_pue_setup_cta survey trigger when the user has seen the overlay but has not clicked Set up', async () => {
+		setup( {
+			subscribed: false,
+			clickedSetupCTA: false,
+			overlaySeen: true,
+		} );
+		mockSurveyEndpoints();
+
+		const { waitForRegistry } = renderComponent();
+
+		await waitForRegistry();
+		await expectTriggerFetch( 'view_pue_setup_cta' );
+	} );
+
+	it( 'does not dispatch any survey trigger when the user has never seen the overlay', async () => {
+		setup( {
+			subscribed: false,
+			clickedSetupCTA: false,
+			overlaySeen: false,
+		} );
 		mockSurveyEndpoints();
 
 		const { waitForRegistry } = renderComponent();

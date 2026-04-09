@@ -2,8 +2,9 @@
  * PUESurveyTriggers component.
  *
  * Fires Proactive User Engagement (PUE) survey triggers on dashboard load
- * based on the user's email reporting subscription status and whether the
- * user has previously seen the email reporting setup CTA overlay.
+ * based on the user's email reporting subscription status, whether the
+ * user has clicked "Set up" on the overlay CTA, and whether the overlay
+ * has ever been visible to the user for at least 3 seconds.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -28,7 +29,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from './SetUpEmailReportingOverlayNotification';
+import {
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+} from './SetUpEmailReportingOverlayNotification';
 
 export default function PUESurveyTriggers() {
 	const settings = useSelect( ( select ) =>
@@ -37,30 +41,51 @@ export default function PUESurveyTriggers() {
 	const isSubscribed = useSelect( ( select ) =>
 		select( CORE_USER ).isEmailReportingSubscribed()
 	);
-	const hasSeenSetupCTA = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissed(
+	const hasClickedSetupCTA = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA
+		)
+	);
+	const overlaySeenDates = useSelect( ( select ) =>
+		select( CORE_NOTIFICATIONS ).getNotificationSeenDates(
 			SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION
 		)
 	);
 
-	// Wait until both the user's email reporting settings and the
-	// notification dismissed state have resolved before dispatching any
-	// trigger. This prevents firing `view_pue_not_subscribed` for a user
-	// who is actually subscribed (but whose settings have not yet loaded).
-	if ( settings === undefined || hasSeenSetupCTA === undefined ) {
+	// Wait for the server-backed inputs to resolve before firing any
+	// trigger. `overlaySeenDates` is localStorage-backed and always
+	// returns an array (empty or populated) from the datastore's
+	// initialState, so it does not need a resolution guard.
+	if ( settings === undefined || hasClickedSetupCTA === undefined ) {
 		return null;
 	}
 
+	// Segment 1 — successfully activated.
 	if ( isSubscribed ) {
 		return (
 			<SurveyViewTrigger triggerID="view_pue" ttl={ DAY_IN_SECONDS } />
 		);
 	}
 
-	if ( hasSeenSetupCTA ) {
+	// Segment 3 — clicked "Set up" but did not subscribe. Checked
+	// before segment 2 because clicking "Set up" implies the overlay
+	// was already seen, so segment 3 users satisfy both conditions.
+	if ( hasClickedSetupCTA ) {
 		return (
 			<SurveyViewTrigger
 				triggerID="view_pue_not_subscribed"
+				ttl={ DAY_IN_SECONDS }
+			/>
+		);
+	}
+
+	// Segment 2 — has seen the overlay (automatically marked seen
+	// after 3s of viewport dwell via ViewedStateObserver) and has
+	// not clicked "Set up".
+	if ( overlaySeenDates.length > 0 ) {
+		return (
+			<SurveyViewTrigger
+				triggerID="view_pue_setup_cta"
 				ttl={ DAY_IN_SECONDS }
 			/>
 		);

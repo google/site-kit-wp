@@ -26,6 +26,7 @@ import { waitFor } from '@testing-library/react';
  */
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
 } from './SetUpEmailReportingOverlayNotification';
 import {
 	createTestRegistry,
@@ -52,10 +53,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 const fetchDismissItem = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -272,11 +270,20 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				);
 		} );
 
-		it( 'dispatches the view_pue_setup_cta survey trigger on render', async () => {
+		it( 'dispatches dismissItem for the setup-cta flag when the Set up button is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+			// Mock the dismiss-item endpoint for BOTH the setup-cta
+			// slug (our new flag) and the notification's own slug
+			// (fired by dismissOnClick: true on the CTA button).
+			fetchMock.post( fetchDismissItem, {
+				body: [
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+				],
+			} );
 			mockSurveyEndpoints();
 
-			const { waitForRegistry } = render(
+			const { getByRole, waitForRegistry } = render(
 				<Notifications
 					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
@@ -290,12 +297,19 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 			await waitForRegistry();
 
+			act( () => {
+				fireEvent.click( getByRole( 'button', { name: /set up/i } ) );
+			} );
+
 			await waitFor( () =>
 				expect( fetchMock ).toHaveFetched(
-					surveyTriggerEndpoint,
+					fetchDismissItem,
 					expect.objectContaining( {
 						body: {
-							data: { triggerID: 'view_pue_setup_cta' },
+							data: {
+								slug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+								expiration: 0,
+							},
 						},
 					} )
 				)
