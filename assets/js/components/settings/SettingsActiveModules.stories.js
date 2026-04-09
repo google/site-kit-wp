@@ -152,11 +152,9 @@ WithRRMActionNeeded.args = {
 			.receiveGetSettings( {
 				publicationID: 'test-publication-id',
 				publicationOnboardingState: 'ONBOARDING_COMPLETE',
-				contentPolicyStatus: {
-					contentPolicyState:
-						CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
-					policyInfoLink: 'https://example.com/policy-info',
-				},
+				contentPolicyState:
+					CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_GRACE_PERIOD,
+				policyInfoLink: 'https://example.com/policy-info',
 			} );
 	},
 };

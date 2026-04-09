@@ -376,12 +376,14 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'Payment option should be updated after fetching publications.'
 		);
 		$this->assertEquals(
-			array(
-				'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_ACTIVE',
-				'policyInfoLink'     => 'https://example.com/policy-info',
-			),
-			$settings['contentPolicyStatus'],
-			'Content policy status should be synchronized after fetching publications.'
+			'CONTENT_POLICY_VIOLATION_ACTIVE',
+			$settings['contentPolicyState'],
+			'Content policy state should be synchronized after fetching publications.'
+		);
+		$this->assertEquals(
+			'https://example.com/policy-info',
+			$settings['policyInfoLink'],
+			'Policy info link should be synchronized after fetching publications.'
 		);
 	}
 
@@ -942,7 +944,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	public function test_get_debug_fields__content_policy_state() {
 		$this->reader_revenue_manager->get_settings()->register();
 
-		// Test that the content policy state debug field is included with default `contentPolicyStatus`.
+		// Test that the content policy state debug field is included with default value.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
 				'publicationID' => 'test-publication-id',
@@ -959,16 +961,14 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals(
 			'',
 			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
-			'Content policy state value should be empty when contentPolicyStatus is default.'
+			'Content policy state value should be empty when contentPolicyState is default.'
 		);
 
-		// Test that the content policy state debug field has correct values when `contentPolicyStatus` contains `contentPolicyState`.
+		// Test that the content policy state debug field has correct values when `contentPolicyState` is set.
 		$this->reader_revenue_manager->get_settings()->set(
 			array(
-				'publicationID'       => 'test-publication-id',
-				'contentPolicyStatus' => array(
-					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
-				),
+				'publicationID'      => 'test-publication-id',
+				'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
 			)
 		);
 
@@ -976,7 +976,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertArrayHasKey(
 			'reader_revenue_manager_content_policy_state',
 			$debug_fields,
-			'Content policy state debug field should be included when contentPolicyStatus is set.'
+			'Content policy state debug field should be included when contentPolicyState is set.'
 		);
 
 		$this->assertEquals(
@@ -995,33 +995,6 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
 			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
 			'Content policy state field should have correct debug value'
-		);
-
-		// Test that the content policy state field handles missing `contentPolicyState` property gracefully.
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID'       => 'test-publication-id',
-				'contentPolicyStatus' => array(),
-			)
-		);
-
-		$debug_fields = $this->reader_revenue_manager->get_debug_fields();
-		$this->assertArrayHasKey(
-			'reader_revenue_manager_content_policy_state',
-			$debug_fields,
-			'Content policy state field should be included even when contentPolicyState is missing'
-		);
-
-		$this->assertEquals(
-			'',
-			$debug_fields['reader_revenue_manager_content_policy_state']['value'],
-			'Content policy state field should have empty string when contentPolicyState is missing'
-		);
-
-		$this->assertEquals(
-			'',
-			$debug_fields['reader_revenue_manager_content_policy_state']['debug'],
-			'Content policy state field debug should have empty string when contentPolicyState is missing'
 		);
 	}
 

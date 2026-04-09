@@ -62,10 +62,8 @@ function setupRegistry( registry: Registry, contentPolicyState: string ) {
 		publicationID: '1234',
 		publicationOnboardingState:
 			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-		contentPolicyStatus: {
-			contentPolicyState,
-			policyInfoLink: POLICY_INFO_URL,
-		},
+		contentPolicyState,
+		policyInfoLink: POLICY_INFO_URL,
 	} );
 }
 
