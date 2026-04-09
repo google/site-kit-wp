@@ -85,20 +85,6 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets owner ID.
-	 *
-	 * @since 1.16.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {number|undefined} Owner ID if it exists, otherwise undefined.
-	 */
-	getOwnerID: createRegistrySelector( ( select ) => () => {
-		const { ownerID } = select( CORE_SITE ).getConnection() || {};
-
-		return ownerID;
-	} ),
-
-	/**
 	 * Gets information about connected admins.
 	 *
 	 * @since 1.14.0
