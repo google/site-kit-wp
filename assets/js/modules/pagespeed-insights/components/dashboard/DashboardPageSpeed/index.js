@@ -68,10 +68,10 @@ export default function DashboardPageSpeed() {
 	const strategy =
 		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
 		STRATEGY_MOBILE;
-	const dataSrc =
-		useSelect( ( select ) =>
-			select( CORE_UI ).getValue( UI_DATA_SOURCE )
-		) || DATA_SRC_LAB;
+	const selectedDataSrc = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_DATA_SOURCE )
+	);
+	const dataSrc = selectedDataSrc ?? DATA_SRC_LAB;
 
 	const { isFetchingMobile, isFetchingDesktop, errorMobile, errorDesktop } =
 		useSelect( ( select ) => {
@@ -219,10 +219,13 @@ export default function DashboardPageSpeed() {
 
 	// Set the default data source based on report data for the current view.
 	useEffect( () => {
-		if ( reportData?.loadingExperience?.metrics ) {
+		if (
+			selectedDataSrc === undefined &&
+			reportData?.loadingExperience?.metrics
+		) {
 			setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } );
 		}
-	}, [ reportData, setValues ] );
+	}, [ reportData, selectedDataSrc, setValues ] );
 
 	const isLoading =
 		! referenceURL || ( isFetching && ! reportData ) || ! dataSrc;
