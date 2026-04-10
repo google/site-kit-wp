@@ -173,9 +173,6 @@ export default function SettingsEmailReporting( { loading = false } ) {
 											{
 												a: (
 													<Link
-														// This is a temporary link until we have a
-														// dedicated page for email reporting documentation.
-														// See: https://github.com/google/site-kit-wp/issues/12327
 														href={
 															documentationURL
 														}
@@ -261,7 +258,6 @@ export default function SettingsEmailReporting( { loading = false } ) {
 								}
 							) }
 							<br />
-							{ /** TODO update learn more link when it is provided. */ }
 							<Link
 								href={ documentationURL }
 								onClick={ () => {

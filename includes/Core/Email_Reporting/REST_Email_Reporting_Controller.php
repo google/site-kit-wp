@@ -580,7 +580,7 @@ class REST_Email_Reporting_Controller {
 			),
 			'body'                   => Content_Map::get_body( 'invitation-email' ),
 			'inviter_email'          => $inviter_email,
-			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'learn_more_url'         => add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' ),
 			'primary_call_to_action' => array(
 				'label' => __( 'Get your report', 'google-site-kit' ),
 				'url'   => $this->golinks->get_url( 'manage-subscription-email-reporting' ),
