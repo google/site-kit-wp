@@ -19,6 +19,7 @@ exports[`AdBlockingRecoverySetupSuccessNotification should render notification a
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--success"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"

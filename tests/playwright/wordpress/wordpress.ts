@@ -159,15 +159,23 @@ export class WordPress {
 		}
 
 		if ( errors.length > 0 ) {
-			const summary = errors
-				.map(
-					( error ) =>
-						`[${ error.level }] ${ error.message } (${ error.file }:${ error.line })`
-				)
-				.join( '\n' );
+			const uniqueErrors: string[] = [];
+			errors.forEach( ( err ) => {
+				let msg = `[${ err.level }] ${ err.message } (${ err.file }:${ err.line })`;
+				if ( err.backtrace ) {
+					msg += `\n\t${ err.backtrace
+						.split( '\n' )
+						.join( '\n\t' ) }`;
+				}
 
+				if ( ! uniqueErrors.includes( msg ) ) {
+					uniqueErrors.push( msg );
+				}
+			} );
+
+			const summary = uniqueErrors.join( '\n' );
 			throw new Error(
-				`${ errors.length } PHP error(s) during test:\n${ summary }`
+				`${ uniqueErrors.length } PHP error(s) during test:\n${ summary }`
 			);
 		}
 	}
@@ -242,6 +250,27 @@ export class WordPress {
 	}
 
 	/**
+	 * Navigates to the Site Kit dashboard.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  hash The hash to navigate to.
+	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
+	 */
+	visitDashboard( hash = '' ): Promise< Response | null > {
+		let stepName = 'Visit Dashboard';
+		if ( hash ) {
+			stepName += ` (#${ hash })`;
+		}
+
+		return test.step( stepName, () =>
+			this.visitAdmin(
+				`admin.php?page=googlesitekit-dashboard#${ hash }`
+			)
+		);
+	}
+
+	/**
 	 * Navigates to the given path in the admin area.
 	 *
 	 * @since 1.175.0
@@ -263,5 +292,33 @@ export class WordPress {
 	 */
 	visitFrontend( path = '/' ): Promise< Response | null > {
 		return this.page.goto( `${ this.baseURL }${ path }` );
+	}
+
+	/**
+	 * Makes a request to the WordPress REST API using the browser's fetch.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  method HTTP method (e.g. 'GET', 'POST').
+	 * @param  route  REST route without leading slash (e.g. 'sitekit-e2e/v1/my-endpoint').
+	 * @param  init   Optional additional fetch init options (headers, body, etc.).
+	 * @return {Promise<unknown>} Parsed JSON response body.
+	 */
+	restRequest(
+		method: string,
+		route: string,
+		init: Omit< RequestInit, 'method' > = {}
+	): Promise< unknown > {
+		return this.page.evaluate(
+			async ( { url, method: m, init: index } ) => {
+				const response = await fetch( url, { method: m, ...index } );
+				return response.json();
+			},
+			{
+				url: `${ this.baseURL }/wp-json/${ route }`,
+				method,
+				init,
+			}
+		);
 	}
 }

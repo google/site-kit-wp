@@ -26,9 +26,12 @@ import { waitFor } from '@testing-library/react';
  */
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
 } from './SetUpEmailReportingOverlayNotification';
 import {
 	createTestRegistry,
+	provideSiteInfo,
+	provideUserAuthentication,
 	render,
 	fireEvent,
 	act,
@@ -50,6 +53,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 
 const fetchDismissItem = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -248,6 +252,8 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		beforeEach( () => {
 			registry = createTestRegistry();
+			provideSiteInfo( registry );
+			provideUserAuthentication( registry );
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 			registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
@@ -264,11 +270,58 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 				);
 		} );
 
+		it( 'dispatches dismissItem for the setup-cta flag when the Set up button is clicked', async () => {
+			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
+			// Mock the dismiss-item endpoint for BOTH the setup-cta
+			// slug (our new flag) and the notification's own slug
+			// (fired by dismissOnClick: true on the CTA button).
+			fetchMock.post( fetchDismissItem, {
+				body: [
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+					SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+				],
+			} );
+			mockSurveyEndpoints();
+
+			const { getByRole, waitForRegistry } = render(
+				<Notifications
+					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'proactiveUserEngagement' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			act( () => {
+				fireEvent.click( getByRole( 'button', { name: /set up/i } ) );
+			} );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					fetchDismissItem,
+					expect.objectContaining( {
+						body: {
+							data: {
+								slug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+								expiration: 0,
+							},
+						},
+					} )
+				)
+			);
+		} );
+
 		it( 'shows the tooltip when the dismiss button is clicked', async () => {
 			fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
 			} );
+			mockSurveyEndpoints();
 
 			const { getByRole, waitForRegistry } = render(
 				<Notifications
@@ -304,6 +357,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 			fetchMock.postOnce( fetchDismissItem, {
 				body: [ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION ],
 			} );
+			mockSurveyEndpoints();
 
 			render( <NotificationComponent />, {
 				registry,

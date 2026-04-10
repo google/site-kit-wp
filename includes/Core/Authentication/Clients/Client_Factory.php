@@ -63,6 +63,16 @@ final class Client_Factory {
 
 		$http_client        = $client->getHttpClient();
 		$http_client_config = self::get_http_client_config( $http_client->getConfig() );
+
+		/**
+		 * Filters the Guzzle HTTP client configuration used for Google API requests.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $http_client_config Guzzle HTTP client configuration array.
+		 */
+		$http_client_config = apply_filters( 'googlesitekit_http_client_config', $http_client_config );
+
 		// In Guzzle 6+, the HTTP client is immutable, so only a new instance can be set.
 		$client->setHttpClient( new Client( $http_client_config ) );
 

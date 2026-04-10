@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
@@ -32,8 +32,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-	untilResolved,
-	waitForTimeouts,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -47,28 +45,6 @@ describe( 'AMPContainerSelect', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
-	} );
-
-	afterEach( async () => {
-		// react-select can schedule a state update after the menu closes; flush so
-		// @wordpress/jest-console does not see it in the next test's beforeEach.
-		await act( async () => {
-			await waitForTimeouts( 150 );
-		} );
-		// eslint-disable-next-line no-console
-		const hasReactSelectUnmountWarning = console.error.mock.calls.some(
-			( call ) =>
-				call.some(
-					( arg ) =>
-						typeof arg === 'string' &&
-						arg.includes(
-							"Can't perform a React state update on an unmounted component"
-						)
-				)
-		);
-		if ( hasReactSelectUnmountWarning ) {
-			expect( console ).toHaveErrored();
-		}
 	} );
 
 	it( 'should render an option for each AMP container of the currently selected account.', () => {
@@ -138,7 +114,7 @@ describe( 'AMPContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', () => {
+	it( 'can select the "Set up a new container" option', async () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_AMP ] },
 		} );
@@ -157,18 +133,24 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <AMPContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<AMPContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click(
 			container.querySelector( '.mdc-select__selected-text' )
 		);
+
 		fireEvent.click( getByText( /set up a new container/i ) );
 
 		expect(
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -191,9 +173,12 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <AMPContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<AMPContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -206,14 +191,7 @@ describe( 'AMPContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		);
 
-		await act( async () => {
-			fireEvent.click(
-				getByText( new RegExp( ampContainer.name, 'i' ) )
-			);
-			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
-		} );
+		fireEvent.click( getByText( new RegExp( ampContainer.name, 'i' ) ) );
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -221,6 +199,10 @@ describe( 'AMPContainerSelect', () => {
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
 		).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
+
+		// Ensure any pending async updates from the enhanced Select finish before unmount,
+		// preventing setState on unmounted component warnings in Jest.
+		await waitForRegistry();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

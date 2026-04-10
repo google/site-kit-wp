@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WebContainerSelect from './WebContainerSelect';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
@@ -35,9 +35,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-	untilResolved,
-	waitForDefaultTimeouts,
-	waitForTimeouts,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -51,28 +48,6 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
 		provideSiteInfo( registry );
-	} );
-
-	afterEach( async () => {
-		// react-select can schedule a state update after the menu closes; flush so
-		// @wordpress/jest-console does not see it in the next test's beforeEach.
-		await act( async () => {
-			await waitForTimeouts( 150 );
-		} );
-		// eslint-disable-next-line no-console
-		const hasReactSelectUnmountWarning = console.error.mock.calls.some(
-			( call ) =>
-				call.some(
-					( arg ) =>
-						typeof arg === 'string' &&
-						arg.includes(
-							"Can't perform a React state update on an unmounted component"
-						)
-				)
-		);
-		if ( hasReactSelectUnmountWarning ) {
-			expect( console ).toHaveErrored();
-		}
 	} );
 
 	it( 'should render an option for each web container of the currently selected account.', () => {
@@ -161,20 +136,24 @@ describe( 'WebContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <WebContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<WebContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click(
 			container.querySelector( '.mdc-select__selected-text' )
 		);
+
 		fireEvent.click( getByText( /set up a new container/i ) );
 
 		expect(
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
 
-		await waitForDefaultTimeouts();
+		await waitForRegistry();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -197,9 +176,12 @@ describe( 'WebContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <WebContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<WebContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getContainerID()
@@ -212,14 +194,7 @@ describe( 'WebContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		);
 
-		await act( async () => {
-			fireEvent.click(
-				getByText( new RegExp( webContainer.name, 'i' ) )
-			);
-			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
-		} );
+		fireEvent.click( getByText( new RegExp( webContainer.name, 'i' ) ) );
 
 		expect( registry.select( MODULES_TAGMANAGER ).getContainerID() ).toBe(
 			// eslint-disable-next-line sitekit/acronym-case
@@ -229,6 +204,8 @@ describe( 'WebContainerSelect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalContainerID()
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( webContainer.containerId );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
