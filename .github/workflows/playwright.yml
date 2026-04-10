@@ -301,7 +301,7 @@ jobs:
       actions: write
     steps:
       - name: Delete temporary artifacts
-        uses: geekyeggo/delete-artifact@v5
+        uses: geekyeggo/delete-artifact@v6
         with:
           name: |
             plugin
