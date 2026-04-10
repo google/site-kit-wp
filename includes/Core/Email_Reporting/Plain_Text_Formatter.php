@@ -43,7 +43,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the full email report as plain text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param array $data     Template data.
 	 * @param array $sections Sections map.
@@ -142,15 +142,10 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Footer links.
-		$footer_links = $data['footer']['links'] ?? array();
-		if ( ! empty( $footer_links ) && is_array( $footer_links ) ) {
-			foreach ( $footer_links as $link ) {
-				if ( ! empty( $link['label'] ) && ! empty( $link['url'] ) ) {
-					$lines[] = self::format_link( $link['label'], $link['url'] );
-				}
-			}
-		}
+		// Footer links (hardcoded to match HTML footer template).
+		$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
 
 		return implode( "\n", $lines );
 	}
@@ -285,7 +280,7 @@ class Plain_Text_Formatter {
 	 * @since 1.170.0
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
-	 * @param array $footer Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
+	 * @param array $footer Footer configuration with 'copy' and 'unsubscribe_url'.
 	 * @return string Formatted footer text.
 	 */
 	public static function format_footer( $cta, $footer ) {
@@ -313,13 +308,12 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Footer links.
-		if ( ! empty( $footer['links'] ) && is_array( $footer['links'] ) ) {
-			foreach ( $footer['links'] as $link ) {
-				if ( ! empty( $link['label'] ) && ! empty( $link['url'] ) ) {
-					$lines[] = self::format_link( $link['label'], $link['url'] );
-				}
-			}
+		// Footer links (hardcoded to match HTML footer template).
+		$unsubscribe_url = $footer['unsubscribe_url'] ?? '';
+		if ( ! empty( $unsubscribe_url ) ) {
+			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+			$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+			$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
 		}
 
 		return implode( "\n", $lines );

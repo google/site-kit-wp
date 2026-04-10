@@ -14,6 +14,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
+use Google\Site_Kit\Core\Util\Date;
 
 /**
  * Handles initiator cron callbacks for email reporting.
@@ -61,9 +62,8 @@ class Initiator_Task {
 	 */
 	public function handle_callback_action( $frequency, $scheduled_timestamp = null ) {
 		$timestamp = (int) $scheduled_timestamp;
-
 		if ( $timestamp <= 0 ) {
-			$timestamp = time();
+			$timestamp = Date::now();
 		}
 
 		$this->scheduler->schedule_next_initiator( $frequency, $timestamp );
@@ -113,18 +113,18 @@ class Initiator_Task {
 			->setTime( 0, 0, 0 );
 		// Initiators are scheduled at period-boundary midnight in site timezone.
 		// The reporting window should end on "yesterday" (inclusive end date), so subtract one day.
-		$send_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
+		$end_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
 
-		$period_lengths = array(
-			Email_Reporting_Settings::FREQUENCY_WEEKLY    => 7,
-			Email_Reporting_Settings::FREQUENCY_MONTHLY   => 30,
-			Email_Reporting_Settings::FREQUENCY_QUARTERLY => 90,
-		);
+		$period_days = 7;
 
-		$period_days = isset( $period_lengths[ $frequency ] ) ? $period_lengths[ $frequency ] : $period_lengths[ Email_Reporting_Settings::FREQUENCY_WEEKLY ];
+		if ( Email_Reporting_Settings::FREQUENCY_MONTHLY === $frequency ) {
+			$period_days = (int) $end_date->format( 't' );
+		} elseif ( Email_Reporting_Settings::FREQUENCY_QUARTERLY === $frequency ) {
+			$period_days = self::get_days_in_quarter( $end_date );
+		}
 
 		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
-		$start_date         = $send_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
+		$start_date         = $end_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
 		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
 		$compare_start_date = $compare_end_date->sub(
 			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
@@ -132,9 +132,30 @@ class Initiator_Task {
 
 		return array(
 			'startDate'        => $start_date->format( 'Y-m-d' ),
-			'sendDate'         => $send_date->format( 'Y-m-d' ),
+			'endDate'          => $end_date->format( 'Y-m-d' ),
 			'compareStartDate' => $compare_start_date->format( 'Y-m-d' ),
 			'compareEndDate'   => $compare_end_date->format( 'Y-m-d' ),
 		);
+	}
+
+	/**
+	 * Gets the number of days in the quarter for a date.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param DateTimeImmutable $date Date in the target quarter.
+	 * @return int Days in the quarter.
+	 */
+	private static function get_days_in_quarter( DateTimeImmutable $date ) {
+		$year                = (int) $date->format( 'Y' );
+		$month               = (int) $date->format( 'n' );
+		$quarter_start_month = floor( ( $month - 1 ) / 3 ) * 3 + 1;
+
+		$quarter_start = $date->setDate( $year, $quarter_start_month, 1 );
+		$quarter_end   = $quarter_start
+			->add( new DateInterval( 'P3M' ) )
+			->sub( new DateInterval( 'P1D' ) );
+
+		return (int) $quarter_start->diff( $quarter_end )->days + 1;
 	}
 }

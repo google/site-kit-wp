@@ -35,7 +35,6 @@ class Batch_Error_Notifier {
 	const NON_SENDABLE_CATEGORIES = array(
 		'sending_error',
 		'cron_scheduler_error',
-		'other_error',
 	);
 
 	/**
@@ -47,7 +46,6 @@ class Batch_Error_Notifier {
 	const CATEGORY_CONTENT_MAP = array(
 		'permissions_error' => 'permissions',
 		'report_error'      => 'report',
-		'network_error'     => 'network',
 		'server_error'      => 'server',
 	);
 
@@ -147,8 +145,8 @@ class Batch_Error_Notifier {
 		$template_data = $this->build_template_data( $content_key );
 
 		$renderer     = new Email_Template_Renderer();
-		$html_content = $renderer->render( 'error-email', $template_data );
-		$text_content = $renderer->render_text( 'error-email', $template_data );
+		$html_content = $renderer->render( 'simple-email', $template_data );
+		$text_content = $renderer->render_text( 'simple-email', $template_data );
 
 		if ( is_wp_error( $html_content ) || is_wp_error( $text_content ) ) {
 			return;
@@ -271,12 +269,11 @@ class Batch_Error_Notifier {
 			$title = Content_Map::get_title( 'error-email' );
 		}
 
-		$body_args = $this->get_body_args( $content_key );
+		$body_args = Content_Map::get_body_args( $content_key, $this->golinks );
 		$body      = Content_Map::get_body_with_args( $content_key, $body_args );
 		$domain    = $this->get_site_domain();
 
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
-		$help_center_url    = add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' );
 
 		return array(
 			'subject'                => $title,
@@ -294,71 +291,10 @@ class Batch_Error_Notifier {
 			'footer'                 => array(
 				'copy'            => __( 'You received this email because you signed up to receive email reports from Site Kit. If you do not want to receive these emails in the future you can unsubscribe', 'google-site-kit' ),
 				'unsubscribe_url' => $email_settings_url,
-				'links'           => array(
-					array(
-						'label' => __( 'Manage subscription', 'google-site-kit' ),
-						'url'   => $email_settings_url,
-					),
-					array(
-						'label' => __( 'Help center', 'google-site-kit' ),
-						'url'   => $help_center_url,
-					),
-					array(
-						'label' => __( 'Privacy Policy', 'google-site-kit' ),
-						'url'   => 'https://policies.google.com/privacy',
-					),
-				),
 			),
+			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
+			'footer_type'            => 'standard',
 		);
-	}
-
-	/**
-	 * Gets sprintf arguments for Content_Map body placeholders.
-	 *
-	 * Maps each content key to the URLs that fill its `%s` / `%1$s` / `%2$s`
-	 * placeholders. Keys without placeholders return an empty array.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param string $content_key Content_Map key.
-	 * @return array Ordered sprintf arguments for the body paragraphs.
-	 */
-	private function get_body_args( $content_key ) {
-		$link_style = 'color:#108080;';
-		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
-
-		// URLs are internally generated (golinks, add_query_arg) and safe.
-		// Escaping is handled by wp_kses() in the HTML template and
-		// wp_strip_all_tags() in the plain text renderer.
-		switch ( $content_key ) {
-			case 'error-email-report-search-console':
-				$settings_url = add_query_arg( 'module', 'search-console', $this->golinks->get_url( 'settings' ) );
-				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			case 'error-email-report-analytics-4':
-				$settings_url = add_query_arg( 'module', 'analytics-4', $this->golinks->get_url( 'settings' ) );
-				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			case 'error-email-permissions-search-console':
-			case 'error-email-permissions-analytics-4':
-				return array(
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
-				);
-
-			default:
-				return array();
-		}
 	}
 
 	/**

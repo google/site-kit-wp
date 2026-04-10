@@ -491,7 +491,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				).toEqual( 'openaccess' );
 			} );
 
-			it( 'should set `contentPolicyStatus` in state when provided', () => {
+			it( 'should set `contentPolicyState` and `policyInfoLink` in state when `contentPolicyStatus` is provided', () => {
 				const contentPolicyStatus = {
 					contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
 					policyInfoLink: 'https://example.com/policy-info',
@@ -510,11 +510,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 						.select( MODULES_READER_REVENUE_MANAGER )
 						.getSettings()
 				).toMatchObject( {
-					contentPolicyStatus,
+					contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
+					policyInfoLink: 'https://example.com/policy-info',
 				} );
 			} );
 
-			it( 'should not set `contentPolicyStatus` when not provided', () => {
+			it( 'should not set `contentPolicyState` or `policyInfoLink` when `contentPolicyStatus` is not provided', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.selectPublication( {
@@ -526,7 +527,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getSettings();
 
-				expect( settings ).not.toHaveProperty( 'contentPolicyStatus' );
+				expect( settings ).not.toHaveProperty( 'contentPolicyState' );
+				expect( settings ).not.toHaveProperty( 'policyInfoLink' );
 			} );
 		} );
 	} );
@@ -578,10 +580,12 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [ 'basic' ] );
 			expect( settings.paymentOption ).toEqual( 'subscriptions' );
-			expect( settings.contentPolicyStatus ).toEqual( {
-				contentPolicyState: 'CONTENT_POLICY_STATE_OK',
-				policyInfoLink: `https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=${ publication.publicationId }`,
-			} );
+			expect( settings.contentPolicyState ).toEqual(
+				'CONTENT_POLICY_STATE_OK'
+			);
+			expect( settings.policyInfoLink ).toEqual(
+				`https://publishercenter.google.com/reader-revenue-manager/settings/policy?publication=${ publication.publicationId }`
+			);
 		} );
 
 		it( 'should update savedSettings in state when publications are fetched', async () => {
@@ -817,7 +821,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( contentPolicyState ).toBeUndefined();
 			} );
 
-			it( 'should return `undefined` if `contentPolicyStatus` is not available', () => {
+			it( 'should return `undefined` if `contentPolicyState` is not in settings', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -832,17 +836,13 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( contentPolicyState ).toBeUndefined();
 			} );
 
-			it( 'should return the `contentPolicyState` property from `contentPolicyStatus`', () => {
+			it( 'should return the `contentPolicyState` setting value', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
 						publicationID: 'publication-id',
 						publicationOnboardingState: 'onboarding-state',
-						contentPolicyStatus: {
-							contentPolicyState:
-								'CONTENT_POLICY_VIOLATION_ACTIVE',
-							policyInfoLink: 'https://example.com/policy-info',
-						},
+						contentPolicyState: 'CONTENT_POLICY_VIOLATION_ACTIVE',
 					} );
 
 				const contentPolicyState = registry
@@ -866,7 +866,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( policyInfoURL ).toBeUndefined();
 			} );
 
-			it( 'should return `undefined` if `contentPolicyStatus` is not available', () => {
+			it( 'should return `undefined` if `policyInfoLink` is not in settings', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
@@ -881,35 +881,13 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( policyInfoURL ).toBeUndefined();
 			} );
 
-			it( 'should return `undefined` if `policyInfoLink` is not available', () => {
+			it( 'should return `null` if `policyInfoLink` is empty', () => {
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
 					.receiveGetSettings( {
 						publicationID: 'publication-id',
 						publicationOnboardingState: 'onboarding-state',
-						contentPolicyStatus: {
-							contentPolicyState:
-								'CONTENT_POLICY_VIOLATION_ACTIVE',
-						},
-					} );
-
-				const policyInfoURL = registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getPolicyInfoURL();
-
-				expect( policyInfoURL ).toBeUndefined();
-			} );
-
-			it( 'should return `null` if `policyInfoLink` is `null`', () => {
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						publicationID: 'publication-id',
-						publicationOnboardingState: 'onboarding-state',
-						contentPolicyStatus: {
-							contentPolicyState: 'CONTENT_POLICY_STATE_OK',
-							policyInfoLink: null,
-						},
+						policyInfoLink: '',
 					} );
 
 				const policyInfoURL = registry
@@ -919,7 +897,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				expect( policyInfoURL ).toBeNull();
 			} );
 
-			it( 'should return the `policyInfoLink` property from `contentPolicyStatus`, wrapped with account chooser URL', () => {
+			it( 'should return the `policyInfoLink` setting wrapped with account chooser URL', () => {
 				const testEmail = 'test@example.com';
 				const testPolicyInfoLink = 'https://example.com/policy-info';
 
@@ -932,11 +910,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 					.receiveGetSettings( {
 						publicationID: 'publication-id',
 						publicationOnboardingState: 'onboarding-state',
-						contentPolicyStatus: {
-							contentPolicyState:
-								'CONTENT_POLICY_VIOLATION_ACTIVE',
-							policyInfoLink: testPolicyInfoLink,
-						},
+						policyInfoLink: testPolicyInfoLink,
 					} );
 
 				const policyInfoURL = registry

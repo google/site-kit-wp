@@ -23,7 +23,7 @@ import { type Connection, type RowDataPacket } from 'mysql2/promise';
 /**
  * Internal dependencies
  */
-import { PLUGINS_SEPARATOR } from './options';
+import { ANNOTATION_SEPARATOR } from './options';
 
 /**
  * Serializes a string array to a PHP serialized format.
@@ -36,8 +36,8 @@ import { PLUGINS_SEPARATOR } from './options';
 function phpSerializeStringArray( arr: string[] ): string {
 	const items = arr
 		.map(
-			( v, i ) =>
-				`i:${ i };s:${ Buffer.byteLength( v, 'utf8' ) }:"${ v }";`
+			( v, index ) =>
+				`i:${ index };s:${ Buffer.byteLength( v, 'utf8' ) }:"${ v }";`
 		)
 		.join( '' );
 	return `a:${ arr.length }:{${ items }}`;
@@ -188,7 +188,7 @@ export class WordPressPlugins {
 			}
 
 			description
-				.split( PLUGINS_SEPARATOR )
+				.split( ANNOTATION_SEPARATOR )
 				.forEach( ( pluginFile: string ) => {
 					pluginFiles.push( pluginFile );
 				} );

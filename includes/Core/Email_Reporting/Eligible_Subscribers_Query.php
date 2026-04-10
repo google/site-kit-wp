@@ -230,14 +230,21 @@ class Eligible_Subscribers_Query {
 			),
 		);
 
-		if ( '' !== $search ) {
-			$args['search']         = '*' . $search . '*';
-			$args['search_columns'] = array( 'display_name', 'user_email' );
+		if ( '' === $search ) {
+			return $this->query_user_ids( $args );
 		}
 
-		$query = new WP_User_Query( $args );
+		$users_by_name_or_email_args = $this->with_name_or_email_search( $args, $search );
+		$users_by_name_or_email      = $this->query_user_ids( $users_by_name_or_email_args );
 
-		return array_map( 'intval', $query->get_results() );
+		$users_by_role = array();
+		$matched_roles = $this->get_matched_role_slugs( $search );
+
+		if ( in_array( 'administrator', $matched_roles, true ) ) {
+			$users_by_role = $this->query_user_ids( $args );
+		}
+
+		return array_values( array_unique( array_merge( $users_by_name_or_email, $users_by_role ) ) );
 	}
 
 	/**
@@ -270,13 +277,86 @@ class Eligible_Subscribers_Query {
 			'exclude'     => $excluded_user_ids, // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- excluding the requesting user from eligibility results.
 		);
 
-		if ( '' !== $search ) {
-			$args['search']         = '*' . $search . '*';
-			$args['search_columns'] = array( 'display_name', 'user_email' );
+		if ( '' === $search ) {
+			return $this->query_user_ids( $args );
 		}
 
-		$query = new WP_User_Query( $args );
+		$users_by_name_or_email_args = $this->with_name_or_email_search( $args, $search );
+		$users_by_name_or_email      = $this->query_user_ids( $users_by_name_or_email_args );
 
-		return array_map( 'intval', $query->get_results() );
+		$matched_role_slugs = $this->get_matched_role_slugs( $search );
+		$matched_shared     = array_values( array_intersect( $shared_roles, $matched_role_slugs ) );
+		$users_by_role      = array();
+
+		if ( ! empty( $matched_shared ) ) {
+			$users_by_role_args             = $args;
+			$users_by_role_args['role__in'] = $matched_shared;
+			$users_by_role                  = $this->query_user_ids( $users_by_role_args );
+		}
+
+		return array_values( array_unique( array_merge( $users_by_name_or_email, $users_by_role ) ) );
+	}
+
+	/**
+	 * Adds name/email search parameters to user query args.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $args   User query args.
+	 * @param string $search Search term.
+	 * @return array User query args with search params.
+	 */
+	private function with_name_or_email_search( array $args, string $search ): array {
+		$args['search']         = '*' . $search . '*';
+		$args['search_columns'] = array( 'display_name', 'user_email' );
+
+		return $args;
+	}
+
+	/**
+	 * Runs a user query and returns user IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $args User query args.
+	 * @return array User IDs.
+	 */
+	private function query_user_ids( array $args ): array {
+		return ( new WP_User_Query( $args ) )->get_results();
+	}
+
+	/**
+	 * Gets role slugs matching a search term.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $search Search term.
+	 * @return string[] Matched role slugs.
+	 */
+	private function get_matched_role_slugs( string $search ): array {
+		$search = strtolower( trim( sanitize_text_field( $search ) ) );
+
+		if ( '' === $search ) {
+			return array();
+		}
+
+		$wp_roles = wp_roles();
+
+		if ( ! isset( $wp_roles->roles ) || ! is_array( $wp_roles->roles ) ) {
+			return array();
+		}
+
+		$matched_roles = array();
+
+		foreach ( $wp_roles->roles as $role_slug => $role_data ) {
+			$normalized_slug = strtolower( $role_slug );
+			$role_label      = isset( $role_data['name'] ) ? strtolower( sanitize_text_field( $role_data['name'] ) ) : '';
+
+			if ( false !== strpos( $normalized_slug, $search ) || ( '' !== $role_label && false !== strpos( $role_label, $search ) ) ) {
+				$matched_roles[] = $normalized_slug;
+			}
+		}
+
+		return array_values( array_unique( $matched_roles ) );
 	}
 }
