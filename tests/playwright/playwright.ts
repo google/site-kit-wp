@@ -88,7 +88,7 @@ export const test = base.extend< WordPressFixture >( {
 
 			// Start screencast recording.
 			const video = path.join( testInfo.outputDir, 'screencast.webm' );
-			await page.screencast.start( { path: video } );
+			await page.screencast.start( { path: video, quality: 100 } );
 			await page.screencast.showActions( { position: 'top-right' } );
 
 			// Use the WordPress fixture.
