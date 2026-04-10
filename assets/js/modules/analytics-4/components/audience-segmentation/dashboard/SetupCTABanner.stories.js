@@ -79,7 +79,7 @@ DismissedOnce.args = {
 DismissedOnce.scenario = {};
 
 export default {
-	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/AudienceSegmentationSetupCTATile',
+	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/SetupCTABanner',
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
