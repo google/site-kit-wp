@@ -12,11 +12,8 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
-use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -221,25 +218,22 @@ class Email_Reporting implements Provides_Feature_Metrics {
 		?Options $options = null,
 		?User_Options $user_options = null
 	) {
-		$this->context                = $context;
-		$this->modules                = $modules;
-		$this->data_requests          = $data_requests;
-		$this->golinks                = $golinks;
-		$this->authentication         = $authentication;
-		$this->options                = $options ?: new Options( $this->context );
-		$this->user_options           = $user_options ?: new User_Options( $this->context );
-		$this->settings               = new Email_Reporting_Settings( $this->options );
-		$this->user_settings          = new User_Email_Reporting_Settings( $this->user_options );
-		$conversion_tracking_settings = new Conversion_Tracking_Settings( $this->options );
-		$conversion_tracking          = new Conversion_Tracking( $this->context, $this->options );
-		$frequency_planner            = new Frequency_Planner();
-		$this->scheduler              = new Email_Reporting_Scheduler( $frequency_planner );
-		$this->email_notices          = new Email_Notices(
+		$this->context        = $context;
+		$this->modules        = $modules;
+		$this->data_requests  = $data_requests;
+		$this->golinks        = $golinks;
+		$this->authentication = $authentication;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->settings       = new Email_Reporting_Settings( $this->options );
+		$this->user_settings  = new User_Email_Reporting_Settings( $this->user_options );
+		$frequency_planner    = new Frequency_Planner();
+		$this->scheduler      = new Email_Reporting_Scheduler( $frequency_planner );
+		$this->email_notices  = new Email_Notices(
 			$this->context,
 			$this->golinks,
 			array(
 				new Analytics_Setup_Email_Notice( $this->context, $this->modules, $this->golinks ),
-				new Enable_Conversion_Events_Email_Notice( $this->context, $this->modules, $this->golinks, $conversion_tracking_settings, $conversion_tracking ),
 			)
 		);
 

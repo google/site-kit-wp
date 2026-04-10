@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings as User_Email_Reporting_S
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Modules;
@@ -239,15 +238,13 @@ class Email_ReportingTest extends TestCase {
 	}
 
 	private function create_email_reporting() {
-		$conversion_tracking = new Conversion_Tracking( $this->context, $this->options );
-		$data_requests       = new Email_Reporting_Data_Requests(
+		$data_requests = new Email_Reporting_Data_Requests(
 			$this->context,
 			$this->modules,
-			$conversion_tracking,
 			new Transients( $this->context ),
 			$this->user_options
 		);
-		$golinks             = new Golinks( $this->context );
+		$golinks       = new Golinks( $this->context );
 		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
 
 		return new Email_Reporting(

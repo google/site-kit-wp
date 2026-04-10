@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Golinks\Golinks;
-use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use WP_Error;
@@ -151,10 +150,6 @@ class Email_Template_Formatter {
 		}
 
 		$section_notices = $this->prepare_section_notices( $user );
-
-		if ( ! empty( $section_notices[ Enable_Conversion_Events_Email_Notice::SECTION_KEY ] ) ) {
-			$sections_payload[ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ] = true;
-		}
 
 		$sections_map = new Sections_Map( $this->context, $sections_payload, $this->golinks );
 		if ( empty( $sections_map->get_sections() ) ) {

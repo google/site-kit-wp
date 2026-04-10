@@ -118,7 +118,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$this->assertSame( 'total_conversion_events', $ga4_section->get_section_key(), 'GA4 section key should use section slug from payload.' );
 		$this->assertSame( 'Is my site helping my business grow?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
-		$this->assertSame( array( 'Total conversion events' ), $ga4_section->get_labels(), 'GA4 labels should be translated from metric names.' );
+		$this->assertSame( array( 'eventCount' ), $ga4_section->get_labels(), 'GA4 labels should use original metric name when no translation exists.' );
 		$this->assertSame( array( '123' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
 		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
@@ -141,81 +141,6 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$this->assertWPError( $sections, 'Search Console errors should be propagated as WP_Error.' );
 		$this->assertSame( 'email_report_search_console_missing_result', $sections->get_error_code(), 'Expected original Search Console error code to be preserved.' );
-	}
-
-	public function test_build_sections__uses_total_conversion_count_and_top_channel_sidecar_data() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$builder = new Email_Report_Section_Builder( $context );
-
-		$payloads = array(
-			array(
-				'total_conversion_events'                  => $this->get_conversion_event_total_report( '90' ),
-				'conversion_event_add_to_cart'             => $this->get_conversion_event_total_report( '50' ),
-				'conversion_event_begin_checkout'          => $this->get_conversion_event_total_report( '30' ),
-				'conversion_event_purchase'                => $this->get_conversion_event_total_report( '10' ),
-				'conversion_event_top_channel_add_to_cart' => $this->get_conversion_event_top_channel_report( 'Organic Search', '5' ),
-				'conversion_event_top_channel_begin_checkout' => $this->get_conversion_event_top_channel_report( 'Direct', '7' ),
-				'conversion_event_top_channel_purchase'    => $this->get_conversion_event_top_channel_report( 'Paid Search', '999' ),
-			),
-		);
-
-		$sections = $builder->build_sections( 'analytics-4', $payloads, 'en_US' );
-
-		$this->assertIsArray( $sections, 'Expected analytics sections array.' );
-		$this->assertCount( 4, $sections, 'Expected total plus three conversion event sections; top-channel sidecar reports should not render as standalone sections.' );
-
-		$section_by_key = $this->map_sections_by_key( $sections );
-
-		$this->assertArrayNotHasKey( 'conversion_event_top_channel_add_to_cart', $section_by_key, 'Top-channel sidecar payload should not become a standalone section.' );
-		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $section_by_key, 'Expected conversion event section to be present.' );
-
-		$add_to_cart_section = $section_by_key['conversion_event_add_to_cart'];
-		$this->assertSame( array( '50' ), $add_to_cart_section->get_values(), 'Conversion event value should come from total event count.' );
-		$this->assertSame( array( 'sessionDefaultChannelGroup' ), $add_to_cart_section->get_dimensions(), 'Conversion event should expose top-channel dimension only when sidecar data exists.' );
-		$this->assertSame( array( 'Organic Search' ), $add_to_cart_section->get_dimension_values(), 'Conversion event top channel should be merged from sidecar payload.' );
-
-		$sections_payload = $this->to_sections_payload( $sections );
-		$golinks          = new Golinks( $context );
-		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
-		$sections_map = new Sections_Map( $context, $sections_payload, $golinks );
-		$section_map  = $sections_map->get_sections();
-
-		$this->assertArrayHasKey( 'is_my_site_helping_my_business_grow', $section_map, 'Expected conversions section in section map.' );
-		$this->assertSame(
-			array(
-				'total_conversion_events',
-				'conversion_event_add_to_cart',
-				'conversion_event_begin_checkout',
-			),
-			array_keys( $section_map['is_my_site_helping_my_business_grow']['section_parts'] ),
-			'Conversion rows should be ranked by total event counts, not top-channel sidecar counts.'
-		);
-	}
-
-	public function test_build_sections__keeps_conversion_event_row_when_top_channel_sidecar_is_missing() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$builder = new Email_Report_Section_Builder( $context );
-
-		$payloads = array(
-			array(
-				'total_conversion_events'      => $this->get_conversion_event_total_report( '12' ),
-				'conversion_event_add_to_cart' => $this->get_conversion_event_total_report( '4' ),
-			),
-		);
-
-		$sections = $builder->build_sections( 'analytics-4', $payloads, 'en_US' );
-
-		$this->assertIsArray( $sections, 'Expected analytics sections array.' );
-		$this->assertCount( 2, $sections, 'Expected total plus conversion event section.' );
-
-		$section_by_key = $this->map_sections_by_key( $sections );
-
-		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $section_by_key, 'Conversion event should be present even when top-channel sidecar data is missing.' );
-
-		$add_to_cart_section = $section_by_key['conversion_event_add_to_cart'];
-		$this->assertSame( array( '4' ), $add_to_cart_section->get_values(), 'Conversion event value should still come from total event count.' );
-		$this->assertSame( array(), $add_to_cart_section->get_dimensions(), 'Conversion event should not expose a top-channel dimension when sidecar data is missing.' );
-		$this->assertSame( array(), $add_to_cart_section->get_dimension_values(), 'Conversion event should not expose a top-channel value when sidecar data is missing.' );
 	}
 
 	/**
@@ -245,62 +170,6 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		}
 
 		return $payload;
-	}
-
-	/**
-	 * Builds a minimal GA4 conversion event totals report fixture.
-	 *
-	 * @param string $value Event count value.
-	 * @return array
-	 */
-	private function get_conversion_event_total_report( $value ) {
-		return array(
-			'metricHeaders' => array(
-				array(
-					'name' => 'eventCount',
-					'type' => 'TYPE_INTEGER',
-				),
-			),
-			'totals'        => array(
-				array(
-					'metricValues' => array(
-						array( 'value' => (string) $value ),
-					),
-				),
-			),
-			'rowCount'      => 1,
-		);
-	}
-
-	/**
-	 * Builds a minimal GA4 conversion event top-channel report fixture.
-	 *
-	 * @param string $channel Top channel name.
-	 * @param string $value   Event count value.
-	 * @return array
-	 */
-	private function get_conversion_event_top_channel_report( $channel, $value ) {
-		return array(
-			'dimensionHeaders' => array(
-				array( 'name' => 'sessionDefaultChannelGroup' ),
-			),
-			'metricHeaders'    => array(
-				array(
-					'name' => 'eventCount',
-					'type' => 'TYPE_INTEGER',
-				),
-			),
-			'rows'             => array(
-				array(
-					'dimensionValues' => array(
-						array( 'value' => (string) $channel ),
-					),
-					'metricValues'    => array(
-						array( 'value' => (string) $value ),
-					),
-				),
-			),
-		);
 	}
 
 	/**
