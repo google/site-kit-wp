@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
 use WP_Post_Type;
@@ -795,7 +796,7 @@ final class Assets {
 			'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
 			'postTypes'         => $this->get_post_types(),
 			'storagePrefix'     => $this->get_storage_prefix(),
-			'referenceDate'     => apply_filters( 'googlesitekit_reference_date', null ),
+			'referenceDate'     => Date::reference_date(),
 			'productPostType'   => $this->get_product_post_type(),
 			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
 			'isMultisite'       => is_multisite(),

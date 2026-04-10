@@ -513,6 +513,7 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -1012,6 +1013,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -1492,6 +1494,7 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
                   >
                     <div
                       class="googlesitekit-notice googlesitekit-notice--error"
+                      role="status"
                     >
                       <div
                         class="googlesitekit-notice__icon"
@@ -1538,6 +1541,7 @@ exports[`KeyMetricsSetupApp should show an error when the save fails 1`] = `
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -2037,6 +2041,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"

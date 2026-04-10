@@ -242,6 +242,7 @@ exports[`EnhancedMeasurementActivationBanner should render the success step when
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--success"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"

@@ -9,20 +9,23 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+add_filter(
+	'wp_mail_from',
+	function () {
+		return isset( $_COOKIE['_wp_test_db'] )
+			? $_COOKIE['_wp_test_db'] . '@example.com'
+			: 'admin@example.com';
+	}
+);
+
 add_action(
 	'phpmailer_init',
-	function ( PHPMailer $phpmailer ) {
-		$from_name = isset( $_COOKIE['_wp_test_db'] )
-			? preg_replace( '/[^a-zA-Z0-9_]/', '_', $_COOKIE['_wp_test_db'] ) . '@example.com'
-			: 'admin@example.com';
-
+	function ( $phpmailer ) {
 		$phpmailer->isSMTP();
 		$phpmailer->Host       = 'mailpit';
 		$phpmailer->Port       = 1025;
 		$phpmailer->Username   = 'admin@example.com';
 		$phpmailer->Password   = '';
-		$phpmailer->From       = $from_name;
-		$phpmailer->FromName   = 'Site Kit E2E Tests';
 		$phpmailer->SMTPSecure = '';
 		$phpmailer->SMTPAuth   = false;
 	}
