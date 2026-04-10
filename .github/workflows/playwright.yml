@@ -223,9 +223,9 @@ jobs:
         run: |
           mkdir -p /tmp/artifact-url
           if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
-            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           else
-            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           fi
 
       - name: Upload report URL
