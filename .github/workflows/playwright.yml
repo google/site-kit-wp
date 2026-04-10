@@ -196,7 +196,7 @@ jobs:
         if: always()
         with:
           name: playwright-report-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]
-          path: tests/playwright/artifacts/
+          path: tests/playwright/artifacts/playwright-html
 
       - name: Set report target directory
         id: report-target
@@ -221,7 +221,7 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/artifact-url
-          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
 
       - name: Upload report URL
         if: always()
