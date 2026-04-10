@@ -291,3 +291,18 @@ jobs:
           section-content: |
             🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
             - Reports have been deleted.
+
+  cleanup-artifacts:
+    name: Cleanup temporary artifacts
+    runs-on: ubuntu-latest
+    needs: [playwright-tests, add-comment-to-pr]
+    if: always()
+    permissions:
+      actions: write
+    steps:
+      - name: Delete temporary artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: |
+            plugin
+            artifact-url-wp-*
