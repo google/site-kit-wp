@@ -179,15 +179,7 @@ function Template() {
 					<div className="googlesitekit-banner-notification googlesitekit-banner-notification--info">
 						<Banner
 							title="Analytics is gathering data"
-							description="It can take up to 72 hours before stats show up for your site. While you’re waiting, connect more services to get more stats."
-							ctaButton={ {
-								label: 'Connect more services',
-								onClick: () => {},
-							} }
-							dismissButton={ {
-								label: 'Got it',
-								onClick: () => {},
-							} }
+							description="It may take up to 72 hours before stats show up for your site."
 							svg={ {
 								desktop: gatheringDataSVG,
 								verticalPosition: 'center',
