@@ -24,14 +24,10 @@ import type { ElementType, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
+import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-
-type Registry = ReturnType< typeof createTestRegistry >;
+import { provideSiteInfo } from 'tests/js/utils';
+import WithRegistrySetup from 'tests/js/WithRegistrySetup';
 
 function Template( args: { errorCode: string; onRetry: () => void } ) {
 	return (
@@ -70,7 +66,7 @@ export default {
 		( Story: ElementType ): ReactNode => {
 			return (
 				<WithRegistrySetup
-					func={ ( registry: Registry ) => {
+					func={ ( registry: WPDataRegistry ) => {
 						provideSiteInfo( registry );
 					} }
 				>

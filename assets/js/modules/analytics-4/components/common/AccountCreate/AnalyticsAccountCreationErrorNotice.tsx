@@ -88,7 +88,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 				a: (
 					<Link
 						// @ts-expect-error - The `Link` component is not currently typed.
-						href={ analyticsAccountLimitHelpURL || '' }
+						href={ analyticsAccountLimitHelpURL }
 						external
 					/>
 				),

@@ -19,17 +19,18 @@
 /**
  * Internal dependencies
  */
+import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from 'tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -38,11 +39,10 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 
 	describe( 'user_cancel', () => {
 		it( 'should render the terms of service not accepted variant', () => {
-			const onRetry = jest.fn();
 			const { getByRole, getByText } = render(
 				<AnalyticsAccountCreationErrorNotice
 					errorCode="user_cancel"
-					onRetry={ onRetry }
+					onRetry={ () => {} }
 				/>,
 				{ registry }
 			);
@@ -94,11 +94,10 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 					hash: 'topic=14090456',
 				} );
 
-			const onRetry = jest.fn();
 			const { getByRole, getByText } = render(
 				<AnalyticsAccountCreationErrorNotice
 					errorCode="max_accounts_reached"
-					onRetry={ onRetry }
+					onRetry={ () => {} }
 				/>,
 				{ registry }
 			);
@@ -144,11 +143,10 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 				.select( CORE_SITE )
 				.getDocumentationLinkURL( 'analytics-additional-support' );
 
-			const onRetry = jest.fn();
 			const { getByRole, getByText } = render(
 				<AnalyticsAccountCreationErrorNotice
 					errorCode="backend_error"
-					onRetry={ onRetry }
+					onRetry={ () => {} }
 				/>,
 				{ registry }
 			);
