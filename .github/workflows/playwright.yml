@@ -187,6 +187,7 @@ jobs:
         run: npm run playwright:env:start
 
       - name: Run tests
+        id: run-tests
         run: npm run test:playwright
         env:
           PLAYWRIGHT_HTML_TITLE: "WordPress ${{ matrix.wp_version }}"
@@ -221,7 +222,11 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/artifact-url
-          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+          if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
+            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+          else
+            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/index.html)" > /tmp/artifact-url/url.md
+          fi
 
       - name: Upload report URL
         if: always()
