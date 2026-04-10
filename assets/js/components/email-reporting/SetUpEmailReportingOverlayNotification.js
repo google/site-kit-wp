@@ -44,6 +44,15 @@ import EmailReportingOverlayGraphicMobile from '@/svg/graphics/email-reporting-o
 export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION =
 	'email_reports_setup_overlay_notification';
 
+// Dismissed-item slug used as a persistent "user clicked the Set up
+// button on the overlay CTA" flag. Distinct from the notification's
+// own dismissed-item slug (set by both "Set up" via dismissOnClick
+// and "Maybe later" via the dismissButton), this slug is set ONLY
+// when the user clicks "Set up", and is read by PUESurveyTriggers to
+// distinguish users who engaged with the setup flow from users who
+// dismissed the overlay without ever clicking "Set up".
+export const SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA = `${ SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION }_setup_cta`;
+
 export default function SetUpEmailReportingOverlayNotification( {
 	id,
 	Notification,
@@ -55,10 +64,14 @@ export default function SetUpEmailReportingOverlayNotification( {
 
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const onSetupCallback = useCallback( () => {
+		dismissItem( SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA, {
+			expiresInSeconds: 0,
+		} );
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ setValue ] );
+	}, [ dismissItem, setValue ] );
 
 	const tooltipSettings = {
 		target: '.googlesitekit-user-selector',

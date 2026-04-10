@@ -25,6 +25,8 @@ import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
@@ -40,6 +42,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
@@ -59,6 +62,8 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		provideModules( registry );
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
 		provideUserCapabilities( registry );
 
@@ -77,6 +82,8 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
 	} );
 
 	afterEach( () => {
@@ -280,6 +287,56 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
+	} );
+
+	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {
+		jest.useFakeTimers();
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [ 'Module report error.' ],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		const goToSettingsButton = getByRole( 'button', {
+			name: 'Go to settings',
+		} );
+		goToSettingsButton.setAttribute( 'href', '#' );
+		fireEvent.click( goToSettingsButton );
+
+		await waitFor( () =>
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( false )
+		);
+
+		act( () => {
+			jest.runOnlyPendingTimers();
+		} );
+
+		jest.useRealTimers();
 	} );
 
 	it( 'resets email reporting settings when the panel closes', async () => {

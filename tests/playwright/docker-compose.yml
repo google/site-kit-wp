@@ -26,6 +26,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - sitekit
 
   wp:
     image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_VERSION:-5.2.21}
@@ -50,7 +52,7 @@ services:
         define( 'WP_DEBUG_LOG', true );
         define( 'WP_DEBUG_DISPLAY', false );
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
-        define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org' );
+        define( 'WP_ACCESSIBLE_HOSTS', '*.wordpress.org,*.googleapis.com' );
         define( 'WP_AUTO_UPDATE_CORE', false );
       PLAYWRIGHT_MAILPIT_URL: http://mailpit:8025
     profiles:
@@ -64,6 +66,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - sitekit
 
   mailpit:
     image: axllent/mailpit:v1.29.2
@@ -72,3 +76,36 @@ services:
       - 8025:8025
     profiles:
       - test
+    networks:
+      - sitekit
+
+  fixtures:
+    build:
+      context: ./docker/fixtures
+    image: site-kit-wp/playwright-node:22-alpine
+    command: node --watch index.ts
+    volumes:
+      - ./docker/fixtures:/fixtures
+    expose:
+      - "80"
+      - "443"
+    profiles:
+      - test
+    networks:
+      sitekit:
+        aliases:
+          - analyticsadmin.googleapis.com
+          - analyticsdata.googleapis.com
+          - searchconsole.googleapis.com
+          - oauth2.googleapis.com
+          - tagmanager.googleapis.com
+          - adsense.googleapis.com
+          - pagespeedonline.googleapis.com
+          - subscribewithgoogle.googleapis.com
+          - www.googleapis.com
+          - storage.googleapis.com
+          - people.googleapis.com
+          - googleads.googleapis.com
+
+networks:
+  sitekit:

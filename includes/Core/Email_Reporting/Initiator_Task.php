@@ -14,6 +14,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
+use Google\Site_Kit\Core\Util\Date;
 
 /**
  * Handles initiator cron callbacks for email reporting.
@@ -61,9 +62,8 @@ class Initiator_Task {
 	 */
 	public function handle_callback_action( $frequency, $scheduled_timestamp = null ) {
 		$timestamp = (int) $scheduled_timestamp;
-
 		if ( $timestamp <= 0 ) {
-			$timestamp = time();
+			$timestamp = Date::now();
 		}
 
 		$this->scheduler->schedule_next_initiator( $frequency, $timestamp );

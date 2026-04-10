@@ -23,6 +23,7 @@ exports[`WPDashboardReportError should only render one error per module when the
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--error"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"
@@ -86,6 +87,7 @@ exports[`WPDashboardReportError should only render one error per module when the
           >
             <div
               class="googlesitekit-notice googlesitekit-notice--error"
+              role="status"
             >
               <div
                 class="googlesitekit-notice__icon"
