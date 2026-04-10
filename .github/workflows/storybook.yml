@@ -158,7 +158,7 @@ jobs:
   remove-storybook:
     name: Remove Storybook
     runs-on: ubuntu-latest
-    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
+    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.event.pull_request.head.ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     permissions:
       contents: read
       pull-requests: write
