@@ -199,6 +199,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
     >
       <div
         class="googlesitekit-notice googlesitekit-notice--warning"
+        role="status"
       >
         <div
           class="googlesitekit-notice__content"

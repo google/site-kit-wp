@@ -188,7 +188,7 @@ export default function UserSettingsSelectionPanel() {
 
 	return (
 		<SelectionPanel
-			className="googlesitekit-user-settings-selection-panel"
+			className="googlesitekit-user-settings-selection-panel googlesitekit-email-reporting-settings"
 			isOpen={ !! isOpen }
 			onOpen={ onSideSheetOpen }
 			closePanel={ closePanel }

@@ -37,7 +37,7 @@ export const EMAIL_REPORTS_REPORT_ERROR_NOTICE =
 
 const NoticeWithIntersectionObserver = withIntersectionObserver( Notice );
 
-export default function ReportErrorNotice( { moduleSlug } ) {
+export default function ReportErrorNotice( { moduleSlug, onGoToSettings } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -51,7 +51,9 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 	);
 
 	const getHelpURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'email-reporting' )
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'email-reporting-module-issues'
+		)
 	);
 
 	return (
@@ -76,7 +78,10 @@ export default function ReportErrorNotice( { moduleSlug } ) {
 					? {
 							label: __( 'Go to settings', 'google-site-kit' ),
 							href: settingsURL,
-							onClick: trackEvents.confirm,
+							onClick: () => {
+								onGoToSettings?.();
+								trackEvents.confirm();
+							},
 					  }
 					: null
 			}
