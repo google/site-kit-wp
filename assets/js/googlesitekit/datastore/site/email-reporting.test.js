@@ -368,6 +368,100 @@ describe( 'core/site Email Reporting', () => {
 				} ).toThrow( 'userID should be a positive integer.' );
 			} );
 		} );
+
+		describe( 'resetEligibleSubscribers', () => {
+			it( 'clears cached eligible subscribers', async () => {
+				fetchMock.get( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [] ),
+					status: 200,
+				} );
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createEligibleSubscribersResponse( [] ),
+						{ page: 1, search: '' }
+					);
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createEligibleSubscribersResponse( [] ),
+						{ page: 1, search: 'editor' }
+					);
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeDefined();
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: 'editor',
+					} )
+				).toBeDefined();
+
+				await registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+
+				expect(
+					registry.stores[ CORE_SITE ].store.getState().emailReporting
+						.eligibleSubscribers
+				).toEqual( {} );
+			} );
+
+			it( 'invalidates resolver state so prior args can re-fetch', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				await registry.dispatch( CORE_SITE ).resetEligibleSubscribers();
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 3,
+							displayName: 'Another Eligible User',
+							email: 'another@example.com',
+							role: 'author',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				registry
+					.select( CORE_SITE )
+					.getEligibleSubscribers( defaultEligibleSubscribersArgs );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( defaultEligibleSubscribersArgs );
+
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

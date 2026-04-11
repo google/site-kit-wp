@@ -25,6 +25,8 @@ import {
 	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserInfo,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -33,6 +35,7 @@ import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'core/modules sharing-settings', () => {
 	const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';
@@ -87,6 +90,17 @@ describe( 'core/modules sharing-settings', () => {
 		MODULE_SLUG_SEARCH_CONSOLE,
 		MODULE_SLUG_TAGMANAGER,
 	];
+	const eligibleSubscribersEndpointRegExp =
+		/email-reporting-eligible-subscribers/;
+
+	function createEligibleSubscribersResponse( users, args = {} ) {
+		return {
+			page: args.page || 1,
+			total: args.total || users.length,
+			totalPages: args.totalPages || 1,
+			users,
+		};
+	}
 
 	let registry;
 	let store;
@@ -277,6 +291,216 @@ describe( 'core/modules sharing-settings', () => {
 					).toBe( ownerID );
 				}
 			);
+
+			it( 'invalidates eligible subscribers after a successful save', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
+					createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					{ page: 1, search: '' }
+				);
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeDefined();
+
+				await registry
+					.resolveSelect( CORE_MODULES )
+					.getSharingSettings();
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
+					{
+						body: {
+							settings: sharingSettings,
+							newOwnerIDs: {},
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeUndefined();
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 3,
+							displayName: 'New Eligible User',
+							email: 'new@example.com',
+							role: 'author',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					search: '',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { search: '' } );
+
+				expect( fetchMock ).toHaveFetched(
+					eligibleSubscribersEndpointRegExp
+				);
+			} );
+
+			it( 'does not invalidate eligible subscribers after a failed save', async () => {
+				global[ dashboardSharingDataBaseVar ] = dashboardSharingData;
+
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createEligibleSubscribersResponse( [] ),
+						{ page: 1, search: '' }
+					);
+
+				await registry
+					.resolveSelect( CORE_MODULES )
+					.getSharingSettings();
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
+					{
+						status: 500,
+						body: {
+							code: 'internal_server_error',
+							message: 'Internal Server Error',
+							data: { status: 500 },
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).saveSharingSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeDefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'resetSharingSettings', () => {
+			it( 'invalidates eligible subscribers after a successful reset', async () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
+					createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					{ page: 1, search: '' }
+				);
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
+					{
+						body: {
+							settings: {},
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).resetSharingSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeUndefined();
+
+				fetchMock.getOnce( eligibleSubscribersEndpointRegExp, {
+					body: createEligibleSubscribersResponse( [
+						{
+							id: 3,
+							displayName: 'Another Eligible User',
+							email: 'another@example.com',
+							role: 'author',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					status: 200,
+				} );
+
+				registry.select( CORE_SITE ).getEligibleSubscribers( {
+					search: '',
+				} );
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getEligibleSubscribers( { search: '' } );
+
+				expect( fetchMock ).toHaveFetched(
+					eligibleSubscribersEndpointRegExp
+				);
+			} );
+
+			it( 'does not invalidate eligible subscribers after a failed reset', async () => {
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetEligibleSubscribers(
+						createEligibleSubscribersResponse( [] ),
+						{ page: 1, search: '' }
+					);
+
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/core/modules/data/sharing-settings'
+					),
+					{
+						status: 500,
+						body: {
+							code: 'internal_server_error',
+							message: 'Internal Server Error',
+							data: { status: 500 },
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).resetSharingSettings();
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toBeDefined();
+				expect( console ).toHaveErrored();
+			} );
 		} );
 
 		describe( 'receiveGetSharingSettings', () => {

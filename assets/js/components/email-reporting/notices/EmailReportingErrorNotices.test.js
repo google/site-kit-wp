@@ -22,6 +22,7 @@
 
 import EmailReportingErrorNotices from './EmailReportingErrorNotices';
 import {
+	fireEvent,
 	render,
 	createTestRegistry,
 	provideUserAuthentication,
@@ -128,6 +129,78 @@ describe( 'EmailReportingErrorNotices', () => {
 		} );
 
 		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'calls onGoToSettings when clicking "Go to settings" for report_error', () => {
+		const onGoToSettings = jest.fn();
+
+		provideModules( registry );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [ 'Module report error.' ],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { getByRole } = render(
+			<EmailReportingErrorNotices onGoToSettings={ onGoToSettings } />,
+			{
+				registry,
+			}
+		);
+
+		const goToSettingsButton = getByRole( 'button', {
+			name: 'Go to settings',
+		} );
+		goToSettingsButton.setAttribute( 'href', '#' );
+		fireEvent.click( goToSettingsButton );
+
+		expect( onGoToSettings ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'does not call onGoToSettings for non report_error variants', () => {
+		const onGoToSettings = jest.fn();
+
+		provideModules( registry );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				403: [ 'Insufficient permissions.' ],
+			},
+			error_data: {
+				403: {
+					status: 403,
+					reason: 'forbidden',
+					category_id: 'permissions_error',
+					module_slug: 'analytics-4',
+				},
+			},
+		} );
+
+		const { getByRole } = render(
+			<EmailReportingErrorNotices onGoToSettings={ onGoToSettings } />,
+			{
+				registry,
+			}
+		);
+
+		const getHelpButton = getByRole( 'button', { name: /Get help/i } );
+		getHelpButton.setAttribute( 'href', '#' );
+		fireEvent.click( getHelpButton );
+
+		expect( onGoToSettings ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should render the sending error notice when email reporting is enabled, user is not view-only, and there is a sending_error category ID', () => {

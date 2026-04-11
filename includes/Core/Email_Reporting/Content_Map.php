@@ -229,8 +229,9 @@ class Content_Map {
 	 * @return array Ordered sprintf arguments for the body paragraphs.
 	 */
 	public static function get_body_args( $content_key, Golinks $golinks ) {
-		$link_style = 'color:#108080;';
-		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
+		$link_style    = 'color:#108080;';
+		$support_base  = 'https://sitekit.withgoogle.com/support/';
+		$module_issues = add_query_arg( 'doc', 'email-reporting-module-issues', $support_base );
 
 		switch ( $content_key ) {
 			case 'error-email-report-search-console':
@@ -238,7 +239,7 @@ class Content_Map {
 				return array(
 					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
 					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $module_issues . '" style="' . $link_style . '">',
 					'</a>',
 				);
 
@@ -247,14 +248,21 @@ class Content_Map {
 				return array(
 					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
 					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $module_issues . '" style="' . $link_style . '">',
 					'</a>',
 				);
 
 			case 'error-email-permissions-search-console':
-			case 'error-email-permissions-analytics-4':
+				$permissions_url = add_query_arg( 'error_id', 'search-console_insufficient_permissions', $support_base );
 				return array(
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
+					'<a class="link" href="' . $permissions_url . '" style="' . $link_style . '">',
+					'</a>',
+				);
+
+			case 'error-email-permissions-analytics-4':
+				$permissions_url = add_query_arg( 'error_id', 'analytics-4_insufficient_permissions', $support_base );
+				return array(
+					'<a class="link" href="' . $permissions_url . '" style="' . $link_style . '">',
 					'</a>',
 				);
 

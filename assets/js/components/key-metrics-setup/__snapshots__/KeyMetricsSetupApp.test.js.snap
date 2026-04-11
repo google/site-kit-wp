@@ -460,6 +460,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
                   >
                     <div
                       class="googlesitekit-notice googlesitekit-notice--error"
+                      role="status"
                     >
                       <div
                         class="googlesitekit-notice__icon"
@@ -519,6 +520,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -999,6 +1001,7 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
                   >
                     <div
                       class="googlesitekit-notice googlesitekit-notice--error"
+                      role="status"
                     >
                       <div
                         class="googlesitekit-notice__icon"
@@ -1053,6 +1056,7 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -1586,6 +1590,7 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -2085,6 +2090,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -2584,6 +2590,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
