@@ -249,50 +249,6 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 	} );
 
-	it( 'should show an error when the save fails', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-
-		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
-			body: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { container, getByRole, getByText, waitForRegistry } = render(
-			<KeyMetricsSetupApp />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
-			}
-		);
-
-		await waitForRegistry();
-		await waitForFocus();
-
-		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
-		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
-
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-
-		expect(
-			getByText( 'Error: Internal server error (Please try again.)' )
-		).toBeInTheDocument();
-
-		expect( console ).toHaveErroredWith( [
-			'Google Site Kit API Error',
-			'method:POST',
-			'datapoint:user-input-settings',
-			'type:core',
-			'identifier:user',
-			'error:"Internal server error"',
-		] );
-	} );
-
 	it( 'should not navigate to the dashboard when saving fails', async () => {
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
@@ -750,6 +706,159 @@ describe( 'KeyMetricsSetupApp', () => {
 			);
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	describe( 'error handling', () => {
+		it( 'should show an error and a `Continue without saving` button when saving the user input fails', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const { container, getByRole, getByText, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitForFocus();
+
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Saving your answer failed' )
+			).toBeInTheDocument();
+
+			expect(
+				getByText(
+					'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.'
+				)
+			).toBeInTheDocument();
+
+			expect(
+				getByRole( 'button', { name: 'Continue without saving' } )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+
+			expect( console ).toHaveErroredWith( [
+				'Google Site Kit API Error',
+				'method:POST',
+				'datapoint:user-input-settings',
+				'type:core',
+				'identifier:user',
+				'error:"Internal server error"',
+			] );
+		} );
+		it( 'should continue without saving user input when the `Continue without saving` is clicked', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: { settings: { isAnalyticsSetupComplete: true } },
+			} );
+
+			const { getByRole, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitForFocus();
+
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Continue without saving' } )
+			);
+
+			await waitFor( () => {
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=authentication_success&slug=analytics-4'
+				);
+			} );
+		} );
+		it( 'should show an error when saving initial setup settings fails', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			fetchMock.postOnce( initialSetupSettingsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			const { container, getByText, getByRole, waitForRegistry } = render(
+				<KeyMetricsSetupApp />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitForFocus();
+
+			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+			fireEvent.click(
+				getByRole( 'button', { name: 'Complete setup' } )
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Continue without saving' } )
+			);
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Something went wrong, please try again' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
 		} );
 	} );
 } );

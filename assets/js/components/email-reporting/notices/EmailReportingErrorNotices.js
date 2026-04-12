@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import PropTypes from 'prop-types';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -28,7 +29,7 @@ import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/S
 import CronSchedulerErrorNotice from '@/js/components/email-reporting/notices/errors/CronSchedulerErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
 
-export default function EmailReportingErrorNotices() {
+export default function EmailReportingErrorNotices( { onGoToSettings } ) {
 	const isViewOnly = useViewOnly();
 
 	const isEmailReportingEnabled = useSelect( ( select ) =>
@@ -63,6 +64,7 @@ export default function EmailReportingErrorNotices() {
 			return (
 				<ReportErrorNotice
 					moduleSlug={ latestEmailReportingError.module_slug }
+					onGoToSettings={ onGoToSettings }
 				/>
 			);
 		case 'sending_error':
@@ -73,3 +75,7 @@ export default function EmailReportingErrorNotices() {
 			return <ServerErrorNotice />;
 	}
 }
+
+EmailReportingErrorNotices.propTypes = {
+	onGoToSettings: PropTypes.func,
+};

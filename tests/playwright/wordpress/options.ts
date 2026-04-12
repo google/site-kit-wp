@@ -20,11 +20,11 @@
 import { TestDetailsAnnotation } from '@playwright/test';
 
 /**
- * Separator for plugin file paths.
+ * Separator for annotation values.
  *
  * @since 1.175.0
  */
-export const PLUGINS_SEPARATOR = ',';
+export const ANNOTATION_SEPARATOR = ',';
 
 /**
  * Sets the plugins to activate for the test.
@@ -39,7 +39,37 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 		type: '_wp:plugin',
 		description: plugins
 			.map( ( plugin ) => `google-site-kit-test-plugins/${ plugin }` )
-			.join( PLUGINS_SEPARATOR ),
+			.join( ANNOTATION_SEPARATOR ),
+	};
+}
+
+/**
+ * Sets the feature flags to enable for the test.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} flags Feature flag names to enable.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
+	return {
+		type: '_wp:feature-flags',
+		description: flags.join( ANNOTATION_SEPARATOR ),
+	};
+}
+
+/**
+ * Sets the fixtures to use for the test.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} fixtures The fixtures to use for the test.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withFixtures( fixtures: string ): TestDetailsAnnotation {
+	return {
+		type: '_wp:fixtures',
+		description: fixtures,
 	};
 }
 

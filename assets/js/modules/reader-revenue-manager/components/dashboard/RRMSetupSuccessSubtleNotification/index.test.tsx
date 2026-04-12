@@ -507,10 +507,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'subscriptions',
 						productID: 'basic',
-						contentPolicyStatus: {
-							contentPolicyState,
-							policyInfoLink: 'https://example.com/policy',
-						},
+						contentPolicyState,
+						policyInfoLink: 'https://example.com/policy',
 					} );
 
 				const { getByRole, getByText } = render(
@@ -543,10 +541,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'subscriptions',
 						productID: 'basic',
-						contentPolicyStatus: {
-							contentPolicyState,
-							policyInfoLink: 'https://example.com/policy',
-						},
+						contentPolicyState,
+						policyInfoLink: 'https://example.com/policy',
 					} );
 
 				await registry
@@ -590,10 +586,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'subscriptions',
 						productID: 'basic',
-						contentPolicyStatus: {
-							contentPolicyState,
-							policyInfoLink: 'https://example.com/policy',
-						},
+						contentPolicyState,
+						policyInfoLink: 'https://example.com/policy',
 					} );
 
 				await registry
@@ -649,10 +643,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'subscriptions',
 						productID: 'basic',
-						contentPolicyStatus: {
-							contentPolicyState,
-							policyInfoLink: 'https://example.com/policy',
-						},
+						contentPolicyState,
+						policyInfoLink: 'https://example.com/policy',
 					} );
 
 				const { getByRole } = render(
@@ -693,10 +685,8 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 					publicationOnboardingState: ONBOARDING_COMPLETE,
 					paymentOption: 'subscriptions',
 					productID: 'basic',
-					contentPolicyStatus: {
-						contentPolicyState,
-						policyInfoLink: null,
-					},
+					contentPolicyState,
+					policyInfoLink: '',
 				} );
 
 			const { getByText, queryByRole, queryByText } = render(
@@ -749,12 +739,12 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			undefined,
 			...Object.values( CONTENT_POLICY_STATES ),
 		] )( 'with contentPolicyState %s', ( contentPolicyState ) => {
-			const contentPolicyStatus = contentPolicyState
+			const contentPolicySettings = contentPolicyState
 				? {
 						contentPolicyState,
 						policyInfoLink: 'https://example.com/policy',
 				  }
-				: undefined;
+				: {};
 
 			const expectedLabelSuffix = contentPolicyState
 				? `:${ contentPolicyState }`
@@ -780,7 +770,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'subscriptions',
 						productID: 'basic',
-						contentPolicyStatus,
+						...contentPolicySettings,
 					} );
 
 				const { getByRole, waitForRegistry } = render(
@@ -826,7 +816,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 						publicationOnboardingState: ONBOARDING_COMPLETE,
 						paymentOption: 'noPayment',
 						productID: 'basic',
-						contentPolicyStatus,
+						...contentPolicySettings,
 					} );
 
 				const { getByText, waitForRegistry } = render(
@@ -881,7 +871,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 							publicationOnboardingState: ONBOARDING_COMPLETE,
 							paymentOption: 'noPayment',
 							productID: 'advanced',
-							contentPolicyStatus,
+							...contentPolicySettings,
 						} );
 
 					const { getByText, waitForRegistry } = render(

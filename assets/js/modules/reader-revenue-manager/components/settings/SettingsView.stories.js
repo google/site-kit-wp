@@ -172,11 +172,9 @@ export default {
 
 				// Add content policy status if provided.
 				if ( args?.contentPolicyState ) {
-					settings.contentPolicyStatus = {
-						contentPolicyState: args.contentPolicyState,
-						policyInfoLink:
-							'https://publishercenter.google.com/policy',
-					};
+					settings.contentPolicyState = args.contentPolicyState;
+					settings.policyInfoLink =
+						'https://publishercenter.google.com/policy';
 				}
 
 				registry

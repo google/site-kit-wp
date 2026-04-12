@@ -20,12 +20,7 @@
  * Internal dependencies
  */
 import AMPContainerSelect from './AMPContainerSelect';
-import {
-	fireEvent,
-	render,
-	act,
-	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_TAGMANAGER,
 	CONTEXT_WEB,
@@ -37,7 +32,6 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideSiteInfo,
-	untilResolved,
 } from '../../../../../../tests/js/utils';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
 
@@ -120,7 +114,7 @@ describe( 'AMPContainerSelect', () => {
 		);
 	} );
 
-	it( 'can select the "Set up a new container" option', () => {
+	it( 'can select the "Set up a new container" option', async () => {
 		const { account, containers } = factories.buildAccountWithContainers( {
 			container: { usageContext: [ CONTEXT_AMP ] },
 		} );
@@ -139,18 +133,24 @@ describe( 'AMPContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <AMPContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText, waitForRegistry } = render(
+			<AMPContainerSelect />,
+			{
+				registry,
+			}
+		);
 
 		fireEvent.click(
 			container.querySelector( '.mdc-select__selected-text' )
 		);
+
 		fireEvent.click( getByText( /set up a new container/i ) );
 
 		expect(
 			container.querySelector( '.mdc-select__selected-text' )
 		).toHaveTextContent( /set up a new container/i );
+
+		await waitForRegistry();
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
@@ -191,14 +191,7 @@ describe( 'AMPContainerSelect', () => {
 			container.querySelector( '.mdc-select__selected-text' )
 		);
 
-		await act( async () => {
-			fireEvent.click(
-				getByText( new RegExp( ampContainer.name, 'i' ) )
-			);
-			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
-				accountID
-			);
-		} );
+		fireEvent.click( getByText( new RegExp( ampContainer.name, 'i' ) ) );
 
 		expect(
 			registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
@@ -210,7 +203,6 @@ describe( 'AMPContainerSelect', () => {
 		// Ensure any pending async updates from the enhanced Select finish before unmount,
 		// preventing setState on unmounted component warnings in Jest.
 		await waitForRegistry();
-		await waitForDefaultTimeouts();
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {

@@ -340,7 +340,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'Receive the most important insights about your site\'s performance, key trends, and tailored metrics.',
 				'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.',
 			),
-			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/support/?doc=email-reporting',
 			'primary_call_to_action' => array(
 				'label' => 'Get your report',
 				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
@@ -358,7 +358,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Simple email should contain first body paragraph.' );
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
-		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Simple email should contain Learn more link.' );
+		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/support/?doc=email-reporting', $result, 'Simple email should contain Learn more link.' );
 		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
 	}
