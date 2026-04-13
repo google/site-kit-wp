@@ -79,6 +79,7 @@ class Report_Data_Builder {
 	 * Builds section payloads from Analytics module data.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event handling.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
@@ -170,6 +171,7 @@ class Report_Data_Builder {
 	 * Builds analytics section payload, extracting dimensions, metrics, and trends.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event label overrides.
 	 *
 	 * @param array  $processed_report Processed report data.
 	 * @param string $section_key      Section key.

@@ -115,24 +115,6 @@ class Email_Template_FormatterTest extends TestCase {
 		$this->assertSame( array(), $payload['template_data']['header_notices'], 'Expected no header notices when analytics was previously connected/disconnected.' );
 	}
 
-	public function test_build_template_payload__includes_empty_section_notices() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user    = get_user_by( 'id', $user_id );
-
-		$this->set_analytics_settings_connected();
-
-		$payload = $this->formatter->build_template_payload(
-			array( $this->get_total_visitors_section() ),
-			Email_Reporting_Settings::FREQUENCY_WEEKLY,
-			$this->get_date_range(),
-			$user
-		);
-
-		$this->assertNotWPError( $payload, 'Expected template payload to be built successfully.' );
-		$this->assertArrayHasKey( 'section_notices', $payload['template_data'], 'Expected section_notices key in template data.' );
-		$this->assertSame( array(), $payload['template_data']['section_notices'], 'Expected no section notices.' );
-	}
-
 	public function test_build_template_payload__returns_no_data_error_when_report_has_no_sections() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$user    = get_user_by( 'id', $user_id );
