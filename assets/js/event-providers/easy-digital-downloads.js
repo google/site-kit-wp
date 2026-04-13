@@ -54,7 +54,7 @@
  * @since 1.153.0
  *
  * @param {string} cartItemHTML The HTML string for the cart item.
- * @return {Object} An object containing the item's `title`, `value` and `price`.
+ * @return {Object} An object containing the item's `id`, `name` and `price`.
  */
 export function parseCartItemHTML( cartItemHTML ) {
 	const parser = new DOMParser();
