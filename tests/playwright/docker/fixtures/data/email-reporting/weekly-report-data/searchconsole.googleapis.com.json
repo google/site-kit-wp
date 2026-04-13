@@ -512,7 +512,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2025-12-31\",\"rowlimit\":1000,\"startdate\":\"2025-12-18\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2025-12-28\",\"rowlimit\":1000,\"startdate\":\"2025-12-15\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -655,7 +655,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-31\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-28\",\"rowlimit\":10,\"startdate\":\"2025-12-22\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -753,7 +753,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-31\",\"rowlimit\":10,\"startdate\":\"2025-12-25\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-28\",\"rowlimit\":10,\"startdate\":\"2025-12-22\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -851,7 +851,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-31\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-28\",\"rowlimit\":50,\"startdate\":\"2025-12-22\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1309,7 +1309,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-31\",\"rowlimit\":50,\"startdate\":\"2025-12-25\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-28\",\"rowlimit\":50,\"startdate\":\"2025-12-22\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1767,7 +1767,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-21\",\"rowlimit\":10,\"startdate\":\"2025-12-15\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1865,7 +1865,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":10,\"startdate\":\"2025-12-18\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-21\",\"rowlimit\":10,\"startdate\":\"2025-12-15\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -1963,7 +1963,7 @@
 				"responseAggregationType": "byPage"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-21\",\"rowlimit\":50,\"startdate\":\"2025-12-15\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
@@ -2421,7 +2421,7 @@
 				"responseAggregationType": "byProperty"
 			}
 		},
-		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-24\",\"rowlimit\":50,\"startdate\":\"2025-12-18\"}": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-21\",\"rowlimit\":50,\"startdate\":\"2025-12-15\"}": {
 			"status": 200,
 			"body": {
 				"rows": [
