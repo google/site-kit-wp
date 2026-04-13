@@ -71,7 +71,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->scheduler->schedule_initiator_events();
 
 		foreach ( $this->offsets as $frequency => $offset ) {
-			$scheduled = $this->scheduler->get_initiator_timestamp( $frequency );
+			$scheduled = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
 			$this->assertNotFalse( $scheduled, 'Expected initiator event to be scheduled for frequency "' . $frequency . '".' );
 			$this->assertLessThanOrEqual( $before + $offset + 2, $scheduled, 'Initiator for frequency "' . $frequency . '" should not exceed expected offset.' );
 			$this->assertGreaterThanOrEqual( $before + $offset, $scheduled, 'Initiator for frequency "' . $frequency . '" should meet minimum offset.' );
@@ -87,10 +87,10 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$frequency = Email_Reporting_Settings::FREQUENCY_WEEKLY;
 
 		$this->scheduler->schedule_initiator_once( $frequency );
-		$first = $this->scheduler->get_initiator_timestamp( $frequency );
+		$first = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
 
 		$this->scheduler->schedule_initiator_once( $frequency );
-		$second = $this->scheduler->get_initiator_timestamp( $frequency );
+		$second = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
 
 		$this->assertSame( $first, $second, 'Scheduling initiator twice should not change the event timestamp for frequency "' . $frequency . '".' );
 		$this->assertCount( 1, $this->get_initiator_events_for_frequency( $frequency ), 'Scheduling initiator twice should not create duplicate events.' );
@@ -105,7 +105,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->scheduler->schedule_initiator_once( $frequency );
 
-		$scheduled_timestamp = $this->scheduler->get_initiator_timestamp( $frequency );
+		$scheduled_timestamp = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
 		$events              = $this->get_initiator_events_for_frequency( $frequency );
 
 		$this->assertCount( 1, $events, 'Mismatched frequency initiator should be replaced with one canonical event.' );
@@ -144,7 +144,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->assertSame(
 			$noncanonical_first,
-			$this->scheduler->get_initiator_timestamp( $frequency ),
+			$this->scheduler->get_initiator_timestamp_for_frequency( $frequency ),
 			'Frequency initiator lookup should match by first argument and return earliest timestamp regardless of args shape.'
 		);
 	}
@@ -253,7 +253,7 @@ class Email_Reporting_SchedulerTest extends TestCase {
 
 		$this->scheduler->unschedule_all();
 
-		$this->assertFalse( $this->scheduler->get_initiator_timestamp( Email_Reporting_Settings::FREQUENCY_WEEKLY ), 'Initiator hook should be unscheduled for weekly frequency.' );
+		$this->assertFalse( $this->scheduler->get_initiator_timestamp_for_frequency( Email_Reporting_Settings::FREQUENCY_WEEKLY ), 'Initiator hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_WORKER, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $worker_timestamp ) ), 'Worker hook should be unscheduled for batch "batch".' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_FALLBACK, array( 'batch', Email_Reporting_Settings::FREQUENCY_WEEKLY, $fallback_timestamp ) ), 'Fallback hook should be unscheduled for weekly frequency.' );
 		$this->assertFalse( wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup hook should be unscheduled.' );

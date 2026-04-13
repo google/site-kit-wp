@@ -263,7 +263,7 @@ class Email_ReportingTest extends TestCase {
 
 	private function get_initiator_scheduled_timestamp( $frequency ) {
 		$scheduler = new Email_Reporting_Scheduler( new Frequency_Planner() );
-		return $scheduler->get_initiator_timestamp( $frequency );
+		return $scheduler->get_initiator_timestamp_for_frequency( $frequency );
 	}
 
 	private function clear_scheduled_events() {

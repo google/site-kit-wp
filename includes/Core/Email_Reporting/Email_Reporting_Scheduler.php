@@ -76,9 +76,9 @@ class Email_Reporting_Scheduler {
 	public function schedule_initiator_once( $frequency ) {
 		$now    = time();
 		$next   = $this->frequency_planner->next_occurrence( $frequency, $now, BC_Functions::wp_timezone() );
-		$events = $this->get_initiator_events( $frequency );
+		$events = $this->get_initiator_events_for_frequency( $frequency );
 
-		if ( $this->has_due_initiator_event( $events, $now ) ) {
+		if ( $this->has_initiator_event_that_is_due_or_overdue( $events, $now ) ) {
 			return;
 		}
 
@@ -86,7 +86,7 @@ class Email_Reporting_Scheduler {
 			return;
 		}
 
-		$this->unschedule_initiator_events( $frequency );
+		$this->unschedule_initiator_events_for_frequency( $frequency );
 
 		wp_schedule_single_event( $next, self::ACTION_INITIATOR, array( $frequency, $next ) );
 	}
@@ -114,19 +114,19 @@ class Email_Reporting_Scheduler {
 	 * @return bool Whether an initiator event is already scheduled for this frequency.
 	 */
 	public function is_initiator_scheduled( $frequency ) {
-		return false !== $this->get_initiator_timestamp( $frequency );
+		return false !== $this->get_initiator_timestamp_for_frequency( $frequency );
 	}
 
 	/**
 	 * Gets the timestamp of the next initiator event for a frequency.
 	 *
-	 * @since 1.176.0
+	 * @since n.e.x.t
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return int|false Timestamp if found, otherwise false.
 	 */
-	public function get_initiator_timestamp( $frequency ) {
-		$events = $this->get_initiator_events( $frequency );
+	public function get_initiator_timestamp_for_frequency( $frequency ) {
+		$events = $this->get_initiator_events_for_frequency( $frequency );
 
 		if ( empty( $events ) ) {
 			return false;
@@ -157,7 +157,7 @@ class Email_Reporting_Scheduler {
 	 * @param string $frequency Frequency slug.
 	 * @return array<array{timestamp:int,args:array}> Matched initiator events.
 	 */
-	private function get_initiator_events( $frequency ) {
+	private function get_initiator_events_for_frequency( $frequency ) {
 		// Private function is used here but there are tests covering this
 		// method in case it changes.
 		//
@@ -199,16 +199,15 @@ class Email_Reporting_Scheduler {
 	 *
 	 * @param string $frequency Frequency slug.
 	 */
-	private function unschedule_initiator_events( $frequency ) {
-		foreach ( $this->get_initiator_events( $frequency ) as $event ) {
+	private function unschedule_initiator_events_for_frequency( $frequency ) {
+		foreach ( $this->get_initiator_events_for_frequency( $frequency ) as $event ) {
 			wp_unschedule_event( $event['timestamp'], self::ACTION_INITIATOR, $event['args'] );
 		}
 	}
 
 	/**
-	 * Checks whether an initiator list contains a due/overdue event.
-	 *
-	 * Due/overdue events must not be reconciled, so cron can execute them.
+	 * Checks for due/overdue events that are not yet reconciled; if this is
+	 * `true` then cron can execute these events.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -216,7 +215,7 @@ class Email_Reporting_Scheduler {
 	 * @param int   $now Current unix timestamp.
 	 * @return bool True if any event is due/overdue.
 	 */
-	private function has_due_initiator_event( $events, $now ) {
+	private function has_initiator_event_that_is_due_or_overdue( $events, $now ) {
 		foreach ( $events as $event ) {
 			if ( $event['timestamp'] <= $now ) {
 				return true;
