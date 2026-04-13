@@ -106,7 +106,7 @@ class Initiator_Task {
 	 *
 	 * @since 1.167.0
 	 * @since 1.174.0 Made method static.
-	 * @since n.e.x.t Switched to calendar-aware period resolution; compare periods use natural lengths.
+	 * @since n.e.x.t Switched to calendar-aware period resolution.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp.
