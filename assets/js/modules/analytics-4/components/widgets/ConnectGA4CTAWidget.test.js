@@ -45,6 +45,7 @@ import {
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 
 describe( 'ConnectGA4CTAWidget', () => {
 	let registry;
@@ -146,5 +147,55 @@ describe( 'ConnectGA4CTAWidget', () => {
 			name: /Connect Analytics/i,
 		} );
 		expect( button ).toBeInTheDocument();
+	} );
+
+	it( 'should render the administrator message without CTA or dismiss link for view-only users', async () => {
+		const keyMetricWidgets = [
+			KM_ANALYTICS_RETURNING_VISITORS,
+			KM_ANALYTICS_NEW_VISITORS,
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+			KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+		];
+
+		provideKeyMetrics( registry, {
+			widgetSlugs: keyMetricWidgets,
+		} );
+
+		provideKeyMetricsWidgetRegistrations(
+			registry,
+			keyMetricWidgets.reduce(
+				( acc, widget ) => ( {
+					...acc,
+					[ widget ]: { modules: [ MODULE_SLUG_ANALYTICS_4 ] },
+				} ),
+				{}
+			)
+		);
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const {
+			container,
+			getByText,
+			queryByRole,
+			queryByText,
+			waitForRegistry,
+		} = render( <WidgetWithComponentProps />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-banner__title' )
+		).toHaveTextContent( 'Analytics is disconnected' );
+		expect(
+			getByText(
+				/Metrics cannot be displayed without Analytics\. To fix the issue, contact your administrator\./i
+			)
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: /Connect Analytics/i } )
+		).not.toBeInTheDocument();
+		expect( queryByText( /Maybe later/i ) ).not.toBeInTheDocument();
 	} );
 } );
