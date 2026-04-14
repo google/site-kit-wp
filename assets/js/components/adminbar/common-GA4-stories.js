@@ -243,8 +243,10 @@ export function setupAnalytics4MockReportsWithNoDataInComparisonDateRange(
 
 export function setupSearchConsoleGatheringData( registry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-27' );
-	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-		options: adminbarSearchConsoleOptions,
+	adminbarSearchConsoleOptions.forEach( ( options ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveGetReport( [], { options } );
 	} );
 }
 

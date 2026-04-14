@@ -27,8 +27,24 @@ export function bootstrapFetchMocks() {
 	fetchMockSaveSettings();
 	fetchMockSaveDataAvailable();
 	fetchMockGetModules();
+	fetchMockGetNotifications();
 	fetchMockCatchAll();
 	fetchMock.spy( /\.hot-update\.json$/ );
+}
+
+// Mock server-side notifications endpoints (core + modules) to return an
+// empty array. The notifications store reducer calls `.reduce()` on the
+// response so an object (the catch-all default) causes a TypeError.
+export function fetchMockGetNotifications() {
+	fetchMock.get(
+		new RegExp(
+			'/google-site-kit/v1/(?:core/site|modules/[\\w-]+)/data/notifications'
+		),
+		{
+			body: [],
+			status: 200,
+		}
+	);
 }
 
 export function fetchMockGetModules() {

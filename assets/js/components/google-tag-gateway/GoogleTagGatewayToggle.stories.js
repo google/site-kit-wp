@@ -39,9 +39,32 @@ function Template() {
 const serverRequirementStatusEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/site/data/gtg-server-requirement-status'
 );
+const gtgSettingsEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/site/data/gtg-settings'
+);
+
+const defaultServerRequirementStatus = {
+	isEnabled: true,
+	isGTGHealthy: true,
+	isScriptAccessEnabled: true,
+};
+
+const defaultGTGSettings = {
+	isEnabled: false,
+	isGTGHealthy: true,
+	isScriptAccessEnabled: true,
+};
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
+Default.args = {
+	setupRegistry: () => {
+		fetchMock.getOnce( serverRequirementStatusEndpoint, {
+			body: defaultServerRequirementStatus,
+			status: 200,
+		} );
+	},
+};
 Default.scenario = {};
 
 export const ServerRequirementsFail = Template.bind( {} );
@@ -74,6 +97,12 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			fetchMock.reset();
+			// The toggle also resolves GTG settings via CORE_SITE; provide a
+			// shared mock so each story variant doesn't need to repeat it.
+			fetchMock.get( gtgSettingsEndpoint, {
+				body: defaultGTGSettings,
+				status: 200,
+			} );
 			return (
 				<WithRegistrySetup
 					func={ ( registry ) => args.setupRegistry?.( registry ) }
