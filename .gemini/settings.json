@@ -20,5 +20,8 @@
 			},
 			"includeTools": [ "issue_read", "list_issues", "search_issues" ]
 		}
+	},
+	"ui": {
+		"inlineThinkingMode": "full"
 	}
 }
