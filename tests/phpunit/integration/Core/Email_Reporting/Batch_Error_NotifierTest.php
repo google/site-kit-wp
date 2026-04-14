@@ -461,7 +461,7 @@ class Batch_Error_NotifierTest extends TestCase {
 			->with(
 				$this->isType( 'string' ),
 				$this->isType( 'string' ),
-				$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=' . $module_slug . '" style="color:#108080; text-decoration:none;">Search Console settings</a>' ),
+				$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=search-console" style="color:#108080; text-decoration:none;">Search Console settings</a>' ),
 				$this->isType( 'array' ),
 				$this->isType( 'string' )
 			);
