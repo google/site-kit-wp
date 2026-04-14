@@ -289,4 +289,62 @@ class Email_LogTest extends TestCase {
 
 		$this->assertNull( Email_Log::get_date_range_from_log( get_post( $post_id ) ), 'Unparseable dates should return null.' );
 	}
+
+	/**
+	 * @dataProvider data_reference_dates_timezone_round_trip
+	 */
+	public function test_reference_dates_survive_timezone_round_trip( $timezone_string ) {
+		$original_timezone_string = get_option( 'timezone_string' );
+		$original_gmt_offset      = get_option( 'gmt_offset' );
+
+		update_option( 'timezone_string', $timezone_string );
+		delete_option( 'gmt_offset' );
+
+		try {
+			$input_dates = array(
+				'startDate'        => '2026-04-06',
+				'endDate'          => '2026-04-12',
+				'compareStartDate' => '2026-03-30',
+				'compareEndDate'   => '2026-04-05',
+			);
+
+			$post_id = wp_insert_post(
+				array(
+					'post_type'   => Email_Log::POST_TYPE,
+					'post_status' => Email_Log::STATUS_SCHEDULED,
+					'post_title'  => wp_generate_uuid4(),
+					'meta_input'  => array(
+						Email_Log::META_REPORT_REFERENCE_DATES => $input_dates,
+					),
+				)
+			);
+
+			$retrieved = Email_Log::get_date_range_from_log( get_post( $post_id ) );
+
+			$this->assertSame( $input_dates['startDate'], $retrieved['startDate'], "startDate should survive round-trip in $timezone_string timezone." );
+			$this->assertSame( $input_dates['endDate'], $retrieved['endDate'], "endDate should survive round-trip in $timezone_string timezone." );
+			$this->assertSame( $input_dates['compareStartDate'], $retrieved['compareStartDate'], "compareStartDate should survive round-trip in $timezone_string timezone." );
+			$this->assertSame( $input_dates['compareEndDate'], $retrieved['compareEndDate'], "compareEndDate should survive round-trip in $timezone_string timezone." );
+
+			wp_delete_post( $post_id, true );
+		} finally {
+			update_option( 'timezone_string', $original_timezone_string );
+
+			if ( false === $original_gmt_offset ) {
+				delete_option( 'gmt_offset' );
+			} else {
+				update_option( 'gmt_offset', $original_gmt_offset );
+			}
+		}
+	}
+
+	public function data_reference_dates_timezone_round_trip() {
+		return array(
+			'UTC'                 => array( 'UTC' ),
+			'America/Los_Angeles' => array( 'America/Los_Angeles' ),
+			'America/New_York'    => array( 'America/New_York' ),
+			'Australia/Sydney'    => array( 'Australia/Sydney' ),
+			'Pacific/Auckland'    => array( 'Pacific/Auckland' ),
+		);
+	}
 }

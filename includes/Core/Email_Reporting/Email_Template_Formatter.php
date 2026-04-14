@@ -392,7 +392,7 @@ class Email_Template_Formatter {
 					$first_report_date,
 				)
 			),
-			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'learn_more_url'         => add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' ),
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
@@ -486,17 +486,17 @@ class Email_Template_Formatter {
 		}
 
 		$format_date = static function ( $value ) {
-			$timestamp = strtotime( $value );
-			if ( ! $timestamp ) {
+			$timezone = BC_Functions::wp_timezone();
+			$date     = date_create_immutable( $value, $timezone );
+			if ( ! $date ) {
 				return $value;
 			}
 
-			$timezone = BC_Functions::wp_timezone();
-			if ( $timezone && function_exists( 'wp_date' ) ) {
-				return wp_date( 'M j', $timestamp, $timezone );
+			if ( function_exists( 'wp_date' ) ) {
+				return wp_date( 'M j', $date->getTimestamp(), $timezone );
 			}
 
-			return gmdate( 'M j', $timestamp );
+			return $date->format( 'M j' );
 		};
 
 		return sprintf(

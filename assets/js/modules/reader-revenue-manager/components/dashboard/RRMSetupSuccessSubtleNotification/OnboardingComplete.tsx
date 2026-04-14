@@ -71,14 +71,18 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 	productID,
 	serviceURL,
 } ) => {
-	const productIDs = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+	const productIDs = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getProductIDs(),
+		[]
 	);
 
-	const rrmSettingsURL = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getModuleSettingsEditURL(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		)
+	const rrmSettingsURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getModuleSettingsEditURL(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			),
+		[]
 	);
 
 	// Do not show the notification if the payment option is not set.

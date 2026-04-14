@@ -219,7 +219,7 @@ export function dateSub( relativeDate, duration ) {
 	);
 
 	const timestamp = isValidDateString( relativeDate )
-		? Date.parse( relativeDate )
+		? stringToDate( relativeDate ).getTime()
 		: relativeDate.getTime();
 
 	// Valid use of `new Date()` using calculations.

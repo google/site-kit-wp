@@ -102,6 +102,9 @@ describe( 'ModuleSetup', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetAccountSummaries( accountSummaries );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getAccountSummaries', [] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -114,6 +117,9 @@ describe( 'ModuleSetup', () => {
 				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
 					propertyIDs: [ propertyID ],
 				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getWebDataStreams', [ propertyID ] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -126,6 +132,12 @@ describe( 'ModuleSetup', () => {
 						propertyID,
 						webDataStreamID,
 					}
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution(
+					'isEnhancedMeasurementStreamAlreadyEnabled',
+					[ propertyID, webDataStreamID ]
 				);
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).selectAccount( accountID );

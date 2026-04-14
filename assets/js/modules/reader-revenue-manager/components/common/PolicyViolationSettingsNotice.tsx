@@ -41,12 +41,16 @@ import { getPolicyViolationNotificationCopy } from '@/js/modules/reader-revenue-
 import Notice from '@/js/components/Notice';
 
 const PolicyViolationSettingsNotice: FC = () => {
-	const contentPolicyState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	const contentPolicyState = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState(),
+		[]
 	);
 
-	const policyInfoURL = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
+	const policyInfoURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL(),
+		[]
 	);
 
 	const inView = useInView();

@@ -11,6 +11,10 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Cookie-Based Routing](#cookie-based-routing)
     -   [Authentication Without Login](#authentication-without-login)
     -   [Plugin Activation via Database](#plugin-activation-via-database)
+    -   [Feature Flags](#feature-flags)
+    -   [Google API Fixtures](#google-api-fixtures)
+    -   [Email Testing](#email-testing)
+    -   [Reference Date](#reference-date)
     -   [PHP Error Logging](#php-error-logging)
 -   [Running Tests](#running-tests)
 -   [Writing Tests](#writing-tests)
@@ -19,6 +23,8 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Test Annotations](#test-annotations)
     -   [Navigation Helpers](#navigation-helpers)
     -   [Plugin Management](#plugin-management)
+    -   [REST API Helpers](#rest-api-helpers)
+    -   [Email Assertions](#email-assertions)
 -   [Test Infrastructure](#test-infrastructure)
     -   [Docker Services](#docker-services)
     -   [Docker Compose Profiles](#docker-compose-profiles)
@@ -38,7 +44,10 @@ This infrastructure enables fast, fully isolated, repeatable E2E tests without r
 -   **Per-test database isolation** — each test gets its own fresh database cloned from a snapshot.
 -   **No real login** — authentication is handled via cookies, bypassing the login flow entirely.
 -   **Plugin state via database** — plugins are activated/deactivated by writing directly to `wp_options`, not through the admin UI.
--   **Annotation-driven configuration** — tests declare their requirements (plugins, user) as Playwright annotations, keeping setup out of test bodies.
+-   **Annotation-driven configuration** — tests declare their requirements (plugins, user, feature flags, fixtures) as Playwright annotations, keeping setup out of test bodies.
+-   **Google API mocking** — a local fixtures service intercepts all Google API calls and returns pre-recorded responses.
+-   **Email capture** — a Mailpit SMTP server captures all outgoing emails for assertion in tests.
+-   **Fixed reference date** — a must-use plugin fixes the WordPress reference date to `2026-01-01` for deterministic time-based tests.
 
 ---
 
@@ -54,17 +63,34 @@ tests/playwright/
 ├── config/
 │   └── viewports.ts                    # Viewport helpers (mobile, tablet, desktop, large)
 ├── docker/                             # Docker runtime assets
+│   ├── fixtures/                       # Google API mock service
+│   │   ├── data/                       # Per-fixture JSON response files keyed by API host
+│   │   │   └── email-reporting/
+│   │   │       └── weekly-report-data/
+│   │   │           └── searchconsole.googleapis.com.json
+│   │   ├── Dockerfile
+│   │   ├── index.ts                    # Express server: routes requests to fixture JSON
+│   │   ├── package.json
+│   │   └── tsconfig.json
 │   ├── mariadb/
 │   │   └── backup.sql                  # WordPress DB snapshot (loaded on container init)
 │   └── wordpress/
 │       ├── Dockerfile                  # Custom WordPress image (configurable WP version)
 │       ├── db.php                      # DB drop-in: routes connections and logs PHP errors
 │       ├── mu-plugins/
-│       │   └── e2e-authenticate-admin.php  # Authenticates user via cookie
+│       │   ├── e2e-authenticate-admin.php  # Authenticates user via cookie
+│       │   ├── e2e-feature-flags.php       # Enables feature flags via cookie
+│       │   ├── e2e-fixtures.php            # Disables SSL verification, forwards fixture header
+│       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01
 │       └── plugins/                    # Test helper plugins (auto-mounted)
+│           ├── email-reporting.php     # REST endpoint to trigger email reporting cron
 │           ├── gcp-credentials.php     # Mock GCP OAuth credentials
-│           └── proxy-credentials.php   # Mock proxy OAuth credentials
+│           ├── mailpit.php             # Routes wp_mail() through Mailpit SMTP
+│           ├── proxy-auth.php          # Fakes proxy authentication state
+│           └── proxy-credentials.php  # Mock proxy OAuth credentials
 ├── specs/                              # Test files
+│   ├── email-reporting/
+│   │   └── email-reporting.spec.ts
 │   └── plugin-activation.spec.ts
 ├── wordpress/                          # TypeScript test utilities
 │   ├── index.ts                        # Re-exports
@@ -73,7 +99,8 @@ tests/playwright/
 │   ├── database.ts                     # Per-test DB create/drop and error log retrieval
 │   ├── cookies.ts                      # Test routing cookies
 │   ├── plugins.ts                      # Plugin activation via DB
-│   ├── options.ts                      # Annotation helpers (withPlugins, asUser)
+│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures)
+│   ├── mailpit.ts                      # Mailpit email client
 │   └── error-log-ignore-list.ts        # Known PHP errors to ignore per WP version
 ├── docker-compose.yml
 ├── package.json
@@ -103,10 +130,14 @@ The `WordPressCookies` class injects these cookies into the Playwright browser c
 
 -   `_wp_test_db` — database name for this test (always set)
 -   `_wp_test_user` — username to authenticate as (set when `_wp:as-user` annotation is present)
+-   `_wp_test_feature_flags` — comma-separated list of enabled feature flags (set when `_wp:feature-flags` annotation is present)
+-   `_wp_test_fixtures` — fixture set name for Google API mocking (set when `_wp:fixtures` annotation is present)
 
 ### Authentication Without Login
 
-`docker/wordpress/mu-plugins/e2e-authenticate-admin.php` hooks into WordPress's `determine_current_user` filter. It reads the `_wp_test_user` cookie and sets the corresponding WordPress user as the currently authenticated user — no actual login flow required.
+`docker/wordpress/mu-plugins/e2e-authenticate-admin.php` hooks into WordPress's `determine_current_user` filter. It reads the `_wp_test_user` cookie (defaulting to `admin` if absent) and sets the corresponding WordPress user as the currently authenticated user — no actual login flow required.
+
+On `wp-admin` pages, `wp_set_auth_cookie()` is called to persist the session, ensuring redirect flows work correctly.
 
 This means tests never need to fill in a username/password form, making them faster and more reliable.
 
@@ -115,6 +146,77 @@ This means tests never need to fill in a username/password form, making them fas
 `WordPressPlugins` activates and deactivates plugins by directly reading and writing the `active_plugins` option in `wp_options` (as a PHP-serialized array). This avoids the overhead of navigating the WordPress admin UI for plugin management.
 
 Plugins specified via the `withPlugins()` annotation are activated automatically during test setup, before the test body runs.
+
+### Feature Flags
+
+`docker/wordpress/mu-plugins/e2e-feature-flags.php` hooks into the `googlesitekit_is_feature_enabled` filter at priority 999. It reads the `_wp_test_feature_flags` cookie (a comma-separated list of flag names) and forces those flags to return `true`.
+
+Use the `withFeatureFlags()` annotation to enable flags for a test:
+
+```typescript
+import { withFeatureFlags } from '../wordpress';
+
+test(
+    'feature behind a flag',
+    { annotation: withFeatureFlags( 'myFeatureFlag' ) },
+    async ( { wp } ) => { ... }
+);
+```
+
+### Google API Fixtures
+
+A local Node.js service (`docker/fixtures/`) intercepts all Google API calls made by WordPress and returns pre-recorded JSON responses. The service is configured as a DNS alias for the following hosts on the internal Docker network:
+
+-   `analyticsadmin.googleapis.com`
+-   `analyticsdata.googleapis.com`
+-   `searchconsole.googleapis.com`
+-   `oauth2.googleapis.com`
+-   `tagmanager.googleapis.com`
+-   `adsense.googleapis.com`
+-   `pagespeedonline.googleapis.com`
+-   `subscribewithgoogle.googleapis.com`
+-   `www.googleapis.com`
+-   `storage.googleapis.com`
+
+**How fixture data works:**
+
+1. Create a directory under `docker/fixtures/data/<fixture-name>/` with one JSON file per API host (e.g., `searchconsole.googleapis.com.json`).
+2. Each file contains an array of `{ request, response }` pairs matched by URL path.
+3. Use the `withFixtures()` annotation to activate a fixture set for a test.
+4. The `e2e-fixtures.php` mu-plugin disables SSL certificate verification and forwards the `_wp_test_fixtures` cookie value as a `X-WP-Test-Fixtures` request header to the fixtures service.
+5. The fixtures service routes responses based on that header.
+
+The service also handles Google's multipart batch request format, dispatching each sub-request to its corresponding fixture entry.
+
+Use the `withFixtures()` annotation:
+
+```typescript
+import { withFixtures } from '../wordpress';
+
+test(
+    'test with mocked API data',
+    { annotation: withFixtures( 'email-reporting/weekly-report-data' ) },
+    async ( { wp } ) => { ... }
+);
+```
+
+### Email Testing
+
+A [Mailpit](https://github.com/axllent/mailpit) service (v1.29.2) captures all outgoing emails sent by WordPress via SMTP.
+
+**How it works:**
+
+1. Activate the `mailpit.php` test helper plugin via `withPlugins('mailpit.php')` — this redirects `wp_mail()` to Mailpit's SMTP server on port 1025 and sets the sender address to `<database-name>@example.com`.
+2. Use `wp.mailpit` (a `Mailpit` instance) to assert on received emails in your test.
+3. After the test, any emails sent by this test are automatically deleted from Mailpit.
+
+The `Mailpit` class uses Mailpit's [search API](https://mailpit.axllent.org/docs/api-v1/) to scope queries to the current test's sender address, so parallel tests never see each other's emails.
+
+See [Email Assertions](#email-assertions) for usage examples.
+
+### Reference Date
+
+`docker/wordpress/mu-plugins/e2e-reference-date.php` fixes the WordPress reference date to `2026-01-01 00:00:00`. This ensures that any date-dependent logic in Site Kit (e.g., date range calculations, report periods) behaves deterministically regardless of when the tests are run.
 
 ### PHP Error Logging
 
@@ -167,18 +269,19 @@ npm run -w tests/playwright setup
 
 The following environment variables configure how tests connect to the running environment:
 
-| Variable                 | Default                 | Description                             |
-| ------------------------ | ----------------------- | --------------------------------------- |
-| `PLAYWRIGHT_WP_URL`      | `http://localhost:9002` | WordPress base URL                      |
-| `PLAYWRIGHT_DB_HOST`     | `localhost`             | MariaDB host                            |
-| `PLAYWRIGHT_DB_PORT`     | `9306`                  | MariaDB port                            |
-| `PLAYWRIGHT_DB_USER`     | `root`                  | MariaDB user                            |
-| `PLAYWRIGHT_DB_PASSWORD` | `example`               | MariaDB password                        |
-| `PLUGIN_PATH`            | `../../`                | Path to the plugin directory to mount   |
-| `WP_VERSION`             | `5.2.21`                | WordPress version to use in Docker      |
-| `FORBID_ONLY`            | _(unset)_               | Fail if `test.only` is present (CI use) |
-| `RETRIES`                | `0`                     | Number of retries per failing test      |
-| `WORKERS`                | _(Playwright default)_  | Number of parallel workers              |
+| Variable                   | Default                 | Description                             |
+| -------------------------- | ----------------------- | --------------------------------------- |
+| `PLAYWRIGHT_WP_URL`        | `http://localhost:9002` | WordPress base URL                      |
+| `PLAYWRIGHT_DB_HOST`       | `localhost`             | MariaDB host                            |
+| `PLAYWRIGHT_DB_PORT`       | `9306`                  | MariaDB port                            |
+| `PLAYWRIGHT_DB_USER`       | `root`                  | MariaDB user                            |
+| `PLAYWRIGHT_DB_PASSWORD`   | `example`               | MariaDB password                        |
+| `PLAYWRIGHT_MAILPIT_URL`   | `http://localhost:8025` | Mailpit API base URL                    |
+| `PLUGIN_PATH`              | `../../`                | Path to the plugin directory to mount   |
+| `WP_VERSION`               | `5.2.21`                | WordPress version to use in Docker      |
+| `FORBID_ONLY`              | _(unset)_               | Fail if `test.only` is present (CI use) |
+| `RETRIES`                  | `0`                     | Number of retries per failing test      |
+| `WORKERS`                  | _(Playwright default)_  | Number of parallel workers              |
 
 ---
 
@@ -202,15 +305,18 @@ test( 'my test', async ( { wp } ) => {
 
 The `wp` fixture is a `WordPress` instance automatically set up and torn down for each test. It provides:
 
-| Member                      | Type     | Description                                        |
-| --------------------------- | -------- | -------------------------------------------------- |
-| `wp.page`                   | `Page`   | The Playwright page                                |
-| `wp.baseURL`                | `string` | The WordPress base URL                             |
-| `wp.goto(path)`             | method   | Navigate to an absolute path on the WordPress host |
-| `wp.visitAdmin(path?)`      | method   | Navigate to `/wp-admin/{path}`                     |
-| `wp.visitFrontend(path?)`   | method   | Navigate to `/{path}` (default: `/`)               |
-| `wp.activatePlugin(file)`   | method   | Activate a plugin by its file path                 |
-| `wp.deactivatePlugin(file)` | method   | Deactivate a plugin by its file path               |
+| Member                      | Type       | Description                                        |
+| --------------------------- | ---------- | -------------------------------------------------- |
+| `wp.page`                   | `Page`     | The Playwright page                                |
+| `wp.baseURL`                | `string`   | The WordPress base URL                             |
+| `wp.mailpit`                | `Mailpit`  | Email client scoped to the current test            |
+| `wp.goto(path)`             | method     | Navigate to an absolute path on the WordPress host |
+| `wp.visitDashboard(hash?)`  | method     | Navigate to the Site Kit dashboard (`/wp-admin/admin.php?page=googlesitekit-dashboard`) |
+| `wp.visitAdmin(path?)`      | method     | Navigate to `/wp-admin/{path}`                     |
+| `wp.visitFrontend(path?)`   | method     | Navigate to `/{path}` (default: `/`)               |
+| `wp.activatePlugin(file)`   | method     | Activate a plugin by its file path                 |
+| `wp.deactivatePlugin(file)` | method     | Deactivate a plugin by its file path               |
+| `wp.restRequest(...)`       | method     | Issue a WordPress REST API request via the browser |
 
 ### Test Annotations
 
@@ -227,6 +333,8 @@ const details: TestDetails = {
 
 test.describe( 'my suite', details, () => { ... } );
 ```
+
+Available users in the database snapshot: `admin`, `admin-2`, `editor`, `author`, `contributor`.
 
 **`withPlugins(...plugins)`** — Activate one or more test helper plugins before the test. Plugin paths are relative to `google-site-kit-test-plugins/`:
 
@@ -248,6 +356,30 @@ Multiple plugins can be activated at once:
 }
 ```
 
+**`withFeatureFlags(...flags)`** — Enable one or more Site Kit feature flags for the duration of the test:
+
+```typescript
+import { withFeatureFlags } from '../wordpress';
+
+test(
+    'test behind a feature flag',
+    { annotation: withFeatureFlags( 'proactiveUserEngagement' ) },
+    async ( { wp } ) => { ... }
+);
+```
+
+**`withFixtures(fixtureSet)`** — Use a named set of pre-recorded Google API responses. The fixture set name maps to a directory under `docker/fixtures/data/`:
+
+```typescript
+import { withFixtures } from '../wordpress';
+
+test(
+    'test with mocked API data',
+    { annotation: withFixtures( 'email-reporting/weekly-report-data' ) },
+    async ( { wp } ) => { ... }
+);
+```
+
 Annotations can be applied at both the `test.describe` (suite) level and the individual `test` level. Test-level annotations are merged with suite-level annotations.
 
 ### Navigation Helpers
@@ -255,6 +387,10 @@ Annotations can be applied at both the `test.describe` (suite) level and the ind
 ```typescript
 // Navigate to any path on the WordPress host
 await wp.goto( '/wp-json/wp/v2/posts' );
+
+// Navigate to the Site Kit dashboard
+await wp.visitDashboard();
+await wp.visitDashboard( '#/settings' ); // with hash
 
 // Navigate to a wp-admin page
 await wp.visitAdmin( 'options-general.php' );
@@ -282,6 +418,56 @@ test( 'my test', async ( { wp } ) => {
 } );
 ```
 
+### REST API Helpers
+
+`wp.restRequest()` issues a WordPress REST API request using the browser's `fetch`, inheriting the test's authenticated session:
+
+```typescript
+test( 'my test', async ( { wp } ) => {
+	const response = await wp.restRequest( 'POST', '/google-site-kit/v1/e2e/email-reporting/trigger-cron', {
+		body: JSON.stringify( { frequency: 'weekly' } ),
+	} );
+} );
+```
+
+### Email Assertions
+
+Use `wp.mailpit` to wait for and inspect emails sent during a test. Email capture requires the `mailpit.php` plugin to be activated:
+
+```typescript
+test(
+    'sends a welcome email',
+    { annotation: withPlugins( 'mailpit.php' ) },
+    async ( { wp } ) => {
+        // ... trigger an action that sends email ...
+
+        // Wait for an email to arrive (polls until timeout)
+        const message = await wp.mailpit.waitForMessage();
+
+        // Fetch full message details (including body)
+        const detail = await wp.mailpit.getMessage( message.ID );
+
+        expect( detail.Subject ).toBe( 'Welcome!' );
+        expect( detail.HTML ).toContain( 'Hello' );
+
+        // Check if any emails arrived matching an optional search query
+        const found = await wp.mailpit.hasMessage( 'subject:Weekly' );
+    }
+);
+```
+
+**`Mailpit` API:**
+
+| Method                          | Description                                                         |
+| ------------------------------- | ------------------------------------------------------------------- |
+| `getMessages(query?)`           | Fetch all messages, optionally filtered by a search query           |
+| `getMessage(id)`                | Fetch full message detail (body, attachments) for a given ID        |
+| `waitForMessage(options?)`      | Poll until at least one message arrives (default timeout: 2500ms)   |
+| `hasMessage(query?)`            | Return `true` if any messages match the optional query              |
+| `deleteMessages()`              | Delete all messages sent by this test                               |
+
+Mailpit automatically scopes queries to the current test's sender address (`<database-name>@example.com`), so concurrent tests never see each other's emails.
+
 ---
 
 ## Test Infrastructure
@@ -297,30 +483,51 @@ test( 'my test', async ( { wp } ) => {
 **`wp` (custom WordPress image — `docker/wordpress/Dockerfile`)**
 
 -   Port: `9002` → `80`
--   Based on `wordpress:php7.4-apache`; the WordPress version is controlled by the `WP_VERSION` build arg (defaults to `5.2.21`)
+-   Based on `ghcr.io/google/site-kit-wp/playwright-wp`; the WordPress version is controlled by the `WP_VERSION` build arg (defaults to `5.2.21`)
 -   The plugin is mounted at `wp-content/plugins/google-site-kit` from `PLUGIN_PATH` (defaults to `../../` for local dev; CI uses a built artifact)
 -   Test helper plugins are mounted at `wp-content/plugins/google-site-kit-test-plugins`
--   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable)
+-   `WP_HTTP_BLOCK_EXTERNAL` is enabled (only `*.wordpress.org` is reachable from the browser; the fixtures service intercepts Google API calls at the network level)
 -   `db.php` drop-in is mounted at `wp-content/db.php` — handles per-test database routing and PHP error logging
 -   `SCRIPT_DEBUG` and `WP_DEBUG_LOG` are enabled; `WP_DEBUG_DISPLAY` is **disabled** (errors go to the log file and the per-test error log table, not the page)
 -   `WP_AUTO_UPDATE_CORE` is disabled
 -   Depends on `mysql` being healthy before starting
 
+**`mailpit` (axllent/mailpit:v1.29.2)**
+
+-   SMTP port: `1025`
+-   Web UI / REST API port: `8025`
+-   Captures all outgoing WordPress emails sent via the `mailpit.php` test helper plugin
+-   Profile: `test`
+
+**`fixtures` (custom Node.js image — `docker/fixtures/Dockerfile`)**
+
+-   Serves pre-recorded Google API responses for tests
+-   Configured as a DNS alias for all major Google API hosts on the internal Docker network
+-   Routes requests based on the `X-WP-Test-Fixtures` header forwarded by `e2e-fixtures.php`
+-   Profile: `test`
+
 ### Docker Compose Profiles
 
 Docker Compose uses profiles to separate test-running services from backup-generation services:
 
--   **`test`** — used when running tests (`npm run start` / `npm run test`). Both `mysql` and `wp` services are started.
--   **`generate`** — used by `bin/generate-backup-sql.sh` to generate the database snapshot. Starts the same services but with `WP_DEBUG=0` to suppress debug output during setup.
-
-Both services belong to both profiles, so the same containers serve both purposes. The profile controls which `docker compose` commands activate the services.
+-   **`test`** — used when running tests (`npm run start` / `npm run test`). All services (`mysql`, `wp`, `mailpit`, `fixtures`) are started.
+-   **`generate`** — used by `bin/generate-backup-sql.sh` to generate the database snapshot. Starts `mysql` and `wp` only, with `WP_DEBUG=0` to suppress debug output during setup.
 
 ### Must-Use Plugins
 
 Must-use plugins in `docker/wordpress/mu-plugins/` are always active and cannot be deactivated through the UI.
 
 **`e2e-authenticate-admin.php`**
-Hooks into `determine_current_user` to authenticate the user specified in the `_wp_test_user` cookie. This enables tests to act as any WordPress user without performing a real login.
+Hooks into `determine_current_user` to authenticate the user specified in the `_wp_test_user` cookie (defaults to `admin`). Also calls `wp_set_auth_cookie()` on admin pages so redirect flows work correctly. This enables tests to act as any WordPress user without performing a real login.
+
+**`e2e-feature-flags.php`**
+Hooks into `googlesitekit_is_feature_enabled` at priority 999 to force the feature flags listed in the `_wp_test_feature_flags` cookie to return `true`.
+
+**`e2e-fixtures.php`**
+Disables SSL certificate verification so WordPress can reach the local fixtures service (which uses a self-signed certificate). Forwards the `_wp_test_fixtures` cookie value as an `X-WP-Test-Fixtures` HTTP header on all outbound requests.
+
+**`e2e-reference-date.php`**
+Fixes the Site Kit reference date to `2026-01-01 00:00:00` so that date-dependent calculations in reports are deterministic across test runs.
 
 ### Test Helper Plugins
 
@@ -331,6 +538,15 @@ Filters `googlesitekit_oauth_secret` with placeholder GCP OAuth credentials (cli
 
 **`proxy-credentials.php`**
 Similar to `gcp-credentials.php` but uses the `sitekit.withgoogle.com` proxy domain. Use this to test proxy-based OAuth flows.
+
+**`proxy-auth.php`**
+Fakes a completed proxy authentication state so tests can start from an already-authenticated context without going through the OAuth flow.
+
+**`mailpit.php`**
+Configures PHPMailer to route all `wp_mail()` calls through Mailpit's SMTP server on port 1025. Sets the sender address to `<database-name>@example.com` so the `Mailpit` client can scope email queries to the current test.
+
+**`email-reporting.php`**
+Exposes a REST endpoint (`POST /wp-json/google-site-kit/v1/e2e/email-reporting/trigger-cron`) that synchronously runs the email reporting cron job for a given `frequency`. This lets tests trigger and verify email sends without waiting for WP-Cron to fire naturally.
 
 ### Database Snapshot
 

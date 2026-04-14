@@ -23,6 +23,7 @@ import fetchMock from 'fetch-mock';
  */
 import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModules,
@@ -311,11 +312,13 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 				NOTIFICATION_GROUPS.DEFAULT,
 			] );
 
-		fireEvent.click(
-			getByRole( 'button', {
-				name: 'Enable Google tag gateway for advertisers',
-			} )
-		);
+		await act( () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: 'Enable Google tag gateway for advertisers',
+				} )
+			);
+		} );
 
 		await waitForRegistry();
 
@@ -328,6 +331,8 @@ describe( 'GoogleTagGatewaySetupBanner', () => {
 			expect( fetchMock ).toHaveFetched( gtgSettingsEndpoint );
 			expect( fetchMock ).toHaveFetched( dismissItemEndpoint );
 		} );
+
+		await waitForRegistry();
 
 		expect(
 			registry

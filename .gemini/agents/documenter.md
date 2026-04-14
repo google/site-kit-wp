@@ -7,7 +7,7 @@ tools:
   - "read_file"
   - "write_file"
   - "list_directory"
-  - "grep"
+  - "grep_search"
   - "glob"
 temperature: 0.4
 max_turns: 15

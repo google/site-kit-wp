@@ -7,6 +7,7 @@ exports[`EmailReportingErrorNotices should render the permissions error notice w
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -56,6 +57,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
   >
     <div
       class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      role="status"
     >
       <div
         class="googlesitekit-notice__icon"
@@ -82,7 +84,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
         <a
           aria-label="Get help (opens in a new tab)"
           class="mdc-button mdc-button--tertiary"
-          href="undefined?doc=email-reporting"
+          href="undefined?doc=email-reporting-module-issues"
           role="button"
           target="_blank"
         >

@@ -24,6 +24,7 @@ import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { actHook, renderHook } from '../../../../../tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '../../../../../tests/js/utils';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
 import useAllTrafficWidgetReport from './useAllTrafficWidgetReport';
 
 describe( 'useAllTrafficWidgetReport', () => {
@@ -65,14 +66,15 @@ describe( 'useAllTrafficWidgetReport', () => {
 		} );
 
 		let result;
+		let waitForRegistry;
 
 		await actHook( async () => {
-			( { result } = await renderHook(
-				() => useAllTrafficWidgetReport(),
-				{
-					registry,
-				}
-			) );
+			const hookResult = renderHook( () => useAllTrafficWidgetReport(), {
+				registry,
+			} );
+			result = hookResult.result;
+			waitForRegistry = hookResult.waitForRegistry;
+			await waitForRegistry();
 		} );
 
 		expect( console ).toHaveErrored();
@@ -82,8 +84,10 @@ describe( 'useAllTrafficWidgetReport', () => {
 
 	it( 'should return the report response', async () => {
 		const reportArgs = {
-			startDate: '2023-01-01',
-			endDate: '2023-01-28',
+			...registry.select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} ),
 			metrics: [ { name: 'totalUsers' } ],
 		};
 
@@ -95,14 +99,15 @@ describe( 'useAllTrafficWidgetReport', () => {
 		} );
 
 		let result;
+		let waitForRegistry;
 
 		await actHook( async () => {
-			( { result } = await renderHook(
-				() => useAllTrafficWidgetReport(),
-				{
-					registry,
-				}
-			) );
+			const hookResult = renderHook( () => useAllTrafficWidgetReport(), {
+				registry,
+			} );
+			result = hookResult.result;
+			waitForRegistry = hookResult.waitForRegistry;
+			await waitForRegistry();
 		} );
 
 		expect( result.current.report ).toEqual( reportResponse );

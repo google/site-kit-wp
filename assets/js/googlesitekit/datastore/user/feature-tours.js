@@ -50,8 +50,6 @@ export const FEATURE_TOUR_LAST_DISMISSED_AT = 'feature_tour_last_dismissed_at';
 // Actions.
 const DISMISS_TOUR = 'DISMISS_TOUR';
 const RECEIVE_CURRENT_TOUR = 'RECEIVE_CURRENT_TOUR';
-const RECEIVE_READY_TOURS = 'RECEIVE_READY_TOURS';
-const RECEIVE_TOURS = 'RECEIVE_TOURS';
 const CHECK_TOUR_REQUIREMENTS = 'CHECK_TOUR_REQUIREMENTS';
 const CHECK_ON_DEMAND_TOUR_REQUIREMENTS = 'CHECK_ON_DEMAND_TOUR_REQUIREMENTS';
 const RECEIVE_LAST_DISMISSED_AT = 'RECEIVE_LAST_DISMISSED_AT';
@@ -133,23 +131,6 @@ const baseActions = {
 		return {
 			payload: { tour },
 			type: RECEIVE_CURRENT_TOUR,
-		};
-	},
-
-	receiveFeatureToursForView( viewTours, { viewContext } = {} ) {
-		invariant( Array.isArray( viewTours ), 'viewTours must be an array.' );
-		invariant( viewContext, 'viewContext is required.' );
-		return {
-			payload: { viewTours, viewContext },
-			type: RECEIVE_READY_TOURS,
-		};
-	},
-
-	receiveAllFeatureTours( tours ) {
-		invariant( Array.isArray( tours ), 'tours must be an array.' );
-		return {
-			payload: { tours },
-			type: RECEIVE_TOURS,
 		};
 	},
 
@@ -326,19 +307,6 @@ const baseReducer = createReducer( ( state, { type, payload } ) => {
 		case RECEIVE_CURRENT_TOUR:
 			state.currentTour = payload.tour;
 			state.shownTour = payload.tour;
-			break;
-
-		case RECEIVE_READY_TOURS:
-			const { viewContext, viewTours } = payload;
-
-			state.viewTours = {
-				...state.viewTours,
-				[ viewContext ]: viewTours,
-			};
-			break;
-
-		case RECEIVE_TOURS:
-			state.tours = payload.tours;
 			break;
 
 		case RECEIVE_LAST_DISMISSED_AT:

@@ -56,7 +56,8 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'contentPolicyStatus'               => (object) array(),
+				'contentPolicyState'                => '',
+				'policyInfoLink'                    => '',
 				'ownerID'                           => 0,
 				'publicationID'                     => '',
 				'publicationOnboardingState'        => '',
@@ -129,35 +130,48 @@ class SettingsTest extends SettingsTestCase {
 			'paymentOption with number'                    => array( 'paymentOption', 123, '' ),
 			'paymentOption with boolean'                   => array( 'paymentOption', true, '' ),
 
-			// Validate contentPolicyStatus.
-			'contentPolicyStatus with populated object'    => array(
-				'contentPolicyStatus',
-				array(
-					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
-				),
-				array(
-					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
-				),
+			// Validate contentPolicyState.
+			'contentPolicyState with valid string'         => array(
+				'contentPolicyState',
+				'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
 			),
-			'contentPolicyStatus with empty object'        => array(
-				'contentPolicyStatus',
-				(object) array(),
-				(object) array(),
+			'contentPolicyState with empty string'         => array(
+				'contentPolicyState',
+				'',
+				'',
 			),
-			'contentPolicyStatus with empty array'         => array(
-				'contentPolicyStatus',
-				array(),
-				(object) array(),
-			),
-			'contentPolicyStatus with number'              => array(
-				'contentPolicyStatus',
+			'contentPolicyState with number'               => array(
+				'contentPolicyState',
 				123,
-				(object) array(),
+				'',
 			),
-			'contentPolicyStatus with boolean'             => array(
-				'contentPolicyStatus',
+			'contentPolicyState with boolean'              => array(
+				'contentPolicyState',
 				true,
-				(object) array(),
+				'',
+			),
+
+			// Validate policyInfoLink.
+			'policyInfoLink with valid string'             => array(
+				'policyInfoLink',
+				'https://example.com/policy-info',
+				'https://example.com/policy-info',
+			),
+			'policyInfoLink with empty string'             => array(
+				'policyInfoLink',
+				'',
+				'',
+			),
+			'policyInfoLink with number'                   => array(
+				'policyInfoLink',
+				123,
+				'',
+			),
+			'policyInfoLink with boolean'                  => array(
+				'policyInfoLink',
+				true,
+				'',
 			),
 		);
 	}

@@ -171,13 +171,13 @@ describe( 'dateSub', () => {
 			'properly subtract one day from the date provided as a string',
 			'2021-01-02',
 			DAY_IN_SECONDS,
-			new Date( '2021-01-01' ),
+			stringToDate( '2021-01-01' ),
 		],
 		[
 			'properly subtract one day from the date provided as a Date object',
-			new Date( '2021-01-02' ),
+			stringToDate( '2021-01-02' ),
 			DAY_IN_SECONDS,
-			new Date( '2021-01-01' ),
+			stringToDate( '2021-01-01' ),
 		],
 	] )( 'should %s', ( _, from, duration, want ) => {
 		const got = dateSub( from, duration );

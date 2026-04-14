@@ -639,8 +639,8 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 */
 	public function check_service_entity_access() {
 		$data_request = array(
-			'start_date' => gmdate( 'Y-m-d' ),
-			'end_date'   => gmdate( 'Y-m-d' ),
+			'start_date' => gmdate( 'Y-m-d', Date::now() ),
+			'end_date'   => gmdate( 'Y-m-d', Date::now() ),
 			'row_limit'  => 1,
 		);
 
