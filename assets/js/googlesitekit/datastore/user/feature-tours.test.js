@@ -196,46 +196,6 @@ describe( 'core/user feature-tours', () => {
 			} );
 		} );
 
-		describe( 'receiveAllFeatureTours', () => {
-			it( 'requires tours to be an array', () => {
-				expect( () =>
-					registry.dispatch( CORE_USER ).receiveAllFeatureTours()
-				).toThrow( 'tours must be an array' );
-			} );
-
-			it( 'receives the given tours into the state', () => {
-				const tours = [ testTourA, testTourB ];
-				registry.dispatch( CORE_USER ).receiveAllFeatureTours( tours );
-				expect( store.getState().tours ).toEqual( tours );
-			} );
-		} );
-
-		describe( 'receiveFeatureToursForView', () => {
-			it( 'requires viewTours to be an array', () => {
-				expect( () =>
-					registry.dispatch( CORE_USER ).receiveFeatureToursForView()
-				).toThrow( 'viewTours must be an array' );
-			} );
-
-			it( 'requires a viewContext to be provided for the viewTours', () => {
-				expect( () =>
-					registry
-						.dispatch( CORE_USER )
-						.receiveFeatureToursForView( [] )
-				).toThrow( 'viewContext is required' );
-			} );
-
-			it( 'receives the given viewTours into the state for the viewContext', () => {
-				const tours = [ testTourA, testTourB ];
-				registry
-					.dispatch( CORE_USER )
-					.receiveFeatureToursForView( tours, {
-						viewContext: 'foo',
-					} );
-				expect( store.getState().viewTours.foo ).toEqual( tours );
-			} );
-		} );
-
 		describe( 'receiveLastDismissedAt', () => {
 			it( 'requires a timestamp to be provided', () => {
 				expect( () =>
@@ -391,9 +351,11 @@ describe( 'core/user feature-tours', () => {
 		describe( 'triggerTourForView', () => {
 			it( 'triggers the first tour that qualifies for the given viewContext when multiple tours match', async () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				const tours = [ testTourA, testTourB ];
+				jest.spyOn(
+					registry.select( CORE_USER ),
+					'getAllFeatureTours'
+				).mockReturnValue( tours );
 				expect( testTourA.contexts ).toContain( 'common-context' );
 				expect( testTourB.contexts ).toContain( 'common-context' );
 
@@ -408,9 +370,11 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'triggers the first tour that qualifies for the given viewContext', async () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveAllFeatureTours( [ testTourA, testTourB ] );
+				const tours = [ testTourA, testTourB ];
+				jest.spyOn(
+					registry.select( CORE_USER ),
+					'getAllFeatureTours'
+				).mockReturnValue( tours );
 				expect( testTourA.contexts ).not.toContain( 'b-only-context' );
 				expect( testTourB.contexts ).toContain( 'b-only-context' );
 
@@ -425,9 +389,11 @@ describe( 'core/user feature-tours', () => {
 
 			it( 'does not override an existing tour if present when no tour qualifies', async () => {
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-				registry
-					.dispatch( CORE_USER )
-					.receiveAllFeatureTours( [ testTourA ] );
+				const tours = [ testTourA ];
+				jest.spyOn(
+					registry.select( CORE_USER ),
+					'getAllFeatureTours'
+				).mockReturnValue( tours );
 
 				expect( store.getState().currentTour ).toBeUndefined();
 
@@ -508,8 +474,7 @@ describe( 'core/user feature-tours', () => {
 
 		describe( 'getAllFeatureTours', () => {
 			it( 'returns all tours in the store', () => {
-				const tours = [ testTourA, testTourB ];
-				registry.dispatch( CORE_USER ).receiveAllFeatureTours( tours );
+				const tours = store.getState().tours;
 
 				expect(
 					registry.select( CORE_USER ).getAllFeatureTours()

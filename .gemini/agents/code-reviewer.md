@@ -7,7 +7,7 @@ description: >
 tools:
   - "read_file"
   - "list_directory"
-  - "grep"
+  - "grep_search"
   - "glob"
 temperature: 0.2
 max_turns: 30

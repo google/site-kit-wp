@@ -486,17 +486,17 @@ class Email_Template_Formatter {
 		}
 
 		$format_date = static function ( $value ) {
-			$timestamp = strtotime( $value );
-			if ( ! $timestamp ) {
+			$timezone = BC_Functions::wp_timezone();
+			$date     = date_create_immutable( $value, $timezone );
+			if ( ! $date ) {
 				return $value;
 			}
 
-			$timezone = BC_Functions::wp_timezone();
-			if ( $timezone && function_exists( 'wp_date' ) ) {
-				return wp_date( 'M j', $timestamp, $timezone );
+			if ( function_exists( 'wp_date' ) ) {
+				return wp_date( 'M j', $date->getTimestamp(), $timezone );
 			}
 
-			return gmdate( 'M j', $timestamp );
+			return $date->format( 'M j' );
 		};
 
 		return sprintf(

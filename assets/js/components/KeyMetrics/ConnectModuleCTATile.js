@@ -35,6 +35,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import Link from '@/js/components/Link';
 import GhostCardGreenSVG from './GhostCardGreenSVG';
 import GhostCardRedSVG from './GhostCardRedSVG';
@@ -42,6 +43,7 @@ import MetricTileHeader from './MetricTileHeader';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 export default function ConnectModuleCTATile( { moduleSlug } ) {
+	const isViewOnly = useViewOnly();
 	const handleConnectModule = useActivateModuleCallback( moduleSlug );
 
 	const module = useSelect( ( select ) =>
@@ -114,13 +116,15 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 										module.name
 								  ) }
 						</p>
-						<Link onClick={ handleConnectModule } secondary>
-							{ sprintf(
-								/* translators: %s: module name */
-								__( 'Connect %s', 'google-site-kit' ),
-								module.name
-							) }
-						</Link>
+						{ ! isViewOnly && (
+							<Link onClick={ handleConnectModule } secondary>
+								{ sprintf(
+									/* translators: %s: module name */
+									__( 'Connect %s', 'google-site-kit' ),
+									module.name
+								) }
+							</Link>
+						) }
 					</div>
 				</div>
 			</div>
