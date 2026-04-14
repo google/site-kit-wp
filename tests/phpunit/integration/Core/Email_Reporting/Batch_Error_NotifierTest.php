@@ -451,7 +451,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		);
 	}
 
-	public function test_report_error_body_contains_full_link() {
+	public function test_report_error_body_contains_full_links() {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category_and_module( 'report_error', 'search-console' );
 
@@ -461,7 +461,10 @@ class Batch_Error_NotifierTest extends TestCase {
 			->with(
 				$this->isType( 'string' ),
 				$this->isType( 'string' ),
-				$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=search-console" style="color:#108080; text-decoration:none;">Search Console settings</a>' ),
+				$this->logicalAnd(
+					$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=search-console" style="color:#108080;text-decoration:underline">Search Console settings</a>' ),
+					$this->stringContains( '<a class="link" href="https://sitekit.withgoogle.com/support/?doc=email-reporting-module-issues" style="color:#108080;text-decoration:underline">get help</a>' )
+				),
 				$this->isType( 'array' ),
 				$this->isType( 'string' )
 			);

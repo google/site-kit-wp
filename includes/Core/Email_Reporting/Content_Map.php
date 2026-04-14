@@ -229,7 +229,7 @@ class Content_Map {
 	 * @return array Ordered sprintf arguments for the body paragraphs.
 	 */
 	public static function get_body_args( $content_key, Golinks $golinks ) {
-		$link_style        = 'color:#108080;';
+		$link_style        = 'color:#108080;text-decoration:underline;';
 		$support_base      = 'https://sitekit.withgoogle.com/support/';
 		$email_support_url = add_query_arg( 'doc', 'email-reporting-module-issues', $support_base );
 
