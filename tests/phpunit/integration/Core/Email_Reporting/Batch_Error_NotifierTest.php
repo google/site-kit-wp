@@ -451,6 +451,24 @@ class Batch_Error_NotifierTest extends TestCase {
 		);
 	}
 
+	public function test_report_error_body_contains_full_link() {
+		self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_up_batch_with_category_and_module( 'report_error', 'search-console' );
+
+		$this->email_sender->method( 'build_headers' )->willReturn( array() );
+		$this->email_sender->expects( $this->atLeastOnce() )
+			->method( 'send' )
+			->with(
+				$this->isType( 'string' ),
+				$this->isType( 'string' ),
+				$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=' . $module_slug . '" style="color:#108080; text-decoration:none;">Search Console settings</a>' ),
+				$this->isType( 'array' ),
+				$this->isType( 'string' )
+			);
+
+		$this->create_notifier()->maybe_notify( 'batch-1' );
+	}
+
 	/**
 	 * @dataProvider data_permissions_error_body_contains_help_link
 	 */
