@@ -1384,7 +1384,10 @@ const baseSelectors = {
 			// A store with this name doesn't exist, so the user can't have access to it.
 			// This is either caused by a module not being loaded or an incorrect module
 			// name being used.
-			if ( select( moduleStoreName ) === null ) {
+			if (
+				select( moduleStoreName ) === null ||
+				select( moduleStoreName ) === undefined
+			) {
 				return null;
 			}
 

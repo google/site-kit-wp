@@ -23,6 +23,7 @@ import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 	freezeFetch,
 } from '../../../../../../tests/js/utils';
@@ -40,10 +41,15 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'TopCitiesWidget', () => {
 	let registry;
 	const widgetProps = getWidgetComponentProps( KM_ANALYTICS_TOP_CITIES );
+
+	const analytics4SettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
@@ -53,6 +59,10 @@ describe( 'TopCitiesWidget', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 		provideKeyMetrics( registry );
 		provideModules( registry, withConnected( MODULE_SLUG_ANALYTICS_4 ) );
+
+		fetchMock.getOnce( analytics4SettingsEndpoint, {
+			body: analyticsFixtures.defaultSettings,
+		} );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {
@@ -108,6 +118,8 @@ describe( 'TopCitiesWidget', () => {
 	} );
 
 	it( 'should render the generic error variant when the report fetch fails', async () => {
+		provideModuleRegistrations( registry );
+
 		const errorResponse = {
 			code: ERROR_INTERNAL_SERVER_ERROR,
 			message: 'Internal server error',

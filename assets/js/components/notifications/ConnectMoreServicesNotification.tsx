@@ -58,12 +58,15 @@ const ConnectMoreServicesNotification: FC<
 	const showTooltip = useShowTooltip( tooltipSettings );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const connectMoreServicesURL = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getConnectMoreServicesURL()
+	const connectMoreServicesURL = useSelect(
+		( select: Select ) => select( CORE_SITE ).getConnectMoreServicesURL(),
+		[]
 	);
 
-	const isNavigatingToConnectMoreServices = useSelect( ( select: Select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( connectMoreServicesURL )
+	const isNavigatingToConnectMoreServices = useSelect(
+		( select: Select ) =>
+			select( CORE_LOCATION ).isNavigatingTo( connectMoreServicesURL ),
+		[ connectMoreServicesURL ]
 	);
 
 	const viewContext = useViewContext();

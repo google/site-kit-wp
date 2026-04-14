@@ -3,11 +3,7 @@
  */
 import { Dispatch, FC, ReactElement, SetStateAction } from 'react';
 import { render, act, RenderResult } from '@testing-library/react';
-import {
-	renderHook,
-	act as actHook,
-	RenderHookResult,
-} from '@testing-library/react-hooks';
+import { renderHook, act as actHook } from '@testing-library/react-hooks';
 // @ts-expect-error - No types available.
 import { Router } from 'react-router-dom';
 // @ts-expect-error - No types available.
@@ -16,7 +12,6 @@ import { createMemoryHistory } from 'history';
 /**
  * WordPress dependencies
  */
-// @ts-expect-error - No types available.
 import { RegistryProvider } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
@@ -160,6 +155,13 @@ function customRender(
 		setInView,
 	};
 }
+
+type RenderHookResult< Props, Result > = {
+	result: { current: Result };
+	rerender: ( props?: Props ) => void;
+	unmount: () => void;
+	waitForNextUpdate?: () => Promise< void >;
+};
 
 type CustomRenderHookResult< Props, Result > = RenderHookResult<
 	Props,

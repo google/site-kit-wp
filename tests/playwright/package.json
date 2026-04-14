@@ -2,6 +2,8 @@
 	"name": "@google/site-kit-playwright-tests",
 	"scripts": {
 		"pretest": "docker compose --profile test ps --services --filter status=running | grep -q wp || npm run start --silent",
+		"postinstall": "npm run setup",
+		"postci": "npm run setup",
 		"test": "playwright test --config=playwright.config.ts",
 		"test:ui": "npm run test --silent -- --ui",
 		"start": "docker compose --profile test up -d",

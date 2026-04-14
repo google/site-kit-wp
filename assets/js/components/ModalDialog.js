@@ -132,7 +132,6 @@ function ModalDialog( {
 				<Button
 					className="mdc-dialog__cancel-button"
 					onClick={ handleCancel }
-					disabled={ inProgress }
 					tertiary
 				>
 					{ __( 'Cancel', 'google-site-kit' ) }

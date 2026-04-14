@@ -70,7 +70,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			contentPolicyState ===
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 		);
-	} );
+	}, [] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
