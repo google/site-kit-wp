@@ -240,7 +240,6 @@ final class Plugin {
 					$data_requests = new Core\Email_Reporting\Email_Reporting_Data_Requests(
 						$this->context,
 						$modules,
-						$conversion_tracking,
 						$transients,
 						$user_options,
 					);

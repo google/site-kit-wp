@@ -266,41 +266,6 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Direct: 300 (-2.3%)', $result, 'Page metrics section should contain second row.' );
 	}
 
-	public function test_format_section_dispatches_to_conversions_section() {
-		$section = array(
-			'title'            => 'Is my site helping my business grow?',
-			'section_template' => 'section-conversions',
-			'section_parts'    => array(
-				'total_conversion_events'   => array(
-					'data' => array(
-						'label'          => 'Total conversions',
-						'value'          => '150',
-						'change'         => 25.0,
-						'change_context' => 'Compared to previous 7 days',
-					),
-				),
-				'conversion_event_purchase' => array(
-					'data' => array(
-						'label'           => 'purchase',
-						'value'           => '50',
-						'change'          => 15.0,
-						'event_name'      => 'purchase',
-						'dimension'       => 'traffic_channel',
-						'dimension_value' => 'Organic Search',
-					),
-				),
-			),
-		);
-
-		$result = Plain_Text_Formatter::format_section( $section );
-
-		$this->assertStringContainsString( 'Is my site helping my business grow?', $result, 'Conversions section should contain title.' );
-		$this->assertStringContainsString( 'Total conversions: 150 (+25%)', $result, 'Conversions section should contain total conversions.' );
-		$this->assertStringContainsString( 'purchase', $result, 'Conversions section should contain raw event label.' );
-		$this->assertStringContainsString( '“purchase“ events', $result, 'Conversions section should contain lowercase event name.' );
-		$this->assertStringContainsString( 'Top traffic channel driving the most conversions: Organic Search', $result, 'Conversions section should contain top traffic channel.' );
-	}
-
 	public function test_format_section_returns_empty_for_empty_section_parts() {
 		$section = array(
 			'title'            => 'Empty Section',

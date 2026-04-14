@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -77,14 +76,6 @@ class Email_Reporting_Data_Requests {
 	private $context;
 
 	/**
-	 * Conversion tracking instance.
-	 *
-	 * @since 1.168.0
-	 * @var Conversion_Tracking
-	 */
-	private $conversion_tracking;
-
-	/**
 	 * Module audience settings instance.
 	 *
 	 * @since 1.168.0
@@ -117,16 +108,14 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since 1.168.0
 	 *
-	 * @param Context             $context             Plugin context.
-	 * @param Modules             $modules             Modules instance.
-	 * @param Conversion_Tracking $conversion_tracking Conversion tracking instance.
-	 * @param Transients          $transients          Transients instance.
-	 * @param User_Options|null   $user_options        Optional. User options instance. Default new instance.
+	 * @param Context           $context      Plugin context.
+	 * @param Modules           $modules      Modules instance.
+	 * @param Transients        $transients   Transients instance.
+	 * @param User_Options|null $user_options Optional. User options instance. Default new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Modules $modules,
-		Conversion_Tracking $conversion_tracking,
 		Transients $transients,
 		?User_Options $user_options = null
 	) {
@@ -134,7 +123,6 @@ class Email_Reporting_Data_Requests {
 		$this->modules      = $modules;
 		$this->user_options = $user_options ?: new User_Options( $this->context );
 
-		$this->conversion_tracking              = $conversion_tracking;
 		$this->audience_settings                = new Module_Audience_Settings( new Options( $this->context ) );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $transients );
 	}
@@ -337,9 +325,7 @@ class Email_Reporting_Data_Requests {
 	 */
 	private function collect_analytics_payloads( $module, $date_range ) {
 		$report_options = new Analytics_4_Report_Options( $date_range, array(), $this->context );
-		$settings       = $module->get_settings()->get();
 
-		$report_options->set_conversion_events( $settings['detectedEvents'] ?? array() );
 		$report_options->set_audience_segmentation_enabled( $this->is_audience_segmentation_enabled() );
 		$report_options->set_custom_dimension_availability(
 			array(
