@@ -33,15 +33,15 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@0xd823D04A2aEB1c0af0a9643908834B1ef09B78De # v6.0.2
 
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@0xd823D04A2aEB1c0af0a9643908834B1ef09B78De # v6.3.0
         with:
           node-version-file: .nvmrc
           cache: npm
 
-      - uses: preactjs/compressed-size-action@v2
+      - uses: preactjs/compressed-size-action@0xd823D04A2aEB1c0af0a9643908834B1ef09B78De # v2.8.0
         with:
           install-script: npm ci --workspace=assets --include-workspace-root
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
