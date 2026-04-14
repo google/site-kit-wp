@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -92,18 +93,13 @@ class Get_PropertyTest extends TestCase {
 
 	public function test_create_request_validates_required_param() {
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'property', array() );
-		$result       = $this->datapoint->create_request( $data_request );
 
-		$this->assertInstanceOf(
-			WP_Error::class,
-			$result,
-			'Missing propertyID should return a WP_Error response.'
-		);
-		$this->assertEquals(
-			'missing_required_param',
-			$result->get_error_code(),
-			'Missing propertyID should return missing_required_param.'
-		);
+		try {
+			$this->datapoint->create_request( $data_request );
+			$this->fail( 'Expected `Missing_Required_Param_Exception` to be thrown.' );
+		} catch ( \Exception $e ) {
+			$this->assertInstanceOf( Missing_Required_Param_Exception::class, $e, 'The datapoint should throw `Missing_Required_Param_Exception` when the `propertyID` parameter is missing.' );
+		}
 	}
 
 	public function test_create_request() {

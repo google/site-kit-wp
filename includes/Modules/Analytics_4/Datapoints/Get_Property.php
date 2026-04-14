@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 
 /**
  * Class for the single property retrieval datapoint.
@@ -60,7 +61,7 @@ class Get_Property extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @param GoogleAnalyticsAdminV1betaProperty $response Property resource from the Admin API.
 	 * @param Data_Request                       $data     Data request object.
-	 * @return stdClass Updated model with _id and _accountID attributes.
+	 * @return \stdClass Updated model with _id and _accountID attributes.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
 		return Analytics_4::filter_property_with_ids( $response );
