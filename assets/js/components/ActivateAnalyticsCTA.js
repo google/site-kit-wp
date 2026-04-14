@@ -209,7 +209,10 @@ export default function ActivateAnalyticsCTA( {
 	}
 
 	return (
-		<div className="googlesitekit-activate-analytics-cta">
+		<div
+			className="googlesitekit-activate-analytics-cta"
+			ref={ trackingRef }
+		>
 			<div className="googlesitekit-activate-analytics-cta__top">
 				<div className="googlesitekit-activate-analytics-cta__icon">
 					<AnalyticsIcon width={ 28 } height={ 31 } />

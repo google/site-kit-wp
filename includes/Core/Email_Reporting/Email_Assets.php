@@ -23,12 +23,10 @@ class Email_Assets {
 	/**
 	 * CDN base URL for email assets.
 	 *
-	 * TODO: Change to the production URL when the assets are uploaded to production bucket in #11551.
-	 *
 	 * @since 1.173.0
 	 * @var string
 	 */
-	const BASE_URL = 'https://storage.googleapis.com/pue-email-assets-dev/';
+	const BASE_URL = 'https://sitekit-static.withgoogle.com/';
 
 	/**
 	 * Asset registry.

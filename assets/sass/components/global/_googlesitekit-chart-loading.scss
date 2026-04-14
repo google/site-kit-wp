@@ -17,11 +17,10 @@
  */
 
 .googlesitekit-chart-loading {
-	align-items: center;
 	display: flex;
 	flex-wrap: wrap;
 	height: 100%;
-	justify-items: center;
+	place-items: center center;
 	width: 100%;
 
 	.googlesitekit-chart-loading__wrapper {

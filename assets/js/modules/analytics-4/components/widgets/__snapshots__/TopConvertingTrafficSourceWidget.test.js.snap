@@ -162,9 +162,20 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
         <div
           class="googlesitekit-report-error-actions"
         >
-          <div
+          <button
+            class="mdc-button mdc-button--raised"
+            target="_self"
+          >
+            <span
+              class="mdc-button__label"
+            >
+              Retry
+            </span>
+          </button>
+          <span
             class="googlesitekit-error-retry-text"
           >
+            Retry didn’t work? 
             <a
               aria-label="Get help (opens in a new tab)"
               class="googlesitekit-cta-link"
@@ -178,7 +189,7 @@ exports[`TopConvertingTrafficSourceWidget should render the generic error varian
                 Get help
               </span>
             </a>
-          </div>
+          </span>
         </div>
       </div>
     </div>

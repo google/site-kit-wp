@@ -57,7 +57,9 @@ const store = combineStores(
 	notifications,
 	cache,
 	createErrorStore( CORE_SITE ),
-	createSnapshotStore( CORE_SITE, { pick: [ 'conversionTracking' ] } )
+	createSnapshotStore( CORE_SITE, {
+		keysToSnapshot: [ 'conversionTracking' ],
+	} )
 );
 
 export const initialState = store.initialState;

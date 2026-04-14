@@ -14,6 +14,9 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Section_Builder;
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Data_Section_Part;
+use Google\Site_Kit\Core\Email_Reporting\Sections_Map;
+use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
+use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Tests\TestCase;
 
 class Email_Report_Section_BuilderTest extends TestCase {
@@ -35,7 +38,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$date_range_meta = array(
 			'startDate'        => strtotime( '2024-09-01' ),
-			'sendDate'         => strtotime( '2024-10-01' ),
+			'endDate'          => strtotime( '2024-10-01' ),
 			'compareStartDate' => strtotime( '2024-08-01' ),
 			'compareEndDate'   => strtotime( '2024-08-31' ),
 		);
@@ -53,7 +56,7 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$expected_date_range = array(
 			'startDate'        => $format_date( $date_range_meta['startDate'] ),
-			'endDate'          => $format_date( $date_range_meta['sendDate'] ),
+			'endDate'          => $format_date( $date_range_meta['endDate'] ),
 			'compareStartDate' => $format_date( $date_range_meta['compareStartDate'] ),
 			'compareEndDate'   => $format_date( $date_range_meta['compareEndDate'] ),
 		);
@@ -67,18 +70,18 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		update_post_meta( $email_log_id, Email_Log::META_REPORT_REFERENCE_DATES, wp_json_encode( $date_range_meta ) );
 		$email_log = get_post( $email_log_id );
 
-		// Example payload for the business growth section derived from conversions data.
+		// Example payload for the visitors section.
 		$payloads = array(
 			array(
-				'title'                   => 'Is my site helping my business grow?',
-				'total_conversion_events' => array(
+				'title'          => 'How many visitors do I have?',
+				'total_visitors' => array(
 					array(
 						'dimensionHeaders' => array(
 							array( 'name' => 'dateRange' ),
 						),
 						'metricHeaders'    => array(
 							array(
-								'name' => 'eventCount',
+								'name' => 'totalUsers',
 								'type' => 'TYPE_INTEGER',
 							),
 						),
@@ -113,9 +116,9 @@ class Email_Report_Section_BuilderTest extends TestCase {
 		$this->assertSame( array( 0 ), array_keys( $ga4_sections ), 'GA4 sections should be numerically indexed.' );
 		$ga4_section = $ga4_sections[0];
 
-		$this->assertSame( 'total_conversion_events', $ga4_section->get_section_key(), 'GA4 section key should use section slug from payload.' );
-		$this->assertSame( 'Is my site helping my business grow?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
-		$this->assertSame( array( 'Total conversion events' ), $ga4_section->get_labels(), 'GA4 labels should be translated from metric names.' );
+		$this->assertSame( 'total_visitors', $ga4_section->get_section_key(), 'GA4 section key should use section slug from payload.' );
+		$this->assertSame( 'How many visitors do I have?', $ga4_section->get_title(), 'GA4 section title should come from payload.' );
+		$this->assertSame( array( 'Total visitors' ), $ga4_section->get_labels(), 'GA4 labels should be translated when a translation exists.' );
 		$this->assertSame( array( '123' ), $ga4_section->get_values(), 'GA4 totals should be normalized.' );
 		$this->assertSame( array( '23.00%' ), $ga4_section->get_trends(), 'GA4 trends should represent percentage change from previous period.' );
 		$this->assertSame( $expected_date_range, $ga4_section->get_date_range(), 'GA4 date range should come from email log meta.' );
@@ -138,5 +141,50 @@ class Email_Report_Section_BuilderTest extends TestCase {
 
 		$this->assertWPError( $sections, 'Search Console errors should be propagated as WP_Error.' );
 		$this->assertSame( 'email_report_search_console_missing_result', $sections->get_error_code(), 'Expected original Search Console error code to be preserved.' );
+	}
+
+	/**
+	 * Converts built section parts into section payload used by sections map.
+	 *
+	 * @param Email_Report_Data_Section_Part[] $sections Built section parts.
+	 * @return array
+	 */
+	private function to_sections_payload( array $sections ) {
+		$payload = array();
+
+		foreach ( $sections as $section ) {
+			$dimensions       = $section->get_dimensions();
+			$dimension_values = $section->get_dimension_values();
+			$first_dimension  = $dimensions[0] ?? '';
+			$first_value      = $dimension_values[0] ?? '';
+			$first_label      = is_array( $first_value ) ? ( $first_value['label'] ?? '' ) : $first_value;
+
+			$payload[ $section->get_section_key() ] = array(
+				'value'           => $section->get_values()[0] ?? '',
+				'label'           => $section->get_labels()[0] ?? '',
+				'event_name'      => $section->get_event_names()[0] ?? '',
+				'dimension'       => $first_dimension,
+				'dimension_value' => $first_label,
+				'change_context'  => 'Compared to previous 7 days',
+			);
+		}
+
+		return $payload;
+	}
+
+	/**
+	 * Maps section parts by section key for easier assertions.
+	 *
+	 * @param Email_Report_Data_Section_Part[] $sections Built section parts.
+	 * @return Email_Report_Data_Section_Part[]
+	 */
+	private function map_sections_by_key( array $sections ) {
+		$section_by_key = array();
+
+		foreach ( $sections as $section ) {
+			$section_by_key[ $section->get_section_key() ] = $section;
+		}
+
+		return $section_by_key;
 	}
 }

@@ -753,7 +753,20 @@ abstract class Module {
 	 * @return bool TRUE if the request is for shared data, otherwise FALSE.
 	 */
 	protected function is_shared_data_request( Data_Request $data ) {
-		$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+		$datapoint = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+
+		return $this->is_shared_datapoint_request( $datapoint );
+	}
+
+	/**
+	 * Determines whether the current datapoint request is for shared data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Datapoint $datapoint Datapoint instance.
+	 * @return bool TRUE if the request is for shared data, otherwise FALSE.
+	 */
+	protected function is_shared_datapoint_request( Datapoint $datapoint ) {
 		$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
 		if ( $this->authentication->get_oauth_client() !== $oauth_client ) {
@@ -785,11 +798,11 @@ abstract class Module {
 		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
 			$datapoints = $this->get_datapoint_definitions();
 			foreach ( $datapoints as $datapoint ) {
-				if ( $datapoint instanceof Shareable_Datapoint ) {
-					return $datapoint->is_shareable();
+				if ( $datapoint instanceof Datapoint && $datapoint->is_shareable() ) {
+					return true;
 				}
 
-				if ( ! empty( $datapoint['shareable'] ) ) {
+				if ( is_array( $datapoint ) && ! empty( $datapoint['shareable'] ) ) {
 					return true;
 				}
 			}

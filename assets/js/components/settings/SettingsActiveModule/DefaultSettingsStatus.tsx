@@ -42,23 +42,30 @@ import ConnectedIcon from '@/svg/icons/connected.svg';
 import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 export default function DefaultSettingsStatus( { slug }: { slug: string } ) {
-	const module = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).getModule( slug )
+	const module = useSelect(
+		( select: Select ) => select( CORE_MODULES ).getModule( slug ),
+		[ slug ]
 	);
 
-	const adminReauthURL = useSelect( ( select: Select ) => {
-		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
-		return select( storeName )?.getAdminReauthURL?.();
-	} );
+	const adminReauthURL = useSelect(
+		( select: Select ) => {
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			return select( storeName )?.getAdminReauthURL?.();
+		},
+		[ slug ]
+	);
 
-	const requirementsError = useSelect( ( select: Select ) =>
-		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	const requirementsError = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES )?.getCheckRequirementsError( slug ),
+		[ slug ]
 	);
 
 	const isNavigatingToAdminReAuthURL = useSelect(
 		( select: Select ) =>
 			adminReauthURL &&
-			select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+			select( CORE_LOCATION ).isNavigatingTo( adminReauthURL ),
+		[ adminReauthURL ]
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );

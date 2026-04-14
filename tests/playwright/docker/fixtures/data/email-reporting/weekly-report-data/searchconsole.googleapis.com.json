@@ -1,0 +1,2995 @@
+{
+	"/webmasters/v3/sites/http%3A%2F%2Flocalhost%3A9002/searchAnalytics/query": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2026-01-01\",\"rowlimit\":1000,\"startdate\":\"2025-11-07\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"2025-11-07"
+						],
+						"clicks": 21,
+						"impressions": 1035,
+						"ctr": 0.020289855072463767,
+						"position": 16.8063625106
+					},
+					{
+						"keys": [
+							"2025-11-08"
+						],
+						"clicks": 18,
+						"impressions": 1471,
+						"ctr": 0.012236573759347382,
+						"position": 17.9338351966
+					},
+					{
+						"keys": [
+							"2025-11-09"
+						],
+						"clicks": 15,
+						"impressions": 1901,
+						"ctr": 0.007890583903208837,
+						"position": 33.9422079552
+					},
+					{
+						"keys": [
+							"2025-11-10"
+						],
+						"clicks": 16,
+						"impressions": 1206,
+						"ctr": 0.013266998341625208,
+						"position": 20.1932070742
+					},
+					{
+						"keys": [
+							"2025-11-11"
+						],
+						"clicks": 21,
+						"impressions": 1398,
+						"ctr": 0.015021459227467811,
+						"position": 19.7605455174
+					},
+					{
+						"keys": [
+							"2025-11-12"
+						],
+						"clicks": 21,
+						"impressions": 1403,
+						"ctr": 0.01496792587312901,
+						"position": 19.5845314847
+					},
+					{
+						"keys": [
+							"2025-11-13"
+						],
+						"clicks": 19,
+						"impressions": 1446,
+						"ctr": 0.01313969571230982,
+						"position": 19.6674869898
+					},
+					{
+						"keys": [
+							"2025-11-14"
+						],
+						"clicks": 20,
+						"impressions": 1133,
+						"ctr": 0.0176522506619594,
+						"position": 17.6876923652
+					},
+					{
+						"keys": [
+							"2025-11-15"
+						],
+						"clicks": 20,
+						"impressions": 1203,
+						"ctr": 0.01662510390689942,
+						"position": 14.8768659034
+					},
+					{
+						"keys": [
+							"2025-11-16"
+						],
+						"clicks": 17,
+						"impressions": 1824,
+						"ctr": 0.00932017543859649,
+						"position": 22.7956131326
+					},
+					{
+						"keys": [
+							"2025-11-17"
+						],
+						"clicks": 15,
+						"impressions": 1436,
+						"ctr": 0.010445682451253482,
+						"position": 21.1214081179
+					},
+					{
+						"keys": [
+							"2025-11-18"
+						],
+						"clicks": 22,
+						"impressions": 1335,
+						"ctr": 0.01647940074906367,
+						"position": 20.7523967938
+					},
+					{
+						"keys": [
+							"2025-11-19"
+						],
+						"clicks": 16,
+						"impressions": 1295,
+						"ctr": 0.012355212355212355,
+						"position": 22.2911571451
+					},
+					{
+						"keys": [
+							"2025-11-20"
+						],
+						"clicks": 16,
+						"impressions": 1362,
+						"ctr": 0.011747430249632892,
+						"position": 18.1258989726
+					},
+					{
+						"keys": [
+							"2025-11-21"
+						],
+						"clicks": 24,
+						"impressions": 1156,
+						"ctr": 0.020761245674740483,
+						"position": 15.5408597441
+					},
+					{
+						"keys": [
+							"2025-11-22"
+						],
+						"clicks": 29,
+						"impressions": 1327,
+						"ctr": 0.02185380557648832,
+						"position": 17.0282286845
+					},
+					{
+						"keys": [
+							"2025-11-23"
+						],
+						"clicks": 25,
+						"impressions": 1394,
+						"ctr": 0.017934002869440458,
+						"position": 18.5241170908
+					},
+					{
+						"keys": [
+							"2025-11-24"
+						],
+						"clicks": 23,
+						"impressions": 1219,
+						"ctr": 0.018867924528301886,
+						"position": 20.6908042715
+					},
+					{
+						"keys": [
+							"2025-11-25"
+						],
+						"clicks": 10,
+						"impressions": 1409,
+						"ctr": 0.007097232079488999,
+						"position": 17.3496500143
+					},
+					{
+						"keys": [
+							"2025-11-26"
+						],
+						"clicks": 13,
+						"impressions": 986,
+						"ctr": 0.013184584178498986,
+						"position": 21.3930983525
+					},
+					{
+						"keys": [
+							"2025-11-27"
+						],
+						"clicks": 17,
+						"impressions": 1366,
+						"ctr": 0.012445095168374817,
+						"position": 23.1408488962
+					},
+					{
+						"keys": [
+							"2025-11-28"
+						],
+						"clicks": 8,
+						"impressions": 1352,
+						"ctr": 0.005917159763313609,
+						"position": 24.4623930646
+					},
+					{
+						"keys": [
+							"2025-11-29"
+						],
+						"clicks": 11,
+						"impressions": 989,
+						"ctr": 0.011122345803842264,
+						"position": 16.1482933752
+					},
+					{
+						"keys": [
+							"2025-11-30"
+						],
+						"clicks": 18,
+						"impressions": 1142,
+						"ctr": 0.01576182136602452,
+						"position": 19.6023127616
+					},
+					{
+						"keys": [
+							"2025-12-01"
+						],
+						"clicks": 18,
+						"impressions": 1037,
+						"ctr": 0.017357762777242044,
+						"position": 21.380515033
+					},
+					{
+						"keys": [
+							"2025-12-02"
+						],
+						"clicks": 14,
+						"impressions": 1136,
+						"ctr": 0.01232394366197183,
+						"position": 19.0105686864
+					},
+					{
+						"keys": [
+							"2025-12-03"
+						],
+						"clicks": 6,
+						"impressions": 900,
+						"ctr": 0.006666666666666667,
+						"position": 19.1458981042
+					},
+					{
+						"keys": [
+							"2025-12-04"
+						],
+						"clicks": 7,
+						"impressions": 1117,
+						"ctr": 0.006266786034019696,
+						"position": 22.8215391374
+					},
+					{
+						"keys": [
+							"2025-12-05"
+						],
+						"clicks": 19,
+						"impressions": 999,
+						"ctr": 0.01901901901901902,
+						"position": 21.114374041
+					},
+					{
+						"keys": [
+							"2025-12-06"
+						],
+						"clicks": 27,
+						"impressions": 1104,
+						"ctr": 0.024456521739130436,
+						"position": 15.8726505534
+					},
+					{
+						"keys": [
+							"2025-12-07"
+						],
+						"clicks": 16,
+						"impressions": 1318,
+						"ctr": 0.012139605462822459,
+						"position": 21.2508889085
+					},
+					{
+						"keys": [
+							"2025-12-08"
+						],
+						"clicks": 11,
+						"impressions": 1015,
+						"ctr": 0.01083743842364532,
+						"position": 20.8154252522
+					},
+					{
+						"keys": [
+							"2025-12-09"
+						],
+						"clicks": 9,
+						"impressions": 1005,
+						"ctr": 0.008955223880597015,
+						"position": 25.1735521977
+					},
+					{
+						"keys": [
+							"2025-12-10"
+						],
+						"clicks": 9,
+						"impressions": 855,
+						"ctr": 0.010526315789473684,
+						"position": 25.8868605662
+					},
+					{
+						"keys": [
+							"2025-12-11"
+						],
+						"clicks": 13,
+						"impressions": 1009,
+						"ctr": 0.01288404360753221,
+						"position": 18.7415517839
+					},
+					{
+						"keys": [
+							"2025-12-12"
+						],
+						"clicks": 14,
+						"impressions": 1451,
+						"ctr": 0.009648518263266712,
+						"position": 37.4032365431
+					},
+					{
+						"keys": [
+							"2025-12-13"
+						],
+						"clicks": 8,
+						"impressions": 3427,
+						"ctr": 0.0023344032681645753,
+						"position": 46.0990084305
+					},
+					{
+						"keys": [
+							"2025-12-14"
+						],
+						"clicks": 9,
+						"impressions": 1236,
+						"ctr": 0.007281553398058253,
+						"position": 17.613080259
+					},
+					{
+						"keys": [
+							"2025-12-15"
+						],
+						"clicks": 17,
+						"impressions": 1324,
+						"ctr": 0.01283987915407855,
+						"position": 21.0970549186
+					},
+					{
+						"keys": [
+							"2025-12-16"
+						],
+						"clicks": 6,
+						"impressions": 1278,
+						"ctr": 0.004694835680751174,
+						"position": 21.8021975742
+					},
+					{
+						"keys": [
+							"2025-12-17"
+						],
+						"clicks": 15,
+						"impressions": 1030,
+						"ctr": 0.014563106796116505,
+						"position": 17.2825756908
+					},
+					{
+						"keys": [
+							"2025-12-18"
+						],
+						"clicks": 11,
+						"impressions": 962,
+						"ctr": 0.011434511434511435,
+						"position": 17.9789307185
+					},
+					{
+						"keys": [
+							"2025-12-19"
+						],
+						"clicks": 9,
+						"impressions": 1408,
+						"ctr": 0.006392045454545455,
+						"position": 25.7402250827
+					},
+					{
+						"keys": [
+							"2025-12-20"
+						],
+						"clicks": 8,
+						"impressions": 1214,
+						"ctr": 0.006589785831960461,
+						"position": 18.5077240844
+					},
+					{
+						"keys": [
+							"2025-12-21"
+						],
+						"clicks": 12,
+						"impressions": 1428,
+						"ctr": 0.008403361344537815,
+						"position": 20.2919718127
+					},
+					{
+						"keys": [
+							"2025-12-22"
+						],
+						"clicks": 12,
+						"impressions": 1223,
+						"ctr": 0.009811937857726901,
+						"position": 28.7472251277
+					},
+					{
+						"keys": [
+							"2025-12-23"
+						],
+						"clicks": 11,
+						"impressions": 1055,
+						"ctr": 0.01042654028436019,
+						"position": 25.9117065387
+					},
+					{
+						"keys": [
+							"2025-12-24"
+						],
+						"clicks": 7,
+						"impressions": 1072,
+						"ctr": 0.0065298507462686565,
+						"position": 27.1044605377
+					},
+					{
+						"keys": [
+							"2025-12-25"
+						],
+						"clicks": 7,
+						"impressions": 1028,
+						"ctr": 0.006809338521400778,
+						"position": 24.1312852351
+					},
+					{
+						"keys": [
+							"2025-12-26"
+						],
+						"clicks": 11,
+						"impressions": 1105,
+						"ctr": 0.009954751131221719,
+						"position": 18.7213020843
+					},
+					{
+						"keys": [
+							"2025-12-27"
+						],
+						"clicks": 20,
+						"impressions": 1367,
+						"ctr": 0.014630577907827359,
+						"position": 18.9678917749
+					},
+					{
+						"keys": [
+							"2025-12-28"
+						],
+						"clicks": 19,
+						"impressions": 1293,
+						"ctr": 0.014694508894044857,
+						"position": 18.4402443564
+					},
+					{
+						"keys": [
+							"2025-12-29"
+						],
+						"clicks": 15,
+						"impressions": 1589,
+						"ctr": 0.009439899307740718,
+						"position": 18.3478339298
+					},
+					{
+						"keys": [
+							"2025-12-30"
+						],
+						"clicks": 19,
+						"impressions": 1343,
+						"ctr": 0.014147431124348473,
+						"position": 19.5527986928
+					},
+					{
+						"keys": [
+							"2025-12-31"
+						],
+						"clicks": 24,
+						"impressions": 1725,
+						"ctr": 0.01391304347826087,
+						"position": 17.1229548132
+					},
+					{
+						"keys": [
+							"2026-01-01"
+						],
+						"clicks": 14,
+						"impressions": 1247,
+						"ctr": 0.011226944667201283,
+						"position": 21.9664363855
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2025-12-28\",\"rowlimit\":1000,\"startdate\":\"2025-12-15\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"2025-12-18"
+						],
+						"clicks": 10,
+						"impressions": 1007,
+						"ctr": 0.009930486593843098,
+						"position": 20.2573740973
+					},
+					{
+						"keys": [
+							"2025-12-19"
+						],
+						"clicks": 11,
+						"impressions": 1237,
+						"ctr": 0.00889248181083266,
+						"position": 25.2898916411
+					},
+					{
+						"keys": [
+							"2025-12-20"
+						],
+						"clicks": 8,
+						"impressions": 1168,
+						"ctr": 0.00684931506849315,
+						"position": 18.6661088186
+					},
+					{
+						"keys": [
+							"2025-12-21"
+						],
+						"clicks": 11,
+						"impressions": 1230,
+						"ctr": 0.00894308943089431,
+						"position": 21.9795773078
+					},
+					{
+						"keys": [
+							"2025-12-22"
+						],
+						"clicks": 13,
+						"impressions": 1478,
+						"ctr": 0.008795669824086604,
+						"position": 29.9689136369
+					},
+					{
+						"keys": [
+							"2025-12-23"
+						],
+						"clicks": 9,
+						"impressions": 1152,
+						"ctr": 0.0078125,
+						"position": 25.2035119685
+					},
+					{
+						"keys": [
+							"2025-12-24"
+						],
+						"clicks": 8,
+						"impressions": 1066,
+						"ctr": 0.0075046904315197,
+						"position": 23.6625717436
+					},
+					{
+						"keys": [
+							"2025-12-25"
+						],
+						"clicks": 7,
+						"impressions": 1099,
+						"ctr": 0.006369426751592357,
+						"position": 22.8826474696
+					},
+					{
+						"keys": [
+							"2025-12-26"
+						],
+						"clicks": 9,
+						"impressions": 1368,
+						"ctr": 0.006578947368421052,
+						"position": 19.2326060636
+					},
+					{
+						"keys": [
+							"2025-12-27"
+						],
+						"clicks": 19,
+						"impressions": 1328,
+						"ctr": 0.01430722891566265,
+						"position": 17.4794081691
+					},
+					{
+						"keys": [
+							"2025-12-28"
+						],
+						"clicks": 22,
+						"impressions": 1606,
+						"ctr": 0.0136986301369863,
+						"position": 21.3452037611
+					},
+					{
+						"keys": [
+							"2025-12-29"
+						],
+						"clicks": 18,
+						"impressions": 1710,
+						"ctr": 0.010526315789473684,
+						"position": 18.100343472
+					},
+					{
+						"keys": [
+							"2025-12-30"
+						],
+						"clicks": 21,
+						"impressions": 1409,
+						"ctr": 0.014904187366926898,
+						"position": 18.6761121388
+					},
+					{
+						"keys": [
+							"2025-12-31"
+						],
+						"clicks": 23,
+						"impressions": 1482,
+						"ctr": 0.0155195681511471,
+						"position": 17.5244561345
+					},
+					{
+						"keys": [
+							"2026-01-01"
+						],
+						"clicks": 15,
+						"impressions": 1468,
+						"ctr": 0.010217983651226158,
+						"position": 21.057137554
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-28\",\"rowlimit\":10,\"startdate\":\"2025-12-22\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"travel companion in scotland"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 7.6935917653
+					},
+					{
+						"keys": [
+							"riverside grill market square"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 10.7991286346
+					},
+					{
+						"keys": [
+							"free midsummer outdoor events"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 6.095016349
+					},
+					{
+						"keys": [
+							"northern craft brands"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.3333333333333333,
+						"position": 0.9114330546
+					},
+					{
+						"keys": [
+							"highland pub ocean city"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 4.7505389042
+					},
+					{
+						"keys": [
+							"what does the p sticker mean on cars in scotland"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.05263157894736842,
+						"position": 5.7116684155
+					},
+					{
+						"keys": [
+							"\"riverside bakery\" \"n17 qp33\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 51.752125536
+					},
+					{
+						"keys": [
+							"#mountaincafe"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 17.7879481366
+					},
+					{
+						"keys": [
+							"22 harbor lane west"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 71.6713411446
+					},
+					{
+						"keys": [
+							"27.80"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 10.6482993569
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-28\",\"rowlimit\":10,\"startdate\":\"2025-12-22\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"http://localhost:9002/tips/mountain-river-golden-bridge/"
+						],
+						"clicks": 28,
+						"impressions": 1366,
+						"ctr": 0.020497803806734993,
+						"position": 5.8481200403
+					},
+					{
+						"keys": [
+							"http://localhost:9002/guide/silver-forest-morning-light/"
+						],
+						"clicks": 8,
+						"impressions": 53,
+						"ctr": 0.1509433962264151,
+						"position": 6.6761819242
+					},
+					{
+						"keys": [
+							"http://localhost:9002/events/cobalt-garden-winter-sunrise/"
+						],
+						"clicks": 8,
+						"impressions": 215,
+						"ctr": 0.037209302325581395,
+						"position": 6.8734928269
+					},
+					{
+						"keys": [
+							"http://localhost:9002/noticias/estrela-pedra-azul-horizonte/"
+						],
+						"clicks": 8,
+						"impressions": 278,
+						"ctr": 0.02877697841726619,
+						"position": 7.4989559502
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/campo-verde-neblina-alta/"
+						],
+						"clicks": 9,
+						"impressions": 195,
+						"ctr": 0.046153846153846156,
+						"position": 7.0024006925
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/bronze-velvet-cedar-peak/"
+						],
+						"clicks": 7,
+						"impressions": 151,
+						"ctr": 0.046357615894039736,
+						"position": 6.264289635
+					},
+					{
+						"keys": [
+							"http://localhost:9002/negocios/amber-cliff-coastal-range/"
+						],
+						"clicks": 3,
+						"impressions": 38,
+						"ctr": 0.07894736842105263,
+						"position": 1.0247043031
+					},
+					{
+						"keys": [
+							"http://localhost:9002/saude/iron-maple-harvest-valley/"
+						],
+						"clicks": 3,
+						"impressions": 48,
+						"ctr": 0.0625,
+						"position": 10.2687926671
+					},
+					{
+						"keys": [
+							"http://localhost:9002/carreira/copper-basin-thunder-ridge/"
+						],
+						"clicks": 3,
+						"impressions": 114,
+						"ctr": 0.02631578947368421,
+						"position": 2.7212363344
+					},
+					{
+						"keys": [
+							"http://localhost:9002/musica/jade-meadow-crystal-falls/"
+						],
+						"clicks": 2,
+						"impressions": 5,
+						"ctr": 0.4,
+						"position": 7.228744201
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-28\",\"rowlimit\":50,\"startdate\":\"2025-12-22\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"travel companion in scotland"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 6.4616001386
+					},
+					{
+						"keys": [
+							"riverside grill market square"
+						],
+						"clicks": 1,
+						"impressions": 15,
+						"ctr": 0.06666666666666667,
+						"position": 11.0718478526
+					},
+					{
+						"keys": [
+							"free midsummer outdoor events"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 5.6443167748
+					},
+					{
+						"keys": [
+							"northern craft brands"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.3333333333333333,
+						"position": 0.9977063704
+					},
+					{
+						"keys": [
+							"highland pub ocean city"
+						],
+						"clicks": 1,
+						"impressions": 18,
+						"ctr": 0.05555555555555555,
+						"position": 4.0756648901
+					},
+					{
+						"keys": [
+							"what does the p sticker mean on cars in scotland"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 5.6161863887
+					},
+					{
+						"keys": [
+							"\"riverside bakery\" \"n17 qp33\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 47.6195526243
+					},
+					{
+						"keys": [
+							"#mountaincafe"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 16.2613668326
+					},
+					{
+						"keys": [
+							"22 harbor lane west"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 75.3634895062
+					},
+					{
+						"keys": [
+							"27.80"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 11.3093414422
+					},
+					{
+						"keys": [
+							"2024 timber wolves"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 17.5842929733
+					},
+					{
+						"keys": [
+							"5 foot narrow alley"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 85.0910316985
+					},
+					{
+						"keys": [
+							"the ancient harvest festival"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 0.9420153077
+					},
+					{
+						"keys": [
+							"the coastal wanderers luck"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 28.5126277061
+					},
+					{
+						"keys": [
+							"enable tap card reader"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 47.5197388142
+					},
+					{
+						"keys": [
+							"adventure trails scotland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 79.3961643041
+					},
+					{
+						"keys": [
+							"airport of glasgow"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 56.504870149
+					},
+					{
+						"keys": [
+							"plan your trip to arrive at the central station"
+						],
+						"clicks": 0,
+						"impressions": 16,
+						"ctr": 0.0,
+						"position": 23.7099233627
+					},
+					{
+						"keys": [
+							"cabin rental scotland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 8.5825024454
+					},
+					{
+						"keys": [
+							"top rated host mountain lodge"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 50.7587952877
+					},
+					{
+						"keys": [
+							"rent a car highlands"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0.0,
+						"position": 88.9526479722
+					},
+					{
+						"keys": [
+							"car rental in the valley"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 11.9047277632
+					},
+					{
+						"keys": [
+							"vehicle hire coastal route"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 12.2917482673
+					},
+					{
+						"keys": [
+							"car hire mountain pass"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 61.8017529753
+					},
+					{
+						"keys": [
+							"marketplace platform opens"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 65.9519248996
+					},
+					{
+						"keys": [
+							"online shop opening schedule"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 41.6567376227
+					},
+					{
+						"keys": [
+							"webstore currently active"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 72.9223996793
+					},
+					{
+						"keys": [
+							"online store northern region"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 82.484268168
+					},
+					{
+						"keys": [
+							"digital market western coast"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 37.5026845651
+					},
+					{
+						"keys": [
+							"shop platform debut"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 45.9558796798
+					},
+					{
+						"keys": [
+							"woodland adventure center"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 58.8884213046
+					},
+					{
+						"keys": [
+							"outdoor fun parks valley"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 27.910485925
+					},
+					{
+						"keys": [
+							"marco santos harbor town"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 9.3949739985
+					},
+					{
+						"keys": [
+							"handcrafted silver band"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 31.7795802823
+					},
+					{
+						"keys": [
+							"braided golden ring"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 11.5924800865
+					},
+					{
+						"keys": [
+							"the twisted bronze ring"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 7.3076559682
+					},
+					{
+						"keys": [
+							"new year in the harbor city"
+						],
+						"clicks": 0,
+						"impressions": 6,
+						"ctr": 0.0,
+						"position": 4.2539405208
+					},
+					{
+						"keys": [
+							"car booking mobile app"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 8.3291180383
+					},
+					{
+						"keys": [
+							"ancient ruins highland tour"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 100.4399681383
+					},
+					{
+						"keys": [
+							"are portland trail blazers canadian"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 6.7213298244
+					},
+					{
+						"keys": [
+							"are highland people tall"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 82.8136073018
+					},
+					{
+						"keys": [
+							"are blondes scandinavian"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 58.7636441102
+					},
+					{
+						"keys": [
+							"are the denver nuggets colorado"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 5.6564416812
+					},
+					{
+						"keys": [
+							"are the rangers scottish"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 60.3746822654
+					},
+					{
+						"keys": [
+							"harbor market weekend hours"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 3.0092712059
+					},
+					{
+						"keys": [
+							"indoor snow slopes"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 102.1137305191
+					},
+					{
+						"keys": [
+							"morning bread baker village"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 43.4666941272
+					},
+					{
+						"keys": [
+							"coastal bread shop opening times"
+						],
+						"clicks": 0,
+						"impressions": 21,
+						"ctr": 0.0,
+						"position": 10.2488598952
+					},
+					{
+						"keys": [
+							"thornwood manor"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 73.165251667
+					},
+					{
+						"keys": [
+							"stage actor coastal theater"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 72.2943026458
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-28\",\"rowlimit\":50,\"startdate\":\"2025-12-22\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"http://localhost:9002/tips/mountain-river-golden-bridge/"
+						],
+						"clicks": 26,
+						"impressions": 1496,
+						"ctr": 0.017379679144385027,
+						"position": 5.3187059701
+					},
+					{
+						"keys": [
+							"http://localhost:9002/guide/silver-forest-morning-light/"
+						],
+						"clicks": 9,
+						"impressions": 47,
+						"ctr": 0.19148936170212766,
+						"position": 6.7785177789
+					},
+					{
+						"keys": [
+							"http://localhost:9002/events/cobalt-garden-winter-sunrise/"
+						],
+						"clicks": 10,
+						"impressions": 201,
+						"ctr": 0.04975124378109453,
+						"position": 6.4458930889
+					},
+					{
+						"keys": [
+							"http://localhost:9002/noticias/estrela-pedra-azul-horizonte/"
+						],
+						"clicks": 8,
+						"impressions": 321,
+						"ctr": 0.024922118380062305,
+						"position": 6.8436402511
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/campo-verde-neblina-alta/"
+						],
+						"clicks": 7,
+						"impressions": 207,
+						"ctr": 0.033816425120772944,
+						"position": 7.9460997161
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/bronze-velvet-cedar-peak/"
+						],
+						"clicks": 7,
+						"impressions": 146,
+						"ctr": 0.04794520547945205,
+						"position": 6.015986017
+					},
+					{
+						"keys": [
+							"http://localhost:9002/negocios/amber-cliff-coastal-range/"
+						],
+						"clicks": 3,
+						"impressions": 41,
+						"ctr": 0.07317073170731707,
+						"position": 1.1990087139
+					},
+					{
+						"keys": [
+							"http://localhost:9002/saude/iron-maple-harvest-valley/"
+						],
+						"clicks": 3,
+						"impressions": 47,
+						"ctr": 0.06382978723404255,
+						"position": 10.4849414689
+					},
+					{
+						"keys": [
+							"http://localhost:9002/carreira/copper-basin-thunder-ridge/"
+						],
+						"clicks": 3,
+						"impressions": 120,
+						"ctr": 0.025,
+						"position": 3.0472474711
+					},
+					{
+						"keys": [
+							"http://localhost:9002/musica/jade-meadow-crystal-falls/"
+						],
+						"clicks": 2,
+						"impressions": 5,
+						"ctr": 0.4,
+						"position": 6.9645442116
+					},
+					{
+						"keys": [
+							"http://localhost:9002/bares/ruby-harbor-evening-tide/"
+						],
+						"clicks": 2,
+						"impressions": 264,
+						"ctr": 0.007575757575757576,
+						"position": 10.160354226
+					},
+					{
+						"keys": [
+							"http://localhost:9002/historia/golden-harp-sunset-mist/"
+						],
+						"clicks": 2,
+						"impressions": 75,
+						"ctr": 0.02666666666666667,
+						"position": 5.5642309703
+					},
+					{
+						"keys": [
+							"http://localhost:9002/curiosidades/silver-moon-granite-peak/"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.08333333333333333,
+						"position": 5.606138691
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/emerald-plain-ocean-breeze/"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 5.4433644003
+					},
+					{
+						"keys": [
+							"http://localhost:9002/literatura/ivory-tower-autumn-wind/"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 8.6158461592
+					},
+					{
+						"keys": [
+							"http://localhost:9002/hospedagem/cobalt-lake-morning-dew/"
+						],
+						"clicks": 1,
+						"impressions": 14,
+						"ctr": 0.07142857142857142,
+						"position": 6.2571891963
+					},
+					{
+						"keys": [
+							"http://localhost:9002/inverno/frost-crystal-winter-plain/"
+						],
+						"clicks": 1,
+						"impressions": 50,
+						"ctr": 0.02,
+						"position": 8.6199672937
+					},
+					{
+						"keys": [
+							"http://localhost:9002/lazer/midnight-wolf-forest-trail/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.3333333333333333,
+						"position": 4.406202159
+					},
+					{
+						"keys": [
+							"http://localhost:9002/natal/cedar-ember-snowfall-valley/"
+						],
+						"clicks": 1,
+						"impressions": 53,
+						"ctr": 0.018867924528301886,
+						"position": 6.2309535817
+					},
+					{
+						"keys": [
+							"http://localhost:9002/noticias/charcoal-ridge-shadow-hollow/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.3333333333333333,
+						"position": 12.6145728869
+					},
+					{
+						"keys": [
+							"http://localhost:9002/idiomas/stone-bridge-river-current/"
+						],
+						"clicks": 1,
+						"impressions": 39,
+						"ctr": 0.02564102564102564,
+						"position": 68.6820598056
+					},
+					{
+						"keys": [
+							"http://localhost:9002/esporte/maple-court-distant-peak/"
+						],
+						"clicks": 1,
+						"impressions": 24,
+						"ctr": 0.041666666666666664,
+						"position": 6.1929805619
+					},
+					{
+						"keys": [
+							"http://localhost:9002/trabalho/garden-petal-morning-song/"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.08333333333333333,
+						"position": 9.6566627293
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/amber-crest-highland-grove/"
+						],
+						"clicks": 1,
+						"impressions": 21,
+						"ctr": 0.047619047619047616,
+						"position": 18.5384965842
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cinema/velvet-screen-coastal-view/"
+						],
+						"clicks": 1,
+						"impressions": 56,
+						"ctr": 0.017857142857142856,
+						"position": 8.3005623493
+					},
+					{
+						"keys": [
+							"http://localhost:9002/gastronomia/copper-kettle-orchard-lane/"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 7.6833854415
+					},
+					{
+						"keys": [
+							"http://localhost:9002/food/willow-market-harbor-walk/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 48.618163037
+					},
+					{
+						"keys": [
+							"http://localhost:9002/language/pebble-shore-evening-glow/"
+						],
+						"clicks": 1,
+						"impressions": 78,
+						"ctr": 0.01282051282051282,
+						"position": 2.9174002106
+					},
+					{
+						"keys": [
+							"http://localhost:9002/travel/opal-nest-mountain-hollow/"
+						],
+						"clicks": 1,
+						"impressions": 3,
+						"ctr": 0.3333333333333333,
+						"position": 27.6482552304
+					},
+					{
+						"keys": [
+							"http://localhost:9002/skills/thunder-voice-open-field/"
+						],
+						"clicks": 1,
+						"impressions": 27,
+						"ctr": 0.037037037037037035,
+						"position": 41.676455329
+					},
+					{
+						"keys": [
+							"http://localhost:9002/entertainment/pine-ember-starlight-film/"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.08333333333333333,
+						"position": 26.8535095816
+					},
+					{
+						"keys": [
+							"http://localhost:9002/finance/silver-vault-morning-tide/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 86.384783401
+					},
+					{
+						"keys": [
+							"http://localhost:9002/careers/white-coat-summit-trail/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 46.7536177135
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/iron-fist-shadow-court/"
+						],
+						"clicks": 1,
+						"impressions": 17,
+						"ctr": 0.058823529411764705,
+						"position": 6.9548687846
+					},
+					{
+						"keys": [
+							"http://localhost:9002/dining/tropical-leaf-harbor-square/"
+						],
+						"clicks": 1,
+						"impressions": 143,
+						"ctr": 0.006993006993006993,
+						"position": 23.3998324771
+					},
+					{
+						"keys": [
+							"http://localhost:9002/sports/frost-slope-granite-summit/"
+						],
+						"clicks": 1,
+						"impressions": 55,
+						"ctr": 0.01818181818181818,
+						"position": 14.8949147453
+					},
+					{
+						"keys": [
+							"http://localhost:9002/travel/blue-sky-ocean-crossing/"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 12.4763951193
+					},
+					{
+						"keys": [
+							"http://localhost:9002/history/green-island-distant-shore/"
+						],
+						"clicks": 1,
+						"impressions": 15,
+						"ctr": 0.06666666666666667,
+						"position": 8.5353858622
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/badge-patrol-river-crossing/"
+						],
+						"clicks": 1,
+						"impressions": 11,
+						"ctr": 0.09090909090909091,
+						"position": 2.1226851208
+					},
+					{
+						"keys": [
+							"http://localhost:9002/geography/patchwork-map-rolling-hills/"
+						],
+						"clicks": 1,
+						"impressions": 33,
+						"ctr": 0.030303030303030304,
+						"position": 16.8751754212
+					},
+					{
+						"keys": [
+							"http://localhost:9002/lifestyle/green-plate-meadow-harvest/"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.05263157894736842,
+						"position": 8.1284352404
+					},
+					{
+						"keys": [
+							"http://localhost:9002/travel/shadow-manor-hollow-night/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 9.3870264691
+					},
+					{
+						"keys": [
+							"http://localhost:9002/nature/deep-water-canyon-mist/"
+						],
+						"clicks": 1,
+						"impressions": 21,
+						"ctr": 0.047619047619047616,
+						"position": 67.1156029584
+					},
+					{
+						"keys": [
+							"http://localhost:9002/remote-work/sun-terrace-coastal-office/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 1.0700586478
+					},
+					{
+						"keys": [
+							"http://localhost:9002/food/samba-box-urban-delivery/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 9.8709198327
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cinema/reel-emerald-silver-screen/"
+						],
+						"clicks": 1,
+						"impressions": 32,
+						"ctr": 0.03125,
+						"position": 21.5978918815
+					},
+					{
+						"keys": [
+							"http://localhost:9002/events/clover-parade-golden-hour/"
+						],
+						"clicks": 1,
+						"impressions": 8,
+						"ctr": 0.125,
+						"position": 8.2300929973
+					},
+					{
+						"keys": [
+							"http://localhost:9002/nightlife/carnival-beat-harbor-lights/"
+						],
+						"clicks": 1,
+						"impressions": 21,
+						"ctr": 0.047619047619047616,
+						"position": 9.5989125936
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/midnight-case-rural-shadow/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 44.7611414124
+					},
+					{
+						"keys": [
+							"http://localhost:9002/entretenimento/candle-film-winter-night/"
+						],
+						"clicks": 1,
+						"impressions": 8,
+						"ctr": 0.125,
+						"position": 9.4208315472
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-21\",\"rowlimit\":10,\"startdate\":\"2025-12-15\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"tour guides in edinburgh"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 11.6780382814
+					},
+					{
+						"keys": [
+							"top films of the valley 2025"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 18.2616256241
+					},
+					{
+						"keys": [
+							"palm leaf congregation harbor"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 9.633083688
+					},
+					{
+						"keys": [
+							"winter films set in the highlands"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 16.144893552
+					},
+					{
+						"keys": [
+							"mountain tavern old quarter"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 3.9860587293
+					},
+					{
+						"keys": [
+							"coastal pub stone district"
+						],
+						"clicks": 1,
+						"impressions": 32,
+						"ctr": 0.03125,
+						"position": 5.17740842
+					},
+					{
+						"keys": [
+							"meaning of the green plate on learner cars"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 10.1718381251
+					},
+					{
+						"keys": [
+							"snowboard run highland resort"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 37.9686413774
+					},
+					{
+						"keys": [
+							"craft gifts mountain village"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 41.4052755911
+					},
+					{
+						"keys": [
+							"\"riverside bakery\" \"n17 qp33\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 48.8880628991
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-21\",\"rowlimit\":10,\"startdate\":\"2025-12-15\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"http://localhost:9002/tips/mountain-river-golden-bridge/"
+						],
+						"clicks": 10,
+						"impressions": 1033,
+						"ctr": 0.00968054211035818,
+						"position": 7.3580617717
+					},
+					{
+						"keys": [
+							"http://localhost:9002/compras/crystal-shop-window-light/"
+						],
+						"clicks": 5,
+						"impressions": 47,
+						"ctr": 0.10638297872340426,
+						"position": 5.4048488265
+					},
+					{
+						"keys": [
+							"http://localhost:9002/guide/silver-forest-morning-light/"
+						],
+						"clicks": 5,
+						"impressions": 51,
+						"ctr": 0.09803921568627451,
+						"position": 5.6072403685
+					},
+					{
+						"keys": [
+							"http://localhost:9002/bares/ruby-harbor-evening-tide/"
+						],
+						"clicks": 3,
+						"impressions": 265,
+						"ctr": 0.011320754716981131,
+						"position": 9.6058576798
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/bronze-velvet-cedar-peak/"
+						],
+						"clicks": 3,
+						"impressions": 146,
+						"ctr": 0.02054794520547945,
+						"position": 5.0794349669
+					},
+					{
+						"keys": [
+							"http://localhost:9002/transporte/road-sign-silver-badge/"
+						],
+						"clicks": 3,
+						"impressions": 108,
+						"ctr": 0.027777777777777776,
+						"position": 4.1369980284
+					},
+					{
+						"keys": [
+							"http://localhost:9002/gastronomia/palm-feast-winter-table/"
+						],
+						"clicks": 3,
+						"impressions": 49,
+						"ctr": 0.061224489795918366,
+						"position": 6.2449536317
+					},
+					{
+						"keys": [
+							"http://localhost:9002/carreira/badge-patrol-training-field/"
+						],
+						"clicks": 2,
+						"impressions": 77,
+						"ctr": 0.025974025974025976,
+						"position": 3.8009102947
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/campo-verde-neblina-alta/"
+						],
+						"clicks": 2,
+						"impressions": 29,
+						"ctr": 0.06896551724137931,
+						"position": 5.8010909322
+					},
+					{
+						"keys": [
+							"http://localhost:9002/entertainment/pine-ember-starlight-film/"
+						],
+						"clicks": 2,
+						"impressions": 28,
+						"ctr": 0.07142857142857142,
+						"position": 44.6527093227
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-21\",\"rowlimit\":50,\"startdate\":\"2025-12-15\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"tour guides in edinburgh"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 10.4004629597
+					},
+					{
+						"keys": [
+							"top films of the valley 2025"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 18.6262998303
+					},
+					{
+						"keys": [
+							"palm leaf congregation harbor"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 9.0960461402
+					},
+					{
+						"keys": [
+							"winter films set in the highlands"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 16.1053835918
+					},
+					{
+						"keys": [
+							"mountain tavern old quarter"
+						],
+						"clicks": 1,
+						"impressions": 11,
+						"ctr": 0.09090909090909091,
+						"position": 3.9577700913
+					},
+					{
+						"keys": [
+							"coastal pub stone district"
+						],
+						"clicks": 1,
+						"impressions": 36,
+						"ctr": 0.027777777777777776,
+						"position": 4.5324383622
+					},
+					{
+						"keys": [
+							"meaning of the green plate on learner cars"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 9.5572400396
+					},
+					{
+						"keys": [
+							"snowboard run highland resort"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 33.3907998429
+					},
+					{
+						"keys": [
+							"craft gifts mountain village"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 35.333901642
+					},
+					{
+						"keys": [
+							"\"riverside bakery\" \"n17 qp33\""
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 53.8403976026
+					},
+					{
+						"keys": [
+							"+44 (00) 000 0000"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 7.1488447117
+					},
+					{
+						"keys": [
+							"27.80"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 11.5519168308
+					},
+					{
+						"keys": [
+							"a great harvest season"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0.0,
+						"position": 1.0720333332
+					},
+					{
+						"keys": [
+							"plantain fritters london"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 20.4841092843
+					},
+					{
+						"keys": [
+							"travel companion in scotland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 25.0589149215
+					},
+					{
+						"keys": [
+							"minimum age forest ranger"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 7.2245993921
+					},
+					{
+						"keys": [
+							"plan your trip to arrive at the central station"
+						],
+						"clicks": 0,
+						"impressions": 6,
+						"ctr": 0.0,
+						"position": 21.6988790925
+					},
+					{
+						"keys": [
+							"bank home loan for overseas buyers"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 50.9381119512
+					},
+					{
+						"keys": [
+							"open savings account as foreigner"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 69.7732081204
+					},
+					{
+						"keys": [
+							"student card tap payment feature"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 87.6668051492
+					},
+					{
+						"keys": [
+							"cabin rental scotland"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 8.2000928115
+					},
+					{
+						"keys": [
+							"market store jobs coastal town"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 6.8951945525
+					},
+					{
+						"keys": [
+							"grocery store positions northern region"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 10.8168228904
+					},
+					{
+						"keys": [
+							"rent a car highlands"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 73.7215800697
+					},
+					{
+						"keys": [
+							"hire car in the lake district"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 101.3841409864
+					},
+					{
+						"keys": [
+							"car rental in the valley"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 98.584881833
+					},
+					{
+						"keys": [
+							"car hire mountain pass"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 65.0061383025
+					},
+					{
+						"keys": [
+							"stunning cottage stay forest"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 17.2514709799
+					},
+					{
+						"keys": [
+							"web retail coastal district"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 67.4552242143
+					},
+					{
+						"keys": [
+							"woodland adventure center"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 75.7706123175
+					},
+					{
+						"keys": [
+							"a winter holiday film"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 93.4927310869
+					},
+					{
+						"keys": [
+							"old stone carved emblems"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 78.0919847781
+					},
+					{
+						"keys": [
+							"marco santos harbor town"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 7.2121132852
+					},
+					{
+						"keys": [
+							"woven copper ring"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 50.3447632903
+					},
+					{
+						"keys": [
+							"handcrafted silver band"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 28.465702919
+					},
+					{
+						"keys": [
+							"braided golden ring"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 52.7353617971
+					},
+					{
+						"keys": [
+							"stone hearth dining coastal city"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 91.4086566621
+					},
+					{
+						"keys": [
+							"apps for hiking trails"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 99.8950414531
+					},
+					{
+						"keys": [
+							"are there really no bears in city parks"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 94.3645362805
+					},
+					{
+						"keys": [
+							"are there wolves in the forest"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 67.023725779
+					},
+					{
+						"keys": [
+							"regions of the highlands"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 92.8378869567
+					},
+					{
+						"keys": [
+							"wooden harp emblem history"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 0.9375165083
+					},
+					{
+						"keys": [
+							"morning bread baker village"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 49.2039239246
+					},
+					{
+						"keys": [
+							"coastal bread shop opening times"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 9.694501707
+					},
+					{
+						"keys": [
+							"thornwood manor"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 83.6918254689
+					},
+					{
+						"keys": [
+							"granite ridge estate hotel"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 67.4371060055
+					},
+					{
+						"keys": [
+							"riverdale pine tree farm"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 10.101678014
+					},
+					{
+						"keys": [
+							"film actors northern cinema"
+						],
+						"clicks": 0,
+						"impressions": 4,
+						"ctr": 0.0,
+						"position": 59.5909899624
+					},
+					{
+						"keys": [
+							"au pair highland family"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 40.818400758
+					},
+					{
+						"keys": [
+							"nanny pay rates mountain region"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 91.8122185375
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"page\"],\"enddate\":\"2025-12-21\",\"rowlimit\":50,\"startdate\":\"2025-12-15\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"http://localhost:9002/tips/mountain-river-golden-bridge/"
+						],
+						"clicks": 9,
+						"impressions": 911,
+						"ctr": 0.009879253567508232,
+						"position": 7.628054608
+					},
+					{
+						"keys": [
+							"http://localhost:9002/compras/crystal-shop-window-light/"
+						],
+						"clicks": 6,
+						"impressions": 40,
+						"ctr": 0.15,
+						"position": 5.9440468114
+					},
+					{
+						"keys": [
+							"http://localhost:9002/guide/silver-forest-morning-light/"
+						],
+						"clicks": 5,
+						"impressions": 54,
+						"ctr": 0.09259259259259259,
+						"position": 5.8429477069
+					},
+					{
+						"keys": [
+							"http://localhost:9002/bares/ruby-harbor-evening-tide/"
+						],
+						"clicks": 3,
+						"impressions": 296,
+						"ctr": 0.010135135135135136,
+						"position": 9.119591483
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cultura/bronze-velvet-cedar-peak/"
+						],
+						"clicks": 3,
+						"impressions": 133,
+						"ctr": 0.022556390977443608,
+						"position": 5.7139523551
+					},
+					{
+						"keys": [
+							"http://localhost:9002/transporte/road-sign-silver-badge/"
+						],
+						"clicks": 3,
+						"impressions": 127,
+						"ctr": 0.023622047244094488,
+						"position": 4.1643684251
+					},
+					{
+						"keys": [
+							"http://localhost:9002/gastronomia/palm-feast-winter-table/"
+						],
+						"clicks": 3,
+						"impressions": 55,
+						"ctr": 0.05454545454545454,
+						"position": 7.4337013023
+					},
+					{
+						"keys": [
+							"http://localhost:9002/carreira/badge-patrol-training-field/"
+						],
+						"clicks": 2,
+						"impressions": 64,
+						"ctr": 0.03125,
+						"position": 4.0876372011
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/campo-verde-neblina-alta/"
+						],
+						"clicks": 2,
+						"impressions": 29,
+						"ctr": 0.06896551724137931,
+						"position": 5.5999464837
+					},
+					{
+						"keys": [
+							"http://localhost:9002/entertainment/pine-ember-starlight-film/"
+						],
+						"clicks": 2,
+						"impressions": 27,
+						"ctr": 0.07407407407407407,
+						"position": 43.771918946
+					},
+					{
+						"keys": [
+							"http://localhost:9002/community/sun-village-western-plain/"
+						],
+						"clicks": 2,
+						"impressions": 74,
+						"ctr": 0.02702702702702703,
+						"position": 10.5584740116
+					},
+					{
+						"keys": [
+							"http://localhost:9002/social/golden-circle-harbor-meet/"
+						],
+						"clicks": 2,
+						"impressions": 56,
+						"ctr": 0.03571428571428571,
+						"position": 10.4571351945
+					},
+					{
+						"keys": [
+							"http://localhost:9002/dining/carnival-table-winter-feast/"
+						],
+						"clicks": 2,
+						"impressions": 65,
+						"ctr": 0.03076923076923077,
+						"position": 6.1283021641
+					},
+					{
+						"keys": [
+							"http://localhost:9002/carreira/copper-basin-thunder-ridge/"
+						],
+						"clicks": 2,
+						"impressions": 87,
+						"ctr": 0.022988505747126436,
+						"position": 4.8286701576
+					},
+					{
+						"keys": [
+							"http://localhost:9002/idiomas/river-words-morning-phrase/"
+						],
+						"clicks": 1,
+						"impressions": 34,
+						"ctr": 0.029411764705882353,
+						"position": 9.0810823956
+					},
+					{
+						"keys": [
+							"http://localhost:9002/hospedagem/stone-cottage-hidden-valley/"
+						],
+						"clicks": 1,
+						"impressions": 7,
+						"ctr": 0.14285714285714285,
+						"position": 7.8821458819
+					},
+					{
+						"keys": [
+							"http://localhost:9002/negocios/amber-cliff-coastal-range/"
+						],
+						"clicks": 1,
+						"impressions": 27,
+						"ctr": 0.037037037037037035,
+						"position": 3.488208645
+					},
+					{
+						"keys": [
+							"http://localhost:9002/educacao/parchment-seal-emerald-gate/"
+						],
+						"clicks": 1,
+						"impressions": 7,
+						"ctr": 0.14285714285714285,
+						"position": 11.4877983846
+					},
+					{
+						"keys": [
+							"http://localhost:9002/politica/ballot-stone-distant-home/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 5.1045900552
+					},
+					{
+						"keys": [
+							"http://localhost:9002/language/pebble-shore-evening-glow/"
+						],
+						"clicks": 1,
+						"impressions": 67,
+						"ctr": 0.014925373134328358,
+						"position": 3.1879941183
+					},
+					{
+						"keys": [
+							"http://localhost:9002/travel/runway-cloud-terminal-gate/"
+						],
+						"clicks": 1,
+						"impressions": 9,
+						"ctr": 0.1111111111111111,
+						"position": 17.8198127624
+					},
+					{
+						"keys": [
+							"http://localhost:9002/finance/copper-key-vault-bridge/"
+						],
+						"clicks": 1,
+						"impressions": 5,
+						"ctr": 0.2,
+						"position": 14.4036600936
+					},
+					{
+						"keys": [
+							"http://localhost:9002/sports/frost-slope-granite-summit/"
+						],
+						"clicks": 1,
+						"impressions": 40,
+						"ctr": 0.025,
+						"position": 16.4300345172
+					},
+					{
+						"keys": [
+							"http://localhost:9002/music/velvet-crown-shamrock-stage/"
+						],
+						"clicks": 1,
+						"impressions": 12,
+						"ctr": 0.08333333333333333,
+						"position": 25.388017946
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/cobalt-street-shadow-report/"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.05263157894736842,
+						"position": 7.3461353026
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/iron-gate-morning-release/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 6.9843530024
+					},
+					{
+						"keys": [
+							"http://localhost:9002/dining/amber-plate-budget-square/"
+						],
+						"clicks": 1,
+						"impressions": 15,
+						"ctr": 0.06666666666666667,
+						"position": 8.0279443208
+					},
+					{
+						"keys": [
+							"http://localhost:9002/tag/harbor-stone-evening-patrol/"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 32.5949008766
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cinema/reel-emerald-silver-screen/"
+						],
+						"clicks": 1,
+						"impressions": 37,
+						"ctr": 0.02702702702702703,
+						"position": 15.8543094708
+					},
+					{
+						"keys": [
+							"http://localhost:9002/news/velvet-cage-marble-hall/"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 19.4063764972
+					},
+					{
+						"keys": [
+							"http://localhost:9002/culture/paper-trail-cozy-nook/"
+						],
+						"clicks": 1,
+						"impressions": 177,
+						"ctr": 0.005649717514124294,
+						"position": 9.7499893056
+					},
+					{
+						"keys": [
+							"http://localhost:9002/natureza/deep-fjord-misty-shore/"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 5.5717412642
+					},
+					{
+						"keys": [
+							"http://localhost:9002/gastronomia/morning-table-golden-fork/"
+						],
+						"clicks": 1,
+						"impressions": 6,
+						"ctr": 0.16666666666666666,
+						"position": 60.3926491936
+					},
+					{
+						"keys": [
+							"http://localhost:9002/saude/iron-maple-harvest-valley/"
+						],
+						"clicks": 1,
+						"impressions": 23,
+						"ctr": 0.043478260869565216,
+						"position": 11.1624994754
+					},
+					{
+						"keys": [
+							"http://localhost:9002/transporte/silver-wheel-coastal-drive/"
+						],
+						"clicks": 1,
+						"impressions": 16,
+						"ctr": 0.0625,
+						"position": 40.1927355733
+					},
+					{
+						"keys": [
+							"http://localhost:9002/financas/copper-bridge-key-vault/"
+						],
+						"clicks": 1,
+						"impressions": 19,
+						"ctr": 0.05263157894736842,
+						"position": 8.060019649
+					},
+					{
+						"keys": [
+							"http://localhost:9002/tag/maple-shadow-trail/"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 18.1740333455
+					},
+					{
+						"keys": [
+							"http://localhost:9002/negocios/diamond-summit-tower-peak/"
+						],
+						"clicks": 1,
+						"impressions": 20,
+						"ctr": 0.05,
+						"position": 5.457799305
+					},
+					{
+						"keys": [
+							"http://localhost:9002/"
+						],
+						"clicks": 0,
+						"impressions": 15,
+						"ctr": 0.0,
+						"position": 17.2543605626
+					},
+					{
+						"keys": [
+							"http://localhost:9002/gastronomia/salt-herb-harvest-plate/"
+						],
+						"clicks": 0,
+						"impressions": 33,
+						"ctr": 0.0,
+						"position": 69.4916386043
+					},
+					{
+						"keys": [
+							"http://localhost:9002/transporte/cloud-gate-tower-runway/"
+						],
+						"clicks": 0,
+						"impressions": 2,
+						"ctr": 0.0,
+						"position": 8.1054864271
+					},
+					{
+						"keys": [
+							"http://localhost:9002/idiomas/ancient-tongue-stone-circle/"
+						],
+						"clicks": 0,
+						"impressions": 52,
+						"ctr": 0.0,
+						"position": 39.4819132265
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/emerald-path-cliff-walk/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 1.0808310582
+					},
+					{
+						"keys": [
+							"http://localhost:9002/natal/pine-farm-winter-grove/"
+						],
+						"clicks": 0,
+						"impressions": 10,
+						"ctr": 0.0,
+						"position": 6.3554586644
+					},
+					{
+						"keys": [
+							"http://localhost:9002/natureza/crystal-cove-ocean-swim/"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 23.1464280573
+					},
+					{
+						"keys": [
+							"http://localhost:9002/viagem/hidden-road-highland-path/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 10.3183630806
+					},
+					{
+						"keys": [
+							"http://localhost:9002/features/amber-dawn-harbor-light/"
+						],
+						"clicks": 0,
+						"impressions": 3,
+						"ctr": 0.0,
+						"position": 39.2647335829
+					},
+					{
+						"keys": [
+							"http://localhost:9002/archive/spring-meadow-golden-oak/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 5.9289878282
+					},
+					{
+						"keys": [
+							"http://localhost:9002/archive/autumn-copper-fallen-leaf/"
+						],
+						"clicks": 0,
+						"impressions": 1,
+						"ctr": 0.0,
+						"position": 9.1802667515
+					},
+					{
+						"keys": [
+							"http://localhost:9002/cinema/cliff-set-ocean-backdrop/"
+						],
+						"clicks": 0,
+						"impressions": 5,
+						"ctr": 0.0,
+						"position": 39.4624021945
+					}
+				],
+				"responseAggregationType": "byPage"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2026-01-01\",\"rowlimit\":\"10\",\"startdate\":\"2025-12-05\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [
+							"coastal pub stone district"
+						],
+						"clicks": 4,
+						"impressions": 125,
+						"ctr": 0.032,
+						"position": 5.144965203
+					},
+					{
+						"keys": [
+							"crowdfund relief campaign"
+						],
+						"clicks": 3,
+						"impressions": 15,
+						"ctr": 0.2,
+						"position": 7.3806543963
+					},
+					{
+						"keys": [
+							"mountain tavern old quarter"
+						],
+						"clicks": 2,
+						"impressions": 26,
+						"ctr": 0.07692307692307693,
+						"position": 3.7363858724
+					},
+					{
+						"keys": [
+							"northern craft brands"
+						],
+						"clicks": 2,
+						"impressions": 16,
+						"ctr": 0.125,
+						"position": 1.6129050846
+					},
+					{
+						"keys": [
+							"travel companion in scotland"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 13.922271045
+					},
+					{
+						"keys": [
+							"tour guides in edinburgh"
+						],
+						"clicks": 1,
+						"impressions": 1,
+						"ctr": 1.0,
+						"position": 11.4932767666
+					},
+					{
+						"keys": [
+							"top films of the valley 2025"
+						],
+						"clicks": 1,
+						"impressions": 10,
+						"ctr": 0.1,
+						"position": 15.4422440304
+					},
+					{
+						"keys": [
+							"tropical cafe harbor district"
+						],
+						"clicks": 1,
+						"impressions": 13,
+						"ctr": 0.07692307692307693,
+						"position": 10.6077088395
+					},
+					{
+						"keys": [
+							"sunflower community chapel"
+						],
+						"clicks": 1,
+						"impressions": 2,
+						"ctr": 0.5,
+						"position": 7.2419597346
+					},
+					{
+						"keys": [
+							"palm leaf congregation harbor"
+						],
+						"clicks": 1,
+						"impressions": 4,
+						"ctr": 0.25,
+						"position": 10.1125928723
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"enddate\":\"2026-01-01\",\"rowlimit\":1,\"startdate\":\"2026-01-01\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"clicks": 17,
+						"impressions": 1253,
+						"ctr": 0.0144325572801182557,
+						"position": 15.248337028824835
+					}
+				],
+				"responseAggregationType": "byProperty"
+			}
+		}
+	}
+}

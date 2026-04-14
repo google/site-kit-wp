@@ -138,10 +138,8 @@ export default {
 						publicationID: '1234',
 						publicationOnboardingState:
 							PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
-						contentPolicyStatus: {
-							contentPolicyState: parameters.contentPolicyState,
-							policyInfoLink: POLICY_INFO_URL,
-						},
+						contentPolicyState: parameters.contentPolicyState,
+						policyInfoLink: POLICY_INFO_URL,
 					} );
 			}
 

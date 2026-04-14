@@ -20,11 +20,24 @@
  * Internal dependencies
  */
 import CronSchedulerErrorNotice from './CronSchedulerErrorNotice';
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	render,
+} from '../../../../../../tests/js/test-utils';
 
 describe( 'CronSchedulerErrorNotice', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+	} );
+
 	it( 'renders expected title and description', () => {
-		const { getByText } = render( <CronSchedulerErrorNotice /> );
+		const { getByText } = render( <CronSchedulerErrorNotice />, {
+			registry,
+		} );
 
 		expect(
 			getByText( 'Email reports are failing to send' )
@@ -34,5 +47,17 @@ describe( 'CronSchedulerErrorNotice', () => {
 				'We were unable to deliver your report, likely due to a WP-Cron configuration error in your WordPress site’s system settings. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders a "Get help" link to the scheduler issues doc', () => {
+		const { getByRole } = render( <CronSchedulerErrorNotice />, {
+			registry,
+		} );
+
+		const helpLink = getByRole( 'button', { name: /get help/i } );
+		expect( helpLink ).toBeInTheDocument();
+		expect( helpLink.getAttribute( 'href' ) ).toContain(
+			'doc=email-reporting-scheduler-issues'
+		);
 	} );
 } );

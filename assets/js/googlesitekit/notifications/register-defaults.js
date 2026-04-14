@@ -539,7 +539,7 @@ export const DEFAULT_NOTIFICATIONS = {
 
 			return analyticsGatheringData || searchConsoleGatheringData;
 		},
-		isDismissible: true,
+		isDismissible: false,
 	},
 	'zero-data-notification': {
 		Component: ZeroDataNotification,

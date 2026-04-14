@@ -37,9 +37,9 @@ function Template() {
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 
-export const WithError = Template.bind( {} );
-WithError.storyName = 'With error';
-WithError.args = {
+export const WithSaveInputError = Template.bind( {} );
+WithSaveInputError.storyName = 'With error (save user input)';
+WithSaveInputError.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_USER ).receiveError(
 			{
@@ -51,6 +51,40 @@ WithError.args = {
 			},
 			'saveUserInputSettings',
 			[]
+		);
+	},
+};
+
+export const WithSaveInitialSetupError = Template.bind( {} );
+WithSaveInitialSetupError.storyName = 'With error (save initial setup)';
+WithSaveInitialSetupError.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( CORE_USER ).receiveError(
+			{
+				code: 'test_code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'saveUserInputSettings',
+			[]
+		);
+
+		registry.dispatch( CORE_USER ).receiveError(
+			{
+				code: 'test_code',
+				message: 'Test error message',
+				data: {
+					reason: '',
+				},
+			},
+			'saveInitialSetupSettings',
+			[
+				{
+					isAnalyticsSetupComplete: true,
+				},
+			]
 		);
 	},
 };

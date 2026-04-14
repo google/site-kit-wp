@@ -36,14 +36,6 @@ class Report_Options extends Base_Report_Options {
 	private $custom_dimension_availability = array();
 
 	/**
-	 * Conversion events.
-	 *
-	 * @since 1.170.0
-	 * @var array
-	 */
-	private $conversion_events = array();
-
-	/**
 	 * Whether audience segmentation is enabled.
 	 *
 	 * Null value means the 'audienceSegmentationSetupCompletedBy'
@@ -98,17 +90,6 @@ class Report_Options extends Base_Report_Options {
 	}
 
 	/**
-	 * Sets conversion events.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $events Conversion events.
-	 */
-	public function set_conversion_events( $events ) {
-		$this->conversion_events = $events;
-	}
-
-	/**
 	 * Sets audience segmentation flag.
 	 *
 	 * @since 1.170.0
@@ -117,39 +98,6 @@ class Report_Options extends Base_Report_Options {
 	 */
 	public function set_audience_segmentation_enabled( $enabled ) {
 		$this->audience_segmentation_enabled = (bool) $enabled;
-	}
-
-	/**
-	 * Gets conversion events.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @return array Conversion events.
-	 */
-	public function get_conversion_events() {
-		return $this->conversion_events;
-	}
-
-	/**
-	 * Gets normalized conversion events.
-	 *
-	 * Ensures conversion events are strings, de-duplicated, and non-empty.
-	 *
-	 * @since 1.173.0
-	 *
-	 * @return string[] Normalized conversion events.
-	 */
-	public function get_normalized_conversion_events() {
-		$events = array_map( 'strval', (array) $this->conversion_events );
-
-		$events = array_filter(
-			$events,
-			function ( $event_name ) {
-				return '' !== trim( $event_name );
-			}
-		);
-
-		return array_values( array_unique( $events ) );
 	}
 
 	/**
@@ -178,64 +126,6 @@ class Report_Options extends Base_Report_Options {
 	 */
 	public function has_custom_dimension_data( $custom_dimension ) {
 		return ! empty( $this->custom_dimension_availability[ $custom_dimension ] );
-	}
-
-	/**
-	 * Gets report options for the total conversion events section.
-	 *
-	 * @since 1.167.0
-	 *
-	 * @return array Report request options array.
-	 */
-	public function get_total_conversion_events_options() {
-		$conversion_events = $this->get_normalized_conversion_events();
-
-		return $this->with_current_range(
-			array(
-				'metrics'          => array(
-					array( 'name' => 'eventCount' ),
-				),
-				'dimensionFilters' => array(
-					'eventName' => $conversion_events,
-				),
-				'keepEmptyRows'    => true,
-			),
-			true
-		);
-	}
-
-	/**
-	 * Gets report options for a conversion event.
-	 *
-	 * @since 1.173.0
-	 *
-	 * @param string $event_name Conversion event name.
-	 * @return array Report request options array.
-	 */
-	public function get_conversion_event_options( string $event_name ) {
-		return $this->with_current_range(
-			array(
-				'metrics'          => array(
-					array( 'name' => 'eventCount' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'sessionDefaultChannelGroup' ),
-				),
-				'dimensionFilters' => array(
-					'eventName' => array(
-						'value' => $event_name,
-					),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'eventCount' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 1,
-				'keepEmptyRows'    => true,
-			)
-		);
 	}
 
 	/**

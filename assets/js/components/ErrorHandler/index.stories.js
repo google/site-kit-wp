@@ -24,7 +24,7 @@ import ErrorHandler from './';
 
 function Template() {
 	return (
-		<ErrorHandler>
+		<ErrorHandler hideFilenamesInStack>
 			<ThrowErrorComponent throwErrorOnMount />
 		</ErrorHandler>
 	);

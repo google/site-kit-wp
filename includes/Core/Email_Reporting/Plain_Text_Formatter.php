@@ -43,7 +43,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the full email report as plain text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.176.0
 	 *
 	 * @param array $data     Template data.
 	 * @param array $sections Sections map.
@@ -142,15 +142,10 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Footer links.
-		$footer_links = $data['footer']['links'] ?? array();
-		if ( ! empty( $footer_links ) && is_array( $footer_links ) ) {
-			foreach ( $footer_links as $link ) {
-				if ( ! empty( $link['label'] ) && ! empty( $link['url'] ) ) {
-					$lines[] = self::format_link( $link['label'], $link['url'] );
-				}
-			}
-		}
+		// Footer links (hardcoded to match HTML footer template).
+		$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
 
 		return implode( "\n", $lines );
 	}
@@ -171,8 +166,6 @@ class Plain_Text_Formatter {
 		$template = $section['section_template'] ?? '';
 
 		switch ( $template ) {
-			case 'section-conversions':
-				return self::format_conversions_section( $section );
 			case 'section-metrics':
 				return self::format_metrics_section( $section );
 			case 'section-page-metrics':
@@ -285,7 +278,7 @@ class Plain_Text_Formatter {
 	 * @since 1.170.0
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
-	 * @param array $footer Footer configuration with 'copy', 'unsubscribe_url', and 'links'.
+	 * @param array $footer Footer configuration with 'copy' and 'unsubscribe_url'.
 	 * @return string Formatted footer text.
 	 */
 	public static function format_footer( $cta, $footer ) {
@@ -313,13 +306,12 @@ class Plain_Text_Formatter {
 			$lines[] = '';
 		}
 
-		// Footer links.
-		if ( ! empty( $footer['links'] ) && is_array( $footer['links'] ) ) {
-			foreach ( $footer['links'] as $link ) {
-				if ( ! empty( $link['label'] ) && ! empty( $link['url'] ) ) {
-					$lines[] = self::format_link( $link['label'], $link['url'] );
-				}
-			}
+		// Footer links (hardcoded to match HTML footer template).
+		$unsubscribe_url = $footer['unsubscribe_url'] ?? '';
+		if ( ! empty( $unsubscribe_url ) ) {
+			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+			$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+			$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
 		}
 
 		return implode( "\n", $lines );
@@ -342,91 +334,6 @@ class Plain_Text_Formatter {
 		$display_value = $prefix . round( $change, 1 ) . '%';
 
 		return '(' . $display_value . ')';
-	}
-
-	/**
-	 * Formats the conversions section.
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $section Section configuration.
-	 * @return string Formatted section text.
-	 */
-	protected static function format_conversions_section( $section ) {
-		$output        = self::format_section_heading( $section['title'] );
-		$section_parts = $section['section_parts'];
-
-		// Total conversion events (rendered first/separately).
-		if ( ! empty( $section_parts['total_conversion_events']['data'] ) ) {
-			$data    = $section_parts['total_conversion_events']['data'];
-			$output .= self::format_metric(
-				$data['label'] ?? __( 'Total conversions', 'google-site-kit' ),
-				$data['value'] ?? '',
-				$data['change'] ?? null
-			);
-			$output .= "\n";
-
-			if ( ! empty( $data['change_context'] ) ) {
-				$output .= $data['change_context'] . "\n";
-			}
-			$output .= "\n";
-		}
-
-		// Other conversion metrics.
-		foreach ( $section_parts as $part_key => $part_config ) {
-			if ( 'total_conversion_events' === $part_key || empty( $part_config['data'] ) ) {
-				continue;
-			}
-
-			$data    = $part_config['data'];
-			$output .= self::format_conversion_metric_part( $data );
-		}
-
-		return $output . "\n";
-	}
-
-	/**
-	 * Formats a conversion metric part (e.g., purchases, products added to cart).
-	 *
-	 * @since 1.170.0
-	 *
-	 * @param array $data Conversion metric data.
-	 * @return string Formatted metric part text.
-	 */
-	protected static function format_conversion_metric_part( $data ) {
-		$lines = array();
-
-		// Metric label.
-		if ( ! empty( $data['label'] ) ) {
-			$lines[] = $data['label'];
-		}
-
-		// Event count with change.
-		if ( ! empty( $data['event_name'] ) ) {
-			$event_label = sprintf(
-				/* translators: %s: Event name (e.g., "Purchase") */
-				__( '“%s“ events', 'google-site-kit' ),
-				$data['event_name']
-			);
-			$lines[] = self::format_metric(
-				$event_label,
-				$data['value'] ?? '',
-				$data['change'] ?? null
-			);
-		}
-
-		// Top traffic channel.
-		if ( ! empty( $data['dimension'] ) && ! empty( $data['dimension_value'] ) ) {
-			$lines[] = sprintf(
-				'%s: %s',
-				__( 'Top traffic channel driving the most conversions', 'google-site-kit' ),
-				$data['dimension_value']
-			);
-		}
-
-		$lines[] = '';
-
-		return implode( "\n", $lines );
 	}
 
 	/**

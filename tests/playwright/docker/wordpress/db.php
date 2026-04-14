@@ -14,9 +14,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-$_e2e_db_name = isset( $_COOKIE['_wp_test_db'] )
-	? preg_replace( '/[^a-zA-Z0-9_]/', '_', $_COOKIE['_wp_test_db'] )
-	: DB_NAME;
+$_e2e_db_name = isset( $_COOKIE['_wp_test_db'] ) ? $_COOKIE['_wp_test_db'] : DB_NAME;
 
 $_e2e_error_level_map = array(
 	E_WARNING         => 'E_WARNING',

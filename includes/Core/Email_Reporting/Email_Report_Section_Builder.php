@@ -100,9 +100,6 @@ class Email_Report_Section_Builder {
 			// Analytics 4.
 			'totalUsers'  => __( 'Total visitors', 'google-site-kit' ),
 			'newUsers'    => __( 'New visitors', 'google-site-kit' ),
-			'eventCount'  => __( 'Total conversion events', 'google-site-kit' ),
-			'add_to_cart' => __( 'Products added to cart', 'google-site-kit' ),
-			'purchase'    => __( 'Purchases', 'google-site-kit' ),
 			// Search Console.
 			'impressions' => __( 'Total impressions from Search', 'google-site-kit' ),
 			'clicks'      => __( 'Total clicks from Search', 'google-site-kit' ),

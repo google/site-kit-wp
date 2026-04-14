@@ -198,16 +198,6 @@ class Plain_Text_FormatterTest extends TestCase {
 		$footer = array(
 			'copy'            => 'You received this email because you signed up.',
 			'unsubscribe_url' => 'https://example.com/unsubscribe',
-			'links'           => array(
-				array(
-					'label' => 'Help center',
-					'url'   => 'https://example.com/help',
-				),
-				array(
-					'label' => 'Privacy Policy',
-					'url'   => 'https://example.com/privacy',
-				),
-			),
 		);
 
 		$result = Plain_Text_Formatter::format_footer( $cta, $footer );
@@ -216,8 +206,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
 		$this->assertStringContainsString( 'Unsubscribe: https://example.com/unsubscribe', $result, 'Footer should contain unsubscribe link as separate line.' );
-		$this->assertStringContainsString( 'Help center: https://example.com/help', $result, 'Footer should contain help center link.' );
-		$this->assertStringContainsString( 'Privacy Policy: https://example.com/privacy', $result, 'Footer should contain privacy policy link.' );
+		$this->assertStringContainsString( 'Manage subscription: https://example.com/unsubscribe', $result, 'Footer should contain hardcoded manage subscription link.' );
+		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Footer should contain hardcoded privacy policy link.' );
+		$this->assertStringContainsString( 'Help center:', $result, 'Footer should contain hardcoded help center link.' );
 	}
 
 	public function test_format_section_dispatches_to_metrics_section() {
@@ -275,41 +266,6 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Direct: 300 (-2.3%)', $result, 'Page metrics section should contain second row.' );
 	}
 
-	public function test_format_section_dispatches_to_conversions_section() {
-		$section = array(
-			'title'            => 'Is my site helping my business grow?',
-			'section_template' => 'section-conversions',
-			'section_parts'    => array(
-				'total_conversion_events'   => array(
-					'data' => array(
-						'label'          => 'Total conversions',
-						'value'          => '150',
-						'change'         => 25.0,
-						'change_context' => 'Compared to previous 7 days',
-					),
-				),
-				'conversion_event_purchase' => array(
-					'data' => array(
-						'label'           => 'purchase',
-						'value'           => '50',
-						'change'          => 15.0,
-						'event_name'      => 'purchase',
-						'dimension'       => 'traffic_channel',
-						'dimension_value' => 'Organic Search',
-					),
-				),
-			),
-		);
-
-		$result = Plain_Text_Formatter::format_section( $section );
-
-		$this->assertStringContainsString( 'Is my site helping my business grow?', $result, 'Conversions section should contain title.' );
-		$this->assertStringContainsString( 'Total conversions: 150 (+25%)', $result, 'Conversions section should contain total conversions.' );
-		$this->assertStringContainsString( 'purchase', $result, 'Conversions section should contain raw event label.' );
-		$this->assertStringContainsString( '“purchase“ events', $result, 'Conversions section should contain lowercase event name.' );
-		$this->assertStringContainsString( 'Top traffic channel driving the most conversions: Organic Search', $result, 'Conversions section should contain top traffic channel.' );
-	}
-
 	public function test_format_section_returns_empty_for_empty_section_parts() {
 		$section = array(
 			'title'            => 'Empty Section',
@@ -349,7 +305,7 @@ class Plain_Text_FormatterTest extends TestCase {
 				'Receive the most important insights about your site\'s performance, key trends, and tailored metrics.',
 				'You can easily unsubscribe or change the reports frequency anytime from your Site Kit dashboard.',
 			),
-			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'learn_more_url'         => 'https://sitekit.withgoogle.com/support/?doc=email-reporting',
 			'primary_call_to_action' => array(
 				'label' => 'Get your report',
 				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
@@ -367,7 +323,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringContainsString( 'Receive the most important insights about your site\'s performance', $result, 'Simple email should contain first body paragraph.' );
 		$this->assertStringContainsString( 'You can easily unsubscribe or change the reports frequency', $result, 'Simple email should contain second body paragraph.' );
-		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/documentation/email-reports/', $result, 'Simple email should contain Learn more link.' );
+		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/support/?doc=email-reporting', $result, 'Simple email should contain Learn more link.' );
 		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
 	}

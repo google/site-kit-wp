@@ -23,6 +23,7 @@ import {
 	render,
 	createTestRegistry,
 	fireEvent,
+	act,
 } from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -227,11 +228,21 @@ describe( 'TourTooltips', () => {
 		);
 	} );
 
-	it( 'should end tour when close icon is clicked', () => {
-		const { getByRole, queryByRole } =
+	it( 'should end tour when close icon is clicked', async () => {
+		const { getByRole, queryByRole, rerender } =
 			renderTourTooltipsWithMockUI( registry );
 
-		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		await act( () => {
+			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		} );
+
+		rerender();
+
+		// This error is caused by the `react-select` component trying to update
+		// state after the component has unmounted, so we can't fix it ourselves.
+		expect( console ).toHaveErrored(
+			"Warning: Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in %s.%s"
+		);
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 		expect( dismissTourSpy ).toHaveBeenCalled();

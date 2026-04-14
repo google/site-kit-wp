@@ -78,19 +78,25 @@ export default function SettingsView() {
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
-	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID )
-		) {
-			return null;
-		}
+	const isEnhancedMeasurementStreamEnabled = useSelect(
+		( select ) => {
+			if ( propertyID === undefined || webDataStreamID === undefined ) {
+				return undefined;
+			}
 
-		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
-			propertyID,
-			webDataStreamID
-		);
-	} );
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID )
+			) {
+				return null;
+			}
+
+			return select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+		},
+		[ propertyID, webDataStreamID ]
+	);
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConversionTrackingEnabled()

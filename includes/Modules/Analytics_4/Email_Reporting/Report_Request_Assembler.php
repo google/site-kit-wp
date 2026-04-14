@@ -55,23 +55,6 @@ class Report_Request_Assembler {
 			'popular_content'  => $this->report_options->get_popular_content_options(),
 		);
 
-		$conversion_events = $this->report_options->get_normalized_conversion_events();
-
-		if ( ! empty( $conversion_events ) ) {
-			$requests['total_conversion_events'] = $this->report_options->get_total_conversion_events_options();
-
-			foreach ( $conversion_events as $event_name ) {
-				$event_name_slug = sanitize_key( $event_name );
-
-				$request_key = sprintf( 'conversion_event_%s', $event_name_slug );
-				if ( isset( $requests[ $request_key ] ) ) {
-					continue;
-				}
-
-				$requests[ $request_key ] = $this->report_options->get_conversion_event_options( $event_name );
-			}
-		}
-
 		if ( $this->report_options->is_audience_segmentation_enabled() ) {
 			$requests['new_visitors']       = $this->report_options->get_new_visitors_options();
 			$requests['returning_visitors'] = $this->report_options->get_returning_visitors_options();

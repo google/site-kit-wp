@@ -157,8 +157,8 @@ class Email_Template_Renderer {
 	 * @return string The rendered plain text.
 	 */
 	public function render_text( $template_name, $data ) {
-		// Handle simple email templates (invitation-email, subscription-confirmation, etc.).
-		if ( 'email-report' !== $template_name ) {
+		// Handle simple email templates with the single simple formatter.
+		if ( 'simple-email' === $template_name ) {
 			return Plain_Text_Formatter::format_simple_email( $data );
 		}
 

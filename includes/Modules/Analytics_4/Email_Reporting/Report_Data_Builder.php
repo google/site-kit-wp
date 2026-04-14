@@ -79,6 +79,7 @@ class Report_Data_Builder {
 	 * Builds section payloads from Analytics module data.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event handling.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
@@ -170,6 +171,7 @@ class Report_Data_Builder {
 	 * Builds analytics section payload, extracting dimensions, metrics, and trends.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event label overrides.
 	 *
 	 * @param array  $processed_report Processed report data.
 	 * @param string $section_key      Section key.
@@ -189,15 +191,6 @@ class Report_Data_Builder {
 		list( $values, $trends ) = $this->data_processor->apply_dimension_aggregates( $values, $trends, $dimension_values, $dimension_metrics, $metric_names );
 
 		list( $dimension_values, $labels ) = $this->maybe_format_audience_dimensions( $dimensions, $dimension_values, $labels );
-
-		if ( 0 === strpos( $section_key, 'conversion_event_' ) ) {
-			$event_name = substr( $section_key, strlen( 'conversion_event_' ) );
-
-			if ( '' !== $event_name ) {
-				$labels       = array( $event_name );
-				$metric_names = array( $event_name );
-			}
-		}
 
 		return array(
 			'section_key'      => $section_key,
