@@ -107,6 +107,11 @@ class Get_Account_SummariesTest extends TestCase {
 			$uri,
 			'Account summaries request should request the expected page size.'
 		);
+		$this->assertStringNotContainsString(
+			'pageToken',
+			$uri,
+			'Account summaries request should not include a page token when none is provided.'
+		);
 	}
 
 	public function test_create_request_with_page_token() {

@@ -13,11 +13,10 @@ namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaProperty;
-use stdClass;
-use WP_Error;
 
 /**
  * Class for the single property retrieval datapoint.
@@ -34,16 +33,12 @@ class Get_Property extends Datapoint implements Executable_Datapoint {
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return mixed Request object on success, or WP_Error on failure.
+	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
+	 * @return RequestInterface Request object.
 	 */
 	public function create_request( Data_Request $data_request ) {
-		if ( ! isset( $data_request->data['propertyID'] ) ) {
-			return new WP_Error(
-				'missing_required_param',
-				/* translators: %s: Missing parameter name */
-				sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-				array( 'status' => 400 )
-			);
+		if ( empty( $data_request->data['propertyID'] ) ) {
+			throw new Missing_Required_Param_Exception( 'propertyID' );
 		}
 
 		/**
