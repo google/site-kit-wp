@@ -8,7 +8,6 @@
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Data_Requests;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -98,18 +97,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES );
 
-		$conversion_tracking = $this->createMock( Conversion_Tracking::class );
-		$conversion_tracking->method( 'get_supported_conversion_events' )->willReturn(
-			array( 'add_to_cart', 'purchase' )
-		);
-
 		$this->activate_modules( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG );
 		$this->set_active_modules( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ) );
-		$this->set_analytics_settings_connected(
-			array(
-				'detectedEvents' => array( 'add_to_cart', 'purchase' ),
-			)
-		);
+		$this->set_analytics_settings_connected();
 		$this->set_search_console_settings_connected();
 
 		$analytics      = $this->modules->get_module( Analytics_4::MODULE_SLUG );
@@ -123,22 +113,18 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$this->get_search_console_analytics_report_handlers()
 		);
 
-		$data_requests = $this->create_data_requests( $conversion_tracking );
+		$data_requests = $this->create_data_requests();
 		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
 
 		$this->assertIsArray( $payload, 'Payload should be an array keyed by module slug.' );
-		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Conversion data should be under analytics-4 module key.' );
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Analytics data should be under analytics-4 module key.' );
 		$this->assertArrayHasKey( Search_Console::MODULE_SLUG, $payload, 'Search Console data should be under search-console module key.' );
 
 		$this->assertArrayHasKey( 'total_impressions', $payload[ Search_Console::MODULE_SLUG ], 'Search Console impressions payload should be included.' );
 		$this->assertArrayHasKey( 'total_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console clicks payload should be included.' );
 		$this->assertArrayHasKey( 'top_ctr_keywords', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top CTR keywords payload should be included.' );
 		$this->assertArrayHasKey( 'top_pages_by_clicks', $payload[ Search_Console::MODULE_SLUG ], 'Search Console top pages payload should be included.' );
-		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should be included.' );
-		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Add to cart conversion event payload should be included.' );
-		$this->assertArrayHasKey( 'conversion_event_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Purchase conversion event payload should be included.' );
-		$this->assertArrayHasKey( 'conversion_event_top_channel_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Add to cart top channel payload should be included.' );
-		$this->assertArrayHasKey( 'conversion_event_top_channel_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Purchase top channel payload should be included.' );
+		$this->assertArrayNotHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events payload should not be included.' );
 		$this->assertArrayHasKey( 'total_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Total visitors payload should be included.' );
 		$this->assertArrayHasKey( 'traffic_channels', $payload[ Analytics_4::MODULE_SLUG ], 'Traffic channels payload should be included.' );
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
@@ -168,11 +154,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->set_analytics_settings_connected();
 		$this->set_search_console_settings_connected();
 
-		$conversion_tracking = $this->createMock( Conversion_Tracking::class );
-		$conversion_tracking->method( 'get_supported_conversion_events' )->willReturn(
-			array( 'add_to_cart', 'purchase' )
-		);
-
 		// Assign ownership to the admin so shared data uses admin tokens.
 		$this->options->set(
 			Analytics_4_Settings::OPTION,
@@ -182,7 +163,6 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 				'propertyID'      => '987654321',
 				'webDataStreamID' => '1234567890',
 				'measurementID'   => 'A1B2C3D4E5',
-				'detectedEvents'  => array( 'add_to_cart', 'purchase' ),
 			)
 		);
 
@@ -256,7 +236,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 		add_filter( 'pre_http_request', $http_filter, 10, 3 );
 
-		$data_requests = $this->create_data_requests( $conversion_tracking );
+		$data_requests = $this->create_data_requests();
 		$payload       = $data_requests->get_user_payload( $viewer_id, $this->date_range );
 
 		remove_filter( 'pre_http_request', $http_filter, 10 );
@@ -264,11 +244,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertIsArray( $payload, 'Payload for shared viewer should be an array.' );
 		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'Shared viewer should see analytics-4 payload.' );
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Unshared Search Console data should be absent.' );
-		$this->assertArrayHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see conversion events.' );
-		$this->assertArrayHasKey( 'conversion_event_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see add to cart conversion event data.' );
-		$this->assertArrayHasKey( 'conversion_event_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchase conversion event data.' );
-		$this->assertArrayHasKey( 'conversion_event_top_channel_add_to_cart', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see add to cart top channel data.' );
-		$this->assertArrayHasKey( 'conversion_event_top_channel_purchase', $payload[ Analytics_4::MODULE_SLUG ], 'Shared viewer should see purchase top channel data.' );
+		$this->assertArrayNotHasKey( 'total_conversion_events', $payload[ Analytics_4::MODULE_SLUG ], 'Conversion events should not be included.' );
 		$this->assertArrayNotHasKey( 'new_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
 		$this->assertArrayNotHasKey( 'returning_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Audience segmentation data should be absent.' );
 		$this->assertArrayNotHasKey( 'top_authors', $payload[ Analytics_4::MODULE_SLUG ], 'Custom dimension authors data should be absent.' );
@@ -423,31 +399,19 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertEquals( Search_Console::MODULE_SLUG, $categorized_other_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
 	}
 
-	private function create_data_requests( Conversion_Tracking $conversion_tracking = null ) {
-		if ( null === $conversion_tracking ) {
-			$conversion_tracking = $this->createMock( Conversion_Tracking::class );
-			$conversion_tracking->method( 'get_supported_conversion_events' )->willReturn( array() );
-		}
-
+	private function create_data_requests() {
 		return new Email_Reporting_Data_Requests(
 			$this->context,
 			$this->modules,
-			$conversion_tracking,
 			$this->transients,
 			$this->user_options
 		);
 	}
 
-	private function create_data_requests_with_modules( Modules $modules, Conversion_Tracking $conversion_tracking = null ) {
-		if ( null === $conversion_tracking ) {
-			$conversion_tracking = $this->createMock( Conversion_Tracking::class );
-			$conversion_tracking->method( 'get_supported_conversion_events' )->willReturn( array() );
-		}
-
+	private function create_data_requests_with_modules( Modules $modules ) {
 		return new Email_Reporting_Data_Requests(
 			$this->context,
 			$modules,
-			$conversion_tracking,
 			$this->transients,
 			$this->user_options
 		);

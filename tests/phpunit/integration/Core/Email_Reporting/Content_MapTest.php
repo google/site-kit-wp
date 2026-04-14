@@ -199,8 +199,8 @@ class Content_MapTest extends TestCase {
 		$args = Content_Map::get_body_args( 'error-email-report-search-console', $this->build_golinks() );
 
 		$this->assertNotEmpty( $args, 'Body args should not be empty for SC report error.' );
-		$help_anchor = end( $args ) === '</a>' ? $args[ count( $args ) - 2 ] : '';
-		$this->assertStringContainsString( 'doc=email-reporting-module-issues', $help_anchor, 'SC report error should link to module-issues doc.' );
+		$this->assertStringContainsString( 'module=search-console', $args[0], 'SC report error should link to search console settings.' );
+		$this->assertStringContainsString( 'doc=email-reporting-module-issues', $args[2], 'SC report error should link to module-issues doc.' );
 	}
 
 	public function test_get_body_args_uses_module_issues_doc_for_analytics_4_report_error() {

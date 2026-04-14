@@ -20,13 +20,6 @@ use Google\Site_Kit\Core\Golinks\Golinks;
  */
 class Sections_Map {
 	/**
-	 * Payload flag for rendering conversions section without metric data.
-	 *
-	 * @since 1.175.0
-	 */
-	const CONVERSIONS_NOTICE_ONLY_FLAG = '__show_conversion_notice_only';
-
-	/**
 	 * Plugin context.
 	 *
 	 * @since 1.168.0
@@ -124,71 +117,10 @@ class Sections_Map {
 	 */
 	public function get_sections() {
 		return array_merge(
-			$this->get_business_growth_section(),
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
 			$this->get_growth_drivers_section()
-		);
-	}
-
-	/**
-	 * Gets the business growth section.
-	 *
-	 * @since 1.168.0
-	 *
-	 * @return array Section configuration array.
-	 */
-	protected function get_business_growth_section() {
-		$section_parts           = array(
-			'total_conversion_events' => array(
-				'data' => $this->payload['total_conversion_events'] ?? array(),
-			),
-		);
-		$conversion_metric_parts = array();
-
-		foreach ( $this->payload as $key => $data ) {
-			if ( 0 !== strpos( $key, 'conversion_event_' ) ) {
-				continue;
-			}
-
-			$conversion_metric_parts[ $key ] = array(
-				'data' => $data,
-			);
-		}
-
-		if ( ! empty( $conversion_metric_parts ) ) {
-			// Rank conversion events by event volume so we can surface only the top performers in the section.
-			uasort(
-				$conversion_metric_parts,
-				function ( $a, $b ) {
-					$value_a = $a['data']['value'] ?? 0;
-					$value_b = $b['data']['value'] ?? 0;
-
-					return floatval( $value_b ) <=> floatval( $value_a );
-				}
-			);
-
-			$conversion_metric_parts = array_slice( $conversion_metric_parts, 0, 2, true );
-			$section_parts           = array_merge( $section_parts, $conversion_metric_parts );
-		}
-
-		$section_parts = $this->filter_section_parts( $section_parts );
-		if (
-			empty( $section_parts )
-			&& empty( $this->payload[ self::CONVERSIONS_NOTICE_ONLY_FLAG ] )
-		) {
-			return array();
-		}
-
-		return array(
-			'is_my_site_helping_my_business_grow' => array(
-				'title'            => esc_html__( 'Is my site helping my business grow?', 'google-site-kit' ),
-				'icon'             => 'conversions',
-				'section_template' => 'section-conversions',
-				'dashboard_url'    => $this->get_dashboard_url(),
-				'section_parts'    => $section_parts,
-			),
 		);
 	}
 
