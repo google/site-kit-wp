@@ -10,7 +10,11 @@
 
 namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Email_Reporting\Content_Map;
+use Google\Site_Kit\Core\Golinks\Dashboard_Golink_Handler;
+use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Core\Golinks\Settings_Golink_Handler;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -189,6 +193,47 @@ class Content_MapTest extends TestCase {
 		foreach ( $required_keys as $key ) {
 			$this->assertArrayHasKey( $key, $config, "Graphic config for '$template_name' should have key '$key'." );
 		}
+	}
+
+	public function test_get_body_args_uses_module_issues_doc_for_search_console_report_error() {
+		$args = Content_Map::get_body_args( 'error-email-report-search-console', $this->build_golinks() );
+
+		$this->assertNotEmpty( $args, 'Body args should not be empty for SC report error.' );
+		$this->assertStringContainsString( 'module=search-console', $args[0], 'SC report error should link to search console settings.' );
+		$this->assertStringContainsString( 'doc=email-reporting-module-issues', $args[2], 'SC report error should link to module-issues doc.' );
+	}
+
+	public function test_get_body_args_uses_module_issues_doc_for_analytics_4_report_error() {
+		$args = Content_Map::get_body_args( 'error-email-report-analytics-4', $this->build_golinks() );
+
+		$this->assertNotEmpty( $args, 'Body args should not be empty for GA4 report error.' );
+		$help_anchor = $args[ count( $args ) - 2 ];
+		$this->assertStringContainsString( 'doc=email-reporting-module-issues', $help_anchor, 'GA4 report error should link to module-issues doc.' );
+	}
+
+	public function test_get_body_args_uses_search_console_error_id_for_permissions_error() {
+		$args = Content_Map::get_body_args( 'error-email-permissions-search-console', $this->build_golinks() );
+
+		$this->assertNotEmpty( $args, 'Body args should not be empty for SC permissions error.' );
+		$this->assertStringContainsString( 'error_id=search-console_insufficient_permissions', $args[0], 'SC permissions error should link via search-console error_id.' );
+		$this->assertStringNotContainsString( 'doc=email-reporting', $args[0], 'SC permissions error should not use the generic doc key.' );
+	}
+
+	public function test_get_body_args_uses_analytics_4_error_id_for_permissions_error() {
+		$args = Content_Map::get_body_args( 'error-email-permissions-analytics-4', $this->build_golinks() );
+
+		$this->assertNotEmpty( $args, 'Body args should not be empty for GA4 permissions error.' );
+		$this->assertStringContainsString( 'error_id=analytics-4_insufficient_permissions', $args[0], 'GA4 permissions error should link via analytics-4 error_id.' );
+		$this->assertStringNotContainsString( 'doc=email-reporting', $args[0], 'GA4 permissions error should not use the generic doc key.' );
+	}
+
+	private function build_golinks() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$golinks = new Golinks( $context );
+		$golinks->register_handler( 'dashboard', new Dashboard_Golink_Handler() );
+		$golinks->register_handler( 'settings', new Settings_Golink_Handler() );
+
+		return $golinks;
 	}
 
 	public function data_graphic_config_templates() {

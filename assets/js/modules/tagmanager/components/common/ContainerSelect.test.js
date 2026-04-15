@@ -58,9 +58,12 @@ describe( 'ContainerSelect', () => {
 			.dispatch( MODULES_TAGMANAGER )
 			.finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
 
-		const { container } = render( <ContainerSelect containers={ [] } />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<ContainerSelect containers={ [] } />,
+			{
+				registry,
+			}
+		);
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
@@ -71,6 +74,7 @@ describe( 'ContainerSelect', () => {
 				.dispatch( MODULES_TAGMANAGER )
 				.setAccountID( ACCOUNT_CREATE )
 		);
+		await waitForRegistry();
 
 		expect( select ).toHaveClass( 'mdc-select--disabled' );
 	} );

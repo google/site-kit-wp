@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Golinks\Golinks;
-use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use WP_Error;
@@ -150,12 +149,6 @@ class Email_Template_Formatter {
 			);
 		}
 
-		$section_notices = $this->prepare_section_notices( $user );
-
-		if ( ! empty( $section_notices[ Enable_Conversion_Events_Email_Notice::SECTION_KEY ] ) ) {
-			$sections_payload[ Sections_Map::CONVERSIONS_NOTICE_ONLY_FLAG ] = true;
-		}
-
 		$sections_map = new Sections_Map( $this->context, $sections_payload, $this->golinks );
 		if ( empty( $sections_map->get_sections() ) ) {
 			return new WP_Error(
@@ -169,8 +162,7 @@ class Email_Template_Formatter {
 			'template_data'    => $this->prepare_template_data(
 				$frequency,
 				$date_range,
-				$user,
-				$section_notices
+				$user
 			),
 		);
 	}
@@ -392,7 +384,7 @@ class Email_Template_Formatter {
 					$first_report_date,
 				)
 			),
-			'learn_more_url'         => 'https://sitekit.withgoogle.com/documentation/email-reports/',
+			'learn_more_url'         => add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' ),
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
@@ -411,13 +403,12 @@ class Email_Template_Formatter {
 	 *
 	 * @since 1.170.0
 	 *
-	 * @param string  $frequency       Frequency slug.
-	 * @param array   $date_range      Date range.
-	 * @param WP_User $user            User receiving the report.
-	 * @param array   $section_notices Section notices keyed by section key.
+	 * @param string  $frequency  Frequency slug.
+	 * @param array   $date_range Date range.
+	 * @param WP_User $user       User receiving the report.
 	 * @return array Template data.
 	 */
-	private function prepare_template_data( $frequency, $date_range, WP_User $user, array $section_notices ) {
+	private function prepare_template_data( $frequency, $date_range, WP_User $user ) {
 		$dashboard_url      = $this->golinks->get_url( 'dashboard' );
 		$email_settings_url = $this->golinks->get_url( 'manage-subscription-email-reporting' );
 
@@ -433,7 +424,6 @@ class Email_Template_Formatter {
 				'context' => $this->get_change_context_label( $date_range ),
 			),
 			'header_notices'         => $this->email_notices->get_header_notices( $user ),
-			'section_notices'        => $section_notices,
 			'primary_call_to_action' => array(
 				'label' => __( 'View dashboard', 'google-site-kit' ),
 				'url'   => $dashboard_url,
@@ -443,33 +433,6 @@ class Email_Template_Formatter {
 				'unsubscribe_url' => $email_settings_url,
 			),
 		);
-	}
-
-	/**
-	 * Resolves section notices keyed by section slug.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param WP_User $user User receiving the report.
-	 * @return array Section notices map.
-	 */
-	private function prepare_section_notices( WP_User $user ) {
-		$section_notices = array();
-		$section_keys    = $this->email_notices->get_section_notice_keys();
-
-		foreach ( $section_keys as $section_key ) {
-			$section_key = sanitize_key( (string) $section_key );
-			if ( '' === $section_key ) {
-				continue;
-			}
-
-			$notices = $this->email_notices->get_section_notices( $user, $section_key );
-			if ( ! empty( $notices ) ) {
-				$section_notices[ $section_key ] = $notices;
-			}
-		}
-
-		return $section_notices;
 	}
 
 	/**
@@ -486,17 +449,17 @@ class Email_Template_Formatter {
 		}
 
 		$format_date = static function ( $value ) {
-			$timestamp = strtotime( $value );
-			if ( ! $timestamp ) {
+			$timezone = BC_Functions::wp_timezone();
+			$date     = date_create_immutable( $value, $timezone );
+			if ( ! $date ) {
 				return $value;
 			}
 
-			$timezone = BC_Functions::wp_timezone();
-			if ( $timezone && function_exists( 'wp_date' ) ) {
-				return wp_date( 'M j', $timestamp, $timezone );
+			if ( function_exists( 'wp_date' ) ) {
+				return wp_date( 'M j', $date->getTimestamp(), $timezone );
 			}
 
-			return gmdate( 'M j', $timestamp );
+			return $date->format( 'M j' );
 		};
 
 		return sprintf(

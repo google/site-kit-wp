@@ -73,76 +73,109 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		} );
 	} );
 
-	const isEnhancedMeasurementStreamEnabled = useSelect( ( select ) => {
-		if ( isLoadingPropertySummaries || isLoadingWebDataStreams ) {
-			return undefined;
-		}
+	const isEnhancedMeasurementStreamEnabled = useSelect(
+		( select ) => {
+			if (
+				isLoadingPropertySummaries ||
+				isLoadingWebDataStreams ||
+				propertyID === undefined ||
+				webDataStreamID === undefined
+			) {
+				return undefined;
+			}
 
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID )
-		) {
-			return null;
-		}
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID )
+			) {
+				return null;
+			}
 
-		return select( MODULES_ANALYTICS_4 ).isEnhancedMeasurementStreamEnabled(
+			return select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamEnabled( propertyID, webDataStreamID );
+		},
+		[
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
 			propertyID,
-			webDataStreamID
-		);
-	} );
+			webDataStreamID,
+		]
+	);
 
-	const isEnhancedMeasurementAlreadyEnabled = useSelect( ( select ) => {
-		if (
-			isLoadingPropertySummaries ||
-			isLoadingWebDataStreams ||
-			isEnhancedMeasurementStreamEnabled === undefined
-		) {
-			return undefined;
-		}
+	const isEnhancedMeasurementAlreadyEnabled = useSelect(
+		( select ) => {
+			if (
+				isLoadingPropertySummaries ||
+				isLoadingWebDataStreams ||
+				propertyID === undefined ||
+				webDataStreamID === undefined
+			) {
+				return undefined;
+			}
 
-		if (
-			! isValidPropertyID( propertyID ) ||
-			! isValidWebDataStreamID( webDataStreamID )
-		) {
-			return null;
-		}
+			if (
+				! isValidPropertyID( propertyID ) ||
+				! isValidWebDataStreamID( webDataStreamID )
+			) {
+				return null;
+			}
 
-		return select(
-			MODULES_ANALYTICS_4
-		).isEnhancedMeasurementStreamAlreadyEnabled(
+			return select(
+				MODULES_ANALYTICS_4
+			).isEnhancedMeasurementStreamAlreadyEnabled(
+				propertyID,
+				webDataStreamID
+			);
+		},
+		[
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
 			propertyID,
-			webDataStreamID
-		);
-	} );
+			webDataStreamID,
+		]
+	);
 
-	const isLoading = useSelect( ( select ) => {
-		if (
-			! isValidPropertySelection( propertyID ) ||
-			! isValidWebDataStreamSelection( webDataStreamID ) ||
-			isLoadingPropertySummaries ||
-			isLoadingWebDataStreams
-		) {
-			return true;
-		}
+	const isLoading = useSelect(
+		( select ) => {
+			if (
+				propertyID === undefined ||
+				webDataStreamID === undefined ||
+				! isValidPropertySelection( propertyID ) ||
+				! isValidWebDataStreamSelection( webDataStreamID ) ||
+				isLoadingPropertySummaries ||
+				isLoadingWebDataStreams
+			) {
+				return true;
+			}
 
-		if (
-			propertyID === PROPERTY_CREATE ||
-			webDataStreamID === WEBDATASTREAM_CREATE
-		) {
-			return false;
-		}
+			if (
+				propertyID === PROPERTY_CREATE ||
+				webDataStreamID === WEBDATASTREAM_CREATE
+			) {
+				return false;
+			}
 
-		return (
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getEnhancedMeasurementSettings',
-				[ propertyID, webDataStreamID ]
-			) ||
-			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'isEnhancedMeasurementStreamAlreadyEnabled',
-				[ propertyID, webDataStreamID ]
-			)
-		);
-	} );
+			return (
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getEnhancedMeasurementSettings',
+					[ propertyID, webDataStreamID ]
+				) ||
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'isEnhancedMeasurementStreamAlreadyEnabled',
+					[ propertyID, webDataStreamID ]
+				)
+			);
+		},
+		[
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
+			propertyID,
+			webDataStreamID,
+			isEnhancedMeasurementStreamEnabled,
+			isEnhancedMeasurementAlreadyEnabled,
+		]
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setEnhancedMeasurementStreamEnabled } =
@@ -157,6 +190,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 	useEffect( () => {
 		if (
 			initialValues.current.isEnhancedMeasurementEnabled !== undefined &&
+			// initialValues.current.isEnhancedMeasurementEnabled !== null &&
 			initialValues.current.webDataStreamID === webDataStreamID &&
 			initialValues.current.propertyID === propertyID
 		) {
@@ -165,6 +199,7 @@ export default function SettingsEnhancedMeasurementSwitch( {
 
 		if (
 			isEnhancedMeasurementStreamEnabled === undefined ||
+			// isEnhancedMeasurementStreamEnabled === null ||
 			! isValidPropertySelection( propertyID ) ||
 			! isValidWebDataStreamSelection( webDataStreamID )
 		) {

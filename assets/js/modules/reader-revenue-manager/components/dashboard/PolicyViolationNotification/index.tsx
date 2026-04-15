@@ -49,12 +49,16 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 } ) => {
 	const viewContext = useViewContext();
 
-	const contentPolicyState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	const contentPolicyState = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState(),
+		[]
 	);
 
-	const policyInfoURL = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
+	const policyInfoURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL(),
+		[]
 	);
 
 	const { title, description, ctaLabel, type } =

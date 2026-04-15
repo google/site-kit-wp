@@ -435,7 +435,7 @@ class Batch_Error_NotifierTest extends TestCase {
 				$this->isType( 'string' ),
 				$this->logicalAnd(
 					$this->stringContains( 'module=' . $module_slug ),
-					$this->stringContains( 'doc=email-reporting' )
+					$this->stringContains( 'doc=email-reporting-module-issues' )
 				),
 				$this->isType( 'array' ),
 				$this->isType( 'string' )
@@ -451,6 +451,27 @@ class Batch_Error_NotifierTest extends TestCase {
 		);
 	}
 
+	public function test_report_error_body_contains_full_links() {
+		self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->set_up_batch_with_category_and_module( 'report_error', 'search-console' );
+
+		$this->email_sender->method( 'build_headers' )->willReturn( array() );
+		$this->email_sender->expects( $this->atLeastOnce() )
+			->method( 'send' )
+			->with(
+				$this->isType( 'string' ),
+				$this->isType( 'string' ),
+				$this->logicalAnd(
+					$this->stringContains( '<a class="link" href="http://example.org/wp-admin/index.php?action=googlesitekit_go&amp;to=settings&amp;module=search-console" style="color:#108080;text-decoration:underline">Search Console settings</a>' ),
+					$this->stringContains( '<a class="link" href="https://sitekit.withgoogle.com/support/?doc=email-reporting-module-issues" style="color:#108080;text-decoration:underline">get help</a>' )
+				),
+				$this->isType( 'array' ),
+				$this->isType( 'string' )
+			);
+
+		$this->create_notifier()->maybe_notify( 'batch-1' );
+	}
+
 	/**
 	 * @dataProvider data_permissions_error_body_contains_help_link
 	 */
@@ -458,7 +479,7 @@ class Batch_Error_NotifierTest extends TestCase {
 		self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->set_up_batch_with_category_and_module( 'permissions_error', $module_slug );
 
-		$expected_help_url = 'https://sitekit.withgoogle.com/support/?doc=email-reporting';
+		$expected_help_url = 'https://sitekit.withgoogle.com/support/?error_id=' . $module_slug . '_insufficient_permissions';
 
 		$this->email_sender->method( 'build_headers' )->willReturn( array() );
 		$this->email_sender->expects( $this->atLeastOnce() )

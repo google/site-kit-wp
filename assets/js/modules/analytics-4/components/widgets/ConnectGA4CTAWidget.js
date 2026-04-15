@@ -45,6 +45,7 @@ import {
 } from '@/js/modules/analytics-4/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import Link from '@/js/components/Link';
 import Banner from '@/js/components/Banner';
@@ -52,6 +53,7 @@ import BannerSVGDesktop from '@/svg/graphics/banner-conversions-setup-cta.svg?ur
 import BannerSVGMobile from '@/svg/graphics/banner-conversions-setup-cta-mobile.svg?url';
 
 export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
+	const isViewOnly = useViewOnly();
 	const trackingRef = useRef();
 	const ga4DependantKeyMetrics = useSelect( ( select ) => {
 		const keyMetrics = select( CORE_USER ).getKeyMetrics();
@@ -167,37 +169,53 @@ export default function ConnectGA4CTAWidget( { Widget, WidgetNull } ) {
 		return <WidgetNull />;
 	}
 
+	const description = isViewOnly
+		? __(
+				'Metrics cannot be displayed without Analytics. To fix the issue, contact your administrator.',
+				'google-site-kit'
+		  )
+		: __(
+				'Metrics cannot be displayed without Analytics',
+				'google-site-kit'
+		  );
+
 	return (
 		<Widget noPadding>
 			<Banner
 				ref={ trackingRef }
 				className="googlesitekit-banner--setup-cta googlesitekit-km-connect-ga4-cta"
 				title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
-				description={ __(
-					'Metrics cannot be displayed without Analytics',
-					'google-site-kit'
-				) }
-				ctaButton={ {
-					label: __( 'Connect Analytics', 'google-site-kit' ),
-					onClick: handleCTAClick,
-					disabled: inProgress,
-					inProgress,
-				} }
+				description={ description }
+				ctaButton={
+					isViewOnly
+						? undefined
+						: {
+								label: __(
+									'Connect Analytics',
+									'google-site-kit'
+								),
+								onClick: handleCTAClick,
+								disabled: inProgress,
+								inProgress,
+						  }
+				}
 				svg={ {
 					desktop: BannerSVGDesktop,
 					mobile: BannerSVGMobile,
 					verticalPosition: 'top',
 				} }
 				footer={
-					<Link
-						onClick={ () =>
-							dismissItem(
-								KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
-							)
-						}
-					>
-						{ __( 'Maybe later', 'google-site-kit' ) }
-					</Link>
+					isViewOnly ? undefined : (
+						<Link
+							onClick={ () =>
+								dismissItem(
+									KM_CONNECT_GA4_CTA_WIDGET_DISMISSED_ITEM_KEY
+								)
+							}
+						>
+							{ __( 'Maybe later', 'google-site-kit' ) }
+						</Link>
+					)
 				}
 			/>
 		</Widget>

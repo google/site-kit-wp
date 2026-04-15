@@ -33,7 +33,8 @@ export default function SettingsEdit() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			( select as any )(
 				MODULES_SIGN_IN_WITH_GOOGLE
-			).isDoingSubmitChanges() as boolean
+			).isDoingSubmitChanges() as boolean,
+		[]
 	);
 
 	return (

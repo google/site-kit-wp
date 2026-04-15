@@ -12,12 +12,9 @@ namespace Google\Site_Kit\Tests\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Email_Notice_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Notices;
 use Google\Site_Kit\Core\Email_Reporting\Notices\Analytics_Setup_Email_Notice;
-use Google\Site_Kit\Core\Email_Reporting\Notices\Enable_Conversion_Events_Email_Notice;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
 use Google\Site_Kit\Core\Golinks\Golinks;
 use Google\Site_Kit\Core\Modules\Disconnected_Modules;
@@ -43,7 +40,6 @@ class Email_NoticesTest extends TestCase {
 	private $modules;
 	private $golinks;
 	private $email_notices;
-	private $conversion_tracking;
 	private $manage_options_cap_filter;
 
 	public function set_up() {
@@ -57,22 +53,13 @@ class Email_NoticesTest extends TestCase {
 		$user_options         = new User_Options( $this->context );
 		$this->authentication = new Authentication( $this->context, $options, $user_options );
 
-		$this->modules             = new Modules( $this->context, $options, $user_options, $this->authentication );
-		$this->golinks             = new Golinks( $this->context );
-		$this->conversion_tracking = $this->createMock( Conversion_Tracking::class );
-		$this->conversion_tracking->method( 'get_active_providers' )->willReturn( array( 'mock-provider' => true ) );
+		$this->modules       = new Modules( $this->context, $options, $user_options, $this->authentication );
+		$this->golinks       = new Golinks( $this->context );
 		$this->email_notices = new Email_Notices(
 			$this->context,
 			$this->golinks,
 			array(
 				new Analytics_Setup_Email_Notice( $this->context, $this->modules, $this->golinks ),
-				new Enable_Conversion_Events_Email_Notice(
-					$this->context,
-					$this->modules,
-					$this->golinks,
-					new Conversion_Tracking_Settings( $options ),
-					$this->conversion_tracking
-				),
 			)
 		);
 
@@ -90,7 +77,6 @@ class Email_NoticesTest extends TestCase {
 	public function tear_down() {
 		unset( $_GET['to'], $_GET['notice_id'] );
 		delete_option( Disconnected_Modules::OPTION );
-		delete_option( Conversion_Tracking_Settings::OPTION );
 
 		parent::tear_down();
 	}
@@ -194,84 +180,6 @@ class Email_NoticesTest extends TestCase {
 		$state = $this->get_notice_prompt_state( $user_id, Analytics_Setup_Email_Notice::DISMISSAL_SLUG );
 		$this->assertSame( 0, (int) $state['expires'], 'Expected notice to be permanently dismissed after second impression.' );
 		$this->assertGreaterThanOrEqual( 2, (int) $state['count'], 'Expected notice prompt count to be at least two impressions.' );
-	}
-
-	public function test_get_section_notices__returns_enable_conversion_events_notice_when_eligible() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user    = get_user_by( 'id', $user_id );
-
-		$this->set_analytics_settings_connected();
-
-		$notices = $this->email_notices->get_section_notices( $user, Enable_Conversion_Events_Email_Notice::SECTION_KEY );
-
-		$this->assertCount( 1, $notices, 'Expected one eligible section notice.' );
-		$this->assertSame( Enable_Conversion_Events_Email_Notice::ID, $notices[0]['id'], 'Expected conversion events notice ID.' );
-		$this->assertStringContainsString( 'notice_id=' . Enable_Conversion_Events_Email_Notice::ID, $notices[0]['cta_url'], 'Expected section notice CTA URL to include notice_id.' );
-		$this->assertStringContainsString( 'to=' . Email_Notices::GOLINK_NOTICE, $notices[0]['cta_url'], 'Expected section notice CTA URL to route through golink proxy.' );
-
-		$state = $this->get_notice_prompt_state( $user_id, Enable_Conversion_Events_Email_Notice::DISMISSAL_SLUG );
-		$this->assertSame( 1, (int) $state['count'], 'Expected first section notice impression count to be 1.' );
-	}
-
-	public function test_get_section_notices__does_not_return_notice_when_conversion_tracking_is_enabled() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user    = get_user_by( 'id', $user_id );
-
-		$this->set_analytics_settings_connected();
-		( new Conversion_Tracking_Settings( new Options( $this->context ) ) )->set( array( 'enabled' => true ) );
-
-		$notices = $this->email_notices->get_section_notices( $user, Enable_Conversion_Events_Email_Notice::SECTION_KEY );
-		$this->assertSame( array(), $notices, 'Expected no section notice when conversion tracking is already enabled.' );
-	}
-
-	public function test_get_section_notices__does_not_return_notice_when_no_supported_conversion_provider_is_detected() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user    = get_user_by( 'id', $user_id );
-
-		$this->set_analytics_settings_connected();
-		$conversion_tracking = $this->createMock( Conversion_Tracking::class );
-		$conversion_tracking->method( 'get_active_providers' )->willReturn( array() );
-		$email_notices = new Email_Notices(
-			$this->context,
-			$this->golinks,
-			array(
-				new Analytics_Setup_Email_Notice( $this->context, $this->modules, $this->golinks ),
-				new Enable_Conversion_Events_Email_Notice(
-					$this->context,
-					$this->modules,
-					$this->golinks,
-					new Conversion_Tracking_Settings( $this->options ),
-					$conversion_tracking
-				),
-			)
-		);
-
-		$notices = $email_notices->get_section_notices( $user, Enable_Conversion_Events_Email_Notice::SECTION_KEY );
-		$this->assertSame( array(), $notices, 'Expected no section notice when there are no supported active conversion providers.' );
-	}
-
-	public function test_get_section_notices__auto_dismisses_notice_after_two_impressions() {
-		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$user              = get_user_by( 'id', $user_id );
-		$dismissed_prompts = new Dismissed_Prompts( new User_Options( $this->context, $user_id ) );
-		$slug              = Enable_Conversion_Events_Email_Notice::DISMISSAL_SLUG;
-
-		$this->set_analytics_settings_connected();
-
-		$dismissed_prompts->set(
-			array(
-				$slug => array(
-					'expires' => time() - 10,
-					'count'   => 2,
-				),
-			)
-		);
-
-		$notices = $this->email_notices->get_section_notices( $user, Enable_Conversion_Events_Email_Notice::SECTION_KEY );
-		$this->assertSame( array(), $notices, 'Expected section notice to be suppressed after two impressions.' );
-
-		$state = $this->get_notice_prompt_state( $user_id, $slug );
-		$this->assertSame( 0, (int) $state['expires'], 'Expected section notice to be permanently dismissed after reaching max impressions.' );
 	}
 
 	public function test_email_notice_golink_handler__dismisses_notice_and_redirects_to_analytics_setup() {

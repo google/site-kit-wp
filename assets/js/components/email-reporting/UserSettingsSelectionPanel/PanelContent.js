@@ -91,8 +91,10 @@ export default function PanelContent( {
 		<Fragment>
 			<Header closePanel={ closePanel } isLoading={ isLoading } />
 			<SelectionPanelContent className="googlesitekit-user-settings-selection__panel-content">
-				<Notices isLoading={ isLoading } />
-
+				<Notices
+					isLoading={ isLoading }
+					onGoToSettings={ closePanel }
+				/>
 				<div className="googlesitekit-user-settings-selection__panel-description">
 					{ isLoading && (
 						<Fragment>

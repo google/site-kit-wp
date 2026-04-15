@@ -193,23 +193,23 @@ class Content_Map {
 			// out of translation strings. Inline color styles are required
 			// because many email clients strip or ignore CSS classes.
 			'error-email-permissions-search-console' => array(
-				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
-				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
+				/* translators: 1: help link URL, 2: help link style CSS */
+				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or <a class="link" href="%1$s" style="%2$s">get help</a>.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-permissions-analytics-4'    => array(
-				/* translators: 1: opening anchor tag for help link, 2: closing anchor tag */
-				__( 'We were unable to generate your reports due to insufficient permissions in Analytics. To fix this, contact your administrator or %1$sget help%2$s.', 'google-site-kit' ),
+				/* translators: 1: help link URL, 2: help link style CSS */
+				__( 'We were unable to generate your reports due to insufficient permissions in Analytics. To fix this, contact your administrator or <a class="link" href="%1$s" style="%2$s">get help</a>.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-report-search-console'      => array(
-				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
-				__( 'We were unable to generate your report because data loading failed for Search Console. To fix this, go to %1$sSearch Console settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
+				/* translators: 1: Search Console settings link URL, 2: Search Console settings link style CSS, 3: help link URL, 4: help link style CSS */
+				__( 'We were unable to generate your report because data loading failed for Search Console. To fix this, go to <a class="link" href="%1$s" style="%2$s">Search Console settings</a> in Site Kit or <a class="link" href="%3$s" style="%4$s">get help</a>.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			'error-email-report-analytics-4'         => array(
-				/* translators: 1: opening anchor tag for settings link, 2: closing anchor tag, 3: opening anchor tag for help link, 4: closing anchor tag */
-				__( 'We were unable to generate your report because data loading failed for Analytics. To fix this, go to %1$sAnalytics settings%2$s in Site Kit or %3$sget help%4$s.', 'google-site-kit' ),
+				/* translators: 1: Analytics settings link URL, 2: Analytics settings link style CSS, 3: help link URL, 4: help link style CSS */
+				__( 'We were unable to generate your report because data loading failed for Analytics. To fix this, go to <a class="link" href="%1$s" style="%2$s">Analytics settings</a> in Site Kit or <a class="link" href="%3$s" style="%4$s">get help</a>.', 'google-site-kit' ),
 				__( 'Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 		);
@@ -229,33 +229,41 @@ class Content_Map {
 	 * @return array Ordered sprintf arguments for the body paragraphs.
 	 */
 	public static function get_body_args( $content_key, Golinks $golinks ) {
-		$link_style = 'color:#108080;';
-		$help_url   = add_query_arg( 'doc', 'email-reporting', 'https://sitekit.withgoogle.com/support/' );
+		$link_style        = 'color:#108080;text-decoration:underline;';
+		$support_base      = 'https://sitekit.withgoogle.com/support/';
+		$email_support_url = add_query_arg( 'doc', 'email-reporting-module-issues', $support_base );
 
 		switch ( $content_key ) {
 			case 'error-email-report-search-console':
 				$settings_url = add_query_arg( 'module', 'search-console', $golinks->get_url( 'settings' ) );
 				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
+					$settings_url,
+					$link_style,
+					$email_support_url,
+					$link_style,
 				);
 
 			case 'error-email-report-analytics-4':
 				$settings_url = add_query_arg( 'module', 'analytics-4', $golinks->get_url( 'settings' ) );
 				return array(
-					'<a class="link" href="' . $settings_url . '" style="' . $link_style . '">',
-					'</a>',
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
+					$settings_url,
+					$link_style,
+					$email_support_url,
+					$link_style,
 				);
 
 			case 'error-email-permissions-search-console':
-			case 'error-email-permissions-analytics-4':
+				$permissions_url = add_query_arg( 'error_id', 'search-console_insufficient_permissions', $support_base );
 				return array(
-					'<a class="link" href="' . $help_url . '" style="' . $link_style . '">',
-					'</a>',
+					$permissions_url,
+					$link_style,
+				);
+
+			case 'error-email-permissions-analytics-4':
+				$permissions_url = add_query_arg( 'error_id', 'analytics-4_insufficient_permissions', $support_base );
+				return array(
+					$permissions_url,
+					$link_style,
 				);
 
 			default:

@@ -71,25 +71,35 @@ const RRMSetupSuccessSubtleNotification: FC<
 		ONBOARDING_ACTION_REQUIRED,
 	];
 
-	const publicationOnboardingState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPublicationOnboardingState()
+	const publicationOnboardingState = useSelect(
+		( select: Select ) =>
+			select(
+				MODULES_READER_REVENUE_MANAGER
+			).getPublicationOnboardingState(),
+		[]
 	);
 
-	const publicationID = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
+	const publicationID = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
+		[]
 	);
 
-	const serviceURL = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
-			path: 'reader-revenue-manager',
-			query: {
-				publication: publicationID,
-			},
-		} )
+	const serviceURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+				path: 'reader-revenue-manager',
+				query: {
+					publication: publicationID,
+				},
+			} ),
+		[ publicationID ]
 	);
 
-	const policyInfoURL = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
+	const policyInfoURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL(),
+		[]
 	);
 
 	const shouldSyncPublicationValue = useFormValue(
@@ -101,16 +111,22 @@ const RRMSetupSuccessSubtleNotification: FC<
 		shouldSyncPublicationValue &&
 		actionableOnboardingStates.includes( publicationOnboardingState );
 
-	const paymentOption = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
+	const paymentOption = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption(),
+		[]
 	);
 
-	const productID = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductID()
+	const productID = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getProductID(),
+		[]
 	);
 
-	const contentPolicyState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	const contentPolicyState = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState(),
+		[]
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );

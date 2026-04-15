@@ -74,6 +74,9 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
@@ -88,7 +91,6 @@ use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
-use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdsLinked;
@@ -97,10 +99,6 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Interface;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
-use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_Service_AnalyticsData_Metric;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1betaDataStreamWebStreamData;
@@ -118,6 +116,7 @@ use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reportin
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_New_Badge_Events_Sync;
 use Google\Site_Kit\Modules\Analytics_4\Conversion_Reporting\Conversion_Reporting_Provider;
 use Google\Site_Kit\Modules\Analytics_4\Reset_Audiences;
+use Google\Site_Kit\Core\Modules\Datapoint;
 use stdClass;
 use WP_Error;
 use WP_Post;
@@ -730,9 +729,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					),
 				)
 			),
-			'GET:key-events'                            => array(
-				'service'   => 'analyticsadmin',
-				'shareable' => true,
+			'GET:key-events'                            => new Get_Key_Events(
+				array(
+					'service'  => function () {
+						return $this->get_service( 'analyticsadmin' );
+					},
+					'settings' => $this->get_settings(),
+				)
 			),
 			'POST:create-account-ticket'                => new Create_Account_Ticket(
 				array(
@@ -777,10 +780,24 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 			'GET:properties'                            => array( 'service' => 'analyticsadmin' ),
 			'GET:property'                              => array( 'service' => 'analyticsadmin' ),
-			'GET:has-property-access'                   => array( 'service' => 'analyticsdata' ),
-			'GET:report'                                => array(
-				'service'   => 'analyticsdata',
-				'shareable' => true,
+			'GET:has-property-access'                   => new Get_Has_Property_Access(
+				array(
+					'service' => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+				)
+			),
+			'GET:report'                                => new Get_Report(
+				array(
+					'service'           => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'settings'          => $this->get_settings(),
+					'context'           => $this->context,
+					'is_shared_request' => function ( Datapoint $datapoint ) {
+						return $this->is_shared_datapoint_request( $datapoint );
+					},
+				),
 			),
 			'GET:batch-report'                          => array(
 				'service'   => 'analyticsdata',
@@ -1295,58 +1312,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				}
 
 				return $this->get_service( 'analyticsadmin' )->properties->get( self::normalize_property_id( $data['propertyID'] ) );
-			case 'GET:has-property-access':
-				if ( ! isset( $data['propertyID'] ) ) {
-					throw new Missing_Required_Param_Exception( 'propertyID' );
-				}
-
-				// A simple way to check for property access is to attempt a minimal report request.
-				// If the user does not have access, this will return a 403 error.
-				$request = new Google_Service_AnalyticsData_RunReportRequest();
-				$request->setDimensions( array( new Google_Service_AnalyticsData_Dimension( array( 'name' => 'date' ) ) ) );
-				$request->setMetrics( array( new Google_Service_AnalyticsData_Metric( array( 'name' => 'sessions' ) ) ) );
-				$request->setDateRanges(
-					array(
-						new Google_Service_AnalyticsData_DateRange(
-							array(
-								'start_date' => 'yesterday',
-								'end_date'   => 'today',
-							)
-						),
-					)
-				);
-				$request->setLimit( 0 );
-
-				return $this->get_analyticsdata_service()->properties->runReport( $data['propertyID'], $request );
-			case 'GET:report':
-				if ( empty( $data['metrics'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'metrics' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$report  = new Analytics_4_Report_Request( $this->context );
-				$request = $report->create_request( $data, $this->is_shared_data_request( $data ) );
-				if ( is_wp_error( $request ) ) {
-					return $request;
-				}
-
-				$property_id = self::normalize_property_id( $settings['propertyID'] );
-				$request->setProperty( $property_id );
-
-				return $this->get_analyticsdata_service()->properties->runReport( $property_id, $request );
 
 			case 'GET:batch-report':
 				if ( empty( $data['requests'] ) ) {
@@ -1399,22 +1364,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					$property_id,
 					$batch_request
 				);
-			case 'GET:key-events':
-				$settings = $this->get_settings()->get();
-				if ( empty( $settings['propertyID'] ) ) {
-					return new WP_Error(
-						'missing_required_setting',
-						__( 'No connected Google Analytics property ID.', 'google-site-kit' ),
-						array( 'status' => 500 )
-					);
-				}
-
-				$analyticsadmin = $this->get_service( 'analyticsadmin' );
-				$property_id    = self::normalize_property_id( $settings['propertyID'] );
-
-				return $analyticsadmin
-					->properties_keyEvents // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					->listPropertiesKeyEvents( $property_id );
 		}
 
 		return parent::create_data_request( $data );
@@ -1441,11 +1390,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				);
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
-			case 'GET:key-events':
-				return (array) $response->getKeyEvents();
-			case 'GET:report':
-				$report = new Analytics_4_Report_Response( $this->context );
-				return $report->parse_response( $data, $response );
 		}
 
 		return parent::parse_data_response( $data, $response );

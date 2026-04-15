@@ -79,6 +79,7 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 					array(
 						'strong' => array(),
 						'a'      => array(
+							'class' => array(),
 							'href'  => array(),
 							'style' => array(),
 						),

@@ -59,7 +59,7 @@
 			gap: 5px;
 			justify-content: center;
 
-			@media (min-width: 880px) {
+			@media (width >= 880px) {
 				gap: 10px;
 			}
 
@@ -110,7 +110,7 @@
 					text-align: center;
 				}
 
-				@media (min-width: 389px) and (max-width: $bp-mobileOnly) {
+				@media (width >= 389px) and (max-width: $bp-mobileOnly) {
 					padding: 8px 10px;
 				}
 			}

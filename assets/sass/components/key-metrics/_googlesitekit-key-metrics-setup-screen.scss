@@ -37,7 +37,17 @@
 		}
 
 		.googlesitekit-user-input__footer {
+			column-gap: 16px;
 			flex-direction: row;
+			justify-content: flex-start;
+		}
+
+		.googlesitekit-user-input__error {
+			padding: 1px 0;
+			z-index: 2;
+			@media (min-width: $width-desktop + px) {
+				bottom: 86px;
+			}
 		}
 	}
 

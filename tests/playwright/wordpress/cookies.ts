@@ -96,18 +96,42 @@ export class WordPressCookies {
 			},
 		];
 
-		const userAnnotation = this.testInfo.annotations.find(
-			( { type } ) => type === '_wp:as-user'
-		);
+		const user = this.getAnnotation( '_wp:as-user' );
+		if ( user ) {
+			cookies.push( { ...defaults, name: '_wp_test_user', value: user } );
+		}
 
-		if ( userAnnotation?.description ) {
+		const featureFlags = this.getAnnotation( '_wp:feature-flags' );
+		if ( featureFlags ) {
 			cookies.push( {
 				...defaults,
-				name: '_wp_test_user',
-				value: userAnnotation.description,
+				name: '_wp_test_feature_flags',
+				value: featureFlags,
+			} );
+		}
+
+		const fixtures = this.getAnnotation( '_wp:fixtures' );
+		if ( fixtures ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_fixtures',
+				value: fixtures,
 			} );
 		}
 
 		return this.context.addCookies( cookies );
+	}
+
+	/**
+	 * Gets an annotation from the test info.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} name The name of the annotation to get.
+	 * @return {string | undefined} The annotation value, or undefined if not found.
+	 */
+	private getAnnotation( name: string ): string | undefined {
+		return this.testInfo.annotations.find( ( { type } ) => type === name )
+			?.description;
 	}
 }
