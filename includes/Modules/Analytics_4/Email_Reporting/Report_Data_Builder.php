@@ -79,19 +79,15 @@ class Report_Data_Builder {
 	 * Builds section payloads from Analytics module data.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event handling.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.
 	 */
 	public function build_sections_from_module_payload( $module_payload ) {
-		$sections              = array();
-		$top_channels_by_event = $this->extract_top_channels_by_event( $module_payload );
+		$sections = array();
 
 		foreach ( $module_payload as $section_key => $section_data ) {
-			if ( $this->is_conversion_event_top_channel_key( $section_key ) ) {
-				continue;
-			}
-
 			list( $reports ) = $this->normalize_section_input( $section_data );
 
 			foreach ( $reports as $report ) {
@@ -113,8 +109,6 @@ class Report_Data_Builder {
 				if ( empty( $payload['title'] ) ) {
 					$payload['title'] = '';
 				}
-
-				$payload = $this->maybe_merge_conversion_event_top_channel( $payload, $section_key, $top_channels_by_event );
 
 				$sections[] = $payload;
 			}
@@ -177,6 +171,7 @@ class Report_Data_Builder {
 	 * Builds analytics section payload, extracting dimensions, metrics, and trends.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Removed conversion event label overrides.
 	 *
 	 * @param array  $processed_report Processed report data.
 	 * @param string $section_key      Section key.
@@ -196,15 +191,6 @@ class Report_Data_Builder {
 		list( $values, $trends ) = $this->data_processor->apply_dimension_aggregates( $values, $trends, $dimension_values, $dimension_metrics, $metric_names );
 
 		list( $dimension_values, $labels ) = $this->maybe_format_audience_dimensions( $dimensions, $dimension_values, $labels );
-
-		if ( 0 === strpos( $section_key, 'conversion_event_' ) ) {
-			$event_name = substr( $section_key, strlen( 'conversion_event_' ) );
-
-			if ( '' !== $event_name ) {
-				$labels       = array( $event_name );
-				$metric_names = array( $event_name );
-			}
-		}
 
 		return array(
 			'section_key'      => $section_key,
@@ -271,135 +257,5 @@ class Report_Data_Builder {
 		);
 
 		return array( $formatted_values, $labels );
-	}
-
-	/**
-	 * Extracts top traffic channels from conversion sidecar payloads.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $module_payload Analytics module payload.
-	 * @return array Event slug => top channel.
-	 */
-	private function extract_top_channels_by_event( $module_payload ) {
-		$top_channels_by_event = array();
-
-		if ( ! is_array( $module_payload ) ) {
-			return $top_channels_by_event;
-		}
-
-		foreach ( $module_payload as $section_key => $section_data ) {
-			if ( ! $this->is_conversion_event_top_channel_key( $section_key ) ) {
-				continue;
-			}
-
-			$event_slug = $this->get_conversion_event_slug_from_top_channel_key( $section_key );
-			if ( '' === $event_slug ) {
-				continue;
-			}
-
-			$top_channel = $this->extract_top_channel_from_section_data( $section_data );
-			if ( '' === $top_channel ) {
-				continue;
-			}
-
-			$top_channels_by_event[ $event_slug ] = $top_channel;
-		}
-
-		return $top_channels_by_event;
-	}
-
-	/**
-	 * Merges sidecar top-channel data into a conversion-event payload.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array  $payload               Section payload.
-	 * @param string $section_key           Section key.
-	 * @param array  $top_channels_by_event Event slug => top channel map.
-	 * @return array Section payload.
-	 */
-	private function maybe_merge_conversion_event_top_channel( $payload, $section_key, $top_channels_by_event ) {
-		if ( 0 !== strpos( $section_key, 'conversion_event_' ) ) {
-			return $payload;
-		}
-
-		$event_slug = substr( $section_key, strlen( 'conversion_event_' ) );
-		if ( '' === $event_slug ) {
-			return $payload;
-		}
-
-		if ( empty( $top_channels_by_event[ $event_slug ] ) ) {
-			$payload['dimensions']       = array();
-			$payload['dimension_values'] = array();
-
-			return $payload;
-		}
-
-		$payload['dimensions']       = array( 'sessionDefaultChannelGroup' );
-		$payload['dimension_values'] = array( $top_channels_by_event[ $event_slug ] );
-
-		return $payload;
-	}
-
-	/**
-	 * Extracts the top channel value from sidecar report data.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $section_data Section data for a top-channel request.
-	 * @return string Top channel value, or empty string when unavailable.
-	 */
-	private function extract_top_channel_from_section_data( $section_data ) {
-		list( $reports ) = $this->normalize_section_input( $section_data );
-		if ( empty( $reports ) ) {
-			return '';
-		}
-
-		foreach ( $reports as $report ) {
-			$processed_report = $this->report_processor->process_single_report( $report );
-			$rows             = $processed_report['rows'] ?? array();
-
-			if ( empty( $rows ) || ! is_array( $rows ) ) {
-				continue;
-			}
-
-			foreach ( $rows as $row ) {
-				$top_channel = $row['dimensions']['sessionDefaultChannelGroup'] ?? '';
-				if ( '' !== $top_channel ) {
-					return $top_channel;
-				}
-			}
-		}
-
-		return '';
-	}
-
-	/**
-	 * Determines whether section key is a conversion top-channel sidecar key.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $section_key Section key.
-	 * @return bool True when key is a conversion top-channel key.
-	 */
-	private function is_conversion_event_top_channel_key( $section_key ) {
-		return 0 === strpos( $section_key, 'conversion_event_top_channel_' );
-	}
-
-	/**
-	 * Gets conversion event slug from a top-channel sidecar key.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $section_key Section key.
-	 * @return string Conversion event slug.
-	 */
-	private function get_conversion_event_slug_from_top_channel_key( $section_key ) {
-		if ( ! $this->is_conversion_event_top_channel_key( $section_key ) ) {
-			return '';
-		}
-
-		return substr( $section_key, strlen( 'conversion_event_top_channel_' ) );
 	}
 }

@@ -22,7 +22,6 @@ $site_domain        = $data['site']['domain'];
 $site_url           = ! empty( $data['site']['url'] ) ? $data['site']['url'] : '';
 $date_label         = $data['date_range']['label'];
 $header_notices     = ! empty( $data['header_notices'] ) && is_array( $data['header_notices'] ) ? $data['header_notices'] : array();
-$section_notices    = ! empty( $data['section_notices'] ) && is_array( $data['section_notices'] ) ? $data['section_notices'] : array();
 $primary_cta        = $data['primary_call_to_action'];
 $footer_content     = $data['footer'];
 $sections           = $data['sections'];
@@ -83,10 +82,7 @@ $render_shared_part = $data['render_shared_part'];
 
 							// Render each section with its parts.
 							foreach ( $sections as $section_key => $section ) {
-								$has_section_notices = ! empty( $section_notices[ $section_key ] );
-
-								// Skip sections without parts unless there are section notices to render.
-								if ( empty( $section['section_parts'] ) && ! $has_section_notices ) {
+								if ( empty( $section['section_parts'] ) ) {
 									continue;
 								}
 
@@ -96,7 +92,6 @@ $render_shared_part = $data['render_shared_part'];
 										$section['section_template'],
 										array(
 											'section'     => $section,
-											'section_notices' => $section_notices,
 											'render_part' => $render_part,
 											'render_shared_part' => $render_shared_part,
 											'get_asset_url' => $get_asset_url,
