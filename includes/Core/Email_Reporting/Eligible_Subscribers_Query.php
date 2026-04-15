@@ -300,7 +300,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Adds name/email search parameters to user query args.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array  $args   User query args.
 	 * @param string $search Search term.
@@ -316,7 +316,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Runs a user query and returns user IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $args User query args.
 	 * @return array User IDs.
@@ -328,7 +328,7 @@ class Eligible_Subscribers_Query {
 	/**
 	 * Gets role slugs matching a search term.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param string $search Search term.
 	 * @return string[] Matched role slugs.

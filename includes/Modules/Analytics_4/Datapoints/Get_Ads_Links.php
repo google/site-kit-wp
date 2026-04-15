@@ -22,7 +22,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 /**
  * Get Ads links datapoint class.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Get_Ads_Links extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
@@ -50,7 +50,7 @@ class Get_Ads_Links extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param GoogleAnalyticsAdminV1betaListGoogleAdsLinksResponse $response Request response.
 	 * @param Data_Request                                         $data Data request object.
