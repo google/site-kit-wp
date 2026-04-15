@@ -761,7 +761,7 @@ abstract class Module {
 	/**
 	 * Determines whether the current datapoint request is for shared data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Datapoint $datapoint Datapoint instance.
 	 * @return bool TRUE if the request is for shared data, otherwise FALSE.

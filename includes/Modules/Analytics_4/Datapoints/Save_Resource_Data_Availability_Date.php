@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 /**
  * Class for the resource data availability date save datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Save_Resource_Data_Availability_Date extends Datapoint implements Executab
 	/**
 	 * Resource_Data_Availability_Date instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Resource_Data_Availability_Date
 	 */
 	private $resource_data_availability_date;
@@ -37,7 +37,7 @@ class Save_Resource_Data_Availability_Date extends Datapoint implements Executab
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -49,7 +49,7 @@ class Save_Resource_Data_Availability_Date extends Datapoint implements Executab
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that saves the resource data availability date.
@@ -89,7 +89,7 @@ class Save_Resource_Data_Availability_Date extends Datapoint implements Executab
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.
