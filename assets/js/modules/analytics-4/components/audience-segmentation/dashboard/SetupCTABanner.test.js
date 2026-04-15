@@ -295,6 +295,32 @@ describe( 'SetupCTABanner', () => {
 
 			expect( isActive ).toBe( false );
 		} );
+
+		it( 'is active when analytics setup is not complete', async () => {
+			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+				isAnalyticsSetupComplete: false,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when analytics setup is complete', async () => {
+			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
 	} );
 
 	describe( 'CTA actions', () => {
