@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,6 +32,7 @@ import {
 	provideUserAuthentication,
 	renderHook,
 } from '../../../../../../../../../tests/js/test-utils';
+
 import useCreateCustomDimension from './useCreateCustomDimension';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -40,7 +46,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 describe( 'useCreateCustomDimension', () => {
-	let registry;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- registry type is not typed yet.
+	let registry: any;
 
 	const propertyID = '12345';
 

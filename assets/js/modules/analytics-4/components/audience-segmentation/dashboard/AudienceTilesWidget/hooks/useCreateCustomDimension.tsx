@@ -26,7 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -42,20 +42,29 @@ import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesi
 
 const SHOW_ERROR_MODAL_KEY = 'audience-tiles-show-error-modal';
 
-export default function useCreateCustomDimension() {
+interface UseCreateCustomDimensionReturn {
+	onCreateCustomDimension: ( options?: { isRetrying?: boolean } ) => void;
+	isSaving: boolean;
+	showErrorModal: boolean;
+	setShowErrorModal: ( value: boolean ) => void;
+}
+
+export default function useCreateCustomDimension(): UseCreateCustomDimensionReturn {
 	const showErrorModal = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( SHOW_ERROR_MODAL_KEY ) || false
+		( select: Select ) =>
+			select( CORE_UI ).getValue( SHOW_ERROR_MODAL_KEY ) || false,
+		[]
 	);
 	const { setValue } = useDispatch( CORE_UI );
 	const setShowErrorModal = useCallback(
-		( value ) => setValue( SHOW_ERROR_MODAL_KEY, value ),
+		( value: boolean ) => setValue( SHOW_ERROR_MODAL_KEY, value ),
 		[ setValue ]
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const hasAnalyticsEditScope = useSelect( ( select ) =>
-		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	const hasAnalyticsEditScope = useSelect(
+		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
+		[]
 	);
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
@@ -68,7 +77,7 @@ export default function useCreateCustomDimension() {
 	} );
 
 	const onCreateCustomDimension = useCallback(
-		( { isRetrying } = {} ) => {
+		( { isRetrying }: { isRetrying?: boolean } = {} ) => {
 			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
 				autoSubmit: true,
 				isRetrying,
@@ -109,14 +118,20 @@ export default function useCreateCustomDimension() {
 	const postTypeDimension =
 		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
 
-	const isCreatingCustomDimension = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
-			postTypeDimension
-		)
+	const isCreatingCustomDimension = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
+				postTypeDimension
+			),
+		[ postTypeDimension ]
 	);
 
-	const isSyncingAvailableCustomDimensions = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
+	const isSyncingAvailableCustomDimensions = useSelect(
+		( select: Select ) =>
+			select(
+				MODULES_ANALYTICS_4
+			).isFetchingSyncAvailableCustomDimensions(),
+		[]
 	);
 
 	const isSaving =
