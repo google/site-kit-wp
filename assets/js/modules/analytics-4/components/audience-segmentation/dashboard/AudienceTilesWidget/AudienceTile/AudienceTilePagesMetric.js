@@ -90,6 +90,11 @@ export default function AudienceTilePagesMetric( {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
+	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
+	);
+
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
 	const isMobileBreakpoint = [ BREAKPOINT_SMALL, BREAKPOINT_TABLET ].includes(
@@ -101,7 +106,8 @@ export default function AudienceTilePagesMetric( {
 
 	const shouldShowErrorModal =
 		( customDimensionError && ! isSaving ) ||
-		isRetryingCustomDimensionCreate ||
+		( isRetryingCustomDimensionCreate &&
+			! isAutoCreatingCustomDimensionsForAudience ) ||
 		hasOAuthError;
 
 	useEffect( () => {

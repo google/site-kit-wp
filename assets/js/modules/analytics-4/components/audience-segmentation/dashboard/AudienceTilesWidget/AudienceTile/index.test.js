@@ -19,9 +19,13 @@
 /**
  * External dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { useIntersection as mockUseIntersection } from 'react-use';
 import { getByText as domGetByText } from '@testing-library/dom';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies

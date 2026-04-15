@@ -16,9 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import AudienceErrorModal from './AudienceErrorModal';
 import {
@@ -48,7 +59,8 @@ const CustomDimensionErrorModal: FC = () => {
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
 				postTypeDimension
-			)
+			),
+		[]
 	);
 
 	const autoSubmit:
@@ -62,8 +74,9 @@ const CustomDimensionErrorModal: FC = () => {
 		'autoSubmit'
 	);
 
-	const setupErrorCode: string | null = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getSetupErrorCode()
+	const setupErrorCode: string | null = useSelect(
+		( select: Select ) => select( CORE_SITE ).getSetupErrorCode(),
+		[]
 	);
 
 	const hasOAuthError: boolean = !! (
@@ -73,8 +86,9 @@ const CustomDimensionErrorModal: FC = () => {
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
-	const propertyID: string = useSelect( ( select: Select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	const propertyID: string = useSelect(
+		( select: Select ) => select( MODULES_ANALYTICS_4 ).getPropertyID(),
+		[]
 	);
 	const { setValues } = useDispatch( CORE_FORMS );
 
