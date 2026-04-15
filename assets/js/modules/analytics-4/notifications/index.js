@@ -85,6 +85,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			async ( { resolveSelect, select } ) => {
+				await resolveSelect( CORE_USER ).getInitialSetupSettings();
+				return ! select( CORE_USER ).isAnalyticsSetupComplete();
+			},
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequireAny(
 				requireIsAuthenticated(),
