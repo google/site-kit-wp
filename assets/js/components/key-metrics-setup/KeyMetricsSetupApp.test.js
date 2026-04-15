@@ -56,6 +56,7 @@ describe( 'KeyMetricsSetupApp', () => {
 	const syncAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+
 	const syncCustomDimensionsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
@@ -809,6 +810,7 @@ describe( 'KeyMetricsSetupApp', () => {
 				);
 			} );
 		} );
+
 		it( 'should show an error when saving initial setup settings fails', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
@@ -854,9 +856,11 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitForRegistry();
 
-			expect(
-				getByText( 'Something went wrong, please try again' )
-			).toBeInTheDocument();
+			await waitFor( () => {
+				expect(
+					getByText( 'Something went wrong, please try again' )
+				).toBeInTheDocument();
+			} );
 
 			expect( container ).toMatchSnapshot();
 		} );
