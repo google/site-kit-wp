@@ -97,8 +97,9 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			fetchMock.reset();
-			// The toggle also resolves GTG settings via CORE_SITE; provide a
-			// shared mock so each story variant doesn't need to repeat it.
+			// The toggle also resolves Google Tag Gateway settings via
+			// CORE_SITE; provide a shared mock so each story variant
+			// doesn't need to repeat it.
 			fetchMock.get( gtgSettingsEndpoint, {
 				body: defaultGTGSettings,
 				status: 200,
