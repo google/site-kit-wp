@@ -35,6 +35,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
@@ -44,6 +45,7 @@ const SHOW_ERROR_MODAL_KEY = 'audience-tiles-show-error-modal';
 
 interface UseCreateCustomDimensionReturn {
 	onCreateCustomDimension: ( options?: { isRetrying?: boolean } ) => void;
+	onCancel: () => void;
 	isSaving: boolean;
 	showErrorModal: boolean;
 	setShowErrorModal: ( value: boolean ) => void;
@@ -66,7 +68,14 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
 	);
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setPermissionScopeError, clearPermissionScopeError } =
+		useDispatch( CORE_USER );
+	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setSetupErrorCode } = useDispatch( CORE_SITE );
+	const propertyID = useSelect(
+		( select: Select ) => select( MODULES_ANALYTICS_4 ).getPropertyID(),
+		[]
+	);
 
 	const redirectURL = addQueryArgs( global.location.href, {
 		notification: 'audience_segmentation',
@@ -110,6 +119,27 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		]
 	);
 
+	const onCancel = useCallback( () => {
+		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
+			autoSubmit: false,
+			isRetrying: false,
+		} );
+		setSetupErrorCode( null );
+		clearPermissionScopeError();
+		clearError( 'createCustomDimension', [
+			propertyID,
+			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
+		] );
+		setShowErrorModal( false );
+	}, [
+		clearError,
+		clearPermissionScopeError,
+		propertyID,
+		setSetupErrorCode,
+		setShowErrorModal,
+		setValues,
+	] );
+
 	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
@@ -141,6 +171,7 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 
 	return {
 		onCreateCustomDimension,
+		onCancel,
 		isSaving,
 		showErrorModal,
 		setShowErrorModal,

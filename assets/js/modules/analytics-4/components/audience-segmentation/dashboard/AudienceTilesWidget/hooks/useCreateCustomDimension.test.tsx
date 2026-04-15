@@ -41,6 +41,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
@@ -268,6 +269,96 @@ describe( 'useCreateCustomDimension', () => {
 			);
 
 			expect( result.current.isSaving ).toBe( true );
+		} );
+	} );
+
+	describe( 'onCancel', () => {
+		it( 'resets autoSubmit and isRetrying form values', async () => {
+			const { result } = await renderHook(
+				() => useCreateCustomDimension(),
+				{ registry }
+			);
+
+			actHook( () => {
+				result.current.onCreateCustomDimension( { isRetrying: true } );
+			} );
+
+			actHook( () => {
+				result.current.onCancel();
+			} );
+
+			expect(
+				registry
+					.select( CORE_FORMS )
+					.getValue(
+						AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+						'autoSubmit'
+					)
+			).toBe( false );
+
+			expect(
+				registry
+					.select( CORE_FORMS )
+					.getValue(
+						AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+						'isRetrying'
+					)
+			).toBe( false );
+		} );
+
+		it( 'clears the permission scope error', async () => {
+			registry.dispatch( CORE_USER ).setPermissionScopeError( {
+				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				message: 'test',
+				data: { status: 403, scopes: [ EDIT_SCOPE ] },
+			} );
+
+			const { result } = await renderHook(
+				() => useCreateCustomDimension(),
+				{ registry }
+			);
+
+			actHook( () => {
+				result.current.onCancel();
+			} );
+
+			expect(
+				registry.select( CORE_USER ).getPermissionScopeError()
+			).toBeNull();
+		} );
+
+		it( 'clears the setup error code', async () => {
+			registry.dispatch( CORE_SITE ).setSetupErrorCode( 'access_denied' );
+
+			const { result } = await renderHook(
+				() => useCreateCustomDimension(),
+				{ registry }
+			);
+
+			actHook( () => {
+				result.current.onCancel();
+			} );
+
+			expect(
+				registry.select( CORE_SITE ).getSetupErrorCode()
+			).toBeNull();
+		} );
+
+		it( 'hides the error modal', async () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'audience-tiles-show-error-modal', true );
+
+			const { result } = await renderHook(
+				() => useCreateCustomDimension(),
+				{ registry }
+			);
+
+			actHook( () => {
+				result.current.onCancel();
+			} );
+
+			expect( result.current.showErrorModal ).toBe( false );
 		} );
 	} );
 } );
