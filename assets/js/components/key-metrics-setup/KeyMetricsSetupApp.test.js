@@ -734,10 +734,17 @@ describe( 'KeyMetricsSetupApp', () => {
 			await waitForRegistry();
 			await waitForFocus();
 
-			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
-			fireEvent.click(
-				getByRole( 'button', { name: 'Complete setup' } )
-			);
+			act( () => {
+				fireEvent.click(
+					getByRole( 'radio', { name: 'Publish a blog' } )
+				);
+			} );
+
+			act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Complete setup' } )
+				);
+			} );
 
 			await waitForRegistry();
 
@@ -766,6 +773,7 @@ describe( 'KeyMetricsSetupApp', () => {
 				'error:"Internal server error"',
 			] );
 		} );
+
 		it( 'should continue without saving user input when the `Continue without saving` is clicked', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
