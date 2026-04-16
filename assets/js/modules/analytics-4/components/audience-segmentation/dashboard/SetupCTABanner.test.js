@@ -31,6 +31,7 @@ import {
 	act,
 	fireEvent,
 	render,
+	setEnabledFeatures,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
@@ -296,7 +297,9 @@ describe( 'SetupCTABanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is active when analytics setup is not complete', async () => {
+		it( 'is active when analytics setup is not complete and `setupFlowRefresh` is enabled', async () => {
+			setEnabledFeatures( [ 'setupFlowRefresh' ] );
+
 			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
 				isAnalyticsSetupComplete: false,
 			} );
@@ -309,7 +312,9 @@ describe( 'SetupCTABanner', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when analytics setup is complete', async () => {
+		it( 'is not active when analytics setup is complete and `setupFlowRefresh` is enabled', async () => {
+			setEnabledFeatures( [ 'setupFlowRefresh' ] );
+
 			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
 				isAnalyticsSetupComplete: true,
 			} );
