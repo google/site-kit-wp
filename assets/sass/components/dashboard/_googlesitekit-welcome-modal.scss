@@ -19,12 +19,29 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-welcome-modal {
+		.admin-bar & {
+			align-items: center;
+		}
+
 		.mdc-dialog__surface {
 			overflow: hidden;
 		}
 
 		.mdc-dialog__container {
 			max-width: 491px;
+		}
+
+		@media (width < $bp-tablet) {
+			.mdc-dialog__container {
+				height: auto;
+				max-height: calc(100vh - 32px);
+				width: calc(100% - 32px);
+			}
+
+			.mdc-dialog__surface {
+				border-radius: $br-md;
+				max-height: calc(100vh - 32px);
+			}
 		}
 	}
 
@@ -107,6 +124,20 @@
 
 		@media (min-width: $bp-tablet) {
 			padding: 0 $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop;
+		}
+	}
+
+	@media (width < $bp-tablet) and (height <= 660px) {
+		.googlesitekit-welcome-modal__graphic {
+			display: none;
+		}
+
+		.googlesitekit-welcome-modal__title {
+			margin-top: 20px;
+		}
+
+		.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+			margin-top: 16px;
 		}
 	}
 }
