@@ -20,91 +20,48 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import DisplaySetting from '@/js/components/DisplaySetting';
 import { trackingExclusionLabels } from '@/js/modules/analytics-4/components/common/TrackingExclusionSwitches';
 import Typography from '@/js/components/Typography';
 
 export default function OptionalSettingsView() {
-	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getUseSnippet()
-	);
-	const adsConversionIDMigratedAtMs = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionIDMigratedAtMs()
-	);
 	const trackingDisabled = useSelect(
 		( select ) => select( MODULES_ANALYTICS_4 ).getTrackingDisabled() || []
 	);
-	const adsConversionID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getAdsConversionID()
-	);
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
-					<Typography
-						as="h5"
-						size="medium"
-						type="label"
-						className="googlesitekit-settings-module__meta-item-type"
-					>
-						{ __( 'Excluded from Analytics', 'google-site-kit' ) }
-					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ !! trackingDisabled.length &&
-							trackingDisabled
-								.map(
-									( exclusion ) =>
-										trackingExclusionLabels[ exclusion ]
-								)
-								.join(
-									_x(
-										', ',
-										'list separator',
-										'google-site-kit'
-									)
-								) }
-						{ ! trackingDisabled.length &&
-							__(
-								'Analytics is currently enabled for all visitors',
-								'google-site-kit'
+		<div className="googlesitekit-settings-module__meta-items">
+			<div className="googlesitekit-settings-module__meta-item">
+				<Typography
+					as="h5"
+					size="medium"
+					type="label"
+					className="googlesitekit-settings-module__meta-item-type"
+				>
+					{ __( 'Excluded from Analytics', 'google-site-kit' ) }
+				</Typography>
+				<p className="googlesitekit-settings-module__meta-item-data">
+					{ !! trackingDisabled.length &&
+						trackingDisabled
+							.map(
+								( exclusion ) =>
+									trackingExclusionLabels[ exclusion ]
+							)
+							.join(
+								_x( ', ', 'list separator', 'google-site-kit' )
 							) }
-					</p>
-				</div>
+					{ ! trackingDisabled.length &&
+						__(
+							'Analytics is currently enabled for all visitors',
+							'google-site-kit'
+						) }
+				</p>
 			</div>
-
-			{ /* Prevent the Ads Conversion ID setting displaying after this field has been
-				 migrated to the Ads module, even after resetting the Analytics module. */ }
-			{ useSnippet &&
-				! adsConversionIDMigratedAtMs &&
-				!! adsConversionID && (
-					<div className="googlesitekit-settings-module__meta-items">
-						<div className="googlesitekit-settings-module__meta-item">
-							<Typography
-								as="h5"
-								size="medium"
-								type="label"
-								className="googlesitekit-settings-module__meta-item-type"
-							>
-								{ __( 'Ads Conversion ID', 'google-site-kit' ) }
-							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
-								{ !! adsConversionID && (
-									<DisplaySetting value={ adsConversionID } />
-								) }
-								{ ! adsConversionID &&
-									__( 'None', 'google-site-kit' ) }
-							</p>
-						</div>
-					</div>
-				) }
-		</Fragment>
+		</div>
 	);
 }
