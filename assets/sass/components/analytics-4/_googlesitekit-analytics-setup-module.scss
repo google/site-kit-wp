@@ -25,6 +25,39 @@
 			.googlesitekit-setup-module__inputs {
 				align-items: start;
 
+				@media (max-width: $bp-desktop) {
+					display: grid;
+					gap: $grid-gap-phone;
+					grid-template-columns: minmax(0, 1fr);
+
+					> div {
+						margin: 0;
+						max-width: none;
+						min-width: 0;
+						width: 100%;
+					}
+				}
+
+				@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+					gap: $grid-gap-phone;
+					grid-template-columns: repeat(2, 1fr);
+
+					> div:first-child {
+						grid-column: 1;
+						grid-row: 1;
+					}
+
+					> div:nth-child(2) {
+						grid-column: 1;
+						grid-row: 2;
+					}
+
+					> div:nth-child(3) {
+						grid-column: 2;
+						grid-row: 2;
+					}
+				}
+
 				.googlesitekit-setup__step-hint {
 					margin: 7px 0 0 15px;
 					padding: 0;
@@ -36,6 +69,21 @@
 
 					@media (min-width: $bp-tablet) {
 						width: 280px;
+					}
+
+					@media (max-width: $bp-desktop) {
+						max-width: none;
+						width: 100%;
+					}
+				}
+
+				@media (max-width: $bp-desktop) {
+
+					.googlesitekit-analytics__select-account,
+					.googlesitekit-analytics-4__select-property,
+					.googlesitekit-analytics-4__select-webdatastream {
+						max-width: none;
+						width: 100%;
 					}
 				}
 			}
@@ -55,6 +103,20 @@
 
 			// Ensure that these styles are only applied within Analytics setup.
 			.googlesitekit-analytics-setup__form {
+
+				.googlesitekit-setup-module__action {
+
+					@media (max-width: $bp-desktop) {
+						background: $c-base;
+						border-top: 1px solid $c-border-light;
+						bottom: 0;
+						left: 0;
+						margin-top: $grid-gap-phone;
+						padding: $grid-gap-phone 0 calc(#{$grid-gap-phone} + env(safe-area-inset-bottom));
+						position: sticky;
+						z-index: 1;
+					}
+				}
 
 				.googlesitekit-analytics-enable-enhanced-measurement {
 
