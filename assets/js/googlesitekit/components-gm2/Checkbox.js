@@ -81,6 +81,7 @@ export default function Checkbox( props ) {
 							onChange={ onChange }
 							tabIndex={ tabIndex }
 							onKeyDown={ onKeyDown }
+							aria-checked={ checked ? 'true' : 'false' }
 						/>
 
 						<div className="mdc-checkbox__background">
