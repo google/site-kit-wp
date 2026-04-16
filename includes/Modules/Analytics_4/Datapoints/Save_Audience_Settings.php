@@ -21,7 +21,7 @@ use WP_Error;
 /**
  * Class for the audience settings save datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Save_Audience_Settings extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Audience settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Audience_Settings
 	 */
 	private $audience_settings;
@@ -38,7 +38,7 @@ class Save_Audience_Settings extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -50,7 +50,7 @@ class Save_Audience_Settings extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable|WP_Error Closure that saves audience settings, or WP_Error on failure.
@@ -92,7 +92,7 @@ class Save_Audience_Settings extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

@@ -56,6 +56,7 @@ describe( 'KeyMetricsSetupApp', () => {
 	const syncAudiencesEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-audiences'
 	);
+
 	const syncCustomDimensionsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 	);
@@ -733,10 +734,17 @@ describe( 'KeyMetricsSetupApp', () => {
 			await waitForRegistry();
 			await waitForFocus();
 
-			fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
-			fireEvent.click(
-				getByRole( 'button', { name: 'Complete setup' } )
-			);
+			act( () => {
+				fireEvent.click(
+					getByRole( 'radio', { name: 'Publish a blog' } )
+				);
+			} );
+
+			act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Complete setup' } )
+				);
+			} );
 
 			await waitForRegistry();
 
@@ -765,6 +773,7 @@ describe( 'KeyMetricsSetupApp', () => {
 				'error:"Internal server error"',
 			] );
 		} );
+
 		it( 'should continue without saving user input when the `Continue without saving` is clicked', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
@@ -809,6 +818,7 @@ describe( 'KeyMetricsSetupApp', () => {
 				);
 			} );
 		} );
+
 		it( 'should show an error when saving initial setup settings fails', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
@@ -854,9 +864,11 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			await waitForRegistry();
 
-			expect(
-				getByText( 'Something went wrong, please try again' )
-			).toBeInTheDocument();
+			await waitFor( () => {
+				expect(
+					getByText( 'Something went wrong, please try again' )
+				).toBeInTheDocument();
+			} );
 
 			expect( container ).toMatchSnapshot();
 		} );

@@ -120,7 +120,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Gets the timestamp of the next initiator event for a frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return int|false Timestamp if found, otherwise false.
@@ -152,7 +152,7 @@ class Email_Reporting_Scheduler {
 	 * exact args match, but here we need to discover all initiators for a
 	 * frequency regardless of argument length/shape.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return array<array{timestamp:int,args:array}> Matched initiator events.
@@ -195,7 +195,7 @@ class Email_Reporting_Scheduler {
 	/**
 	 * Unschedules all initiator events for the provided frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param string $frequency Frequency slug.
 	 */
@@ -209,7 +209,7 @@ class Email_Reporting_Scheduler {
 	 * Checks for due/overdue events that are not yet reconciled; if this is
 	 * `true` then cron can execute these events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $events Matched initiator events.
 	 * @param int   $now Current unix timestamp.
@@ -230,7 +230,7 @@ class Email_Reporting_Scheduler {
 	 *
 	 * Canonical means expected timestamp and canonical args shape.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array  $events    Matched initiator events.
 	 * @param string $frequency Frequency slug.

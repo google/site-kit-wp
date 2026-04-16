@@ -40,9 +40,17 @@ export default function SelectionPanel( {
 		.map( ( name ) => `.${ name }` )
 		.join( '' );
 
-	const initialFocus = classNameSelector
+	// Use a function for `initialFocus` so focus-trap resolves the element at
+	// activation time. Returning `false` when no match is present falls back
+	// to the first focusable element in the trap, avoiding the
+	// "refers to no known node" error when items haven't rendered yet.
+	const initialFocusSelector = classNameSelector
 		? `${ classNameSelector } .googlesitekit-selection-panel-item .googlesitekit-selection-box input`
 		: '.googlesitekit-selection-panel-item .googlesitekit-selection-box input';
+
+	function initialFocus() {
+		return document.querySelector( initialFocusSelector ) || false;
+	}
 
 	return (
 		<SideSheet

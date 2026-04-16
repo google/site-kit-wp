@@ -306,7 +306,7 @@ const baseActions = {
 	/**
 	 * Resets the eligible subscribers cache.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
