@@ -40,12 +40,32 @@
 			column-gap: 16px;
 			flex-direction: row;
 			justify-content: flex-start;
+			padding-left: 42px;
+
+			@media (min-width: $bp-desktop) {
+				padding-left: 56px;
+			}
+		}
+
+		&.googlesitekit-key-metrics-setup--footer-inline {
+
+			.googlesitekit-user-input__footer {
+				background-color: transparent;
+				border-top: none;
+				bottom: auto;
+				left: auto;
+				margin: 32px 0 0;
+				padding: 0;
+				position: static;
+				right: auto;
+				z-index: auto;
+			}
 		}
 
 		.googlesitekit-user-input__error {
 			padding: 1px 0;
 			z-index: 2;
-			@media (min-width: $width-desktop + px) {
+			@media (min-width: $bp-desktop) {
 				bottom: 86px;
 			}
 		}

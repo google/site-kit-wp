@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classNames from 'classnames';
 import { omit } from 'lodash';
 import { useMount } from 'react-use';
 
@@ -30,6 +31,9 @@ import {
 	useCallback,
 	Fragment,
 	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -285,6 +289,29 @@ export default function KeyMetricsSetupApp() {
 		( ! saveUserInputError && isSavingInitialSetup ) || // Avoid a situation where both buttons are loading.
 		isSyncing;
 
+	const contentRef = useRef();
+	const footerRef = useRef();
+	const [ footerInline, setFooterInline ] = useState( false );
+
+	useLayoutEffect( () => {
+		function checkFits() {
+			if ( ! contentRef.current || ! footerRef.current ) {
+				return;
+			}
+
+			const contentBottom =
+				contentRef.current.getBoundingClientRect().bottom;
+			const footerHeight = footerRef.current.offsetHeight;
+			setFooterInline(
+				contentBottom + footerHeight <= window.innerHeight
+			);
+		}
+
+		checkFits();
+		window.addEventListener( 'resize', checkFits );
+		return () => window.removeEventListener( 'resize', checkFits );
+	}, [] );
+
 	return (
 		<Fragment>
 			<Header subHeader={ subHeader }>
@@ -298,7 +325,13 @@ export default function KeyMetricsSetupApp() {
 				) }
 				<HelpMenu />
 			</Header>
-			<div className="googlesitekit-key-metrics-setup">
+			<div
+				ref={ contentRef }
+				className={ classNames( 'googlesitekit-key-metrics-setup', {
+					'googlesitekit-key-metrics-setup--footer-inline':
+						footerInline,
+				} ) }
+			>
 				<div className="googlesitekit-module-page">
 					<Grid>
 						<Layout rounded>
@@ -397,7 +430,10 @@ export default function KeyMetricsSetupApp() {
 												</div>
 											) }
 
-										<div className="googlesitekit-user-input__footer">
+										<div
+											ref={ footerRef }
+											className="googlesitekit-user-input__footer"
+										>
 											<SpinnerButton
 												onClick={ onSaveClick }
 												isSaving={
