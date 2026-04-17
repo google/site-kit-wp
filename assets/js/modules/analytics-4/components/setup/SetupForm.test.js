@@ -195,9 +195,6 @@ describe( 'SetupForm', () => {
 	} );
 
 	it( 'submits the form upon pressing the CTA', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-			adsConversionID: '',
-		} );
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

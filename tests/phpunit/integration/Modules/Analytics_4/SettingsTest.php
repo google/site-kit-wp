@@ -81,7 +81,6 @@ class SettingsTest extends SettingsTestCase {
 				'propertyCreateTime'               => 0,
 				'adSenseLinked'                    => false,
 				'adSenseLinkedLastSyncedAt'        => 0,
-				'adsConversionIDMigratedAtMs'      => 0,
 				'adsLinked'                        => false,
 				'adsLinkedLastSyncedAt'            => 0,
 				'detectedEvents'                   => array(),

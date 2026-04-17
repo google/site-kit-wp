@@ -91,9 +91,7 @@ describe( 'ModuleSetup', () => {
 			const propertyID = properties[ 0 ]._id;
 			const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				adsConversionID: '',
-			} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
