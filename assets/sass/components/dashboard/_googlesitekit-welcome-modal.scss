@@ -19,29 +19,12 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-welcome-modal {
-		.admin-bar & {
-			align-items: center;
-		}
-
 		.mdc-dialog__surface {
 			overflow: hidden;
 		}
 
 		.mdc-dialog__container {
 			max-width: 491px;
-		}
-
-		@media (width < $bp-tablet) {
-			.mdc-dialog__container {
-				height: auto;
-				max-height: calc(100vh - 32px);
-				width: calc(100% - 32px);
-			}
-
-			.mdc-dialog__surface {
-				border-radius: $br-md;
-				max-height: calc(100vh - 32px);
-			}
 		}
 	}
 

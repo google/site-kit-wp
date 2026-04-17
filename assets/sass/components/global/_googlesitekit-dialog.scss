@@ -150,4 +150,27 @@
 			}
 		}
 	}
+
+	.googlesitekit-dialog--with-mobile-margins {
+
+		.admin-bar & {
+			@media (width < $bp-tablet) {
+				align-items: center;
+			}
+		}
+
+		@media (width < $bp-tablet) {
+			.mdc-dialog__container {
+				height: auto;
+				margin: 0 $grid-gap-phone;
+				max-height: calc(100vh - 32px);
+				width: auto;
+			}
+
+			.mdc-dialog__surface {
+				border-radius: $br-md;
+				max-height: calc(100vh - 32px);
+			}
+		}
+	}
 }
