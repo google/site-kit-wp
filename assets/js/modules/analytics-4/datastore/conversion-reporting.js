@@ -40,6 +40,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
@@ -71,6 +72,50 @@ export const selectors = {
 
 			return eventsToCheck.some( ( event ) =>
 				detectedEvents.includes( event )
+			);
+		}
+	),
+
+	/**
+	 * Checks if any ecommerce conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True if any ecommerce conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasDetectedEcommerceConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
+			return detectedEvents.some( ( event ) =>
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS.includes( event )
+			);
+		}
+	),
+
+	/**
+	 * Checks if any lead conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True if any lead conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasDetectedLeadConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
+			return detectedEvents.some( ( event ) =>
+				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
 			);
 		}
 	),
