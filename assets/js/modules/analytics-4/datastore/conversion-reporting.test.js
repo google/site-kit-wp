@@ -35,7 +35,12 @@ import {
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, ENUM_CONVERSION_EVENTS } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	CONVERSION_REPORTING_LEAD_EVENTS,
+} from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
@@ -163,6 +168,49 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				).getModuleData();
 
 				expect( result ).toEqual( undefined );
+			} );
+		} );
+
+		describe.each( [
+			[
+				'hasDetectedEcommerceConversionReportingEvents',
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+				true,
+			],
+			[
+				'hasDetectedEcommerceConversionReportingEvents',
+				CONVERSION_REPORTING_LEAD_EVENTS,
+				false,
+			],
+			[
+				'hasDetectedLeadConversionReportingEvents',
+				CONVERSION_REPORTING_LEAD_EVENTS,
+				true,
+			],
+			[
+				'hasDetectedLeadConversionReportingEvents',
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+				false,
+			],
+		] )( '%s', ( selector, events, expectedReturn ) => {
+			it( 'returns whether any detected events match the expected event group', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( events );
+
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					[ selector ]();
+
+				expect( selectorValue ).toEqual( expectedReturn );
+			} );
+
+			it( 'returns undefined when detected events have not loaded yet', () => {
+				const selectorValue = registry
+					.select( MODULES_ANALYTICS_4 )
+					[ selector ]();
+
+				expect( selectorValue ).toEqual( undefined );
 			} );
 		} );
 
