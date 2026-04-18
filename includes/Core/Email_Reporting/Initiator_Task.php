@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use DateInterval;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 use Google\Site_Kit\Core\Util\Date;
@@ -99,63 +100,132 @@ class Initiator_Task {
 	/**
 	 * Builds the report reference dates for a batch.
 	 *
+	 * Resolves to the canonical previous period regardless of when the
+	 * initiator fires. For example, a monthly trigger on the 7th still
+	 * reports the full previous calendar month.
+	 *
 	 * @since 1.167.0
 	 * @since 1.174.0 Made method static.
+	 * @since 1.177.0 Switched to calendar-aware period resolution.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp.
 	 * @return array Reference date payload.
+	 * @throws InvalidArgumentException When an unsupported frequency is provided.
 	 */
 	public static function build_reference_dates( $frequency, $timestamp ) {
-		$time_zone      = BC_Functions::wp_timezone();
-		$scheduled_date = ( new DateTimeImmutable( '@' . $timestamp ) )
+		$time_zone = BC_Functions::wp_timezone();
+		$date      = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )
 			->setTime( 0, 0, 0 );
-		// Initiators are scheduled at period-boundary midnight in site timezone.
-		// The reporting window should end on "yesterday" (inclusive end date), so subtract one day.
-		$end_date = $scheduled_date->sub( new DateInterval( 'P1D' ) );
 
-		$period_days = 7;
+		switch ( $frequency ) {
+			case Email_Reporting_Settings::FREQUENCY_MONTHLY:
+				return self::build_monthly_reference_dates( $date );
 
-		if ( Email_Reporting_Settings::FREQUENCY_MONTHLY === $frequency ) {
-			$period_days = (int) $end_date->format( 't' );
-		} elseif ( Email_Reporting_Settings::FREQUENCY_QUARTERLY === $frequency ) {
-			$period_days = self::get_days_in_quarter( $end_date );
+			case Email_Reporting_Settings::FREQUENCY_QUARTERLY:
+				return self::build_quarterly_reference_dates( $date );
+
+			case Email_Reporting_Settings::FREQUENCY_WEEKLY:
+				return self::build_weekly_reference_dates( $date );
+
+			default:
+				throw new InvalidArgumentException(
+					sprintf( 'Unsupported frequency "%s".', $frequency )
+				);
 		}
+	}
 
-		// endDate is inclusive, so startDate must be endDate - (period_days - 1) for an exact period-length window.
-		$start_date         = $end_date->sub( new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) ) );
-		$compare_end_date   = $start_date->sub( new DateInterval( 'P1D' ) );
-		$compare_start_date = $compare_end_date->sub(
-			new DateInterval( sprintf( 'P%dD', max( $period_days - 1, 0 ) ) )
-		);
+	/**
+	 * Builds reference dates for a weekly reporting period.
+	 *
+	 * @since 1.177.0
+	 *
+	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
+	 * @return array Reference date payload.
+	 */
+	private static function build_weekly_reference_dates( DateTimeImmutable $date ) {
+		$start_of_week = (int) get_option( 'start_of_week', 0 );
+		$current_wday  = (int) $date->format( 'w' );
+
+		// Days since the current week started.
+		$days_into_week = ( $current_wday - $start_of_week + 7 ) % 7;
+
+		// Start of the current week.
+		$current_week_start = $date->sub( new DateInterval( sprintf( 'P%dD', $days_into_week ) ) );
+
+		// Previous week: 7 days before current week start.
+		$prev_week_start = $current_week_start->sub( new DateInterval( 'P7D' ) );
+		$prev_week_end   = $current_week_start->sub( new DateInterval( 'P1D' ) );
+
+		// Compare: the week before the previous week.
+		$compare_start = $prev_week_start->sub( new DateInterval( 'P7D' ) );
+		$compare_end   = $prev_week_start->sub( new DateInterval( 'P1D' ) );
 
 		return array(
-			'startDate'        => $start_date->format( 'Y-m-d' ),
-			'endDate'          => $end_date->format( 'Y-m-d' ),
-			'compareStartDate' => $compare_start_date->format( 'Y-m-d' ),
-			'compareEndDate'   => $compare_end_date->format( 'Y-m-d' ),
+			'startDate'        => $prev_week_start->format( 'Y-m-d' ),
+			'endDate'          => $prev_week_end->format( 'Y-m-d' ),
+			'compareStartDate' => $compare_start->format( 'Y-m-d' ),
+			'compareEndDate'   => $compare_end->format( 'Y-m-d' ),
 		);
 	}
 
 	/**
-	 * Gets the number of days in the quarter for a date.
+	 * Builds reference dates for a monthly reporting period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
-	 * @param DateTimeImmutable $date Date in the target quarter.
-	 * @return int Days in the quarter.
+	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
+	 * @return array Reference date payload.
 	 */
-	private static function get_days_in_quarter( DateTimeImmutable $date ) {
-		$year                = (int) $date->format( 'Y' );
+	private static function build_monthly_reference_dates( DateTimeImmutable $date ) {
+		$first_of_current = $date->modify( 'first day of this month' );
+
+		// Subtracting P1M from the 1st always lands on the 1st of the previous month.
+		$prev_month_start = $first_of_current->sub( new DateInterval( 'P1M' ) );
+		$prev_month_end   = $first_of_current->sub( new DateInterval( 'P1D' ) );
+
+		// Compare: the month before the previous month (natural length).
+		$compare_end   = $prev_month_start->sub( new DateInterval( 'P1D' ) );
+		$compare_start = $compare_end->modify( 'first day of this month' );
+
+		return array(
+			'startDate'        => $prev_month_start->format( 'Y-m-d' ),
+			'endDate'          => $prev_month_end->format( 'Y-m-d' ),
+			'compareStartDate' => $compare_start->format( 'Y-m-d' ),
+			'compareEndDate'   => $compare_end->format( 'Y-m-d' ),
+		);
+	}
+
+	/**
+	 * Builds reference dates for a quarterly reporting period.
+	 *
+	 * @since 1.177.0
+	 *
+	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
+	 * @return array Reference date payload.
+	 */
+	private static function build_quarterly_reference_dates( DateTimeImmutable $date ) {
 		$month               = (int) $date->format( 'n' );
-		$quarter_start_month = floor( ( $month - 1 ) / 3 ) * 3 + 1;
+		$year                = (int) $date->format( 'Y' );
+		$quarter_start_month = (int) ( floor( ( $month - 1 ) / 3 ) * 3 + 1 );
 
-		$quarter_start = $date->setDate( $year, $quarter_start_month, 1 );
-		$quarter_end   = $quarter_start
-			->add( new DateInterval( 'P3M' ) )
-			->sub( new DateInterval( 'P1D' ) );
+		// First day of the current quarter.
+		$current_quarter_start = $date->setDate( $year, $quarter_start_month, 1 );
 
-		return (int) $quarter_start->diff( $quarter_end )->days + 1;
+		// Previous quarter: go back 3 months from current quarter start.
+		$prev_quarter_start = $current_quarter_start->sub( new DateInterval( 'P3M' ) );
+		$prev_quarter_end   = $current_quarter_start->sub( new DateInterval( 'P1D' ) );
+
+		// Compare: the quarter before the previous quarter (symmetric pattern).
+		$compare_start = $prev_quarter_start->sub( new DateInterval( 'P3M' ) );
+		$compare_end   = $prev_quarter_start->sub( new DateInterval( 'P1D' ) );
+
+		return array(
+			'startDate'        => $prev_quarter_start->format( 'Y-m-d' ),
+			'endDate'          => $prev_quarter_end->format( 'Y-m-d' ),
+			'compareStartDate' => $compare_start->format( 'Y-m-d' ),
+			'compareEndDate'   => $compare_end->format( 'Y-m-d' ),
+		);
 	}
 }

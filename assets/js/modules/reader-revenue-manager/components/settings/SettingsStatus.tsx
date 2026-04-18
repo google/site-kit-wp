@@ -44,10 +44,12 @@ interface SettingsStatusProps {
 }
 
 const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
-	const isConnected = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).isModuleConnected(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		)
+	const isConnected = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			),
+		[]
 	);
 
 	const hasPolicyViolation = useSelect( ( select: Select ) => {
@@ -59,7 +61,7 @@ const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
 			contentPolicyState &&
 			contentPolicyState !== CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK
 		);
-	} );
+	}, [] );
 
 	if ( isConnected && hasPolicyViolation ) {
 		return (

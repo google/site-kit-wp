@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 /**
  * Class for the Google Tag ID mismatch setting datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Set_Google_Tag_ID_Mismatch extends Datapoint implements Executable_Datapoi
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -36,7 +36,7 @@ class Set_Google_Tag_ID_Mismatch extends Datapoint implements Executable_Datapoi
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -48,7 +48,7 @@ class Set_Google_Tag_ID_Mismatch extends Datapoint implements Executable_Datapoi
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that sets or deletes the tag ID mismatch transient.
@@ -75,7 +75,7 @@ class Set_Google_Tag_ID_Mismatch extends Datapoint implements Executable_Datapoi
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

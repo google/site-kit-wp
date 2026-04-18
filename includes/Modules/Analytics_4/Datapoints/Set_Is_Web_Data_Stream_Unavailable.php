@@ -20,7 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 /**
  * Class for the web data stream unavailable status datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Set_Is_Web_Data_Stream_Unavailable extends Datapoint implements Executable
 	/**
 	 * Transients instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Transients
 	 */
 	private $transients;
@@ -37,7 +37,7 @@ class Set_Is_Web_Data_Stream_Unavailable extends Datapoint implements Executable
 	/**
 	 * Analytics settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -45,7 +45,7 @@ class Set_Is_Web_Data_Stream_Unavailable extends Datapoint implements Executable
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -58,7 +58,7 @@ class Set_Is_Web_Data_Stream_Unavailable extends Datapoint implements Executable
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that sets or deletes the web data stream unavailable transient.
@@ -89,7 +89,7 @@ class Set_Is_Web_Data_Stream_Unavailable extends Datapoint implements Executable
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

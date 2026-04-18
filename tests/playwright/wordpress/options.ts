@@ -46,7 +46,7 @@ export function withPlugins( ...plugins: string[] ): TestDetailsAnnotation {
 /**
  * Sets the feature flags to enable for the test.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  *
  * @param {string[]} flags Feature flag names to enable.
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -61,7 +61,7 @@ export function withFeatureFlags( ...flags: string[] ): TestDetailsAnnotation {
 /**
  * Sets the fixtures to use for the test.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  *
  * @param {string} fixtures The fixtures to use for the test.
  * @return {TestDetailsAnnotation} The annotation to use for the test.

@@ -27,6 +27,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -214,6 +215,8 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 	} );
 
 	it( 'should render an error state if there is a report error', async () => {
+		provideModuleRegistrations( registry );
+
 		const error = {
 			code: 'missing_required_param',
 			message: 'Request parameter is empty: metrics.',

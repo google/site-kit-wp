@@ -40,7 +40,7 @@ class Date {
 	/**
 	 * Gets the current time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return int Current time.
 	 */

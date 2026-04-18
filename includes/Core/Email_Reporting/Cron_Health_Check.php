@@ -75,7 +75,7 @@ class Cron_Health_Check {
 		);
 
 		foreach ( $frequencies as $frequency ) {
-			$scheduled = $this->scheduler->get_initiator_timestamp( $frequency );
+			$scheduled = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
 
 			if ( false === $scheduled ) {
 				continue;

@@ -76,8 +76,8 @@
 		// Policy violation notice spacing.
 		// Also override the global error notice margin from _googlesitekit-setup-module.scss.
 		// stylelint-disable-next-line no-descending-specificity
-		.googlesitekit-policy-violation-settings-notice,
-		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error {
+		.googlesitekit-policy-violation-settings-notice.googlesitekit-notice--error,
+		.googlesitekit-policy-violation-settings-notice {
 			margin-bottom: $grid-gap-phone;
 		}
 

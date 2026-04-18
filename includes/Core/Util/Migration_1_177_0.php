@@ -15,17 +15,17 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Manager_Settings;
 
 /**
- * Class Migration_N_E_X_T
+ * Class Migration_1_177_0
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
-class Migration_N_E_X_T {
+class Migration_1_177_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = 'n.e.x.t';
+	const DB_VERSION = '1.177.0';
 
 	/**
 	 * DB version option name.
@@ -35,7 +35,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Context
 	 */
 	protected $context;
@@ -43,7 +43,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Options
 	 */
 	protected $options;
@@ -51,7 +51,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Reader_Revenue_Manager_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Reader_Revenue_Manager_Settings
 	 */
 	protected $rrm_settings;
@@ -59,7 +59,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -76,7 +76,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -85,7 +85,7 @@ class Migration_N_E_X_T {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
@@ -101,7 +101,7 @@ class Migration_N_E_X_T {
 	 * Migrates the legacy nested `contentPolicyStatus` setting into
 	 * flat `contentPolicyState` and `policyInfoLink` settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 */
 	protected function migrate_rrm_content_policy_status() {
 		if ( ! $this->rrm_settings->has() ) {

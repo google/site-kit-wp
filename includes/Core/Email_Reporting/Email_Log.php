@@ -203,7 +203,15 @@ final class Email_Log {
 			return null;
 		}
 
-		$timestamp = is_numeric( $value ) ? (int) $value : strtotime( $value );
+		if ( is_numeric( $value ) ) {
+			$timestamp = (int) $value;
+		} else {
+			// Parse date strings in site timezone for consistent round-tripping.
+			$timezone  = BC_Functions::wp_timezone();
+			$date      = date_create_immutable( $value, $timezone );
+			$timestamp = $date ? $date->getTimestamp() : false;
+		}
+
 		if ( empty( $timestamp ) || $timestamp < 0 ) {
 			return null;
 		}
@@ -620,7 +628,12 @@ final class Email_Log {
 		if ( is_numeric( $raw_value ) ) {
 			$timestamp = $raw_value;
 		} else {
-			$timestamp = strtotime( $raw_value );
+			// Parse date strings in the site timezone so the resulting UTC
+			// timestamp represents the correct calendar day when converted
+			// back via format_reference_date().
+			$timezone  = BC_Functions::wp_timezone();
+			$date      = date_create_immutable( $raw_value, $timezone );
+			$timestamp = $date ? $date->getTimestamp() : false;
 		}
 
 		if ( false === $timestamp || $timestamp <= 0 ) {

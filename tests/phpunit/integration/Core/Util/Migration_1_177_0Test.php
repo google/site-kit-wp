@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_N_E_X_TTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_177_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2026 Google LLC
@@ -12,11 +12,11 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
+use Google\Site_Kit\Core\Util\Migration_1_177_0;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Manager_Settings;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_N_E_X_TTest extends TestCase {
+class Migration_1_177_0Test extends TestCase {
 
 	/**
 	 * @var Context
@@ -45,7 +45,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	}
 
 	public function get_new_migration_instance() {
-		return new Migration_N_E_X_T(
+		return new Migration_1_177_0(
 			$this->context,
 			$this->options
 		);
@@ -137,14 +137,14 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$migration->migrate();
 
-		$this->assertEquals( Migration_N_E_X_T::DB_VERSION, $this->get_db_version(), 'DB version should be set after migration.' );
+		$this->assertEquals( Migration_1_177_0::DB_VERSION, $this->get_db_version(), 'DB version should be set after migration.' );
 	}
 
 	protected function get_db_version() {
-		return $this->options->get( Migration_N_E_X_T::DB_VERSION_OPTION );
+		return $this->options->get( Migration_1_177_0::DB_VERSION_OPTION );
 	}
 
 	protected function delete_db_version() {
-		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
+		$this->options->delete( Migration_1_177_0::DB_VERSION_OPTION );
 	}
 }

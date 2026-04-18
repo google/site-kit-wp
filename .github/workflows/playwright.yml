@@ -80,6 +80,7 @@ env:
   FORBID_ONLY: true
   RETRIES: 2
   WORKERS: 4
+  CAN_UPLOAD_PLAYWRIGHT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false ) }}
 
 jobs:
   build:
@@ -201,7 +202,7 @@ jobs:
 
       - name: Set report target directory
         id: report-target
-        if: always()
+        if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
         run: |
           suffix="wp-${{ matrix.wp_version }}"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
@@ -212,14 +213,14 @@ jobs:
 
       - uses: ./.github/actions/upload-to-gcs
         id: upload-to-gcs
-        if: always()
+        if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
           path: tests/playwright/artifacts
           destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
 
       - name: Save report URL
-        if: always()
+        if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
         run: |
           mkdir -p /tmp/artifact-url
           if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
@@ -229,7 +230,7 @@ jobs:
           fi
 
       - name: Upload report URL
-        if: always()
+        if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
         uses: actions/upload-artifact@v6
         with:
           name: artifact-url-wp-${{ matrix.wp_version }}
@@ -239,7 +240,7 @@ jobs:
     name: Add comment to PR
     runs-on: ubuntu-latest
     needs: playwright-tests
-    if: always() && github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false
     permissions:
       contents: read
       pull-requests: write
