@@ -37,6 +37,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_GOALS,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { DAY_IN_SECONDS } from '@/js/util';
 import Header from './Header';
@@ -59,6 +60,7 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
+	ANCHOR_ID_GOALS,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -200,6 +202,13 @@ export default function DashboardMainApp() {
 		)
 	);
 
+	const isGoalsActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_GOALS,
+			widgetContextOptions
+		)
+	);
+
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -257,19 +266,7 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	let lastWidgetAnchor = null;
-
-	if ( isMonetizationActive ) {
-		lastWidgetAnchor = ANCHOR_ID_MONETIZATION;
-	} else if ( isSpeedActive ) {
-		lastWidgetAnchor = ANCHOR_ID_SPEED;
-	} else if ( isContentActive ) {
-		lastWidgetAnchor = ANCHOR_ID_CONTENT;
-	} else if ( isTrafficActive ) {
-		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
-	} else if ( isKeyMetricsActive ) {
-		lastWidgetAnchor = ANCHOR_ID_KEY_METRICS;
-	}
+	const lastWidgetAnchor = getLastWidgetAnchor();
 
 	return (
 		<Fragment>
@@ -330,6 +327,14 @@ export default function DashboardMainApp() {
 					} ) }
 				/>
 				<WidgetContextRenderer
+					id={ ANCHOR_ID_GOALS }
+					slug={ CONTEXT_MAIN_DASHBOARD_GOALS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_GOALS,
+					} ) }
+				/>
+				<WidgetContextRenderer
 					id={ ANCHOR_ID_SPEED }
 					slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
 					className={ classnames( {
@@ -370,4 +375,26 @@ export default function DashboardMainApp() {
 			<OfflineNotification />
 		</Fragment>
 	);
+
+	function getLastWidgetAnchor() {
+		if ( isMonetizationActive ) {
+			return ANCHOR_ID_MONETIZATION;
+		}
+		if ( isSpeedActive ) {
+			return ANCHOR_ID_SPEED;
+		}
+		if ( isContentActive ) {
+			return ANCHOR_ID_CONTENT;
+		}
+		if ( isGoalsActive ) {
+			return ANCHOR_ID_GOALS;
+		}
+		if ( isTrafficActive ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+		if ( isKeyMetricsActive ) {
+			return ANCHOR_ID_KEY_METRICS;
+		}
+		return null;
+	}
 }

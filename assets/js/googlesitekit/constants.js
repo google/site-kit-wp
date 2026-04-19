@@ -40,6 +40,7 @@ export const VIEW_CONTEXT_KEY_METRICS_SETUP = 'keyMetricsSetup';
 // Anchor ID Constants
 export const ANCHOR_ID_KEY_METRICS = 'key-metrics';
 export const ANCHOR_ID_TRAFFIC = 'traffic';
+export const ANCHOR_ID_GOALS = 'goals';
 export const ANCHOR_ID_CONTENT = 'content';
 export const ANCHOR_ID_SPEED = 'speed';
 export const ANCHOR_ID_MONETIZATION = 'monetization';
