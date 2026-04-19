@@ -256,7 +256,7 @@ describe( 'Dashboard Navigation', () => {
 		);
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent( 'Goals' );
+		expect( container ).toHaveTextContent( 'Site goals' );
 	} );
 
 	it( 'hides the Goals chip when goals context is active but no detected events are present', async () => {
@@ -290,6 +290,6 @@ describe( 'Dashboard Navigation', () => {
 		);
 		await waitForRegistry();
 
-		expect( container ).not.toHaveTextContent( 'Goals' );
+		expect( container ).not.toHaveTextContent( 'Site goals' );
 	} );
 } );
