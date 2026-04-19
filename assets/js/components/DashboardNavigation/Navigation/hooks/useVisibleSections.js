@@ -21,6 +21,7 @@
  */
 import { useSelect } from 'googlesitekit-data';
 import {
+	ANCHOR_ID_GOALS,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_TRAFFIC,
 	ANCHOR_ID_CONTENT,
@@ -28,6 +29,7 @@ import {
 	ANCHOR_ID_MONETIZATION,
 } from '@/js/googlesitekit/constants';
 import {
+	CONTEXT_MAIN_DASHBOARD_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -40,6 +42,7 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
@@ -50,6 +53,7 @@ export const contexts = {
 	[ DASHBOARD_TYPE_MAIN ]: {
 		[ ANCHOR_ID_KEY_METRICS ]: CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 		[ ANCHOR_ID_TRAFFIC ]: CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+		[ ANCHOR_ID_GOALS ]: CONTEXT_MAIN_DASHBOARD_GOALS,
 		[ ANCHOR_ID_CONTENT ]: CONTEXT_MAIN_DASHBOARD_CONTENT,
 		[ ANCHOR_ID_SPEED ]: CONTEXT_MAIN_DASHBOARD_SPEED,
 		[ ANCHOR_ID_MONETIZATION ]: CONTEXT_MAIN_DASHBOARD_MONETIZATION,
@@ -74,6 +78,10 @@ export default function useVisibleSections() {
 	const viewOnlyDashboard = useViewOnly();
 
 	return useSelect( ( select ) => {
+		const detectedEvents =
+			select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+		const hasDetectedEvents = !! detectedEvents?.length;
+
 		const viewableModules = viewOnlyDashboard
 			? select( CORE_USER ).getViewableModules()
 			: null;
@@ -92,6 +100,11 @@ export default function useVisibleSections() {
 					section === ANCHOR_ID_KEY_METRICS &&
 					isKeyMetricsWidgetHidden
 				) {
+					return visibleSections;
+				}
+
+				// Skip goals section if no conversion events have been detected.
+				if ( section === ANCHOR_ID_GOALS && ! hasDetectedEvents ) {
 					return visibleSections;
 				}
 
