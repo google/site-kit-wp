@@ -34,19 +34,29 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 	} );
 
 	test( 'should forward URL parameters', async ( { wp } ) => {
-		await wp.visitAdmin(
-			'index.php?action=googlesitekit_go&to=dashboard&slug=analytics-4&reAuth=true&permaLink=http%3A%2F%2Flocalhost%3A9002%2Fhello-world%2F'
-		);
+		// eslint-disable-next-line sitekit/acronym-case
+		const searchParams = new URLSearchParams( {
+			action: 'googlesitekit_go',
+			to: 'dashboard',
+			slug: 'analytics-4',
+			reAuth: 'true',
+			permaLink: 'http://localhost:9002/hello-world/',
+			otherParam: 'value',
+		} );
+
+		await wp.visitAdmin( 'index.php?' + searchParams.toString() );
 		await expect(
 			wp.page.getByRole( 'heading', {
 				name: 'Find out how your audience is growing',
 			} )
 		).toBeVisible();
+
 		await expect( wp.page ).toHaveURL( /slug=analytics-4/ );
 		await expect( wp.page ).toHaveURL( /reAuth=true/ );
 		await expect( wp.page ).toHaveURL(
 			/permaLink=http%3A%2F%2Flocalhost%3A9002%2Fhello-world%2F/
 		);
+		await expect( wp.page ).not.toHaveURL( /otherParam=value/ );
 	} );
 
 	test( 'should fail if the link is invalid', async ( { wp } ) => {
@@ -60,7 +70,7 @@ test.describe( 'Golinks', { annotation: [ user, plugins ] }, () => {
 		).toBeVisible();
 	} );
 
-	test( 'should fail if the PUE feature flag is not enabled', async ( {
+	test( 'should fail for the subscription management link if the PUE feature flag is not enabled', async ( {
 		wp,
 	} ) => {
 		await wp.visitAdmin(
