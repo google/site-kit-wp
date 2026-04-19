@@ -319,19 +319,19 @@ export default function DashboardMainApp() {
 					} ) }
 				/>
 				<WidgetContextRenderer
-					id={ ANCHOR_ID_CONTENT }
-					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
-					className={ classnames( {
-						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_CONTENT,
-					} ) }
-				/>
-				<WidgetContextRenderer
 					id={ ANCHOR_ID_GOALS }
 					slug={ CONTEXT_MAIN_DASHBOARD_GOALS }
 					className={ classnames( {
 						'googlesitekit-widget-context--last':
 							lastWidgetAnchor === ANCHOR_ID_GOALS,
+					} ) }
+				/>
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_CONTENT }
+					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_CONTENT,
 					} ) }
 				/>
 				<WidgetContextRenderer
