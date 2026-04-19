@@ -47,6 +47,10 @@ import {
 	PopularAuthorsWidget,
 	TopPagesDrivingLeadsWidget,
 } from '@/js/modules/analytics-4/components/widgets';
+import {
+	LeadGenerationPerformanceWidget,
+	OnlineStorePerformanceWidget,
+} from '@/js/modules/analytics-4/components/site-goals/widgets';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -55,6 +59,7 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_GOALS_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
@@ -739,5 +744,32 @@ export function registerWidgets( widgets ) {
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
 		},
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
+
+	/*
+	 * Site Goals widgets.
+	 */
+	widgets.registerWidget(
+		'analyticsOnlineStorePerformance',
+		{
+			Component: OnlineStorePerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+		},
+		[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
+	);
+
+	widgets.registerWidget(
+		'analyticsLeadGenerationPerformance',
+		{
+			Component: LeadGenerationPerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+		},
+		[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
 	);
 }
