@@ -89,6 +89,8 @@ import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 export default function DashboardMainApp() {
+	const siteGoalsEnabled = useFeature( 'siteGoals' );
+
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
@@ -203,10 +205,12 @@ export default function DashboardMainApp() {
 	);
 
 	const isGoalsActive = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).isWidgetContextActive(
-			CONTEXT_MAIN_DASHBOARD_GOALS,
-			widgetContextOptions
-		)
+		siteGoalsEnabled
+			? select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_MAIN_DASHBOARD_GOALS,
+					widgetContextOptions
+			  )
+			: false
 	);
 
 	const isContentActive = useSelect( ( select ) =>
@@ -318,14 +322,16 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-				<WidgetContextRenderer
-					id={ ANCHOR_ID_GOALS }
-					slug={ CONTEXT_MAIN_DASHBOARD_GOALS }
-					className={ classnames( {
-						'googlesitekit-widget-context--last':
-							lastWidgetAnchor === ANCHOR_ID_GOALS,
-					} ) }
-				/>
+				{ siteGoalsEnabled && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_GOALS }
+						slug={ CONTEXT_MAIN_DASHBOARD_GOALS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_GOALS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_CONTENT }
 					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
