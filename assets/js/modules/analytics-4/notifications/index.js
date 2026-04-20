@@ -22,9 +22,9 @@
 import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { EnhancedMeasurementActivationBanner } from '@/js/modules/analytics-4/components/dashboard';
-import AudienceSegmentationIntroductoryOverlayNotification, {
+import IntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationIntroductoryOverlayNotification';
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/IntroductoryOverlayNotification';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -35,9 +35,9 @@ import {
 	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
-import AudienceSegmentationSetupCTABanner, {
+import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationSetupCTABanner';
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/SetupCTABanner';
 import {
 	WebDataStreamNotAvailableNotification,
 	GoogleTagIDMismatchNotification,
@@ -79,7 +79,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {
-		Component: AudienceSegmentationSetupCTABanner,
+		Component: SetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
@@ -148,7 +148,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		),
 	},
 	[ AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
-		Component: AudienceSegmentationIntroductoryOverlayNotification,
+		Component: IntroductoryOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
