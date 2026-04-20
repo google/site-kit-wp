@@ -252,7 +252,11 @@ describe( 'Dashboard Navigation', () => {
 
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'siteGoals' ],
+			}
 		);
 		await waitForRegistry();
 
@@ -286,7 +290,11 @@ describe( 'Dashboard Navigation', () => {
 
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'siteGoals' ],
+			}
 		);
 		await waitForRegistry();
 
