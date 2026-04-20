@@ -48,6 +48,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '@/js/hooks/useDashboardType';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export const contexts = {
 	[ DASHBOARD_TYPE_MAIN ]: {
@@ -77,17 +78,20 @@ export default function useVisibleSections() {
 	const dashboardType = useDashboardType();
 	const viewOnlyDashboard = useViewOnly();
 
-	return useSelect( ( select ) => {
-		const detectedEvents =
-			select( MODULES_ANALYTICS_4 ).getDetectedEvents();
-		const hasDetectedEvents = !! detectedEvents?.length;
+	const siteGoalsEnabled = useFeature( 'siteGoals' );
 
+	return useSelect( ( select ) => {
 		const viewableModules = viewOnlyDashboard
 			? select( CORE_USER ).getViewableModules()
 			: null;
 
 		const isKeyMetricsWidgetHidden =
 			select( CORE_USER ).isKeyMetricsWidgetHidden();
+
+		const detectedEvents = siteGoalsEnabled
+			? select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+			: [];
+		const hasDetectedEvents = !! detectedEvents?.length;
 
 		const widgetContextOptions = {
 			modules: viewableModules ? viewableModules : undefined,
