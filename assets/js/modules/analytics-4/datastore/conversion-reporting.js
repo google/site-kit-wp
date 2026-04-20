@@ -56,7 +56,7 @@ export const selectors = {
 	 *
 	 * @param {Object}               state  Data store's state.
 	 * @param {string|Array<string>} events Conversion reporting events to check.
-	 * @return {(boolean|undefined)} True if all provided custom dimensions are available, otherwise false. Undefined if available custom dimensions are not loaded yet.
+	 * @return {(boolean|undefined)} True if all provided custom dimensions are available, otherwise false. Undefined if detected events are not loaded yet.
 	 */
 	hasConversionReportingEvents: createRegistrySelector(
 		( select ) => ( state, events ) => {
