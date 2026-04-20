@@ -46,6 +46,10 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 function provideWidgetContexts( registry, widgetContexts = [] ) {
 	const mapContextToModule = {
@@ -108,9 +112,14 @@ describe( 'useVisibleSections', () => {
 			Object.values( contexts[ VIEW_CONTEXT_MAIN_DASHBOARD ] )
 		);
 
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
+
 		const { result } = await renderHook( () => useVisibleSections(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			features: [ 'siteGoals' ],
 		} );
 
 		expect( result.current ).toEqual(
@@ -124,6 +133,10 @@ describe( 'useVisibleSections', () => {
 			isWidgetHidden: true,
 		} );
 
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
+
 		provideWidgetContexts(
 			registry,
 			Object.values( contexts[ VIEW_CONTEXT_MAIN_DASHBOARD ] )
@@ -132,6 +145,7 @@ describe( 'useVisibleSections', () => {
 		const { result } = await renderHook( () => useVisibleSections(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			features: [ 'siteGoals' ],
 		} );
 
 		expect( result.current ).toEqual(
