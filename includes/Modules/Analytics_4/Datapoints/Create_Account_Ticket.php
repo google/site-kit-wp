@@ -89,11 +89,11 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 
 		$redirect_uri = $this->provisioning_redirect_uri;
 
-		// Add query parameters to the redirect URI if the feature flag is enabled.
+		// Add `service_version` query parameter if the feature flag is enabled.
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
 			$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
 
-			// Also add `show_progress` if `showProgress` is set and truthy.
+			// Add `show_progress` query parameter if `showProgress` is set and truthy.
 			if ( ! empty( $data_request->data['showProgress'] ) ) {
 				$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
 			}
