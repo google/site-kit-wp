@@ -83,7 +83,7 @@ export const selectors = {
 	 *
 	 * @return {(boolean|undefined)} True if any ecommerce conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */
-	hasDetectedEcommerceConversionReportingEvents: createRegistrySelector(
+	hasEcommerceConversionReportingEvents: createRegistrySelector(
 		( select ) => () => {
 			const detectedEvents =
 				select( MODULES_ANALYTICS_4 ).getDetectedEvents();

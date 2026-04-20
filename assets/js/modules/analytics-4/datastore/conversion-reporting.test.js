@@ -173,12 +173,12 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 		describe.each( [
 			[
-				'hasDetectedEcommerceConversionReportingEvents',
+				'hasEcommerceConversionReportingEvents',
 				CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 				true,
 			],
 			[
-				'hasDetectedEcommerceConversionReportingEvents',
+				'hasEcommerceConversionReportingEvents',
 				CONVERSION_REPORTING_LEAD_EVENTS,
 				false,
 			],

@@ -34,14 +34,11 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 
 export default function OnlineStorePerformanceWidget( { Widget, WidgetNull } ) {
-	const hasDetectedEcommerceConversionReportingEvents = useSelect(
-		( select ) =>
-			select(
-				MODULES_ANALYTICS_4
-			).hasDetectedEcommerceConversionReportingEvents()
+	const hasEcommerceConversionReportingEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasEcommerceConversionReportingEvents()
 	);
 
-	if ( ! hasDetectedEcommerceConversionReportingEvents ) {
+	if ( ! hasEcommerceConversionReportingEvents ) {
 		return <WidgetNull />;
 	}
 
