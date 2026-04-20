@@ -89,15 +89,8 @@ export const selectors = {
 	 */
 	hasEcommerceConversionReportingEvents: createRegistrySelector(
 		( select ) => () => {
-			const detectedEvents =
-				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
-
-			if ( detectedEvents === undefined ) {
-				return undefined;
-			}
-
-			return detectedEvents.some( ( event ) =>
-				CONVERSION_REPORTING_ECOMMERCE_EVENTS.includes( event )
+			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS
 			);
 		}
 	),
@@ -111,15 +104,8 @@ export const selectors = {
 	 */
 	hasLeadConversionReportingEvents: createRegistrySelector(
 		( select ) => () => {
-			const detectedEvents =
-				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
-
-			if ( detectedEvents === undefined ) {
-				return undefined;
-			}
-
-			return detectedEvents.some( ( event ) =>
-				CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
+			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+				CONVERSION_REPORTING_LEAD_EVENTS
 			);
 		}
 	),
