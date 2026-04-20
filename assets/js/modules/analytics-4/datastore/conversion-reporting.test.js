@@ -21,6 +21,7 @@
  */
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideKeyMetrics,
 	provideKeyMetricsUserInputSettings,
 	provideModules,
@@ -206,6 +207,13 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 			} );
 
 			it( 'returns undefined when detected events have not loaded yet', () => {
+				// Prevent network request/resolver from running to avoid console errors.
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
 				const selectorValue = registry
 					.select( MODULES_ANALYTICS_4 )
 					[ selector ]();
