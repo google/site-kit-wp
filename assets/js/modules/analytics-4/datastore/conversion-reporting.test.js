@@ -183,12 +183,12 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				false,
 			],
 			[
-				'hasDetectedLeadConversionReportingEvents',
+				'hasLeadConversionReportingEvents',
 				CONVERSION_REPORTING_LEAD_EVENTS,
 				true,
 			],
 			[
-				'hasDetectedLeadConversionReportingEvents',
+				'hasLeadConversionReportingEvents',
 				CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 				false,
 			],

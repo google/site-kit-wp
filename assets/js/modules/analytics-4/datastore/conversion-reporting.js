@@ -105,7 +105,7 @@ export const selectors = {
 	 *
 	 * @return {(boolean|undefined)} True if any lead conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */
-	hasDetectedLeadConversionReportingEvents: createRegistrySelector(
+	hasLeadConversionReportingEvents: createRegistrySelector(
 		( select ) => () => {
 			const detectedEvents =
 				select( MODULES_ANALYTICS_4 ).getDetectedEvents();

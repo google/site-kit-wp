@@ -30,23 +30,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import {
-	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 
 export default function LeadGenerationPerformanceWidget( {
 	Widget,
 	WidgetNull,
 } ) {
-	const hasDetectedLeadConversionReportingEvents = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-			CONVERSION_REPORTING_LEAD_EVENTS
-		)
+	const hasLeadConversionReportingEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasLeadConversionReportingEvents()
 	);
 
-	if ( ! hasDetectedLeadConversionReportingEvents ) {
+	if ( ! hasLeadConversionReportingEvents ) {
 		return <WidgetNull />;
 	}
 
