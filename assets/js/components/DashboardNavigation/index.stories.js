@@ -23,6 +23,7 @@ import DashboardNavigation from './';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
+	CONTEXT_MAIN_DASHBOARD_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 } from '@/js/googlesitekit/widgets/default-contexts';
@@ -38,6 +39,7 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 function Template( { setupRegistry, viewContext, ...args } ) {
 	return (
@@ -181,6 +183,40 @@ WithKeyMetrics.args = {
 			.assignWidget( 'KeyMetricsWidget', 'KeyMetricsArea' );
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+
+export const WithSiteGoals = Template.bind( {} );
+WithSiteGoals.storyName = 'With Site Goals';
+WithSiteGoals.args = {
+	setupRegistry: ( registry ) => {
+		setupDefaultChips( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+
+		// Site Goals
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'SiteGoalsArea', {
+			title: 'Site Goals',
+			subtitle: 'Site Goals Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'SiteGoalsArea', CONTEXT_MAIN_DASHBOARD_GOALS );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'SiteGoalsWidget', {
+			Component() {
+				return <div>Site Goals Widget</div>;
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'SiteGoalsWidget', 'SiteGoalsArea' );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+WithSiteGoals.parameters = {
+	features: [ 'siteGoals' ],
 };
 
 export default {
