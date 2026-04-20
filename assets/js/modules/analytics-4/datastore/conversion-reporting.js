@@ -66,6 +66,10 @@ export const selectors = {
 			const detectedEvents =
 				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
 			if ( ! detectedEvents?.length ) {
 				return false;
 			}
