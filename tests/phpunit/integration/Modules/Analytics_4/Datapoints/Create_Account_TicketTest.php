@@ -175,12 +175,13 @@ class Create_Account_TicketTest extends TestCase {
 		$this->assertEquals( 'test account name', $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( 'US', $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
 		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
+		$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
 
 		if ( $show_progress_params['expected'] ) {
 			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
 		}
 
-		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should include service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
 	}
 
 	public function test_parse_response() {
