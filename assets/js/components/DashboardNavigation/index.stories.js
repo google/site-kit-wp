@@ -215,9 +215,6 @@ WithSiteGoals.args = {
 	},
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 };
-WithSiteGoals.parameters = {
-	features: [ 'siteGoals' ],
-};
 
 export default {
 	title: 'Components/DashboardNavigation',
