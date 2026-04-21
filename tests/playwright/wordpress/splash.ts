@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { escape } from 'lodash';
+
 const siteKitLogoSvg = `<svg width="80" height="21" viewBox="0 0 80 21" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<path d="M62.0891 1.66406H65.1276V1.76387L58.3409 9.59293L65.5823 19.8173V19.9171H62.699L56.7552 11.4005L53.9496 14.6386V19.9171H51.5986V1.66406H53.9496V11.0789H54.0494L62.0891 1.66406Z" fill="#5F6368"/>
 	<path d="M69.9845 3.11652C69.9845 3.57119 69.8182 3.9704 69.4966 4.29199C69.175 4.61358 68.7869 4.77992 68.3211 4.77992C67.8664 4.77992 67.4672 4.61358 67.1456 4.29199C66.8241 3.9704 66.6577 3.58228 66.6577 3.11652C66.6577 2.65077 66.8241 2.26265 67.1456 1.94106C67.4672 1.61946 67.8554 1.45312 68.3211 1.45312C68.7758 1.45312 69.175 1.61946 69.4966 1.94106C69.8293 2.27374 69.9845 2.66186 69.9845 3.11652ZM69.5077 7.43027V19.9279H67.1567V7.43027H69.5077Z" fill="#5F6368"/>
@@ -45,11 +50,7 @@ const playwrightLogoSvg = `<svg width="64" height="64" viewBox="0 0 400 400" fil
  */
 export function getSplashHTML( testTitle: string ): string {
 	// Escape the test title to avoid breaking the HTML.
-	const safeTitle = testTitle
-		.replace( /&/g, '&amp;' )
-		.replace( /</g, '&lt;' )
-		.replace( />/g, '&gt;' )
-		.replace( /"/g, '&quot;' );
+	const safeTitle = escape( testTitle );
 
 	return `<!DOCTYPE html>
 <html lang="en">
