@@ -59,7 +59,7 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-	AREA_MAIN_DASHBOARD_GOALS_PRIMARY,
+	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import {
 	CORE_USER,
@@ -763,7 +763,7 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			},
-			[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
+			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
 
 		widgets.registerWidget(
@@ -775,7 +775,7 @@ export function registerWidgets( widgets ) {
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			},
-			[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
+			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
 	}
 }

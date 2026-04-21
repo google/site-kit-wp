@@ -66,7 +66,7 @@ export function registerDefaults( widgetsAPI ) {
 	const {
 		// Main dashboard
 		CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-		CONTEXT_MAIN_DASHBOARD_GOALS,
+		CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 		CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 		CONTEXT_MAIN_DASHBOARD_CONTENT,
 		CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -81,7 +81,7 @@ export function registerDefaults( widgetsAPI ) {
 	const {
 		// Main dashboard
 		AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-		AREA_MAIN_DASHBOARD_GOALS_PRIMARY,
+		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 		AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 		AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -182,7 +182,7 @@ export function registerDefaults( widgetsAPI ) {
 	);
 
 	widgetsAPI.registerWidgetArea(
-		AREA_MAIN_DASHBOARD_GOALS_PRIMARY,
+		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		{
 			title: __( 'Site Goals', 'google-site-kit' ),
 			subtitle: __(
@@ -192,7 +192,7 @@ export function registerDefaults( widgetsAPI ) {
 			style: WIDGET_AREA_STYLES.BOXES,
 			priority: 1,
 		},
-		CONTEXT_MAIN_DASHBOARD_GOALS
+		CONTEXT_MAIN_DASHBOARD_SITE_GOALS
 	);
 
 	widgetsAPI.registerWidgetArea(

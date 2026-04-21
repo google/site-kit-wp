@@ -36,7 +36,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
-	ANCHOR_ID_GOALS,
+	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_KEY_METRICS,
@@ -240,7 +240,7 @@ export default function Navigation() {
 			label: __( 'Traffic', 'google-site-kit' ),
 			icon: <NavTrafficIcon width="18" height="16" />,
 		},
-		[ ANCHOR_ID_GOALS ]: {
+		[ ANCHOR_ID_SITE_GOALS ]: {
 			label: __( 'Site goals', 'google-site-kit' ),
 			icon: <NavSiteGoalsIcon width="17" height="17" />,
 		},

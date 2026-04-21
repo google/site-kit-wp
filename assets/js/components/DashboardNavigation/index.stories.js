@@ -23,7 +23,7 @@ import DashboardNavigation from './';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
-	CONTEXT_MAIN_DASHBOARD_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 } from '@/js/googlesitekit/widgets/default-contexts';
@@ -203,7 +203,10 @@ WithSiteGoals.args = {
 		} );
 		registry
 			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea( 'SiteGoalsArea', CONTEXT_MAIN_DASHBOARD_GOALS );
+			.assignWidgetArea(
+				'SiteGoalsArea',
+				CONTEXT_MAIN_DASHBOARD_SITE_GOALS
+			);
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'SiteGoalsWidget', {
 			Component() {
 				return <div>Site Goals Widget</div>;

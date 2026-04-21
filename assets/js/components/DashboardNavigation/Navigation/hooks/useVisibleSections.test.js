@@ -27,7 +27,7 @@ import { renderHook } from '../../../../../../tests/js/test-utils';
 import useVisibleSections, { contexts } from './useVisibleSections';
 import {
 	ANCHOR_ID_CONTENT,
-	ANCHOR_ID_GOALS,
+	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_SPEED,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -36,7 +36,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
-	CONTEXT_MAIN_DASHBOARD_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -56,7 +56,7 @@ function provideWidgetContexts( registry, widgetContexts = [] ) {
 			MODULE_SLUG_ANALYTICS_4,
 			MODULE_SLUG_SEARCH_CONSOLE,
 		],
-		[ CONTEXT_MAIN_DASHBOARD_GOALS ]: [ MODULE_SLUG_ANALYTICS_4 ],
+		[ CONTEXT_MAIN_DASHBOARD_SITE_GOALS ]: [ MODULE_SLUG_ANALYTICS_4 ],
 		[ CONTEXT_MAIN_DASHBOARD_CONTENT ]: [
 			MODULE_SLUG_ANALYTICS_4,
 			MODULE_SLUG_SEARCH_CONSOLE,
@@ -210,7 +210,7 @@ describe( 'useVisibleSections', () => {
 
 		expect( result.current ).toEqual( [
 			ANCHOR_ID_KEY_METRICS,
-			ANCHOR_ID_GOALS,
+			ANCHOR_ID_SITE_GOALS,
 			ANCHOR_ID_SPEED,
 		] );
 	} );

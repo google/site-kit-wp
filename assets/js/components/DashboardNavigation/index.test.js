@@ -37,7 +37,7 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
-	CONTEXT_MAIN_DASHBOARD_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import DashboardNavigation from './';
@@ -223,7 +223,7 @@ describe( 'Dashboard Navigation', () => {
 		).toHaveTextContent( 'Speed' );
 	} );
 
-	it( 'shows the `ANCHOR_ID_GOALS` chip when Site Goals context is active', async () => {
+	it( 'shows the `ANCHOR_ID_SITE_GOALS` chip when Site Goals context is active', async () => {
 		setupDefaultChips( registry );
 
 		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'GoalsArea', {
@@ -233,7 +233,7 @@ describe( 'Dashboard Navigation', () => {
 		} );
 		registry
 			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea( 'GoalsArea', CONTEXT_MAIN_DASHBOARD_GOALS );
+			.assignWidgetArea( 'GoalsArea', CONTEXT_MAIN_DASHBOARD_SITE_GOALS );
 		registry.dispatch( CORE_WIDGETS ).registerWidget( 'GoalsWidget', {
 			Component() {
 				return <div>Goals Widget</div>;

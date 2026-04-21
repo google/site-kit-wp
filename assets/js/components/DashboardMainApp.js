@@ -37,7 +37,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
-	CONTEXT_MAIN_DASHBOARD_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { DAY_IN_SECONDS } from '@/js/util';
 import Header from './Header';
@@ -60,7 +60,7 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
-	ANCHOR_ID_GOALS,
+	ANCHOR_ID_SITE_GOALS,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -204,10 +204,10 @@ export default function DashboardMainApp() {
 		)
 	);
 
-	const isGoalsActive = useSelect( ( select ) =>
+	const isSiteGoalsActive = useSelect( ( select ) =>
 		siteGoalsEnabled
 			? select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_MAIN_DASHBOARD_GOALS,
+					CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 					widgetContextOptions
 			  )
 			: false
@@ -324,11 +324,11 @@ export default function DashboardMainApp() {
 				/>
 				{ siteGoalsEnabled && (
 					<WidgetContextRenderer
-						id={ ANCHOR_ID_GOALS }
-						slug={ CONTEXT_MAIN_DASHBOARD_GOALS }
+						id={ ANCHOR_ID_SITE_GOALS }
+						slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
 						className={ classnames( {
 							'googlesitekit-widget-context--last':
-								lastWidgetAnchor === ANCHOR_ID_GOALS,
+								lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
 						} ) }
 					/>
 				) }
@@ -392,8 +392,8 @@ export default function DashboardMainApp() {
 		if ( isContentActive ) {
 			return ANCHOR_ID_CONTENT;
 		}
-		if ( isGoalsActive ) {
-			return ANCHOR_ID_GOALS;
+		if ( isSiteGoalsActive ) {
+			return ANCHOR_ID_SITE_GOALS;
 		}
 		if ( isTrafficActive ) {
 			return ANCHOR_ID_TRAFFIC;
