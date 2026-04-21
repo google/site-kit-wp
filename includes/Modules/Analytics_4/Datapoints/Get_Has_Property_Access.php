@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
@@ -59,7 +60,10 @@ class Get_Has_Property_Access extends Datapoint implements Executable_Datapoint 
 		);
 		$request->setLimit( 0 );
 
-		return $this->get_service()->properties->runReport( $data['propertyID'], $request );
+		return $this->get_service()->properties->runReport(
+			Analytics_4::normalize_property_id( $data['propertyID'] ),
+			$request
+		);
 	}
 
 	/**

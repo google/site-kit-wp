@@ -22,7 +22,11 @@
 import DashboardNavigation from './';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { CONTEXT_MAIN_DASHBOARD_MONETIZATION } from '@/js/googlesitekit/widgets/default-contexts';
+import {
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
@@ -35,6 +39,7 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 function Template( { setupRegistry, viewContext, ...args } ) {
 	return (
@@ -129,6 +134,89 @@ LoadingDashboardNavigation.args = {
 			new RegExp( '^/google-site-kit/v1/core/user/data/key-metrics' )
 		);
 	},
+};
+
+export const WithKeyMetrics = Template.bind( {} );
+WithKeyMetrics.storyName = 'With Key Metrics';
+WithKeyMetrics.args = {
+	setupRegistry: ( registry ) => {
+		setupDefaultChips( registry );
+
+		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'publish_blog' ],
+				scope: 'site',
+			},
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [
+				KM_ANALYTICS_NEW_VISITORS,
+				KM_ANALYTICS_TOP_CATEGORIES,
+			],
+			isWidgetHidden: false,
+		} );
+
+		// Key Metrics
+		registry
+			.dispatch( CORE_WIDGETS )
+			.registerWidgetArea( 'KeyMetricsArea', {
+				title: 'KeyMetrics',
+				subtitle: 'KeyMetrics Widget Area',
+				style: 'composite',
+			} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea(
+				'KeyMetricsArea',
+				CONTEXT_MAIN_DASHBOARD_KEY_METRICS
+			);
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'KeyMetricsWidget', {
+			Component() {
+				return <div>KeyMetrics Widget</div>;
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'KeyMetricsWidget', 'KeyMetricsArea' );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+};
+
+export const WithSiteGoals = Template.bind( {} );
+WithSiteGoals.storyName = 'With Site Goals';
+WithSiteGoals.args = {
+	setupRegistry: ( registry ) => {
+		setupDefaultChips( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+
+		// Site Goals
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'SiteGoalsArea', {
+			title: 'Site Goals',
+			subtitle: 'Site Goals Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea(
+				'SiteGoalsArea',
+				CONTEXT_MAIN_DASHBOARD_SITE_GOALS
+			);
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'SiteGoalsWidget', {
+			Component() {
+				return <div>Site Goals Widget</div>;
+			},
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'SiteGoalsWidget', 'SiteGoalsArea' );
+	},
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 };
 
 export default {

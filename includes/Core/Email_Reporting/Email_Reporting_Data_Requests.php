@@ -167,14 +167,14 @@ class Email_Reporting_Data_Requests {
 		try {
 			$this->maybe_reset_runtime_caches_for_user_change( $user_id );
 
-			$active_modules = $this->modules->get_active_modules();
+			$shareable_modules = $this->modules->get_shareable_modules();
 
 			if ( ! empty( $allowed_module_slugs ) ) {
 				// Flip slugs to keys so we can intersect by module slug.
-				$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
+				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
-			$available_modules = $this->filter_modules_for_user( $active_modules, $user );
+			$available_modules = $this->filter_modules_for_user( $shareable_modules, $user );
 
 			if ( empty( $available_modules ) ) {
 				return array();
@@ -388,15 +388,30 @@ class Email_Reporting_Data_Requests {
 		$allowed = array();
 
 		foreach ( $modules as $slug => $module ) {
-			if ( ! $module->is_connected() || $module->is_recoverable() ) {
+			if ( $module->is_recoverable() ) {
 				continue;
 			}
 
+			// Module owner; data fetch uses their own (= owner) tokens.
+			if ( $user->ID === $this->get_module_owner_id( $slug ) ) {
+				$allowed[ $slug ] = $module;
+				continue;
+			}
+
+			// Recipient's role is in the module's shared roles; the data fetch
+			// resolves to the owner's OAuth client in Module::get_oauth_client_for_datapoint(),
+			// matching the dashboard-sharing path. Applies to any role (editor,
+			// admin, etc.) whose role is in sharedRoles.
+			if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				$allowed[ $slug ] = $module;
+				continue;
+			}
+
+			// Admin not in shared roles; preserves the authenticated-admin-with-
+			// own-Google path: preflight with the recipient's own tokens and only
+			// include the module if they personally have access.
 			if ( user_can( $user, Permissions::MANAGE_OPTIONS ) ) {
-				if (
-					$module instanceof Module_With_Service_Entity
-					&& $user->ID !== $this->get_module_owner_id( $slug )
-				) {
+				if ( $module instanceof Module_With_Service_Entity ) {
 					$access = $module->check_service_entity_access();
 
 					if ( true !== $access ) {
@@ -405,12 +420,6 @@ class Email_Reporting_Data_Requests {
 				}
 
 				$allowed[ $slug ] = $module;
-				continue;
-			}
-
-			if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
-				$allowed[ $slug ] = $module;
-				continue;
 			}
 		}
 

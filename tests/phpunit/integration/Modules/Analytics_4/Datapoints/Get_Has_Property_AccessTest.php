@@ -117,9 +117,9 @@ class Get_Has_Property_AccessTest extends TestCase {
 		$result = $this->analytics->get_client()->execute( $request );
 
 		$this->assertEquals(
-			'https://analyticsdata.googleapis.com/v1beta/12345:runReport',
+			'https://analyticsdata.googleapis.com/v1beta/properties/12345:runReport',
 			$this->get_report_request->getUri(),
-			'The request should be made to the correct endpoint.'
+			'The request should target the normalized `properties/{id}:runReport` endpoint.'
 		);
 	}
 
