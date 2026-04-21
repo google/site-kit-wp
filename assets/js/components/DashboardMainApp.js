@@ -306,6 +306,11 @@ export default function DashboardMainApp() {
 		isKeyMetricsActive,
 	} );
 
+	const isWelcomeTourActive = [
+		'welcome-with-analytics',
+		'welcome-without-analytics',
+	].includes( currentTour?.slug );
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -333,7 +338,7 @@ export default function DashboardMainApp() {
 					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 				/>
 
-				{ currentTour && (
+				{ ! isWelcomeTourActive && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
