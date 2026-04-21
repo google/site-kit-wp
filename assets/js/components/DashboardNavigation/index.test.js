@@ -40,7 +40,6 @@ import {
 	CONTEXT_MAIN_DASHBOARD_GOALS,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -68,8 +67,6 @@ describe( 'Dashboard Navigation', () => {
 			],
 			isWidgetHidden: false,
 		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 		previousSiteKitUserData = global._googlesitekitUserData;
 	} );
@@ -226,7 +223,7 @@ describe( 'Dashboard Navigation', () => {
 		).toHaveTextContent( 'Speed' );
 	} );
 
-	it( 'shows the Goals chip when goals context is active and detected events are present', async () => {
+	it( 'shows the `ANCHOR_ID_GOALS` chip when Site Goals context is active', async () => {
 		setupDefaultChips( registry );
 
 		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'GoalsArea', {
@@ -245,10 +242,6 @@ describe( 'Dashboard Navigation', () => {
 		registry
 			.dispatch( CORE_WIDGETS )
 			.assignWidget( 'GoalsWidget', 'GoalsArea' );
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'purchase' ] );
 
 		const { container, waitForRegistry } = render(
 			<DashboardNavigation />,
