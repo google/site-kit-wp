@@ -86,6 +86,44 @@ import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
+/**
+ * Determines the last active widget anchor.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  options                      Widget active states.
+ * @param {boolean} options.isMonetizationActive Whether monetization widget is active.
+ * @param {boolean} options.isSpeedActive        Whether speed widget is active.
+ * @param {boolean} options.isContentActive      Whether content widget is active.
+ * @param {boolean} options.isTrafficActive      Whether traffic widget is active.
+ * @param {boolean} options.isKeyMetricsActive   Whether key metrics widget is active.
+ * @return {string|null} The anchor ID of the last active widget.
+ */
+function getLastWidgetAnchor( {
+	isMonetizationActive,
+	isSpeedActive,
+	isContentActive,
+	isTrafficActive,
+	isKeyMetricsActive,
+} ) {
+	if ( isMonetizationActive ) {
+		return ANCHOR_ID_MONETIZATION;
+	}
+	if ( isSpeedActive ) {
+		return ANCHOR_ID_SPEED;
+	}
+	if ( isContentActive ) {
+		return ANCHOR_ID_CONTENT;
+	}
+	if ( isTrafficActive ) {
+		return ANCHOR_ID_TRAFFIC;
+	}
+	if ( isKeyMetricsActive ) {
+		return ANCHOR_ID_KEY_METRICS;
+	}
+	return null;
+}
+
 export default function DashboardMainApp() {
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
@@ -254,22 +292,19 @@ export default function DashboardMainApp() {
 			isInitialWelcomeModalActive()
 		);
 	} );
+	const currentTour = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentTour()
+	);
 
 	useMonitorInternetConnection();
 
-	let lastWidgetAnchor = null;
-
-	if ( isMonetizationActive ) {
-		lastWidgetAnchor = ANCHOR_ID_MONETIZATION;
-	} else if ( isSpeedActive ) {
-		lastWidgetAnchor = ANCHOR_ID_SPEED;
-	} else if ( isContentActive ) {
-		lastWidgetAnchor = ANCHOR_ID_CONTENT;
-	} else if ( isTrafficActive ) {
-		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
-	} else if ( isKeyMetricsActive ) {
-		lastWidgetAnchor = ANCHOR_ID_KEY_METRICS;
-	}
+	const lastWidgetAnchor = getLastWidgetAnchor( {
+		isMonetizationActive,
+		isSpeedActive,
+		isContentActive,
+		isTrafficActive,
+		isKeyMetricsActive,
+	} );
 
 	return (
 		<Fragment>
@@ -298,10 +333,12 @@ export default function DashboardMainApp() {
 					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 				/>
 
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-				/>
+				{ currentTour && (
+					<Notifications
+						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
+						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					/>
+				) }
 
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer
