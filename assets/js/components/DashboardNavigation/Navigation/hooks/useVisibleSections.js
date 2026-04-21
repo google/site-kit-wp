@@ -42,13 +42,11 @@ import {
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
 } from '@/js/hooks/useDashboardType';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { useFeature } from '@/js/hooks/useFeature';
 
 export const contexts = {
 	[ DASHBOARD_TYPE_MAIN ]: {
@@ -78,8 +76,6 @@ export default function useVisibleSections() {
 	const dashboardType = useDashboardType();
 	const viewOnlyDashboard = useViewOnly();
 
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
-
 	return useSelect( ( select ) => {
 		const viewableModules = viewOnlyDashboard
 			? select( CORE_USER ).getViewableModules()
@@ -87,11 +83,6 @@ export default function useVisibleSections() {
 
 		const isKeyMetricsWidgetHidden =
 			select( CORE_USER ).isKeyMetricsWidgetHidden();
-
-		const detectedEvents = siteGoalsEnabled
-			? select( MODULES_ANALYTICS_4 ).getDetectedEvents()
-			: [];
-		const hasDetectedEvents = !! detectedEvents?.length;
 
 		const widgetContextOptions = {
 			modules: viewableModules ? viewableModules : undefined,
@@ -104,11 +95,6 @@ export default function useVisibleSections() {
 					section === ANCHOR_ID_KEY_METRICS &&
 					isKeyMetricsWidgetHidden
 				) {
-					return visibleSections;
-				}
-
-				// Skip goals section if no conversion events have been detected.
-				if ( section === ANCHOR_ID_GOALS && ! hasDetectedEvents ) {
 					return visibleSections;
 				}
 
