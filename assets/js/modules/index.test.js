@@ -54,6 +54,7 @@ describe( 'all modules', () => {
 		const filteredComponents = components.filter(
 			( component ) =>
 				component !== 'audience-segmentation' &&
+				component !== 'site-goals' &&
 				component !== 'custom-dimensions-report-options'
 		);
 
