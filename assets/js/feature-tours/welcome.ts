@@ -168,6 +168,7 @@ export function getWelcomeTour( {
 				offset: 0,
 				spotlightPadding: 0,
 				placement: 'top',
+				scrollToTop: true,
 			},
 			{
 				target: '.googlesitekit-widget--searchConsolePopularKeywords',
@@ -185,6 +186,7 @@ export function getWelcomeTour( {
 				offset: 0,
 				spotlightPadding: 0,
 				placement: 'top',
+				scrollToTop: true,
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate, false ),
 		];
@@ -233,6 +235,7 @@ export function getWelcomeTour( {
 				offset: -3,
 				spotlightPadding: 4,
 				placement: 'top-end',
+				scrollToTop: true,
 			},
 			{
 				target: '.googlesitekit-widget--analyticsAllTrafficGA4',
@@ -250,6 +253,7 @@ export function getWelcomeTour( {
 				offset: 35,
 				spotlightPadding: 0,
 				placement: 'top',
+				scrollToTop: true,
 			},
 			{
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
@@ -267,6 +271,7 @@ export function getWelcomeTour( {
 				offset: 14,
 				spotlightPadding: 4,
 				placement: 'top',
+				scrollToTop: true,
 			},
 			{
 				target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
@@ -284,6 +289,7 @@ export function getWelcomeTour( {
 				offset: 25,
 				spotlightPadding: 0,
 				placement: 'top',
+				scrollToTop: true,
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
 		],
