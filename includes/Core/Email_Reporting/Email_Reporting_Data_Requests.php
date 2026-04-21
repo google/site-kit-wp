@@ -392,11 +392,26 @@ class Email_Reporting_Data_Requests {
 				continue;
 			}
 
+			// Module owner; data fetch uses their own (= owner) tokens.
+			if ( $user->ID === $this->get_module_owner_id( $slug ) ) {
+				$allowed[ $slug ] = $module;
+				continue;
+			}
+
+			// Recipient's role is in the module's shared roles; the data fetch
+			// resolves to the owner's OAuth client in Module::get_oauth_client_for_datapoint(),
+			// matching the dashboard-sharing path. Applies to any role (editor,
+			// admin, etc.) whose role is in sharedRoles.
+			if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
+				$allowed[ $slug ] = $module;
+				continue;
+			}
+
+			// Admin not in shared roles; preserves the authenticated-admin-with-
+			// own-Google path: preflight with the recipient's own tokens and only
+			// include the module if they personally have access.
 			if ( user_can( $user, Permissions::MANAGE_OPTIONS ) ) {
-				if (
-					$module instanceof Module_With_Service_Entity
-					&& $user->ID !== $this->get_module_owner_id( $slug )
-				) {
+				if ( $module instanceof Module_With_Service_Entity ) {
 					$access = $module->check_service_entity_access();
 
 					if ( true !== $access ) {
@@ -405,12 +420,6 @@ class Email_Reporting_Data_Requests {
 				}
 
 				$allowed[ $slug ] = $module;
-				continue;
-			}
-
-			if ( user_can( $user, Permissions::READ_SHARED_MODULE_DATA, $slug ) ) {
-				$allowed[ $slug ] = $module;
-				continue;
 			}
 		}
 
