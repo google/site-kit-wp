@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-export const TYPES = {
-	NEW: 'new',
-	SUCCESS: 'success',
-	WARNING: 'warning',
-	INFO: 'info', // Grey background
-	INFO_ALT: 'info-alt', // White background
-	INFO_ALT_2: 'info-alt-2', // Black background
-	ERROR: 'error',
-};
+/**
+ * Notice types that inform how a `<Notice />` component is styled.
+ */
+export const enum TYPES {
+	NEW = 'new',
+	SUCCESS = 'success',
+	WARNING = 'warning',
+	/**
+	 * Grey background, the default for `'info'` notices.
+	 */
+	INFO = 'info',
+	/**
+	 * White background alternative for `'info'` notices.
+	 */
+	INFO_ALT = 'info-alt',
+	/**
+	 * Black background alternative for `'info'` notices.
+	 */
+	INFO_ALT_2 = 'info-alt-2',
+	ERROR = 'error',
+}

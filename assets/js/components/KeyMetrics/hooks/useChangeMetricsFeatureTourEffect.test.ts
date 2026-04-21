@@ -17,9 +17,13 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { renderHook } from 'tests/js/test-utils';
 import {
