@@ -37,6 +37,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { DAY_IN_SECONDS } from '@/js/util';
 import Header from './Header';
@@ -59,6 +60,7 @@ import {
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
+	ANCHOR_ID_SITE_GOALS,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
@@ -86,45 +88,9 @@ import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
-/**
- * Determines the last active widget anchor.
- *
- * @since n.e.x.t
- *
- * @param {Object}  options                      Widget active states.
- * @param {boolean} options.isMonetizationActive Whether monetization widget is active.
- * @param {boolean} options.isSpeedActive        Whether speed widget is active.
- * @param {boolean} options.isContentActive      Whether content widget is active.
- * @param {boolean} options.isTrafficActive      Whether traffic widget is active.
- * @param {boolean} options.isKeyMetricsActive   Whether key metrics widget is active.
- * @return {string|null} The anchor ID of the last active widget.
- */
-function getLastWidgetAnchor( {
-	isMonetizationActive,
-	isSpeedActive,
-	isContentActive,
-	isTrafficActive,
-	isKeyMetricsActive,
-} ) {
-	if ( isMonetizationActive ) {
-		return ANCHOR_ID_MONETIZATION;
-	}
-	if ( isSpeedActive ) {
-		return ANCHOR_ID_SPEED;
-	}
-	if ( isContentActive ) {
-		return ANCHOR_ID_CONTENT;
-	}
-	if ( isTrafficActive ) {
-		return ANCHOR_ID_TRAFFIC;
-	}
-	if ( isKeyMetricsActive ) {
-		return ANCHOR_ID_KEY_METRICS;
-	}
-	return null;
-}
-
 export default function DashboardMainApp() {
+	const siteGoalsEnabled = useFeature( 'siteGoals' );
+
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewOnlyDashboard = useViewOnly();
@@ -238,6 +204,15 @@ export default function DashboardMainApp() {
 		)
 	);
 
+	const isSiteGoalsActive = useSelect( ( select ) =>
+		siteGoalsEnabled
+			? select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+					widgetContextOptions
+			  )
+			: false
+	);
+
 	const isContentActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			CONTEXT_MAIN_DASHBOARD_CONTENT,
@@ -298,18 +273,12 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const lastWidgetAnchor = getLastWidgetAnchor( {
-		isMonetizationActive,
-		isSpeedActive,
-		isContentActive,
-		isTrafficActive,
-		isKeyMetricsActive,
-	} );
-
 	const isWelcomeTourActive = [
 		'welcome-with-analytics',
 		'welcome-without-analytics',
 	].includes( currentTour?.slug );
+
+	const lastWidgetAnchor = getLastWidgetAnchor();
 
 	return (
 		<Fragment>
@@ -363,6 +332,16 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
+				{ siteGoalsEnabled && (
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_SITE_GOALS }
+						slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
+						className={ classnames( {
+							'googlesitekit-widget-context--last':
+								lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
+						} ) }
+					/>
+				) }
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_CONTENT }
 					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
@@ -412,4 +391,26 @@ export default function DashboardMainApp() {
 			<OfflineNotification />
 		</Fragment>
 	);
+
+	function getLastWidgetAnchor() {
+		if ( isMonetizationActive ) {
+			return ANCHOR_ID_MONETIZATION;
+		}
+		if ( isSpeedActive ) {
+			return ANCHOR_ID_SPEED;
+		}
+		if ( isContentActive ) {
+			return ANCHOR_ID_CONTENT;
+		}
+		if ( isSiteGoalsActive ) {
+			return ANCHOR_ID_SITE_GOALS;
+		}
+		if ( isTrafficActive ) {
+			return ANCHOR_ID_TRAFFIC;
+		}
+		if ( isKeyMetricsActive ) {
+			return ANCHOR_ID_KEY_METRICS;
+		}
+		return null;
+	}
 }
