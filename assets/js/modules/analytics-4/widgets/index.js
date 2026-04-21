@@ -748,28 +748,34 @@ export function registerWidgets( widgets ) {
 
 	/*
 	 * Site Goals widgets.
+	 *
+	 * Not registering these widgets when the feature flag is disabled will
+	 * ensure that the new Widget Area and Widget Context for Site Goals, including
+	 * the Navigation chip, will not be rendered when the feature is disabled.
 	 */
-	widgets.registerWidget(
-		'analyticsOnlineStorePerformance',
-		{
-			Component: OnlineStorePerformanceWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-		},
-		[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
-	);
+	if ( isFeatureEnabled( 'siteGoals' ) ) {
+		widgets.registerWidget(
+			'analyticsOnlineStorePerformance',
+			{
+				Component: OnlineStorePerformanceWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
+			[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
+		);
 
-	widgets.registerWidget(
-		'analyticsLeadGenerationPerformance',
-		{
-			Component: LeadGenerationPerformanceWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 2,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-		},
-		[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
-	);
+		widgets.registerWidget(
+			'analyticsLeadGenerationPerformance',
+			{
+				Component: LeadGenerationPerformanceWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
+			[ AREA_MAIN_DASHBOARD_GOALS_PRIMARY ]
+		);
+	}
 }
