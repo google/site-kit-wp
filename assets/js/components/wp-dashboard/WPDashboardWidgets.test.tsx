@@ -23,6 +23,11 @@ import { mocked } from 'jest-mock';
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -40,7 +45,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WPDashboardWidgets from './WPDashboardWidgets';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { type WPDataRegistry } from '@/js/googlesitekit/data';
 
 jest.mock( 'react-use', () => ( {
 	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),

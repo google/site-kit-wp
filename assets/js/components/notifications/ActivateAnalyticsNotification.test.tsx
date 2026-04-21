@@ -23,6 +23,11 @@ import fetchMock from 'fetch-mock';
 import { mocked } from 'jest-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -56,7 +61,7 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 const ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG = 'activate-analytics-notification';
 
 describe( 'ActivateAnalyticsNotification', () => {
-	let registry: ReturnType< typeof createTestRegistry >;
+	let registry: WPDataRegistry;
 
 	const ActivateAnalyticsNotificationComponent =
 		withNotificationComponentProps( ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG )(

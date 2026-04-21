@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from './constants';
@@ -28,7 +33,7 @@ import {
 } from '../../../../../tests/js/utils';
 
 describe( 'core/site urls', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	const adminBarSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/site/data/admin-bar-settings'
