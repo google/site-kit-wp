@@ -52,7 +52,7 @@ const SetupSuccessSubtleNotification: FC<
 	const siwgSettingsURL = useSelect(
 		( select ) =>
 			// @ts-expect-error This store is not yet typed.
-			select( CORE_SITE ).getModuleSettingsURL(
+			select( CORE_SITE ).getModuleSettingsEditURL(
 				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
 			),
 		[]
