@@ -255,7 +255,6 @@ describe( 'Dashboard Navigation', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'siteGoals' ],
 			}
 		);
 		await waitForRegistry();
