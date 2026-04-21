@@ -36,6 +36,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_SITE_GOALS,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_KEY_METRICS,
@@ -52,6 +53,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import useVisibleSections from './hooks/useVisibleSections';
 import NavContentIcon from '@/svg/icons/nav-content-icon.svg';
 import NavKeyMetricsIcon from '@/svg/icons/nav-key-metrics-icon.svg';
+import NavSiteGoalsIcon from '@/svg/icons/nav-site-goals-icon.svg';
 import NavMonetizationIcon from '@/svg/icons/nav-monetization-icon.svg';
 import NavSpeedIcon from '@/svg/icons/nav-speed-icon.svg';
 import NavTrafficIcon from '@/svg/icons/nav-traffic-icon.svg';
@@ -237,6 +239,10 @@ export default function Navigation() {
 		[ ANCHOR_ID_TRAFFIC ]: {
 			label: __( 'Traffic', 'google-site-kit' ),
 			icon: <NavTrafficIcon width="18" height="16" />,
+		},
+		[ ANCHOR_ID_SITE_GOALS ]: {
+			label: __( 'Site goals', 'google-site-kit' ),
+			icon: <NavSiteGoalsIcon width="17" height="17" />,
 		},
 		[ ANCHOR_ID_CONTENT ]: {
 			label: __( 'Content', 'google-site-kit' ),

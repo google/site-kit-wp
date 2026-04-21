@@ -1,7 +1,7 @@
 /**
- * Audience Segmentation settings components.
+ * Site Goals widget components.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +16,5 @@
  * limitations under the License.
  */
 
-export { default as SettingsCardAudiences } from './SettingsCardAudiences';
+export { default as LeadGenerationPerformanceWidget } from './LeadGenerationPerformanceWidget';
+export { default as OnlineStorePerformanceWidget } from './OnlineStorePerformanceWidget';
