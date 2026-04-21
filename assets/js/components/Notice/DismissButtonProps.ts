@@ -1,5 +1,5 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-export const TYPES = {
-	NEW: 'new',
-	SUCCESS: 'success',
-	WARNING: 'warning',
-	INFO: 'info', // Grey background
-	INFO_ALT: 'info-alt', // White background
-	INFO_ALT_2: 'info-alt-2', // Black background
-	ERROR: 'error',
-};
+export interface DismissButtonProps {
+	label?: string;
+	dismissOptions?: {
+		expiresInSeconds?: number;
+		skipHidingFromQueue?: boolean;
+	};
+	onClick?: (
+		event: React.MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	disabled?: boolean;
+	tertiary?: boolean;
+	href?: string;
+	external?: boolean;
+}

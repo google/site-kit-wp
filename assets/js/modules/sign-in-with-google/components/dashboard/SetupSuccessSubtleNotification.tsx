@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -35,15 +30,32 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
+import { ElementType, FC } from 'react';
 
-export default function SetupSuccessSubtleNotification( { id, Notification } ) {
+export interface SetupSuccessSubtleNotificationProps {
+	/**
+	 * Notification component type used to render the notice.
+	 */
+	Notification: ElementType;
+	/**
+	 * Notification ID.
+	 */
+	id: string;
+}
+
+const SetupSuccessSubtleNotification: FC<
+	SetupSuccessSubtleNotificationProps
+> = ( { id, Notification } ) => {
 	const [ , setNotification ] = useQueryArg( 'notification' );
 	const [ , setSlug ] = useQueryArg( 'slug' );
 
-	const siwgSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getModuleSettingsURL(
-			MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-		)
+	const siwgSettingsURL = useSelect(
+		( select ) =>
+			// @ts-expect-error This store is not yet typed.
+			select( CORE_SITE ).getModuleSettingsURL(
+				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+			),
+		[]
 	);
 
 	function onDismiss() {
@@ -88,9 +100,6 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 			/>
 		</Notification>
 	);
-}
-
-SetupSuccessSubtleNotification.propTypes = {
-	id: PropTypes.string.isRequired,
-	Notification: PropTypes.elementType.isRequired,
 };
+
+export default SetupSuccessSubtleNotification;
