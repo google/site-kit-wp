@@ -13,6 +13,7 @@
 	},
 	"dependencies": {
 		"@playwright/test": "^1.59.1",
+		"lodash": "^4.18.1",
 		"mysql2": "^3.21.1"
 	},
 	"devDependencies": {
