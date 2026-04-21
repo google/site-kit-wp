@@ -167,14 +167,14 @@ class Email_Reporting_Data_Requests {
 		try {
 			$this->maybe_reset_runtime_caches_for_user_change( $user_id );
 
-			$active_modules = $this->modules->get_active_modules();
+			$shareable_modules = $this->modules->get_shareable_modules();
 
 			if ( ! empty( $allowed_module_slugs ) ) {
 				// Flip slugs to keys so we can intersect by module slug.
-				$active_modules = array_intersect_key( $active_modules, array_flip( $allowed_module_slugs ) );
+				$shareable_modules = array_intersect_key( $shareable_modules, array_flip( $allowed_module_slugs ) );
 			}
 
-			$available_modules = $this->filter_modules_for_user( $active_modules, $user );
+			$available_modules = $this->filter_modules_for_user( $shareable_modules, $user );
 
 			if ( empty( $available_modules ) ) {
 				return array();
@@ -388,7 +388,7 @@ class Email_Reporting_Data_Requests {
 		$allowed = array();
 
 		foreach ( $modules as $slug => $module ) {
-			if ( ! $module->is_connected() || $module->is_recoverable() ) {
+			if ( $module->is_recoverable() ) {
 				continue;
 			}
 
