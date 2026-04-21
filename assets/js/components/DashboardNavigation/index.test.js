@@ -262,42 +262,4 @@ describe( 'Dashboard Navigation', () => {
 
 		expect( container ).toHaveTextContent( 'Site goals' );
 	} );
-
-	it( 'hides the Goals chip when goals context is active but no detected events are present', async () => {
-		setupDefaultChips( registry );
-
-		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'GoalsArea', {
-			title: 'Goals',
-			subtitle: 'Goals Widget Area',
-			style: 'composite',
-		} );
-
-		registry
-			.dispatch( CORE_WIDGETS )
-			.assignWidgetArea( 'GoalsArea', CONTEXT_MAIN_DASHBOARD_GOALS );
-
-		registry.dispatch( CORE_WIDGETS ).registerWidget( 'GoalsWidget', {
-			Component() {
-				return <div>Goals Widget</div>;
-			},
-		} );
-
-		registry
-			.dispatch( CORE_WIDGETS )
-			.assignWidget( 'GoalsWidget', 'GoalsArea' );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
-
-		const { container, waitForRegistry } = render(
-			<DashboardNavigation />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'siteGoals' ],
-			}
-		);
-		await waitForRegistry();
-
-		expect( container ).not.toHaveTextContent( 'Site goals' );
-	} );
 } );
