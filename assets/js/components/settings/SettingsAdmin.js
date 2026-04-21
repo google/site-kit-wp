@@ -40,7 +40,7 @@ import SettingsCardEmailReporting from './SettingsCardEmailReporting';
 import SettingsPlugin from './SettingsPlugin';
 import ConnectedIcon from '@/svg/icons/connected.svg';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import SettingsCardVisitorGroups from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardVisitorGroups';
+import SettingsCardAudiences from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences';
 import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SettingsAdmin() {
@@ -156,7 +156,7 @@ export default function SettingsAdmin() {
 
 			{ ( isAnalyticsConnected || !! configuredAudiences ) && (
 				<Cell size={ 12 }>
-					<SettingsCardVisitorGroups />
+					<SettingsCardAudiences />
 				</Cell>
 			) }
 

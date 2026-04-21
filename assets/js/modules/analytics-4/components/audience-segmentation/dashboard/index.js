@@ -18,8 +18,8 @@
 
 export { default as AudienceErrorModal } from './AudienceErrorModal';
 export { default as AudienceSegmentationErrorWidget } from './AudienceSegmentationErrorWidget';
-export { default as AudienceSegmentationIntroductoryOverlayNotification } from './AudienceSegmentationIntroductoryOverlayNotification';
-export { default as AudienceSegmentationSetupCTABanner } from './AudienceSegmentationSetupCTABanner';
+export { default as IntroductoryOverlayNotification } from './IntroductoryOverlayNotification';
+export { default as SetupCTABanner } from './SetupCTABanner';
 export { default as AudienceTilesWidget } from './AudienceTilesWidget';
 export { default as AudienceSelectionPanel } from './AudienceSelectionPanel';
 export { default as AudienceAreaFooter } from './AudienceAreaFooter';
