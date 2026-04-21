@@ -27,6 +27,7 @@ import { renderHook } from '../../../../../../tests/js/test-utils';
 import useVisibleSections, { contexts } from './useVisibleSections';
 import {
 	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_GOALS,
 	ANCHOR_ID_KEY_METRICS,
 	ANCHOR_ID_SPEED,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -35,6 +36,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import {
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_GOALS,
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
@@ -46,10 +48,6 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import {
-	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
 
 function provideWidgetContexts( registry, widgetContexts = [] ) {
 	const mapContextToModule = {
@@ -58,6 +56,7 @@ function provideWidgetContexts( registry, widgetContexts = [] ) {
 			MODULE_SLUG_ANALYTICS_4,
 			MODULE_SLUG_SEARCH_CONSOLE,
 		],
+		[ CONTEXT_MAIN_DASHBOARD_GOALS ]: [ MODULE_SLUG_ANALYTICS_4 ],
 		[ CONTEXT_MAIN_DASHBOARD_CONTENT ]: [
 			MODULE_SLUG_ANALYTICS_4,
 			MODULE_SLUG_SEARCH_CONSOLE,
@@ -112,14 +111,9 @@ describe( 'useVisibleSections', () => {
 			Object.values( contexts[ VIEW_CONTEXT_MAIN_DASHBOARD ] )
 		);
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
-
 		const { result } = await renderHook( () => useVisibleSections(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'siteGoals' ],
 		} );
 
 		expect( result.current ).toEqual(
@@ -133,10 +127,6 @@ describe( 'useVisibleSections', () => {
 			isWidgetHidden: true,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( CONVERSION_REPORTING_ECOMMERCE_EVENTS );
-
 		provideWidgetContexts(
 			registry,
 			Object.values( contexts[ VIEW_CONTEXT_MAIN_DASHBOARD ] )
@@ -145,7 +135,6 @@ describe( 'useVisibleSections', () => {
 		const { result } = await renderHook( () => useVisibleSections(), {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'siteGoals' ],
 		} );
 
 		expect( result.current ).toEqual(
@@ -221,6 +210,7 @@ describe( 'useVisibleSections', () => {
 
 		expect( result.current ).toEqual( [
 			ANCHOR_ID_KEY_METRICS,
+			ANCHOR_ID_GOALS,
 			ANCHOR_ID_SPEED,
 		] );
 	} );
