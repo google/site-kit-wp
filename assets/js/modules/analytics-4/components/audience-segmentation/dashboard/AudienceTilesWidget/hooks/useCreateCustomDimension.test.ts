@@ -22,6 +22,11 @@
 import fetchMock from 'fetch-mock';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -32,7 +37,6 @@ import {
 	provideUserAuthentication,
 	renderHook,
 } from '../../../../../../../../../tests/js/test-utils';
-
 import useCreateCustomDimension from './useCreateCustomDimension';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -47,8 +51,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 describe( 'useCreateCustomDimension', () => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- registry type is not typed yet.
-	let registry: any;
+	let registry: WPDataRegistry;
 
 	const propertyID = '12345';
 
