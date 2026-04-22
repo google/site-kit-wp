@@ -87,6 +87,7 @@ import {
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
+import { WELCOME_TOUR } from './setup/constants';
 
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
@@ -267,16 +268,17 @@ export default function DashboardMainApp() {
 			isInitialWelcomeModalActive()
 		);
 	} );
-	const currentTour = useSelect( ( select ) =>
-		select( CORE_USER ).getCurrentTour()
-	);
 
 	useMonitorInternetConnection();
 
-	const isWelcomeTourActive = [
-		'welcome-with-analytics',
-		'welcome-without-analytics',
-	].includes( currentTour?.slug );
+	const isWelcomeTourActive = useSelect( ( select ) => {
+		const currentTour = select( CORE_USER ).getCurrentTour();
+
+		return [
+			WELCOME_TOUR.WITHOUT_ANALYTICS,
+			WELCOME_TOUR.WITH_ANALYTICS,
+		].includes( currentTour?.slug );
+	} );
 
 	const lastWidgetAnchor = getLastWidgetAnchor();
 

@@ -19,3 +19,8 @@
 export const ANALYTICS_NOTICE_FORM_NAME = 'connect-analytics-setup-splash';
 export const ANALYTICS_NOTICE_CHECKBOX = 'analytics-setup-opt-in';
 export const SHARED_DASHBOARD_SPLASH_ITEM_KEY = 'shared_dashboard_splash';
+
+export const WELCOME_TOUR = {
+	WITH_ANALYTICS: 'welcome-with-analytics',
+	WITHOUT_ANALYTICS: 'welcome-without-analytics',
+};
