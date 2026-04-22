@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * Internal dependencies
  */
 import {
@@ -52,9 +47,9 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import WelcomeModal from './WelcomeModal';
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import * as tracking from '@/js/util/tracking';
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

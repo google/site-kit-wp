@@ -31,11 +31,12 @@ import { FC, ElementType } from 'react';
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { TYPES } from '@/js/components/Notice/constants';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface OnboardingActionRequiredProps {
 	id: string;
 	Notification: ElementType;
-	gaTrackingEventArgs: Record< string, string >;
+	gaTrackingEventArgs: GATrackingEventArgs;
 	dismissNotice: () => void;
 	onCTAClick: () => void;
 }
@@ -49,7 +50,6 @@ const OnboardingActionRequired: FC< OnboardingActionRequiredProps > = ( {
 } ) => {
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ TYPES.WARNING }
 				notificationID={ id }

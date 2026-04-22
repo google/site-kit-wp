@@ -32,12 +32,15 @@ const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-siwg'
 )( SetupSuccessSubtleNotification );
 
+// @ts-ignore Stories are not yet properly typed.
 function Template( args ) {
 	return <NotificationWithComponentProps { ...args } />;
 }
 
 export const Default = Template.bind( {} );
+// @ts-ignore Stories are not yet properly typed.
 Default.storyName = 'SetupSuccessSubtleNotification';
+// @ts-ignore Stories are not yet properly typed.
 Default.parameters = {
 	query: {
 		notification: 'authentication_success',

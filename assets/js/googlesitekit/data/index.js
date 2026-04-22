@@ -46,25 +46,30 @@ import { createReducer } from './create-reducer';
 
 /**
  * @since 1.166.0
+ * @since n.e.x.t Updated types to include `registerGenericStore` function.
  *
  * @typedef {Object} WPDataRegistry
- * @property {Function} registerStore Given a namespace key and settings
- *                                    object, registers a new namespace
- *                                    store.
- * @property {Function} subscribe     Given a function callback, invokes
- *                                    the callback on any change to state
- *                                    within any registered store.
- * @property {Function} select        Given a namespace key, returns an
- *                                    object of the store's registered
- *                                    selectors.
- * @property {Function} dispatch      Given a namespace key, returns an
- *                                    object of the store's registered
- *                                    action dispatchers.
- * @property {Function} resolveSelect Given a namespace key, returns an
- *                                    object containing the store's
- *                                    selectors modified so that they return
- *                                    promises that resolve to their eventual
- *                                    values, after any resolvers have run.
+ * @property {Function} registerGenericStore Given a namespace key and settings
+ *                                           object, registers a new generic
+ *                                           store.
+ * @property {Function} registerStore        Given a namespace key and settings
+ *                                           object, registers a new namespace
+ *                                           store.
+ * @property {Function} subscribe            Given a function callback, invokes
+ *                                           the callback on any change to state
+ *                                           within any registered store.
+ * @property {Function} select               Given a namespace key, returns an
+ *                                           object of the store's registered
+ *                                           selectors.
+ * @property {Function} dispatch             Given a namespace key, returns an
+ *                                           object of the store's registered
+ *                                           action dispatchers.
+ * @property {Function} resolveSelect        Given a namespace key, returns an
+ *                                           object containing the store's
+ *                                           selectors modified so that they
+ *                                           return promises that resolve to
+ *                                           their eventual values, after any
+ *                                           resolvers have run.
  */
 
 /**

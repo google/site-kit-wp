@@ -40,6 +40,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
+	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
@@ -55,7 +56,7 @@ export const selectors = {
 	 *
 	 * @param {Object}               state  Data store's state.
 	 * @param {string|Array<string>} events Conversion reporting events to check.
-	 * @return {(boolean|undefined)} True if all provided custom dimensions are available, otherwise false. Undefined if available custom dimensions are not loaded yet.
+	 * @return {(boolean|undefined)} True if all provided custom dimensions are available, otherwise false. Undefined if detected events are not loaded yet.
 	 */
 	hasConversionReportingEvents: createRegistrySelector(
 		( select ) => ( state, events ) => {
@@ -65,12 +66,46 @@ export const selectors = {
 			const detectedEvents =
 				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
 			if ( ! detectedEvents?.length ) {
 				return false;
 			}
 
 			return eventsToCheck.some( ( event ) =>
 				detectedEvents.includes( event )
+			);
+		}
+	),
+
+	/**
+	 * Checks if any ecommerce conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True if any ecommerce conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasEcommerceConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS
+			);
+		}
+	),
+
+	/**
+	 * Checks if any lead conversion reporting events have been detected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} True if any lead conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
+	 */
+	hasLeadConversionReportingEvents: createRegistrySelector(
+		( select ) => () => {
+			return select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+				CONVERSION_REPORTING_LEAD_EVENTS
 			);
 		}
 	),
