@@ -26,6 +26,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { WELCOME_TOUR } from '@/js/components/setup/constants';
 
 /**
  * Gets the dashboard sharing step configuration based on user context.
@@ -194,7 +195,7 @@ export function getWelcomeTour( {
 		}
 
 		return {
-			slug: 'welcome-without-analytics',
+			slug: WELCOME_TOUR.WITHOUT_ANALYTICS,
 			isRepeatable: true,
 			contexts: [
 				VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -207,7 +208,7 @@ export function getWelcomeTour( {
 	}
 
 	return {
-		slug: 'welcome-with-analytics',
+		slug: WELCOME_TOUR.WITH_ANALYTICS,
 		isRepeatable: true,
 		contexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
