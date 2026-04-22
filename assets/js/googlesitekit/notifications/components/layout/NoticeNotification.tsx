@@ -22,16 +22,30 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { Grid, Cell, Row } from '@/js/material-components';
-import propTypes from 'prop-types';
+import { FC, MouseEvent, ReactNode } from 'react';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
+import { DismissButtonProps } from '@/js/components/Notice/DismissButtonProps';
+import { TYPES } from '@/js/components/Notice/constants';
 
-export default function NoticeNotification( {
+interface NoticeNotificationProps {
+	notificationID: string;
+	children?: ReactNode;
+	title?: ReactNode;
+	description?: ReactNode;
+	dismissButton?: DismissButtonProps;
+	ctaButton?: Record< string, unknown >;
+	gaTrackingEventArgs?: GATrackingEventArgs;
+	type: TYPES;
+}
+
+const NoticeNotification: FC< NoticeNotificationProps > = ( {
 	notificationID,
 	children,
 	dismissButton,
 	ctaButton,
 	gaTrackingEventArgs,
 	...props
-} ) {
+} ) => {
 	const trackEvents = useNotificationEvents(
 		notificationID,
 		gaTrackingEventArgs?.category
@@ -39,7 +53,9 @@ export default function NoticeNotification( {
 
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	async function handleDismissWithTrackEvent( event ) {
+	async function handleDismissWithTrackEvent(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
 		await dismissButton?.onClick?.( event );
 		trackEvents.dismiss(
 			gaTrackingEventArgs?.label,
@@ -50,25 +66,32 @@ export default function NoticeNotification( {
 		} );
 	}
 
-	async function handleCTAClickWithTrackEvent( event ) {
+	async function handleCTAClickWithTrackEvent(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
 		trackEvents.confirm(
 			gaTrackingEventArgs?.label,
 			gaTrackingEventArgs?.value
 		);
 
+		// @ts-ignore TODO: Add types for the `ctaButton` prop.
 		await ctaButton?.onClick?.( event );
 
 		if ( ctaButton?.dismissOnClick ) {
 			dismissNotification( notificationID, {
+				// @ts-ignore TODO: Add types for the `ctaButton` prop.
 				...ctaButton?.dismissOptions,
 			} );
 		}
 	}
 
 	return (
+		/* @ts-expect-error `<Grid>` component is not yet typed. */
 		<Grid>
+			{ /* @ts-expect-error `<Row>` component is not yet typed. */ }
 			<Row>
 				<Cell size={ 12 } alignMiddle>
+					{ /* @ts-expect-error `<Notice>` component is not yet typed. */ }
 					<Notice
 						dismissButton={ {
 							...dismissButton,
@@ -86,12 +109,6 @@ export default function NoticeNotification( {
 			</Row>
 		</Grid>
 	);
-}
-
-NoticeNotification.propTypes = {
-	notificationID: propTypes.string.isRequired,
-	children: propTypes.node,
-	dismissButton: propTypes.oneOfType( [ propTypes.bool, propTypes.object ] ),
-	ctaButton: propTypes.object,
-	gaTrackingEventArgs: propTypes.object,
 };
+
+export default NoticeNotification;
