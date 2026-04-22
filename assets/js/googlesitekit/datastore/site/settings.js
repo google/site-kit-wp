@@ -120,7 +120,7 @@ const baseSelectors = {
 	 * @since 1.39.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} Admin bar setting if they have been already resolved, otherwise undefined.
+	 * @return {Object} Admin bar setting if they have been already resolved, otherwise undefined.
 	 */
 	getAdminBarSettings( state ) {
 		return state.adminBarSettings;

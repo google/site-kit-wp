@@ -125,7 +125,7 @@ export class WordPressCookies {
 	/**
 	 * Gets an annotation from the test info.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param {string} name The name of the annotation to get.
 	 * @return {string | undefined} The annotation value, or undefined if not found.

@@ -106,7 +106,7 @@ class Initiator_Task {
 	 *
 	 * @since 1.167.0
 	 * @since 1.174.0 Made method static.
-	 * @since n.e.x.t Switched to calendar-aware period resolution.
+	 * @since 1.177.0 Switched to calendar-aware period resolution.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @param int    $timestamp Base timestamp.
@@ -139,7 +139,7 @@ class Initiator_Task {
 	/**
 	 * Builds reference dates for a weekly reporting period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
 	 * @return array Reference date payload.
@@ -173,7 +173,7 @@ class Initiator_Task {
 	/**
 	 * Builds reference dates for a monthly reporting period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
 	 * @return array Reference date payload.
@@ -200,7 +200,7 @@ class Initiator_Task {
 	/**
 	 * Builds reference dates for a quarterly reporting period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param DateTimeImmutable $date Trigger date normalised to midnight.
 	 * @return array Reference date payload.

@@ -17,9 +17,13 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import {
 	createTestRegistry,
 	fireEvent,

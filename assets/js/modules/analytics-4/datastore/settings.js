@@ -51,7 +51,6 @@ import {
 	WEBDATASTREAM_CREATE,
 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { isValidConversionID } from '@/js/modules/ads/utils/validation';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
@@ -65,8 +64,6 @@ export const INVARIANT_INVALID_WEBDATASTREAM_NAME =
 	'a valid web data stream name is required to submit changes';
 export const INVARIANT_WEBDATASTREAM_ALREADY_EXISTS =
 	'a web data stream with the same name already exists';
-export const INVARIANT_INVALID_ADS_CONVERSION_ID =
-	'a valid ads adsConversionID is required to submit changes';
 
 const store = {
 	selectors: {
@@ -292,7 +289,6 @@ export function validateCanSubmitChanges( select ) {
 		getPropertyID,
 		getWebDataStreamID,
 		doesWebDataStreamExist,
-		getAdsConversionID,
 	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	invariant( haveAnyGA4SettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
@@ -331,15 +327,6 @@ export function validateCanSubmitChanges( select ) {
 				INVARIANT_WEBDATASTREAM_ALREADY_EXISTS
 			);
 		}
-	}
-
-	const adsConversionID = getAdsConversionID();
-
-	if ( adsConversionID !== '' ) {
-		invariant(
-			isValidConversionID( adsConversionID ),
-			INVARIANT_INVALID_ADS_CONVERSION_ID
-		);
 	}
 }
 

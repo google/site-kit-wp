@@ -67,7 +67,7 @@ final class Client_Factory {
 		/**
 		 * Filters the Guzzle HTTP client configuration used for Google API requests.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.177.0
 		 *
 		 * @param array $http_client_config Guzzle HTTP client configuration array.
 		 */

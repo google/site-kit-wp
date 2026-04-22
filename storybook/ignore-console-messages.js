@@ -27,17 +27,9 @@ export const IGNORE_CONSOLE_MESSAGES = {
 		// Caused by Storyshots navigation during story render cycles.
 		/Execution context was destroyed, most likely because of a navigation/,
 
-		// TEMPORARY: allow known errors tracked in #11324 to unblock merging.
-		// TODO: In ticket #11324: Remove each of these as the underlying issues are fixed.
-		/No fallback response defined for GET to \/google-site-kit/,
-		/Fetch API cannot load file/,
-		/Could not get a valid response from the server/, // Formerly "You are probably offline"
-		/TypeError:\s+notifications\.reduce is not a function/,
-		/Error:\s+`initialFocus`\s+as selector refers to no known node/,
-		/TypeError:\s+Cannot read (?:properties|property) of undefined \(reading 'includes'\)/,
-		/Invariant Violation:\s+Options for Search Console report must be an object\./,
-		/Failed to load resource: the server responded with a status of 400/,
-		/\[GSI_LOGGER\]: The given origin is not allowed for the given client ID/, // Sign in with Google button preview on Modules/SignInWithGoogle/Settings/SettingsEdit we may want to continue to ignore this if it can't be fixed.
+		// Sign in with Google button preview on Modules/SignInWithGoogle/Settings/SettingsEdit;
+		// we may want to continue to ignore this if it can't be fixed.
+		/\[GSI_LOGGER\]: The given origin is not allowed for the given client ID/,
 	],
 
 	// Expected errors allowed only for specific stories which are there to

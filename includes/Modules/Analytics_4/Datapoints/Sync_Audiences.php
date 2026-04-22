@@ -22,7 +22,7 @@ use WP_Error;
 /**
  * Class for syncing audiences.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -39,7 +39,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Analytics settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -47,7 +47,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Audience utilities instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Audience_Utilities
 	 */
 	private $audience_utilities;
@@ -55,7 +55,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -69,7 +69,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -102,7 +102,7 @@ class Sync_Audiences extends Shareable_Datapoint implements Executable_Datapoint
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

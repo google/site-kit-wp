@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -25,7 +30,6 @@ import {
 	provideUserCapabilities,
 	renderHook,
 } from '../../../../tests/js/test-utils';
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import { useWelcomeTour } from './useWelcomeTour';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';

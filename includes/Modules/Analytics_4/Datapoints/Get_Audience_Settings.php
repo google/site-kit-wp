@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 /**
  * Class for the audience settings retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Audience_Settings extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Audience settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 * @var Audience_Settings
 	 */
 	private $audience_settings;
@@ -36,7 +36,7 @@ class Get_Audience_Settings extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -48,7 +48,7 @@ class Get_Audience_Settings extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Closure that returns audience settings.
@@ -65,7 +65,7 @@ class Get_Audience_Settings extends Shareable_Datapoint implements Executable_Da
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

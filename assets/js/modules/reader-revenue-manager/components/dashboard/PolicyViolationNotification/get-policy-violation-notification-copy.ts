@@ -37,7 +37,7 @@ export interface NotificationCopy {
 	title: string;
 	description: string;
 	ctaLabel: string;
-	type: string;
+	type: TYPES;
 }
 
 /**

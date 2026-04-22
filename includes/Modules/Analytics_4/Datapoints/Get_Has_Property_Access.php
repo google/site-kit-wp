@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
+use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportRequest as Google_Service_AnalyticsData_RunReportRequest;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension as Google_Service_AnalyticsData_Dimension;
@@ -22,7 +23,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Metric as Google_S
 /**
  * Has property access datapoint.
  *
- * @since n.e.x.t
+ * @since 1.177.0
  * @access private
  * @ignore
  */
@@ -31,7 +32,7 @@ class Get_Has_Property_Access extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -59,13 +60,16 @@ class Get_Has_Property_Access extends Datapoint implements Executable_Datapoint 
 		);
 		$request->setLimit( 0 );
 
-		return $this->get_service()->properties->runReport( $data['propertyID'], $request );
+		return $this->get_service()->properties->runReport(
+			Analytics_4::normalize_property_id( $data['propertyID'] ),
+			$request
+		);
 	}
 
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data     Data request object.

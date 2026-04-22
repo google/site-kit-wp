@@ -24,6 +24,11 @@ import { mocked } from 'jest-mock';
 import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -62,7 +67,6 @@ import {
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { type WPDataRegistry } from '@/js/googlesitekit/data';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	mockLocation();
@@ -144,9 +148,8 @@ describe( 'SearchFunnelWidgetGA4', () => {
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules(
-				coreModulesFixture.filter(
-					( { slug }: { slug: string } ) =>
-						slug !== MODULE_SLUG_ANALYTICS_4
+				( coreModulesFixture as { slug: string }[] ).filter(
+					( { slug } ) => slug !== MODULE_SLUG_ANALYTICS_4
 				)
 			);
 

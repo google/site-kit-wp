@@ -17,7 +17,13 @@
 /**
  * External dependencies
  */
-import { test, Response, type Page, type TestInfo } from '@playwright/test';
+import {
+	test,
+	Response,
+	type Page,
+	type TestInfo,
+	type TestStepInfo,
+} from '@playwright/test';
 
 /**
  * Internal dependencies
@@ -252,7 +258,7 @@ export class WordPress {
 	/**
 	 * Navigates to the Site Kit dashboard.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param  hash The hash to navigate to.
 	 * @return {Promise<Response|null>} A promise that resolves when the page is navigated to.
@@ -297,7 +303,7 @@ export class WordPress {
 	/**
 	 * Makes a request to the WordPress REST API using the browser's fetch.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param  method HTTP method (e.g. 'GET', 'POST').
 	 * @param  route  REST route without leading slash (e.g. 'sitekit-e2e/v1/my-endpoint').
@@ -320,5 +326,22 @@ export class WordPress {
 				init,
 			}
 		);
+	}
+
+	/**
+	 * Declares a test step that is shown in the report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  title Step name.
+	 * @param  body  Step body.
+	 * @return {Promise<void>} A promise that resolves when the step is finished.
+	 */
+	async step(
+		title: string,
+		body: ( step: TestStepInfo ) => Promise< void >
+	) {
+		await this.page.screencast.showChapter( title );
+		await test.step( title, body );
 	}
 }

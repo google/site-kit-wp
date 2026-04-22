@@ -34,7 +34,7 @@ export class EmailReportingPage {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param page The page.
 	 */
@@ -46,7 +46,7 @@ export class EmailReportingPage {
 	/**
 	 * Open the email reporting settings page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Promise<void>} The promise that resolves when the email reporting settings page is opened.
 	 */
@@ -60,7 +60,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the panel title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The panel title.
 	 */
@@ -73,7 +73,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the current subscription badge.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The current subscription badge.
 	 */
@@ -86,7 +86,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the frequency radio button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param frequency The frequency to get the radio button for.
 	 * @return          The frequency radio button.
@@ -98,7 +98,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the subscribe button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The subscribe button.
 	 */
@@ -112,7 +112,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the unsubscribe button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The unsubscribe button.
 	 */
@@ -123,7 +123,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the update settings button.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The update settings button.
 	 */
@@ -134,7 +134,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the success notice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Locator} The success notice.
 	 */
@@ -147,7 +147,7 @@ export class EmailReportingPage {
 	/**
 	 * Subscribe to email reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Promise<void>} The promise that resolves when the email reports are subscribed to.
 	 */
@@ -158,7 +158,7 @@ export class EmailReportingPage {
 	/**
 	 * Select the frequency for email reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param  frequency The frequency to select.
 	 * @return {Promise<void>} The promise that resolves when the frequency is selected.
@@ -171,7 +171,7 @@ export class EmailReportingPage {
 	/**
 	 * Verify the state of the email reporting settings panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @param  options The options to verify.
 	 * @return {Promise<void>} The promise that resolves when the email reporting settings panel is verified.
@@ -240,7 +240,7 @@ export class EmailReportingPage {
 	/**
 	 * Verify the subscription success notice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.177.0
 	 *
 	 * @return {Promise<void>} The promise that resolves when the subscription success notice is verified.
 	 */
