@@ -1,0 +1,322 @@
+/**
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { render } from '../../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../../../tests/js/utils';
+import {
+	getWidgetComponentProps,
+	type WidgetComponentProps,
+} from '@/js/googlesitekit/widgets/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
+
+describe( 'LeadGenerationPerformanceWidget', () => {
+	let registry: WPDataRegistry;
+	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
+		'analyticsLeadGenerationPerformance'
+	);
+
+	function buildReportOptions(
+		dates: Record< string, unknown >,
+		leadEvents: string[]
+	) {
+		return {
+			leadEventsReport: {
+				...dates,
+				metrics: [ { name: 'eventCount' } ],
+				dimensions: [ 'eventName' ],
+				dimensionFilters: {
+					eventName: {
+						filterType: 'inListFilter',
+						value: leadEvents,
+					},
+				},
+				reportID:
+					'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
+			},
+			sessionsReport: {
+				...dates,
+				metrics: [ { name: 'sessions' } ],
+				reportID:
+					'analytics-4_lead-generation-performance-widget_widget_sessionsReportOptions',
+			},
+		};
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
+	} );
+
+	it( 'renders WidgetNull when no lead events are detected', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'renders WidgetNull when detected events array is empty', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'renders PrimaryActionSection with a single detected lead event', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const { leadEventsReport, sessionsReport } = buildReportOptions(
+			dates,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ]
+		);
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, sessionsReport );
+
+		const { container, getAllByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelectorAll( '.googlesitekit-km-widget-tile' )
+		).toHaveLength( 2 );
+		expect( getAllByText( 'Total form completions' ) ).toHaveLength( 2 );
+	} );
+
+	it( 'aggregates event counts across multiple detected lead events', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const { leadEventsReport, sessionsReport } = buildReportOptions(
+			dates,
+			[
+				ENUM_CONVERSION_EVENTS.CONTACT,
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+			]
+		);
+
+		// Provide mock report data with multiple event rows per date range.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '30' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '20' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '25' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '15' } ],
+					},
+				],
+			},
+			{ options: leadEventsReport }
+		);
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '200' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '180' } ],
+					},
+				],
+			},
+			{ options: sessionsReport }
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ leadEventsReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ sessionsReport ] );
+
+		const { container, getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// currentPrimaryCount = 30 + 20 = 50, currentSessions = 200 → rate = 25%
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect( getByText( '25%' ) ).toBeInTheDocument();
+		// currentPrimaryCount = 50
+		expect( getByText( '50' ) ).toBeInTheDocument();
+	} );
+
+	it( 'computes zero rate when sessions count is zero', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const { leadEventsReport, sessionsReport } = buildReportOptions(
+			dates,
+			[ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ]
+		);
+
+		// Provide empty reports so sessions count is 0.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: leadEventsReport } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: sessionsReport } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ leadEventsReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ sessionsReport ] );
+
+		const { getAllByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// With zero sessions, rate should be 0 = 0%.
+		expect( getAllByText( '0%' ).length ).toBeGreaterThanOrEqual( 1 );
+	} );
+
+	it( 'renders loading state while reports are being resolved', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const { leadEventsReport, sessionsReport } = buildReportOptions(
+			dates,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ]
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ leadEventsReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ sessionsReport ] );
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// Loading preview block should be present.
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+	} );
+} );
