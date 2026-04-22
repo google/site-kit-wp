@@ -110,7 +110,7 @@
 		}
 	}
 
-	@media (width < $bp-tablet) and (height <= 660px) {
+	@media (height < 520px) {
 		.googlesitekit-welcome-modal__graphic {
 			display: none;
 		}

@@ -162,7 +162,7 @@
 		@media (width < $bp-tablet) {
 			.mdc-dialog__container {
 				height: auto;
-				margin: 0 $grid-gap-phone;
+				margin: 0 24px;
 				max-height: calc(100vh - 32px);
 				width: auto;
 			}
