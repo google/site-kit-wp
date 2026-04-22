@@ -26,7 +26,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { WELCOME_TOUR } from '@/js/components/setup/constants';
+import { WELCOME_TOUR } from './constants';
 
 /**
  * Gets the dashboard sharing step configuration based on user context.

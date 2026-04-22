@@ -1,7 +1,7 @@
 /**
  * Setup constants.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
-export const ANALYTICS_NOTICE_FORM_NAME = 'connect-analytics-setup-splash';
-export const ANALYTICS_NOTICE_CHECKBOX = 'analytics-setup-opt-in';
-export const SHARED_DASHBOARD_SPLASH_ITEM_KEY = 'shared_dashboard_splash';
+export const WELCOME_TOUR = {
+	WITH_ANALYTICS: 'welcome-with-analytics',
+	WITHOUT_ANALYTICS: 'welcome-without-analytics',
+};

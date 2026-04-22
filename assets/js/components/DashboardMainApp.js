@@ -87,7 +87,7 @@ import {
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
-import { WELCOME_TOUR } from './setup/constants';
+import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
