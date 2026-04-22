@@ -5,7 +5,7 @@ exports[`WelcomeModal should show the data available variant when Analytics is c
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -84,7 +84,7 @@ exports[`WelcomeModal should show the data available variant when Analytics is n
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -163,7 +163,7 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -242,7 +242,7 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -321,7 +321,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is c
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -392,7 +392,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is n
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
