@@ -17,6 +17,7 @@
 /**
  * External dependencies
  */
+import * as path from 'path';
 import { test as base } from '@playwright/test';
 import { createConnection } from 'mysql2/promise';
 
@@ -24,6 +25,7 @@ import { createConnection } from 'mysql2/promise';
  * Internal dependencies
  */
 import { WordPress, type WordPressArgs } from './wordpress';
+import { getSplashHTML } from './wordpress/splash';
 
 /**
  * Re-export parts of @playwright/test.
@@ -79,8 +81,22 @@ export const test = base.extend< WordPressFixture >( {
 			// Prepare the WordPress environment.
 			await wp.setUp();
 
+			// Show a branded splash screen as the first frame of the screencast.
+			await page.setContent(
+				getSplashHTML( testInfo.titlePath.slice( 1 ).join( ' ' ) )
+			);
+
+			// Start screencast recording.
+			const video = path.join( testInfo.outputDir, 'screencast.webm' );
+			await page.screencast.start( { path: video, quality: 100 } );
+			await page.screencast.showActions( { position: 'top-right' } );
+
 			// Use the WordPress fixture.
 			await use( wp );
+
+			// Finish screencast recording and attach the video to the test.
+			await page.screencast.stop();
+			await testInfo.attach( 'screencast.webm', { path: video } );
 		} finally {
 			// Clean up the WordPress environment.
 			await wp.tearDown();

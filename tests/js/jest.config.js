@@ -39,7 +39,7 @@ module.exports = {
 			],
 			setupFilesAfterEnv: [
 				'<rootDir>/tests/js/jest-matchers',
-				'<rootDir>/tests/js/setup-before-after',
+				'<rootDir>/tests/js/setup-before-after.ts',
 			],
 			testMatch: [
 				'<rootDir>/assets/**/__tests__/**/*.{js,jsx,ts,tsx}',

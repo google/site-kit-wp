@@ -79,7 +79,6 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ type }
 				notificationID={ id }

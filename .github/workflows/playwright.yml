@@ -87,7 +87,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false )
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.action != 'closed' )
     permissions:
       contents: read
     steps:
@@ -188,6 +188,7 @@ jobs:
         run: npm run playwright:env:start
 
       - name: Run tests
+        id: run-tests
         run: npm run test:playwright
         env:
           PLAYWRIGHT_HTML_TITLE: "WordPress ${{ matrix.wp_version }}"
@@ -197,7 +198,7 @@ jobs:
         if: always()
         with:
           name: playwright-report-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]
-          path: tests/playwright/artifacts/
+          path: tests/playwright/artifacts/playwright-html
 
       - name: Set report target directory
         id: report-target
@@ -222,7 +223,11 @@ jobs:
         if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
         run: |
           mkdir -p /tmp/artifact-url
-          echo "- [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
+            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          else
+            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          fi
 
       - name: Upload report URL
         if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
@@ -268,7 +273,7 @@ jobs:
   remove-playwright-reports:
     name: Remove Playwright reports
     runs-on: ubuntu-latest
-    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
     permissions:
       contents: read
       pull-requests: write
@@ -287,3 +292,18 @@ jobs:
           section-content: |
             🎭 **Playwright reports for ${{ github.event.pull_request.head.sha }}:**
             - Reports have been deleted.
+
+  cleanup-artifacts:
+    name: Cleanup temporary artifacts
+    runs-on: ubuntu-latest
+    needs: [playwright-tests, add-comment-to-pr]
+    if: always()
+    permissions:
+      actions: write
+    steps:
+      - name: Delete temporary artifacts
+        uses: geekyeggo/delete-artifact@v6
+        with:
+          name: |
+            plugin
+            artifact-url-wp-*

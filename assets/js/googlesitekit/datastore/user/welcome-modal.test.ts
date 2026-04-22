@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry } from 'tests/js/utils';
@@ -25,7 +30,6 @@ import {
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from './constants';
-import { type WPDataRegistry } from 'googlesitekit-data';
 
 describe( 'core/user welcome modal', () => {
 	let registry: WPDataRegistry;

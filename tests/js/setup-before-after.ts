@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
- * Jest common setup.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +16,9 @@
  */
 
 /**
- * External dependencies
+ * External dependencies.
  */
+import '@testing-library/jest-dom';
 import faker from 'faker';
 import fetchMockJest from 'fetch-mock-jest';
 
@@ -27,12 +27,16 @@ import fetchMockJest from 'fetch-mock-jest';
  */
 import { enabledFeatures } from '../../assets/js/features';
 
+declare global {
+	const fetchMock: typeof fetchMockJest;
+}
+
 // Set fetchMock global so we don't have to import fetchMock in every test.
 // This global is instantiated in tests/js/setup-globals.js.
 // It is re-set here since fetch-mock-jest must be imported during Jest's `setupFilesAfterEnv` or later.
-global.fetchMock = fetchMockJest;
+( global as any ).fetchMock = fetchMockJest;
 // https://www.wheresrhys.co.uk/fetch-mock/docs/legacy-api/Usage/configuration/#overwriteroutes
-global.fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
+( global as any ).fetchMock.config.overwriteRoutes = false; // Appends the new route to the list of routes.
 
 beforeEach( () => {
 	// Use real timers in order to be able to wait for them. This was introduced to support the changes introduced in @wordpress/data 4.23.0

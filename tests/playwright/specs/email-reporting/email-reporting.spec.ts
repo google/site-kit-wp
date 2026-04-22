@@ -48,7 +48,7 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 			} );
 
 			// Trigger the email pipeline to send the weekly report.
-			await test.step( 'Trigger email pipeline', async () => {
+			await wp.step( 'Trigger email pipeline', async () => {
 				const response = await wp.restRequest(
 					'POST',
 					'google-site-kit/v1/e2e/email-reporting/trigger-cron',
@@ -62,7 +62,7 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 			} );
 
 			// Verify the email was sent and has the correct content.
-			await test.step( 'Verify email', async () => {
+			await wp.step( 'Verify email', async () => {
 				const message = await wp.mailpit.waitForMessage();
 				expect( message.Subject ).toContain(
 					'Your weekly Site Kit report'
@@ -98,24 +98,24 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 		};
 
 		// Open the email reporting settings panel.
-		await test.step( 'Open settings page', async () => {
+		await wp.step( 'Open settings page', async () => {
 			await pageObject.openSettings();
 		} );
 
 		// Verify the settings panel state.
-		await test.step( 'Verify settings panel state', async () => {
+		await wp.step( 'Verify settings panel state', async () => {
 			await pageObject.verifyPanelState( initialPanelState );
 		} );
 
 		// Verify the monthly option can be selected.
-		await test.step( 'Set monthly option', async () => {
+		await wp.step( 'Set monthly option', async () => {
 			await pageObject.selectFrequency( 'Monthly' );
 			await pageObject.subscribe();
 			await pageObject.verifySubscriptionSuccess();
 		} );
 
 		// Verify the settings panel state changed.
-		await test.step( 'Verify settings state changed', async () => {
+		await wp.step( 'Verify settings state changed', async () => {
 			await pageObject.verifyPanelState( subscribedPanelState );
 		} );
 	} );
