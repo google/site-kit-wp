@@ -191,7 +191,7 @@ describe( 'createFetchStore store', () => {
 					'FETCH_SAVE_SOME_DATA'
 				);
 				expect( action.throw( error ).value.type ).toEqual(
-					'RECEIVE_ERROR'
+					'SET_ERROR_FOR_SELECTOR'
 				);
 				expect( action.next().value.type ).toEqual(
 					'CATCH_FETCH_SAVE_SOME_DATA'
