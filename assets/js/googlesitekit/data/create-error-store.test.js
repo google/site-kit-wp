@@ -82,30 +82,64 @@ describe( 'createErrorStore store', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'receiveError', () => {
+		describe( 'setErrorForSelector', () => {
 			it( 'requires the error param', () => {
 				expect( () => {
-					dispatch.receiveError();
+					dispatch.setErrorForSelector();
 				} ).toThrow( 'error is required.' );
 			} );
 
-			it( 'requires the baseName param', () => {
+			it( 'requires the selectorName param', () => {
 				expect( () => {
-					dispatch.receiveError( errorNotFound );
-				} ).toThrow( 'baseName is required.' );
+					dispatch.setErrorForSelector( errorNotFound );
+				} ).toThrow( 'selectorName is required.' );
 			} );
 
 			it( 'receives and sets value for an error with `baseName` only', () => {
-				dispatch.receiveError( errorNotFound, baseName, [] );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
 				expect(
-					store.getState().errors[ generateErrorKey( baseName, [] ) ]
+					store.getState().selectorErrors[
+						generateErrorKey( baseName, [] )
+					]
 				).toEqual( errorNotFound );
 			} );
 
 			it( 'receives and sets value for an error with `baseName` and `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, args );
 
-				expect( store.getState().errors ).toHaveProperty(
+				expect( store.getState().selectorErrors ).toHaveProperty(
+					generateErrorKey( baseName, args ),
+					errorNotFound
+				);
+			} );
+		} );
+
+		describe( 'setErrorForAction', () => {
+			it( 'requires the error param', () => {
+				expect( () => {
+					dispatch.setErrorForAction();
+				} ).toThrow( 'error is required.' );
+			} );
+
+			it( 'requires the actionName param', () => {
+				expect( () => {
+					dispatch.setErrorForAction( errorNotFound );
+				} ).toThrow( 'actionName is required.' );
+			} );
+
+			it( 'receives and sets value for an error with `baseName` only', () => {
+				dispatch.setErrorForAction( errorNotFound, baseName, [] );
+				expect(
+					store.getState().actionErrors[
+						generateErrorKey( baseName, [] )
+					]
+				).toEqual( errorNotFound );
+			} );
+
+			it( 'receives and sets value for an error with `baseName` and `args`', () => {
+				dispatch.setErrorForAction( errorNotFound, baseName, args );
+
+				expect( store.getState().actionErrors ).toHaveProperty(
 					generateErrorKey( baseName, args ),
 					errorNotFound
 				);
@@ -114,7 +148,7 @@ describe( 'createErrorStore store', () => {
 
 		describe( 'clearError', () => {
 			it( 'requires the baseName param', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				expect( () => {
 					dispatch.clearError();
@@ -122,7 +156,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'requires the args param to be an array', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				expect( () => {
 					dispatch.clearError( baseName, null );
@@ -130,29 +164,31 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'does not clear the error when called without baseName param', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
-				const errorsBefore = store.getState().errors;
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
+				const selectorErrorsBefore = store.getState().selectorErrors;
 
 				expect( () => {
 					dispatch.clearError();
 				} ).toThrow();
 
-				expect( store.getState().errors ).toEqual( errorsBefore );
+				expect( store.getState().selectorErrors ).toEqual(
+					selectorErrorsBefore
+				);
 			} );
 
 			it( 'requires the same `baseName` and `args` an error was received with to clear it', () => {
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				dispatch.clearError( baseName, [] );
 
-				expect( store.getState().errors ).toHaveProperty(
+				expect( store.getState().selectorErrors ).toHaveProperty(
 					generateErrorKey( baseName, args ),
 					errorForbidden
 				);
 
 				dispatch.clearError( baseName, args );
 
-				expect( store.getState().errors ).not.toHaveProperty(
+				expect( store.getState().selectorErrors ).not.toHaveProperty(
 					generateErrorKey( baseName, args )
 				);
 			} );
@@ -160,35 +196,53 @@ describe( 'createErrorStore store', () => {
 
 		describe( 'clearErrors', () => {
 			it( 'clears all received errors when called with no arguments', () => {
-				dispatch.receiveError( errorNotFound, baseName );
-				dispatch.receiveError( errorForbidden, baseName, [] );
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName );
+				dispatch.setErrorForSelector( errorForbidden, baseName, [] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				dispatch.clearErrors();
 
 				expect( store.getState().error ).toBeUndefined();
-				expect( Object.values( store.getState().errors ) ).toEqual(
-					[]
-				);
+				expect(
+					Object.values( store.getState().selectorErrors )
+				).toEqual( [] );
 			} );
 
 			it( 'clears all received errors for a given `baseName`', () => {
-				dispatch.receiveError( errorNotFound, baseName );
-				dispatch.receiveError( errorForbidden, baseName, [] );
-				dispatch.receiveError( errorForbidden, baseName, args );
-				dispatch.receiveError( errorNotFound, 'otherBaseName', args );
+				dispatch.setErrorForSelector( errorNotFound, baseName );
+				dispatch.setErrorForSelector( errorForbidden, baseName, [] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector(
+					errorNotFound,
+					'otherBaseName',
+					args
+				);
 
 				dispatch.clearErrors( baseName );
 
-				expect( store.getState().errors ).toHaveProperty(
+				expect( store.getState().selectorErrors ).toHaveProperty(
 					generateErrorKey( 'otherBaseName', args ),
 					errorNotFound
 				);
 				// The store should no longer contain errorForbidden as it was the only
 				// error used with the given `baseName`.
 				expect(
-					Object.values( store.getState().errors )
+					Object.values( store.getState().selectorErrors )
 				).not.toContain( errorForbidden );
+			} );
+
+			it( 'clears both selector and action error slices', () => {
+				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
+				dispatch.setErrorForAction( errorForbidden, baseName, args );
+
+				dispatch.clearErrors();
+
+				expect(
+					Object.values( store.getState().selectorErrors )
+				).toEqual( [] );
+				expect(
+					Object.values( store.getState().actionErrors )
+				).toEqual( [] );
 			} );
 		} );
 	} );
@@ -208,7 +262,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error for the given `selectorName` with empty `args` or none', () => {
-				dispatch.receiveError( errorForbidden, baseName, [] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, [] );
 
 				expect( select.getErrorForSelector( baseName ) ).toEqual(
 					errorForbidden
@@ -219,8 +273,8 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error received for the given `selectorName` and `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName, [] );
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				expect( select.getErrorForSelector( baseName, args ) ).toEqual(
 					errorForbidden
@@ -242,7 +296,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error for the given `actionName` with empty `args` or none', () => {
-				dispatch.receiveError( errorForbidden, baseName, [] );
+				dispatch.setErrorForAction( errorForbidden, baseName, [] );
 
 				expect( select.getErrorForAction( baseName ) ).toEqual(
 					errorForbidden
@@ -253,8 +307,8 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error received for the given `actionName` and `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName, [] );
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForAction( errorNotFound, baseName, [] );
+				dispatch.setErrorForAction( errorForbidden, baseName, args );
 
 				expect( select.getErrorForAction( baseName, args ) ).toEqual(
 					errorForbidden
@@ -274,8 +328,8 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns the error received with the same given `baseName` and `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName, [] );
-				dispatch.receiveError( errorForbidden, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, args );
 
 				expect( select.getError( baseName, [] ) ).toEqual(
 					errorNotFound
@@ -292,8 +346,12 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns an array of all errors', () => {
-				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
-				dispatch.receiveError( errorForbidden, baseName, [ 'bar' ] );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'foo',
+				] );
+				dispatch.setErrorForSelector( errorForbidden, baseName, [
+					'bar',
+				] );
 
 				expect( select.getErrors() ).toEqual(
 					expect.arrayContaining( [ errorForbidden, errorNotFound ] )
@@ -301,19 +359,40 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns a list of unique errors, regardless of `args`', () => {
-				dispatch.receiveError( errorNotFound, baseName );
-				dispatch.receiveError( errorNotFound, baseName, [] );
-				dispatch.receiveError( errorNotFound, 'otherBaseName', [] );
-				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
-				dispatch.receiveError( errorNotFound, baseName, [ 'bar' ] );
+				dispatch.setErrorForSelector( errorNotFound, baseName );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
+				dispatch.setErrorForSelector(
+					errorNotFound,
+					'otherBaseName',
+					[]
+				);
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'foo',
+				] );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'bar',
+				] );
 
 				expect( select.getErrors() ).toEqual( [ errorNotFound ] );
+			} );
+
+			it( 'merges errors from both selector and action slices', () => {
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'foo',
+				] );
+				dispatch.setErrorForAction( errorForbidden, 'doBar', [
+					'baz',
+				] );
+
+				expect( select.getErrors() ).toEqual(
+					expect.arrayContaining( [ errorNotFound, errorForbidden ] )
+				);
 			} );
 		} );
 
 		describe( 'getMetaDataForError', () => {
 			it( 'returns null when there is no meta-data found for the error', () => {
-				dispatch.receiveError( errorNotFound, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, args );
 
 				expect( select.getMetaDataForError( errorForbidden ) ).toEqual(
 					null
@@ -322,8 +401,10 @@ describe( 'createErrorStore store', () => {
 
 			it( 'returns the meta-data for an error object', () => {
 				// Populate multiple errors to verify the we're correctly looking up the error.
-				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
-				dispatch.receiveError( errorForbidden, 'otherBasename', [
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'foo',
+				] );
+				dispatch.setErrorForSelector( errorForbidden, 'otherBasename', [
 					'bar',
 				] );
 
@@ -353,7 +434,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns null when there is no meta-data found for the error', () => {
-				dispatch.receiveError( errorNotFound, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, args );
 
 				expect(
 					select.getSelectorDataForError( errorForbidden )
@@ -361,7 +442,7 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns null when there is no selector found for the error', () => {
-				dispatch.receiveError( errorNotFound, 'getBar', args );
+				dispatch.setErrorForSelector( errorNotFound, 'getBar', args );
 
 				expect(
 					select.getSelectorDataForError( errorNotFound )
@@ -370,8 +451,12 @@ describe( 'createErrorStore store', () => {
 
 			it( 'returns the selector data for an error object', () => {
 				// Populate multiple errors to verify the we're correctly looking up the error.
-				dispatch.receiveError( errorNotFound, baseName, [ 'foo' ] );
-				dispatch.receiveError( errorForbidden, 'getBar', [ 'bar' ] );
+				dispatch.setErrorForSelector( errorNotFound, baseName, [
+					'foo',
+				] );
+				dispatch.setErrorForSelector( errorForbidden, 'getBar', [
+					'bar',
+				] );
 
 				expect(
 					select.getSelectorDataForError( errorNotFound )
@@ -389,9 +474,27 @@ describe( 'createErrorStore store', () => {
 			} );
 
 			it( 'returns `true` if there are any errors', () => {
-				dispatch.receiveError( errorNotFound, baseName, args );
+				dispatch.setErrorForSelector( errorNotFound, baseName, args );
 
 				expect( select.hasErrors() ).toBe( true );
+			} );
+		} );
+
+		describe( 'state segregation', () => {
+			it( 'a selector error should NOT be visible via getErrorForAction', () => {
+				dispatch.setErrorForSelector( errorNotFound, baseName, args );
+
+				expect(
+					select.getErrorForAction( baseName, args )
+				).toBeUndefined();
+			} );
+
+			it( 'an action error should NOT be visible via getErrorForSelector', () => {
+				dispatch.setErrorForAction( errorForbidden, baseName, args );
+
+				expect(
+					select.getErrorForSelector( baseName, args )
+				).toBeUndefined();
 			} );
 		} );
 	} );
