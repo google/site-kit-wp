@@ -33,15 +33,19 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
-import ChangeBadge from '@/js/components/ChangeBadge';
-import MetricTileHeader from '@/js/components/KeyMetrics/MetricTileHeader';
 import { numFmt } from '@/js/util';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { TilesGroup } from './TilesGroup';
+import { Tile } from './Tile';
 
-const RATE_FORMAT = {
+const PERCENT_FORMAT = {
 	style: 'percent' as const,
 	signDisplay: 'never' as const,
 	maximumFractionDigits: 1,
+};
+
+const NUMBER_FORMAT = {
+	style: 'decimal' as const,
 };
 
 export interface PrimaryActionSectionProps {
@@ -49,6 +53,8 @@ export interface PrimaryActionSectionProps {
 	previousCount: number;
 	currentLabel: string;
 	previousLabel: string;
+	eventSubtext: string;
+	infoTooltip?: string;
 	ErrorComponent: ComponentType< {
 		moduleSlug: string;
 		error: unknown;
@@ -73,6 +79,8 @@ export const PrimaryActionSection: FC< PrimaryActionSectionProps > = (
 		previousCount,
 		currentLabel,
 		previousLabel,
+		eventSubtext,
+		infoTooltip,
 		ErrorComponent,
 	} = props;
 
@@ -118,11 +126,11 @@ export const PrimaryActionSection: FC< PrimaryActionSectionProps > = (
 		return <PrimaryActionSectionLoading />;
 	}
 
-	if ( ErrorComponent ) {
+	if ( error ) {
 		return <ErrorComponent moduleSlug="analytics-4" error={ error } />;
 	}
 
-	const { rows: sessionsRows = [] } = sessionsReport || {};
+	const { totals: sessionsRows = [] } = sessionsReport || {};
 
 	const currentSessions =
 		parseInt(
@@ -146,58 +154,32 @@ export const PrimaryActionSection: FC< PrimaryActionSectionProps > = (
 		previousSessions === 0 ? 0 : previousCount / previousSessions;
 
 	return (
-		<div className="googlesitekit-site-goals-primary-action">
-			<p className="googlesitekit-site-goals-primary-action__title">
-				{ __( 'Key action', 'google-site-kit' ) }
-			</p>
-			<div className="googlesitekit-site-goals-primary-action__tiles">
-				<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-					<MetricTileHeader title={ currentLabel } />
-					<div className="googlesitekit-km-widget-tile__body">
-						<div className="googlesitekit-km-widget-tile__metric-container">
-							<div className="googlesitekit-km-widget-tile__metric">
-								{ numFmt( currentRate, RATE_FORMAT ) }
-							</div>
-							<p className="googlesitekit-km-widget-tile__subtext">
-								{ sprintf(
-									/* translators: %s: formatted number of total sessions */
-									__(
-										'%s total sessions',
-										'google-site-kit'
-									),
-									numFmt( currentSessions, {
-										style: 'decimal',
-									} )
-								) }
-							</p>
-						</div>
-						<div className="googlesitekit-km-widget-tile__metric-change-container">
-							<ChangeBadge
-								previousValue={ previousRate }
-								currentValue={ currentRate }
-								isAbsolute
-							/>
-						</div>
-					</div>
-				</div>
-				<div className="googlesitekit-km-widget-tile googlesitekit-km-widget-tile--numeric">
-					<MetricTileHeader title={ previousLabel } />
-					<div className="googlesitekit-km-widget-tile__body">
-						<div className="googlesitekit-km-widget-tile__metric-container">
-							<div className="googlesitekit-km-widget-tile__metric">
-								{ numFmt( currentCount, { style: 'decimal' } ) }
-							</div>
-						</div>
-						<div className="googlesitekit-km-widget-tile__metric-change-container">
-							<ChangeBadge
-								previousValue={ previousCount }
-								currentValue={ currentCount }
-							/>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		<TilesGroup
+			className="googlesitekit-site-goals-primary-action"
+			title={ __( 'Key action', 'google-site-kit' ) }
+		>
+			<Tile
+				title={ currentLabel }
+				subtitle={ sprintf(
+					/* translators: %s: formatted number of total sessions */
+					__( '%s total sessions', 'google-site-kit' ),
+					numFmt( currentSessions, NUMBER_FORMAT )
+				) }
+				infoTooltip={ infoTooltip }
+				currentValue={ currentRate }
+				previousValue={ previousRate }
+				format={ PERCENT_FORMAT }
+				primary
+			/>
+
+			<Tile
+				title={ previousLabel }
+				subtitle={ eventSubtext }
+				currentValue={ currentCount }
+				previousValue={ previousCount }
+				format={ NUMBER_FORMAT }
+			/>
+		</TilesGroup>
 	);
 };
 

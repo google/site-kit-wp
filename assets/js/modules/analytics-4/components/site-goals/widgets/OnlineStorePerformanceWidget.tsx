@@ -22,7 +22,7 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,7 +37,7 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import {
 	PrimaryActionSection,
 	PrimaryActionSectionLoading,
-} from '@/js/modules/analytics-4/components/site-goals/PrimaryActionSection';
+} from '@/js/modules/analytics-4/components/site-goals/components/PrimaryActionSection';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 
 type ReportRow = {
@@ -53,11 +53,6 @@ const EVENT_RATE_LABELS: Record< string, string > = {
 const EVENT_TOTAL_LABELS: Record< string, string > = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
-};
-
-const REPORT_METRIC_NAMES: Record< string, string > = {
-	purchase: 'ecommercePurchases',
-	add_to_cart: 'addToCarts',
 };
 
 function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
@@ -85,9 +80,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 
 	const eventOptions = {
 		...dates,
-		metrics: [ { name: REPORT_METRIC_NAMES[ primaryEvent ] } ],
+		metrics: [ { name: 'eventCount' } ],
+		dimensions: [ { name: 'eventName' } ],
+		dimensionFilters: {
+			eventName: primaryEvent,
+		},
 		reportID:
-			'analytics-4_online-store-performance-widget_widget_primaryEventReportOptions',
+			'analytics-4_online-store-performance-widget_primaryEventReportOptions',
 	};
 
 	const primaryEventReport = useInViewSelect(
@@ -168,6 +167,11 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 						EVENT_TOTAL_LABELS[ primaryEvent ] ||
 						__( 'Unknown Event', 'google-site-kit' )
 					}
+					eventSubtext={ sprintf(
+						/* translators: %s: GA4 event name */
+						__( '“%s” events', 'google-site-kit' ),
+						primaryEvent
+					) }
 				/>
 			) }
 		</Widget>

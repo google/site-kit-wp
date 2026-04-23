@@ -22,7 +22,7 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,7 +37,7 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import {
 	PrimaryActionSection,
 	PrimaryActionSectionLoading,
-} from '@/js/modules/analytics-4/components/site-goals/PrimaryActionSection';
+} from '@/js/modules/analytics-4/components/site-goals/components/PrimaryActionSection';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 
 type ReportRow = {
@@ -164,6 +164,24 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 						'Total form completions',
 						'google-site-kit'
 					) }
+					eventSubtext={
+						detectedLeadEvents.length === 1
+							? sprintf(
+									/* translators: %s: GA4 event name */
+									__( '"%s" events', 'google-site-kit' ),
+									detectedLeadEvents[ 0 ]
+							  )
+							: sprintf(
+									/* translators: %d: number of detected event types */
+									_n(
+										'%d event type',
+										'%d event types',
+										detectedLeadEvents.length,
+										'google-site-kit'
+									),
+									detectedLeadEvents.length
+							  )
+					}
 				/>
 			) }
 		</Widget>
