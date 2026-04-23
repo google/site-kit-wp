@@ -246,6 +246,19 @@
 	.googlesitekit-tooltip-actions {
 		padding: $grid-gap-phone;
 	}
+
+	&.googlesitekit-tour-tooltip--no-title {
+
+		.googlesitekit-tooltip-content {
+			font-size: $fs-body-md;
+		}
+
+		.googlesitekit-tooltip-button {
+			background-color: transparent;
+			color: $c-site-kit-sk-0;
+		}
+	}
+
 }
 
 // Old design styles - override Typography when setupFlowRefresh is disabled.

@@ -63,6 +63,7 @@ export default function TourTooltip( {
 				'googlesitekit-tour-tooltip',
 				step.className,
 				{
+					'googlesitekit-tour-tooltip--no-title': ! step.title,
 					'googlesitekit-tour-tooltip--setupFlowRefresh':
 						setupFlowRefreshEnabled,
 				}
@@ -71,14 +72,16 @@ export default function TourTooltip( {
 		>
 			<Card className="googlesitekit-tooltip-card">
 				<div className="googlesitekit-tooltip-body">
-					<Typography
-						as="h2"
-						className="googlesitekit-tooltip-title"
-						size="medium"
-						type="title"
-					>
-						{ step.title }
-					</Typography>
+					{ step.title && (
+						<Typography
+							as="h2"
+							className="googlesitekit-tooltip-title"
+							size="medium"
+							type="title"
+						>
+							{ step.title }
+						</Typography>
+					) }
 					<div className="googlesitekit-tooltip-content">
 						{ step.content }
 					</div>

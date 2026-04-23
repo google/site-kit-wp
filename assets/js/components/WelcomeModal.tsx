@@ -130,7 +130,7 @@ export default function WelcomeModal() {
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',
 		tooltipSlug: 'welcome-modal',
-		title: __(
+		content: __(
 			'You can always take the dashboard tour from the help menu',
 			'google-site-kit'
 		),
