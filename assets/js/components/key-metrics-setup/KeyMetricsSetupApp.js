@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classNames from 'classnames';
 import { omit } from 'lodash';
 import { useMount } from 'react-use';
 
@@ -31,9 +30,6 @@ import {
 	useCallback,
 	Fragment,
 	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
@@ -55,6 +51,7 @@ import ExitSetup from '@/js/components/setup/ExitSetup';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
+import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
@@ -289,28 +286,26 @@ export default function KeyMetricsSetupApp() {
 		( ! saveUserInputError && isSavingInitialSetup ) || // Avoid a situation where both buttons are loading.
 		isSyncing;
 
-	const contentRef = useRef();
-	const footerRef = useRef();
-	const [ footerInline, setFooterInline ] = useState( false );
-
-	useLayoutEffect( () => {
-		function checkFits() {
-			if ( ! contentRef.current || ! footerRef.current ) {
-				return;
-			}
-
-			const contentBottom =
-				contentRef.current.getBoundingClientRect().bottom;
-			const footerHeight = footerRef.current.offsetHeight;
-			setFooterInline(
-				contentBottom + footerHeight <= window.innerHeight
-			);
-		}
-
-		checkFits();
-		window.addEventListener( 'resize', checkFits );
-		return () => window.removeEventListener( 'resize', checkFits );
-	}, [] );
+	const footer = (
+		<Fragment>
+			<SpinnerButton
+				onClick={ onSaveClick }
+				isSaving={ isCompleteSetupLoading }
+				disabled={ hasErrorForAnswer( values ) || isSyncing }
+			>
+				{ __( 'Complete setup', 'google-site-kit' ) }
+			</SpinnerButton>
+			{ saveUserInputError && (
+				<SpinnerButton
+					onClick={ saveInitialSetup }
+					isSaving={ isSavingInitialSetup }
+					tertiary
+				>
+					{ __( 'Continue without saving', 'google-site-kit' ) }
+				</SpinnerButton>
+			) }
+		</Fragment>
+	);
 
 	return (
 		<Fragment>
@@ -325,102 +320,85 @@ export default function KeyMetricsSetupApp() {
 				) }
 				<HelpMenu />
 			</Header>
-			<div
-				ref={ contentRef }
-				className={ classNames( 'googlesitekit-key-metrics-setup', {
-					'googlesitekit-key-metrics-setup--footer-inline':
-						footerInline,
-				} ) }
-			>
+			<div className="googlesitekit-key-metrics-setup">
 				<div className="googlesitekit-module-page">
 					<Grid>
 						<Layout rounded>
 							<Grid>
 								<Row>
 									<Cell size={ 12 }>
-										<Typography
-											as="h1"
-											type="headline"
-											size="medium"
-											className="googlesitekit-key-metrics-setup__title"
+										<AdaptiveFooterLayout
+											className="googlesitekit-key-metrics-setup__content"
+											inlineClassName="googlesitekit-key-metrics-setup__content--footer-inline"
+											footerClassName="googlesitekit-user-input__footer googlesitekit-key-metrics-setup__footer"
+											footer={ footer }
 										>
-											{ __(
-												'Tell us your main goal to get tailored metrics',
-												'google-site-kit'
-											) }
-										</Typography>
-
-										<div className="googlesitekit-key-metrics-setup__heading">
 											<Typography
-												as="h2"
-												type="body"
-												size="large"
+												as="h1"
+												type="headline"
+												size="medium"
+												className="googlesitekit-key-metrics-setup__title"
 											>
 												{ __(
-													'Which option most closely matches the purpose of your site?',
+													'Tell us your main goal to get tailored metrics',
 													'google-site-kit'
 												) }
 											</Typography>
-											<P
-												className="googlesitekit-key-metrics-setup__description"
-												type="body"
-												size="small"
-											>
-												{ createInterpolateElement(
-													__(
-														'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
-														'google-site-kit'
-													),
-													{
-														br: <br />,
-													}
-												) }
-											</P>
-										</div>
 
-										<UserInputSelectOptions
-											slug={
-												USER_INPUT_QUESTIONS_PURPOSE
-											}
-											max={
-												USER_INPUT_MAX_ANSWERS[
-													USER_INPUT_QUESTIONS_PURPOSE
-												]
-											}
-											options={ omit(
-												USER_INPUT_ANSWERS_PURPOSE,
-												'other'
-											) }
-											descriptions={
-												USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
-											}
-											gaTrackingEventArgs={
-												gaTrackingEventArgs
-											}
-										/>
-
-										{ saveInitialSetupError && (
-											<div className="googlesitekit-user-input__error">
-												<Notice
-													description={ __(
-														'Something went wrong, please try again',
+											<div className="googlesitekit-key-metrics-setup__heading">
+												<Typography
+													as="h2"
+													type="body"
+													size="large"
+												>
+													{ __(
+														'Which option most closely matches the purpose of your site?',
 														'google-site-kit'
 													) }
-													type={ Notice.TYPES.ERROR }
-												/>
-											</div>
-										) }
-
-										{ ! saveInitialSetupError &&
-											!! saveUserInputError && (
-												<div className="googlesitekit-user-input__error">
-													<Notice
-														title={ __(
-															'Saving your answer failed',
+												</Typography>
+												<P
+													className="googlesitekit-key-metrics-setup__description"
+													type="body"
+													size="small"
+												>
+													{ createInterpolateElement(
+														__(
+															'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
 															'google-site-kit'
-														) }
+														),
+														{
+															br: <br />,
+														}
+													) }
+												</P>
+											</div>
+
+											<UserInputSelectOptions
+												slug={
+													USER_INPUT_QUESTIONS_PURPOSE
+												}
+												max={
+													USER_INPUT_MAX_ANSWERS[
+														USER_INPUT_QUESTIONS_PURPOSE
+													]
+												}
+												options={ omit(
+													USER_INPUT_ANSWERS_PURPOSE,
+													'other'
+												) }
+												descriptions={
+													USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+												}
+												gaTrackingEventArgs={
+													gaTrackingEventArgs
+												}
+											/>
+
+											{ saveInitialSetupError && (
+												<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+													<Notice
 														description={ __(
-															'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.',
+															'Something went wrong, please try again',
 															'google-site-kit'
 														) }
 														type={
@@ -430,41 +408,26 @@ export default function KeyMetricsSetupApp() {
 												</div>
 											) }
 
-										<div
-											ref={ footerRef }
-											className="googlesitekit-user-input__footer"
-										>
-											<SpinnerButton
-												onClick={ onSaveClick }
-												isSaving={
-													isCompleteSetupLoading
-												}
-												disabled={
-													hasErrorForAnswer(
-														values
-													) || isSyncing
-												}
-											>
-												{ __(
-													'Complete setup',
-													'google-site-kit'
+											{ ! saveInitialSetupError &&
+												!! saveUserInputError && (
+													<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+														<Notice
+															title={ __(
+																'Saving your answer failed',
+																'google-site-kit'
+															) }
+															description={ __(
+																'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.',
+																'google-site-kit'
+															) }
+															type={
+																Notice.TYPES
+																	.ERROR
+															}
+														/>
+													</div>
 												) }
-											</SpinnerButton>
-											{ saveUserInputError && (
-												<SpinnerButton
-													onClick={ saveInitialSetup }
-													isSaving={
-														isSavingInitialSetup
-													}
-													tertiary
-												>
-													{ __(
-														'Continue without saving',
-														'google-site-kit'
-													) }
-												</SpinnerButton>
-											) }
-										</div>
+										</AdaptiveFooterLayout>
 									</Cell>
 								</Row>
 							</Grid>

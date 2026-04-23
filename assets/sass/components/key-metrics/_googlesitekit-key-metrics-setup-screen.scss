@@ -36,7 +36,7 @@
 			}
 		}
 
-		.googlesitekit-user-input__footer {
+		.googlesitekit-key-metrics-setup__footer {
 			column-gap: 16px;
 			flex-direction: row;
 			justify-content: flex-start;
@@ -47,9 +47,9 @@
 			}
 		}
 
-		&.googlesitekit-key-metrics-setup--footer-inline {
+		.googlesitekit-key-metrics-setup__content--footer-inline {
 
-			.googlesitekit-user-input__footer {
+			.googlesitekit-key-metrics-setup__footer {
 				background-color: transparent;
 				border-top: none;
 				bottom: auto;
@@ -62,7 +62,7 @@
 			}
 		}
 
-		.googlesitekit-user-input__error {
+		.googlesitekit-key-metrics-setup__error {
 			padding: 1px 0;
 			z-index: 2;
 			@media (min-width: $bp-desktop) {
