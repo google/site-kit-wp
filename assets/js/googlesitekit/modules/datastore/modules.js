@@ -176,6 +176,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 		invariant( slug, 'slug is required.' );
 		invariant( active !== undefined, 'active is required.' );
 	},
+	isAction: true,
 } );
 
 const fetchCheckModuleAccessStore = createFetchStore( {
@@ -192,6 +193,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	validateParams: ( { slug } ) => {
 		invariant( slug, 'slug is required.' );
 	},
+	isAction: true,
 } );
 
 const fetchRecoverModulesStore = createFetchStore( {

@@ -84,7 +84,7 @@ const baseActions = {
 					{ notificationID, notificationState: ACCEPTED }
 				);
 			if ( error ) {
-				yield errorStoreActions.receiveError(
+				yield errorStoreActions.setErrorForAction(
 					error,
 					'acceptNotification',
 					[ notificationID ]
@@ -115,7 +115,7 @@ const baseActions = {
 					{ notificationID, notificationState: DISMISSED }
 				);
 			if ( error ) {
-				yield errorStoreActions.receiveError(
+				yield errorStoreActions.setErrorForAction(
 					error,
 					'dismissNotification',
 					[ notificationID ]

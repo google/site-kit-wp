@@ -26,7 +26,7 @@ import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-err
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearError, receiveError } = errorStoreActions;
+const { clearError, setErrorForAction } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
@@ -78,7 +78,7 @@ export function createSubmitChangesStore( args ) {
 			};
 
 			if ( result?.error ) {
-				yield receiveError( result.error, 'submitChanges', [] );
+				yield setErrorForAction( result.error, 'submitChanges', [] );
 			}
 
 			yield {

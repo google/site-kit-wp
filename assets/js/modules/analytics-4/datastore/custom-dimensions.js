@@ -79,6 +79,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 			);
 		} );
 	},
+	isAction: true,
 } );
 
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {

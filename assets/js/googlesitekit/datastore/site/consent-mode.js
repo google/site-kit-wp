@@ -34,7 +34,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-const { clearError, receiveError } = errorStoreActions;
+const { clearError, setErrorForAction } = errorStoreActions;
 
 const { getRegistry } = commonActions;
 
@@ -116,6 +116,7 @@ const fetchInstallActivateWPConsentAPI = createFetchStore( {
 	validateParams: ( { nonce } ) => {
 		invariant( typeof nonce === 'string', 'nonce must be a string.' );
 	},
+	isAction: true,
 } );
 
 const fetchActivateConsentAPI = createFetchStore( {
@@ -218,7 +219,7 @@ const baseActions = {
 				.select( CORE_USER )
 				.getErrorForSelector( 'getNonces' );
 
-			yield receiveError( error, 'installActivateWPConsentAPI', [] );
+			yield setErrorForAction( error, 'installActivateWPConsentAPI', [] );
 
 			yield {
 				type: INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING,

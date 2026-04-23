@@ -34,10 +34,11 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
-const { receiveError, clearError } = errorStoreActions;
+const { setErrorForAction, clearError } = errorStoreActions;
 
 const fetchEnableAutoUpdateStore = createFetchStore( {
 	baseName: 'enableAutoUpdate',
+	isAction: true,
 	controlCallback: async ( { nonce, pluginBasename } ) => {
 		const data = new FormData();
 		data.append( 'action', 'toggle-auto-updates' );
@@ -103,7 +104,7 @@ const baseActions = {
 		}
 
 		if ( error ) {
-			yield receiveError( error, 'enableAutoUpdate', [] );
+			yield setErrorForAction( error, 'enableAutoUpdate', [] );
 		}
 	},
 };

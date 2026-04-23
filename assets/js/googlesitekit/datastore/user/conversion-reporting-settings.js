@@ -82,6 +82,7 @@ const fetchSaveConversionReportingSettingsStore = createFetchStore( {
 			);
 		}
 	},
+	isAction: true,
 } );
 
 const baseActions = {

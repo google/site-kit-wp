@@ -30,7 +30,7 @@ import {
 import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-const { receiveError, clearError } = errorStoreActions;
+const { setErrorForAction, clearError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, tracking ) => {
 	state.tracking = tracking;
@@ -80,7 +80,7 @@ const baseActions = {
 		const { response, error } =
 			yield fetchSaveTrackingStore.actions.fetchSetTracking( enabled );
 		if ( error ) {
-			yield receiveError( error, 'setTrackingEnabled', [ enabled ] );
+			yield setErrorForAction( error, 'setTrackingEnabled', [ enabled ] );
 		}
 
 		yield {

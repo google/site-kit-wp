@@ -40,7 +40,7 @@ import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from './constants';
 
-const { receiveError, clearError } = errorStoreActions;
+const { setErrorForAction, clearError } = errorStoreActions;
 
 function validateUserAudienceSettings( settings ) {
 	invariant(
@@ -91,6 +91,7 @@ const fetchSaveUserAudienceSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateUserAudienceSettings,
+	isAction: true,
 } );
 
 // Actions
@@ -162,7 +163,11 @@ const baseActions = {
 				);
 
 			if ( error ) {
-				yield receiveError( error, 'saveUserAudienceSettings', [] );
+				yield setErrorForAction(
+					error,
+					'saveUserAudienceSettings',
+					[]
+				);
 			}
 
 			return { response, error };
