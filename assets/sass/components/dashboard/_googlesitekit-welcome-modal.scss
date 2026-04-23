@@ -109,4 +109,18 @@
 			padding: 0 $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop;
 		}
 	}
+
+	@media (height < 520px) {
+		.googlesitekit-welcome-modal__graphic {
+			display: none;
+		}
+
+		.googlesitekit-welcome-modal__title {
+			margin-top: 20px;
+		}
+
+		.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+			margin-top: 16px;
+		}
+	}
 }
