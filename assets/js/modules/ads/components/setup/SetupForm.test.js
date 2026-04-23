@@ -28,11 +28,6 @@ import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import SetupForm from './SetupForm';
 
 jest.mock( '@/js/components/StoreErrorNotices', () => () => null );
-jest.mock( '@/js/modules/ads/components/common', () => ( {
-	ConversionIDTextField: () => (
-		<div data-testid="googlesitekit-ads-conversion-id-field" />
-	),
-} ) );
 
 describe( 'SetupForm', () => {
 	let registry;
@@ -52,18 +47,6 @@ describe( 'SetupForm', () => {
 			accountOverviewURL: '',
 		} );
 	} );
-
-	function renderSetupForm() {
-		return render(
-			<SetupForm
-				finishSetup={ finishSetup }
-				isNavigatingToOAuthURL={ false }
-			/>,
-			{
-				registry,
-			}
-		);
-	}
 
 	function setupDuplicateConversionID( {
 		isGoogleForWooCommerceActivated,
@@ -86,13 +69,19 @@ describe( 'SetupForm', () => {
 	it( 'shows duplicate warning when Google for WooCommerce is active and duplicate exists, but does not block submit', async () => {
 		setupDuplicateConversionID( { isGoogleForWooCommerceActivated: true } );
 
-		const { getByRole, getByText, waitForRegistry } = renderSetupForm();
+		const { getByRole, getByText, waitForRegistry } = render(
+			<SetupForm
+				finishSetup={ finishSetup }
+				isNavigatingToOAuthURL={ false }
+			/>,
+			{
+				registry,
+			}
+		);
 		await waitForRegistry();
 
 		expect(
-			getByText(
-				'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.'
-			)
+			getByText( /Conversion ID is already in use/i )
 		).toBeInTheDocument();
 
 		expect(
@@ -107,13 +96,19 @@ describe( 'SetupForm', () => {
 			isGoogleForWooCommerceActivated: false,
 		} );
 
-		const { getByRole, queryByText, waitForRegistry } = renderSetupForm();
+		const { getByRole, queryByText, waitForRegistry } = render(
+			<SetupForm
+				finishSetup={ finishSetup }
+				isNavigatingToOAuthURL={ false }
+			/>,
+			{
+				registry,
+			}
+		);
 		await waitForRegistry();
 
 		expect(
-			queryByText(
-				'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.'
-			)
+			queryByText( /Conversion ID is already in use/i )
 		).not.toBeInTheDocument();
 
 		expect(
@@ -129,7 +124,15 @@ describe( 'SetupForm', () => {
 			canSubmitChanges: false,
 		} );
 
-		const { getByRole, waitForRegistry } = renderSetupForm();
+		const { getByRole, waitForRegistry } = render(
+			<SetupForm
+				finishSetup={ finishSetup }
+				isNavigatingToOAuthURL={ false }
+			/>,
+			{
+				registry,
+			}
+		);
 		await waitForRegistry();
 
 		expect(
