@@ -43,6 +43,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 // @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
@@ -101,7 +102,7 @@ const ActivateAnalyticsNotification: FC<
 
 	const isBusy = isActivatingAnalytics || isNavigatingToReauthURL;
 
-	const gaTrackingEventArgs = {
+	const gaTrackingEventArgs: GATrackingEventArgs = {
 		category: `${ viewContext }_${ id }`,
 	};
 

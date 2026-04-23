@@ -16,6 +16,7 @@ End-to-end tests for the Site Kit WordPress plugin, built on [Playwright](https:
     -   [Email Testing](#email-testing)
     -   [Reference Date](#reference-date)
     -   [PHP Error Logging](#php-error-logging)
+    -   [Screencasts](#screencasts)
 -   [Running Tests](#running-tests)
 -   [Writing Tests](#writing-tests)
     -   [Basic Test Structure](#basic-test-structure)
@@ -230,6 +231,30 @@ The `db.php` drop-in registers PHP error handlers that capture all errors, warni
 
 **Ignore list:** Some PHP errors are expected on older WordPress versions. The ignore list in `wordpress/error-log-ignore-list.ts` is keyed by WordPress version, with a special `ALL` key for errors ignored across all versions. Each entry is a substring match against the error message. For example, `get_magic_quotes_gpc()` deprecation warnings are expected on WordPress 5.2.21 but not on newer versions.
 
+### Screencasts
+
+Every test automatically records a screencast of the browser session. The recording is handled by the `wp` fixture in `playwright.ts`:
+
+1. **Before the test:** `page.screencast.start()` begins recording to `<testInfo.outputDir>/screencast.webm`. `page.screencast.showActions({ position: 'top-right' })` overlays a live action log in the top-right corner of the video.
+2. **During the test:** Calls to `wp.step(title, body)` insert named chapter markers into the screencast via `page.screencast.showChapter(title)` and simultaneously create a Playwright test step. Use `wp.step()` instead of `test.step()` when you want step boundaries to be visible in the video.
+3. **After the test:** `page.screencast.stop()` finalises the recording, and the file is attached to the test result as `screencast.webm`. It is viewable in the HTML report and downloadable from the GitHub Actions artifact.
+
+**Usage — step chapters:**
+
+```typescript
+test( 'my test', async ( { wp } ) => {
+    await wp.step( 'Navigate to dashboard', async () => {
+        await wp.visitDashboard();
+    } );
+
+    await wp.step( 'Check widget heading', async () => {
+        await expect( wp.page.locator( 'h3' ) ).toBeVisible();
+    } );
+} );
+```
+
+Screencasts are always recorded regardless of whether the test passes or fails, making them useful for diagnosing failures.
+
 ---
 
 ## Running Tests
@@ -317,6 +342,7 @@ The `wp` fixture is a `WordPress` instance automatically set up and torn down fo
 | `wp.activatePlugin(file)`   | method     | Activate a plugin by its file path                 |
 | `wp.deactivatePlugin(file)` | method     | Deactivate a plugin by its file path               |
 | `wp.restRequest(...)`       | method     | Issue a WordPress REST API request via the browser |
+| `wp.step(title, body)`      | method     | Run a named test step and insert a chapter marker into the screencast |
 
 ### Test Annotations
 
@@ -594,10 +620,10 @@ npm run generate-backup
 
 Test outputs are saved to `artifacts/` (not committed to version control).
 
-| Path                           | Contents                                                                                       |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `artifacts/playwright-html/`   | Interactive HTML report (`index.html`) — open in browser to view test results with screenshots |
-| `artifacts/playwright-output/` | Per-test directories containing screenshots (always) and trace files (on first retry)          |
+| Path                           | Contents                                                                                                               |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `artifacts/playwright-html/`   | Interactive HTML report (`index.html`) — open in browser to view test results with screenshots and attached screencasts |
+| `artifacts/playwright-output/` | Per-test directories containing `screencast.webm` (always), screenshots (always), and trace files (on first retry)    |
 
 **View the HTML report:**
 

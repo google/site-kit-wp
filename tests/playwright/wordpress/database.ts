@@ -94,6 +94,7 @@ export class WordPressDatabase {
 	 */
 	async create(): Promise< void > {
 		const name = getDbName( this.testInfo );
+		await this.db.query( `DROP DATABASE IF EXISTS \`${ name }\`` );
 		await this.db.query( `CREATE DATABASE \`${ name }\`` );
 		await this.db.query( `USE \`${ name }\`` );
 
