@@ -27,7 +27,8 @@ import { createRegistrySelector } from '@wordpress/data';
 import invariant from 'invariant';
 import md5 from 'md5';
 
-const RECEIVE_ERROR = 'RECEIVE_ERROR';
+const SET_ERROR_FOR_SELECTOR = 'SET_ERROR_FOR_SELECTOR';
+const SET_ERROR_FOR_ACTION = 'SET_ERROR_FOR_ACTION';
 const CLEAR_ERROR = 'CLEAR_ERROR';
 const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
@@ -49,16 +50,51 @@ export function generateErrorKey( baseName, args ) {
 }
 
 export const actions = {
-	receiveError( error, baseName, args = [] ) {
+	/**
+	 * Sets an error for a selector.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}      error        Error object.
+	 * @param {string}      selectorName Selector name.
+	 * @param {Array.<any>} [args]       Arguments passed to selector (default `[]`).
+	 * @return {Object} Redux-style action.
+	 */
+	setErrorForSelector( error, selectorName, args = [] ) {
 		invariant( error, 'error is required.' );
-		invariant( baseName, 'baseName is required.' );
+		invariant( selectorName, 'selectorName is required.' );
 		invariant( args && Array.isArray( args ), 'args must be an array.' );
 
 		return {
-			type: RECEIVE_ERROR,
+			type: SET_ERROR_FOR_SELECTOR,
 			payload: {
 				error,
-				baseName,
+				baseName: selectorName,
+				args,
+			},
+		};
+	},
+
+	/**
+	 * Sets an error for an action.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}      error      Error object.
+	 * @param {string}      actionName Action name.
+	 * @param {Array.<any>} [args]     Arguments passed to action (default `[]`).
+	 * @return {Object} Redux-style action.
+	 */
+	setErrorForAction( error, actionName, args = [] ) {
+		invariant( error, 'error is required.' );
+		invariant( actionName, 'actionName is required.' );
+		invariant( args && Array.isArray( args ), 'args must be an array.' );
+
+		return {
+			type: SET_ERROR_FOR_ACTION,
+			payload: {
+				error,
+				baseName: actionName,
 				args,
 			},
 		};
@@ -91,52 +127,106 @@ export function createErrorStore( storeName ) {
 	invariant( storeName, 'storeName must be defined.' );
 
 	const initialState = {
-		errors: {},
-		errorArgs: {},
+		selectorErrors: {},
+		selectorErrorArgs: {},
+		actionErrors: {},
+		actionErrorArgs: {},
 	};
+
+	function setErrorInSlice( state, errorsKey, errorArgsKey, payload ) {
+		const { baseName, args, error } = payload;
+		const key = generateErrorKey( baseName, args );
+		state[ errorsKey ] = state[ errorsKey ] || {};
+		state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+		state[ errorsKey ][ key ] = error;
+		state[ errorArgsKey ][ key ] = args;
+	}
+
+	function clearErrorInSlice(
+		state,
+		errorsKey,
+		errorArgsKey,
+		baseName,
+		args
+	) {
+		const key = generateErrorKey( baseName, args );
+		state[ errorsKey ] = state[ errorsKey ] || {};
+		state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+		delete state[ errorsKey ][ key ];
+		delete state[ errorArgsKey ][ key ];
+	}
+
+	function clearErrorsInSlice( state, errorsKey, errorArgsKey, baseName ) {
+		if ( baseName ) {
+			state[ errorsKey ] = state[ errorsKey ] || {};
+			state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+			for ( const key in state[ errorsKey ] ) {
+				if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
+					delete state[ errorsKey ][ key ];
+					delete state[ errorArgsKey ][ key ];
+				}
+			}
+		} else {
+			state[ errorsKey ] = {};
+			state[ errorArgsKey ] = {};
+		}
+	}
 
 	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
-			case RECEIVE_ERROR: {
-				const { baseName, args, error } = payload;
+			case SET_ERROR_FOR_SELECTOR: {
+				setErrorInSlice(
+					state,
+					'selectorErrors',
+					'selectorErrorArgs',
+					payload
+				);
+				break;
+			}
 
-				const key = generateErrorKey( baseName, args );
-				state.errors = state.errors || {};
-				state.errorArgs = state.errorArgs || {};
-				state.errors[ key ] = error;
-				state.errorArgs[ key ] = args;
+			case SET_ERROR_FOR_ACTION: {
+				setErrorInSlice(
+					state,
+					'actionErrors',
+					'actionErrorArgs',
+					payload
+				);
 				break;
 			}
 
 			case CLEAR_ERROR: {
 				const { baseName, args } = payload;
-				const key = generateErrorKey( baseName, args );
-				state.errors = state.errors || {};
-				state.errorArgs = state.errorArgs || {};
-
-				delete state.errors[ key ];
-				delete state.errorArgs[ key ];
+				clearErrorInSlice(
+					state,
+					'selectorErrors',
+					'selectorErrorArgs',
+					baseName,
+					args
+				);
+				clearErrorInSlice(
+					state,
+					'actionErrors',
+					'actionErrorArgs',
+					baseName,
+					args
+				);
 				break;
 			}
 
 			case CLEAR_ERRORS: {
 				const { baseName } = payload;
-				if ( baseName ) {
-					state.errors = state.errors || {};
-					state.errorArgs = state.errorArgs || {};
-					for ( const key in state.errors ) {
-						if (
-							key === baseName ||
-							key.startsWith( `${ baseName }::` )
-						) {
-							delete state.errors[ key ];
-							delete state.errorArgs[ key ];
-						}
-					}
-				} else {
-					state.errors = {};
-					state.errorArgs = {};
-				}
+				clearErrorsInSlice(
+					state,
+					'selectorErrors',
+					'selectorErrorArgs',
+					baseName
+				);
+				clearErrorsInSlice(
+					state,
+					'actionErrors',
+					'actionErrorArgs',
+					baseName
+				);
 				break;
 			}
 		}
@@ -169,7 +259,8 @@ export function createErrorStore( storeName ) {
 		 */
 		getErrorForSelector( state, selectorName, args = [] ) {
 			invariant( selectorName, 'selectorName is required.' );
-			return selectors.getError( state, selectorName, args );
+			const { selectorErrors } = state;
+			return selectorErrors[ generateErrorKey( selectorName, args ) ];
 		},
 
 		/**
@@ -192,7 +283,8 @@ export function createErrorStore( storeName ) {
 		 */
 		getErrorForAction( state, actionName, args = [] ) {
 			invariant( actionName, 'actionName is required.' );
-			return selectors.getError( state, actionName, args );
+			const { actionErrors } = state;
+			return actionErrors[ generateErrorKey( actionName, args ) ];
 		},
 
 		/**
@@ -215,11 +307,12 @@ export function createErrorStore( storeName ) {
 		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
 		 */
 		getError( state, baseName, args ) {
-			const { errors } = state;
+			const { selectorErrors, actionErrors } = state;
 
 			invariant( baseName, 'baseName is required.' );
 
-			return errors[ generateErrorKey( baseName, args ) ];
+			const key = generateErrorKey( baseName, args );
+			return selectorErrors[ key ] || actionErrors[ key ];
 		},
 
 		/**
@@ -231,7 +324,10 @@ export function createErrorStore( storeName ) {
 		 * @return {Object[]} Unique set of errors.
 		 */
 		getErrors( state ) {
-			const errorsSet = new Set( Object.values( state.errors ) );
+			const errorsSet = new Set( [
+				...Object.values( state.selectorErrors ),
+				...Object.values( state.actionErrors ),
+			] );
 
 			return Array.from( errorsSet );
 		},
@@ -255,15 +351,34 @@ export function createErrorStore( storeName ) {
 		 * @return {Object|null} Meta-data for the given error object, or null if the error is not found.
 		 */
 		getMetaDataForError( state, error ) {
-			const key = Object.keys( state.errors ).find(
-				( errorKey ) => state.errors[ errorKey ] === error
+			// Search selector errors first, then action errors.
+			const selectorKey = Object.keys( state.selectorErrors ).find(
+				( errorKey ) => state.selectorErrors[ errorKey ] === error
 			);
 
-			if ( key ) {
-				const baseName = key.substring( 0, key.indexOf( '::' ) );
+			if ( selectorKey ) {
+				const baseName = selectorKey.substring(
+					0,
+					selectorKey.indexOf( '::' )
+				);
 				return {
 					baseName,
-					args: state.errorArgs[ key ],
+					args: state.selectorErrorArgs[ selectorKey ],
+				};
+			}
+
+			const actionKey = Object.keys( state.actionErrors ).find(
+				( errorKey ) => state.actionErrors[ errorKey ] === error
+			);
+
+			if ( actionKey ) {
+				const baseName = actionKey.substring(
+					0,
+					actionKey.indexOf( '::' )
+				);
+				return {
+					baseName,
+					args: state.actionErrorArgs[ actionKey ],
 				};
 			}
 
