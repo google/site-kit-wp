@@ -34,7 +34,7 @@ import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function UserSettingsSelectionPanel() {
 	const viewContext = useViewContext();
@@ -101,7 +101,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: TYPES.SUCCESS,
+				type: NOTICE_TYPES.SUCCESS,
 				text: __(
 					'You’ve successfully updated frequency settings!',
 					'google-site-kit'
@@ -109,7 +109,7 @@ export default function UserSettingsSelectionPanel() {
 			} );
 		} else {
 			setNotice( {
-				type: TYPES.ERROR,
+				type: NOTICE_TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),
@@ -130,7 +130,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: TYPES.SUCCESS,
+				type: NOTICE_TYPES.SUCCESS,
 				title: __(
 					'You’ve successfully subscribed to email reports!',
 					'google-site-kit'
@@ -142,7 +142,7 @@ export default function UserSettingsSelectionPanel() {
 			} );
 		} else {
 			setNotice( {
-				type: TYPES.ERROR,
+				type: NOTICE_TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),
@@ -162,7 +162,7 @@ export default function UserSettingsSelectionPanel() {
 
 		if ( ! error ) {
 			setNotice( {
-				type: TYPES.INFO_ALT_2,
+				type: NOTICE_TYPES.INFO_ALT_2,
 				text: __(
 					'You’ve unsubscribed from email reports',
 					'google-site-kit'
@@ -170,7 +170,7 @@ export default function UserSettingsSelectionPanel() {
 			} );
 		} else {
 			setNotice( {
-				type: TYPES.ERROR,
+				type: NOTICE_TYPES.ERROR,
 				text:
 					error?.message ||
 					__( 'An error occurred.', 'google-site-kit' ),

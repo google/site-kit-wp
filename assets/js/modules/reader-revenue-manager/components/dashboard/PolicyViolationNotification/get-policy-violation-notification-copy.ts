@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	CONTENT_POLICY_STATES,
 	ACTIVE_POLICY_VIOLATION_STATES,
@@ -37,7 +37,7 @@ export interface NotificationCopy {
 	title: string;
 	description: string;
 	ctaLabel: string;
-	type: TYPES;
+	type: NOTICE_TYPES;
 }
 
 /**
@@ -66,7 +66,7 @@ export function getPolicyViolationNotificationCopy(
 				'google-site-kit'
 			),
 			ctaLabel: __( 'Learn more', 'google-site-kit' ),
-			type: TYPES.ERROR,
+			type: NOTICE_TYPES.ERROR,
 		};
 	}
 
@@ -82,7 +82,7 @@ export function getPolicyViolationNotificationCopy(
 				'google-site-kit'
 			),
 			ctaLabel: __( 'View violations', 'google-site-kit' ),
-			type: TYPES.WARNING,
+			type: NOTICE_TYPES.WARNING,
 		};
 	}
 
@@ -97,6 +97,6 @@ export function getPolicyViolationNotificationCopy(
 			'google-site-kit'
 		),
 		ctaLabel: __( 'View violations', 'google-site-kit' ),
-		type: TYPES.WARNING,
+		type: NOTICE_TYPES.WARNING,
 	};
 }

@@ -30,6 +30,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function HTTPSWarning( { moduleSlug } ) {
 	const module = useSelect( ( select ) =>
@@ -49,7 +50,7 @@ export default function HTTPSWarning( { moduleSlug } ) {
 	return (
 		<Notice
 			className="googlesitekit-notice--small"
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: Module name. */
 				__(

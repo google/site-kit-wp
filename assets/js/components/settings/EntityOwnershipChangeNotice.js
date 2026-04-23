@@ -34,6 +34,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { listFormat } from '@/js/util';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function EntityOwnershipChangeNotice( { slug } ) {
 	const slugs = Array.isArray( slug ) ? slug : [ slug ];
@@ -98,7 +99,7 @@ export default function EntityOwnershipChangeNotice( { slug } ) {
 	return (
 		<Notice
 			className="googlesitekit-notice--bottom-margin"
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %s: module name. */
 				__(

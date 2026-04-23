@@ -29,6 +29,7 @@ import PropTypes from 'prop-types';
 import UserRoleSelect from '@/js/components/dashboard-sharing/UserRoleSelect';
 import Notice from '@/js/components/Notice';
 import Link from '@/js/components/Link';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const ModuleViewAccess = forwardRef(
 	(
@@ -55,7 +56,7 @@ const ModuleViewAccess = forwardRef(
 			return (
 				<Notice
 					className="googlesitekit-notice--small"
-					type={ Notice.TYPES.WARNING }
+					type={ NOTICE_TYPES.WARNING }
 					description={ createInterpolateElement(
 						__(
 							'Managing user required to manage view access. <a>Learn more</a>',

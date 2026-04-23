@@ -31,7 +31,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { useDispatch, useSelect } from 'googlesitekit-data';
@@ -80,7 +80,7 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'Success! Visitor groups added to your dashboard',
 					'google-site-kit'

@@ -34,7 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import { escapeURI } from '@/js/util/escape-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 
@@ -66,7 +66,7 @@ export default function EnhancedConversionsNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.INFO_ALT }
+				type={ NOTICE_TYPES.INFO_ALT }
 				title={ __(
 					'Boost your Analytics data with more metrics about your visitors',
 					'google-site-kit'

@@ -19,49 +19,51 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
-import Typography from '@/js/components/Typography';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { getErrorMessages } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks/utils';
+import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
+import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks';
 
-const CONFLICTING_PLUGINS_ERROR_SLUG = 'conflicting_plugins';
+interface CompatibilityWarningSubtleNotificationProps {
+	id: string;
+	Notification: ElementType;
+}
 
-export default function CompatibilityWarningSubtleNotification( {
-	id,
-	Notification,
-} ) {
-	const compatibilityChecks = useSelect( ( select ) =>
-		select( MODULES_SIGN_IN_WITH_GOOGLE ).getCompatibilityChecks()
-	);
-	const errors = useMemo(
-		() => compatibilityChecks?.checks || {},
-		[ compatibilityChecks ]
-	);
-	const errorMessages = useMemo(
-		() => getErrorMessages( errors ),
-		[ errors ]
-	);
+const CompatibilityWarningSubtleNotification: FC<
+	CompatibilityWarningSubtleNotificationProps
+> = ( { id, Notification } ) => {
+	const compatibilityChecks = useSelect( ( select ) => {
+		return select(
+			MODULES_SIGN_IN_WITH_GOOGLE
+			// @ts-expect-error Data store is not yet typed.
+		).getCompatibilityChecks() as
+			| undefined
+			| {
+					checks: SignInWithGoogleCompatibilityErrors;
+					timestamp: number;
+			  };
+	}, [] );
 
-	const pluginsAdminURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL()
-	);
+	const pluginsAdminURL = useSelect( ( select ) => {
+		// @ts-expect-error Data store is not yet typed.
+		return select( CORE_SITE ).getAdminURL();
+	}, [] );
 
-	const hasConflictingPluginsError =
-		!! errors[ CONFLICTING_PLUGINS_ERROR_SLUG ];
+	const errors = compatibilityChecks?.checks || {};
+	const hasConflictingPluginsError = !! errors?.conflicting_plugins;
 
 	const ctaButton =
 		hasConflictingPluginsError && pluginsAdminURL
@@ -75,26 +77,19 @@ export default function CompatibilityWarningSubtleNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.WARNING }
+				type={ NOTICE_TYPES.WARNING }
 				title={ __(
 					'Potential issues with Sign in with Google detected',
 					'google-site-kit'
 				) }
-				description={ errorMessages.map( ( message, index ) => (
-					<Typography key={ `${ index }-${ message }` }>
-						{ message }
-					</Typography>
-				) ) }
 				dismissButton={ {
 					label: __( 'Dismiss', 'google-site-kit' ),
 				} }
 				ctaButton={ ctaButton }
-			/>
+			>
+				<CompatibilityErrors errors={ errors } />
+			</NoticeNotification>
 		</Notification>
 	);
-}
-
-CompatibilityWarningSubtleNotification.propTypes = {
-	id: PropTypes.string.isRequired,
-	Notification: PropTypes.elementType.isRequired,
 };
+export default CompatibilityWarningSubtleNotification;

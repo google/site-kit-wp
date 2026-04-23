@@ -45,9 +45,10 @@ import { ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS } from '@/js/modules/analyt
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function EnhancedConversionsSettingsNotice( {
-	type = Notice.TYPES.INFO,
+	type = NOTICE_TYPES.INFO,
 } ) {
 	const id = ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS;
 
@@ -142,5 +143,5 @@ export default function EnhancedConversionsSettingsNotice( {
 }
 
 EnhancedConversionsSettingsNotice.propTypes = {
-	type: PropTypes.oneOf( Object.values( Notice.TYPES ) ),
+	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
 };

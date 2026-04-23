@@ -35,7 +35,7 @@ import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/c
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import SettingsControls from './SettingsControls';
 import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
@@ -102,7 +102,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				{ gtagUserDataEnabled && (
 					<EnhancedConversionsSettingsNotice
-						type={ TYPES.INFO_ALT }
+						type={ NOTICE_TYPES.INFO_ALT }
 					/>
 				) }
 			</SettingsGroup>

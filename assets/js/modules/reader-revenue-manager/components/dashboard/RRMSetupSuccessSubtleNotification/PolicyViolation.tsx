@@ -42,7 +42,7 @@ import {
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface PolicyViolationProps {
@@ -104,7 +104,11 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			onView={ onView }
 		>
 			<NoticeNotification
-				type={ isExtremeViolation ? TYPES.ERROR : TYPES.WARNING }
+				type={
+					isExtremeViolation
+						? NOTICE_TYPES.ERROR
+						: NOTICE_TYPES.WARNING
+				}
 				notificationID={ id }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(

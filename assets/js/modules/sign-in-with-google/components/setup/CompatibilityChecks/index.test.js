@@ -58,7 +58,7 @@ describe( 'CompatibilityChecks', () => {
 		} );
 	} );
 
-	it( 'renders fallback warning for conflicting plugins without bespoke message', async () => {
+	it( 'renders warning for conflicting plugins', async () => {
 		registry
 			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
 			.receiveGetCompatibilityChecks( {
@@ -66,7 +66,6 @@ describe( 'CompatibilityChecks', () => {
 					conflicting_plugins: {
 						'hide-login/hide-login.php': {
 							pluginName: 'Hide Login',
-							conflictMessage: null,
 						},
 					},
 				},
@@ -79,34 +78,7 @@ describe( 'CompatibilityChecks', () => {
 
 		await waitFor( () => {
 			expect( container ).toHaveTextContent(
-				'Hide Login can interfere with Sign in with Google. When this plugin is active, Sign in with Google may not function properly'
-			);
-		} );
-	} );
-
-	it( 'renders bespoke warning message when provided for conflicting plugins', async () => {
-		registry
-			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-			.receiveGetCompatibilityChecks( {
-				checks: {
-					conflicting_plugins: {
-						'security/security.php': {
-							pluginName: 'Security',
-							conflictMessage:
-								'Security requires additional configuration to work with Sign in with Google.',
-						},
-					},
-				},
-				timestamp: Date.now(),
-			} );
-
-		const { container } = render( <CompatibilityChecks />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect( container ).toHaveTextContent(
-				'Security requires additional configuration to work with Sign in with Google.'
+				'Your site may not be ready for Sign in with GoogleThe following plugins may prevent Sign in with Google from working properly:Hide Login'
 			);
 		} );
 	} );

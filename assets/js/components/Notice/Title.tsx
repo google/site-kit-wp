@@ -18,17 +18,18 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
-export default function Title( { className, children } ) {
+interface TitleProps {
+	className?: string;
+}
+
+const Title: FC< TitleProps > = ( { className, children } ) => {
 	return (
 		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
 			{ children }
 		</p>
 	);
-}
-
-Title.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
 };
+
+export default Title;
