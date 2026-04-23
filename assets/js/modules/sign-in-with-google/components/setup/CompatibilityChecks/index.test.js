@@ -83,6 +83,36 @@ describe( 'CompatibilityChecks', () => {
 		} );
 	} );
 
+	it( 'renders warning with multiple conflicting plugins', async () => {
+		registry
+			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
+			.receiveGetCompatibilityChecks( {
+				checks: {
+					conflicting_plugins: {
+						'hide-login/hide-login.php': {
+							pluginName: 'Hide Login',
+						},
+						'hide-login-2/hide-login-2.php': {
+							pluginName: 'Hide Login 2',
+						},
+					},
+				},
+				timestamp: Date.now(),
+			} );
+
+		const { container } = render( <CompatibilityChecks />, {
+			registry,
+		} );
+
+		await waitFor( () => {
+			expect( container ).toHaveTextContent(
+				'Your site may not be ready for Sign in with GoogleThe following plugins may prevent Sign in with Google from working properly:Hide LoginHide Login 2'
+			);
+		} );
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	it( 'renders warning when WordPress login is inaccessible', async () => {
 		registry
 			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
