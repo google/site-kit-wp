@@ -117,6 +117,6 @@ CustomDateRange.args = {
 CustomDateRange.scenario = {};
 
 export default {
-	title: 'Site Goals/Tile',
+	title: 'Modules/Analytics4/Components/Site Goals/Components/Tile',
 	component: Tile,
 };

@@ -122,6 +122,6 @@ NegativeChanges.args = {
 NegativeChanges.scenario = {};
 
 export default {
-	title: 'Site Goals/TilesGroup',
+	title: 'Modules/Analytics4/Components/Site Goals/Components/TilesGroup',
 	component: TilesGroup,
 };
