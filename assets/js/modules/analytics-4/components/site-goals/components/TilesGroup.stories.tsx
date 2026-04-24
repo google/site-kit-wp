@@ -59,7 +59,6 @@ SingleTile.args = {
 		/>
 	),
 };
-SingleTile.scenario = {};
 
 export const MultipleTiles = Template.bind( {} );
 MultipleTiles.storyName = 'Multiple Tiles';
@@ -93,7 +92,6 @@ MultipleTiles.args = {
 		/>,
 	],
 };
-MultipleTiles.scenario = {};
 
 export const NegativeChanges = Template.bind( {} );
 NegativeChanges.storyName = 'Negative Changes';
@@ -119,7 +117,6 @@ NegativeChanges.args = {
 		/>,
 	],
 };
-NegativeChanges.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Components/TilesGroup',

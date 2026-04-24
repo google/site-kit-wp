@@ -54,7 +54,6 @@ DefaultTile.args = {
 	previousValue: 1100,
 	format: { style: 'decimal' },
 };
-DefaultTile.scenario = {};
 
 export const PrimaryTile = Template.bind( {} );
 PrimaryTile.storyName = 'Primary Tile';
@@ -77,7 +76,6 @@ PercentFormat.args = {
 	previousValue: 0.038,
 	format: { style: 'percent', maximumFractionDigits: 1 },
 };
-PercentFormat.scenario = {};
 
 export const WithInfoTooltip = Template.bind( {} );
 WithInfoTooltip.storyName = 'With Info Tooltip';
@@ -100,7 +98,6 @@ NegativeChange.args = {
 	previousValue: 1200,
 	format: { style: 'decimal' },
 };
-NegativeChange.scenario = {};
 
 export const CustomDateRange = Template.bind( {} );
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
@@ -114,7 +111,6 @@ CustomDateRange.args = {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 	},
 };
-CustomDateRange.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Components/Tile',

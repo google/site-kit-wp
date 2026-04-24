@@ -124,7 +124,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, sessionsReportOptions );
 	},
 };
-Ready.scenario = {};
 
 export const ReadyAddToCart = Template.bind( {} );
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
@@ -138,7 +137,6 @@ ReadyAddToCart.args = {
 		provideAnalytics4MockReport( registry, sessionsReportOptions );
 	},
 };
-ReadyAddToCart.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';

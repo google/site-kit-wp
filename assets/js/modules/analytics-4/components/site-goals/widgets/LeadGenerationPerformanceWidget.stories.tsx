@@ -128,7 +128,6 @@ Ready.args = {
 		provideAnalytics4MockReport( registry, sessionsReportOptions );
 	},
 };
-Ready.scenario = {};
 
 export const ReadyMultipleEvents = Template.bind( {} );
 ReadyMultipleEvents.storyName = 'Ready (Multiple Events)';
@@ -145,7 +144,6 @@ ReadyMultipleEvents.args = {
 		provideAnalytics4MockReport( registry, sessionsReportOptions );
 	},
 };
-ReadyMultipleEvents.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
