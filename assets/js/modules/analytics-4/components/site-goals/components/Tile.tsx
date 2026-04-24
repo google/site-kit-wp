@@ -18,6 +18,7 @@
  * External dependencies
  */
 import type { FC } from 'react';
+import { ReactElementLike } from 'prop-types';
 import classnames from 'classnames';
 
 /**
@@ -38,7 +39,7 @@ export interface TileProps {
 	className?: string;
 	title: string;
 	subtitle: string;
-	infoTooltip?: string;
+	infoTooltip?: string | ReactElementLike;
 	currentValue: number;
 	previousValue: number;
 	format: {

@@ -39,6 +39,7 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import { createInterpolateElement } from '@wordpress/element';
 
 type ReportRow = {
 	dimensionValues?: Array< { value: string } >;
@@ -248,9 +249,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 							__( '%s total sessions', 'google-site-kit' ),
 							numFmt( currentSessions, NUMBER_FORMAT )
 						) }
-						infoTooltip={ __(
-							'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). Learn more',
-							'google-site-kit'
+						infoTooltip={ createInterpolateElement(
+							__(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									// eslint-disable-next-line
+									<a
+										href="#"
+										target="_blank"
+										rel="noreferrer noopener"
+									/>
+								),
+							}
 						) }
 						currentValue={ currentRate }
 						previousValue={ previousRate }
