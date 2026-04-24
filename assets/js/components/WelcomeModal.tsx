@@ -290,7 +290,7 @@ export default function WelcomeModal() {
 
 	return (
 		<Dialog
-			className="googlesitekit-dialog googlesitekit-welcome-modal"
+			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
 			onClose={ () => {
 				trackDismissal();
 				closeAndDismissModalWithTooltip();
