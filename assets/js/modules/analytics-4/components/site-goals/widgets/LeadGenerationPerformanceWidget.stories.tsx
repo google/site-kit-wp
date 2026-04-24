@@ -241,6 +241,6 @@ InsufficientPermissions.args = {
 };
 
 export default {
-	title: 'Site Goals/LeadGenerationPerformanceWidget',
+	title: 'Modules/Analytics4/Components/Site Goals/LeadGenerationPerformanceWidget',
 	component: LeadGenerationPerformanceWidget,
 };

@@ -234,6 +234,6 @@ InsufficientPermissions.args = {
 };
 
 export default {
-	title: 'Site Goals/OnlineStorePerformanceWidget',
+	title: 'Modules/Analytics4/Components/Site Goals/OnlineStorePerformanceWidget',
 	component: OnlineStorePerformanceWidget,
 };
