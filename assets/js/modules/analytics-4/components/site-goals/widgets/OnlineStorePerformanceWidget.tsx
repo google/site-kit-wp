@@ -33,16 +33,31 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import {
-	PrimaryActionSection,
-	PrimaryActionSectionLoading,
-} from '@/js/modules/analytics-4/components/site-goals/components/PrimaryActionSection';
+import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 
 type ReportRow = {
 	dimensionValues?: Array< { value: string } >;
 	metricValues?: Array< { value: string } >;
+};
+
+type Report = {
+	rows: ReportRow[];
+	totals: ReportRow[];
+};
+
+const PERCENT_FORMAT = {
+	style: 'percent' as const,
+	signDisplay: 'never' as const,
+	maximumFractionDigits: 1,
+};
+
+const NUMBER_FORMAT = {
+	style: 'decimal' as const,
 };
 
 const EVENT_RATE_LABELS: Record< string, string > = {
@@ -58,6 +73,58 @@ const EVENT_TOTAL_LABELS: Record< string, string > = {
 function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
 	return ( row: ReportRow ) =>
 		row?.dimensionValues?.[ dimensionIndex ]?.value === dateRangeSlug;
+}
+
+function processReports( eventsReport: Report, sessionsReport: Report ) {
+	const { rows: primaryEventRows = [] } = eventsReport || {};
+	const { totals: sessionsRows = [] } = sessionsReport || {};
+
+	// dateRange is at dimensionValues[1] since eventName is at [0].
+	const currentPrimaryCount =
+		parseInt(
+			( primaryEventRows as ReportRow[] ).find(
+				makeFind( 'date_range_0', 1 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	const previousPrimaryCount =
+		parseInt(
+			( primaryEventRows as ReportRow[] ).find(
+				makeFind( 'date_range_1', 1 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	// Get session counts.
+	const currentSessions =
+		parseInt(
+			( sessionsRows as ReportRow[] ).find(
+				makeFind( 'date_range_0', 0 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	const previousSessions =
+		parseInt(
+			( sessionsRows as ReportRow[] ).find(
+				makeFind( 'date_range_1', 0 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	const currentRate =
+		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
+	const previousRate =
+		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
+
+	return {
+		currentRate,
+		previousRate,
+		currentPrimaryCount,
+		previousPrimaryCount,
+		currentSessions,
+	};
 }
 
 const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
@@ -89,12 +156,23 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 			'analytics-4_online-store-performance-widget_primaryEventReportOptions',
 	};
 
-	const primaryEventReport = useInViewSelect(
+	const sessionsOptions = {
+		...dates,
+		metrics: [ { name: 'sessions' } ],
+		reportID: 'analytics-4_site-goals_sessionsReportOptions',
+	};
+
+	const [ primaryEventReport, sessionsReport ] = useInViewSelect(
 		( select: Select ) =>
 			primaryEvent
-				? select( MODULES_ANALYTICS_4 ).getReport( eventOptions )
+				? [
+						select( MODULES_ANALYTICS_4 ).getReport( eventOptions ),
+						select( MODULES_ANALYTICS_4 ).getReport(
+							sessionsOptions
+						),
+				  ]
 				: undefined,
-		[ primaryEvent, eventOptions ]
+		[ primaryEvent, eventOptions, sessionsOptions ]
 	);
 
 	const loading = useSelect(
@@ -103,6 +181,10 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 						'getReport',
 						[ eventOptions ]
+				  ) ||
+				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getReport',
+						[ sessionsOptions ]
 				  )
 				: undefined,
 		[ primaryEvent, eventOptions ]
@@ -114,6 +196,10 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 						'getReport',
 						[ eventOptions ]
+				  ) ||
+				  select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+						'getReport',
+						[ sessionsOptions ]
 				  )
 				: undefined,
 		[]
@@ -123,24 +209,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		return <WidgetNull />;
 	}
 
-	const { rows: primaryEventRows = [] } = primaryEventReport || {};
+	if ( error ) {
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+			</Widget>
+		);
+	}
 
-	// dateRange is at dimensionValues[1] since eventName is at [0].
-	const currentPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
+	const {
+		currentPrimaryCount,
+		previousPrimaryCount,
+		currentSessions,
+		currentRate,
+		previousRate,
+	} = processReports( primaryEventReport, sessionsReport );
 
 	return (
 		<Widget>
@@ -148,31 +231,48 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 				title={ __( 'Online store performance', 'google-site-kit' ) }
 			/>
 
-			{ loading && <PrimaryActionSectionLoading /> }
-
-			{ ! loading && error && (
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			) }
+			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && ! error && (
-				<PrimaryActionSection
-					ErrorComponent={ WidgetReportError }
-					currentCount={ currentPrimaryCount }
-					previousCount={ previousPrimaryCount }
-					currentLabel={
-						EVENT_RATE_LABELS[ primaryEvent ] ||
-						__( 'Unknown Event', 'google-site-kit' )
-					}
-					previousLabel={
-						EVENT_TOTAL_LABELS[ primaryEvent ] ||
-						__( 'Unknown Event', 'google-site-kit' )
-					}
-					eventSubtext={ sprintf(
-						/* translators: %s: GA4 event name */
-						__( '“%s” events', 'google-site-kit' ),
-						primaryEvent
-					) }
-				/>
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
+						title={
+							EVENT_RATE_LABELS[ primaryEvent ] ||
+							__( 'Unknown Event', 'google-site-kit' )
+						}
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( '%s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						infoTooltip={ __(
+							'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). Learn more',
+							'google-site-kit'
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
+
+					<Tile
+						title={
+							EVENT_TOTAL_LABELS[ primaryEvent ] ||
+							__( 'Unknown Event', 'google-site-kit' )
+						}
+						subtitle={ sprintf(
+							/* translators: %s: GA4 event name */
+							__( '“%s” events', 'google-site-kit' ),
+							primaryEvent
+						) }
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
 		</Widget>
 	);

@@ -33,21 +33,90 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import {
-	PrimaryActionSection,
-	PrimaryActionSectionLoading,
-} from '@/js/modules/analytics-4/components/site-goals/components/PrimaryActionSection';
+import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 
 type ReportRow = {
 	dimensionValues?: Array< { value: string } >;
 	metricValues?: Array< { value: string } >;
 };
 
+type Report = {
+	rows: ReportRow[];
+	totals: ReportRow[];
+};
+
+const PERCENT_FORMAT = {
+	style: 'percent' as const,
+	signDisplay: 'never' as const,
+	maximumFractionDigits: 1,
+};
+
+const NUMBER_FORMAT = {
+	style: 'decimal' as const,
+};
+
 function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
 	return ( row: ReportRow ) =>
 		row?.dimensionValues?.[ dimensionIndex ]?.value === dateRangeSlug;
+}
+
+function processReports( eventsReport: Report, sessionsReport: Report ) {
+	const { rows: leadEventRows = [] } = eventsReport || {};
+	const { totals: sessionsRows = [] } = sessionsReport || {};
+
+	// Aggregate eventCount across all detected lead events per date range.
+	// dateRange is at dimensionValues[1] since eventName is at [0].
+	const currentPrimaryCount = ( leadEventRows as ReportRow[] )
+		.filter( makeFind( 'date_range_0', 1 ) )
+		.reduce(
+			( sum, row ) =>
+				sum +
+				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
+			0
+		);
+
+	const previousPrimaryCount = ( leadEventRows as ReportRow[] )
+		.filter( makeFind( 'date_range_1', 1 ) )
+		.reduce(
+			( sum, row ) =>
+				sum +
+				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
+			0
+		);
+
+	// Get session counts.
+	const currentSessions =
+		parseInt(
+			( sessionsRows as ReportRow[] ).find(
+				makeFind( 'date_range_0', 0 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	const previousSessions =
+		parseInt(
+			( sessionsRows as ReportRow[] ).find(
+				makeFind( 'date_range_1', 0 )
+			)?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0;
+
+	const currentRate =
+		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
+	const previousRate =
+		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
+	return {
+		currentRate,
+		previousRate,
+		currentPrimaryCount,
+		previousPrimaryCount,
+		currentSessions,
+	};
 }
 
 const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
@@ -86,12 +155,24 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 	};
 
-	const leadEventsReport = useInViewSelect(
-		( select: Select ) =>
-			hasLeadEvents
-				? select( MODULES_ANALYTICS_4 ).getReport( eventsOptions )
-				: undefined,
-		[ hasLeadEvents, eventsOptions ]
+	const sessionsOptions = {
+		...dates,
+		metrics: [ { name: 'sessions' } ],
+		reportID: 'analytics-4_site-goals_sessionsReportOptions',
+	};
+
+	const [ leadEventsReport, sessionsReport ] = useInViewSelect(
+		( select: Select ) => {
+			if ( ! hasLeadEvents ) {
+				return [];
+			}
+
+			return [
+				select( MODULES_ANALYTICS_4 ).getReport( eventsOptions ),
+				select( MODULES_ANALYTICS_4 ).getReport( sessionsOptions ),
+			];
+		},
+		[ hasLeadEvents, eventsOptions, sessionsOptions ]
 	);
 
 	const loading = useSelect(
@@ -100,6 +181,10 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 						'getReport',
 						[ eventsOptions ]
+				  ) ||
+				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getReport',
+						[ sessionsOptions ]
 				  )
 				: undefined,
 		[]
@@ -109,6 +194,9 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 				eventsOptions,
+			] ) ||
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+				sessionsOptions,
 			] ),
 		[]
 	);
@@ -117,72 +205,84 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		return <WidgetNull />;
 	}
 
-	const { rows: leadEventRows = [] } = leadEventsReport || {};
-
-	// Aggregate eventCount across all detected lead events per date range.
-	// dateRange is at dimensionValues[1] since eventName is at [0].
-	const currentPrimaryCount = ( leadEventRows as ReportRow[] )
-		.filter( makeFind( 'date_range_0', 1 ) )
-		.reduce(
-			( sum, row ) =>
-				sum +
-				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
-			0
+	if ( error ) {
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+			</Widget>
 		);
+	}
 
-	const previousPrimaryCount = ( leadEventRows as ReportRow[] )
-		.filter( makeFind( 'date_range_1', 1 ) )
-		.reduce(
-			( sum, row ) =>
-				sum +
-				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
-			0
-		);
+	const {
+		currentPrimaryCount,
+		previousPrimaryCount,
+		currentSessions,
+		currentRate,
+		previousRate,
+	} = processReports( leadEventsReport, sessionsReport );
 
 	return (
 		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Lead generation performance', 'google-site-kit' ) }
-			/>
-
-			{ loading && <PrimaryActionSectionLoading /> }
-
-			{ ! loading && error && (
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+			{ ! error && (
+				<WidgetHeaderTitle
+					title={ __(
+						'Lead generation performance',
+						'google-site-kit'
+					) }
+				/>
 			) }
 
-			{ ! loading && ! error && (
-				<PrimaryActionSection
-					ErrorComponent={ WidgetReportError }
-					currentCount={ currentPrimaryCount }
-					previousCount={ previousPrimaryCount }
-					currentLabel={ __(
-						'Form completion rate',
-						'google-site-kit'
-					) }
-					previousLabel={ __(
-						'Total form completions',
-						'google-site-kit'
-					) }
-					eventSubtext={
-						detectedLeadEvents.length === 1
-							? sprintf(
-									/* translators: %s: GA4 event name */
-									__( '"%s" events', 'google-site-kit' ),
-									detectedLeadEvents[ 0 ]
-							  )
-							: sprintf(
-									/* translators: %d: number of detected event types */
-									_n(
-										'%d event type',
-										'%d event types',
-										detectedLeadEvents.length,
-										'google-site-kit'
-									),
-									detectedLeadEvents.length
-							  )
-					}
-				/>
+			{ loading && <PreviewBlock width="100%" height="100px" /> }
+
+			{ ! loading && (
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
+						title={ __(
+							'Form completion rate',
+							'google-site-kit'
+						) }
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( '%s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
+
+					<Tile
+						title={ __(
+							'Total form completions',
+							'google-site-kit'
+						) }
+						subtitle={
+							detectedLeadEvents.length === 1
+								? sprintf(
+										/* translators: %s: GA4 event name */
+										__( '"%s" events', 'google-site-kit' ),
+										detectedLeadEvents[ 0 ]
+								  )
+								: sprintf(
+										/* translators: %d: number of detected event types */
+										_n(
+											'%d event type',
+											'%d event types',
+											detectedLeadEvents.length,
+											'google-site-kit'
+										),
+										detectedLeadEvents.length
+								  )
+						}
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
 		</Widget>
 	);
