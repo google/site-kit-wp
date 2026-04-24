@@ -1,6 +1,4 @@
 /**
- * OnlineStorePerformanceWidget component tests.
- *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,30 +47,27 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		'analyticsOnlineStorePerformance'
 	);
 
-	function buildReportOptions(
+	function buildPrimaryEventReportOptions(
 		dates: Record< string, unknown >,
 		primaryEvent: string
 	) {
 		return {
-			primaryEventReport: {
-				...dates,
-				metrics: [ { name: 'eventCount' } ],
-				dimensions: [ 'eventName' ],
-				dimensionFilters: {
-					eventName: {
-						filterType: 'inListFilter',
-						value: [ primaryEvent ],
-					},
-				},
-				reportID:
-					'analytics-4_online-store-performance-widget_widget_primaryEventReportOptions',
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: primaryEvent,
 			},
-			sessionsReport: {
-				...dates,
-				metrics: [ { name: 'sessions' } ],
-				reportID:
-					'analytics-4_online-store-performance-widget_widget_sessionsReportOptions',
-			},
+			reportID:
+				'analytics-4_online-store-performance-widget_primaryEventReportOptions',
+		};
+	}
+
+	function buildSessionsReportOptions( dates: Record< string, unknown > ) {
+		return {
+			...dates,
+			metrics: [ { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_sessionsReportOptions',
 		};
 	}
 
@@ -115,7 +110,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders PrimaryActionSection with purchase primary event', async () => {
+	it( 'renders the primary action section with purchase primary event', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -125,15 +120,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { primaryEventReport, sessionsReport } = buildReportOptions(
+		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
+		const sessionsReport = buildSessionsReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, sessionsReport );
 
-		const { container, waitForRegistry } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -145,8 +141,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			)
 		).toBeInTheDocument();
 		expect(
-			container.querySelectorAll( '.googlesitekit-km-widget-tile' )
+			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
 		).toHaveLength( 2 );
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( '“purchase” events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'falls back to add_to_cart when purchase is not detected', async () => {
@@ -159,28 +158,26 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { primaryEventReport, sessionsReport } = buildReportOptions(
+		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
+		const sessionsReport = buildSessionsReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, sessionsReport );
 
-		const { container, getAllByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
+		expect( getByText( 'Add to Cart Rate' ) ).toBeInTheDocument();
 		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
+			getByText( 'Total products added to cart' )
 		).toBeInTheDocument();
-		expect( getAllByText( 'Total products added to cart' ) ).toHaveLength(
-			2
-		);
+		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -196,21 +193,23 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { primaryEventReport, sessionsReport } = buildReportOptions(
+		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
+		const sessionsReport = buildSessionsReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, sessionsReport );
 
-		const { getAllByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getAllByText( 'Total Sales' ) ).toHaveLength( 2 );
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {
@@ -223,22 +222,22 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { primaryEventReport, sessionsReport } = buildReportOptions(
+		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
+		const sessionsReport = buildSessionsReportOptions( dates );
 
-		// Provide empty reports so sessions count is 0.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( { rows: [] }, { options: primaryEventReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, { options: sessionsReport } );
+			.finishResolution( 'getReport', [ primaryEventReport ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ primaryEventReport ] );
+			.receiveGetReport( { totals: [] }, { options: sessionsReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ sessionsReport ] );
@@ -249,11 +248,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		// With zero sessions, rate should be 0 = 0%.
 		expect( getAllByText( '0%' ).length ).toBeGreaterThanOrEqual( 1 );
 	} );
 
-	it( 'renders loading state while reports are being resolved', async () => {
+	it( 'renders loading state while reports are being resolved', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -263,7 +261,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { primaryEventReport, sessionsReport } = buildReportOptions(
+		const primaryEventReport = buildPrimaryEventReportOptions(
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
@@ -271,17 +269,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ primaryEventReport ] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ sessionsReport ] );
 
-		const { container, waitForRegistry } = render(
+		const { container } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
-		await waitForRegistry();
 
-		// Loading preview block should be present.
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();

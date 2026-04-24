@@ -47,30 +47,30 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		'analyticsLeadGenerationPerformance'
 	);
 
-	function buildReportOptions(
+	function buildLeadEventsReportOptions(
 		dates: Record< string, unknown >,
 		leadEvents: string[]
 	) {
 		return {
-			leadEventsReport: {
-				...dates,
-				metrics: [ { name: 'eventCount' } ],
-				dimensions: [ 'eventName' ],
-				dimensionFilters: {
-					eventName: {
-						filterType: 'inListFilter',
-						value: leadEvents,
-					},
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ 'eventName' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: leadEvents,
 				},
-				reportID:
-					'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 			},
-			sessionsReport: {
-				...dates,
-				metrics: [ { name: 'sessions' } ],
-				reportID:
-					'analytics-4_lead-generation-performance-widget_widget_sessionsReportOptions',
-			},
+			reportID:
+				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
+		};
+	}
+
+	function buildSessionsReportOptions( dates: Record< string, unknown > ) {
+		return {
+			...dates,
+			metrics: [ { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_sessionsReportOptions',
 		};
 	}
 
@@ -113,7 +113,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'renders PrimaryActionSection with a single detected lead event', async () => {
+	it( 'renders the primary action section with a single detected lead event', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -123,15 +123,15 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { leadEventsReport, sessionsReport } = buildReportOptions(
-			dates,
-			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ]
-		);
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const sessionsReport = buildSessionsReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
 		provideAnalytics4MockReport( registry, sessionsReport );
 
-		const { container, getAllByText, waitForRegistry } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -143,9 +143,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			)
 		).toBeInTheDocument();
 		expect(
-			container.querySelectorAll( '.googlesitekit-km-widget-tile' )
+			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
 		).toHaveLength( 2 );
-		expect( getAllByText( 'Total form completions' ) ).toHaveLength( 2 );
+		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
+		expect( getByText( '"generate_lead" events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'aggregates event counts across multiple detected lead events', async () => {
@@ -161,15 +163,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { leadEventsReport, sessionsReport } = buildReportOptions(
-			dates,
-			[
-				ENUM_CONVERSION_EVENTS.CONTACT,
-				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-			]
-		);
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const sessionsReport = buildSessionsReportOptions( dates );
 
-		// Provide mock report data with multiple event rows per date range.
+		// Provide lead event rows: contact (30) + generate_lead (20) = 50 for date_range_0.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				rows: [
@@ -205,10 +205,15 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			},
 			{ options: leadEventsReport }
 		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ leadEventsReport ] );
 
+		// Provide sessions in totals.
+		// currentSessions = 200 → rate = 50 / 200 = 25%.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
-				rows: [
+				totals: [
 					{
 						dimensionValues: [ { value: 'date_range_0' } ],
 						metricValues: [ { value: '200' } ],
@@ -221,28 +226,19 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			},
 			{ options: sessionsReport }
 		);
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ leadEventsReport ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ sessionsReport ] );
 
-		const { container, getByText, waitForRegistry } = render(
+		const { getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		// currentPrimaryCount = 30 + 20 = 50, currentSessions = 200 → rate = 25%
-		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
-		).toBeInTheDocument();
+		// currentPrimaryCount = 30 + 20 = 50, currentSessions = 200 → rate = 25%.
 		expect( getByText( '25%' ) ).toBeInTheDocument();
-		// currentPrimaryCount = 50
+		// Total form completions tile shows currentPrimaryCount = 50.
 		expect( getByText( '50' ) ).toBeInTheDocument();
 	} );
 
@@ -256,22 +252,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { leadEventsReport, sessionsReport } = buildReportOptions(
-			dates,
-			[ ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ]
-		);
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+		] );
+		const sessionsReport = buildSessionsReportOptions( dates );
 
-		// Provide empty reports so sessions count is 0.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( { rows: [] }, { options: leadEventsReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [] }, { options: sessionsReport } );
+			.finishResolution( 'getReport', [ leadEventsReport ] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ leadEventsReport ] );
+			.receiveGetReport( { totals: [] }, { options: sessionsReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ sessionsReport ] );
@@ -282,11 +277,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		// With zero sessions, rate should be 0 = 0%.
 		expect( getAllByText( '0%' ).length ).toBeGreaterThanOrEqual( 1 );
 	} );
 
-	it( 'renders loading state while reports are being resolved', async () => {
+	it( 'renders loading state while reports are being resolved', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -296,25 +290,19 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			compare: true,
 		} );
 
-		const { leadEventsReport, sessionsReport } = buildReportOptions(
-			dates,
-			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ]
-		);
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ leadEventsReport ] );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [ sessionsReport ] );
 
-		const { container, waitForRegistry } = render(
+		const { container } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
-		await waitForRegistry();
 
-		// Loading preview block should be present.
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();

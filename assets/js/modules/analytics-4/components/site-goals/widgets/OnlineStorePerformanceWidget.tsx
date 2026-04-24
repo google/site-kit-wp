@@ -171,7 +171,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 							sessionsOptions
 						),
 				  ]
-				: undefined,
+				: [],
 		[ primaryEvent, eventOptions, sessionsOptions ]
 	);
 
