@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, MouseEvent, ReactNode, Ref } from 'react';
+import { FC, forwardRef, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -34,11 +34,29 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 // @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
 
+interface GraphicContainerProps {
+	children: ReactNode;
+	className: string;
+}
+
+const GraphicContainer = forwardRef< HTMLDivElement, GraphicContainerProps >(
+	( { children, className }, ref ) => (
+		<div ref={ ref } className={ className }>
+			{ children }
+		</div>
+	)
+);
+
+const GraphicContainerWithIntersectionObserver =
+	withIntersectionObserver( GraphicContainer );
+
 export interface BannerModalProps {
-	Graphic?: FC;
+	Graphic: FC;
+	onView: () => void;
 	onClose: () => void;
 	title: ReactNode;
 	description: ReactNode;
@@ -54,7 +72,6 @@ export interface BannerModalProps {
 			event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 		) => void;
 	};
-	intersectionRef?: Ref< HTMLDivElement >;
 }
 
 /**
@@ -64,24 +81,24 @@ export interface BannerModalProps {
  *
  * @since n.e.x.t
  *
- * @param props                 Component props.
- * @param props.Graphic         SVG graphic component to render in the modal header.
- * @param props.onClose         Callback invoked when the modal is closed.
- * @param props.title           Modal title text.
- * @param props.description     Modal description content (string or element).
- * @param props.ctaButton       Configuration object for the primary CTA button.
- * @param props.dismissButton   Configuration object for the dismiss button.
- * @param props.intersectionRef Ref forwarded to the first container div.
- * @return                      BannerModal component.
+ * @param props               Component props.
+ * @param props.Graphic       SVG graphic component to render in the modal header.
+ * @param props.onView        Callback invoked when the modal content scrolls into view, used for tracking purposes.
+ * @param props.onClose       Callback invoked when the modal is closed.
+ * @param props.title         Modal title text.
+ * @param props.description   Modal description content (string or element).
+ * @param props.ctaButton     Configuration object for the primary CTA button.
+ * @param props.dismissButton Configuration object for the dismiss button.
+ * @return                    BannerModal component.
  */
 const BannerModal: FC< BannerModalProps > = ( {
 	Graphic,
+	onView,
 	onClose,
 	title,
 	description,
 	ctaButton,
 	dismissButton,
-	intersectionRef,
 } ) => {
 	return (
 		<Dialog
@@ -90,11 +107,11 @@ const BannerModal: FC< BannerModalProps > = ( {
 			open
 		>
 			<DialogContent className="googlesitekit-welcome-modal__content">
-				<div
-					ref={ intersectionRef }
+				<GraphicContainerWithIntersectionObserver
+					onInView={ onView }
 					className="googlesitekit-welcome-modal__graphic"
 				>
-					{ Graphic && <Graphic /> }
+					<Graphic />
 
 					<Button
 						// @ts-expect-error - The `Button` component is not typed yet.
@@ -104,7 +121,7 @@ const BannerModal: FC< BannerModalProps > = ( {
 						aria-label={ __( 'Close', 'google-site-kit' ) }
 						hideTooltipTitle
 					/>
-				</div>
+				</GraphicContainerWithIntersectionObserver>
 
 				<div className="googlesitekit-welcome-modal__text">
 					<Typography
@@ -125,7 +142,6 @@ const BannerModal: FC< BannerModalProps > = ( {
 					</P>
 				</div>
 			</DialogContent>
-
 			<DialogFooter className="googlesitekit-welcome-modal__footer">
 				<Fragment>
 					{ dismissButton && (
