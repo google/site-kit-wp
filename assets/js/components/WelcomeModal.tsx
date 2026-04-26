@@ -29,8 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import { ReactElement, useEffect, useRef } from 'react';
-import { useIntersection } from 'react-use';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
@@ -167,21 +166,7 @@ export default function WelcomeModal() {
 		triggerOnDemandTour( welcomeTour );
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
-	const intersectionRef = useRef( null );
-
-	const intersectionEntry = useIntersection( intersectionRef, {
-		threshold: 0.25,
-	} );
-	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const inView = !! intersectionEntry?.intersectionRatio;
-
-	useEffect( () => {
-		if ( ! inView || hasBeenInView ) {
-			return;
-		}
-
-		setHasBeenInView( true );
-
+	const handleView = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_welcome-modal`,
 			'view_notice',
@@ -209,7 +194,7 @@ export default function WelcomeModal() {
 		}
 
 		trackSetupEventsOnce();
-	}, [ inView, hasBeenInView, viewContext, modalVariant ] );
+	}, [ viewContext, modalVariant ] );
 
 	const trackConfirmation = useCallback( () => {
 		trackEvent(
@@ -323,10 +308,10 @@ export default function WelcomeModal() {
 	return (
 		<BannerModal
 			Graphic={ Graphic }
+			onView={ handleView }
 			onClose={ handleClose }
 			title={ title }
 			description={ description }
-			intersectionRef={ intersectionRef }
 			ctaButton={ ctaButton }
 			dismissButton={ dismissButton }
 		/>
