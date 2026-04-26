@@ -39,6 +39,7 @@ Default.storyName = 'Default';
 Default.scenario = {};
 Default.args = {
 	Graphic: WelcomeModalGraphic,
+	onView: () => {},
 	onClose: () => {},
 	title: 'Welcome to Site Kit',
 	description:
