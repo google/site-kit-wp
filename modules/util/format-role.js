@@ -1,0 +1,1 @@
+export function formatRoleForDisplay(role,rolesMap){if(!role||typeof role!=="string")return"";const r=rolesMap?.[role];if(r?.display_name)return r.display_name;return role.split("_").map(p=>p.charAt(0).toUpperCase()+p.slice(1).toLowerCase()).join(" ")}
