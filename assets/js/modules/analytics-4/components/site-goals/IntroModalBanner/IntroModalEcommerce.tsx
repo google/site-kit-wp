@@ -52,7 +52,7 @@ export default function IntroModalEcommerce( {
 					a: (
 						<Link
 							// @ts-expect-error `Link` component is not currently typed.
-							href="#site-goals" // TODO: Update with actual link to site goals documentation.
+							href="#site-goals" // TODO: Update with actual link to site goal's documentation.
 							aria-label={ __(
 								'Learn more about site goals',
 								'google-site-kit'
