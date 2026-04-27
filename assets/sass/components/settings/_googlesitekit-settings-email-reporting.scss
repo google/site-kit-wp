@@ -43,5 +43,11 @@
 		.googlesitekit-email-reporting__admin-settings-notice {
 			margin-top: $grid-gap-desktop;
 		}
+
+		.googlesitekit-settings-email-reporting__confirm-disable-modal {
+			.mdc-dialog__lead  {
+				font-weight: $fw-normal;
+			}
+		}
 	}
 }
