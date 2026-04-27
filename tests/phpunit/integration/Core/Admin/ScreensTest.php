@@ -264,7 +264,7 @@ class ScreensTest extends TestCase {
 		$this->assertStringContainsString( 'reAuth=true', $redirect->get_location(), 'Redirect should include reAuth.' );
 	}
 
-	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_to_itself_with_setupFlowRefresh_enabled() {
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_with_setupFlowRefresh_enabled() {
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( false );
 
@@ -283,7 +283,43 @@ class ScreensTest extends TestCase {
 
 		$redirect = $this->load_dashboard_screen();
 
-		$this->assertNull( $redirect, 'Analytics setup screen should not redirect to itself.' );
+		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
+	}
+
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->set_analytics_setup_complete( false );
+
+		// Recreate Screens with MutableInput context so query params are accessible.
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$assets         = new Assets( $context );
+		$authentication = new Authentication( $context );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$this->screens = new Screens( $context, $assets, new Modules( $context ), $authentication );
+
+		$_GET['slug']         = 'analytics-4';
+		$_GET['reAuth']       = '1';
+		$_GET['showProgress'] = '1';
+
+		// Activate the `analytics-4` module.
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'analytics-4' ) );
+
+		// Provide minimal settings to consider it connected.
+		update_option(
+			'googlesitekit_analytics-4_settings',
+			array(
+				'accountID'       => '123',
+				'propertyID'      => '456',
+				'webDataStreamID' => '789',
+				'measurementID'   => 'G-ABC',
+			)
+		);
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
