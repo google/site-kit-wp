@@ -56,3 +56,5 @@ DismissButton.propTypes = {
 	href: PropTypes.string,
 	external: PropTypes.bool,
 };
+
+// Contributed via automated bounty system
