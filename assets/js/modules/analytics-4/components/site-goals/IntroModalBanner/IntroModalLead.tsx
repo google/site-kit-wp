@@ -50,7 +50,6 @@ export default function IntroModalLead( {
 				),
 				{
 					a: (
-						//
 						<Link
 							// @ts-expect-error `Link` component is not currently typed.
 							href="#site-goals" // TODO: Update with actual link to site goals documentation.
