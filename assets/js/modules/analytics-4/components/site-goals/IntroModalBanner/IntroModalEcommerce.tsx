@@ -27,7 +27,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import BannerModal from '@/js/components/BannerModal';
 // @ts-expect-error - We need to add types for imported SVGs.
-import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.svg';
+import SiteGoalsIntroModalEcommerceGraphic from '@/svg/graphics/site-goals-intro-modal-ecommerce.svg';
 import Link from '@/js/components/Link';
 import { IntroModalVariantProps } from '@/js/modules/analytics-4/components/site-goals/IntroModalBanner/index';
 
@@ -39,7 +39,7 @@ export default function IntroModalEcommerce( {
 }: IntroModalVariantProps ) {
 	return (
 		<BannerModal
-			Graphic={ SiteGoalsIntroModalGraphic }
+			Graphic={ SiteGoalsIntroModalEcommerceGraphic }
 			onView={ onView }
 			onClose={ onDismiss }
 			title={ __( 'See what drives your sales', 'google-site-kit' ) }
