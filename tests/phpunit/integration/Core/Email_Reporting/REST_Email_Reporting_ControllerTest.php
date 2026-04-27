@@ -416,6 +416,40 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertIsInt( $data['totalPages'], 'TotalPages field should be an integer.' );
 	}
 
+	public function test_get_eligible_subscribers_user_payload_includes_role_slug_and_display_name() {
+		$current_admin = $this->create_admin_with_token( 'admin-current' );
+		$this->create_admin_with_token( 'admin-other' );
+
+		$this->unset_user_access_token( $this->primary_admin_id );
+		wp_set_current_user( $current_admin );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-eligible-subscribers' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$sample_user = $data['users'][0] ?? null;
+		$this->assertIsArray( $sample_user, 'Expected at least one subscriber in the response.' );
+
+		$this->assertArrayHasKey( 'roleDisplayName', $sample_user, 'User payload should include roleDisplayName.' );
+		$this->assertIsString( $sample_user['roleDisplayName'], 'roleDisplayName should be a string.' );
+		$this->assertSame( 'administrator', $sample_user['role'], 'role should be the role slug.' );
+
+		$this->assertSame(
+			'Administrator',
+			$sample_user['roleDisplayName'],
+			'roleDisplayName should be the translated human-readable role name.'
+		);
+		$this->assertNotSame(
+			$sample_user['role'],
+			$sample_user['roleDisplayName'],
+			'Default administrator role slug should not match its display name string.'
+		);
+	}
+
 	public function test_get_eligible_subscribers_non_matching_search_returns_empty_result() {
 		$current_admin = $this->create_admin_with_token( 'admin-current' );
 		$this->create_admin_with_token( 'admin-other' );

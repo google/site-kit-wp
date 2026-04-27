@@ -524,7 +524,7 @@ const baseSelectors = {
 							id: user.id,
 							name: user.displayName || user.name,
 							email: user.email,
-							role: user.role,
+							role: user.roleDisplayName || user.role,
 							subscribed: user.subscribed,
 							invited: user.invited,
 						} ) ),
