@@ -344,6 +344,54 @@ describe( 'ModuleSetup', () => {
 			] );
 		}
 
+		it( 'should not override existing params in redirect URL with forwarded params', async () => {
+			const moduleSlug = 'test-module';
+
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=ads_success';
+
+			const customRedirectURLWithNotification =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=ads&notification=ads_success';
+
+			registerFinishSetupModule( moduleSlug, ( finishSetup ) =>
+				finishSetup( customRedirectURLWithNotification )
+			);
+
+			const { getByRole, waitForRegistry } = render(
+				<ModuleSetup moduleSlug={ moduleSlug } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+			await waitFor( () =>
+				expect(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				).toBeInTheDocument()
+			);
+
+			await act( () => {
+				fireEvent.click(
+					getByRole( 'button', { name: 'Trigger finish setup' } )
+				);
+			} );
+
+			await act( async () => {
+				await waitFor( () =>
+					expect( global.location.assign ).toHaveBeenCalled()
+				);
+			} );
+
+			const redirectURL = new URL(
+				global.location.assign.mock.calls[ 0 ][ 0 ]
+			);
+			expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
+				'ads_success'
+			);
+		} );
+
 		it( 'should preserve forwarded params for custom redirect URL', async () => {
 			const moduleSlug = 'test-module';
 
