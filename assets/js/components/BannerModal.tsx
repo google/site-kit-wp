@@ -30,7 +30,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Button, SpinnerButton } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
@@ -153,10 +153,10 @@ const BannerModal: FC< BannerModalProps > = ( {
 					) }
 
 					{ ctaButton && (
-						// @ts-expect-error - The `SpinnerButton` component is not typed yet.
-						<SpinnerButton onClick={ ctaButton.onClick }>
+						// @ts-expect-error - The `Button` component is not typed yet.
+						<Button onClick={ ctaButton.onClick }>
 							{ ctaButton.label }
-						</SpinnerButton>
+						</Button>
 					) }
 				</Fragment>
 			</DialogFooter>
