@@ -49,7 +49,7 @@ const mockEligibleSubscribers = [
 		displayName: 'MainAdminName',
 		name: 'MainAdminName',
 		email: 'someone@anybusiness.com',
-		role: 'administrator',
+		role: 'Administrator',
 		subscribed: false,
 	},
 	{
@@ -57,7 +57,7 @@ const mockEligibleSubscribers = [
 		displayName: 'AdminName2',
 		name: 'AdminName2',
 		email: 'anotheradminname@anybusiness.com',
-		role: 'administrator',
+		role: 'Administrator',
 		subscribed: false,
 	},
 	{
@@ -65,7 +65,7 @@ const mockEligibleSubscribers = [
 		displayName: 'AuthorName',
 		name: 'AuthorName',
 		email: 'admin2business@gmail.com',
-		role: 'author',
+		role: 'Author',
 		subscribed: false,
 	},
 ];
