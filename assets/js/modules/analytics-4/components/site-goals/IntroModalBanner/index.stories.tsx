@@ -54,7 +54,6 @@ type StoryWithMetadata = typeof Template & {
 
 export const Ecommerce = Template.bind( {} ) as StoryWithMetadata;
 Ecommerce.storyName = 'Ecommerce Only';
-Ecommerce.scenario = {};
 Ecommerce.args = {
 	setupRegistry: ( registry: Registry ) => {
 		registry
@@ -64,7 +63,6 @@ Ecommerce.args = {
 };
 
 export const Lead = Template.bind( {} ) as StoryWithMetadata;
-Lead.storyName = 'Lead Only';
 Lead.scenario = {};
 Lead.args = {
 	setupRegistry: ( registry: Registry ) => {
