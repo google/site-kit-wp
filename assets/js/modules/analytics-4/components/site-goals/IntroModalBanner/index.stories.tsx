@@ -63,7 +63,6 @@ Ecommerce.args = {
 };
 
 export const Lead = Template.bind( {} ) as StoryWithMetadata;
-Lead.scenario = {};
 Lead.args = {
 	setupRegistry: ( registry: Registry ) => {
 		registry

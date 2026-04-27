@@ -36,7 +36,6 @@ function Template( args: BannerModalStoryProps ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-Default.scenario = {};
 Default.args = {
 	Graphic: WelcomeModalGraphic,
 	onView: () => {},
