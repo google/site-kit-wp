@@ -117,7 +117,7 @@
 			}
 
 			.link {
-				color: #93C9A8 !important;
+				color: #4BBBBB !important;
 			}
 
 			.button {
@@ -185,7 +185,7 @@
 		}
 
 		[data-ogsc] .link {
-			color: #93C9A8 !important;
+			color: #4BBBBB !important;
 		}
 
 		[data-ogsc] .button {
@@ -215,4 +215,9 @@
 				/* `!important` used to override inline styles in the element. */
 				width: auto !important;
 			}
+		}
+
+		/* Base link color for light mode */
+		.link {
+			color: #108080;
 		}
