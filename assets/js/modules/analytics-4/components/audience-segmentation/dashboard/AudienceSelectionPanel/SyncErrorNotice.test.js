@@ -166,7 +166,11 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+				[
+					storeFunctionName === 'syncAvailableAudiences'
+						? 'setErrorForAction'
+						: 'setErrorForSelector'
+				]( error, storeFunctionName, args );
 
 			const { getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -204,7 +208,11 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+				[
+					storeFunctionName === 'syncAvailableAudiences'
+						? 'setErrorForAction'
+						: 'setErrorForSelector'
+				]( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -240,7 +248,11 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+				[
+					storeFunctionName === 'syncAvailableAudiences'
+						? 'setErrorForAction'
+						: 'setErrorForSelector'
+				]( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -287,7 +299,11 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+				[
+					storeFunctionName === 'syncAvailableAudiences'
+						? 'setErrorForAction'
+						: 'setErrorForSelector'
+				]( error, storeFunctionName, args );
 
 			const { getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -321,7 +337,11 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+				[
+					storeFunctionName === 'syncAvailableAudiences'
+						? 'setErrorForAction'
+						: 'setErrorForSelector'
+				]( error, storeFunctionName, args );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -405,7 +425,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, 'getReport', [
+				.setErrorForSelector( error, 'getReport', [
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteKitAudiencesUserCountReportOptions(),
