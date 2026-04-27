@@ -137,6 +137,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 	validateParams( { accountID } = {} ) {
 		invariant( accountID, 'accountID is required.' );
 	},
+	isAction: true,
 } );
 
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
