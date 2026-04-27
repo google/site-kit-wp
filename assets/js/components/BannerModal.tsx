@@ -148,7 +148,7 @@ const BannerModal: FC< BannerModalProps > = ( {
 						// @ts-expect-error - The `Button` component is not typed yet.
 						<Button onClick={ dismissButton.onClick } tertiary>
 							{ dismissButton.label ||
-								__( 'Got it', 'google-site-kit' ) }
+								__( 'Maybe later', 'google-site-kit' ) }
 						</Button>
 					) }
 
