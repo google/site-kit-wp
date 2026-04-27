@@ -36,13 +36,19 @@ import { Grid, Cell, Row } from '@/js/material-components';
 import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { useInView } from '@/js/hooks/useInView';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const inView = useInView();
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
+	);
+	const purposeAnswers = useSelect(
+		( select ) =>
+			select( CORE_USER ).getUserInputSettings()?.purpose?.values || []
 	);
 	const isGetUserInputSettingsLoading = useSelect( ( select ) => {
 		// Ensure that `getUserInputSettings()` is called here in order to trigger its resolver, which we
@@ -61,17 +67,35 @@ export default function SettingsCardKeyMetrics() {
 	);
 
 	const gaEventCategory = `${ viewContext }_kmw`;
+	const isPurposeAnswered = purposeAnswers.length > 0;
+	const shouldShowSummary = setupFlowRefreshEnabled
+		? isPurposeAnswered
+		: isUserInputCompleted;
+	const shouldShowSetupCTA = setupFlowRefreshEnabled
+		? ! isPurposeAnswered && ! isGetUserInputSettingsLoading
+		: isUserInputCompleted === false;
+	const shouldShowLoading = setupFlowRefreshEnabled
+		? isGetUserInputSettingsLoading
+		: isUserInputCompletedLoading;
 
 	useEffect( () => {
-		if ( isUserInputCompleted ) {
+		if ( shouldShowSummary ) {
 			trackEvent( gaEventCategory, 'summary_view' );
 		}
-	}, [ isUserInputCompleted, gaEventCategory ] );
+	}, [ shouldShowSummary, gaEventCategory ] );
 
 	return (
-		<Layout title={ __( 'Key Metrics', 'google-site-kit' ) } header rounded>
+		<Layout
+			title={
+				setupFlowRefreshEnabled
+					? __( 'Personalized metrics', 'google-site-kit' )
+					: __( 'Key Metrics', 'google-site-kit' )
+			}
+			header
+			rounded
+		>
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
-				{ isUserInputCompletedLoading && (
+				{ shouldShowLoading && (
 					<PreviewBlock
 						width="100%"
 						smallHeight="100px"
@@ -79,11 +103,13 @@ export default function SettingsCardKeyMetrics() {
 						desktopHeight="117px"
 					/>
 				) }
-				{ isUserInputCompleted && (
+				{ shouldShowSummary && (
 					<Fragment>
-						<SettingsKeyMetrics
-							loading={ isGetUserInputSettingsLoading }
-						/>
+						{ ! setupFlowRefreshEnabled && (
+							<SettingsKeyMetrics
+								loading={ isGetUserInputSettingsLoading }
+							/>
+						) }
 
 						<Grid>
 							<Row>
@@ -100,9 +126,9 @@ export default function SettingsCardKeyMetrics() {
 					</Fragment>
 				) }
 
-				{ isUserInputCompleted === false && (
+				{ shouldShowSetupCTA && (
 					<Fragment>
-						<SettingsKeyMetrics />
+						{ ! setupFlowRefreshEnabled && <SettingsKeyMetrics /> }
 						<Fragment>
 							<ConversionReportingSettingsSubtleNotification />
 							{ inView && (

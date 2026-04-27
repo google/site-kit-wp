@@ -45,12 +45,14 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
+import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
 import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 import UserInputPreviewAnswers from './UserInputPreviewAnswers';
 import UserInputEditModeContent from './UserInputEditModeContent';
 import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 import P from '@/js/components/Typography/P';
 
 export default function UserInputPreviewGroup( {
@@ -104,6 +106,10 @@ export default function UserInputPreviewGroup( {
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const isEditing = currentlyEditingSlug === slug;
+	const hasAnswer = values.length > 0;
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const shouldUseAnswerQuestionCTA =
+		setupFlowRefreshEnabled && settingsView && ! hasAnswer;
 
 	const isScreenLoading = isSavingSettings || isNavigating;
 
@@ -127,6 +133,9 @@ export default function UserInputPreviewGroup( {
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
 	);
+	const previewErrorMessage = shouldUseAnswerQuestionCTA
+		? undefined
+		: errorMessage;
 
 	const editButtonRef = useRef();
 
@@ -156,6 +165,85 @@ export default function UserInputPreviewGroup( {
 	] );
 
 	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
+	const isEditControlDisabled =
+		isScreenLoading || ( !! currentlyEditingSlug && ! isEditing );
+
+	function renderEditLink() {
+		if ( shouldUseAnswerQuestionCTA ) {
+			return null;
+		}
+
+		return (
+			<Link
+				onClick={ handleOnEditClick }
+				ref={ editButtonRef }
+				disabled={ isEditControlDisabled }
+				trailingIcon={ <ChevronDownIcon width={ 20 } height={ 20 } /> }
+				secondary
+				linkButton
+			>
+				{ isEditing
+					? __( 'Close', 'google-site-kit' )
+					: __( 'Edit', 'google-site-kit' ) }
+			</Link>
+		);
+	}
+
+	function renderSubtitle() {
+		if ( Subtitle ) {
+			return (
+				<div className="googlesitekit-user-input__preview-group-subtitle-component">
+					<Subtitle />
+				</div>
+			);
+		}
+
+		return <P>{ subtitle }</P>;
+	}
+
+	function renderAnswerQuestionButton() {
+		if ( ! shouldUseAnswerQuestionCTA || isEditing ) {
+			return null;
+		}
+
+		return (
+			<div className="googlesitekit-user-input__preview-group-answer-question">
+				<Button
+					onClick={ handleOnEditClick }
+					disabled={ isEditControlDisabled }
+				>
+					{ __( 'Answer question', 'google-site-kit' ) }
+				</Button>
+			</div>
+		);
+	}
+
+	function renderPreviewContent() {
+		if ( isEditing ) {
+			return (
+				<UserInputEditModeContent
+					slug={ slug }
+					options={ options }
+					onChange={ onChange }
+					settingsView={ settingsView }
+				/>
+			);
+		}
+
+		if ( ! shouldUseAnswerQuestionCTA || hasAnswer ) {
+			return (
+				<UserInputPreviewAnswers
+					values={ values }
+					options={ options }
+					loading={ loading }
+					errorMessage={ previewErrorMessage }
+					suppressError={ shouldUseAnswerQuestionCTA }
+				/>
+			);
+		}
+
+		return null;
+	}
 
 	return (
 		<div
@@ -183,53 +271,18 @@ export default function UserInputPreviewGroup( {
 					width="60px"
 					height="26px"
 				>
-					<Link
-						onClick={ handleOnEditClick }
-						ref={ editButtonRef }
-						disabled={
-							isScreenLoading ||
-							( !! currentlyEditingSlug && ! isEditing )
-						}
-						trailingIcon={
-							<ChevronDownIcon width={ 20 } height={ 20 } />
-						}
-						secondary
-						linkButton
-					>
-						{ isEditing && __( 'Close', 'google-site-kit' ) }
-						{ ! isEditing && __( 'Edit', 'google-site-kit' ) }
-					</Link>
+					{ renderEditLink() }
 				</LoadingWrapper>
 			</div>
 
 			<LoadingWrapper>
 				<div className="googlesitekit-user-input__preview-group-subtitle">
-					{ Subtitle && (
-						<div className="googlesitekit-user-input__preview-group-subtitle-component">
-							<Subtitle />
-						</div>
-					) }
-					{ ! Subtitle && <P>{ subtitle }</P> }
+					{ renderSubtitle() }
 				</div>
 			</LoadingWrapper>
 
-			{ ! isEditing && (
-				<UserInputPreviewAnswers
-					values={ values }
-					options={ options }
-					loading={ loading }
-					errorMessage={ errorMessage }
-				/>
-			) }
-			{ isEditing && (
-				<UserInputEditModeContent
-					slug={ slug }
-					options={ options }
-					onChange={ onChange }
-					settingsView={ settingsView }
-					values={ values }
-				/>
-			) }
+			{ renderAnswerQuestionButton() }
+			{ renderPreviewContent() }
 		</div>
 	);
 }

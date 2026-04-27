@@ -90,7 +90,7 @@ describe( 'UserInputEditModeContent', () => {
 	it( 'should disable the SpinnerButton when answerHasError is true', () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 			[ USER_INPUT_QUESTIONS_PURPOSE ]: {
-				values: [ 'option1' ],
+				values: [],
 			},
 		} );
 
@@ -108,5 +108,35 @@ describe( 'UserInputEditModeContent', () => {
 
 		const spinnerButton = getByRole( 'button', { name: /save/i } );
 		expect( spinnerButton ).toBeDisabled();
+	} );
+
+	it( 'should show Save answer label in setupFlowRefresh settings flow when value changed', async () => {
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			[ USER_INPUT_QUESTIONS_PURPOSE ]: {
+				values: [ 'option1' ],
+			},
+		} );
+
+		await registry
+			.dispatch( CORE_USER )
+			.setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [ 'option2' ] );
+
+		const { getByRole, queryByRole } = render(
+			<UserInputEditModeContent
+				{ ...defaultProps }
+				values={ [ 'option2' ] }
+			/>,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+
+		expect(
+			getByRole( 'button', { name: /save answer/i } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: /apply changes/i } )
+		).not.toBeInTheDocument();
 	} );
 } );

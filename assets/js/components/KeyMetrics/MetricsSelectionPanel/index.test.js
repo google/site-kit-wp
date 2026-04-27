@@ -164,6 +164,28 @@ describe( 'MetricsSelectionPanel', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should display updated settings copy when setupFlowRefresh is enabled', async () => {
+			const { getByText, queryByText, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
+
+			expect(
+				getByText( /Edit your personalized goals in/i )
+			).toBeInTheDocument();
+			expect(
+				queryByText(
+					/Edit your personalized goals or deactivate this widget in/i
+				)
+			).not.toBeInTheDocument();
+		} );
+
 		it( 'should not display a settings link to edit personalized goals for a view-only user', async () => {
 			const { container, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
