@@ -29,15 +29,61 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalLead from './IntroModalLead';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
 
+export const INTRO_MODAL_VARIANTS = {
+	ECOMMERCE: 'ecommerce',
+	LEAD: 'lead',
+	ECOMMERCE_AND_LEAD: 'ecommerce_lead',
+} as const;
+
+type IntroModalVariantLabel =
+	typeof INTRO_MODAL_VARIANTS[ keyof typeof INTRO_MODAL_VARIANTS ];
+
 export interface IntroModalVariantProps {
-	onClose: () => void;
+	onView: () => void;
+	onConfirm: () => void;
+	onClickLearnMore: () => void;
+	onDismiss: () => void;
+}
+
+interface IntroModalTrackingEvents {
+	view: ( label: IntroModalVariantLabel ) => void;
+	confirm: ( label: IntroModalVariantLabel ) => void;
+	clickLearnMore: ( label: IntroModalVariantLabel ) => void;
+	dismiss: ( label: IntroModalVariantLabel ) => void;
+}
+
+function createModalHandlers(
+	label: IntroModalVariantLabel,
+	onClose: () => void,
+	trackEvent: IntroModalTrackingEvents
+): IntroModalVariantProps {
+	return {
+		onView: () => {
+			trackEvent.view( label );
+		},
+		onConfirm: () => {
+			trackEvent.confirm( label );
+			onClose();
+		},
+		onClickLearnMore: () => {
+			trackEvent.clickLearnMore( label );
+		},
+		onDismiss: () => {
+			trackEvent.dismiss( label );
+			onClose();
+		},
+	};
 }
 
 export default function IntroModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
+	const trackEvent = useNotificationEvents(
+		SITE_GOALS_INTRO_MODAL_BANNER
+	) as IntroModalTrackingEvents;
 
 	const hasEcommerceConversionReportingEvents = useSelect(
 		( select: Select ) =>
@@ -65,19 +111,35 @@ export default function IntroModal() {
 		return null;
 	}
 
+	const ecommerceHandlers = createModalHandlers(
+		INTRO_MODAL_VARIANTS.ECOMMERCE,
+		handleClose,
+		trackEvent
+	);
+	const leadHandlers = createModalHandlers(
+		INTRO_MODAL_VARIANTS.LEAD,
+		handleClose,
+		trackEvent
+	);
+	const ecommerceAndLeadHandlers = createModalHandlers(
+		INTRO_MODAL_VARIANTS.ECOMMERCE_AND_LEAD,
+		handleClose,
+		trackEvent
+	);
+
 	if (
 		hasEcommerceConversionReportingEvents &&
 		hasLeadConversionReportingEvents
 	) {
-		return <IntroModalEcommerceAndLead onClose={ handleClose } />;
+		return <IntroModalEcommerceAndLead { ...ecommerceAndLeadHandlers } />;
 	}
 
 	if ( hasEcommerceConversionReportingEvents ) {
-		return <IntroModalEcommerce onClose={ handleClose } />;
+		return <IntroModalEcommerce { ...ecommerceHandlers } />;
 	}
 
 	if ( hasLeadConversionReportingEvents ) {
-		return <IntroModalLead onClose={ handleClose } />;
+		return <IntroModalLead { ...leadHandlers } />;
 	}
 
 	return null;

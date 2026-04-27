@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useCallback } from 'react';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -33,41 +28,20 @@ import { createInterpolateElement } from '@wordpress/element';
 import BannerModal from '@/js/components/BannerModal';
 // @ts-expect-error - We need to add types for imported SVGs.
 import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.svg';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import Link from '@/js/components/Link';
-import {
-	IntroModalVariantProps,
-	SITE_GOALS_INTRO_MODAL_BANNER,
-} from '@/js/modules/analytics-4/components/site-goals/IntroModalBanner/index';
+import { IntroModalVariantProps } from '@/js/modules/analytics-4/components/site-goals/IntroModalBanner/index';
 
 export default function IntroModalEcommerce( {
-	onClose,
+	onView,
+	onConfirm,
+	onClickLearnMore,
+	onDismiss,
 }: IntroModalVariantProps ) {
-	const trackEvent = useNotificationEvents( SITE_GOALS_INTRO_MODAL_BANNER );
-
-	const handleView = useCallback( () => {
-		trackEvent.view( 'ecommerce' );
-	}, [ trackEvent ] );
-
-	const handleConfirm = useCallback( () => {
-		trackEvent.confirm( 'ecommerce' );
-		onClose();
-	}, [ trackEvent, onClose ] );
-
-	const handleClickLearnMore = useCallback( () => {
-		trackEvent.clickLearnMore( 'ecommerce' );
-	}, [ trackEvent ] );
-
-	const handleDismiss = useCallback( () => {
-		trackEvent.dismiss( 'ecommerce' );
-		onClose();
-	}, [ trackEvent, onClose ] );
-
 	return (
 		<BannerModal
 			Graphic={ SiteGoalsIntroModalGraphic }
-			onView={ handleView }
-			onClose={ handleDismiss }
+			onView={ onView }
+			onClose={ onDismiss }
 			title={ __( 'See what drives your sales', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(
@@ -83,7 +57,7 @@ export default function IntroModalEcommerce( {
 								'Learn more about site goals',
 								'google-site-kit'
 							) }
-							onClick={ handleClickLearnMore }
+							onClick={ onClickLearnMore }
 							external
 							hideExternalIndicator
 						/>
@@ -92,10 +66,10 @@ export default function IntroModalEcommerce( {
 			) }
 			ctaButton={ {
 				label: __( 'Show me', 'google-site-kit' ),
-				onClick: handleConfirm,
+				onClick: onConfirm,
 			} }
 			dismissButton={ {
-				onClick: handleDismiss,
+				onClick: onDismiss,
 			} }
 		/>
 	);
