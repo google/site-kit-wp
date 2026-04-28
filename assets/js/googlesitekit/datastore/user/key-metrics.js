@@ -67,7 +67,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 
-const { setErrorForAction, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
@@ -140,7 +140,7 @@ const baseActions = {
 			'key metric settings should be an object to save.'
 		);
 
-		yield clearError( 'saveKeyMetricsSettings', [] );
+		yield clearActionError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry

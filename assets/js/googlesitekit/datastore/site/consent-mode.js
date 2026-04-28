@@ -34,7 +34,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-const { clearError, setErrorForAction } = errorStoreActions;
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 const { getRegistry } = commonActions;
 
@@ -202,7 +202,7 @@ const baseActions = {
 	*installActivateWPConsentAPI() {
 		const registry = yield getRegistry();
 
-		yield clearError( 'installActivateWPConsentAPI', [] );
+		yield clearActionError( 'installActivateWPConsentAPI', [] );
 
 		yield {
 			type: INSTALL_ACTIVATE_WP_CONSENT_API_FETCHING,

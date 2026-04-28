@@ -244,7 +244,7 @@ const baseActions = {
 			type: 'RESET_PUBLICATIONS',
 		};
 
-		yield errorStoreActions.clearErrors( 'getPublications' );
+		yield errorStoreActions.clearSelectorErrors( 'getPublications' );
 
 		return registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

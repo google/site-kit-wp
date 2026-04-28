@@ -34,7 +34,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
-const { setErrorForAction, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 const fetchEnableAutoUpdateStore = createFetchStore( {
 	baseName: 'enableAutoUpdate',
@@ -79,7 +79,7 @@ const baseActions = {
 	 * @since 1.93.0
 	 */
 	*enableAutoUpdate() {
-		yield clearError( 'enableAutoUpdate', [] );
+		yield clearActionError( 'enableAutoUpdate', [] );
 
 		const registry = yield commonActions.getRegistry();
 

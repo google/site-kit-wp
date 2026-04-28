@@ -35,7 +35,7 @@ import {
 import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
-const { setErrorForAction, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, inputSettings ) => {
 	state.inputSettings = inputSettings;
@@ -104,7 +104,7 @@ const baseActions = {
 	 */
 	*saveUserInputSettings() {
 		const registry = yield commonActions.getRegistry();
-		yield clearError( 'saveUserInputSettings', [] );
+		yield clearActionError( 'saveUserInputSettings', [] );
 
 		function trim( value ) {
 			return value.trim();

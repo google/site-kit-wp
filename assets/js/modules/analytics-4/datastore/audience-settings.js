@@ -40,7 +40,7 @@ import {
 } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 
-const { setErrorForAction, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 /**
  * Validates audience settings.
@@ -177,7 +177,7 @@ const baseActions = {
 			validateAudienceSettings( settings );
 		},
 		function* ( settings ) {
-			yield clearError( 'saveAudienceSettings', [] );
+			yield clearActionError( 'saveAudienceSettings', [] );
 
 			const { response, error } =
 				yield fetchSaveAudienceSettingsStore.actions.fetchSaveAudienceSettings(

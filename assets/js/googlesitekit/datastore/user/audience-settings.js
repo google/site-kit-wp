@@ -40,7 +40,7 @@ import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from './constants';
 
-const { setErrorForAction, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 function validateUserAudienceSettings( settings ) {
 	invariant(
@@ -121,7 +121,7 @@ const baseActions = {
 			);
 		},
 		function* ( settings = {} ) {
-			yield clearError( 'saveUserAudienceSettings', [] );
+			yield clearActionError( 'saveUserAudienceSettings', [] );
 
 			const registry = yield commonActions.getRegistry();
 			const audienceSettings = yield commonActions.await(
@@ -189,7 +189,9 @@ const baseActions = {
 			type: RESET_AUDIENCE_SETTINGS,
 		};
 
-		yield errorStoreActions.clearErrors( 'getUserAudienceSettings' );
+		yield errorStoreActions.clearSelectorErrors(
+			'getUserAudienceSettings'
+		);
 
 		return dispatch( CORE_USER ).invalidateResolutionForStoreSelector(
 			'getUserAudienceSettings'
