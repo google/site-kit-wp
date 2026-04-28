@@ -348,7 +348,7 @@ describe( 'ModuleSetup', () => {
 			const moduleSlug = 'test-module';
 
 			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=ads_success';
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=authentication_success';
 
 			const customRedirectURLWithNotification =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=ads&notification=ads_success';
@@ -366,11 +366,10 @@ describe( 'ModuleSetup', () => {
 			);
 
 			await waitForRegistry();
-			await waitFor( () =>
-				expect(
-					getByRole( 'button', { name: 'Trigger finish setup' } )
-				).toBeInTheDocument()
-			);
+
+			expect(
+				getByRole( 'button', { name: 'Trigger finish setup' } )
+			).toBeInTheDocument();
 
 			await act( () => {
 				fireEvent.click(
@@ -378,11 +377,9 @@ describe( 'ModuleSetup', () => {
 				);
 			} );
 
-			await act( async () => {
-				await waitFor( () =>
-					expect( global.location.assign ).toHaveBeenCalled()
-				);
-			} );
+			await waitFor( () =>
+				expect( global.location.assign ).toHaveBeenCalled()
+			);
 
 			const redirectURL = new URL(
 				global.location.assign.mock.calls[ 0 ][ 0 ]
