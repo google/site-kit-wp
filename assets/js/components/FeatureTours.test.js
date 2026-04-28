@@ -77,6 +77,7 @@ describe( 'FeatureTours', () => {
 			this.observe = observeMock;
 			this.disconnect = disconnectMock;
 		} );
+		global.HTMLElement.prototype.scrollIntoView = () => {};
 	} );
 
 	it( 'properly shows the current tour', async () => {

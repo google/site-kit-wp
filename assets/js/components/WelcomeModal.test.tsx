@@ -181,6 +181,9 @@ describe( 'WelcomeModal', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 
 		jest.mocked( useWelcomeTour ).mockReturnValue( mockWelcomeTour );
+
+		// jsdom does not implement `scrollIntoView`
+		global.HTMLElement.prototype.scrollIntoView = () => {};
 	} );
 
 	afterEach( () => {

@@ -96,7 +96,6 @@ describe( 'TourTooltips', () => {
 	let dismissTourSpy;
 	// store value to return default functionality on test teardown
 	const nativeCreateRange = global.document.createRange;
-	const nativeScrollIntoElement = global.HTMLElement.prototype.scrollIntoView;
 
 	beforeAll( () => {
 		// `react-joyride` is calling `createRange` internally — method must be mocked.
@@ -133,7 +132,6 @@ describe( 'TourTooltips', () => {
 
 	afterAll( () => {
 		global.document.createRange = nativeCreateRange;
-		global.HTMLElement.prototype.scrollIntoView = nativeScrollIntoElement;
 	} );
 
 	it( 'should display step title & content correctly', async () => {
