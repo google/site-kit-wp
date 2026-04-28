@@ -770,5 +770,290 @@ describe( 'modules/analytics-4 report', () => {
 				expect( fetchMock ).toHaveFetchedTimes( 5 );
 			} );
 		} );
+
+		describe( 'areReportsLoading', () => {
+			const reportOptions = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'totalUsers' ],
+			};
+
+			it( 'should return false when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading();
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when a report has not finished resolution', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions );
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'should return false when a report has finished resolution', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions );
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when at least one report is still loading', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report is loading
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has finished
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions2,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'should return false when all reports have finished resolution', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// Both reports have finished
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions2,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when all reports are still loading', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// Both reports are loading
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions1 ] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( true );
+			} );
+		} );
+
+		describe( 'getFirstReportError', () => {
+			const reportOptions = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'totalUsers' ],
+			};
+
+			const error1 = {
+				code: 'error_code_1',
+				message: 'Error message 1',
+				data: { status: 500 },
+			};
+
+			const error2 = {
+				code: 'error_code_2',
+				message: 'Error message 2',
+				data: { status: 400 },
+			};
+
+			it( 'should return undefined when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError();
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should return undefined when no reports have errors', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions );
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should return the error for a single report with an error', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error1, 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions );
+
+				expect( result ).toEqual( error1 );
+			} );
+
+			it( 'should return the first error when multiple reports have errors', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error1, 'getReport', [ reportOptions1 ] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error1 );
+			} );
+
+			it( 'should return the first error when only the second report has an error', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report has no error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has an error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error2 );
+			} );
+
+			it( 'should return undefined when only the second report has an error but first is checked first', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report has no error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has an error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+
+				// Check in order: first (no error), then second (has error)
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error2 );
+			} );
+		} );
 	} );
 } );
