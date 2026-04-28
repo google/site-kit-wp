@@ -216,6 +216,42 @@ export default function TourTooltips( {
 		}
 	}
 
+	function scrollStepIntoView( step ) {
+		let element = step.target;
+
+		if ( 'string' === typeof step.target ) {
+			element = global.document.querySelector( step.target );
+		}
+
+		if ( ! ( element instanceof Element ) ) {
+			return;
+		}
+
+		if ( ! step.scrollToTop ) {
+			element.scrollIntoView( { block: 'center' } );
+			return;
+		}
+
+		const availableHeight = window.innerHeight;
+		const { height, top } = element.getBoundingClientRect();
+		const tooltip = document.querySelector( '.__floater' );
+
+		if ( ! tooltip ) {
+			return;
+		}
+
+		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
+
+		if ( height + tooltipHeight > availableHeight ) {
+			window.scrollTo( {
+				top: top - tooltipHeight - 60 + window.scrollY,
+			} );
+			return;
+		}
+
+		element.scrollIntoView( { block: 'center' } );
+	}
+
 	/**
 	 * Handles `react-joyride` state changes using callback function.
 	 *
@@ -250,11 +286,7 @@ export default function TourTooltips( {
 
 		// Center the target in the viewport when transitioning to the step.
 		if ( EVENTS.STEP_BEFORE === type ) {
-			let element = step.target;
-			if ( 'string' === typeof step.target ) {
-				element = global.document.querySelector( step.target );
-			}
-			element?.scrollIntoView?.( { block: 'center' } );
+			scrollStepIntoView( step );
 		}
 
 		if ( shouldChangeStep ) {
