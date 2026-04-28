@@ -419,6 +419,14 @@ final class Screens {
 							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'];
 
 							if ( false === $is_analytics_setup_complete ) {
+								$slug = $context->input()->filter( INPUT_GET, 'slug' );
+								$show_progress = $context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
+								$re_auth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+
+								if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
+									return;
+								}
+
 								$is_analytics_connected = $this->modules->is_module_connected( 'analytics-4' );
 
 								if ( $is_analytics_connected ) {
@@ -433,14 +441,6 @@ final class Screens {
 
 									exit;
 								} else {
-									$slug = $context->input()->filter( INPUT_GET, 'slug' );
-									$show_progress = $context->input()->filter( INPUT_GET, 'showProgress', FILTER_VALIDATE_BOOLEAN );
-									$re_auth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
-
-									if ( 'analytics-4' === $slug && $re_auth && $show_progress ) {
-										return;
-									}
-
 									wp_safe_redirect(
 										$context->admin_url(
 											'dashboard',

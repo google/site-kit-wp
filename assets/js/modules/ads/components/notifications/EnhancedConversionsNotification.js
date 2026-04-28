@@ -59,7 +59,7 @@ export default function EnhancedConversionsNotification( {
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. <a />',
+						'Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. If you’ve already done this, no further action is required. <a />',
 						'google-site-kit'
 					),
 					{
