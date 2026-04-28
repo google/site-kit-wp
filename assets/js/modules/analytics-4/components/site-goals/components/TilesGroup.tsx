@@ -17,18 +17,13 @@
 /**
  * External dependencies
  */
-import type { FC, ReactElement } from 'react';
+import type { FC, ReactNode } from 'react';
 import classnames from 'classnames';
-
-/**
- * Internal dependencies
- */
-import type { TileProps } from './Tile';
 
 export interface TilesGroupProps {
 	title: string;
 	className?: string;
-	children: ReactElement< TileProps > | ReactElement< TileProps >[];
+	children: ReactNode | ReactNode[]; // This will be an array of TileProps components
 }
 
 export const TilesGroup: FC< TilesGroupProps > = ( props ) => {
