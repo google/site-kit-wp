@@ -26,13 +26,11 @@ exports[`CompatibilityChecks renders warning with multiple conflicting plugins 1
           class="googlesitekit-notice__description"
         >
           <p
-            class="googlesitekit-typography"
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
           >
             The following plugins may prevent Sign in with Google from working properly:
           </p>
-          <ul
-            class="googlesitekit-typography"
-          >
+          <ul>
             <li>
               Hide Login
             </li>

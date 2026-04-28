@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -27,24 +32,11 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { FC } from 'react';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Notice from '@/js/components/Notice';
 import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
 import Description from '@/js/components/Notice/Description';
-
-type PluginWithConflict = {
-	pluginName: string;
-	conflictMessage?: string | null;
-};
-
-export type SignInWithGoogleCompatibilityErrors = {
-	/* eslint-disable camelcase */
-	conflicting_plugins?: { [ slug: string ]: PluginWithConflict };
-	wp_login_inaccessible?: boolean;
-	host_wordpress_dot_com?: boolean;
-	/* eslint-enable camelcase */
-};
+import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 
 const CompatibilityChecks: FC = () => {
 	const compatibilityChecks = useSelect( ( select ) => {
@@ -57,7 +49,8 @@ const CompatibilityChecks: FC = () => {
 			// @ts-expect-error Data store is not yet typed.
 		).isFetchingGetCompatibilityChecks();
 	}, [] );
-	const errors = compatibilityChecks?.checks || {};
+	const errors: SignInWithGoogleCompatibilityErrors =
+		compatibilityChecks?.checks || {};
 	const hasErrors = Object.keys( errors ).length > 0;
 
 	if (

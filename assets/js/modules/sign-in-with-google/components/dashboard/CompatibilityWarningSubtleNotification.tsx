@@ -35,7 +35,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import CompatibilityErrors from '@/js/modules/sign-in-with-google/components/common/CompatibilityErrors';
-import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks';
+import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 
 interface CompatibilityWarningSubtleNotificationProps {
 	id: string;

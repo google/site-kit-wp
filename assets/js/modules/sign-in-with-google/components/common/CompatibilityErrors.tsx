@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Typography from '@/js/components/Typography';
-import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/setup/CompatibilityChecks';
+import P from '@/js/components/Typography/P';
+import { SignInWithGoogleCompatibilityErrors } from '@/js/modules/sign-in-with-google/components/types';
 
 const CompatibilityErrors: FC< {
 	errors?: SignInWithGoogleCompatibilityErrors;
@@ -44,41 +44,40 @@ const CompatibilityErrors: FC< {
 	return (
 		<Fragment>
 			{ !! errors.host_wordpress_dot_com && (
-				// @ts-expect-error The `Typography` component is not yet typed.
-				<Typography as="p">
+				// @ts-expect-error The `P` Typography component is not yet typed.
+				<P>
 					{ __(
 						'Sign in with Google does not function on sites hosted on WordPress.com.',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			) }
 
-			{ !! errors.wp_login_inaccessible && ( // @ts-expect-error The `Typography` component is not yet typed.
-				<Typography as="p">
+			{ !! errors.wp_login_inaccessible && ( // @ts-expect-error The `P` Typography component is not yet typed.
+				<P>
 					{ __(
 						'Your login page (wp-login.php) is not accessible at the expected location. This can prevent Sign in with Google from functioning correctly.',
 						'google-site-kit'
 					) }
-				</Typography>
+				</P>
 			) }
 
 			{ !! errors.conflicting_plugins && (
 				<Fragment>
-					{ /* @ts-expect-error The `Typography` component is not yet typed. */ }
-					<Typography as="p">
+					{ /* @ts-expect-error The `P` Typography component is not yet typed. */ }
+					<P>
 						{ __(
 							'The following plugins may prevent Sign in with Google from working properly:',
 							'google-site-kit'
 						) }
-					</Typography>
-					{ /* @ts-expect-error The `Typography` component is not yet typed. */ }
-					<Typography as="ul">
+					</P>
+					<ul>
 						{ Object.values( errors.conflicting_plugins ).map(
 							( { pluginName } ) => (
 								<li key={ pluginName }>{ pluginName }</li>
 							)
 						) }
-					</Typography>
+					</ul>
 				</Fragment>
 			) }
 		</Fragment>
