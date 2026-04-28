@@ -52,6 +52,7 @@ export default function MetricTileWrapper( props ) {
 		Widget,
 		widgetSlug,
 		title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
+		headerLabel,
 		infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
 			KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
 	} = props;
@@ -108,6 +109,7 @@ export default function MetricTileWrapper( props ) {
 			>
 				<MetricTileHeader
 					title={ title }
+					headerLabel={ headerLabel }
 					infoTooltip={ infoTooltip }
 					loading={ loading }
 				/>
@@ -124,6 +126,7 @@ MetricTileWrapper.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	loading: PropTypes.bool,
 	title: PropTypes.string,
+	headerLabel: PropTypes.string,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	moduleSlug: PropTypes.string.isRequired,
 };
