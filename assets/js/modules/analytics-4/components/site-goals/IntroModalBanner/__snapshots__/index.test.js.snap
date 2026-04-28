@@ -42,15 +42,15 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
             <p
               class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Discover which channels, cities, and pages are bringing in your best results. A new section shows you exactly how
+              Discover which channels, cities, and pages are bringing in your best results. A new section shows you exactly how 
               <strong>
                 sales
               </strong>
-               and
+               and 
               <strong>
                 sign ups
               </strong>
-               are performing, so you can focus on the sources that grow your business.
+               are performing, so you can focus on the sources that grow your business. 
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
@@ -142,7 +142,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
             <p
               class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Understand which parts of your site are most effective at turning visitors into customers. This new section shows you exactly which pages, cities, and traffic sources are bringing in the most sales and actions like add to cart. Use these insights to see what works best for your business so you can focus on the areas that help you grow.
+              Understand which parts of your site are most effective at turning visitors into customers. This new section shows you exactly which pages, cities, and traffic sources are bringing in the most sales and actions like add to cart. Use these insights to see what works best for your business so you can focus on the areas that help you grow. 
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
@@ -234,7 +234,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
             <p
               class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Discover which parts of your site are most successful at encouraging people to reach out. This new section highlights the specific pages, locations, and visitor groups that result in more sign-ups, quote requests, and other important goals. These details help you understand exactly where your most interested visitors are coming from.
+              Discover which parts of your site are most successful at encouraging people to reach out. This new section highlights the specific pages, locations, and visitor groups that result in more sign-ups, quote requests, and other important goals. These details help you understand exactly where your most interested visitors are coming from. 
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
