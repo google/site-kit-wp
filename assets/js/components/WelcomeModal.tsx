@@ -75,30 +75,80 @@ const VARIANT_TRACKING_LABELS = {
 	[ MODAL_VARIANT.DATA_GATHERING_COMPLETE ]: 'data_available',
 };
 
+/**
+ * Determines whether the given modal variant should be rendered based on the
+ * data gathering complete modal active state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        options                                    The options.
+ * @param {MODAL_VARIANT} options.modalVariant                       The computed modal variant.
+ * @param {boolean}       options.isDataGatheringCompleteModalActive Whether the data gathering complete modal is active.
+ * @return {boolean} Whether the modal variant should be rendered.
+ */
+function shouldRenderModalVariant( {
+	modalVariant,
+	isDataGatheringCompleteModalActive,
+}: {
+	modalVariant: MODAL_VARIANT;
+	isDataGatheringCompleteModalActive: boolean;
+} ): boolean {
+	// The GATHERING_DATA variant should not render while the data gathering
+	// complete modal state is active — the DATA_GATHERING_COMPLETE variant
+	// will be shown instead.
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return false;
+	}
+
+	// The DATA_GATHERING_COMPLETE variant must not render when the data
+	// gathering complete modal state is not active, e.g. when the user
+	// re-submits Key Metrics after already dismissing the modal.
+	if (
+		! isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
+	) {
+		return false;
+	}
+
+	return true;
+}
+
 export default function WelcomeModal() {
 	const viewContext = useViewContext();
 
 	const [ isOpen, setIsOpen ] = useState( true );
 
-	const analyticsConnected = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	const analyticsConnected = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+		[]
 	);
 
-	const analyticsGatheringData = useSelect( ( select: Select ) => {
-		if ( ! analyticsConnected ) {
-			return false;
-		}
-		return select( MODULES_ANALYTICS_4 ).isGatheringData();
-	} );
-
-	const searchConsoleGatheringData = useSelect( ( select: Select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	const analyticsGatheringData = useSelect(
+		( select: Select ) => {
+			if ( ! analyticsConnected ) {
+				return false;
+			}
+			return select( MODULES_ANALYTICS_4 ).isGatheringData();
+		},
+		[ analyticsConnected ]
 	);
 
-	const isGatheringDataVariantDismissed = useSelect( ( select: Select ) =>
-		select( CORE_USER ).isItemDismissed(
-			WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
-		)
+	const searchConsoleGatheringData = useSelect(
+		( select: Select ) =>
+			select( MODULES_SEARCH_CONSOLE ).isGatheringData(),
+		[]
+	);
+
+	const isGatheringDataVariantDismissed = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG
+			),
+		[]
 	);
 
 	const showGatheringDataModal = analyticsConnected
@@ -224,13 +274,17 @@ export default function WelcomeModal() {
 		);
 	}, [ viewContext, modalVariant ] );
 
-	const isDataGatheringCompleteModalActive = useSelect( ( select: Select ) =>
-		select( CORE_USER ).isDataGatheringCompleteModalActive()
+	const isDataGatheringCompleteModalActive = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isDataGatheringCompleteModalActive(),
+		[]
 	);
 
 	if (
-		isDataGatheringCompleteModalActive &&
-		modalVariant === MODAL_VARIANT.GATHERING_DATA
+		! shouldRenderModalVariant( {
+			modalVariant,
+			isDataGatheringCompleteModalActive,
+		} )
 	) {
 		return null;
 	}
@@ -279,7 +333,7 @@ export default function WelcomeModal() {
 
 	return (
 		<Dialog
-			className="googlesitekit-dialog googlesitekit-welcome-modal"
+			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
 			onClose={ () => {
 				trackDismissal();
 				closeAndDismissModalWithTooltip();

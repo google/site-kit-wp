@@ -51,7 +51,7 @@ existingTagStore.resolvers.getExistingTag = function* () {
 				.getGoogleTagContainer( existingTag )
 		);
 
-		if ( ! container?.tagIds.includes( existingTag ) ) {
+		if ( ! container?.tagIds?.includes( existingTag ) ) {
 			existingTag = null;
 		}
 	}

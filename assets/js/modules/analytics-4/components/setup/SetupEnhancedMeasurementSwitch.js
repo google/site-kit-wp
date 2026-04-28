@@ -87,28 +87,37 @@ export default function SetupEnhancedMeasurementSwitch() {
 		);
 	} );
 
-	const isLoading = useSelect( ( select ) => {
-		if (
-			! isValidPropertySelection( propertyID ) ||
-			! isValidWebDataStreamSelection( webDataStreamID ) ||
-			isLoadingPropertySummaries ||
-			isLoadingWebDataStreams
-		) {
-			return true;
-		}
+	const isLoading = useSelect(
+		( select ) => {
+			if (
+				! isValidPropertySelection( propertyID ) ||
+				! isValidWebDataStreamSelection( webDataStreamID ) ||
+				isLoadingPropertySummaries ||
+				isLoadingWebDataStreams
+			) {
+				return true;
+			}
 
-		if (
-			propertyID === PROPERTY_CREATE ||
-			webDataStreamID === WEBDATASTREAM_CREATE
-		) {
-			return false;
-		}
+			if (
+				propertyID === PROPERTY_CREATE ||
+				webDataStreamID === WEBDATASTREAM_CREATE
+			) {
+				return false;
+			}
 
-		return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-			'isEnhancedMeasurementStreamAlreadyEnabled',
-			[ propertyID, webDataStreamID ]
-		);
-	} );
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'isEnhancedMeasurementStreamAlreadyEnabled',
+				[ propertyID, webDataStreamID ]
+			);
+		},
+		[
+			isEnhancedMeasurementAlreadyEnabled,
+			isLoadingPropertySummaries,
+			isLoadingWebDataStreams,
+			propertyID,
+			webDataStreamID,
+		]
+	);
 
 	const isAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
 

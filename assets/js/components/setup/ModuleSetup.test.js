@@ -91,9 +91,7 @@ describe( 'ModuleSetup', () => {
 			const propertyID = properties[ 0 ]._id;
 			const webDataStreamID = webDataStreamsBatch[ propertyID ][ 0 ]._id;
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				adsConversionID: '',
-			} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -102,6 +100,9 @@ describe( 'ModuleSetup', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.receiveGetAccountSummaries( accountSummaries );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getAccountSummaries', [] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -114,6 +115,9 @@ describe( 'ModuleSetup', () => {
 				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
 					propertyIDs: [ propertyID ],
 				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getWebDataStreams', [ propertyID ] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -126,6 +130,12 @@ describe( 'ModuleSetup', () => {
 						propertyID,
 						webDataStreamID,
 					}
+				);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution(
+					'isEnhancedMeasurementStreamAlreadyEnabled',
+					[ propertyID, webDataStreamID ]
 				);
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).selectAccount( accountID );

@@ -24,7 +24,9 @@ import ConfirmDisconnect from '.';
 import {
 	render,
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 } from '../../../../../tests/js/test-utils';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -36,6 +38,7 @@ describe( 'ConfirmDisconnect', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideUserAuthentication( registry );
 		registry
 			.dispatch( CORE_UI )
 			.setValue( 'module-ads-dialogActive', true );
@@ -55,6 +58,8 @@ describe( 'ConfirmDisconnect', () => {
 				SettingsDisconnectNoteComponent: SettingsDisconnectNote,
 			},
 		] );
+		provideModuleRegistrations( registry );
+
 		const mockAccountOverviewURL =
 			'https://example.com/account/overview/url';
 
@@ -90,6 +95,7 @@ describe( 'ConfirmDisconnect', () => {
 				],
 			},
 		] );
+
 		const mockAccountOverviewURL =
 			'https://example.com/account/overview/url';
 

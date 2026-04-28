@@ -43,11 +43,12 @@ import {
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
 import { TYPES } from '@/js/components/Notice/constants';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface PolicyViolationProps {
 	id: string;
 	Notification: ElementType;
-	gaTrackingEventArgs: Record< string, string >;
+	gaTrackingEventArgs: GATrackingEventArgs;
 	dismissNotice: () => void;
 	onCTAClick: () => void;
 	policyViolationType: 'PENDING_POLICY_VIOLATION' | 'ACTIVE_POLICY_VIOLATION';
@@ -70,7 +71,7 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			contentPolicyState ===
 			CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 		);
-	} );
+	}, [] );
 
 	const { dismissItem } = useDispatch( CORE_USER );
 
@@ -102,7 +103,6 @@ const PolicyViolation: FC< PolicyViolationProps > = ( {
 			gaTrackingEventArgs={ gaTrackingEventArgs }
 			onView={ onView }
 		>
-			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ isExtremeViolation ? TYPES.ERROR : TYPES.WARNING }
 				notificationID={ id }

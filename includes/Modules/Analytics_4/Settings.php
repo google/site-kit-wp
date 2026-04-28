@@ -90,6 +90,14 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		return array(
 			'ownerID'                          => 0,
 			'accountID'                        => '',
+			/**
+			 * This setting is deprecated and only remains for backwards
+			 * compatibility with old migrations.
+			 *
+			 * See: https://github.com/google/site-kit-wp/pull/12394#pullrequestreview-4068317046
+			 *
+			 * @deprecated
+			 */
 			'adsConversionID'                  => '',
 			'propertyID'                       => '',
 			'webDataStreamID'                  => '',
@@ -105,7 +113,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'propertyCreateTime'               => 0,
 			'adSenseLinked'                    => false,
 			'adSenseLinkedLastSyncedAt'        => 0,
-			'adsConversionIDMigratedAtMs'      => 0,
 			'adsLinked'                        => false,
 			'adsLinkedLastSyncedAt'            => 0,
 			'detectedEvents'                   => array(),
@@ -178,12 +185,6 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( isset( $option['adSenseLinkedLastSyncedAt'] ) ) {
 					if ( ! is_int( $option['adSenseLinkedLastSyncedAt'] ) ) {
 						$option['adSenseLinkedLastSyncedAt'] = 0;
-					}
-				}
-
-				if ( isset( $option['adsConversionIDMigratedAtMs'] ) ) {
-					if ( ! is_int( $option['adsConversionIDMigratedAtMs'] ) ) {
-						$option['adsConversionIDMigratedAtMs'] = 0;
 					}
 				}
 

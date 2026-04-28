@@ -52,9 +52,9 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import WelcomeModal from './WelcomeModal';
-import { type WPDataRegistry } from '@/js/googlesitekit-data';
 import * as tracking from '@/js/util/tracking';
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -894,6 +894,48 @@ describe( 'WelcomeModal', () => {
 			} );
 		}
 	);
+
+	it( 'should not render when the modal variant is DATA_GATHERING_COMPLETE but the data gathering complete modal is not active', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsDataAvailableOnLoad( true );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
+				WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+			] );
+
+		const { container, waitForRegistry } = render( <WelcomeModal />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 
 	it( 'should not show a tooltip when the data gathering complete variant is closed by the "Start tour" button', async () => {
 		provideDataGatheringCompleteVariantData();

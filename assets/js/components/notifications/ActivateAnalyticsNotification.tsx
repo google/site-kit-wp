@@ -43,6 +43,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 // @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface ActivateAnalyticsNotificationProps {
 	id: string;
@@ -65,8 +66,10 @@ const ActivateAnalyticsNotification: FC<
 
 	const showTooltip = useShowTooltip( tooltipSettings );
 
-	const isDismissalFinal = useSelect( ( select: Select ) =>
-		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
+	const isDismissalFinal = useSelect(
+		( select: Select ) =>
+			select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id ),
+		[]
 	);
 
 	const dismissLabel = useRetriableNotificationDismissButtonLabel( {
@@ -82,13 +85,15 @@ const ActivateAnalyticsNotification: FC<
 		}
 
 		return select( CORE_LOCATION ).isNavigatingTo( adminReauthURL );
-	} );
+	}, [] );
 
-	const isActivatingAnalytics = useSelect( ( select: Select ) =>
-		select( CORE_MODULES ).isFetchingSetModuleActivation(
-			MODULE_SLUG_ANALYTICS_4,
-			true
-		)
+	const isActivatingAnalytics = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isFetchingSetModuleActivation(
+				MODULE_SLUG_ANALYTICS_4,
+				true
+			),
+		[]
 	);
 
 	const activateAnalytics = useActivateModuleCallback(
@@ -97,7 +102,7 @@ const ActivateAnalyticsNotification: FC<
 
 	const isBusy = isActivatingAnalytics || isNavigatingToReauthURL;
 
-	const gaTrackingEventArgs = {
+	const gaTrackingEventArgs: GATrackingEventArgs = {
 		category: `${ viewContext }_${ id }`,
 	};
 

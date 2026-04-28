@@ -25,7 +25,7 @@
 		margin-top: 70px;
 		min-height: 0;
 
-		@media (max-height: 799px) {
+		@media (height < 800px) {
 			margin-top: $grid-gap-phone;
 		}
 	}
@@ -118,7 +118,6 @@
 		font-size: $fs-body-md;
 		font-weight: 400;
 		margin-left: 4px;
-		text-transform: capitalize;
 	}
 
 	.googlesitekit-invite-user-row__email {

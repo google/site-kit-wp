@@ -60,12 +60,24 @@ class ErrorHandler extends Component {
 	}
 
 	render() {
-		const { children } = this.props;
+		const { children, hideFilenamesInStack } = this.props;
 		const { error, info } = this.state;
 
 		// If there is no caught error, render the children components normally.
 		if ( ! error ) {
 			return children;
+		}
+
+		let componentStack = info?.componentStack;
+
+		// Hide filenames in stack trace to prevent issues with Visual Regression
+		// tests and hashes changing in the stack trace.
+		if ( hideFilenamesInStack && componentStack ) {
+			componentStack = componentStack
+				.replace( /\(.*\)/g, '(filtered)' )
+				.replace( /at (.+) ?https?:\/\/.*/g, 'at $1 (filtered)' )
+				.replace( /at https?:\/\/.*/g, '' )
+				.replace( /\n    \n    /g, '\n    ' );
 		}
 
 		return (
@@ -81,15 +93,15 @@ class ErrorHandler extends Component {
 					<Fragment>
 						<GenericErrorHandlerActions
 							message={ error.message }
-							componentStack={ info.componentStack }
+							componentStack={ componentStack }
 						/>
 						<pre className="googlesitekit-overflow-auto">
 							{ error.message }
-							{ info.componentStack }
+							{ componentStack }
 						</pre>
 					</Fragment>
 				}
-			></BannerNotification>
+			/>
 		);
 	}
 }

@@ -1058,35 +1058,7 @@ describe( 'modules/analytics-4 settings', () => {
 				it( 'accepts a change to analytics-4 settings as a valid change', () => {
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 						propertyID: '1001',
-						adsConversionID: '',
 					} );
-
-					expect(
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.canSubmitChanges()
-					).toBe( true );
-
-					expect( () =>
-						registry
-							.select( MODULES_ANALYTICS_4 )
-							.__dangerousCanSubmitChanges()
-					).not.toThrow();
-				} );
-
-				it( 'accepts a change to enhanced measurement settings as a valid change', () => {
-					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
-						adsConversionID: '',
-					} );
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.setEnhancedMeasurementSettings(
-							propertyID,
-							webDataStreamID,
-							{
-								streamEnabled: false,
-							}
-						);
 
 					expect(
 						registry

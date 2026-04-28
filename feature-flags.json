@@ -1,6 +1,8 @@
 [
 	"googleTagGateway",
 	"gtagUserData",
+	"pdfGeneration",
 	"proactiveUserEngagement",
-	"setupFlowRefresh"
+	"setupFlowRefresh",
+	"siteGoals"
 ]

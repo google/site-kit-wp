@@ -11,6 +11,9 @@
       "@/*": [
         "./assets/*"
       ],
+      "@wordpress-core/*": [
+        "@wordpress/*"
+      ],
       "googlesitekit-api": [
         "./assets/js/googlesitekit-api"
       ],

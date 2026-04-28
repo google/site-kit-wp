@@ -79,14 +79,35 @@
 			"./vendor/bin/phpcs"
 		]
 	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^7.36.0",
+		"@wordpress/compose": "^4.0.0",
+		"@wordpress/data": "^7.6.0",
+		"@wordpress/dom-ready": "^2.10.0",
+		"@wordpress/element": "^4.0.0",
+		"@wordpress/i18n": "^3.14.0",
+		"@wordpress/icons": "^3.0.0",
+		"@wordpress/keycodes": "^3.2.4",
+		"@wordpress/url": "^3.1.1",
+		"react": "^17.0.0",
+		"react-dom": "^17.0.0"
+	},
 	"devDependencies": {
 		"@babel/preset-typescript": "^7.27.1",
+		"@shopify/jest-dom-mocks": "^4.0.2",
+		"@testing-library/jest-dom": "^5.16.5",
+		"@testing-library/react": "^10.4.9",
+		"@testing-library/react-hooks": "^4.0.0",
+		"@types/faker": "^5.0.0",
+		"@types/node": "^22.0.0",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@wordpress/browserslist-config": "^5.40.0",
 		"@wordpress/eslint-plugin": "^7.1.0",
+		"@wordpress/jest-console": "^8.23.0",
+		"@wordpress/jest-preset-default": "^12.23.0",
 		"@wordpress/prettier-config": "^2.0",
-		"@wordpress/stylelint-config": "^21.0.0",
+		"@wordpress/stylelint-config": "^23.0.0",
 		"archiver": "^5.0.2",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^9.2.1",
@@ -104,6 +125,8 @@
 		"eslint-plugin-sitekit": "file:packages/eslint-plugin",
 		"eslint-plugin-unicorn": "^40.1.0",
 		"eslint-scope": "^5.1.0",
+		"fetch-mock": "^9.11.0",
+		"fetch-mock-jest": "^1.5.0",
 		"fs-extra": "^9.0.1",
 		"git-repo-info": "^2.1.1",
 		"glob-to-regexp": "^0.4.1",
@@ -112,17 +135,26 @@
 		"patch-package": "^8.0.0",
 		"playwright": "^1.14.0",
 		"prettier": "npm:wp-prettier@2.6.2",
+		"react-test-renderer": "^17.0.0",
 		"sanitize-filename": "^1.6.3",
 		"semver-compare": "^1.0.0",
 		"semver-regex": "^3.1.4",
-		"stylelint": "^14.11.0",
-		"stylelint-config-standard-scss": "^5.0.0",
+		"stylelint": "^16.0.0",
+		"stylelint-config-standard-scss": "^12.0.0",
 		"stylelint-declaration-strict-value": "^1.9.0",
-		"stylelint-order": "^5.0.0",
-		"stylelint-scss": "^4.3.0",
+		"stylelint-order": "^6.0.0",
+		"stylelint-scss": "^6.0.0",
 		"tsc-files": "^1.1.4",
 		"typescript": "^5.9.3",
 		"webpack-cli": "^6.0.1"
+	},
+	"overrides": {
+		"react": {
+			".": "^17.0.0"
+		},
+		"react-dom": {
+			".": "^17.0.0"
+		}
 	},
 	"workspaces": [
 		"assets",

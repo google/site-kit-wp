@@ -38,14 +38,9 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		$this->assertTrue( $this->edd->is_active() );
 	}
 
-	public function test_get_event_names_with_gtag_disabled() {
-		$events = $this->edd->get_event_names();
-		$this->assertCount( 1, $events );
-		$this->assertEquals( 'add_to_cart', $events[0] );
-	}
 
-	public function test_get_event_names_with_gtag_enabled() {
-		$this->enable_feature( 'gtagUserData' );
+
+	public function test_get_event_names() {
 		$events = $this->edd->get_event_names();
 		$this->assertCount( 2, $events );
 		$this->assertEquals( array( 'add_to_cart', 'purchase' ), $events );
@@ -61,15 +56,7 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		$this->assertTrue( wp_script_is( $handle, 'registered' ) );
 	}
 
-	public function test_register_hooks_without_feature_flag() {
-		remove_all_actions( 'wp_footer' );
-
-		$this->edd->register_hooks();
-		$this->assertFalse( has_action( 'wp_footer' ), 'Expected wp_footer action to not be registered.' );
-	}
-
-	public function test_register_hooks_with_feature_flag() {
-		$this->enable_feature( 'gtagUserData' );
+	public function test_register_hook() {
 		remove_all_actions( 'wp_footer' );
 
 		$this->edd->register_hooks();
@@ -84,8 +71,15 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		$method     = $reflection->getMethod( 'get_enhanced_conversions_data_from_session' );
 		$method->setAccessible( true );
 
+		$result                     = $method->invoke( $this->edd, $session_data );
+		$expected_without_user_data = $expected;
+		unset( $expected_without_user_data['user_data'] );
+		$this->assertEquals( $expected_without_user_data, $result );
+
+		$this->enable_feature( 'gtagUserData' );
+
 		$result = $method->invoke( $this->edd, $session_data );
-		$this->assertSame( $expected, $result );
+		$this->assertEquals( $expected, $result );
 	}
 
 	/**
@@ -107,12 +101,19 @@ class Easy_Digital_DownloadsTest extends TestCase {
 				array(),
 			),
 			'missing user data'        => array(
-				array( 'user_info' => array() ),
-				array(),
+				array(
+					'user_info'    => array(),
+					'cart_details' => array(),
+					'price'        => 0,
+				),
+				array(
+					'value' => 0,
+					'items' => array(),
+				),
 			),
 			'complete user data array' => array(
 				array(
-					'user_info' => array(
+					'user_info'    => array(
 						'email'      => ' John+Doe@gmail.com ',
 						'first_name' => ' John ',
 						'last_name'  => ' DOE ',
@@ -125,6 +126,14 @@ class Easy_Digital_DownloadsTest extends TestCase {
 							'country' => 'US',
 						),
 					),
+					'cart_details' => array(
+						array(
+							'name'       => 'Product',
+							'id'         => '1234',
+							'item_price' => '2.33',
+						),
+					),
+					'price'        => 2.33,
 				),
 				array(
 					'user_data' => array(
@@ -138,6 +147,14 @@ class Easy_Digital_DownloadsTest extends TestCase {
 							'region'      => 'ny',
 							'postal_code' => '12345',
 							'country'     => 'US',
+						),
+					),
+					'value'     => 2.33,
+					'items'     => array(
+						array(
+							'item_id'   => '1234',
+							'item_name' => 'Product',
+							'price'     => '2.33',
 						),
 					),
 				),

@@ -37,6 +37,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 type NotificationContent = {
 	title: string;
@@ -55,7 +56,7 @@ type NotificationContent = {
 interface OnboardingCompleteProps {
 	id: string;
 	Notification: ElementType;
-	gaTrackingEventArgs: Record< string, string >;
+	gaTrackingEventArgs: GATrackingEventArgs;
 	dismissNotice: () => void;
 	paymentOption: string;
 	productID: string;
@@ -71,14 +72,18 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 	productID,
 	serviceURL,
 } ) => {
-	const productIDs = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getProductIDs()
+	const productIDs = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getProductIDs(),
+		[]
 	);
 
-	const rrmSettingsURL = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getModuleSettingsEditURL(
-			MODULE_SLUG_READER_REVENUE_MANAGER
-		)
+	const rrmSettingsURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getModuleSettingsEditURL(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			),
+		[]
 	);
 
 	// Do not show the notification if the payment option is not set.
@@ -162,7 +167,6 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				notificationID={ id }
 				type={ TYPES.SUCCESS }

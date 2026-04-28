@@ -49,12 +49,16 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 } ) => {
 	const viewContext = useViewContext();
 
-	const contentPolicyState = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+	const contentPolicyState = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState(),
+		[]
 	);
 
-	const policyInfoURL = useSelect( ( select: Select ) =>
-		select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL()
+	const policyInfoURL = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getPolicyInfoURL(),
+		[]
 	);
 
 	const { title, description, ctaLabel, type } =
@@ -75,7 +79,6 @@ const PolicyViolationNotification: FC< PolicyViolationNotificationProps > = ( {
 
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
-			{ /* @ts-expect-error - The `NoticeNotification` component is not typed yet. */ }
 			<NoticeNotification
 				type={ type }
 				notificationID={ id }

@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as SettingsCardVisitorGroups } from './SettingsCardVisitorGroups';
+export { default as SettingsCardAudiences } from './SettingsCardAudiences';

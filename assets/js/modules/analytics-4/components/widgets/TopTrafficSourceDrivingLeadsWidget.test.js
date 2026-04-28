@@ -23,6 +23,7 @@ import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideKeyMetrics,
+	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -190,6 +191,8 @@ describe( 'TopTrafficSourceDrivingLeadsWidget', () => {
 	} );
 
 	it( 'should render the generic error variant when the report fetch fails', async () => {
+		provideModuleRegistrations( registry );
+
 		const errorResponse = {
 			code: ERROR_INTERNAL_SERVER_ERROR,
 			message: 'Internal server error',

@@ -94,7 +94,7 @@
 				flex-direction: row;
 				gap: $grid-gap-phone;
 				margin-top: $grid-gap-phone - 4px;
-				padding: $grid-gap-phone - 6px $grid-gap-desktop;
+				padding: $grid-gap-phone $grid-gap-desktop;
 				width: 100%;
 
 				p {

@@ -44,17 +44,21 @@ export interface AnalyticsAccountCreationErrorNoticeProps {
 const AnalyticsAccountCreationErrorNotice: FC<
 	AnalyticsAccountCreationErrorNoticeProps
 > = ( { errorCode, onRetry } ) => {
-	const analyticsAccountLimitHelpURL = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/',
-			hash: 'topic=14090456',
-		} )
+	const analyticsAccountLimitHelpURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/analytics/',
+				hash: 'topic=14090456',
+			} ),
+		[]
 	);
 
-	const additionalAnalyticsSupportURL = useSelect( ( select: Select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL(
-			'analytics-additional-support'
-		)
+	const additionalAnalyticsSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'analytics-additional-support'
+			),
+		[]
 	);
 
 	const title = __( 'Analytics account creation failed', 'google-site-kit' );
