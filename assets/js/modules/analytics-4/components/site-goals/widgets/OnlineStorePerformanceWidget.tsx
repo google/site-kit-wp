@@ -23,6 +23,7 @@ import type { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,27 +40,16 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
-import { createInterpolateElement } from '@wordpress/element';
-
-type ReportRow = {
-	dimensionValues?: Array< { value: string } >;
-	metricValues?: Array< { value: string } >;
-};
-
-type Report = {
-	rows: ReportRow[];
-	totals: ReportRow[];
-};
-
-const PERCENT_FORMAT = {
-	style: 'percent' as const,
-	signDisplay: 'never' as const,
-	maximumFractionDigits: 1,
-};
-
-const NUMBER_FORMAT = {
-	style: 'decimal' as const,
-};
+import type {
+	Report,
+	ReportRow,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
+import {
+	NUMBER_FORMAT,
+	PERCENT_FORMAT,
+} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
+import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
 const EVENT_RATE_LABELS: Record< string, string > = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -71,61 +61,38 @@ const EVENT_TOTAL_LABELS: Record< string, string > = {
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
 };
 
-function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
-	return ( row: ReportRow ) =>
-		row?.dimensionValues?.[ dimensionIndex ]?.value === dateRangeSlug;
-}
+function processSecondaryEventsReport(
+	secondaryEventsReport: Report | undefined,
+	secondaryEvents: string[]
+) {
+	if ( ! secondaryEventsReport || ! secondaryEvents.length ) {
+		return [];
+	}
 
-function processReports( eventsReport: Report, sessionsReport: Report ) {
-	const { rows: primaryEventRows = [] } = eventsReport || {};
-	const { totals: sessionsRows = [] } = sessionsReport || {};
+	const { rows = [] } = secondaryEventsReport;
 
-	// dateRange is at dimensionValues[1] since eventName is at [0].
-	const currentPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	// Get session counts.
-	const currentSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const currentRate =
-		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
-	const previousRate =
-		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
-
-	return {
-		currentRate,
-		previousRate,
-		currentPrimaryCount,
-		previousPrimaryCount,
-		currentSessions,
-	};
+	return secondaryEvents.map( ( eventName ) => ( {
+		eventName,
+		label: EVENT_TOTAL_LABELS[ eventName ] || eventName,
+		currentCount:
+			parseInt(
+				( rows as ReportRow[] ).find(
+					( row ) =>
+						row?.dimensionValues?.[ 0 ]?.value === eventName &&
+						row?.dimensionValues?.[ 1 ]?.value === 'date_range_0'
+				)?.metricValues?.[ 0 ]?.value ?? '',
+				10
+			) || 0,
+		previousCount:
+			parseInt(
+				( rows as ReportRow[] ).find(
+					( row ) =>
+						row?.dimensionValues?.[ 0 ]?.value === eventName &&
+						row?.dimensionValues?.[ 1 ]?.value === 'date_range_1'
+				)?.metricValues?.[ 0 ]?.value ?? '',
+				10
+			) || 0,
+	} ) );
 }
 
 const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
@@ -137,6 +104,16 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		[]
 	);
 
+	const secondaryEcommerceEvents: string[] = useSelect(
+		( select: Select ) =>
+			primaryEvent
+				? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+						primaryEvent
+				  )
+				: [],
+		[ primaryEvent ]
+	);
+
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
@@ -146,64 +123,60 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		[]
 	);
 
-	const eventOptions = {
-		...dates,
-		metrics: [ { name: 'eventCount' } ],
-		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: {
-			eventName: primaryEvent,
-		},
-		reportID:
-			'analytics-4_online-store-performance-widget_primaryEventReportOptions',
-	};
+	const reportOptions: ReportOptions[] = [];
 
-	const sessionsOptions = {
-		...dates,
-		metrics: [ { name: 'sessions' } ],
-		reportID: 'analytics-4_site-goals_sessionsReportOptions',
-	};
+	if ( primaryEvent ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: primaryEvent,
+			},
+			reportID:
+				'analytics-4_online-store-performance-widget_primaryEventReportOptions',
+		} );
 
-	const [ primaryEventReport, sessionsReport ] = useInViewSelect(
-		( select: Select ) =>
-			primaryEvent
-				? [
-						select( MODULES_ANALYTICS_4 ).getReport( eventOptions ),
-						select( MODULES_ANALYTICS_4 ).getReport(
-							sessionsOptions
-						),
-				  ]
-				: [],
-		[ primaryEvent, eventOptions, sessionsOptions ]
-	);
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
+		} );
+	}
 
-	const loading = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ eventOptions ]
-				  ) ||
-				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ sessionsOptions ]
-				  )
-				: undefined,
-		[ primaryEvent, eventOptions ]
-	);
+	if ( primaryEvent && secondaryEcommerceEvents?.length ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: secondaryEcommerceEvents,
+				},
+			},
+			reportID:
+				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+		} );
+	}
 
-	const error = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ eventOptions ]
-				  ) ||
-				  select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ sessionsOptions ]
-				  )
-				: undefined,
-		[]
+	const [ primaryEventReport, engagementReport, secondaryEventsReport ] =
+		useInViewSelect(
+			( select: Select ) =>
+				reportOptions.map( ( options ) =>
+					select( MODULES_ANALYTICS_4 ).getReport( options )
+				),
+			reportOptions
+		) || [];
+
+	const [ loading, error ] = useSelect(
+		( select: Select ) => [
+			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...reportOptions
+			),
+		],
+		reportOptions
 	);
 
 	if ( ! primaryEvent ) {
@@ -224,7 +197,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		currentSessions,
 		currentRate,
 		previousRate,
-	} = processReports( primaryEventReport, sessionsReport );
+		currentEngagementRate,
+		previousEngagementRate,
+	} = processReports( primaryEventReport, engagementReport );
+
+	const secondaryEventTiles = processSecondaryEventsReport(
+		secondaryEventsReport,
+		secondaryEcommerceEvents || []
+	);
 
 	return (
 		<Widget>
@@ -235,57 +215,97 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && ! error && (
-				<TilesGroup
-					className="googlesitekit-site-goals-primary-action"
-					title={ __( 'Key action', 'google-site-kit' ) }
-				>
-					<Tile
-						title={
-							EVENT_RATE_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
-							/* translators: %s: formatted number of total sessions */
-							__( '%s total sessions', 'google-site-kit' ),
-							numFmt( currentSessions, NUMBER_FORMAT )
-						) }
-						infoTooltip={ createInterpolateElement(
-							__(
-								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									// eslint-disable-next-line
-									<a
-										href="#"
-										target="_blank"
-										rel="noreferrer noopener"
-									/>
-								),
+				<Fragment>
+					<TilesGroup
+						className="googlesitekit-site-goals-primary-action"
+						title={ __( 'Key action', 'google-site-kit' ) }
+					>
+						<Tile
+							title={
+								EVENT_RATE_LABELS[ primaryEvent ] ||
+								__( 'Unknown Event', 'google-site-kit' )
 							}
-						) }
-						currentValue={ currentRate }
-						previousValue={ previousRate }
-						format={ PERCENT_FORMAT }
-						primary
-					/>
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							infoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// eslint-disable-next-line
+										<a
+											href="#"
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
+							currentValue={ currentRate }
+							previousValue={ previousRate }
+							format={ PERCENT_FORMAT }
+							primary
+						/>
 
-					<Tile
-						title={
-							EVENT_TOTAL_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
-							/* translators: %s: GA4 event name */
-							__( '“%s” events', 'google-site-kit' ),
-							primaryEvent
+						<Tile
+							title={
+								EVENT_TOTAL_LABELS[ primaryEvent ] ||
+								__( 'Unknown Event', 'google-site-kit' )
+							}
+							subtitle={ sprintf(
+								/* translators: %s: GA4 event name */
+								__( '"%s" events', 'google-site-kit' ),
+								primaryEvent
+							) }
+							currentValue={ currentPrimaryCount }
+							previousValue={ previousPrimaryCount }
+							format={ NUMBER_FORMAT }
+						/>
+					</TilesGroup>
+
+					<TilesGroup
+						className="googlesitekit-site-goals-visitor-engagement"
+						title={ __( 'Visitor engagement', 'google-site-kit' ) }
+					>
+						<Tile
+							title={ __( 'Engagement rate', 'google-site-kit' ) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentEngagementRate }
+							previousValue={ previousEngagementRate }
+							format={ PERCENT_FORMAT }
+						/>
+						{ secondaryEventTiles.map(
+							( {
+								eventName,
+								label,
+								currentCount,
+								previousCount,
+							} ) => (
+								<Tile
+									key={ eventName }
+									title={ label }
+									subtitle={ sprintf(
+										/* translators: %s: GA4 event name */
+										__( '"%s" events', 'google-site-kit' ),
+										eventName
+									) }
+									currentValue={ currentCount }
+									previousValue={ previousCount }
+									format={ NUMBER_FORMAT }
+								/>
+							)
 						) }
-						currentValue={ currentPrimaryCount }
-						previousValue={ previousPrimaryCount }
-						format={ NUMBER_FORMAT }
-					/>
-				</TilesGroup>
+					</TilesGroup>
+				</Fragment>
 			) }
 		</Widget>
 	);

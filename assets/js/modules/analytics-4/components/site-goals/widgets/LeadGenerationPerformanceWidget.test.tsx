@@ -66,11 +66,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		};
 	}
 
-	function buildSessionsReportOptions( dates: Record< string, unknown > ) {
+	function buildEngagementReportOptions( dates: Record< string, unknown > ) {
 		return {
 			...dates,
-			metrics: [ { name: 'sessions' } ],
-			reportID: 'analytics-4_site-goals_sessionsReportOptions',
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
 		};
 	}
 
@@ -126,10 +126,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		const leadEventsReport = buildLeadEventsReportOptions( dates, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
-		provideAnalytics4MockReport( registry, sessionsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { container, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
@@ -144,10 +144,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 2 );
+		).toHaveLength( 3 ); // Form completion rate + Total form completions + Engagement rate
 		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( getByText( '"generate_lead" events' ) ).toBeInTheDocument();
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 	} );
 
 	it( 'aggregates event counts across multiple detected lead events', async () => {
@@ -167,7 +168,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.CONTACT,
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		// Provide lead event rows: contact (30) + generate_lead (20) = 50 for date_range_0.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
@@ -209,26 +210,27 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ leadEventsReport ] );
 
-		// Provide sessions in totals.
-		// currentSessions = 200 → rate = 50 / 200 = 25%.
+		// Provide engagement report with sessions=200 and engagementRate=0.60.
+		// currentSessions = 200 → rate = 50 / 200 = 25% (form completion).
+		// Using engagementRate=0.60 (60%) to differentiate from form completion rate (25%).
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
 					{
 						dimensionValues: [ { value: 'date_range_0' } ],
-						metricValues: [ { value: '200' } ],
+						metricValues: [ { value: '0.60' }, { value: '200' } ],
 					},
 					{
 						dimensionValues: [ { value: 'date_range_1' } ],
-						metricValues: [ { value: '180' } ],
+						metricValues: [ { value: '0.55' }, { value: '180' } ],
 					},
 				],
 			},
-			{ options: sessionsReport }
+			{ options: engagementReport }
 		);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ sessionsReport ] );
+			.finishResolution( 'getReport', [ engagementReport ] );
 
 		const { getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
@@ -255,7 +257,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		const leadEventsReport = buildLeadEventsReportOptions( dates, [
 			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
 		] );
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -266,10 +268,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { totals: [] }, { options: sessionsReport } );
+			.receiveGetReport( { totals: [] }, { options: engagementReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ sessionsReport ] );
+			.finishResolution( 'getReport', [ engagementReport ] );
 
 		const { getAllByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
@@ -293,10 +295,14 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		const leadEventsReport = buildLeadEventsReportOptions( dates, [
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ leadEventsReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReport ] );
 
 		const { container } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
@@ -306,5 +312,68 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders engagement rate tile with compare values', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render secondary ecommerce tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// No secondary ecommerce tiles should appear in lead generation widget.
+		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Total products added to cart' )
+		).not.toBeInTheDocument();
 	} );
 } );
