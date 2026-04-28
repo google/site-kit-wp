@@ -32,6 +32,20 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import {
+	GOAL_DRIVER_IDS,
+	GOAL_TYPES,
+	getDetectedLeadEvents,
+	GoalDriversSection,
+	useGoalDriversData,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+
+// TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
+const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
+];
 
 export default function LeadGenerationPerformanceWidget( {
 	Widget,
@@ -40,6 +54,17 @@ export default function LeadGenerationPerformanceWidget( {
 	const hasLeadConversionReportingEvents = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasLeadConversionReportingEvents()
 	);
+	const detectedEvents = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getDetectedEvents()
+	);
+
+	const leadEvents = getDetectedLeadEvents( detectedEvents );
+
+	const { drivers, hasExpandableRows } = useGoalDriversData( {
+		goalType: GOAL_TYPES.LEAD,
+		primaryEvent: leadEvents,
+		selectedDriverIDs: DEFAULT_SELECTED_GOAL_DRIVER_IDS,
+	} );
 
 	if ( ! hasLeadConversionReportingEvents ) {
 		return <WidgetNull />;
@@ -49,6 +74,11 @@ export default function LeadGenerationPerformanceWidget( {
 		<Widget>
 			<WidgetHeaderTitle
 				title={ __( 'Lead generation performance', 'google-site-kit' ) }
+			/>
+			<GoalDriversSection
+				drivers={ drivers }
+				hasExpandableRows={ hasExpandableRows }
+				goalType={ GOAL_TYPES.LEAD }
 			/>
 		</Widget>
 	);
