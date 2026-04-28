@@ -1,0 +1,87 @@
+/**
+ * PDF Sections Selection Panel (container around SelectionPanel)
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	DEFAULT_SELECTED_SECTIONS,
+	FORM_PDF_DOWNLOAD,
+	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_GENERATING_KEY,
+} from '@/js/components/pdf-generation/constants';
+import InViewProvider from '@/js/components/InViewProvider';
+import SelectionPanel from '@/js/components/SelectionPanel';
+import PanelContent from './PanelContent';
+import { useFeature } from '@/js/hooks/useFeature';
+
+export default function PDFSectionsSelectionPanel() {
+	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
+
+	const isOpen = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const closePanel = useCallback( () => {
+		if ( isOpen ) {
+			setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+		}
+	}, [ isOpen, setValue ] );
+
+	const onSideSheetOpen = useCallback( () => {
+		setValues( FORM_PDF_DOWNLOAD, {
+			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: DEFAULT_SELECTED_SECTIONS,
+		} );
+		// Reset any stale "generating" state left over from a previous session.
+		setValue( PDF_GENERATING_KEY, false );
+	}, [ setValues, setValue ] );
+
+	if ( ! pdfGenerationEnabled ) {
+		return null;
+	}
+
+	return (
+		<InViewProvider
+			value={ {
+				key: 'PDFSectionsSelectionPanel',
+				value: !! isOpen,
+			} }
+		>
+			<SelectionPanel
+				className="googlesitekit-pdf-download-panel"
+				isOpen={ !! isOpen }
+				onOpen={ onSideSheetOpen }
+				closePanel={ closePanel }
+			>
+				<PanelContent closePanel={ closePanel } />
+			</SelectionPanel>
+		</InViewProvider>
+	);
+}

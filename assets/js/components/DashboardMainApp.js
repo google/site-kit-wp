@@ -52,6 +52,8 @@ import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
+import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
+import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
 import WelcomeModal from './WelcomeModal';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
@@ -292,6 +294,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				<PDFDownloadButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
@@ -378,6 +381,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			<PDFSectionsSelectionPanel />
 
 			{ emailReportingEnabled && (
 				<Fragment>
