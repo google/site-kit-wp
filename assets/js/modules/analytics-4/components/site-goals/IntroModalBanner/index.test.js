@@ -29,6 +29,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import IntroModal from './index';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
 
@@ -44,6 +45,8 @@ describe( 'IntroModal', () => {
 			clickLearnMore: jest.fn(),
 			dismiss: jest.fn(),
 		} );
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	it( 'renders ecommerce-only variant when only ecommerce conversion events exist', () => {
