@@ -24,7 +24,8 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalEcommerce from './IntroModalEcommerce';
@@ -81,6 +82,9 @@ function createModalHandlers(
 
 export default function IntroModal() {
 	const [ isOpen, setIsOpen ] = useState( true );
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
 	const trackEvent = useNotificationEvents(
 		SITE_GOALS_INTRO_MODAL_BANNER
 	) as IntroModalTrackingEvents;
@@ -99,13 +103,23 @@ export default function IntroModal() {
 		[]
 	);
 
+	const isIntroModalDismissed = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				SITE_GOALS_INTRO_MODAL_BANNER
+			),
+		[]
+	);
+
 	const handleClose = useCallback( () => {
 		setIsOpen( false );
-	}, [] );
+		dismissItem( SITE_GOALS_INTRO_MODAL_BANNER );
+	}, [ dismissItem ] );
 
 	if (
 		hasEcommerceConversionReportingEvents === undefined ||
 		hasLeadConversionReportingEvents === undefined ||
+		isIntroModalDismissed ||
 		! isOpen
 	) {
 		return null;
