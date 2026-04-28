@@ -236,6 +236,81 @@ describe( 'AdminMenuTooltip', () => {
 		);
 	} );
 
+	it( 'should not render when isTooltipVisible is true but selectionPanelOpen is true', async () => {
+		const tooltipSlug = 'test-tooltip-slug';
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug,
+		} );
+		await registry
+			.dispatch( CORE_UI )
+			.setValue( 'selectionPanelOpen', true );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Advance timers to allow Joyride to attempt rendering.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-tour-tooltip' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
+	it( 'should render when isTooltipVisible is true and selectionPanelOpen is false', async () => {
+		const tooltipSlug = 'test-tooltip-slug';
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug,
+		} );
+		await registry
+			.dispatch( CORE_UI )
+			.setValue( 'selectionPanelOpen', false );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			const tooltip = document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			expect( tooltip ).toBeInTheDocument();
+		} );
+	} );
+
 	it( 'should use the provided tracking label when tracking GA events', async () => {
 		const tooltipSlug = 'test-tooltip-slug';
 		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
