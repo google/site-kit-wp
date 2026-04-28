@@ -46,8 +46,12 @@ function defaultValidateParams() {}
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearError, setErrorForSelector, setErrorForAction } =
-	errorStoreActions;
+const {
+	clearSelectorError,
+	clearActionError,
+	setErrorForSelector,
+	setErrorForAction,
+} = errorStoreActions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a
@@ -166,6 +170,7 @@ export function createFetchStore( {
 			type: START_FETCH,
 		};
 
+		const clearError = isAction ? clearActionError : clearSelectorError;
 		yield clearError( baseName, args );
 
 		try {
