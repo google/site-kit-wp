@@ -1,5 +1,11 @@
 == Changelog ==
 
+= 1.178.0 =
+
+**Fixed**
+
+* Fix Welcome Modal reappearing after dismissing and resubmitting Key Metrics answers. See [#12477](https://github.com/google/site-kit-wp/issues/12477).
+
 = 1.177.0 =
 
 **Enhanced**
