@@ -28,7 +28,12 @@ import InfoTooltip from '@/js/components/InfoTooltip';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import Typography from '@/js/components/Typography';
 
-export default function MetricTileHeader( { title, infoTooltip, loading } ) {
+export default function MetricTileHeader( {
+	title,
+	infoTooltip,
+	loading,
+	headerLabel,
+} ) {
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">
 			<Typography
@@ -39,6 +44,16 @@ export default function MetricTileHeader( { title, infoTooltip, loading } ) {
 			>
 				{ title }
 			</Typography>
+			{ !! headerLabel && (
+				<Typography
+					as="span"
+					size="small"
+					type="label"
+					className="googlesitekit-km-widget-tile__title-label"
+				>
+					{ headerLabel }
+				</Typography>
+			) }
 			{ loading ? (
 				<VisuallyHidden>
 					<InfoTooltip title={ infoTooltip } />
@@ -54,4 +69,5 @@ MetricTileHeader.propTypes = {
 	title: PropTypes.string,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	loading: PropTypes.bool,
+	headerLabel: PropTypes.string,
 };
