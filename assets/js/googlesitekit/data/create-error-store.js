@@ -29,8 +29,10 @@ import md5 from 'md5';
 
 const SET_ERROR_FOR_SELECTOR = 'SET_ERROR_FOR_SELECTOR';
 const SET_ERROR_FOR_ACTION = 'SET_ERROR_FOR_ACTION';
-const CLEAR_ERROR = 'CLEAR_ERROR';
-const CLEAR_ERRORS = 'CLEAR_ERRORS';
+const CLEAR_SELECTOR_ERROR = 'CLEAR_SELECTOR_ERROR';
+const CLEAR_SELECTOR_ERRORS = 'CLEAR_SELECTOR_ERRORS';
+const CLEAR_ACTION_ERROR = 'CLEAR_ACTION_ERROR';
+const CLEAR_ACTION_ERRORS = 'CLEAR_ACTION_ERRORS';
 
 /**
  * Internal dependencies
@@ -100,24 +102,80 @@ export const actions = {
 		};
 	},
 
-	clearError( baseName, args = [] ) {
-		invariant( baseName, 'baseName is required.' );
-
+	/**
+	 * Clears the error for a given selector name and args.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}      selectorName Selector name.
+	 * @param {Array.<any>} [args]       Arguments passed to selector (default `[]`).
+	 * @return {Object} Redux-style action.
+	 */
+	clearSelectorError( selectorName, args = [] ) {
+		invariant( selectorName, 'selectorName is required.' );
 		invariant( args && Array.isArray( args ), 'args must be an array.' );
 
 		return {
-			type: CLEAR_ERROR,
+			type: CLEAR_SELECTOR_ERROR,
 			payload: {
-				baseName,
+				baseName: selectorName,
 				args,
 			},
 		};
 	},
-	clearErrors( baseName ) {
+
+	/**
+	 * Clears all selector errors, optionally filtered by selector name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} [selectorName] Optional selector name to clear errors for.
+	 * @return {Object} Redux-style action.
+	 */
+	clearSelectorErrors( selectorName ) {
 		return {
-			type: CLEAR_ERRORS,
+			type: CLEAR_SELECTOR_ERRORS,
 			payload: {
-				baseName,
+				baseName: selectorName,
+			},
+		};
+	},
+
+	/**
+	 * Clears the error for a given action name and args.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}      actionName Action name.
+	 * @param {Array.<any>} [args]     Arguments passed to action (default `[]`).
+	 * @return {Object} Redux-style action.
+	 */
+	clearActionError( actionName, args = [] ) {
+		invariant( actionName, 'actionName is required.' );
+		invariant( args && Array.isArray( args ), 'args must be an array.' );
+
+		return {
+			type: CLEAR_ACTION_ERROR,
+			payload: {
+				baseName: actionName,
+				args,
+			},
+		};
+	},
+
+	/**
+	 * Clears all action errors, optionally filtered by action name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} [actionName] Optional action name to clear errors for.
+	 * @return {Object} Redux-style action.
+	 */
+	clearActionErrors( actionName ) {
+		return {
+			type: CLEAR_ACTION_ERRORS,
+			payload: {
+				baseName: actionName,
 			},
 		};
 	},
@@ -194,7 +252,7 @@ export function createErrorStore( storeName ) {
 				break;
 			}
 
-			case CLEAR_ERROR: {
+			case CLEAR_SELECTOR_ERROR: {
 				const { baseName, args } = payload;
 				clearErrorInSlice(
 					state,
@@ -203,6 +261,22 @@ export function createErrorStore( storeName ) {
 					baseName,
 					args
 				);
+				break;
+			}
+
+			case CLEAR_SELECTOR_ERRORS: {
+				const { baseName } = payload;
+				clearErrorsInSlice(
+					state,
+					'selectorErrors',
+					'selectorErrorArgs',
+					baseName
+				);
+				break;
+			}
+
+			case CLEAR_ACTION_ERROR: {
+				const { baseName, args } = payload;
 				clearErrorInSlice(
 					state,
 					'actionErrors',
@@ -213,14 +287,8 @@ export function createErrorStore( storeName ) {
 				break;
 			}
 
-			case CLEAR_ERRORS: {
+			case CLEAR_ACTION_ERRORS: {
 				const { baseName } = payload;
-				clearErrorsInSlice(
-					state,
-					'selectorErrors',
-					'selectorErrorArgs',
-					baseName
-				);
 				clearErrorsInSlice(
 					state,
 					'actionErrors',
@@ -333,7 +401,7 @@ export function createErrorStore( storeName ) {
 		},
 
 		/**
-		 * Gets the meta-data for a given error object, or null if the error is not found.
+		 * Gets the meta-data for a given selector error object, or null if the error is not found.
 		 *
 		 * Returns meta-data in the format:
 		 *
@@ -348,10 +416,9 @@ export function createErrorStore( storeName ) {
 		 *
 		 * @param {Object} state Data store's state.
 		 * @param {Object} error Error object.
-		 * @return {Object|null} Meta-data for the given error object, or null if the error is not found.
+		 * @return {Object|null} Meta-data for the given selector error object, or null if the error is not found.
 		 */
-		getMetaDataForError( state, error ) {
-			// Search selector errors first, then action errors.
+		getMetaDataForSelectorError( state, error ) {
 			const selectorKey = Object.keys( state.selectorErrors ).find(
 				( errorKey ) => state.selectorErrors[ errorKey ] === error
 			);
@@ -364,21 +431,6 @@ export function createErrorStore( storeName ) {
 				return {
 					baseName,
 					args: state.selectorErrorArgs[ selectorKey ],
-				};
-			}
-
-			const actionKey = Object.keys( state.actionErrors ).find(
-				( errorKey ) => state.actionErrors[ errorKey ] === error
-			);
-
-			if ( actionKey ) {
-				const baseName = actionKey.substring(
-					0,
-					actionKey.indexOf( '::' )
-				);
-				return {
-					baseName,
-					args: state.actionErrorArgs[ actionKey ],
 				};
 			}
 
@@ -408,7 +460,9 @@ export function createErrorStore( storeName ) {
 			( select ) =>
 				function ( state, error ) {
 					const metaData =
-						select( storeName ).getMetaDataForError( error );
+						select( storeName ).getMetaDataForSelectorError(
+							error
+						);
 
 					if ( metaData ) {
 						const { baseName: name, args } = metaData;
