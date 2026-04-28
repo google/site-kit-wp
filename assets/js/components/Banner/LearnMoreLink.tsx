@@ -75,8 +75,6 @@ const LearnMoreLink: FC< LearnMoreLinkProps > = ( {
 	}
 
 	return (
-		// @ts-expect-error `Link` component is not currently typed, so this
-		// results in an error because we're supplying a `children` prop.
 		<Link
 			href={ href }
 			className={ className }
