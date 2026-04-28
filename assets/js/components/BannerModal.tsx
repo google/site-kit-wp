@@ -102,20 +102,20 @@ const BannerModal: FC< BannerModalProps > = ( {
 } ) => {
 	return (
 		<Dialog
-			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
 			onClose={ onClose }
 			open
 		>
-			<DialogContent className="googlesitekit-welcome-modal__content">
+			<DialogContent className="googlesitekit-banner-modal__content">
 				<GraphicContainerWithIntersectionObserver
 					onInView={ onView }
-					className="googlesitekit-welcome-modal__graphic"
+					className="googlesitekit-banner-modal__graphic"
 				>
 					<Graphic />
 
 					<Button
 						// @ts-expect-error - The `Button` component is not typed yet.
-						className="googlesitekit-welcome-modal__close-button"
+						className="googlesitekit-banner-modal__close-button"
 						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
 						onClick={ onClose }
 						aria-label={ __( 'Close', 'google-site-kit' ) }
@@ -123,10 +123,10 @@ const BannerModal: FC< BannerModalProps > = ( {
 					/>
 				</GraphicContainerWithIntersectionObserver>
 
-				<div className="googlesitekit-welcome-modal__text">
+				<div className="googlesitekit-banner-modal__text">
 					<Typography
 						as="h1"
-						className="googlesitekit-welcome-modal__title"
+						className="googlesitekit-banner-modal__title"
 						size="large"
 						type="headline"
 					>
@@ -136,13 +136,13 @@ const BannerModal: FC< BannerModalProps > = ( {
 					<P
 						type="body"
 						size="medium"
-						className="googlesitekit-welcome-modal__description"
+						className="googlesitekit-banner-modal__description"
 					>
 						{ description }
 					</P>
 				</div>
 			</DialogContent>
-			<DialogFooter className="googlesitekit-welcome-modal__footer">
+			<DialogFooter className="googlesitekit-banner-modal__footer">
 				<Fragment>
 					{ dismissButton && (
 						// @ts-expect-error - The `Button` component is not typed yet.

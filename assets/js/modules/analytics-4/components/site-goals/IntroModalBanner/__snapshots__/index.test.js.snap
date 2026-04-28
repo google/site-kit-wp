@@ -5,7 +5,7 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -16,41 +16,41 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Track your most valuable goals
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Discover which channels, cities, and pages are bringing in your best results. A new section shows you exactly how 
+              Discover which channels, cities, and pages are bringing in your best results. A new section shows you exactly how
               <strong>
                 sales
               </strong>
-               and 
+               and
               <strong>
                 sign ups
               </strong>
-               are performing, so you can focus on the sources that grow your business. 
+               are performing, so you can focus on the sources that grow your business.
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
@@ -68,7 +68,7 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -105,7 +105,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -116,33 +116,33 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               See what drives your sales
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Understand which parts of your site are most effective at turning visitors into customers. This new section shows you exactly which pages, cities, and traffic sources are bringing in the most sales and actions like add to cart. Use these insights to see what works best for your business so you can focus on the areas that help you grow. 
+              Understand which parts of your site are most effective at turning visitors into customers. This new section shows you exactly which pages, cities, and traffic sources are bringing in the most sales and actions like add to cart. Use these insights to see what works best for your business so you can focus on the areas that help you grow.
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
@@ -160,7 +160,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -197,7 +197,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -208,33 +208,33 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               See what brings in new leads
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
-              Discover which parts of your site are most successful at encouraging people to reach out. This new section highlights the specific pages, locations, and visitor groups that result in more sign-ups, quote requests, and other important goals. These details help you understand exactly where your most interested visitors are coming from. 
+              Discover which parts of your site are most successful at encouraging people to reach out. This new section highlights the specific pages, locations, and visitor groups that result in more sign-ups, quote requests, and other important goals. These details help you understand exactly where your most interested visitors are coming from.
               <a
                 aria-label="Learn more about site goals (opens in a new tab)"
                 class="googlesitekit-cta-link"
@@ -252,7 +252,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
