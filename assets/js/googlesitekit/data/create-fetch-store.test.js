@@ -154,7 +154,9 @@ describe( 'createFetchStore store', () => {
 				expect( action.next().value.type ).toEqual(
 					'START_FETCH_SAVE_SOME_DATA'
 				);
-				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
+				expect( action.next().value.type ).toEqual(
+					'CLEAR_SELECTOR_ERROR'
+				);
 				expect( action.next().value.type ).toEqual(
 					'FETCH_SAVE_SOME_DATA'
 				);
@@ -186,7 +188,9 @@ describe( 'createFetchStore store', () => {
 				expect( action.next().value.type ).toEqual(
 					'START_FETCH_SAVE_SOME_DATA'
 				);
-				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
+				expect( action.next().value.type ).toEqual(
+					'CLEAR_SELECTOR_ERROR'
+				);
 				expect( action.next().value.type ).toEqual(
 					'FETCH_SAVE_SOME_DATA'
 				);
