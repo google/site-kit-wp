@@ -26,6 +26,14 @@ use Google\Site_Kit\Core\User\Email_Reporting_Settings;
 class Frequency_Planner {
 
 	/**
+	 * Trigger hour for email reports.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const TRIGGER_HOUR = 9;
+
+	/**
 	 * Calculates the next run timestamp for a given frequency.
 	 *
 	 * @since 1.167.0
@@ -61,8 +69,8 @@ class Frequency_Planner {
 	private function get_next_weekly_occurrence( $timestamp, DateTimeZone $time_zone ) {
 		$start_of_week = (int) get_option( 'start_of_week', 0 );
 		$current       = $this->immutable_from_timestamp( $timestamp, $time_zone );
-		// Anchor scheduling to the very start of the calendar day.
-		$day_start = $current->setTime( 0, 0, 0 );
+		// Anchor scheduling to the trigger hour.
+		$day_start = $current->setTime( self::TRIGGER_HOUR, 0, 0 );
 		// ISO weekday index where Sunday=0 and Saturday=6, matching WordPress' start_of_week option.
 		$current_wday = (int) $current->format( 'w' );
 
@@ -79,7 +87,7 @@ class Frequency_Planner {
 	}
 
 	/**
-	 * Gets the next monthly occurrence (first day of next month at 00:00:00).
+	 * Gets the next monthly occurrence (first day of next month at the trigger hour).
 	 *
 	 * @param int          $timestamp Current timestamp.
 	 * @param DateTimeZone $time_zone Site timezone.
@@ -89,21 +97,21 @@ class Frequency_Planner {
 		$current = $this->immutable_from_timestamp( $timestamp, $time_zone );
 
 		$next_month = $current
-			->setTime( 0, 0, 0 )
+			->setTime( self::TRIGGER_HOUR, 0, 0 )
 			->modify( 'first day of next month' );
 
 		return $next_month->getTimestamp();
 	}
 
 	/**
-	 * Gets the next quarterly occurrence (first day of the next quarter at 00:00:00).
+	 * Gets the next quarterly occurrence (first day of the next quarter at the trigger hour).
 	 *
 	 * @param int          $timestamp Current timestamp.
 	 * @param DateTimeZone $time_zone Site timezone.
 	 * @return int Next quarterly occurrence timestamp.
 	 */
 	private function get_next_quarterly_occurrence( $timestamp, DateTimeZone $time_zone ) {
-		$current = $this->immutable_from_timestamp( $timestamp, $time_zone )->setTime( 0, 0, 0 );
+		$current = $this->immutable_from_timestamp( $timestamp, $time_zone )->setTime( self::TRIGGER_HOUR, 0, 0 );
 		// Calendar month number in the local timezone (January=1 … December=12).
 		$current_month = (int) $current->format( 'n' );
 		// Translate month into its offset within the quarter (0 => first month, 1 => second, 2 => third).
@@ -111,7 +119,7 @@ class Frequency_Planner {
 		$months_to_add = 3 - $position;
 
 		$next_quarter = $current->add( new DateInterval( 'P' . $months_to_add . 'M' ) );
-		// After jumping to the quarter’s first month, land on day 1 at midnight.
+		// After jumping to the quarter’s first month, land on day 1 at the trigger hour.
 		$next_quarter = $next_quarter->modify( 'first day of this month' );
 
 		return $next_quarter->getTimestamp();
