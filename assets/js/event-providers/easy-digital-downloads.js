@@ -78,7 +78,7 @@ export function parseCartItemHTML( cartItemHTML ) {
 /**
  * Parses the provided amount string to a number.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  *
  * @param {string} amount The amount string.
  * @return {number} The amount as a number.

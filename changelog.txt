@@ -1,5 +1,28 @@
 == Changelog ==
 
+= 1.178.0 =
+
+**Enhanced**
+
+* Improve copy in enhanced conversions notifications for Ads. See [#12535](https://github.com/google/site-kit-wp/issues/12535).
+* Improve copy in enhanced conversions notifications for Analytics. See [#12534](https://github.com/google/site-kit-wp/issues/12534).
+* Add the `pdfGeneration` feature flag for the upcoming feature. See [#12506](https://github.com/google/site-kit-wp/issues/12506).
+* Fix the browser back button on the Key Metrics setup screen, which does not navigate back to the Analytics setup screen. See [#12503](https://github.com/google/site-kit-wp/issues/12503).
+* Update the dashboard's Welcome modal for mobile viewports. See [#12462](https://github.com/google/site-kit-wp/issues/12462).
+* Add the new Site Goals section. See [#12423](https://github.com/google/site-kit-wp/issues/12423).
+* Improve enhanced conversion tracking for Easy Digital Downloads to include additional details. See [#11743](https://github.com/google/site-kit-wp/issues/11743).
+* Update "Customize settings" link after Sign in with Google setup. See [#11666](https://github.com/google/site-kit-wp/issues/11666).
+* Remove Ads Conversion ID entirely from Analytics module. See [#11303](https://github.com/google/site-kit-wp/issues/11303).
+
+**Changed**
+
+* Upgrade WordPress packages and TypeScript versions. See [#12058](https://github.com/google/site-kit-wp/issues/12058).
+
+**Fixed**
+
+* Prevent overlay notifications from appearing when the dashboard tour is active. See [#12478](https://github.com/google/site-kit-wp/issues/12478).
+* Fix Welcome Modal reappearing after dismissing and resubmitting Key Metrics answers. Props anishesg. See [#12477](https://github.com/google/site-kit-wp/issues/12477).
+
 = 1.177.0 =
 
 **Enhanced**
