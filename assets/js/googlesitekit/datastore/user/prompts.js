@@ -67,6 +67,7 @@ const fetchDismissPromptStore = createFetchStore( {
 			'expiresInSeconds must be an integer.'
 		);
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

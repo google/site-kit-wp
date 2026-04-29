@@ -133,6 +133,7 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 	argsToParams( propertyID, displayName ) {
 		return { propertyID, displayName };
 	},
+	isAction: true,
 	validateParams( { propertyID, displayName } = {} ) {
 		invariant(
 			isValidPropertyID( propertyID ),

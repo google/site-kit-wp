@@ -75,6 +75,7 @@ const fetchSetExpirableItemTimersStore = createFetchStore( {
 			);
 		} );
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

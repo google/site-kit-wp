@@ -113,7 +113,7 @@ Error.args = {
 			},
 		};
 
-		dispatch( MODULES_SEARCH_CONSOLE ).receiveError(
+		dispatch( MODULES_SEARCH_CONSOLE ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ reportOptions ]
@@ -138,7 +138,7 @@ InsufficientPermissions.args = {
 			},
 		};
 
-		dispatch( MODULES_SEARCH_CONSOLE ).receiveError(
+		dispatch( MODULES_SEARCH_CONSOLE ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ reportOptions ]

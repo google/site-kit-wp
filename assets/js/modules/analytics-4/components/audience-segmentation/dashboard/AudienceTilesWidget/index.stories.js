@@ -183,7 +183,7 @@ DefaultViewOnlyWithCustomDimensionError.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ options ] );
+			.setErrorForSelector( error, 'getReport', [ options ] );
 	},
 	isAuthenticated: false,
 };
@@ -306,7 +306,7 @@ TwoTilesViewOnlyWithCustomDimensionError.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ options ] );
+			.setErrorForSelector( error, 'getReport', [ options ] );
 	},
 	isAuthenticated: false,
 };
@@ -596,7 +596,7 @@ AllTilesErrored.args = {
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( errorReport, 'getReport', [ reportOptions ] );
+			.setErrorForSelector( errorReport, 'getReport', [ reportOptions ] );
 	},
 };
 AllTilesErrored.scenario = {};
@@ -646,7 +646,9 @@ SingleTileErrored.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( errorReport, 'getReport', [ citiesReportOptions ] );
+			.setErrorForSelector( errorReport, 'getReport', [
+				citiesReportOptions,
+			] );
 	},
 };
 SingleTileErrored.scenario = {};

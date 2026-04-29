@@ -78,7 +78,7 @@ describe( 'SetupForm', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( [] );
 
-		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveError(
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
