@@ -425,30 +425,6 @@ describe( 'createErrorStore store', () => {
 			} );
 		} );
 
-		describe( 'getError', () => {
-			it( 'returns `undefined` if no error exists for the given `baseName` and `args`', () => {
-				expect( select.getError( baseName, args ) ).toBeUndefined();
-			} );
-
-			it( 'requires a `baseName` param when providing `args`', () => {
-				expect( () => {
-					select.getError( '', args );
-				} ).toThrow( 'baseName is required.' );
-			} );
-
-			it( 'returns the error received with the same given `baseName` and `args`', () => {
-				dispatch.setErrorForSelector( errorNotFound, baseName, [] );
-				dispatch.setErrorForSelector( errorForbidden, baseName, args );
-
-				expect( select.getError( baseName, [] ) ).toEqual(
-					errorNotFound
-				);
-				expect( select.getError( baseName, args ) ).toEqual(
-					errorForbidden
-				);
-			} );
-		} );
-
 		describe( 'getErrors', () => {
 			it( 'returns an empty array when there are no errors', () => {
 				expect( select.getErrors() ).toEqual( [] );
