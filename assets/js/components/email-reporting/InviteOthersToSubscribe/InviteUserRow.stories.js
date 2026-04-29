@@ -26,7 +26,7 @@ const mockUser = {
 	displayName: 'MainAdminName',
 	name: 'MainAdminName',
 	email: 'someone@anybusiness.com',
-	role: 'administrator',
+	role: 'Administrator',
 	subscribed: false,
 };
 

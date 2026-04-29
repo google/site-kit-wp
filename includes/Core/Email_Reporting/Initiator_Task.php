@@ -117,6 +117,7 @@ class Initiator_Task {
 		$time_zone = BC_Functions::wp_timezone();
 		$date      = ( new DateTimeImmutable( '@' . $timestamp ) )
 			->setTimezone( $time_zone )
+			// Normalise the scheduled timestamp (e.g. 09:00:00) to midnight for date arithmetic.
 			->setTime( 0, 0, 0 );
 
 		switch ( $frequency ) {
