@@ -44,7 +44,7 @@ function OfflineNotification() {
 		<div aria-live="polite">
 			{ ! isOnline && ! dismissed && (
 				<Notice
-					className="googlesitekit-notice-snackbar--bottom-right"
+					className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right"
 					type={ Notice.TYPES.WARNING }
 					description={ __(
 						'You are currently offline. Some features may not be available.',
