@@ -119,7 +119,7 @@ export default function IntroModal() {
 	if (
 		hasEcommerceConversionReportingEvents === undefined ||
 		hasLeadConversionReportingEvents === undefined ||
-		isIntroModalDismissed ||
+		isIntroModalDismissed !== false ||
 		! isOpen
 	) {
 		return null;
