@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      7.0
 Requires PHP:      7.4
-Stable tag:        1.177.0
+Stable tag:        1.178.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,27 +112,27 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.177.0 =
+= 1.178.0 =
 
 **Enhanced**
 
-* Improve translation strings for some links in Email Reports. See [#12479](https://github.com/google/site-kit-wp/issues/12479).
-* Remove the "Conversions" section in email reports. See [#12466](https://github.com/google/site-kit-wp/issues/12466).
-* Ensure Email Reporting panel is dismissed during navigation. See [#12388](https://github.com/google/site-kit-wp/issues/12388).
-* Add error handling on the Key Metrics setup screen in the new setup flow. See [#12379](https://github.com/google/site-kit-wp/issues/12379).
-* Fix bug causing PageSpeed Insights widget tab to reset on device change. See [#12358](https://github.com/google/site-kit-wp/issues/12358).
-* Add documentation links to Email Reporting feature. See [#12327](https://github.com/google/site-kit-wp/issues/12327).
-* Add date range details to the Site Kit Summary widget on the WordPress admin dashboard. Props mxbclang, github-actions. See [#5589](https://github.com/google/site-kit-wp/issues/5589).
+* Improve copy in enhanced conversions notifications for Ads. See [#12535](https://github.com/google/site-kit-wp/issues/12535).
+* Improve copy in enhanced conversions notifications for Analytics. See [#12534](https://github.com/google/site-kit-wp/issues/12534).
+* Add the `pdfGeneration` feature flag for the upcoming feature. See [#12506](https://github.com/google/site-kit-wp/issues/12506).
+* Fix the browser back button on the Key Metrics setup screen, which does not navigate back to the Analytics setup screen. See [#12503](https://github.com/google/site-kit-wp/issues/12503).
+* Update the dashboard's Welcome modal for mobile viewports. See [#12462](https://github.com/google/site-kit-wp/issues/12462).
+* Add the new Site Goals section. See [#12423](https://github.com/google/site-kit-wp/issues/12423).
+* Improve enhanced conversion tracking for Easy Digital Downloads to include additional details. See [#11743](https://github.com/google/site-kit-wp/issues/11743).
+* Update "Customize settings" link after Sign in with Google setup. See [#11666](https://github.com/google/site-kit-wp/issues/11666).
+* Remove Ads Conversion ID entirely from Analytics module. See [#11303](https://github.com/google/site-kit-wp/issues/11303).
+
+**Changed**
+
+* Upgrade WordPress packages and TypeScript versions. See [#12058](https://github.com/google/site-kit-wp/issues/12058).
 
 **Fixed**
 
-* Remove the "Connect more services" and "Got it" buttons from the gathering data notification. See [#12464](https://github.com/google/site-kit-wp/issues/12464).
-* Fixed the "Analytics is disconnected" CTA banner and tile to hide actionable connect buttons for view-only users. See [#12454](https://github.com/google/site-kit-wp/issues/12454).
-* Fix issues with multiple scheduled events for same email report frequency. See [#12419](https://github.com/google/site-kit-wp/issues/12419).
-* Fix monthly and quarterly email scheduling times. Props officialasishkumar. See [#12385](https://github.com/google/site-kit-wp/issues/12385).
-* Allow filtering users by role in email subscription invites. See [#12368](https://github.com/google/site-kit-wp/issues/12368).
-* Fix the issue with updating users for email reporting settings when dashboard sharing changed. See [#12367](https://github.com/google/site-kit-wp/issues/12367).
-* Fix bug preventing OAuth error notification when permissions are missing. See [#12281](https://github.com/google/site-kit-wp/issues/12281).
-* Fix data type inconsistency for Reader Revenue Manager content policy status settings. See [#12185](https://github.com/google/site-kit-wp/issues/12185).
+* Prevent overlay notifications from appearing when the dashboard tour is active. See [#12478](https://github.com/google/site-kit-wp/issues/12478).
+* Fix Welcome Modal reappearing after dismissing and resubmitting Key Metrics answers. Props anishesg. See [#12477](https://github.com/google/site-kit-wp/issues/12477).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

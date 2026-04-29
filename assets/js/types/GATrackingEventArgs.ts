@@ -18,7 +18,7 @@
  * Tracking event arguments for Google Analytics tracking
  * events.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  */
 // eslint-disable-next-line sitekit/acronym-case
 export interface GATrackingEventArgs {
