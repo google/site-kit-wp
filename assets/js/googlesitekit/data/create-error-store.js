@@ -191,15 +191,38 @@ export function createErrorStore( storeName ) {
 		actionErrorArgs: {},
 	};
 
+	/**
+	 * Sets an error within a given slice of the error state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} errorsKey    Key of the slice's errors object on state.
+	 * @param {string} errorArgsKey Key of the slice's error args object on state.
+	 * @param {Object} payload      Action payload with `baseName`, `args`, and `error`.
+	 */
 	function setErrorInSlice( state, errorsKey, errorArgsKey, payload ) {
 		const { baseName, args, error } = payload;
 		const key = generateErrorKey( baseName, args );
+
 		state[ errorsKey ] = state[ errorsKey ] || {};
 		state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+
 		state[ errorsKey ][ key ] = error;
 		state[ errorArgsKey ][ key ] = args;
 	}
 
+	/**
+	 * Clears the error for a specific (baseName, args) pair within a given slice.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}      state        Data store's state.
+	 * @param {string}      errorsKey    Key of the slice's errors object on state.
+	 * @param {string}      errorArgsKey Key of the slice's error args object on state.
+	 * @param {string}      baseName     Selector or action name.
+	 * @param {Array.<any>} args         Arguments passed to the selector or action.
+	 */
 	function clearErrorInSlice(
 		state,
 		errorsKey,
@@ -208,16 +231,32 @@ export function createErrorStore( storeName ) {
 		args
 	) {
 		const key = generateErrorKey( baseName, args );
+
 		state[ errorsKey ] = state[ errorsKey ] || {};
 		state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+
 		delete state[ errorsKey ][ key ];
 		delete state[ errorArgsKey ][ key ];
 	}
 
+	/**
+	 * Clears all errors within a given slice, optionally filtered by baseName.
+	 *
+	 * When `baseName` is provided, every error keyed under that baseName
+	 * (regardless of args) is cleared. When omitted, the entire slice is wiped.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} errorsKey    Key of the slice's errors object on state.
+	 * @param {string} errorArgsKey Key of the slice's error args object on state.
+	 * @param {string} [baseName]   Optional selector or action name to filter by.
+	 */
 	function clearErrorsInSlice( state, errorsKey, errorArgsKey, baseName ) {
 		if ( baseName ) {
 			state[ errorsKey ] = state[ errorsKey ] || {};
 			state[ errorArgsKey ] = state[ errorArgsKey ] || {};
+
 			for ( const key in state[ errorsKey ] ) {
 				if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
 					delete state[ errorsKey ][ key ];
@@ -356,34 +395,6 @@ export function createErrorStore( storeName ) {
 		},
 
 		/**
-		 * Retrieves the error object from state.
-		 *
-		 *```
-		 * {
-		 *   code: <String>,
-		 *   message: <String>,
-		 *   data: <Object>
-		 * }
-		 * ```
-		 *
-		 * @since 1.15.0
-		 * @private
-		 *
-		 * @param {Object}      state      Data store's state.
-		 * @param {string}      [baseName] Selector or action name.
-		 * @param {Array.<any>} [args]     Arguments array.
-		 * @return {(Object|undefined)} Error object if exists, otherwise undefined.
-		 */
-		getError( state, baseName, args ) {
-			const { selectorErrors, actionErrors } = state;
-
-			invariant( baseName, 'baseName is required.' );
-
-			const key = generateErrorKey( baseName, args );
-			return selectorErrors[ key ] || actionErrors[ key ];
-		},
-
-		/**
 		 * Gets a list of all unique errors.
 		 *
 		 * @since 1.19.0
@@ -413,6 +424,7 @@ export function createErrorStore( storeName ) {
 		 * ```
 		 *
 		 * @since 1.84.0
+		 * @since n.e.x.t Renamed from `getMetaDataForError` and limited to the selector error slice.
 		 *
 		 * @param {Object} state Data store's state.
 		 * @param {Object} error Error object.
