@@ -24,15 +24,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import UntypedSelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { TYPES } from '@/js/components/Notice/constants';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanelNotice` component is not yet typed.
-const SelectionPanelNotice = UntypedSelectionPanelNotice as React.FC< any >;
 
 export default function SelectAtLeastOneSectionNotice() {
 	return (
 		<SelectionPanelNotice
+			// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
 			className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
 			type={ TYPES.ERROR }
 			description={ __( 'Select at least 1 topic', 'google-site-kit' ) }

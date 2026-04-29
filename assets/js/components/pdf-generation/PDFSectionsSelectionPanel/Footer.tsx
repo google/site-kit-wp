@@ -26,12 +26,9 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { Button as UntypedButton } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Button` component is not yet typed.
-const Button = UntypedButton as React.FC< any >;
 
 interface FooterProps {
 	closePanel: () => void;
@@ -56,9 +53,11 @@ export default function Footer( { closePanel, hasSelection }: FooterProps ) {
 		<footer className="googlesitekit-selection-panel-footer googlesitekit-pdf-download-panel__footer">
 			<div className="googlesitekit-selection-panel-footer__content">
 				<div className="googlesitekit-selection-panel-footer__actions">
+					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button onClick={ closePanel } tertiary>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Button>
+					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button
 						onClick={ onDownloadClick }
 						disabled={ ! hasSelection || !! isGenerating }

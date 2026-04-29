@@ -34,14 +34,9 @@ import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
-import UntypedInViewProvider from '@/js/components/InViewProvider';
-import UntypedSelectionPanel from '@/js/components/SelectionPanel';
+import InViewProvider from '@/js/components/InViewProvider';
+import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `InViewProvider` component is not yet typed.
-const InViewProvider = UntypedInViewProvider as React.FC< any >;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanel` component is not yet typed.
-const SelectionPanel = UntypedSelectionPanel as React.FC< any >;
 
 export default function PDFSectionsSelectionPanel() {
 	const isOpen = useSelect(
@@ -69,6 +64,7 @@ export default function PDFSectionsSelectionPanel() {
 
 	return (
 		<InViewProvider
+			// @ts-expect-error - The `InViewProvider` component value prop is currently typed as `boolean` only.
 			value={ {
 				key: 'PDFSectionsSelectionPanel',
 				value: !! isOpen,

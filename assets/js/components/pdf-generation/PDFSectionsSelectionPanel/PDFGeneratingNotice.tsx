@@ -27,11 +27,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
-import UntypedSelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { TYPES } from '@/js/components/Notice/constants';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanelNotice` component is not yet typed.
-const SelectionPanelNotice = UntypedSelectionPanelNotice as React.FC< any >;
 
 export default function PDFGeneratingNotice() {
 	const isGenerating = useSelect(
@@ -45,6 +42,7 @@ export default function PDFGeneratingNotice() {
 
 	return (
 		<SelectionPanelNotice
+			// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
 			className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
 			type={ TYPES.WARNING }
 			title={ __( 'Your report is being generated', 'google-site-kit' ) }

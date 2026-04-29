@@ -26,14 +26,11 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { Button as UntypedButton } from 'googlesitekit-components';
+import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
 // @ts-expect-error - We need to add types for imported SVGs.
 import DownloadIcon from '@/svg/icons/download.svg';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Button` component is not yet typed.
-const Button = UntypedButton as React.FC< any >;
 
 export default function PDFDownloadButton() {
 	const isOpen = useSelect(
@@ -51,6 +48,7 @@ export default function PDFDownloadButton() {
 	return (
 		<Button
 			aria-label={ __( 'Download PDF report', 'google-site-kit' ) }
+			// @ts-expect-error - The `Button` component is not typed yet.
 			className="googlesitekit-pdf-download__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
 			onClick={ togglePanel }
 			icon={ <DownloadIcon width={ 20 } height={ 20 } /> }

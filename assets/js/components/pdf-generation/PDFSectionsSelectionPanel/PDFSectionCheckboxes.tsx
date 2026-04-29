@@ -24,14 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Checkbox as UntypedCheckbox } from 'googlesitekit-components';
+import { Checkbox } from 'googlesitekit-components';
 import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
-import UntypedTypography from '@/js/components/Typography';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Checkbox` component is not yet typed.
-const Checkbox = UntypedCheckbox as React.FC< any >;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Typography` component is not yet typed.
-const Typography = UntypedTypography as React.FC< any >;
+import Typography from '@/js/components/Typography';
 
 interface PDFSectionCheckboxesProps {
 	selectedSections: string[];
@@ -60,6 +55,7 @@ export default function PDFSectionCheckboxes( {
 						checked={ selectedSections.includes( slug ) }
 						onChange={ () => toggleSection( slug ) }
 					>
+						{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
 						<Typography type="title" size="medium" as="span">
 							{ title }
 						</Typography>

@@ -26,10 +26,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { SelectionPanelContent as UntypedSelectionPanelContent } from '@/js/components/SelectionPanel';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanelContent` component is not yet typed.
-const SelectionPanelContent = UntypedSelectionPanelContent as React.FC< any >;
+import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
