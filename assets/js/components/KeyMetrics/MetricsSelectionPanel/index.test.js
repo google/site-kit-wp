@@ -174,7 +174,6 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 
 			await waitForRegistry();
-			await act( waitForDefaultTimeouts );
 
 			expect(
 				getByText( /Edit your personalized goals in/i )

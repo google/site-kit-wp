@@ -69,7 +69,6 @@ export default function UserInputEditModeContent( {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( userInputSettings )
 	);
-	// Use current values from datastore, not the prop which may be stale
 	const currentValues = userInputSettings?.[ slug ]?.values || [];
 	const answerHasError = hasErrorForAnswer( currentValues );
 	const errorMessage = getErrorMessageForAnswer(
