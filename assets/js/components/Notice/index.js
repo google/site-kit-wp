@@ -35,6 +35,22 @@ import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
 import { TYPES } from './constants';
 
+function hasDismissButtonAction( dismissButton ) {
+	if ( dismissButton?.variant === 'icon' ) {
+		return (
+			!! dismissButton.icon &&
+			!! dismissButton.ariaLabel &&
+			( dismissButton.onClick || dismissButton.href )
+		);
+	}
+
+	return (
+		!! dismissButton?.label ||
+		!! dismissButton?.onClick ||
+		!! dismissButton?.href
+	);
+}
+
 const Notice = forwardRef(
 	(
 		{
@@ -49,6 +65,11 @@ const Notice = forwardRef(
 		},
 		ref
 	) => {
+		const hasDismissAction = hasDismissButtonAction( dismissButton );
+		const hasCTAAction =
+			!! ctaButton?.label && ( ctaButton?.onClick || ctaButton?.href );
+		const hasActionContent = hasDismissAction || hasCTAAction || children;
+
 		return (
 			<div className="googlesitekit-notice-container" ref={ ref }>
 				<div
@@ -72,38 +93,36 @@ const Notice = forwardRef(
 						) }
 					</div>
 
-					{ ( dismissButton?.label ||
-						dismissButton?.onClick ||
-						( ctaButton?.label &&
-							( ctaButton?.onClick || ctaButton?.href ) ) ||
-						children ) && (
+					{ hasActionContent && (
 						<div className="googlesitekit-notice__action">
 							{ children }
 
-							{ ( dismissButton?.label ||
-								dismissButton?.onClick ) && (
+							{ hasDismissAction && (
 								<DismissButton
 									label={ dismissButton.label }
 									onClick={ dismissButton.onClick }
 									disabled={ dismissButton.disabled }
 									href={ dismissButton.href }
 									external={ dismissButton.external }
+									variant={ dismissButton.variant }
+									icon={ dismissButton.icon }
+									ariaLabel={ dismissButton.ariaLabel }
 								/>
 							) }
-							{ ctaButton?.label &&
-								( ctaButton?.onClick || ctaButton?.href ) && (
-									<CTAButton
-										label={ ctaButton.label }
-										onClick={ ctaButton.onClick }
-										inProgress={ ctaButton.inProgress }
-										disabled={ ctaButton.disabled }
-										href={ ctaButton.href }
-										external={ ctaButton.external }
-										hideExternalIndicator={
-											ctaButton.hideExternalIndicator
-										}
-									/>
-								) }
+							{ hasCTAAction && (
+								<CTAButton
+									label={ ctaButton.label }
+									onClick={ ctaButton.onClick }
+									inProgress={ ctaButton.inProgress }
+									disabled={ ctaButton.disabled }
+									href={ ctaButton.href }
+									external={ ctaButton.external }
+									hideExternalIndicator={
+										ctaButton.hideExternalIndicator
+									}
+									tertiary={ ctaButton.tertiary }
+								/>
+							) }
 						</div>
 					) }
 				</div>
