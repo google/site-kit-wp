@@ -30,6 +30,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalEcommerce from './IntroModalEcommerce';
 import IntroModalLead from './IntroModalLead';
+import { IntroModalVariantProps } from './types';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
@@ -42,13 +43,6 @@ export const INTRO_MODAL_VARIANTS = {
 
 type IntroModalVariantLabel =
 	typeof INTRO_MODAL_VARIANTS[ keyof typeof INTRO_MODAL_VARIANTS ];
-
-export interface IntroModalVariantProps {
-	onView: () => void;
-	onConfirm: () => void;
-	onClickLearnMore: () => void;
-	onDismiss: () => void;
-}
 
 interface IntroModalTrackingEvents {
 	view: ( label: IntroModalVariantLabel ) => void;
