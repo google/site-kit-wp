@@ -22,7 +22,7 @@
 import {
 	createTestRegistry,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '../../../../../../../../tests/js/test-utils';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,

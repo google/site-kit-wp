@@ -1,5 +1,5 @@
 /**
- * IntroModalLead component.
+ * IntroModalEcommerce component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -27,11 +27,11 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import BannerModal from '@/js/components/BannerModal/index';
 // @ts-expect-error - We need to add types for imported SVGs.
-import SiteGoalsIntroModalLeadGraphic from '@/svg/graphics/site-goals-intro-modal-lead.svg';
+import SiteGoalsIntroModalEcommerceGraphic from '@/svg/graphics/site-goals-intro-modal-ecommerce.svg';
 import Link from '@/js/components/Link';
-import { IntroModalVariantProps } from '@/js/modules/analytics-4/components/site-goals/IntroModalBanner/index';
+import { IntroModalVariantProps } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner/index';
 
-export default function IntroModalLead( {
+export default function IntroModalEcommerce( {
 	onView,
 	onConfirm,
 	onClickLearnMore,
@@ -39,20 +39,20 @@ export default function IntroModalLead( {
 }: IntroModalVariantProps ) {
 	return (
 		<BannerModal
-			Graphic={ SiteGoalsIntroModalLeadGraphic }
+			Graphic={ SiteGoalsIntroModalEcommerceGraphic }
 			onView={ onView }
 			onClose={ onDismiss }
-			title={ __( 'See what brings in new leads', 'google-site-kit' ) }
+			title={ __( 'See what drives your sales', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(
-					'Discover which parts of your site are most successful at encouraging people to reach out. This new section highlights the specific pages, locations, and visitor groups that result in more sign-ups, quote requests, and other important goals. These details help you understand exactly where your most interested visitors are coming from. <a>Learn more</a>',
+					'Understand which parts of your site are most effective at turning visitors into customers. This new section shows you exactly which pages, cities, and traffic sources are bringing in the most sales and actions like add to cart. Use these insights to see what works best for your business so you can focus on the areas that help you grow. <a>Learn more</a>',
 					'google-site-kit'
 				),
 				{
 					a: (
 						<Link
 							// @ts-expect-error `Link` component is not currently typed.
-							href="#site-goals" // TODO: Update with actual link to site goals documentation.
+							href="#site-goals" // TODO: Update with actual link to site goal's documentation.
 							aria-label={ __(
 								'Learn more about site goals',
 								'google-site-kit'

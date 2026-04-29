@@ -25,7 +25,7 @@ import { ComponentProps } from 'react';
  * Internal dependencies
  */
 import IntroModal from './index';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -86,6 +86,6 @@ EcommerceAndLead.args = {
 };
 
 export default {
-	title: 'Modules/Analytics4/SiteGoals/IntroModal',
+	title: 'Modules/Analytics4/SiteGoals/notifications/IntroModal',
 	component: IntroModal,
 };

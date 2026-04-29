@@ -53,7 +53,7 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import WelcomeModal from './WelcomeModal';
-import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/IntroModalBanner';
+import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
 	ANCHOR_ID_CONTENT,
