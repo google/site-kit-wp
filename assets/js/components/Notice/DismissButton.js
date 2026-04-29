@@ -35,7 +35,25 @@ export default function DismissButton( {
 	disabled,
 	href,
 	external = false,
+	variant = 'text',
+	icon,
+	ariaLabel,
 } ) {
+	if ( variant === 'icon' ) {
+		return (
+			<Button
+				className="googlesitekit-notice__dismiss googlesitekit-notice__dismiss--icon"
+				onClick={ onClick }
+				disabled={ disabled }
+				href={ href }
+				target={ external ? '_blank' : undefined }
+				icon={ icon }
+				aria-label={ ariaLabel }
+				hideTooltipTitle
+			/>
+		);
+	}
+
 	return (
 		<Button
 			onClick={ onClick }
@@ -51,8 +69,11 @@ export default function DismissButton( {
 
 DismissButton.propTypes = {
 	label: PropTypes.string,
-	onClick: PropTypes.func.isRequired,
+	onClick: PropTypes.func,
 	disabled: PropTypes.bool,
 	href: PropTypes.string,
 	external: PropTypes.bool,
+	variant: PropTypes.oneOf( [ 'text', 'icon' ] ),
+	icon: PropTypes.node,
+	ariaLabel: PropTypes.string,
 };
