@@ -340,7 +340,7 @@ class Google_Proxy {
 	 */
 	public function get_site_fields() {
 		$return_uri = Feature_Flags::enabled( 'setupFlowRefresh' )
-			? admin_url( 'plugins.php' )
+			? admin_url( 'index.php' )
 			: $this->context->admin_url( 'splash' );
 
 		return array(
