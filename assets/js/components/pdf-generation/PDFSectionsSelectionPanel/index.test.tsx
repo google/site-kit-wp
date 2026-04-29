@@ -32,11 +32,10 @@ import {
 	PDF_GENERATING_KEY,
 	PDF_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
-import PDFSectionsSelectionPanel from '.';
+import PDFSectionsSelectionPanel from './index';
 
 describe( 'PDFSectionsSelectionPanel', () => {
-	const features = [ 'pdfGeneration' ];
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -50,61 +49,47 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		} );
 	}
 
-	it( 'renders nothing when pdfGeneration feature flag is disabled', () => {
-		const { container } = render( <PDFSectionsSelectionPanel />, {
-			registry,
-			features: [],
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'renders the title and all hard-coded sections when opened', async () => {
 		const { getByText, findByText, getByRole } = render(
 			<PDFSectionsSelectionPanel />,
-			{ registry, features }
+			{ registry }
 		);
 
 		openPanel();
 
 		await findByText( 'Download your Site Kit report' );
 
-		for ( const { title } of PDF_SECTIONS ) {
-			expect( getByText( title ) ).toBeInTheDocument();
-		}
+		const renderedTitles = PDF_SECTIONS.map(
+			( { title } ) => getByText( title ).textContent
+		);
+		expect( renderedTitles ).toEqual(
+			PDF_SECTIONS.map( ( { title } ) => title )
+		);
 
 		// All sections selected by default on first open.
-		for ( const { slug } of PDF_SECTIONS ) {
-			expect(
-				getByRole( 'checkbox', {
-					name: new RegExp(
-						`${
-							PDF_SECTIONS.find(
-								( section ) => section.slug === slug
-							).title
-						}$`
-					),
-				} )
-			).toBeChecked();
-		}
+		const checkedStates = PDF_SECTIONS.map( ( { title } ) => {
+			const checkbox = getByRole( 'checkbox', {
+				name: new RegExp( `${ title }$` ),
+			} );
+			return ( checkbox as HTMLInputElement ).checked;
+		} );
+		expect( checkedStates ).toEqual( PDF_SECTIONS.map( () => true ) );
 	} );
 
 	it( 'disables the "Download report" button and shows the error notice when no section is selected', async () => {
 		const { getByRole, findByText, getByText } = render(
 			<PDFSectionsSelectionPanel />,
-			{ registry, features }
+			{ registry }
 		);
 
 		openPanel();
 
 		await findByText( 'Download your Site Kit report' );
 
-		for ( const { title } of PDF_SECTIONS ) {
-			const checkbox = getByRole( 'checkbox', {
-				name: new RegExp( `${ title }$` ),
-			} );
-			fireEvent.click( checkbox );
-		}
+		const checkboxes = PDF_SECTIONS.map( ( { title } ) =>
+			getByRole( 'checkbox', { name: new RegExp( `${ title }$` ) } )
+		);
+		checkboxes.forEach( ( checkbox ) => fireEvent.click( checkbox ) );
 
 		await waitFor( () => {
 			expect(
@@ -120,7 +105,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 	it( 'shows the generating notice and disables the button after clicking Download report', async () => {
 		const { getByRole, findByText, getByText } = render(
 			<PDFSectionsSelectionPanel />,
-			{ registry, features }
+			{ registry }
 		);
 
 		openPanel();
@@ -144,19 +129,18 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'disables the button when PDF_GENERATING_KEY is truthy before open', async () => {
+	it( 'resets PDF_GENERATING_KEY to false on open', async () => {
 		registry.dispatch( CORE_UI ).setValue( PDF_GENERATING_KEY, true );
 
 		const { getByRole, findByText } = render(
 			<PDFSectionsSelectionPanel />,
-			{ registry, features }
+			{ registry }
 		);
 
 		openPanel();
 
 		await findByText( 'Download your Site Kit report' );
 
-		// onOpen callback resets PDF_GENERATING_KEY to false (clean slate on open).
 		expect(
 			registry.select( CORE_UI ).getValue( PDF_GENERATING_KEY )
 		).toBe( false );

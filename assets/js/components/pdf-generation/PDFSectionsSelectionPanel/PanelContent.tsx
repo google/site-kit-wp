@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -31,7 +26,10 @@ import { Fragment, useCallback } from '@wordpress/element';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { SelectionPanelContent } from '@/js/components/SelectionPanel';
+import { SelectionPanelContent as UntypedSelectionPanelContent } from '@/js/components/SelectionPanel';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanelContent` component is not yet typed.
+const SelectionPanelContent = UntypedSelectionPanelContent as React.FC< any >;
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
@@ -44,22 +42,30 @@ import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 import PDFGeneratingNotice from './PDFGeneratingNotice';
 import SelectAtLeastOneSectionNotice from './SelectAtLeastOneSectionNotice';
 
-export default function PanelContent( { closePanel } ) {
+interface PanelContentProps {
+	closePanel: () => void;
+}
+
+export default function PanelContent( { closePanel }: PanelContentProps ) {
 	const selectedSections =
-		useFormValue(
+		( useFormValue(
 			FORM_PDF_DOWNLOAD,
 			FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-		) ?? DEFAULT_SELECTED_SECTIONS;
+		) as string[] | undefined ) ?? DEFAULT_SELECTED_SECTIONS;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const onChange = useCallback(
-		( nextSelection ) => {
+	const toggleSection = useCallback(
+		( slug: string ) => {
+			const nextSelection = selectedSections.includes( slug )
+				? selectedSections.filter( ( item ) => item !== slug )
+				: [ ...selectedSections, slug ];
+
 			setValues( FORM_PDF_DOWNLOAD, {
 				[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: nextSelection,
 			} );
 		},
-		[ setValues ]
+		[ selectedSections, setValues ]
 	);
 
 	const hasSelection = selectedSections.length > 0;
@@ -70,7 +76,7 @@ export default function PanelContent( { closePanel } ) {
 			<SelectionPanelContent className="googlesitekit-pdf-download-panel__content">
 				<PDFSectionCheckboxes
 					selectedSections={ selectedSections }
-					onChange={ onChange }
+					toggleSection={ toggleSection }
 				/>
 			</SelectionPanelContent>
 			{ ! hasSelection && <SelectAtLeastOneSectionNotice /> }
@@ -79,7 +85,3 @@ export default function PanelContent( { closePanel } ) {
 		</Fragment>
 	);
 }
-
-PanelContent.propTypes = {
-	closePanel: PropTypes.func.isRequired,
-};

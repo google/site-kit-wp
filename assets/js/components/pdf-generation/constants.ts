@@ -34,15 +34,23 @@ export const PDF_GENERATING_KEY = 'pdfDownloadGenerating';
 export const FORM_PDF_DOWNLOAD = 'pdfDownloadForm';
 export const FORM_PDF_DOWNLOAD_SELECTED_SECTIONS = 'selectedSections';
 
+export interface PDFSection {
+	slug: string;
+	title: string;
+}
+
 /**
  * Hard-coded list of PDF report sections rendered in the selection panel.
+ *
+ * Each section exposes a slug used as both the `CORE_FORMS` selection key and
+ * the checkbox input identifier.
  *
  * TODO:
  * Temporary constant to be replaced by the widget registry in #12537.
  * The widget-registry integration will source these dynamically and
  * introduce the section/widget two-level hierarchy.
  */
-export const PDF_SECTIONS = [
+export const PDF_SECTIONS: PDFSection[] = [
 	{
 		slug: 'summary',
 		title: __( 'Summary', 'google-site-kit' ),
@@ -56,8 +64,8 @@ export const PDF_SECTIONS = [
 		title: __( 'Engagement', 'google-site-kit' ),
 	},
 	{
-		slug: 'monetisation',
-		title: __( 'Monetisation', 'google-site-kit' ),
+		slug: 'monetization',
+		title: __( 'Monetization', 'google-site-kit' ),
 	},
 	{
 		slug: 'key-metrics',
@@ -73,6 +81,6 @@ export const PDF_SECTIONS = [
  * Default selection used when the panel is opened for the first time.
  * All sections are selected by default.
  */
-export const DEFAULT_SELECTED_SECTIONS = PDF_SECTIONS.map(
+export const DEFAULT_SELECTED_SECTIONS: string[] = PDF_SECTIONS.map(
 	( { slug } ) => slug
 );

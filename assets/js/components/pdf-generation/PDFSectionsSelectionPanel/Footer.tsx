@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,14 +25,23 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { Button as UntypedButton } from 'googlesitekit-components';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 
-export default function Footer( { closePanel, hasSelection } ) {
-	const isGenerating = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( PDF_GENERATING_KEY )
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Button` component is not yet typed.
+const Button = UntypedButton as React.FC< any >;
+
+interface FooterProps {
+	closePanel: () => void;
+	hasSelection: boolean;
+}
+
+export default function Footer( { closePanel, hasSelection }: FooterProps ) {
+	const isGenerating = useSelect(
+		( select: Select ) => select( CORE_UI ).getValue( PDF_GENERATING_KEY ),
+		[]
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -66,8 +70,3 @@ export default function Footer( { closePanel, hasSelection } ) {
 		</footer>
 	);
 }
-
-Footer.propTypes = {
-	closePanel: PropTypes.func.isRequired,
-	hasSelection: PropTypes.bool.isRequired,
-};

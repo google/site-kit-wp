@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,22 +24,31 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
-import P from '@/js/components/Typography/P';
+import { SelectionPanelHeader as UntypedSelectionPanelHeader } from '@/js/components/SelectionPanel';
+import UntypedP from '@/js/components/Typography/P';
 
-export default function Header( { closePanel } ) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanelHeader` component is not yet typed.
+const SelectionPanelHeader = UntypedSelectionPanelHeader as React.FC< any >;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `P` component is not yet typed.
+const P = UntypedP as React.FC< any >;
+
+interface HeaderProps {
+	closePanel: () => void;
+}
+
+export default function Header( { closePanel }: HeaderProps ) {
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Download your Site Kit report', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
 		>
-			<P type="body" size="medium">
+			<P>
 				{ __(
 					'Generate a PDF featuring the current metrics from your dashboard. The report reflects the same date range selected in your dashboard, excluding data from the current day to ensure accuracy.',
 					'google-site-kit'
 				) }
 			</P>
-			<P type="body" size="medium">
+			<P>
 				{ __(
 					'Select the topics you would like to include in your report:',
 					'google-site-kit'
@@ -53,7 +57,3 @@ export default function Header( { closePanel } ) {
 		</SelectionPanelHeader>
 	);
 }
-
-Header.propTypes = {
-	closePanel: PropTypes.func.isRequired,
-};

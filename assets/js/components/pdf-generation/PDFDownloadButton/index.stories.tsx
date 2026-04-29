@@ -20,38 +20,21 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import PDFDownloadButton from '.';
+import PDFDownloadButton from './index';
 
 function Template() {
-	return <PDFDownloadButton />;
+	return (
+		<WithRegistrySetup func={ () => {} }>
+			<PDFDownloadButton />
+		</WithRegistrySetup>
+	);
 }
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.scenario = {};
 
-export const Mobile = Template.bind( {} );
-Mobile.storyName = 'Mobile';
-Mobile.scenario = {};
-Mobile.parameters = {
-	viewport: {
-		defaultViewport: 'mobile1',
-	},
-};
-
 export default {
 	title: 'Components/PDFGeneration/PDFDownloadButton',
 	component: PDFDownloadButton,
-	parameters: {
-		features: [ 'pdfGeneration' ],
-	},
-	decorators: [
-		( Story ) => {
-			return (
-				<WithRegistrySetup func={ () => {} }>
-					<Story />
-				</WithRegistrySetup>
-			);
-		},
-	],
 };

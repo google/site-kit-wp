@@ -260,6 +260,7 @@ export default function DashboardMainApp() {
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 	const showWelcomeModal = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -294,7 +295,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				<PDFDownloadButton />
+				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
@@ -382,7 +383,7 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			<PDFSectionsSelectionPanel />
+			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
 
 			{ emailReportingEnabled && (
 				<Fragment>

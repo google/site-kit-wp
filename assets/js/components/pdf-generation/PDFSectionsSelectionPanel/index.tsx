@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
@@ -34,16 +34,20 @@ import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
-import InViewProvider from '@/js/components/InViewProvider';
-import SelectionPanel from '@/js/components/SelectionPanel';
+import UntypedInViewProvider from '@/js/components/InViewProvider';
+import UntypedSelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
-import { useFeature } from '@/js/hooks/useFeature';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `InViewProvider` component is not yet typed.
+const InViewProvider = UntypedInViewProvider as React.FC< any >;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `SelectionPanel` component is not yet typed.
+const SelectionPanel = UntypedSelectionPanel as React.FC< any >;
 
 export default function PDFSectionsSelectionPanel() {
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-
-	const isOpen = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
+	const isOpen = useSelect(
+		( select: Select ) =>
+			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
+		[]
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -62,10 +66,6 @@ export default function PDFSectionsSelectionPanel() {
 		// Reset any stale "generating" state left over from a previous session.
 		setValue( PDF_GENERATING_KEY, false );
 	}, [ setValues, setValue ] );
-
-	if ( ! pdfGenerationEnabled ) {
-		return null;
-	}
 
 	return (
 		<InViewProvider

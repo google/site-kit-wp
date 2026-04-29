@@ -29,7 +29,14 @@ import {
 	PDF_GENERATING_KEY,
 	DEFAULT_SELECTED_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
-import PDFSectionsSelectionPanel from '.';
+import PDFSectionsSelectionPanel from './index';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
+type Registry = any;
+
+interface StoryArgs {
+	setupRegistry?: ( registry: Registry ) => void;
+}
 
 function Template() {
 	return <PDFSectionsSelectionPanel />;
@@ -43,7 +50,7 @@ export const Empty = Template.bind( {} );
 Empty.storyName = 'All deselected (error state)';
 Empty.scenario = {};
 Empty.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry.dispatch( CORE_FORMS ).setValues( FORM_PDF_DOWNLOAD, {
 			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: [],
 		} );
@@ -54,29 +61,17 @@ export const Generating = Template.bind( {} );
 Generating.storyName = 'Generating state';
 Generating.scenario = {};
 Generating.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( registry: Registry ) => {
 		registry.dispatch( CORE_UI ).setValue( PDF_GENERATING_KEY, true );
-	},
-};
-
-export const Mobile = Template.bind( {} );
-Mobile.storyName = 'Mobile';
-Mobile.scenario = {};
-Mobile.parameters = {
-	viewport: {
-		defaultViewport: 'mobile1',
 	},
 };
 
 export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',
 	component: PDFSectionsSelectionPanel,
-	parameters: {
-		features: [ 'pdfGeneration' ],
-	},
 	decorators: [
-		( Story, { args } ) => {
-			function setupRegistry( registry ) {
+		( Story: () => JSX.Element, { args }: { args?: StoryArgs } ) => {
+			function setupRegistry( registry: Registry ) {
 				registry
 					.dispatch( CORE_UI )
 					.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );

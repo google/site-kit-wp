@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,19 +24,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Checkbox } from 'googlesitekit-components';
+import { Checkbox as UntypedCheckbox } from 'googlesitekit-components';
 import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
-import Typography from '@/js/components/Typography';
+import UntypedTypography from '@/js/components/Typography';
 
-export default function PDFSectionCheckboxes( { selectedSections, onChange } ) {
-	function toggleSection( slug ) {
-		if ( selectedSections.includes( slug ) ) {
-			onChange( selectedSections.filter( ( item ) => item !== slug ) );
-		} else {
-			onChange( [ ...selectedSections, slug ] );
-		}
-	}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Checkbox` component is not yet typed.
+const Checkbox = UntypedCheckbox as React.FC< any >;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Typography` component is not yet typed.
+const Typography = UntypedTypography as React.FC< any >;
 
+interface PDFSectionCheckboxesProps {
+	selectedSections: string[];
+	toggleSection: ( slug: string ) => void;
+}
+
+export default function PDFSectionCheckboxes( {
+	selectedSections,
+	toggleSection,
+}: PDFSectionCheckboxesProps ) {
 	return (
 		<div
 			className="googlesitekit-pdf-download-panel__sections"
@@ -69,8 +69,3 @@ export default function PDFSectionCheckboxes( { selectedSections, onChange } ) {
 		</div>
 	);
 }
-
-PDFSectionCheckboxes.propTypes = {
-	selectedSections: PropTypes.arrayOf( PropTypes.string ).isRequired,
-	onChange: PropTypes.func.isRequired,
-};

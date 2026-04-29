@@ -25,18 +25,21 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button } from 'googlesitekit-components';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { Button as UntypedButton } from 'googlesitekit-components';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
-import { useFeature } from '@/js/hooks/useFeature';
-import PDFDownloadIcon from '@/svg/icons/pdf-download.svg';
+// @ts-expect-error - We need to add types for imported SVGs.
+import DownloadIcon from '@/svg/icons/download.svg';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The `Button` component is not yet typed.
+const Button = UntypedButton as React.FC< any >;
 
 export default function PDFDownloadButton() {
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-
-	const isOpen = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
+	const isOpen = useSelect(
+		( select: Select ) =>
+			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
+		[]
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -45,16 +48,12 @@ export default function PDFDownloadButton() {
 		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, ! isOpen );
 	}, [ isOpen, setValue ] );
 
-	if ( ! pdfGenerationEnabled ) {
-		return null;
-	}
-
 	return (
 		<Button
 			aria-label={ __( 'Download PDF report', 'google-site-kit' ) }
 			className="googlesitekit-pdf-download__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
 			onClick={ togglePanel }
-			icon={ <PDFDownloadIcon width={ 20 } height={ 20 } /> }
+			icon={ <DownloadIcon width={ 20 } height={ 20 } /> }
 			tooltipEnterDelayInMS={ 500 }
 			tertiary
 		/>

@@ -26,38 +26,26 @@ import {
 } from '../../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
-import PDFDownloadButton from '.';
+import PDFDownloadButton from './index';
 
 describe( 'PDFDownloadButton', () => {
-	const features = [ 'pdfGeneration' ];
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'renders the button when pdfGeneration feature flag is enabled', () => {
+	it( 'renders the button with the accessible label', () => {
 		const { getByLabelText } = render( <PDFDownloadButton />, {
 			registry,
-			features,
 		} );
 
 		expect( getByLabelText( 'Download PDF report' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders nothing when pdfGeneration feature flag is disabled', () => {
-		const { container } = render( <PDFDownloadButton />, {
-			registry,
-			features: [],
-		} );
-
-		expect( container ).toBeEmptyDOMElement();
-	} );
-
 	it( 'toggles PDF_DOWNLOAD_PANEL_OPENED_KEY on click', () => {
 		const { getByLabelText } = render( <PDFDownloadButton />, {
 			registry,
-			features,
 		} );
 
 		expect(

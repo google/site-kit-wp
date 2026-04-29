@@ -28,7 +28,7 @@ import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
 describe( 'PDFSectionCheckboxes', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -40,53 +40,55 @@ describe( 'PDFSectionCheckboxes', () => {
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
 				selectedSections={ selected }
-				onChange={ () => {} }
+				toggleSection={ () => {} }
 			/>,
 			{ registry }
 		);
 
-		for ( const { slug, title } of PDF_SECTIONS ) {
+		const checkedStates = PDF_SECTIONS.map( ( { slug, title } ) => {
 			const checkbox = getByRole( 'checkbox', {
 				name: new RegExp( `${ title }$` ),
-			} );
+			} ) as HTMLInputElement;
+			return { slug, checked: checkbox.checked };
+		} );
 
-			if ( selected.includes( slug ) ) {
-				expect( checkbox ).toBeChecked();
-			} else {
-				expect( checkbox ).not.toBeChecked();
-			}
-		}
+		expect( checkedStates ).toEqual(
+			PDF_SECTIONS.map( ( { slug } ) => ( {
+				slug,
+				checked: selected.includes( slug ),
+			} ) )
+		);
 	} );
 
-	it( 'calls onChange with next selection when toggling a checkbox on', () => {
-		const onChange = jest.fn();
+	it( 'calls toggleSection with the slug when toggling a checkbox on', () => {
+		const toggleSection = jest.fn();
 
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
 				selectedSections={ [ 'summary' ] }
-				onChange={ onChange }
+				toggleSection={ toggleSection }
 			/>,
 			{ registry }
 		);
 
 		fireEvent.click( getByRole( 'checkbox', { name: /^Traffic$/ } ) );
 
-		expect( onChange ).toHaveBeenCalledWith( [ 'summary', 'traffic' ] );
+		expect( toggleSection ).toHaveBeenCalledWith( 'traffic' );
 	} );
 
-	it( 'calls onChange with next selection when toggling a checkbox off', () => {
-		const onChange = jest.fn();
+	it( 'calls toggleSection with the slug when toggling a checkbox off', () => {
+		const toggleSection = jest.fn();
 
 		const { getByRole } = render(
 			<PDFSectionCheckboxes
 				selectedSections={ [ 'summary', 'traffic' ] }
-				onChange={ onChange }
+				toggleSection={ toggleSection }
 			/>,
 			{ registry }
 		);
 
 		fireEvent.click( getByRole( 'checkbox', { name: /^Summary$/ } ) );
 
-		expect( onChange ).toHaveBeenCalledWith( [ 'traffic' ] );
+		expect( toggleSection ).toHaveBeenCalledWith( 'summary' );
 	} );
 } );

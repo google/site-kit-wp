@@ -16,69 +16,66 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-plugin .googlesitekit-pdf-download-panel {
+	color: $c-surfaces-on-background-variant;
+}
 
-	.googlesitekit-pdf-download-panel {
-		color: $c-surfaces-on-background-variant;
+.googlesitekit-plugin .googlesitekit-pdf-download-panel .googlesitekit-selection-panel-header {
+	padding-bottom: 0;
+}
 
-		.googlesitekit-selection-panel-header {
-			padding-bottom: 0;
-			
-			p {
-				margin-top: $grid-gap-phone;
-			}
-		}
+.googlesitekit-plugin .googlesitekit-pdf-download-panel .googlesitekit-selection-panel-header p {
+	margin-top: $grid-gap-phone;
+}
 
-		.googlesitekit-pdf-download-panel__content {
-			display: flex;
-			flex-direction: column;
-			min-height: 0;
-			padding: 0 $grid-gap-phone;
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__content {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding: 0 $grid-gap-phone;
 
-			@media (min-width: $bp-tablet) {
-				padding: 0 $grid-gap-desktop;
-			}
-
-			.googlesitekit-notice-container:nth-of-type(n + 2) {
-				margin-top: $grid-gap-phone;
-			}
-		}
-
-		.googlesitekit-pdf-download-panel__sections {
-			display: flex;
-			flex-direction: column;
-		}
-
-		.googlesitekit-pdf-download-panel__section {
-			align-items: center;
-			border-bottom: 1px solid $c-utility-divider;
-			display: flex;
-			height: 60px;
-			padding: 10px 0;
-
-			label {
-				color: $c-surfaces-on-surface;
-				vertical-align: bottom;
-			}
-		}
-
-		.googlesitekit-pdf-download-panel__notice {
-			border-radius: 0;
-			margin: 0;
-			padding: $grid-gap-phone;
-			width: 100%;
-
-			@media (min-width: $bp-tablet) {
-				padding: $grid-gap-phone $grid-gap-desktop;
-			}
-		}
-
-		.googlesitekit-pdf-download-panel__footer {
-			border-top: 1px solid $c-utility-divider;
-
-			.googlesitekit-selection-panel-footer__content {
-				justify-content: flex-end;
-			}
-		}
+	@media (min-width: $bp-tablet) {
+		padding: 0 $grid-gap-desktop;
 	}
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__content .googlesitekit-notice-container:nth-of-type(n + 2) {
+	margin-top: $grid-gap-phone;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__sections {
+	display: flex;
+	flex-direction: column;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__section {
+	align-items: center;
+	border-bottom: 1px solid $c-utility-divider;
+	display: flex;
+	height: 60px;
+	padding: 10px 0;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__section label {
+	color: $c-surfaces-on-surface;
+	vertical-align: bottom;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__notice {
+	border-radius: 0;
+	margin: 0;
+	padding: $grid-gap-phone;
+	width: 100%;
+
+	@media (min-width: $bp-tablet) {
+		padding: $grid-gap-phone $grid-gap-desktop;
+	}
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__footer {
+	border-top: 1px solid $c-utility-divider;
+}
+
+.googlesitekit-plugin .googlesitekit-pdf-download-panel__footer .googlesitekit-selection-panel-footer__content {
+	justify-content: flex-end;
 }
