@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,12 +36,12 @@ import SiteGoalsIntroModalLeadGraphic from '@/svg/graphics/site-goals-intro-moda
 import Link from '@/js/components/Link';
 import type { IntroModalVariantProps } from './types';
 
-export default function IntroModalLead( {
+const IntroModalLead: FC< IntroModalVariantProps > = ( {
 	onView,
 	onConfirm,
 	onClickLearnMore,
 	onDismiss,
-}: IntroModalVariantProps ) {
+} ) => {
 	return (
 		<BannerModal
 			Graphic={ SiteGoalsIntroModalLeadGraphic }
@@ -73,4 +78,6 @@ export default function IntroModalLead( {
 			} }
 		/>
 	);
-}
+};
+
+export default IntroModalLead;
