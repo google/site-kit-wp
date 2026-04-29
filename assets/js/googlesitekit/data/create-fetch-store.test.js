@@ -267,7 +267,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error is stored in the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toEqual( errorResponse );
 				} );
 
@@ -292,7 +295,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error is stored in the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toEqual( errorResponse );
 
 					fetchMock.getOnce(
@@ -309,7 +315,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error has been removed from the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toBeUndefined();
 				} );
 			} );
