@@ -42,9 +42,6 @@ interface PDFReportErrorSnackbarProps {
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) => void;
-	onHelpClick?: (
-		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
-	) => void;
 	title?: string;
 	description?: ReactNode;
 	retryLabel?: string;
@@ -54,7 +51,6 @@ interface PDFReportErrorSnackbarProps {
 export default function PDFReportErrorSnackbar( {
 	onRetry = () => {},
 	onDismiss = () => {},
-	onHelpClick,
 	title = __(
 		'There was a problem generating your report',
 		'google-site-kit'
@@ -74,7 +70,7 @@ export default function PDFReportErrorSnackbar( {
 		{
 			help: (
 				// @ts-expect-error - The `Link` component is not typed yet.
-				<Link href={ helpURL } onClick={ onHelpClick }>
+				<Link href={ helpURL }>
 					{ __( 'Get help', 'google-site-kit' ) }
 				</Link>
 			),
