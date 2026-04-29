@@ -27,4 +27,7 @@ export interface DismissButtonProps {
 	tertiary?: boolean;
 	href?: string;
 	external?: boolean;
+	variant?: 'text' | 'icon';
+	icon?: React.ReactNode;
+	ariaLabel?: string;
 }
