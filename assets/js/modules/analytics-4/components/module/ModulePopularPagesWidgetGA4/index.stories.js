@@ -237,7 +237,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', reportArgs );
+			.setErrorForSelector( error, 'getReport', reportArgs );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

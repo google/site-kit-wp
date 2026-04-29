@@ -226,7 +226,7 @@ describe( 'DashboardAllTrafficWidgetGA4', () => {
 		reportOptions.forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, 'getReport', [ options ] );
+				.setErrorForSelector( error, 'getReport', [ options ] );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )

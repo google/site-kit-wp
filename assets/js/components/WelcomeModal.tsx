@@ -72,7 +72,7 @@ const VARIANT_TRACKING_LABELS = {
  * Determines whether the given modal variant should be rendered based on the
  * data gathering complete modal active state.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  *
  * @param {Object}        options                                    The options.
  * @param {MODAL_VARIANT} options.modalVariant                       The computed modal variant.

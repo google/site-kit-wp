@@ -313,7 +313,9 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				if ( reportError ) {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveError( report, 'getReport', [ reportArgs ] );
+						.setErrorForSelector( reportError, 'getReport', [
+							reportArgs,
+						] );
 				}
 
 				registry

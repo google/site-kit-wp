@@ -169,7 +169,7 @@ Error.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ reportOptions ]
@@ -194,7 +194,7 @@ InsufficientPermissions.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ reportOptions ]

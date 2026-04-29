@@ -70,7 +70,7 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 	);
 	const { setPermissionScopeError, clearPermissionScopeError } =
 		useDispatch( CORE_USER );
-	const { clearError } = useDispatch( MODULES_ANALYTICS_4 );
+	const { clearActionError } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 	const propertyID = useSelect(
 		( select: Select ) => select( MODULES_ANALYTICS_4 ).getPropertyID(),
@@ -126,13 +126,13 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		} );
 		setSetupErrorCode( null );
 		clearPermissionScopeError();
-		clearError( 'createCustomDimension', [
+		clearActionError( 'createCustomDimension', [
 			propertyID,
 			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
 		] );
 		setShowErrorModal( false );
 	}, [
-		clearError,
+		clearActionError,
 		clearPermissionScopeError,
 		propertyID,
 		setSetupErrorCode,

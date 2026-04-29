@@ -45,7 +45,7 @@ export function provideCustomDimensionError(
 
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveError( error, 'createCustomDimension', options );
+		.setErrorForAction( error, 'createCustomDimension', options );
 }
 
 /**

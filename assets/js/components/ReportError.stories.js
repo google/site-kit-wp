@@ -52,7 +52,7 @@ export const DefaultReportError = Template.bind( {} );
 DefaultReportError.storyName = 'Default ReportError';
 DefaultReportError.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -67,7 +67,7 @@ export const ReportErrorWithHTMLTags = Template.bind( {} );
 ReportErrorWithHTMLTags.storyName = 'ReportError with HTML tags';
 ReportErrorWithHTMLTags.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message:
@@ -84,7 +84,7 @@ ReportErrorWithInsufficientPermissions.storyName =
 	'ReportError with insufficient permissions';
 ReportErrorWithInsufficientPermissions.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -131,7 +131,7 @@ ReportErrorWithInsufficientPermissionsWithRequestAccess.args = {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setWebDataStreamID( webDataStreamID );
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -150,7 +150,7 @@ ReportErrorWithInsufficientPermissionsForViewOnlyUser.storyName =
 	'ReportError with insufficient permissions for view-only user';
 ReportErrorWithInsufficientPermissionsForViewOnlyUser.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -168,7 +168,7 @@ export const ReportErrorWithRetryButton = Template.bind( {} );
 ReportErrorWithRetryButton.storyName = 'ReportError with Retry Button';
 ReportErrorWithRetryButton.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -195,7 +195,7 @@ MultipleReportErrorsWithRetryButton.storyName =
 	'Multiple Report Errors with Retry Button';
 MultipleReportErrorsWithRetryButton.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message one',
@@ -213,7 +213,7 @@ MultipleReportErrorsWithRetryButton.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message two',
@@ -231,7 +231,7 @@ MultipleReportErrorsWithRetryButton.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message three',
@@ -259,7 +259,7 @@ MultipleUniqueReportErrorsWithRetryButtonWith.storyName =
 	'Multiple Unique Report Errors with Retry Button';
 MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -277,7 +277,7 @@ MultipleUniqueReportErrorsWithRetryButtonWith.args = {
 				},
 			]
 		);
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
