@@ -17,8 +17,14 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { useDispatch } from 'googlesitekit-data';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
@@ -34,43 +40,57 @@ import PDFSectionsSelectionPanel from './index';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;
 
-interface StoryArgs {
-	setupRegistry?: ( registry: Registry ) => void;
-}
-
-function Template() {
+function DefaultTemplate() {
 	return <PDFSectionsSelectionPanel />;
 }
 
-export const Default = Template.bind( {} );
+function EmptyTemplate() {
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	// The panel's `onSideSheetOpen` resets the form to default selection on
+	// every mount. Re-applying the empty selection from this Template's
+	// `useEffect` runs after the panel's reset (effects fire bottom-up),
+	// so the story renders with no sections selected.
+	useEffect( () => {
+		setValues( FORM_PDF_DOWNLOAD, {
+			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: [],
+		} );
+	}, [ setValues ] );
+
+	return <PDFSectionsSelectionPanel />;
+}
+
+function GeneratingTemplate() {
+	const { setValue } = useDispatch( CORE_UI );
+
+	// The panel's `onSideSheetOpen` resets `PDF_GENERATING_KEY` to false on
+	// every mount. Setting it back to true from this Template's `useEffect`
+	// runs after the panel's reset, so the story renders with the
+	// "generating" notice visible.
+	useEffect( () => {
+		setValue( PDF_GENERATING_KEY, true );
+	}, [ setValue ] );
+
+	return <PDFSectionsSelectionPanel />;
+}
+
+export const Default = DefaultTemplate.bind( {} );
 Default.storyName = 'Default (all selected)';
 Default.scenario = {};
 
-export const Empty = Template.bind( {} );
+export const Empty = EmptyTemplate.bind( {} );
 Empty.storyName = 'All deselected (error state)';
 Empty.scenario = {};
-Empty.args = {
-	setupRegistry: ( registry: Registry ) => {
-		registry.dispatch( CORE_FORMS ).setValues( FORM_PDF_DOWNLOAD, {
-			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: [],
-		} );
-	},
-};
 
-export const Generating = Template.bind( {} );
+export const Generating = GeneratingTemplate.bind( {} );
 Generating.storyName = 'Generating state';
 Generating.scenario = {};
-Generating.args = {
-	setupRegistry: ( registry: Registry ) => {
-		registry.dispatch( CORE_UI ).setValue( PDF_GENERATING_KEY, true );
-	},
-};
 
 export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',
 	component: PDFSectionsSelectionPanel,
 	decorators: [
-		( Story: () => JSX.Element, { args }: { args?: StoryArgs } ) => {
+		( Story: () => JSX.Element ) => {
 			function setupRegistry( registry: Registry ) {
 				registry
 					.dispatch( CORE_UI )
@@ -79,10 +99,6 @@ export default {
 					[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]:
 						DEFAULT_SELECTED_SECTIONS,
 				} );
-
-				if ( args?.setupRegistry ) {
-					args.setupRegistry( registry );
-				}
 			}
 
 			return (
