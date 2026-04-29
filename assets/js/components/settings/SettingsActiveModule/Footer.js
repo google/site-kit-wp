@@ -61,7 +61,8 @@ export default function Footer( { slug } ) {
 	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( module?.storeName ) || {};
+	const { clearSelectorErrors, clearActionErrors } =
+		useDispatch( module?.storeName ) || {};
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handleClose = useCallback( async () => {
@@ -70,9 +71,10 @@ export default function Footer( { slug } ) {
 			'cancel_module_settings',
 			slug
 		);
-		await clearErrors?.();
+		await clearSelectorErrors?.();
+		await clearActionErrors?.();
 		history.push( `/connected-services/${ slug }` );
-	}, [ clearErrors, history, viewContext, slug ] );
+	}, [ clearSelectorErrors, clearActionErrors, history, viewContext, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -91,7 +93,8 @@ export default function Footer( { slug } ) {
 					slug
 				);
 				setValue( errorKey, undefined );
-				await clearErrors?.();
+				await clearSelectorErrors?.();
+				await clearActionErrors?.();
 				history.push( `/connected-services/${ slug }` );
 				await clearCache();
 			}
@@ -102,7 +105,8 @@ export default function Footer( { slug } ) {
 			submitChanges,
 			slug,
 			errorKey,
-			clearErrors,
+			clearSelectorErrors,
+			clearActionErrors,
 			history,
 			viewContext,
 		]

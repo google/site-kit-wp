@@ -90,8 +90,10 @@ export default function withCustomDimensions( options = {} ) {
 				reportOptions: wrappedReportOptions,
 			} );
 
-			const { clearError, scheduleSyncAvailableCustomDimensions } =
-				useDispatch( MODULES_ANALYTICS_4 );
+			const {
+				clearSelectorError,
+				scheduleSyncAvailableCustomDimensions,
+			} = useDispatch( MODULES_ANALYTICS_4 );
 			const { setValues } = useDispatch( CORE_FORMS );
 			const { setPermissionScopeError } = useDispatch( CORE_USER );
 
@@ -143,7 +145,7 @@ export default function withCustomDimensions( options = {} ) {
 					// triggered multiple times.
 					await Promise.all(
 						invalidCustomDimensionReportOptions.map( ( args ) => {
-							return clearError( 'getReport', [ args ] );
+							return clearSelectorError( 'getReport', [ args ] );
 						} )
 					);
 
@@ -151,7 +153,7 @@ export default function withCustomDimensions( options = {} ) {
 					scheduleSyncAvailableCustomDimensions();
 				} )();
 			}, [
-				clearError,
+				clearSelectorError,
 				customDimensions,
 				hasInvalidCustomDimensionError,
 				invalidCustomDimensionReportOptions,

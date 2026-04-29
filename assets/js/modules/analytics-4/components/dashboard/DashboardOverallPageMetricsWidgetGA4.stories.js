@@ -214,9 +214,11 @@ Error.args = {
 		};
 		const options = reportOptions[ 0 ];
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError( error, 'getReport', [
-			options,
-		] );
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			error,
+			'getReport',
+			[ options ]
+		);
 
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
 			options,
@@ -368,7 +370,7 @@ ErrorEntityURL.args = {
 		const options = reportOptionsWithEntity[ 0 ];
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ options ] );
+			.setErrorForSelector( error, 'getReport', [ options ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ options ] );
