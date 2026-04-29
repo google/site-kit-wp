@@ -34,7 +34,7 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
-import { GraphicContainerWithIntersectionObserver } from '@/js/components/GraphicContainer';
+import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
 // @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
 
