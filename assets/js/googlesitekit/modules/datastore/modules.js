@@ -210,6 +210,7 @@ const fetchRecoverModulesStore = createFetchStore( {
 	validateParams: ( { slugs } ) => {
 		invariant( slugs, 'slugs is required.' );
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

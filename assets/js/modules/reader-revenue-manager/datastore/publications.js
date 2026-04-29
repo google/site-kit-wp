@@ -151,6 +151,7 @@ const fetchGetSyncPublicationOnboardingStateStore = createFetchStore( {
 			}
 		}
 	),
+	isAction: true,
 } );
 
 const baseInitialState = {

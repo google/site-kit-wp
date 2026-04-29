@@ -95,6 +95,7 @@ const fetchSaveAudienceSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateAudienceSettings,
+	isAction: true,
 } );
 
 const fetchSyncAvailableAudiencesStore = createFetchStore( {

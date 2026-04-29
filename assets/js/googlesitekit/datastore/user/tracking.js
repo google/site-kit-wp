@@ -50,6 +50,7 @@ const fetchSaveTrackingStore = createFetchStore( {
 		set( 'core', 'user', 'tracking', { enabled: !! enabled } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( enabled ) => enabled,
+	isAction: true,
 } );
 
 const baseInitialState = {

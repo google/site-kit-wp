@@ -60,6 +60,7 @@ const fetchMarkNotificationStore = createFetchStore( {
 			'a valid notification ID is required to mark a notification.'
 		);
 	},
+	isAction: true,
 } );
 
 const baseActions = {

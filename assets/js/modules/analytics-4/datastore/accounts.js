@@ -101,6 +101,7 @@ const fetchCreateAccountStore = createFetchStore( {
 	validateParams: ( { data } = {} ) => {
 		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
+	isAction: true,
 } );
 
 // Actions.
