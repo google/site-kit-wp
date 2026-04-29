@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, forwardRef, MouseEvent, ReactNode } from 'react';
+import { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -34,25 +34,9 @@ import { Button } from 'googlesitekit-components';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import { GraphicContainerWithIntersectionObserver } from '@/js/components/GraphicContainer';
 // @ts-expect-error - We need to add types for imported SVGs.
 import CloseIcon from '@/svg/icons/close.svg';
-
-interface GraphicContainerProps {
-	children: ReactNode;
-	className: string;
-}
-
-const GraphicContainer = forwardRef< HTMLDivElement, GraphicContainerProps >(
-	( { children, className }, ref ) => (
-		<div ref={ ref } className={ className }>
-			{ children }
-		</div>
-	)
-);
-
-const GraphicContainerWithIntersectionObserver =
-	withIntersectionObserver( GraphicContainer );
 
 export interface BannerModalProps {
 	Graphic: FC;
@@ -107,6 +91,9 @@ const BannerModal: FC< BannerModalProps > = ( {
 			open
 		>
 			<DialogContent className="googlesitekit-banner-modal__content">
+				{ /* The `GraphicContainerWithIntersectionObserver` is used here to track when the
+				graphic (and thus the main content of the modal) comes into view, which is needed
+				for analytics tracking. */ }
 				<GraphicContainerWithIntersectionObserver
 					onInView={ onView }
 					className="googlesitekit-banner-modal__graphic"
