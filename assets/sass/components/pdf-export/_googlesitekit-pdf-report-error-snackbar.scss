@@ -17,38 +17,17 @@
  */
 
 .googlesitekit-pdf-report-error-snackbar {
-
-	.googlesitekit-notice__content {
-		color: $c-utility-on-error-container;
-		flex: 1;
-	}
-
-	.googlesitekit-notice__action {
-		align-items: center;
-		gap: $grid-gap-phone;
-		margin-left: auto;
-		width: auto;
-	}
-
 	.googlesitekit-notice__dismiss--icon {
-
 		path {
 			color: $c-utility-on-error-container;
 		}
 	}
-	.googlesitekit-notice__cta {
-		color: $c-utility-on-error-container;
-		order: 1;
-		padding: 0;
-	}
 
-	.googlesitekit-notice__cta.mdc-button--tertiary:not(:disabled),
-	.mdc-button--raised:not(:disabled) {
-		background-color: transparent;
+	.googlesitekit-notice__cta {
 		color: $c-utility-on-error-container;
 	}
 
 	.googlesitekit-notice__cta.mdc-button--tertiary:not(:disabled) {
-		padding: 6px 16px;
+		color: $c-utility-on-error-container;
 	}
 }
