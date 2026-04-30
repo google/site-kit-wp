@@ -287,7 +287,7 @@ export default function KeyMetricsSetupApp() {
 		isSyncing;
 
 	const keyMetricsLayout = (
-		<Layout>
+		<Layout rounded={ ! isInitialSetupFlow }>
 			{ isInitialSetupFlow && (
 				<ProgressIndicator totalSegments={ 6 } currentSegment={ 4 } />
 			) }

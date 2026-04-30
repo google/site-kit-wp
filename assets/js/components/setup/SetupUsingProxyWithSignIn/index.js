@@ -197,7 +197,7 @@ export default function SetupUsingProxyWithSignIn() {
 					<br />
 				</Fragment>
 			) }
-			<Layout rounded>
+			<Layout rounded={ ! setupFlowRefreshEnabled }>
 				<Splash>
 					{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 						<Actions
