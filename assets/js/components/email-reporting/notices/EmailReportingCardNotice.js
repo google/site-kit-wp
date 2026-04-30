@@ -34,7 +34,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
@@ -82,7 +82,7 @@ export default function EmailReportingCardNotice( { className } ) {
 	return (
 		<NoticeWithIntersectionObserver
 			className={ className }
-			type={ TYPES.NEW }
+			type={ NOTICE_TYPES.NEW }
 			title={ __( 'Get site insights in your inbox', 'google-site-kit' ) }
 			description={ __(
 				'Receive the most important insights about your site’s performance, key trends, and tailored metrics directly in your inbox',

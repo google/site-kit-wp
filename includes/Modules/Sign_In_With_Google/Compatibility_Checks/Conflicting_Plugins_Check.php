@@ -62,12 +62,7 @@ class Conflicting_Plugins_Check extends Compatibility_Check {
 			$plugin_name = $plugin_data['Name'];
 
 			$conflicting_plugins[ $plugin_slug ] = array(
-				'pluginName'      => $plugin_name,
-				'conflictMessage' => sprintf(
-					/* translators: %s: plugin name */
-					__( '%s may prevent Sign in with Google from working properly.', 'google-site-kit' ),
-					$plugin_name
-				),
+				'pluginName' => $plugin_name,
 			);
 		}
 

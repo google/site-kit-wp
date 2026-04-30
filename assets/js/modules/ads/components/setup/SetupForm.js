@@ -37,6 +37,7 @@ import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -95,7 +96,7 @@ export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 			{ isDuplicateAdsIDDetected && (
 				<Notice
 					className="googlesitekit-notice--small googlesitekit-ads-setup__ads-id-conflict-warning"
-					type={ Notice.TYPES.WARNING }
+					type={ NOTICE_TYPES.WARNING }
 					description={ __(
 						'This Conversion ID is already in use via the Google for WooCommerce plugin. We don’t recommend adding it in Site Kit, as it may result in inaccurate measurement of your Ads campaign conversions.',
 						'google-site-kit'

@@ -83,7 +83,7 @@ export const selectors = {
 	/**
 	 * Checks if any ecommerce conversion reporting events have been detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @return {(boolean|undefined)} True if any ecommerce conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */
@@ -98,7 +98,7 @@ export const selectors = {
 	/**
 	 * Checks if any lead conversion reporting events have been detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @return {(boolean|undefined)} True if any lead conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */

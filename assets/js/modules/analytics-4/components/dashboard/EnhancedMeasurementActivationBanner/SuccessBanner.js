@@ -36,8 +36,8 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SuccessBanner( { id, Notification } ) {
 	const viewContext = useViewContext();
@@ -77,7 +77,7 @@ export default function SuccessBanner( { id, Notification } ) {
 		<Notification onView={ handleView }>
 			<NoticeNotification
 				notificationID={ id }
-				type={ Notice.TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled enhanced measurement for your site',
 					'google-site-kit'

@@ -28,7 +28,7 @@ import { useCallbackOne } from 'use-memo-one';
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -95,7 +95,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 			}
 
 			if ( redirectURL ) {
-				navigateTo( addQueryArgs( redirectURL, forwardableParams ) );
+				navigateTo(
+					addQueryArgs( redirectURL, {
+						...forwardableParams,
+						...getQueryArgs( redirectURL ),
+					} )
+				);
 				return;
 			}
 

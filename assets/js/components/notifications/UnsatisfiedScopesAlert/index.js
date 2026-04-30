@@ -40,7 +40,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getUnsatisfiedScopesMessage } from './utils';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlert( { id, Notification } ) {
@@ -144,7 +144,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 		<Notification>
 			<BannerNotification
 				notificationID={ id }
-				type={ TYPES.ERROR }
+				type={ NOTICE_TYPES.ERROR }
 				title={ title }
 				description={ message }
 				ctaButton={ {

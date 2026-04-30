@@ -17,8 +17,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,9 +33,10 @@ import Title from './Title';
 import Description from './Description';
 import CTAButton from './CTAButton';
 import DismissButton from './DismissButton';
-import { TYPES } from './constants';
+import { NOTICE_TYPES } from './constants';
+import { DismissButtonProps } from './DismissButtonProps';
 
-function hasDismissButtonAction( dismissButton ) {
+function hasDismissButtonAction( dismissButton?: DismissButtonProps ) {
 	if ( dismissButton?.variant === 'icon' ) {
 		return (
 			!! dismissButton.icon &&
@@ -50,16 +51,27 @@ function hasDismissButtonAction( dismissButton ) {
 		!! dismissButton?.href
 	);
 }
+export interface NoticeProps {
+	actionContent?: ReactNode;
+	className?: string;
+	title?: ReactNode;
+	description?: ReactNode;
+	dismissButton?: DismissButtonProps;
+	ctaButton?: Record< string, unknown >;
+	type?: NOTICE_TYPES;
+	hideIcon?: boolean;
+}
 
-const Notice = forwardRef(
+const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 	(
 		{
+			actionContent,
 			className,
 			title,
 			description,
 			dismissButton,
 			ctaButton,
-			type = TYPES.INFO,
+			type = NOTICE_TYPES.INFO,
 			children,
 			hideIcon,
 		},
@@ -91,35 +103,52 @@ const Notice = forwardRef(
 						{ description && (
 							<Description>{ description }</Description>
 						) }
+						{ children }
 					</div>
 
 					{ hasActionContent && (
 						<div className="googlesitekit-notice__action">
-							{ children }
+							{ actionContent }
 
 							{ hasDismissAction && (
 								<DismissButton
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									label={ dismissButton.label }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									onClick={ dismissButton.onClick }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									disabled={ dismissButton.disabled }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									href={ dismissButton.href }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									external={ dismissButton.external }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									variant={ dismissButton.variant }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									icon={ dismissButton.icon }
+									// @ts-expect-error `DismissButton` component is not yet typed.
 									ariaLabel={ dismissButton.ariaLabel }
 								/>
 							) }
 							{ hasCTAAction && (
 								<CTAButton
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									label={ ctaButton.label }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									onClick={ ctaButton.onClick }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									inProgress={ ctaButton.inProgress }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									disabled={ ctaButton.disabled }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									href={ ctaButton.href }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									external={ ctaButton.external }
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									hideExternalIndicator={
 										ctaButton.hideExternalIndicator
 									}
+									// @ts-expect-error `CTAButton` component is not yet typed.
 									tertiary={ ctaButton.tertiary }
 								/>
 							) }
@@ -130,21 +159,5 @@ const Notice = forwardRef(
 		);
 	}
 );
-
-Notice.TYPES = TYPES;
-
-Notice.propTypes = {
-	className: PropTypes.string,
-	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.object ] ),
-	description: PropTypes.node,
-	type: PropTypes.oneOf( Object.values( TYPES ) ),
-	dismissButton: PropTypes.shape( DismissButton.propTypes ),
-	ctaButton: PropTypes.shape( {
-		...CTAButton.propTypes,
-		label: PropTypes.string, // CTAButton label should not be required for this parent component.
-	} ),
-	children: PropTypes.node,
-	hideIcon: PropTypes.bool,
-};
 
 export default Notice;

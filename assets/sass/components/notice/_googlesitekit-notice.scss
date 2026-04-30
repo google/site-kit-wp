@@ -83,7 +83,7 @@
 			}
 		}
 
-		p {
+		p, ul, ol {
 
 			margin: 0;
 
@@ -91,6 +91,20 @@
 			& > span > a {
 				color: inherit;
 				text-decoration: underline;
+			}
+		}
+
+		ul, ol {
+			margin-block-start: 8px;
+		}
+
+		li {
+			list-style: disc inside;
+			margin-inline-start: 8px;
+
+			&::marker {
+				margin: 0;
+				padding: 0;
 			}
 		}
 

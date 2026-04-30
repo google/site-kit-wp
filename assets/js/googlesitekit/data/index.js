@@ -46,7 +46,7 @@ import { createReducer } from './create-reducer';
 
 /**
  * @since 1.166.0
- * @since n.e.x.t Updated types to include `registerGenericStore` function.
+ * @since 1.178.0 Updated types to include `registerGenericStore` function.
  *
  * @typedef {Object} WPDataRegistry
  * @property {Function} registerGenericStore Given a namespace key and settings

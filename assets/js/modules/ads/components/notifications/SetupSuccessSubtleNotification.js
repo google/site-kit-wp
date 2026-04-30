@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );
@@ -46,7 +46,7 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'Success! Your Conversion ID was added to your site',
 					'google-site-kit'
