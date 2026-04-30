@@ -36,7 +36,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function PAXSetupSuccessSubtleNotification( {
@@ -72,7 +72,7 @@ export default function PAXSetupSuccessSubtleNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'Your Ads campaign was successfully set up!',
 					'google-site-kit'

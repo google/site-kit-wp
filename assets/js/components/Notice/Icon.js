@@ -25,14 +25,14 @@ import PropTypes from 'prop-types';
 import CheckFill from '@/svg/icons/check-fill.svg';
 import WarningSVG from '@/svg/icons/warning-notice.svg';
 import StarFill from '@/svg/icons/star-fill.svg';
-import { TYPES } from './constants';
+import { NOTICE_TYPES } from './constants';
 
 const typeIconMap = {
-	[ TYPES.NEW ]: StarFill,
-	[ TYPES.SUCCESS ]: CheckFill,
-	[ TYPES.INFO ]: WarningSVG,
-	[ TYPES.WARNING ]: WarningSVG,
-	[ TYPES.ERROR ]: WarningSVG,
+	[ NOTICE_TYPES.NEW ]: StarFill,
+	[ NOTICE_TYPES.SUCCESS ]: CheckFill,
+	[ NOTICE_TYPES.INFO ]: WarningSVG,
+	[ NOTICE_TYPES.WARNING ]: WarningSVG,
+	[ NOTICE_TYPES.ERROR ]: WarningSVG,
 };
 
 export default function Icon( { type } ) {
@@ -42,5 +42,5 @@ export default function Icon( { type } ) {
 }
 
 Icon.propTypes = {
-	type: PropTypes.oneOf( Object.values( TYPES ) ),
+	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
 };

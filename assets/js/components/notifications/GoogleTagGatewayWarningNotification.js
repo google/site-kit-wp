@@ -31,7 +31,7 @@ import { useSelect } from 'googlesitekit-data';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function GoogleTagGatewayWarningNotification( {
 	id,
@@ -49,7 +49,7 @@ export default function GoogleTagGatewayWarningNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ Notice.TYPES.WARNING }
+				type={ NOTICE_TYPES.WARNING }
 				description={ createInterpolateElement(
 					__(
 						'Google tag gateway for advertisers has been disabled due to server configuration issues. Measurement data is now being routed through the default Google server. Please contact your hosting provider to resolve the issue. <a>Learn more</a>',

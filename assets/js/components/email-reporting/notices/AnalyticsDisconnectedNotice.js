@@ -28,7 +28,7 @@ import { useCallback, useState } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -110,7 +110,7 @@ export default function AnalyticsDisconnectedNotice() {
 	return (
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
-			type={ TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			title={ __( 'Analytics is disconnected', 'google-site-kit' ) }
 			description={ description }
 			ctaButton={

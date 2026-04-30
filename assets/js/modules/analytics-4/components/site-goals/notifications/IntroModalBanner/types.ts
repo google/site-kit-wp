@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * IntroModalBanner types.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +16,9 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-
-export default function Description( { className, children } ) {
-	return (
-		<p
-			className={ classnames(
-				'googlesitekit-notice__description',
-				className
-			) }
-		>
-			{ children }
-		</p>
-	);
+export interface IntroModalVariantProps {
+	onView: () => void;
+	onConfirm: () => void;
+	onClickLearnMore: () => void;
+	onDismiss: () => void;
 }
-
-Description.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
-};
