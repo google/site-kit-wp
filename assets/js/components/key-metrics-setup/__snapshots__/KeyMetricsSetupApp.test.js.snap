@@ -148,7 +148,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout"
+          class="googlesitekit-layout googlesitekit-layout--rounded"
         >
           <div
             class="mdc-layout-grid"
@@ -689,7 +689,7 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout"
+          class="googlesitekit-layout googlesitekit-layout--rounded"
         >
           <div
             class="mdc-layout-grid"
@@ -1754,7 +1754,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout"
+          class="googlesitekit-layout googlesitekit-layout--rounded"
         >
           <div
             class="mdc-layout-grid"
@@ -2254,7 +2254,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout"
+          class="googlesitekit-layout googlesitekit-layout--rounded"
         >
           <div
             class="mdc-layout-grid"

@@ -256,7 +256,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
           class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-layout"
+            class="googlesitekit-layout googlesitekit-layout--rounded"
           >
             <section
               class="googlesitekit-setup__splash"
@@ -616,7 +616,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
           class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-layout"
+            class="googlesitekit-layout googlesitekit-layout--rounded"
           >
             <section
               class="googlesitekit-setup__splash"
@@ -1031,7 +1031,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
           class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
         >
           <div
-            class="googlesitekit-layout"
+            class="googlesitekit-layout googlesitekit-layout--rounded"
           >
             <section
               class="googlesitekit-setup__splash"
