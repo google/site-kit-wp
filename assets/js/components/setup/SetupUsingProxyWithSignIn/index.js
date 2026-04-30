@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -42,6 +47,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import useViewContext from '@/js/hooks/useViewContext';
 import Header from './Header';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 import Splash from './Splash';
 import Actions from './Actions';
 import Notice from '@/js/components/Notice';
@@ -177,10 +183,15 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
-			<div className="googlesitekit-setup">
+			<div
+				className={ classnames( 'googlesitekit-setup', {
+					'googlesitekit-initial-setup': setupFlowRefreshEnabled,
+				} ) }
+			>
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
+							{ setupFlowRefreshEnabled && <ProgressIndicator /> }
 							{ getQueryArg( location.href, 'notification' ) ===
 								'reset_success' && (
 								<Fragment>
@@ -195,7 +206,7 @@ export default function SetupUsingProxyWithSignIn() {
 									<br />
 								</Fragment>
 							) }
-							<Layout rounded>
+							<Layout>
 								<Splash>
 									{ ( {
 										complete,
