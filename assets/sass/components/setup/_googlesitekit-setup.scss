@@ -129,6 +129,14 @@
 		}
 	}
 
+	.googlesitekit-initial-setup {
+		padding: 0;
+
+		.googlesitekit-setup__wrapper {
+			border-radius: 0;
+		}
+	}
+
 	.googlesitekit-setup__warning {
 		align-items: center;
 		display: flex;
