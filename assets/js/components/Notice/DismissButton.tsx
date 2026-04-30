@@ -17,7 +17,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import type { MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,6 +30,23 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
+export interface DismissButtonProps {
+	label?: string;
+	dismissOptions?: {
+		expiresInSeconds?: number;
+		skipHidingFromQueue?: boolean;
+	};
+	onClick?: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	disabled?: boolean;
+	href?: string;
+	external?: boolean;
+	variant?: 'text' | 'icon';
+	icon?: ReactNode;
+	ariaLabel?: string;
+}
+
 export default function DismissButton( {
 	label = __( 'Got it', 'google-site-kit' ),
 	onClick,
@@ -38,42 +56,24 @@ export default function DismissButton( {
 	variant = 'text',
 	icon,
 	ariaLabel,
-} ) {
-	if ( variant === 'icon' ) {
-		return (
-			<Button
-				className="googlesitekit-notice__dismiss googlesitekit-notice__dismiss--icon"
-				onClick={ onClick }
-				disabled={ disabled }
-				href={ href }
-				target={ external ? '_blank' : undefined }
-				icon={ icon }
-				aria-label={ ariaLabel }
-				hideTooltipTitle
-			/>
-		);
-	}
-
+}: DismissButtonProps ) {
 	return (
+		// @ts-expect-error - `Button` component typing is incomplete.
 		<Button
+			className={ classnames( {
+				'googlesitekit-notice__dismiss': variant === 'icon',
+				'googlesitekit-notice__dismiss--icon': variant === 'icon',
+			} ) }
 			onClick={ onClick }
 			disabled={ disabled }
 			href={ href }
 			target={ external ? '_blank' : undefined }
-			tertiary
+			tertiary={ variant !== 'icon' }
+			icon={ variant === 'icon' ? icon : undefined }
+			aria-label={ variant === 'icon' ? ariaLabel : undefined }
+			hideTooltipTitle={ variant === 'icon' }
 		>
-			{ label }
+			{ variant !== 'icon' ? label : undefined }
 		</Button>
 	);
 }
-
-DismissButton.propTypes = {
-	label: PropTypes.string,
-	onClick: PropTypes.func,
-	disabled: PropTypes.bool,
-	href: PropTypes.string,
-	external: PropTypes.bool,
-	variant: PropTypes.oneOf( [ 'text', 'icon' ] ),
-	icon: PropTypes.node,
-	ariaLabel: PropTypes.string,
-};

@@ -32,9 +32,8 @@ import Icon from './Icon';
 import Title from './Title';
 import Description from './Description';
 import CTAButton from './CTAButton';
-import DismissButton from './DismissButton';
+import DismissButton, { DismissButtonProps } from './DismissButton';
 import { NOTICE_TYPES } from './constants';
-import { DismissButtonProps } from './DismissButtonProps';
 
 function hasDismissButtonAction( dismissButton?: DismissButtonProps ) {
 	if ( dismissButton?.variant === 'icon' ) {
@@ -112,22 +111,14 @@ const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 
 							{ hasDismissAction && (
 								<DismissButton
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									label={ dismissButton.label }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									onClick={ dismissButton.onClick }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									disabled={ dismissButton.disabled }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									href={ dismissButton.href }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									external={ dismissButton.external }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									variant={ dismissButton.variant }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									icon={ dismissButton.icon }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									ariaLabel={ dismissButton.ariaLabel }
+									label={ dismissButton?.label }
+									onClick={ dismissButton?.onClick }
+									disabled={ dismissButton?.disabled }
+									href={ dismissButton?.href }
+									external={ dismissButton?.external }
+									variant={ dismissButton?.variant }
+									icon={ dismissButton?.icon }
+									ariaLabel={ dismissButton?.ariaLabel }
 								/>
 							) }
 							{ hasCTAAction && (

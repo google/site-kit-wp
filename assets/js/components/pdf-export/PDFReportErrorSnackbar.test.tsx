@@ -110,7 +110,6 @@ describe( 'PDFReportErrorSnackbar', () => {
 
 		rerender(
 			<Notice
-				// @ts-expect-error - The `Notice` component is not typed yet.
 				title="Default CTA Notice"
 				ctaButton={ {
 					label: 'Take action',

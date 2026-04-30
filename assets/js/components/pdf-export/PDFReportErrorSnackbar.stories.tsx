@@ -48,12 +48,3 @@ Default.args = {
 	onDismiss: () => {},
 };
 Default.scenario = {};
-
-export const LongCopy = Template.bind( {} );
-LongCopy.args = {
-	onRetry: () => {},
-	onDismiss: () => {},
-	title: 'Unable to generate your PDF report right now',
-	description:
-		'There was a problem generating your PDF report for this dashboard view. Please try again.',
-};
