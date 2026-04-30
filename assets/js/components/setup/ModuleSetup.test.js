@@ -367,10 +367,6 @@ describe( 'ModuleSetup', () => {
 
 			await waitForRegistry();
 
-			expect(
-				getByRole( 'button', { name: 'Trigger finish setup' } )
-			).toBeInTheDocument();
-
 			await act( () => {
 				fireEvent.click(
 					getByRole( 'button', { name: 'Trigger finish setup' } )
