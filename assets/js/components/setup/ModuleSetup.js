@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import { useMount } from 'react-use';
 import { useCallbackOne } from 'use-memo-one';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -150,18 +151,49 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	const { SetupComponent } = module;
 
+	const setupMainContent = (
+		<Fragment>
+			{ isInitialSetupFlow && (
+				<ProgressIndicator currentSegment={ 3 } totalSegments={ 6 } />
+			) }
+			<section className="googlesitekit-setup__wrapper">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							{ ! isInitialSetupFlow && (
+								<p className="googlesitekit-setup__intro-title">
+									{ __(
+										'Connect Service',
+										'google-site-kit'
+									) }
+								</p>
+							) }
+							<SetupComponent
+								module={ module }
+								finishSetup={ finishSetup }
+							/>
+						</Cell>
+					</Row>
+				</Grid>
+
+				{ ! isInitialSetupFlow && (
+					<ModuleSetupFooter
+						module={ module }
+						onCancel={ onCancelButtonClick }
+						onComplete={
+							typeof onCompleteSetup === 'function'
+								? onCompleteSetupCallback
+								: undefined
+						}
+					/>
+				) }
+			</section>
+		</Fragment>
+	);
+
 	return (
 		<Fragment>
-			<Header
-				subHeader={
-					isInitialSetupFlow ? (
-						<ProgressIndicator
-							currentSegment={ 3 }
-							totalSegments={ 6 }
-						/>
-					) : null
-				}
-			>
+			<Header>
 				{ isInitialSetupFlow && (
 					<ExitSetup
 						gaTrackingEventArgs={ {
@@ -172,46 +204,20 @@ export default function ModuleSetup( { moduleSlug } ) {
 				) }
 				<HelpMenu />
 			</Header>
-			<div className="googlesitekit-setup">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							<section className="googlesitekit-setup__wrapper">
-								<Grid>
-									<Row>
-										<Cell size={ 12 }>
-											{ ! isInitialSetupFlow && (
-												<p className="googlesitekit-setup__intro-title">
-													{ __(
-														'Connect Service',
-														'google-site-kit'
-													) }
-												</p>
-											) }
-											<SetupComponent
-												module={ module }
-												finishSetup={ finishSetup }
-											/>
-										</Cell>
-									</Row>
-								</Grid>
-
-								{ ! isInitialSetupFlow && (
-									<ModuleSetupFooter
-										module={ module }
-										onCancel={ onCancelButtonClick }
-										onComplete={
-											typeof onCompleteSetup ===
-											'function'
-												? onCompleteSetupCallback
-												: undefined
-										}
-									/>
-								) }
-							</section>
-						</Cell>
-					</Row>
-				</Grid>
+			<div
+				className={ classnames( 'googlesitekit-setup', {
+					'googlesitekit-initial-setup': isInitialSetupFlow,
+				} ) }
+			>
+				{ isInitialSetupFlow ? (
+					setupMainContent
+				) : (
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>{ setupMainContent }</Cell>
+						</Row>
+					</Grid>
+				) }
 			</div>
 		</Fragment>
 	);
