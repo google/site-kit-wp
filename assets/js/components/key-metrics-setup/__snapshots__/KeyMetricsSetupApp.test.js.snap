@@ -148,7 +148,7 @@ exports[`KeyMetricsSetupApp error handling should show an error and a \`Continue
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout googlesitekit-layout--rounded"
+          class="googlesitekit-layout"
         >
           <div
             class="mdc-layout-grid"
@@ -689,7 +689,7 @@ exports[`KeyMetricsSetupApp error handling should show an error when saving init
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout googlesitekit-layout--rounded"
+          class="googlesitekit-layout"
         >
           <div
             class="mdc-layout-grid"
@@ -1224,360 +1224,355 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
   </header>
   <div
     class="googlesitekit-subheader"
-  >
-    <div
-      class="googlesitekit-progress-indicator"
-      style="grid-template-columns: 46px repeat(6, 1fr);"
-    >
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-      <div
-        class="googlesitekit-progress-indicator__segment"
-      />
-    </div>
-  </div>
+  />
   <div
-    class="googlesitekit-key-metrics-setup"
+    class="googlesitekit-key-metrics-setup googlesitekit-key-metrics-initial-setup"
   >
     <div
       class="googlesitekit-module-page"
     >
       <div
-        class="mdc-layout-grid"
+        class="googlesitekit-layout"
       >
         <div
-          class="googlesitekit-layout googlesitekit-layout--rounded"
+          class="googlesitekit-progress-indicator"
+          style="grid-template-columns: 46px repeat(6, 1fr);"
         >
           <div
-            class="mdc-layout-grid"
+            class="googlesitekit-progress-indicator__segment"
+          />
+          <div
+            class="googlesitekit-progress-indicator__segment"
+          />
+          <div
+            class="googlesitekit-progress-indicator__segment"
+          />
+          <div
+            class="googlesitekit-progress-indicator__segment"
+          />
+          <div
+            class="googlesitekit-progress-indicator__segment"
+          />
+          <div
+            class="googlesitekit-progress-indicator__segment"
+          />
+        </div>
+        <div
+          class="mdc-layout-grid"
+        >
+          <div
+            class="mdc-layout-grid__inner"
           >
             <div
-              class="mdc-layout-grid__inner"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
             >
-              <div
-                class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+              <h1
+                class="googlesitekit-typography googlesitekit-key-metrics-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
               >
-                <h1
-                  class="googlesitekit-typography googlesitekit-key-metrics-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+                Tell us your main goal to get tailored metrics
+              </h1>
+              <div
+                class="googlesitekit-key-metrics-setup__heading"
+              >
+                <h2
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--large"
                 >
-                  Tell us your main goal to get tailored metrics
-                </h1>
-                <div
-                  class="googlesitekit-key-metrics-setup__heading"
+                  Which option most closely matches the purpose of your site?
+                </h2>
+                <p
+                  class="googlesitekit-typography googlesitekit-key-metrics-setup__description googlesitekit-typography--body googlesitekit-typography--small"
                 >
-                  <h2
-                    class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--large"
-                  >
-                    Which option most closely matches the purpose of your site?
-                  </h2>
-                  <p
-                    class="googlesitekit-typography googlesitekit-key-metrics-setup__description googlesitekit-typography--body googlesitekit-typography--small"
-                  >
-                    Even if multiple options apply to your site, select the one that applies the most.
-                    <br />
-                    You can also answer or edit your response later in Settings.
-                  </p>
-                </div>
+                  Even if multiple options apply to your site, select the one that applies the most.
+                  <br />
+                  You can also answer or edit your response later in Settings.
+                </p>
+              </div>
+              <div
+                class="googlesitekit-user-input__select-options-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--start-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+              >
                 <div
-                  class="googlesitekit-user-input__select-options-wrapper mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--start-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                  class="googlesitekit-user-input__select-options"
                 >
                   <div
-                    class="googlesitekit-user-input__select-options"
+                    class="googlesitekit-user-input__select-option"
                   >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio mdc-ripple-upgraded--background-focused"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-sell_products"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="sell_products"
+                        />
                         <div
-                          class="mdc-radio mdc-ripple-upgraded--background-focused"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-sell_products"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="sell_products"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-sell_products"
                         >
-                          <label
-                            for="purpose-sell_products"
-                          >
-                            Sell products
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            E.g. selling devices, apparel, equipment, etc.
-                          </div>
+                          Sell products
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          E.g. selling devices, apparel, equipment, etc.
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    class="googlesitekit-user-input__select-option"
+                  >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-provide_services"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="provide_services"
+                        />
                         <div
-                          class="mdc-radio"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-provide_services"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="provide_services"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-provide_services"
                         >
-                          <label
-                            for="purpose-provide_services"
-                          >
-                            Provide services
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            E.g. offering courses, consulting, tutoring, etc.
-                          </div>
+                          Provide services
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          E.g. offering courses, consulting, tutoring, etc.
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    class="googlesitekit-user-input__select-option"
+                  >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-monetize_content"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="monetize_content"
+                        />
                         <div
-                          class="mdc-radio"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-monetize_content"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="monetize_content"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-monetize_content"
                         >
-                          <label
-                            for="purpose-monetize_content"
-                          >
-                            Monetize content
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            Using display ads, affiliate links, sponsored content, etc.
-                          </div>
+                          Monetize content
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          Using display ads, affiliate links, sponsored content, etc.
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    class="googlesitekit-user-input__select-option"
+                  >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-publish_blog"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="publish_blog"
+                        />
                         <div
-                          class="mdc-radio"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-publish_blog"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="publish_blog"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-publish_blog"
                         >
-                          <label
-                            for="purpose-publish_blog"
-                          >
-                            Publish a blog
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            Writing on a topic you’re passionate about, no focus on monetizing content
-                          </div>
+                          Publish a blog
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          Writing on a topic you’re passionate about, no focus on monetizing content
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    class="googlesitekit-user-input__select-option"
+                  >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-publish_news"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="publish_news"
+                        />
                         <div
-                          class="mdc-radio"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-publish_news"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="publish_news"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-publish_news"
                         >
-                          <label
-                            for="purpose-publish_news"
-                          >
-                            Publish news content
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            E.g. local news, investigative pieces, interviews, etc.
-                          </div>
+                          Publish news content
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          E.g. local news, investigative pieces, interviews, etc.
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div
+                    class="googlesitekit-user-input__select-option"
+                  >
                     <div
-                      class="googlesitekit-user-input__select-option"
+                      class="mdc-form-field"
                     >
                       <div
-                        class="mdc-form-field"
+                        class="mdc-radio"
                       >
+                        <input
+                          class="mdc-radio__native-control"
+                          id="purpose-share_portfolio"
+                          name="purpose"
+                          readonly=""
+                          type="radio"
+                          value="share_portfolio"
+                        />
                         <div
-                          class="mdc-radio"
+                          class="mdc-radio__background"
                         >
-                          <input
-                            class="mdc-radio__native-control"
-                            id="purpose-share_portfolio"
-                            name="purpose"
-                            readonly=""
-                            type="radio"
-                            value="share_portfolio"
+                          <div
+                            class="mdc-radio__outer-circle"
                           />
                           <div
-                            class="mdc-radio__background"
-                          >
-                            <div
-                              class="mdc-radio__outer-circle"
-                            />
-                            <div
-                              class="mdc-radio__inner-circle"
-                            />
-                          </div>
+                            class="mdc-radio__inner-circle"
+                          />
                         </div>
-                        <div
-                          class="mdc-radio__content"
+                      </div>
+                      <div
+                        class="mdc-radio__content"
+                      >
+                        <label
+                          for="purpose-share_portfolio"
                         >
-                          <label
-                            for="purpose-share_portfolio"
-                          >
-                            Portfolio or business card
-                          </label>
-                          <div
-                            class="mdc-radio__description"
-                          >
-                            My website represents me or my company
-                          </div>
+                          Portfolio or business card
+                        </label>
+                        <div
+                          class="mdc-radio__description"
+                        >
+                          My website represents me or my company
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div
-                  class="googlesitekit-user-input__footer"
+              </div>
+              <div
+                class="googlesitekit-user-input__footer"
+              >
+                <button
+                  class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                  disabled=""
+                  target="_self"
                 >
-                  <button
-                    class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
-                    disabled=""
-                    target="_self"
+                  <span
+                    class="mdc-button__label"
                   >
-                    <span
-                      class="mdc-button__label"
-                    >
-                      Complete setup
-                    </span>
-                  </button>
-                </div>
+                    Complete setup
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -1759,7 +1754,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout googlesitekit-layout--rounded"
+          class="googlesitekit-layout"
         >
           <div
             class="mdc-layout-grid"
@@ -2259,7 +2254,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
         class="mdc-layout-grid"
       >
         <div
-          class="googlesitekit-layout googlesitekit-layout--rounded"
+          class="googlesitekit-layout"
         >
           <div
             class="mdc-layout-grid"
