@@ -25,7 +25,7 @@ exports[`Ads EnhancedConversionsNotification should render the notice 1`] = `
         <p
           class="googlesitekit-notice__description"
         >
-          Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. 
+          Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. If you’ve already done this, no further action is required. 
           <a
             aria-label="Learn more (opens in a new tab)"
             class="googlesitekit-cta-link"

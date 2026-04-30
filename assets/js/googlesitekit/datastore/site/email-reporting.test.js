@@ -614,6 +614,68 @@ describe( 'core/site Email Reporting', () => {
 				} );
 			} );
 
+			it( 'exposes roleDisplayName on the user role field when the API provides it', () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
+					createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							roleDisplayName: 'Editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					{ page: 1, search: '' }
+				);
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} )
+				).toEqual( {
+					users: [
+						{
+							id: 2,
+							name: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'Editor',
+							subscribed: false,
+							invited: false,
+						},
+					],
+					total: 1,
+					totalPages: 1,
+				} );
+			} );
+
+			it( 'falls back to the role slug when roleDisplayName is missing', () => {
+				provideUserInfo( registry, { id: 1 } );
+
+				registry.dispatch( CORE_SITE ).receiveGetEligibleSubscribers(
+					createEligibleSubscribersResponse( [
+						{
+							id: 2,
+							displayName: 'Eligible User',
+							email: 'eligible@example.com',
+							role: 'editor',
+							subscribed: false,
+							invited: false,
+						},
+					] ),
+					{ page: 1, search: '' }
+				);
+
+				expect(
+					registry.select( CORE_SITE ).getEligibleSubscribers( {
+						search: '',
+					} ).users[ 0 ].role
+				).toBe( 'editor' );
+			} );
+
 			it( 'resolver fetches with correct params on cache miss', async () => {
 				provideUserInfo( registry, { id: 1 } );
 

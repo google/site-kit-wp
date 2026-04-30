@@ -440,12 +440,13 @@ class REST_Email_Reporting_Controller {
 		$settings = get_user_meta( $user->ID, $meta_key, true );
 
 		return array(
-			'id'          => (int) $user->ID,
-			'displayName' => $user->display_name,
-			'email'       => $user->user_email,
-			'role'        => $this->get_primary_role( $user ),
-			'subscribed'  => is_array( $settings ) && ! empty( $settings['subscribed'] ),
-			'invited'     => $this->is_invite_rate_limited( $user->ID ),
+			'id'              => (int) $user->ID,
+			'displayName'     => $user->display_name,
+			'email'           => $user->user_email,
+			'role'            => $this->get_primary_role( $user ),
+			'roleDisplayName' => $this->get_primary_role_display_name( $user ),
+			'subscribed'      => is_array( $settings ) && ! empty( $settings['subscribed'] ),
+			'invited'         => $this->is_invite_rate_limited( $user->ID ),
 		);
 	}
 
@@ -465,6 +466,22 @@ class REST_Email_Reporting_Controller {
 		$roles = array_values( $user->roles );
 
 		return (string) reset( $roles );
+	}
+
+	/**
+	 * Gets the primary role display name of the user.
+	 *
+	 * @since 1.178.0
+	 *
+	 * @param WP_User $user User object.
+	 * @return string
+	 */
+	private function get_primary_role_display_name( WP_User $user ) {
+		$role_slug = $this->get_primary_role( $user );
+
+		$role_name = wp_roles()->get_names()[ $role_slug ] ?? $role_slug;
+
+		return translate_user_role( $role_name );
 	}
 
 	/**

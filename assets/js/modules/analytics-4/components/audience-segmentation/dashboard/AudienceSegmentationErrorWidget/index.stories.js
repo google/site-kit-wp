@@ -68,7 +68,7 @@ export const Default = Template.bind( {} );
 Default.storyName = 'Default';
 Default.args = {
 	setupRegistry: async ( registry ) => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -121,7 +121,7 @@ InsufficientPermissions.args = {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setWebDataStreamID( webDataStreamID );
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',

@@ -65,13 +65,13 @@ export default function SyncErrorNotice() {
 		select( CORE_UI ).getValue( AUDIENCE_SELECTION_PANEL_OPENED_KEY )
 	);
 
-	const { clearError, syncAvailableAudiences } =
+	const { clearActionError, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
 	const retrySyncAvailableAudiences = useCallback( async () => {
-		await clearError( 'syncAvailableAudiences' );
+		await clearActionError( 'syncAvailableAudiences' );
 		syncAvailableAudiences();
-	}, [ clearError, syncAvailableAudiences ] );
+	}, [ clearActionError, syncAvailableAudiences ] );
 
 	const errors = [];
 

@@ -75,6 +75,47 @@ const VARIANT_TRACKING_LABELS = {
 	[ MODAL_VARIANT.DATA_GATHERING_COMPLETE ]: 'data_available',
 };
 
+/**
+ * Determines whether the given modal variant should be rendered based on the
+ * data gathering complete modal active state.
+ *
+ * @since 1.178.0
+ *
+ * @param {Object}        options                                    The options.
+ * @param {MODAL_VARIANT} options.modalVariant                       The computed modal variant.
+ * @param {boolean}       options.isDataGatheringCompleteModalActive Whether the data gathering complete modal is active.
+ * @return {boolean} Whether the modal variant should be rendered.
+ */
+function shouldRenderModalVariant( {
+	modalVariant,
+	isDataGatheringCompleteModalActive,
+}: {
+	modalVariant: MODAL_VARIANT;
+	isDataGatheringCompleteModalActive: boolean;
+} ): boolean {
+	// The GATHERING_DATA variant should not render while the data gathering
+	// complete modal state is active — the DATA_GATHERING_COMPLETE variant
+	// will be shown instead.
+	if (
+		isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+	) {
+		return false;
+	}
+
+	// The DATA_GATHERING_COMPLETE variant must not render when the data
+	// gathering complete modal state is not active, e.g. when the user
+	// re-submits Key Metrics after already dismissing the modal.
+	if (
+		! isDataGatheringCompleteModalActive &&
+		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
+	) {
+		return false;
+	}
+
+	return true;
+}
+
 export default function WelcomeModal() {
 	const viewContext = useViewContext();
 
@@ -240,8 +281,10 @@ export default function WelcomeModal() {
 	);
 
 	if (
-		isDataGatheringCompleteModalActive &&
-		modalVariant === MODAL_VARIANT.GATHERING_DATA
+		! shouldRenderModalVariant( {
+			modalVariant,
+			isDataGatheringCompleteModalActive,
+		} )
 	) {
 		return null;
 	}

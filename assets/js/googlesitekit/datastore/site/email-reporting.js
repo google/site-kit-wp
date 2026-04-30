@@ -112,6 +112,7 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 			'enabled should be a boolean.'
 		);
 	},
+	isAction: true,
 } );
 
 const fetchGetEligibleSubscribersStore = createFetchStore( {
@@ -195,6 +196,7 @@ const fetchInviteUserStore = createFetchStore( {
 			'userID should be a positive integer.'
 		);
 	},
+	isAction: true,
 } );
 
 // Actions
@@ -524,7 +526,7 @@ const baseSelectors = {
 							id: user.id,
 							name: user.displayName || user.name,
 							email: user.email,
-							role: user.role,
+							role: user.roleDisplayName || user.role,
 							subscribed: user.subscribed,
 							invited: user.invited,
 						} ) ),

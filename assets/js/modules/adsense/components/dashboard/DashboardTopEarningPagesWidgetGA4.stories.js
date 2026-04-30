@@ -212,7 +212,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ reportOptions ] );
+			.setErrorForSelector( error, 'getReport', [ reportOptions ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ reportOptions ] );

@@ -68,6 +68,7 @@ const fetchSaveConversionTrackingSettingsStore = createFetchStore( {
 			'settings must be a plain object.'
 		);
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

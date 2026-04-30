@@ -119,8 +119,11 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
-	const { saveUserInputSettings, saveInitialSetupSettings, clearError } =
-		useDispatch( CORE_USER );
+	const {
+		saveUserInputSettings,
+		saveInitialSetupSettings,
+		clearActionError,
+	} = useDispatch( CORE_USER );
 
 	// Trigger resolution of data availability state before the user proceeds to the dashboard.
 	useSelect( ( select ) => {
@@ -204,7 +207,7 @@ export default function KeyMetricsSetupApp() {
 	] );
 
 	const submitChanges = useCallback( async () => {
-		clearError( 'saveInitialSetupSettings', [
+		clearActionError( 'saveInitialSetupSettings', [
 			{
 				isAnalyticsSetupComplete: true,
 			},
@@ -215,7 +218,7 @@ export default function KeyMetricsSetupApp() {
 		if ( ! response.error ) {
 			await saveInitialSetup();
 		}
-	}, [ saveUserInputSettings, saveInitialSetup, clearError ] );
+	}, [ saveUserInputSettings, saveInitialSetup, clearActionError ] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
