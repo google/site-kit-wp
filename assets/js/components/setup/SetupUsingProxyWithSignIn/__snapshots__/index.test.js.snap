@@ -1356,212 +1356,200 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup googlesitekit-initial-setup"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+    <div
+      class="googlesitekit-layout"
+    >
+      <section
+        class="googlesitekit-splash"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid"
         >
           <div
-            class="googlesitekit-progress-indicator"
-            style="grid-template-columns: 46px repeat(1, 1fr);"
+            class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-progress-indicator__segment"
-            />
-          </div>
-          <div
-            class="googlesitekit-layout"
-          >
-            <section
-              class="googlesitekit-splash"
+              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
+              <svg />
               <div
-                class="mdc-layout-grid"
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
+              </div>
+            </div>
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <h1
+                class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Let’s get started!
+              </h1>
+              <div
+                class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
-                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                  class="mdc-form-field"
                 >
                   <div
-                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox"
                   >
-                    <svg />
+                    <input
+                      class="mdc-checkbox__native-control"
+                      id="googlesitekit-analytics-setup-opt-in"
+                      name="googlesitekit-analytics-setup-opt-in"
+                      type="checkbox"
+                      value="1"
+                    />
                     <div
-                      class="googlesitekit-setup__splash-graphic-screenshot"
+                      class="mdc-checkbox__background"
                     >
-                      <svg />
+                      <svg
+                        class="mdc-checkbox__checkmark"
+                        viewBox="0 0 12 9"
+                      >
+                        <path
+                          class="mdc-checkbox__checkmark-path"
+                          d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                          fill="none"
+                          stroke="none"
+                        />
+                      </svg>
+                      <div
+                        class="mdc-checkbox__mixedmark"
+                      />
                     </div>
                   </div>
                   <div
-                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox__content"
                   >
-                    <h1
-                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+                    <label
+                      for="googlesitekit-analytics-setup-opt-in"
                     >
-                      Let’s get started!
-                    </h1>
+                      Get visitor insights by connecting Google Analytics as part of setup
+                    </label>
                     <div
-                      class="googlesitekit-setup__analytics-opt-in-wrapper"
+                      class="mdc-checkbox__description"
                     >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <input
-                            class="mdc-checkbox__native-control"
-                            id="googlesitekit-analytics-setup-opt-in"
-                            name="googlesitekit-analytics-setup-opt-in"
-                            type="checkbox"
-                            value="1"
-                          />
-                          <div
-                            class="mdc-checkbox__background"
-                          >
-                            <svg
-                              class="mdc-checkbox__checkmark"
-                              viewBox="0 0 12 9"
-                            >
-                              <path
-                                class="mdc-checkbox__checkmark-path"
-                                d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
-                                fill="none"
-                                stroke="none"
-                              />
-                            </svg>
-                            <div
-                              class="mdc-checkbox__mixedmark"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="mdc-checkbox__content"
-                        >
-                          <label
-                            for="googlesitekit-analytics-setup-opt-in"
-                          >
-                            Get visitor insights by connecting Google Analytics as part of setup
-                          </label>
-                          <div
-                            class="mdc-checkbox__description"
-                          >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
-                            <a
-                              aria-label="Learn more (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Learn more
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                             
-                            <span
-                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                            >
-                              Recommended
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-opt-in"
-                    >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <span
-                            class="spinner"
-                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
-                          />
-                        </div>
-                        <label
-                          for="googlesitekit-opt-in"
-                        >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Google Privacy Policy
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                          </span>
-                        </label>
-                        
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-start-setup-wrap"
-                    >
+                      To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
-                        href="https://sitekit.withgoogle.com/site-management/setup/"
-                        role="button"
-                        target="_self"
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
-                          class="mdc-button__label"
+                          class="googlesitekit-cta-link__contents"
                         >
-                          Sign in with Google
+                          Learn more
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
                         </span>
                       </a>
-                    </div>
-                    <div
-                      class="googlesitekit-setup__step-hint"
-                    >
-                      <p>
-                        Why is this required?
-                      </p>
+                       
                       <span
-                        class="googlesitekit-info-tooltip"
-                        role="tooltip"
-                        tabindex="0"
+                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
                       >
-                        <svg />
+                        Recommended
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
+              <div
+                class="googlesitekit-opt-in"
+              >
+                <div
+                  class="mdc-form-field"
+                >
+                  <div
+                    class="mdc-checkbox"
+                  >
+                    <span
+                      class="spinner"
+                      style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                    />
+                  </div>
+                  <label
+                    for="googlesitekit-opt-in"
+                  >
+                    <span>
+                      Help us improve Site Kit by sharing anonymous usage data.
+                    </span>
+                     
+                    <span>
+                      All collected data is treated in accordance with the 
+                      <a
+                        aria-label="Google Privacy Policy (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://policies.google.com/privacy"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Google Privacy Policy
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
+                        </span>
+                      </a>
+                    </span>
+                  </label>
+                  
+                </div>
+              </div>
+              <div
+                class="googlesitekit-start-setup-wrap"
+              >
+                <a
+                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  href="https://sitekit.withgoogle.com/site-management/setup/"
+                  role="button"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Sign in with Google
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-setup__step-hint"
+              >
+                <p>
+                  Why is this required?
+                </p>
+                <span
+                  class="googlesitekit-info-tooltip"
+                  role="tooltip"
+                  tabindex="0"
+                >
+                  <svg />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>
@@ -1733,136 +1721,124 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup googlesitekit-initial-setup"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+    <div
+      class="googlesitekit-layout"
+    >
+      <section
+        class="googlesitekit-splash"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid"
         >
           <div
-            class="googlesitekit-progress-indicator"
-            style="grid-template-columns: 46px repeat(1, 1fr);"
+            class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-progress-indicator__segment"
-            />
-          </div>
-          <div
-            class="googlesitekit-layout"
-          >
-            <section
-              class="googlesitekit-splash"
+              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
+              <svg />
               <div
-                class="mdc-layout-grid"
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
+              </div>
+            </div>
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <h1
+                class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Let’s get started!
+              </h1>
+              <div
+                class="googlesitekit-opt-in"
               >
                 <div
-                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                  class="mdc-form-field"
                 >
                   <div
-                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox"
                   >
-                    <svg />
-                    <div
-                      class="googlesitekit-setup__splash-graphic-screenshot"
-                    >
-                      <svg />
-                    </div>
+                    <span
+                      class="spinner"
+                      style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                    />
                   </div>
-                  <div
-                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
+                  <label
+                    for="googlesitekit-opt-in"
                   >
-                    <h1
-                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
-                    >
-                      Let’s get started!
-                    </h1>
-                    <div
-                      class="googlesitekit-opt-in"
-                    >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <span
-                            class="spinner"
-                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
-                          />
-                        </div>
-                        <label
-                          for="googlesitekit-opt-in"
-                        >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Google Privacy Policy
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                          </span>
-                        </label>
-                        
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-start-setup-wrap"
-                    >
+                    <span>
+                      Help us improve Site Kit by sharing anonymous usage data.
+                    </span>
+                     
+                    <span>
+                      All collected data is treated in accordance with the 
                       <a
-                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
-                        href="https://sitekit.withgoogle.com/site-management/setup/"
-                        role="button"
-                        target="_self"
+                        aria-label="Google Privacy Policy (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://policies.google.com/privacy"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
-                          class="mdc-button__label"
+                          class="googlesitekit-cta-link__contents"
                         >
-                          Sign in with Google
+                          Google Privacy Policy
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
                         </span>
                       </a>
-                    </div>
-                    <div
-                      class="googlesitekit-setup__step-hint"
-                    >
-                      <p>
-                        Why is this required?
-                      </p>
-                      <span
-                        class="googlesitekit-info-tooltip"
-                        role="tooltip"
-                        tabindex="0"
-                      >
-                        <svg />
-                      </span>
-                    </div>
-                  </div>
+                    </span>
+                  </label>
+                  
                 </div>
               </div>
-            </section>
+              <div
+                class="googlesitekit-start-setup-wrap"
+              >
+                <a
+                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  href="https://sitekit.withgoogle.com/site-management/setup/"
+                  role="button"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Sign in with Google
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-setup__step-hint"
+              >
+                <p>
+                  Why is this required?
+                </p>
+                <span
+                  class="googlesitekit-info-tooltip"
+                  role="tooltip"
+                  tabindex="0"
+                >
+                  <svg />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>
@@ -2034,212 +2010,200 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup googlesitekit-initial-setup"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+    <div
+      class="googlesitekit-layout"
+    >
+      <section
+        class="googlesitekit-splash"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid"
         >
           <div
-            class="googlesitekit-progress-indicator"
-            style="grid-template-columns: 46px repeat(1, 1fr);"
+            class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-progress-indicator__segment"
-            />
-          </div>
-          <div
-            class="googlesitekit-layout"
-          >
-            <section
-              class="googlesitekit-splash"
+              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
+              <svg />
               <div
-                class="mdc-layout-grid"
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
+              </div>
+            </div>
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <h1
+                class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Let’s get started!
+              </h1>
+              <div
+                class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
-                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                  class="mdc-form-field"
                 >
                   <div
-                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox"
                   >
-                    <svg />
+                    <input
+                      class="mdc-checkbox__native-control"
+                      id="googlesitekit-analytics-setup-opt-in"
+                      name="googlesitekit-analytics-setup-opt-in"
+                      type="checkbox"
+                      value="1"
+                    />
                     <div
-                      class="googlesitekit-setup__splash-graphic-screenshot"
+                      class="mdc-checkbox__background"
                     >
-                      <svg />
+                      <svg
+                        class="mdc-checkbox__checkmark"
+                        viewBox="0 0 12 9"
+                      >
+                        <path
+                          class="mdc-checkbox__checkmark-path"
+                          d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                          fill="none"
+                          stroke="none"
+                        />
+                      </svg>
+                      <div
+                        class="mdc-checkbox__mixedmark"
+                      />
                     </div>
                   </div>
                   <div
-                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox__content"
                   >
-                    <h1
-                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+                    <label
+                      for="googlesitekit-analytics-setup-opt-in"
                     >
-                      Let’s get started!
-                    </h1>
+                      Get visitor insights by connecting Google Analytics as part of setup
+                    </label>
                     <div
-                      class="googlesitekit-setup__analytics-opt-in-wrapper"
+                      class="mdc-checkbox__description"
                     >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <input
-                            class="mdc-checkbox__native-control"
-                            id="googlesitekit-analytics-setup-opt-in"
-                            name="googlesitekit-analytics-setup-opt-in"
-                            type="checkbox"
-                            value="1"
-                          />
-                          <div
-                            class="mdc-checkbox__background"
-                          >
-                            <svg
-                              class="mdc-checkbox__checkmark"
-                              viewBox="0 0 12 9"
-                            >
-                              <path
-                                class="mdc-checkbox__checkmark-path"
-                                d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
-                                fill="none"
-                                stroke="none"
-                              />
-                            </svg>
-                            <div
-                              class="mdc-checkbox__mixedmark"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="mdc-checkbox__content"
-                        >
-                          <label
-                            for="googlesitekit-analytics-setup-opt-in"
-                          >
-                            Get visitor insights by connecting Google Analytics as part of setup
-                          </label>
-                          <div
-                            class="mdc-checkbox__description"
-                          >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
-                            <a
-                              aria-label="Learn more (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Learn more
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                             
-                            <span
-                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                            >
-                              Recommended
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-opt-in"
-                    >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <span
-                            class="spinner"
-                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
-                          />
-                        </div>
-                        <label
-                          for="googlesitekit-opt-in"
-                        >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Google Privacy Policy
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                          </span>
-                        </label>
-                        
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-start-setup-wrap"
-                    >
+                      To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
-                        href="https://sitekit.withgoogle.com/site-management/setup/"
-                        role="button"
-                        target="_self"
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
-                          class="mdc-button__label"
+                          class="googlesitekit-cta-link__contents"
                         >
-                          Sign in with Google
+                          Learn more
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
                         </span>
                       </a>
-                    </div>
-                    <div
-                      class="googlesitekit-setup__step-hint"
-                    >
-                      <p>
-                        Why is this required?
-                      </p>
+                       
                       <span
-                        class="googlesitekit-info-tooltip"
-                        role="tooltip"
-                        tabindex="0"
+                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
                       >
-                        <svg />
+                        Recommended
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
+              <div
+                class="googlesitekit-opt-in"
+              >
+                <div
+                  class="mdc-form-field"
+                >
+                  <div
+                    class="mdc-checkbox"
+                  >
+                    <span
+                      class="spinner"
+                      style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                    />
+                  </div>
+                  <label
+                    for="googlesitekit-opt-in"
+                  >
+                    <span>
+                      Help us improve Site Kit by sharing anonymous usage data.
+                    </span>
+                     
+                    <span>
+                      All collected data is treated in accordance with the 
+                      <a
+                        aria-label="Google Privacy Policy (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://policies.google.com/privacy"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Google Privacy Policy
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
+                        </span>
+                      </a>
+                    </span>
+                  </label>
+                  
+                </div>
+              </div>
+              <div
+                class="googlesitekit-start-setup-wrap"
+              >
+                <a
+                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  href="https://sitekit.withgoogle.com/site-management/setup/"
+                  role="button"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Sign in with Google
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-setup__step-hint"
+              >
+                <p>
+                  Why is this required?
+                </p>
+                <span
+                  class="googlesitekit-info-tooltip"
+                  role="tooltip"
+                  tabindex="0"
+                >
+                  <svg />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>
@@ -2411,212 +2375,200 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup googlesitekit-initial-setup"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+    <div
+      class="googlesitekit-layout"
+    >
+      <section
+        class="googlesitekit-splash"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid"
         >
           <div
-            class="googlesitekit-progress-indicator"
-            style="grid-template-columns: 46px repeat(1, 1fr);"
+            class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-progress-indicator__segment"
-            />
-          </div>
-          <div
-            class="googlesitekit-layout"
-          >
-            <section
-              class="googlesitekit-splash"
+              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
+              <svg />
               <div
-                class="mdc-layout-grid"
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
+              </div>
+            </div>
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <h1
+                class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Let’s get started!
+              </h1>
+              <div
+                class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
-                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                  class="mdc-form-field"
                 >
                   <div
-                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox"
                   >
-                    <svg />
+                    <input
+                      class="mdc-checkbox__native-control"
+                      id="googlesitekit-analytics-setup-opt-in"
+                      name="googlesitekit-analytics-setup-opt-in"
+                      type="checkbox"
+                      value="1"
+                    />
                     <div
-                      class="googlesitekit-setup__splash-graphic-screenshot"
+                      class="mdc-checkbox__background"
                     >
-                      <svg />
+                      <svg
+                        class="mdc-checkbox__checkmark"
+                        viewBox="0 0 12 9"
+                      >
+                        <path
+                          class="mdc-checkbox__checkmark-path"
+                          d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                          fill="none"
+                          stroke="none"
+                        />
+                      </svg>
+                      <div
+                        class="mdc-checkbox__mixedmark"
+                      />
                     </div>
                   </div>
                   <div
-                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox__content"
                   >
-                    <h1
-                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+                    <label
+                      for="googlesitekit-analytics-setup-opt-in"
                     >
-                      Let’s get started!
-                    </h1>
+                      Get visitor insights by connecting Google Analytics as part of setup
+                    </label>
                     <div
-                      class="googlesitekit-setup__analytics-opt-in-wrapper"
+                      class="mdc-checkbox__description"
                     >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <input
-                            class="mdc-checkbox__native-control"
-                            id="googlesitekit-analytics-setup-opt-in"
-                            name="googlesitekit-analytics-setup-opt-in"
-                            type="checkbox"
-                            value="1"
-                          />
-                          <div
-                            class="mdc-checkbox__background"
-                          >
-                            <svg
-                              class="mdc-checkbox__checkmark"
-                              viewBox="0 0 12 9"
-                            >
-                              <path
-                                class="mdc-checkbox__checkmark-path"
-                                d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
-                                fill="none"
-                                stroke="none"
-                              />
-                            </svg>
-                            <div
-                              class="mdc-checkbox__mixedmark"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="mdc-checkbox__content"
-                        >
-                          <label
-                            for="googlesitekit-analytics-setup-opt-in"
-                          >
-                            Get visitor insights by connecting Google Analytics as part of setup
-                          </label>
-                          <div
-                            class="mdc-checkbox__description"
-                          >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
-                            <a
-                              aria-label="Learn more (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Learn more
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                             
-                            <span
-                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                            >
-                              Recommended
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-opt-in"
-                    >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <span
-                            class="spinner"
-                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
-                          />
-                        </div>
-                        <label
-                          for="googlesitekit-opt-in"
-                        >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Google Privacy Policy
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                          </span>
-                        </label>
-                        
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-start-setup-wrap"
-                    >
+                      To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
-                        href="https://sitekit.withgoogle.com/site-management/setup/"
-                        role="button"
-                        target="_self"
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
-                          class="mdc-button__label"
+                          class="googlesitekit-cta-link__contents"
                         >
-                          Sign in with Google
+                          Learn more
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
                         </span>
                       </a>
-                    </div>
-                    <div
-                      class="googlesitekit-setup__step-hint"
-                    >
-                      <p>
-                        Why is this required?
-                      </p>
+                       
                       <span
-                        class="googlesitekit-info-tooltip"
-                        role="tooltip"
-                        tabindex="0"
+                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
                       >
-                        <svg />
+                        Recommended
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
+              <div
+                class="googlesitekit-opt-in"
+              >
+                <div
+                  class="mdc-form-field"
+                >
+                  <div
+                    class="mdc-checkbox"
+                  >
+                    <span
+                      class="spinner"
+                      style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                    />
+                  </div>
+                  <label
+                    for="googlesitekit-opt-in"
+                  >
+                    <span>
+                      Help us improve Site Kit by sharing anonymous usage data.
+                    </span>
+                     
+                    <span>
+                      All collected data is treated in accordance with the 
+                      <a
+                        aria-label="Google Privacy Policy (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://policies.google.com/privacy"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Google Privacy Policy
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
+                        </span>
+                      </a>
+                    </span>
+                  </label>
+                  
+                </div>
+              </div>
+              <div
+                class="googlesitekit-start-setup-wrap"
+              >
+                <a
+                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  href="https://sitekit.withgoogle.com/site-management/setup/"
+                  role="button"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Sign in with Google
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-setup__step-hint"
+              >
+                <p>
+                  Why is this required?
+                </p>
+                <span
+                  class="googlesitekit-info-tooltip"
+                  role="tooltip"
+                  tabindex="0"
+                >
+                  <svg />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>
@@ -2788,212 +2740,200 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
     class="googlesitekit-setup googlesitekit-initial-setup"
   >
     <div
-      class="mdc-layout-grid"
+      class="googlesitekit-progress-indicator"
+      style="grid-template-columns: 46px repeat(1, 1fr);"
     >
       <div
-        class="mdc-layout-grid__inner"
+        class="googlesitekit-progress-indicator__segment"
+      />
+    </div>
+    <div
+      class="googlesitekit-layout"
+    >
+      <section
+        class="googlesitekit-splash"
       >
         <div
-          class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
+          class="mdc-layout-grid"
         >
           <div
-            class="googlesitekit-progress-indicator"
-            style="grid-template-columns: 46px repeat(1, 1fr);"
+            class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-progress-indicator__segment"
-            />
-          </div>
-          <div
-            class="googlesitekit-layout"
-          >
-            <section
-              class="googlesitekit-splash"
+              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
+              <svg />
               <div
-                class="mdc-layout-grid"
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
+              </div>
+            </div>
+            <div
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <h1
+                class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+              >
+                Let’s get started!
+              </h1>
+              <div
+                class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
-                  class="mdc-layout-grid__inner googlesitekit-setup__content"
+                  class="mdc-form-field"
                 >
                   <div
-                    class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox"
                   >
-                    <svg />
+                    <input
+                      class="mdc-checkbox__native-control"
+                      id="googlesitekit-analytics-setup-opt-in"
+                      name="googlesitekit-analytics-setup-opt-in"
+                      type="checkbox"
+                      value="1"
+                    />
                     <div
-                      class="googlesitekit-setup__splash-graphic-screenshot"
+                      class="mdc-checkbox__background"
                     >
-                      <svg />
+                      <svg
+                        class="mdc-checkbox__checkmark"
+                        viewBox="0 0 12 9"
+                      >
+                        <path
+                          class="mdc-checkbox__checkmark-path"
+                          d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                          fill="none"
+                          stroke="none"
+                        />
+                      </svg>
+                      <div
+                        class="mdc-checkbox__mixedmark"
+                      />
                     </div>
                   </div>
                   <div
-                    class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+                    class="mdc-checkbox__content"
                   >
-                    <h1
-                      class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
+                    <label
+                      for="googlesitekit-analytics-setup-opt-in"
                     >
-                      Let’s get started!
-                    </h1>
+                      Get visitor insights by connecting Google Analytics as part of setup
+                    </label>
                     <div
-                      class="googlesitekit-setup__analytics-opt-in-wrapper"
+                      class="mdc-checkbox__description"
                     >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <input
-                            class="mdc-checkbox__native-control"
-                            id="googlesitekit-analytics-setup-opt-in"
-                            name="googlesitekit-analytics-setup-opt-in"
-                            type="checkbox"
-                            value="1"
-                          />
-                          <div
-                            class="mdc-checkbox__background"
-                          >
-                            <svg
-                              class="mdc-checkbox__checkmark"
-                              viewBox="0 0 12 9"
-                            >
-                              <path
-                                class="mdc-checkbox__checkmark-path"
-                                d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
-                                fill="none"
-                                stroke="none"
-                              />
-                            </svg>
-                            <div
-                              class="mdc-checkbox__mixedmark"
-                            />
-                          </div>
-                        </div>
-                        <div
-                          class="mdc-checkbox__content"
-                        >
-                          <label
-                            for="googlesitekit-analytics-setup-opt-in"
-                          >
-                            Get visitor insights by connecting Google Analytics as part of setup
-                          </label>
-                          <div
-                            class="mdc-checkbox__description"
-                          >
-                            To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
-                            <a
-                              aria-label="Learn more (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Learn more
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                             
-                            <span
-                              class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                            >
-                              Recommended
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-opt-in"
-                    >
-                      <div
-                        class="mdc-form-field"
-                      >
-                        <div
-                          class="mdc-checkbox"
-                        >
-                          <span
-                            class="spinner"
-                            style="display: inline-block; float: none; visibility: visible; margin: 0px;"
-                          />
-                        </div>
-                        <label
-                          for="googlesitekit-opt-in"
-                        >
-                          <span>
-                            Help us improve Site Kit by sharing anonymous usage data.
-                          </span>
-                           
-                          <span>
-                            All collected data is treated in accordance with the 
-                            <a
-                              aria-label="Google Privacy Policy (opens in a new tab)"
-                              class="googlesitekit-cta-link"
-                              href="https://policies.google.com/privacy"
-                              rel="noopener noreferrer"
-                              target="_blank"
-                            >
-                              <span
-                                class="googlesitekit-cta-link__contents"
-                              >
-                                Google Privacy Policy
-                              </span>
-                              <span
-                                class="googlesitekit-icon-wrapper"
-                                style="margin-left: 5px;"
-                              >
-                                <svg />
-                              </span>
-                            </a>
-                          </span>
-                        </label>
-                        
-                      </div>
-                    </div>
-                    <div
-                      class="googlesitekit-start-setup-wrap"
-                    >
+                      To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        class="mdc-button googlesitekit-start-setup mdc-button--raised"
-                        href="https://sitekit.withgoogle.com/site-management/setup/"
-                        role="button"
-                        target="_self"
+                        aria-label="Learn more (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
-                          class="mdc-button__label"
+                          class="googlesitekit-cta-link__contents"
                         >
-                          Sign in with Google
+                          Learn more
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
                         </span>
                       </a>
-                    </div>
-                    <div
-                      class="googlesitekit-setup__step-hint"
-                    >
-                      <p>
-                        Why is this required?
-                      </p>
+                       
                       <span
-                        class="googlesitekit-info-tooltip"
-                        role="tooltip"
-                        tabindex="0"
+                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
                       >
-                        <svg />
+                        Recommended
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
-            </section>
+              <div
+                class="googlesitekit-opt-in"
+              >
+                <div
+                  class="mdc-form-field"
+                >
+                  <div
+                    class="mdc-checkbox"
+                  >
+                    <span
+                      class="spinner"
+                      style="display: inline-block; float: none; visibility: visible; margin: 0px;"
+                    />
+                  </div>
+                  <label
+                    for="googlesitekit-opt-in"
+                  >
+                    <span>
+                      Help us improve Site Kit by sharing anonymous usage data.
+                    </span>
+                     
+                    <span>
+                      All collected data is treated in accordance with the 
+                      <a
+                        aria-label="Google Privacy Policy (opens in a new tab)"
+                        class="googlesitekit-cta-link"
+                        href="https://policies.google.com/privacy"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <span
+                          class="googlesitekit-cta-link__contents"
+                        >
+                          Google Privacy Policy
+                        </span>
+                        <span
+                          class="googlesitekit-icon-wrapper"
+                          style="margin-left: 5px;"
+                        >
+                          <svg />
+                        </span>
+                      </a>
+                    </span>
+                  </label>
+                  
+                </div>
+              </div>
+              <div
+                class="googlesitekit-start-setup-wrap"
+              >
+                <a
+                  class="mdc-button googlesitekit-start-setup mdc-button--raised"
+                  href="https://sitekit.withgoogle.com/site-management/setup/"
+                  role="button"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Sign in with Google
+                  </span>
+                </a>
+              </div>
+              <div
+                class="googlesitekit-setup__step-hint"
+              >
+                <p>
+                  Why is this required?
+                </p>
+                <span
+                  class="googlesitekit-info-tooltip"
+                  role="tooltip"
+                  tabindex="0"
+                >
+                  <svg />
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>

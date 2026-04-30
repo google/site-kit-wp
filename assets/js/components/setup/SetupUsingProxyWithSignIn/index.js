@@ -180,6 +180,40 @@ export default function SetupUsingProxyWithSignIn() {
 		]
 	);
 
+	const splashSetupContent = (
+		<Fragment>
+			{ setupFlowRefreshEnabled && <ProgressIndicator /> }
+			{ getQueryArg( location.href, 'notification' ) ===
+				'reset_success' && (
+				<Fragment>
+					<Notice
+						id="reset_success"
+						title={ __(
+							'Site Kit by Google was successfully reset.',
+							'google-site-kit'
+						) }
+						type={ TYPES.SUCCESS }
+					/>
+					<br />
+				</Fragment>
+			) }
+			<Layout>
+				<Splash>
+					{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
+						<Actions
+							proxySetupURL={ proxySetupURL }
+							onButtonClick={ onButtonClick }
+							forwardableParams={ forwardableParams }
+							complete={ complete }
+							inProgressFeedback={ inProgressFeedback }
+							ctaFeedback={ ctaFeedback }
+						/>
+					) }
+				</Splash>
+			</Layout>
+		</Fragment>
+	);
+
 	return (
 		<Fragment>
 			<Header />
@@ -188,49 +222,15 @@ export default function SetupUsingProxyWithSignIn() {
 					'googlesitekit-initial-setup': setupFlowRefreshEnabled,
 				} ) }
 			>
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							{ setupFlowRefreshEnabled && <ProgressIndicator /> }
-							{ getQueryArg( location.href, 'notification' ) ===
-								'reset_success' && (
-								<Fragment>
-									<Notice
-										id="reset_success"
-										title={ __(
-											'Site Kit by Google was successfully reset.',
-											'google-site-kit'
-										) }
-										type={ TYPES.SUCCESS }
-									/>
-									<br />
-								</Fragment>
-							) }
-							<Layout>
-								<Splash>
-									{ ( {
-										complete,
-										inProgressFeedback,
-										ctaFeedback,
-									} ) => (
-										<Actions
-											proxySetupURL={ proxySetupURL }
-											onButtonClick={ onButtonClick }
-											forwardableParams={
-												forwardableParams
-											}
-											complete={ complete }
-											inProgressFeedback={
-												inProgressFeedback
-											}
-											ctaFeedback={ ctaFeedback }
-										/>
-									) }
-								</Splash>
-							</Layout>
-						</Cell>
-					</Row>
-				</Grid>
+				{ setupFlowRefreshEnabled ? (
+					splashSetupContent
+				) : (
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>{ splashSetupContent }</Cell>
+						</Row>
+					</Grid>
+				) }
 			</div>
 		</Fragment>
 	);
