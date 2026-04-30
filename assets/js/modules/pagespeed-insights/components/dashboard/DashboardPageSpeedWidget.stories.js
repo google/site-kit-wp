@@ -259,7 +259,7 @@ Error.args = {
 			message:
 				'Fetching PageSpeed Insights report with strategy desktop failed.',
 		};
-		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveError(
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).setErrorForSelector(
 			mobileError,
 			'getReport',
 			[ url, STRATEGY_MOBILE ]
@@ -268,7 +268,7 @@ Error.args = {
 			url,
 			STRATEGY_MOBILE,
 		] );
-		dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveError(
+		dispatch( MODULES_PAGESPEED_INSIGHTS ).setErrorForSelector(
 			desktopError,
 			'getReport',
 			[ url, STRATEGY_DESKTOP ]

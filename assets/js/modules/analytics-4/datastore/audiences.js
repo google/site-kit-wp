@@ -114,6 +114,7 @@ const fetchCreateAudienceStore = createFetchStore( {
 	validateParams: ( { audience } ) => {
 		validateAudience( audience );
 	},
+	isAction: true,
 } );
 
 /**

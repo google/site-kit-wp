@@ -137,6 +137,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 	validateParams( { accountID } = {} ) {
 		invariant( accountID, 'accountID is required.' );
 	},
+	isAction: true,
 } );
 
 const fetchGetGoogleTagSettingsStore = createFetchStore( {
@@ -191,6 +192,7 @@ const fetchSetGoogleTagIDMismatch = createFetchStore( {
 			'hasMismatchedTag must be boolean.'
 		);
 	},
+	isAction: true,
 } );
 
 const fetchSetIsWebDataStreamUnavailable = createFetchStore( {
@@ -218,6 +220,7 @@ const fetchSetIsWebDataStreamUnavailable = createFetchStore( {
 			'isWebDataStreamUnavailable must be boolean.'
 		);
 	},
+	isAction: true,
 } );
 
 // Actions

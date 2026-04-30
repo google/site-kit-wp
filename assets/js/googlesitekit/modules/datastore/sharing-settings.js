@@ -85,6 +85,7 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 	validateParams: ( { savedSharingSettings } = {} ) => {
 		invariant( savedSharingSettings, 'savedSharingSettings is required.' );
 	},
+	isAction: true,
 } );
 
 const fetchResetSharingSettingsStore = createFetchStore( {
@@ -102,6 +103,7 @@ const fetchResetSharingSettingsStore = createFetchStore( {
 		state.savedSharingSettings = {};
 		state.sharingSettings = {};
 	} ),
+	isAction: true,
 } );
 
 const baseActions = {

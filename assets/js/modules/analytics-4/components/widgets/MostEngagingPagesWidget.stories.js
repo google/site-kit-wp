@@ -316,7 +316,7 @@ Error.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ pageViewsReportOptions ]
@@ -341,7 +341,7 @@ InsufficientPermissions.args = {
 			},
 		};
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
 			[ pageViewsReportOptions ]

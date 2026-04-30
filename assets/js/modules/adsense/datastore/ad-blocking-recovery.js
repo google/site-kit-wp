@@ -55,6 +55,7 @@ const fetchSyncAdBlockingRecoveryTagsStore = createFetchStore( {
 			'sync-ad-blocking-recovery-tags'
 		);
 	},
+	isAction: true,
 } );
 
 const initialState = {

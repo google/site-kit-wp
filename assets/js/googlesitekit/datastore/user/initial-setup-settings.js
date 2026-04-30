@@ -77,6 +77,7 @@ const fetchSaveInitialSetupSettingsStore = createFetchStore( {
 			);
 		}
 	},
+	isAction: true,
 } );
 
 const baseActions = {
