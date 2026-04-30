@@ -79,7 +79,8 @@ const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 		const hasDismissAction = hasDismissButtonAction( dismissButton );
 		const hasCTAAction =
 			!! ctaButton?.label && ( ctaButton?.onClick || ctaButton?.href );
-		const hasActionContent = hasDismissAction || hasCTAAction || children;
+		const hasActionContent =
+			!! actionContent || hasDismissAction || hasCTAAction;
 
 		return (
 			<div className="googlesitekit-notice-container" ref={ ref }>
