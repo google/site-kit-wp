@@ -68,6 +68,7 @@ import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -376,7 +377,7 @@ export default function KeyMetricsSetupApp() {
 														'Something went wrong, please try again',
 														'google-site-kit'
 													) }
-													type={ Notice.TYPES.ERROR }
+													type={ NOTICE_TYPES.ERROR }
 												/>
 											</div>
 										) }
@@ -394,7 +395,7 @@ export default function KeyMetricsSetupApp() {
 															'google-site-kit'
 														) }
 														type={
-															Notice.TYPES.ERROR
+															NOTICE_TYPES.ERROR
 														}
 													/>
 												</div>

@@ -18,17 +18,30 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ElementType, FC } from 'react';
 
-export default function Title( { className, children } ) {
-	return (
-		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
-			{ children }
-		</p>
-	);
+interface DescriptionProps {
+	as?: ElementType;
+	className?: string;
 }
 
-Title.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
+const Description: FC< DescriptionProps > = ( {
+	as = 'p',
+	className,
+	children,
+} ) => {
+	const Component = as;
+
+	return (
+		<Component
+			className={ classnames(
+				'googlesitekit-notice__description',
+				className
+			) }
+		>
+			{ children }
+		</Component>
+	);
 };
+
+export default Description;

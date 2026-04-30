@@ -40,6 +40,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AudienceCreationErrorNotice( {
 	apiErrors,
@@ -151,7 +152,7 @@ export default function AudienceCreationErrorNotice( {
 	return (
 		<Notice
 			className="googlesitekit-audience-creation-error-notice"
-			type={ Notice.TYPES.ERROR }
+			type={ NOTICE_TYPES.ERROR }
 			title={ errorTitle }
 			description={ errorDescription }
 			ctaButton={

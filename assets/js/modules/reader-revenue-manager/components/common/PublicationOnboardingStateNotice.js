@@ -38,6 +38,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { useRefocus } from '@/js/hooks/useRefocus';
 import Notice from '@/js/components/Notice';
 import useFormValue from '@/js/hooks/useFormValue';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
@@ -142,7 +143,7 @@ export default function PublicationOnboardingStateNotice() {
 
 	return (
 		<Notice
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			className="googlesitekit-publication-onboarding-state-notice"
 			title={ noticeText }
 			ctaButton={ {

@@ -15,23 +15,21 @@
  */
 
 /**
- * Notice types that inform how a `<Notice />` component is styled.
+ * External dependencies
  */
-export const enum NOTICE_TYPES {
-	NEW = 'new',
-	SUCCESS = 'success',
-	WARNING = 'warning',
-	/**
-	 * Grey background, the default for `'info'` notices.
-	 */
-	INFO = 'info',
-	/**
-	 * White background alternative for `'info'` notices.
-	 */
-	INFO_ALT = 'info-alt',
-	/**
-	 * Black background alternative for `'info'` notices.
-	 */
-	INFO_ALT_2 = 'info-alt-2',
-	ERROR = 'error',
+import classnames from 'classnames';
+import { FC } from 'react';
+
+interface TitleProps {
+	className?: string;
 }
+
+const Title: FC< TitleProps > = ( { className, children } ) => {
+	return (
+		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
+			{ children }
+		</p>
+	);
+};
+
+export default Title;

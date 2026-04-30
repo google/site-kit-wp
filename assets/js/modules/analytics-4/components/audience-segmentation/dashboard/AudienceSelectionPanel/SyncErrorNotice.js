@@ -42,6 +42,7 @@ import ReportErrorActions from '@/js/components/ReportErrorActions';
 import RequestAccessButton from './RequestAccessButton';
 import RetryButton from './RetryButton';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SyncErrorNotice() {
 	const viewContext = useViewContext();
@@ -119,7 +120,7 @@ export default function SyncErrorNotice() {
 	return (
 		<Notice
 			className="googlesitekit-audience-selection-panel__error-notice googlesitekit-notice--error googlesitekit-notice--small googlesitekit-notice--square"
-			type={ Notice.TYPES.ERROR }
+			type={ NOTICE_TYPES.ERROR }
 			description={
 				hasInsufficientPermissionsError
 					? createInterpolateElement(
@@ -141,20 +142,21 @@ export default function SyncErrorNotice() {
 					  )
 					: __( 'Data loading failed', 'google-site-kit' )
 			}
+			actionContent={
+				hasInsufficientPermissionsError || userCountError ? (
+					<ReportErrorActions
+						moduleSlug="analytics-4"
+						error={ errors }
+						buttonVariant="danger"
+						RequestAccessButton={ RequestAccessButton }
+						RetryButton={ RetryButton }
+						hideGetHelpLink
+					/>
+				) : (
+					<RetryButton handleRetry={ retrySyncAvailableAudiences } />
+				)
+			}
 			hideIcon
-		>
-			{ hasInsufficientPermissionsError || userCountError ? (
-				<ReportErrorActions
-					moduleSlug="analytics-4"
-					error={ errors }
-					buttonVariant="danger"
-					RequestAccessButton={ RequestAccessButton }
-					RetryButton={ RetryButton }
-					hideGetHelpLink
-				/>
-			) : (
-				<RetryButton handleRetry={ retrySyncAvailableAudiences } />
-			) }
-		</Notice>
+		/>
 	);
 }

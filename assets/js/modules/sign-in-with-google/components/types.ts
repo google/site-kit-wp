@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Sign in with Google shared component types.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +16,15 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
+export type PluginWithConflict = {
+	pluginName: string;
+	conflictMessage?: string | null;
+};
 
-export default function Description( { className, children } ) {
-	return (
-		<p
-			className={ classnames(
-				'googlesitekit-notice__description',
-				className
-			) }
-		>
-			{ children }
-		</p>
-	);
-}
-
-Description.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
+export type SignInWithGoogleCompatibilityErrors = {
+	/* eslint-disable camelcase */
+	conflicting_plugins?: { [ slug: string ]: PluginWithConflict };
+	wp_login_inaccessible?: boolean;
+	host_wordpress_dot_com?: boolean;
+	/* eslint-enable camelcase */
 };
