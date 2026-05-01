@@ -1,5 +1,5 @@
 /**
- * ESLint rules: Sort Import Groups
+ * ESLint rules: Sort import groups
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -272,6 +272,7 @@ module.exports = {
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} node Import declaration node.
+		 * @return {void}
 		 */
 		function checkMemberSortOrder( node ) {
 			if ( node.type !== 'ImportDeclaration' ) {
@@ -286,9 +287,9 @@ module.exports = {
 				return;
 			}
 
-			for ( let i = 1; i < importSpecifiers.length; i++ ) {
-				const prevSpec = importSpecifiers[ i - 1 ];
-				const currSpec = importSpecifiers[ i ];
+			for ( let index = 1; index < importSpecifiers.length; index++ ) {
+				const prevSpec = importSpecifiers[ index - 1 ];
+				const currSpec = importSpecifiers[ index ];
 
 				const prevName = prevSpec.imported.name;
 				const currName = currSpec.imported.name;
@@ -489,6 +490,7 @@ module.exports = {
 		 *
 		 * @param {Array}  importNodes    Import nodes.
 		 * @param {Object} groupedImports Grouped imports.
+		 * @return {void}
 		 */
 		function reportReorganizationErrors( importNodes, groupedImports ) {
 			// Expected order
@@ -498,20 +500,20 @@ module.exports = {
 				INTERNAL_DEPS,
 			];
 
-			for ( let i = 1; i < importNodes.length; i++ ) {
+			for ( let index = 1; index < importNodes.length; index++ ) {
 				const prevGroup = getImportGroup(
-					getImportSource( importNodes[ i - 1 ] )
+					getImportSource( importNodes[ index - 1 ] )
 				);
 				const currGroup = getImportGroup(
-					getImportSource( importNodes[ i ] )
+					getImportSource( importNodes[ index ] )
 				);
 
 				// Check if we've seen this group before
 				let seenBefore = false;
-				for ( let j = 0; j < i - 1; j++ ) {
+				for ( let index_ = 0; index_ < index - 1; index_++ ) {
 					if (
 						getImportGroup(
-							getImportSource( importNodes[ j ] )
+							getImportSource( importNodes[ index_ ] )
 						) === currGroup
 					) {
 						seenBefore = true;
@@ -527,13 +529,13 @@ module.exports = {
 				const wrongOrder = currExpectedIndex < prevExpectedIndex;
 
 				if ( ( seenBefore && prevGroup !== currGroup ) || wrongOrder ) {
-					const source = getImportSource( importNodes[ i ] );
+					const source = getImportSource( importNodes[ index ] );
 					const message = seenBefore
 						? `Import from '${ source }' should be grouped with other ${ currGroup } imports.`
 						: `Import from '${ source }' should come before ${ prevGroup } imports.`;
 
 					context.report( {
-						node: importNodes[ i ],
+						node: importNodes[ index ],
 						message,
 						fix( fixer ) {
 							return fixImportOrganization(
@@ -558,6 +560,7 @@ module.exports = {
 		 * @param {string}  group                       Import group.
 		 * @param {Object}  options                     Options object.
 		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
+		 * @return {void}
 		 */
 		function checkCommentBlock( node, source, group, options ) {
 			const precedingComment = getPrecedingCommentBlock( node );
@@ -602,6 +605,7 @@ module.exports = {
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} node Import node.
+		 * @return {void}
 		 */
 		function checkDuplicateCommentBlock( node ) {
 			const precedingComment = getPrecedingCommentBlock( node );
@@ -720,6 +724,7 @@ module.exports = {
 		 * @param {Array}   importNodes                 All import nodes.
 		 * @param {Object}  options                     Options object.
 		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
+		 * @return {void}
 		 */
 		function checkBlankLinesBetweenImports(
 			node,
@@ -770,6 +775,7 @@ module.exports = {
 		 * @param {Array}   importNodes                 All import nodes.
 		 * @param {Object}  options                     Options object.
 		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
+		 * @return {void}
 		 */
 		function checkAlphabeticalOrder(
 			node,
@@ -832,6 +838,7 @@ module.exports = {
 		 *
 		 * @param {Array} importNodes Import nodes.
 		 * @param {Array} validGroups Valid dependency group names.
+		 * @return {void}
 		 */
 		function checkOrphanedCommentsBeforeFirstImport(
 			importNodes,
@@ -875,14 +882,15 @@ module.exports = {
 		 *
 		 * @param {Array} importNodes Import nodes.
 		 * @param {Array} validGroups Valid dependency group names.
+		 * @return {void}
 		 */
 		function checkOrphanedCommentsBetweenImports(
 			importNodes,
 			validGroups
 		) {
-			for ( let i = 1; i < importNodes.length; i++ ) {
-				const currentImport = importNodes[ i ];
-				const prevImport = importNodes[ i - 1 ];
+			for ( let index = 1; index < importNodes.length; index++ ) {
+				const currentImport = importNodes[ index ];
+				const prevImport = importNodes[ index - 1 ];
 				const commentsBetween =
 					sourceCode.getCommentsBefore( currentImport );
 
@@ -926,6 +934,7 @@ module.exports = {
 		 * @since n.e.x.t
 		 *
 		 * @param {Array} importNodes Import nodes.
+		 * @return {void}
 		 */
 		function checkImportGroup( importNodes ) {
 			if ( importNodes.length === 0 ) {
@@ -1039,8 +1048,8 @@ module.exports = {
 				const firstCandidate = candidates[ 0 ];
 
 				// Work backwards from the first candidate to find all consecutive comments
-				for ( let i = comments.length - 1; i >= 0; i-- ) {
-					const comment = comments[ i ];
+				for ( let index = comments.length - 1; index >= 0; index-- ) {
+					const comment = comments[ index ];
 
 					// Skip dependency comments
 					if ( comment.type === 'Block' ) {
@@ -1108,8 +1117,8 @@ module.exports = {
 			// Find all consecutive dependency comments before the first import
 			// Working backwards from the import
 			let foundConsecutiveChain = false;
-			for ( let i = commentsBefore.length - 1; i >= 0; i-- ) {
-				const comment = commentsBefore[ i ];
+			for ( let index = commentsBefore.length - 1; index >= 0; index-- ) {
+				const comment = commentsBefore[ index ];
 
 				// Only consider block comments
 				if ( comment.type !== 'Block' ) {
@@ -1131,8 +1140,8 @@ module.exports = {
 
 				// This is a dependency comment - check how far it is from what follows
 				const nextItem =
-					i < commentsBefore.length - 1
-						? commentsBefore[ i + 1 ]
+					index < commentsBefore.length - 1
+						? commentsBefore[ index + 1 ]
 						: firstImport;
 				const linesBetween =
 					nextItem.loc.start.line - comment.loc.end.line;
@@ -1325,10 +1334,10 @@ module.exports = {
 			);
 
 			// Remove all existing imports and their comments
-			for ( let i = 0; i < importNodes.length; i++ ) {
-				const node = importNodes[ i ];
+			for ( let index = 0; index < importNodes.length; index++ ) {
+				const node = importNodes[ index ];
 
-				if ( i === 0 ) {
+				if ( index === 0 ) {
 					fixes.push(
 						...processFirstImport(
 							fixer,
@@ -1358,8 +1367,8 @@ module.exports = {
 				}
 
 				// For any subsequent import groups (orphaned imports), report an error
-				for ( let i = 1; i < importGroups.length; i++ ) {
-					const orphanedGroup = importGroups[ i ];
+				for ( let index = 1; index < importGroups.length; index++ ) {
+					const orphanedGroup = importGroups[ index ];
 					for ( const importNode of orphanedGroup ) {
 						const source = getImportSource( importNode );
 
