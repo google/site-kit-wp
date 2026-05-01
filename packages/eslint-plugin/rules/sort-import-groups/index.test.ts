@@ -24,7 +24,7 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './sort-import-groups';
+import rule from '.';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {
