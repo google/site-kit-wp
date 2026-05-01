@@ -25,8 +25,7 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
-import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -50,8 +49,7 @@ import Header from './Header';
 import ProgressIndicator from '@/js/components/ProgressIndicator';
 import Splash from './Splash';
 import Actions from './Actions';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import ResetNotice from './ResetNotice';
 import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -181,37 +179,20 @@ export default function SetupUsingProxyWithSignIn() {
 	);
 
 	const splashSetupContent = (
-		<Fragment>
-			{ setupFlowRefreshEnabled && <ProgressIndicator /> }
-			{ getQueryArg( location.href, 'notification' ) ===
-				'reset_success' && (
-				<Fragment>
-					<Notice
-						id="reset_success"
-						title={ __(
-							'Site Kit by Google was successfully reset.',
-							'google-site-kit'
-						) }
-						type={ NOTICE_TYPES.SUCCESS }
+		<Layout rounded={ ! setupFlowRefreshEnabled }>
+			<Splash>
+				{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
+					<Actions
+						proxySetupURL={ proxySetupURL }
+						onButtonClick={ onButtonClick }
+						forwardableParams={ forwardableParams }
+						complete={ complete }
+						inProgressFeedback={ inProgressFeedback }
+						ctaFeedback={ ctaFeedback }
 					/>
-					<br />
-				</Fragment>
-			) }
-			<Layout rounded={ ! setupFlowRefreshEnabled }>
-				<Splash>
-					{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
-						<Actions
-							proxySetupURL={ proxySetupURL }
-							onButtonClick={ onButtonClick }
-							forwardableParams={ forwardableParams }
-							complete={ complete }
-							inProgressFeedback={ inProgressFeedback }
-							ctaFeedback={ ctaFeedback }
-						/>
-					) }
-				</Splash>
-			</Layout>
-		</Fragment>
+				) }
+			</Splash>
+		</Layout>
 	);
 
 	return (
@@ -223,11 +204,17 @@ export default function SetupUsingProxyWithSignIn() {
 				} ) }
 			>
 				{ setupFlowRefreshEnabled ? (
-					splashSetupContent
+					<Fragment>
+						<ProgressIndicator />
+						{ splashSetupContent }
+					</Fragment>
 				) : (
 					<Grid>
 						<Row>
-							<Cell size={ 12 }>{ splashSetupContent }</Cell>
+							<Cell size={ 12 }>
+								<ResetNotice />
+								{ splashSetupContent }
+							</Cell>
 						</Row>
 					</Grid>
 				) }
