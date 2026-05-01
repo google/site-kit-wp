@@ -41,12 +41,16 @@ type ImportNode = Located< TSImportDeclaration | ESTree.VariableDeclaration >;
 type AnyNode = Located< ESTree.Node >;
 type LComment = Located< ESTree.Comment >;
 
-type DepGroup =
+type DependencyGroup =
 	| 'WordPress dependencies'
 	| 'External dependencies'
 	| 'Internal dependencies';
 
-type GroupedImports = Record< DepGroup, ImportNode[] >;
+type GroupedImports = Record< DependencyGroup, ImportNode[] >;
+
+const WORDPRESS_DEPENDENCIES: DependencyGroup = 'WordPress dependencies';
+const EXTERNAL_DEPENDENCIES: DependencyGroup = 'External dependencies';
+const INTERNAL_DEPENDENCIES: DependencyGroup = 'Internal dependencies';
 
 const rule: Rule.RuleModule = {
 	meta: {
@@ -64,17 +68,6 @@ const rule: Rule.RuleModule = {
 	create( context ) {
 		const sourceCode = context.getSourceCode();
 
-		// Define import groups
-		const WORDPRESS_DEPS: DepGroup = 'WordPress dependencies';
-		const EXTERNAL_DEPS: DepGroup = 'External dependencies';
-		const INTERNAL_DEPS: DepGroup = 'Internal dependencies';
-
-		const VALID_GROUPS: DepGroup[] = [
-			WORDPRESS_DEPS,
-			EXTERNAL_DEPS,
-			INTERNAL_DEPS,
-		];
-
 		/**
 		 * Checks whether a comment text matches one of the dependency group
 		 * headings.
@@ -85,7 +78,13 @@ const rule: Rule.RuleModule = {
 		 * @return True if `text` is a valid dependency group heading.
 		 */
 		function isValidGroupComment( text: string ) {
-			return ( VALID_GROUPS as string[] ).includes( text );
+			const validGroups = [
+				WORDPRESS_DEPENDENCIES,
+				EXTERNAL_DEPENDENCIES,
+				INTERNAL_DEPENDENCIES,
+			] as string[];
+
+			return validGroups.includes( text );
 		}
 
 		/**
@@ -130,7 +129,7 @@ const rule: Rule.RuleModule = {
 				source.startsWith( '@wordpress/' ) ||
 				source.startsWith( '@wordpress-core/' )
 			) {
-				return WORDPRESS_DEPS;
+				return WORDPRESS_DEPENDENCIES;
 			}
 			if (
 				source.startsWith( 'googlesitekit-' ) ||
@@ -139,9 +138,9 @@ const rule: Rule.RuleModule = {
 				source.startsWith( './' ) ||
 				source === '.'
 			) {
-				return INTERNAL_DEPS;
+				return INTERNAL_DEPENDENCIES;
 			}
-			return EXTERNAL_DEPS;
+			return EXTERNAL_DEPENDENCIES;
 		}
 
 		/**
@@ -152,7 +151,7 @@ const rule: Rule.RuleModule = {
 		 * @param group Import group.
 		 * @return Comment block text.
 		 */
-		function getExpectedCommentBlock( group: DepGroup ) {
+		function getExpectedCommentBlock( group: DependencyGroup ) {
 			return `/**\n * ${ group }\n */`;
 		}
 
@@ -512,15 +511,17 @@ const rule: Rule.RuleModule = {
 		 */
 		function needsImportReorganization( importNodes: ImportNode[] ) {
 			// Expected order: EXTERNAL_DEPS, WORDPRESS_DEPS, INTERNAL_DEPS
-			const expectedOrder: DepGroup[] = [
-				EXTERNAL_DEPS,
-				WORDPRESS_DEPS,
-				INTERNAL_DEPS,
+			const expectedOrder: DependencyGroup[] = [
+				EXTERNAL_DEPENDENCIES,
+				WORDPRESS_DEPENDENCIES,
+				INTERNAL_DEPENDENCIES,
 			];
 
-			let currentGroup: DepGroup | null = null;
-			const groupChanges: Array< { node: ImportNode; group: DepGroup } > =
-				[];
+			let currentGroup: DependencyGroup | null = null;
+			const groupChanges: Array< {
+				node: ImportNode;
+				group: DependencyGroup;
+			} > = [];
 
 			for ( const node of importNodes ) {
 				const source = getImportSource( node );
@@ -531,7 +532,8 @@ const rule: Rule.RuleModule = {
 				}
 			}
 
-			const groupCounts: Partial< Record< DepGroup, number > > = {};
+			const groupCounts: Partial< Record< DependencyGroup, number > > =
+				{};
 			for ( const change of groupChanges ) {
 				groupCounts[ change.group ] =
 					( groupCounts[ change.group ] ?? 0 ) + 1;
@@ -573,10 +575,10 @@ const rule: Rule.RuleModule = {
 			groupedImports: GroupedImports
 		) {
 			// Expected order
-			const expectedOrder: DepGroup[] = [
-				EXTERNAL_DEPS,
-				WORDPRESS_DEPS,
-				INTERNAL_DEPS,
+			const expectedOrder: DependencyGroup[] = [
+				EXTERNAL_DEPENDENCIES,
+				WORDPRESS_DEPENDENCIES,
+				INTERNAL_DEPENDENCIES,
 			];
 
 			for ( let index = 1; index < importNodes.length; index++ ) {
@@ -644,7 +646,7 @@ const rule: Rule.RuleModule = {
 		function checkCommentBlock(
 			node: ImportNode,
 			source: string,
-			group: DepGroup,
+			group: DependencyGroup,
 			options: { needsReorganization: boolean }
 		) {
 			const precedingComment = getPrecedingCommentBlock( node );
@@ -734,7 +736,7 @@ const rule: Rule.RuleModule = {
 		function generateSortFixes(
 			fixer: Rule.RuleFixer,
 			importNodes: ImportNode[],
-			group: DepGroup
+			group: DependencyGroup
 		) {
 			const importsInGroup = importNodes.filter(
 				( n ) => getImportGroup( getImportSource( n ) ) === group
@@ -808,7 +810,7 @@ const rule: Rule.RuleModule = {
 			node: ImportNode,
 			lastNode: ImportNode | null,
 			source: string,
-			group: DepGroup,
+			group: DependencyGroup,
 			importNodes: ImportNode[],
 			options: { needsReorganization: boolean }
 		) {
@@ -860,7 +862,7 @@ const rule: Rule.RuleModule = {
 			lastNode: ImportNode | null,
 			source: string,
 			lastSource: string | null,
-			group: DepGroup,
+			group: DependencyGroup,
 			importNodes: ImportNode[],
 			options: { needsReorganization: boolean }
 		) {
@@ -1029,7 +1031,7 @@ const rule: Rule.RuleModule = {
 			checkOrphanedCommentsBeforeFirstImport( importNodes );
 			checkOrphanedCommentsBetweenImports( importNodes );
 
-			let currentGroup: DepGroup | null = null;
+			let currentGroup: DependencyGroup | null = null;
 			let lastNode: ImportNode | null = null;
 			let lastSource: string | null = null;
 
@@ -1332,10 +1334,10 @@ const rule: Rule.RuleModule = {
 			const fixes: Rule.Fix[] = [];
 
 			// Sort imports within each group
-			const orderedGroups: DepGroup[] = [
-				EXTERNAL_DEPS,
-				WORDPRESS_DEPS,
-				INTERNAL_DEPS,
+			const orderedGroups: DependencyGroup[] = [
+				EXTERNAL_DEPENDENCIES,
+				WORDPRESS_DEPENDENCIES,
+				INTERNAL_DEPENDENCIES,
 			];
 			const sortedGroups: GroupedImports = {
 				'External dependencies': [],
@@ -1344,8 +1346,9 @@ const rule: Rule.RuleModule = {
 			};
 			for ( const group of orderedGroups ) {
 				const importsInGroup = groupedImports[ group ];
-				sortedGroups[ group ] = [ ...importsInGroup ].sort( ( a, b ) =>
-					compareImports( a, b, importsInGroup )
+				sortedGroups[ group ] = [ ...importsInGroup ].sort(
+					( importA, importB ) =>
+						compareImports( importA, importB, importsInGroup )
 				);
 			}
 
