@@ -16,7 +16,39 @@
  * limitations under the License.
  */
 
-module.exports = {
+/**
+ * External dependencies
+ */
+import type { AST, Rule } from 'eslint';
+import type * as ESTree from 'estree';
+
+/**
+ * Wraps an AST node/comment with the `range` and `loc` fields ESLint always
+ * provides at runtime (the ESTree base type marks them optional).
+ */
+type Located< T > = T & { range: AST.Range; loc: AST.SourceLocation };
+
+/**
+ * `@typescript-eslint/parser` augments `ImportDeclaration` with `importKind`
+ * to flag type-only imports. Modeling it inline keeps the rule usable with
+ * both the default ESLint parser and the TypeScript parser.
+ */
+type TSImportDeclaration = ESTree.ImportDeclaration & {
+	importKind?: 'type' | 'value';
+};
+
+type ImportNode = Located< TSImportDeclaration | ESTree.VariableDeclaration >;
+type AnyNode = Located< ESTree.Node >;
+type LComment = Located< ESTree.Comment >;
+
+type DepGroup =
+	| 'WordPress dependencies'
+	| 'External dependencies'
+	| 'Internal dependencies';
+
+type GroupedImports = Record< DepGroup, ImportNode[] >;
+
+const rule: Rule.RuleModule = {
 	meta: {
 		type: 'layout',
 		docs: {
@@ -33,19 +65,67 @@ module.exports = {
 		const sourceCode = context.getSourceCode();
 
 		// Define import groups
-		const WORDPRESS_DEPS = 'WordPress dependencies';
-		const EXTERNAL_DEPS = 'External dependencies';
-		const INTERNAL_DEPS = 'Internal dependencies';
+		const WORDPRESS_DEPS: DepGroup = 'WordPress dependencies';
+		const EXTERNAL_DEPS: DepGroup = 'External dependencies';
+		const INTERNAL_DEPS: DepGroup = 'Internal dependencies';
+
+		const VALID_GROUPS: DepGroup[] = [
+			WORDPRESS_DEPS,
+			EXTERNAL_DEPS,
+			INTERNAL_DEPS,
+		];
+
+		/**
+		 * Checks whether a comment text matches one of the dependency group
+		 * headings.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param text Normalized comment text.
+		 * @return True if `text` is a valid dependency group heading.
+		 */
+		function isValidGroupComment( text: string ) {
+			return ( VALID_GROUPS as string[] ).includes( text );
+		}
+
+		/**
+		 * Returns ESLint's leading comments for a node, narrowed to the
+		 * `Located` form (range and loc are guaranteed by ESLint).
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param node AST node.
+		 * @return Array of leading comment tokens.
+		 */
+		function leadingComments( node: AnyNode ) {
+			return sourceCode.getCommentsBefore( node ) as LComment[];
+		}
+
+		/**
+		 * Returns the textual name of an `ImportSpecifier`'s imported binding.
+		 * In modern ESTree, `imported` may be an `Identifier` or a `Literal`
+		 * (to support `import { 'a-b' as c } from ...`).
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param spec Import specifier.
+		 * @return Imported name.
+		 */
+		function importedName( spec: ESTree.ImportSpecifier ) {
+			return spec.imported.type === 'Identifier'
+				? spec.imported.name
+				: String( spec.imported.value ?? '' );
+		}
 
 		/**
 		 * Gets the import group for a given import source.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} source Import source.
-		 * @return {string} Import group.
+		 * @param source Import source.
+		 * @return Import group.
 		 */
-		function getImportGroup( source ) {
+		function getImportGroup( source: string ) {
 			if (
 				source.startsWith( '@wordpress/' ) ||
 				source.startsWith( '@wordpress-core/' )
@@ -69,10 +149,10 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} group Import group.
-		 * @return {string} Comment block text.
+		 * @param group Import group.
+		 * @return Comment block text.
 		 */
-		function getExpectedCommentBlock( group ) {
+		function getExpectedCommentBlock( group: DepGroup ) {
 			return `/**\n * ${ group }\n */`;
 		}
 
@@ -81,11 +161,11 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} node AST node.
-		 * @return {Object|null} Comment token or null.
+		 * @param node AST node.
+		 * @return Comment token or null.
 		 */
-		function getPrecedingCommentBlock( node ) {
-			const comments = sourceCode.getCommentsBefore( node );
+		function getPrecedingCommentBlock( node: AnyNode ) {
+			const comments = leadingComments( node );
 			if ( comments.length === 0 ) {
 				return null;
 			}
@@ -112,10 +192,10 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} text Comment text.
-		 * @return {string} Normalized text.
+		 * @param text Comment text.
+		 * @return Normalized text.
 		 */
-		function normalizeCommentText( text ) {
+		function normalizeCommentText( text: string ) {
 			return text
 				.split( '\n' )
 				.map( ( line ) => line.trim().replace( /^\*\s*/, '' ) )
@@ -128,10 +208,10 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} node Import/require node.
-		 * @return {boolean} True if side-effect import.
+		 * @param node Import/require node.
+		 * @return True if side-effect import.
 		 */
-		function isSideEffectImport( node ) {
+		function isSideEffectImport( node: ImportNode ) {
 			if ( node.type === 'ImportDeclaration' ) {
 				return node.specifiers.length === 0;
 			}
@@ -143,10 +223,10 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} source Import source.
-		 * @return {string} Normalized source.
+		 * @param source Import source.
+		 * @return Normalized source.
 		 */
-		function normalizeImportSource( source ) {
+		function normalizeImportSource( source: string ) {
 			// Normalize the paths for internal dependencies
 			// Priority: googlesitekit-* < @/* < ../* < ./* < .
 			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
@@ -173,12 +253,16 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} nodeA       First node.
-		 * @param {Object} nodeB       Second node.
-		 * @param {Array}  sortedNodes Optional array of nodes in their original order (for preserving side-effect import order).
-		 * @return {number} Sort order.
+		 * @param nodeA       First node.
+		 * @param nodeB       Second node.
+		 * @param sortedNodes Optional array of nodes in their original order (for preserving side-effect import order).
+		 * @return Sort order.
 		 */
-		function compareImports( nodeA, nodeB, sortedNodes = null ) {
+		function compareImports(
+			nodeA: ImportNode,
+			nodeB: ImportNode,
+			sortedNodes: ImportNode[] | null = null
+		) {
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 			const sourceA = getImportSource( nodeA );
 			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
@@ -217,27 +301,25 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} node Import/require node.
-		 * @return {string} Import source.
+		 * @param node Import/require node.
+		 * @return Import source.
 		 */
-		function getImportSource( node ) {
+		function getImportSource( node: ImportNode ) {
 			if ( node.type === 'ImportDeclaration' ) {
-				return node.source.value;
+				return String( node.source.value ?? '' );
 			}
 			// Handle require statements
-			if (
-				node.type === 'VariableDeclaration' &&
-				node.declarations.length > 0
-			) {
+			if ( node.declarations.length > 0 ) {
 				const decl = node.declarations[ 0 ];
 				if (
 					decl.init &&
 					decl.init.type === 'CallExpression' &&
+					decl.init.callee.type === 'Identifier' &&
 					decl.init.callee.name === 'require' &&
 					decl.init.arguments.length > 0 &&
 					decl.init.arguments[ 0 ].type === 'Literal'
 				) {
-					return decl.init.arguments[ 0 ].value;
+					return String( decl.init.arguments[ 0 ].value ?? '' );
 				}
 			}
 			return '';
@@ -248,18 +330,18 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} node AST node.
-		 * @return {boolean} True if import/require.
+		 * @param node AST node.
+		 * @return True if import/require.
 		 */
-		function isImportOrRequire( node ) {
+		function isImportOrRequire( node: AnyNode ): node is ImportNode {
 			if ( node.type === 'ImportDeclaration' ) {
 				return true;
 			}
 			if ( node.type === 'VariableDeclaration' ) {
 				return node.declarations.some(
 					( decl ) =>
-						decl.init &&
-						decl.init.type === 'CallExpression' &&
+						decl.init?.type === 'CallExpression' &&
+						decl.init.callee.type === 'Identifier' &&
 						decl.init.callee.name === 'require'
 				);
 			}
@@ -274,13 +356,14 @@ module.exports = {
 		 * @param {Object} node Import declaration node.
 		 * @return {void}
 		 */
-		function checkMemberSortOrder( node ) {
+		function checkMemberSortOrder( node: ImportNode ) {
 			if ( node.type !== 'ImportDeclaration' ) {
 				return;
 			}
 
 			const importSpecifiers = node.specifiers.filter(
-				( spec ) => spec.type === 'ImportSpecifier'
+				( spec ): spec is ESTree.ImportSpecifier =>
+					spec.type === 'ImportSpecifier'
 			);
 
 			if ( importSpecifiers.length <= 1 ) {
@@ -291,8 +374,8 @@ module.exports = {
 				const prevSpec = importSpecifiers[ index - 1 ];
 				const currSpec = importSpecifiers[ index ];
 
-				const prevName = prevSpec.imported.name;
-				const currName = currSpec.imported.name;
+				const prevName = importedName( prevSpec );
+				const currName = importedName( currSpec );
 
 				if ( prevName > currName ) {
 					context.report( {
@@ -302,8 +385,8 @@ module.exports = {
 							// Sort only the ImportSpecifier nodes
 							const sorted = [ ...importSpecifiers ].sort(
 								( a, b ) => {
-									const nameA = a.imported.name;
-									const nameB = b.imported.name;
+									const nameA = importedName( a );
+									const nameB = importedName( b );
 
 									if ( nameA < nameB ) {
 										return -1;
@@ -318,13 +401,15 @@ module.exports = {
 							// Build the complete import statement with all specifiers
 							const allSpecifiers = node.specifiers;
 							const defaultSpec = allSpecifiers.find(
-								( s ) => s.type === 'ImportDefaultSpecifier'
+								( s ): s is ESTree.ImportDefaultSpecifier =>
+									s.type === 'ImportDefaultSpecifier'
 							);
 							const namespaceSpec = allSpecifiers.find(
-								( s ) => s.type === 'ImportNamespaceSpecifier'
+								( s ): s is ESTree.ImportNamespaceSpecifier =>
+									s.type === 'ImportNamespaceSpecifier'
 							);
 
-							const parts = [];
+							const parts: string[] = [];
 
 							if ( defaultSpec ) {
 								parts.push( sourceCode.getText( defaultSpec ) );
@@ -339,13 +424,11 @@ module.exports = {
 							if ( sorted.length > 0 ) {
 								const sortedText = sorted
 									.map( ( spec ) => {
-										if (
-											spec.imported.name ===
-											spec.local.name
-										) {
-											return spec.imported.name;
+										const name = importedName( spec );
+										if ( name === spec.local.name ) {
+											return name;
 										}
-										return `${ spec.imported.name } as ${ spec.local.name }`;
+										return `${ name } as ${ spec.local.name }`;
 									} )
 									.join( ', ' );
 								parts.push( `{ ${ sortedText } }` );
@@ -372,12 +455,12 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Array} nodes All nodes.
-		 * @return {Array} Groups of import nodes.
+		 * @param nodes All nodes.
+		 * @return Groups of import nodes.
 		 */
-		function groupImports( nodes ) {
-			const groups = [];
-			let currentGroup = [];
+		function groupImports( nodes: AnyNode[] ) {
+			const groups: ImportNode[][] = [];
+			let currentGroup: ImportNode[] = [];
 
 			for ( const node of nodes ) {
 				if ( isImportOrRequire( node ) ) {
@@ -400,14 +483,14 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Array} importNodes Import nodes.
-		 * @return {Object} Grouped imports.
+		 * @param importNodes Import nodes.
+		 * @return Grouped imports.
 		 */
-		function groupImportsByType( importNodes ) {
-			const groupedImports = {
-				[ EXTERNAL_DEPS ]: [],
-				[ WORDPRESS_DEPS ]: [],
-				[ INTERNAL_DEPS ]: [],
+		function groupImportsByType( importNodes: ImportNode[] ) {
+			const groupedImports: GroupedImports = {
+				'External dependencies': [],
+				'WordPress dependencies': [],
+				'Internal dependencies': [],
 			};
 
 			for ( const node of importNodes ) {
@@ -424,27 +507,20 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Array} importNodes Import nodes.
-		 * @return {boolean} True if reorganization is needed.
+		 * @param importNodes Import nodes.
+		 * @return True if reorganization is needed.
 		 */
-		/**
-		 * Checks if imports need reorganization.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param {Array} importNodes Import nodes.
-		 * @return {boolean} True if reorganization is needed.
-		 */
-		function needsImportReorganization( importNodes ) {
+		function needsImportReorganization( importNodes: ImportNode[] ) {
 			// Expected order: EXTERNAL_DEPS, WORDPRESS_DEPS, INTERNAL_DEPS
-			const expectedOrder = [
+			const expectedOrder: DepGroup[] = [
 				EXTERNAL_DEPS,
 				WORDPRESS_DEPS,
 				INTERNAL_DEPS,
 			];
 
-			let currentGroup = null;
-			const groupChanges = [];
+			let currentGroup: DepGroup | null = null;
+			const groupChanges: Array< { node: ImportNode; group: DepGroup } > =
+				[];
 
 			for ( const node of importNodes ) {
 				const source = getImportSource( node );
@@ -455,10 +531,10 @@ module.exports = {
 				}
 			}
 
-			const groupCounts = {};
+			const groupCounts: Partial< Record< DepGroup, number > > = {};
 			for ( const change of groupChanges ) {
 				groupCounts[ change.group ] =
-					( groupCounts[ change.group ] || 0 ) + 1;
+					( groupCounts[ change.group ] ?? 0 ) + 1;
 			}
 
 			// Check if any group appears multiple times (interleaved)
@@ -492,9 +568,12 @@ module.exports = {
 		 * @param {Object} groupedImports Grouped imports.
 		 * @return {void}
 		 */
-		function reportReorganizationErrors( importNodes, groupedImports ) {
+		function reportReorganizationErrors(
+			importNodes: ImportNode[],
+			groupedImports: GroupedImports
+		) {
 			// Expected order
-			const expectedOrder = [
+			const expectedOrder: DepGroup[] = [
 				EXTERNAL_DEPS,
 				WORDPRESS_DEPS,
 				INTERNAL_DEPS,
@@ -562,7 +641,12 @@ module.exports = {
 		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
 		 * @return {void}
 		 */
-		function checkCommentBlock( node, source, group, options ) {
+		function checkCommentBlock(
+			node: ImportNode,
+			source: string,
+			group: DepGroup,
+			options: { needsReorganization: boolean }
+		) {
 			const precedingComment = getPrecedingCommentBlock( node );
 			const expectedComment = getExpectedCommentBlock( group );
 
@@ -589,8 +673,8 @@ module.exports = {
 						node,
 						message: `Import from '${ source }' should be preceded by a "${ group }" comment block, found "${ commentText }".`,
 						fix( fixer ) {
-							return fixer.replaceText(
-								precedingComment,
+							return fixer.replaceTextRange(
+								precedingComment.range,
 								expectedComment
 							);
 						},
@@ -607,20 +691,15 @@ module.exports = {
 		 * @param {Object} node Import node.
 		 * @return {void}
 		 */
-		function checkDuplicateCommentBlock( node ) {
+		function checkDuplicateCommentBlock( node: ImportNode ) {
 			const precedingComment = getPrecedingCommentBlock( node );
 			if ( ! precedingComment ) {
 				return;
 			}
 
 			const commentText = normalizeCommentText( precedingComment.value );
-			const validGroups = [
-				WORDPRESS_DEPS,
-				EXTERNAL_DEPS,
-				INTERNAL_DEPS,
-			];
 
-			if ( validGroups.includes( commentText ) ) {
+			if ( isValidGroupComment( commentText ) ) {
 				context.report( {
 					node,
 					message:
@@ -647,12 +726,16 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} fixer       ESLint fixer.
-		 * @param {Array}  importNodes All import nodes.
-		 * @param {string} group       Current group.
-		 * @return {Array} Array of fixes.
+		 * @param fixer       ESLint fixer.
+		 * @param importNodes All import nodes.
+		 * @param group       Current group.
+		 * @return Array of fixes.
 		 */
-		function generateSortFixes( fixer, importNodes, group ) {
+		function generateSortFixes(
+			fixer: Rule.RuleFixer,
+			importNodes: ImportNode[],
+			group: DepGroup
+		) {
 			const importsInGroup = importNodes.filter(
 				( n ) => getImportGroup( getImportSource( n ) ) === group
 			);
@@ -660,14 +743,9 @@ module.exports = {
 			const sorted = [ ...importsInGroup ].sort( ( a, b ) =>
 				compareImports( a, b, importsInGroup )
 			);
-			const validGroups = [
-				WORDPRESS_DEPS,
-				EXTERNAL_DEPS,
-				INTERNAL_DEPS,
-			];
 
 			// Build the new sorted imports as a single string with no blank lines
-			const newImports = [];
+			const newImports: string[] = [];
 			for ( const node of sorted ) {
 				const nonDepComments = getNonDependencyComments( node );
 
@@ -693,7 +771,7 @@ module.exports = {
 				getPrecedingCommentBlock( firstImport );
 			if (
 				firstPrecedingComment &&
-				validGroups.includes(
+				isValidGroupComment(
 					normalizeCommentText( firstPrecedingComment.value )
 				)
 			) {
@@ -727,12 +805,12 @@ module.exports = {
 		 * @return {void}
 		 */
 		function checkBlankLinesBetweenImports(
-			node,
-			lastNode,
-			source,
-			group,
-			importNodes,
-			options
+			node: ImportNode,
+			lastNode: ImportNode | null,
+			source: string,
+			group: DepGroup,
+			importNodes: ImportNode[],
+			options: { needsReorganization: boolean }
 		) {
 			if ( ! lastNode || options.needsReorganization ) {
 				return;
@@ -778,13 +856,13 @@ module.exports = {
 		 * @return {void}
 		 */
 		function checkAlphabeticalOrder(
-			node,
-			lastNode,
-			source,
-			lastSource,
-			group,
-			importNodes,
-			options
+			node: ImportNode,
+			lastNode: ImportNode | null,
+			source: string,
+			lastSource: string | null,
+			group: DepGroup,
+			importNodes: ImportNode[],
+			options: { needsReorganization: boolean }
 		) {
 			// Get imports in the current group for comparison
 			const importsInGroup = importNodes.filter(
@@ -816,11 +894,11 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} comment Comment token to remove.
-		 * @return {Function} Fixer function.
+		 * @param comment Comment token to remove.
+		 * @return Fixer function.
 		 */
-		function createOrphanedCommentFix( comment ) {
-			return function ( fixer ) {
+		function createOrphanedCommentFix( comment: LComment ) {
+			return ( fixer: Rule.RuleFixer ) => {
 				// Remove the comment and any trailing newline
 				const commentEnd = comment.range[ 1 ];
 				const sourceAfter = sourceCode.text.slice( commentEnd );
@@ -837,15 +915,13 @@ module.exports = {
 		 * @since n.e.x.t
 		 *
 		 * @param {Array} importNodes Import nodes.
-		 * @param {Array} validGroups Valid dependency group names.
 		 * @return {void}
 		 */
 		function checkOrphanedCommentsBeforeFirstImport(
-			importNodes,
-			validGroups
+			importNodes: ImportNode[]
 		) {
 			const firstImport = importNodes[ 0 ];
-			const commentsBefore = sourceCode.getCommentsBefore( firstImport );
+			const commentsBefore = leadingComments( firstImport );
 
 			for ( const comment of commentsBefore ) {
 				if ( comment.type !== 'Block' ) {
@@ -853,7 +929,7 @@ module.exports = {
 				}
 
 				const commentText = normalizeCommentText( comment.value );
-				if ( ! validGroups.includes( commentText ) ) {
+				if ( ! isValidGroupComment( commentText ) ) {
 					continue;
 				}
 
@@ -881,18 +957,15 @@ module.exports = {
 		 * @since n.e.x.t
 		 *
 		 * @param {Array} importNodes Import nodes.
-		 * @param {Array} validGroups Valid dependency group names.
 		 * @return {void}
 		 */
 		function checkOrphanedCommentsBetweenImports(
-			importNodes,
-			validGroups
+			importNodes: ImportNode[]
 		) {
 			for ( let index = 1; index < importNodes.length; index++ ) {
 				const currentImport = importNodes[ index ];
 				const prevImport = importNodes[ index - 1 ];
-				const commentsBetween =
-					sourceCode.getCommentsBefore( currentImport );
+				const commentsBetween = leadingComments( currentImport );
 
 				for ( const comment of commentsBetween ) {
 					// Only check comments that are after the previous import
@@ -905,7 +978,7 @@ module.exports = {
 					}
 
 					const commentText = normalizeCommentText( comment.value );
-					if ( ! validGroups.includes( commentText ) ) {
+					if ( ! isValidGroupComment( commentText ) ) {
 						continue;
 					}
 
@@ -936,7 +1009,7 @@ module.exports = {
 		 * @param {Array} importNodes Import nodes.
 		 * @return {void}
 		 */
-		function checkImportGroup( importNodes ) {
+		function checkImportGroup( importNodes: ImportNode[] ) {
 			if ( importNodes.length === 0 ) {
 				return;
 			}
@@ -952,19 +1025,13 @@ module.exports = {
 				return;
 			}
 
-			const validGroups = [
-				WORDPRESS_DEPS,
-				EXTERNAL_DEPS,
-				INTERNAL_DEPS,
-			];
-
 			// Check for orphaned dependency comments
-			checkOrphanedCommentsBeforeFirstImport( importNodes, validGroups );
-			checkOrphanedCommentsBetweenImports( importNodes, validGroups );
+			checkOrphanedCommentsBeforeFirstImport( importNodes );
+			checkOrphanedCommentsBetweenImports( importNodes );
 
-			let currentGroup = null;
-			let lastNode = null;
-			let lastSource = null;
+			let currentGroup: DepGroup | null = null;
+			let lastNode: ImportNode | null = null;
+			let lastSource: string | null = null;
 
 			for ( const node of importNodes ) {
 				const source = getImportSource( node );
@@ -1011,26 +1078,20 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} node Import node.
-		 * @return {Array} Array of comment tokens.
+		 * @param node Import node.
+		 * @return Array of comment tokens.
 		 */
-		function getNonDependencyComments( node ) {
-			const validGroups = [
-				WORDPRESS_DEPS,
-				EXTERNAL_DEPS,
-				INTERNAL_DEPS,
-			];
-
-			const comments = sourceCode.getCommentsBefore( node );
-			const nonDepComments = [];
+		function getNonDependencyComments( node: ImportNode ) {
+			const comments = leadingComments( node );
+			const nonDepComments: LComment[] = [];
 
 			// First pass: identify which comments are non-dependency and close to the import
-			const candidates = [];
+			const candidates: LComment[] = [];
 			for ( const comment of comments ) {
 				// Check if it's a dependency comment
 				if ( comment.type === 'Block' ) {
 					const commentText = normalizeCommentText( comment.value );
-					if ( validGroups.includes( commentText ) ) {
+					if ( isValidGroupComment( commentText ) ) {
 						continue; // Skip dependency comments
 					}
 				}
@@ -1056,7 +1117,7 @@ module.exports = {
 						const commentText = normalizeCommentText(
 							comment.value
 						);
-						if ( validGroups.includes( commentText ) ) {
+						if ( isValidGroupComment( commentText ) ) {
 							continue;
 						}
 					}
@@ -1103,16 +1164,15 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Array} importNodes Import nodes.
-		 * @param {Array} validGroups Valid dependency group names.
-		 * @return {number} Start position for replacement.
+		 * @param importNodes Import nodes.
+		 * @return Start position for replacement.
 		 */
-		function determineReplaceStart( importNodes, validGroups ) {
+		function determineReplaceStart( importNodes: ImportNode[] ) {
 			const firstImport = importNodes[ 0 ];
 			let replaceStart = firstImport.range[ 0 ];
 
 			// Check all comments before the first import
-			const commentsBefore = sourceCode.getCommentsBefore( firstImport );
+			const commentsBefore = leadingComments( firstImport );
 
 			// Find all consecutive dependency comments before the first import
 			// Working backwards from the import
@@ -1130,7 +1190,7 @@ module.exports = {
 				}
 
 				const commentText = normalizeCommentText( comment.value );
-				if ( ! validGroups.includes( commentText ) ) {
+				if ( ! isValidGroupComment( commentText ) ) {
 					// Non-dependency comment breaks the chain
 					if ( foundConsecutiveChain ) {
 						break;
@@ -1139,7 +1199,7 @@ module.exports = {
 				}
 
 				// This is a dependency comment - check how far it is from what follows
-				const nextItem =
+				const nextItem: LComment | ImportNode =
 					index < commentsBefore.length - 1
 						? commentsBefore[ index + 1 ]
 						: firstImport;
@@ -1164,40 +1224,38 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} fixer        ESLint fixer.
-		 * @param {Object} node         Import node.
-		 * @param {number} replaceStart Start position for replacement.
-		 * @param {Array}  validGroups  Valid dependency group names.
-		 * @param {Array}  newImports   New organized import lines.
-		 * @return {Array} Array of fixes.
+		 * @param fixer        ESLint fixer.
+		 * @param node         Import node.
+		 * @param replaceStart Start position for replacement.
+		 * @param newImports   New organized import lines.
+		 * @return Array of fixes.
 		 */
 		function processFirstImport(
-			fixer,
-			node,
-			replaceStart,
-			validGroups,
-			newImports
+			fixer: Rule.RuleFixer,
+			node: ImportNode,
+			replaceStart: number,
+			newImports: string[]
 		) {
-			const fixes = [];
+			const fixes: Rule.Fix[] = [];
 
 			// Check for preceding comment
 			const precedingComment = getPrecedingCommentBlock( node );
 			if (
 				precedingComment &&
 				precedingComment.range[ 0 ] >= replaceStart &&
-				validGroups.includes(
+				isValidGroupComment(
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
 				// This comment is already in the replace range, skip it
 			} else if (
 				precedingComment &&
-				validGroups.includes(
+				isValidGroupComment(
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
 				// This comment is before the replace range, remove it
-				fixes.push( fixer.remove( precedingComment ) );
+				fixes.push( fixer.removeRange( precedingComment.range ) );
 			}
 
 			// Remove any non-dependency comments that are not in the replace range
@@ -1207,7 +1265,7 @@ module.exports = {
 					// Already in replace range
 					continue;
 				}
-				fixes.push( fixer.remove( comment ) );
+				fixes.push( fixer.removeRange( comment.range ) );
 			}
 
 			// Replace first import (and preceding standalone comments) with all organized imports
@@ -1226,30 +1284,29 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} fixer       ESLint fixer.
-		 * @param {Object} node        Import node.
-		 * @param {Array}  validGroups Valid dependency group names.
-		 * @return {Array} Array of fixes.
+		 * @param fixer ESLint fixer.
+		 * @param node  Import node.
+		 * @return Array of fixes.
 		 */
-		function processOtherImport( fixer, node, validGroups ) {
-			const fixes = [];
+		function processOtherImport( fixer: Rule.RuleFixer, node: ImportNode ) {
+			const fixes: Rule.Fix[] = [];
 
 			// Check for preceding comment
 			const precedingComment = getPrecedingCommentBlock( node );
 			if (
 				precedingComment &&
-				validGroups.includes(
+				isValidGroupComment(
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
 				// Remove the comment
-				fixes.push( fixer.remove( precedingComment ) );
+				fixes.push( fixer.removeRange( precedingComment.range ) );
 			}
 
 			// Remove any non-dependency comments
 			const nonDepComments = getNonDependencyComments( node );
 			for ( const comment of nonDepComments ) {
-				fixes.push( fixer.remove( comment ) );
+				fixes.push( fixer.removeRange( comment.range ) );
 			}
 
 			fixes.push( fixer.remove( node ) );
@@ -1262,26 +1319,30 @@ module.exports = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} fixer          ESLint fixer.
-		 * @param {Array}  importNodes    All import nodes.
-		 * @param {Object} groupedImports Imports grouped by type.
-		 * @return {Array} Array of fixes.
+		 * @param fixer          ESLint fixer.
+		 * @param importNodes    All import nodes.
+		 * @param groupedImports Imports grouped by type.
+		 * @return Array of fixes.
 		 */
-		function fixImportOrganization( fixer, importNodes, groupedImports ) {
-			const fixes = [];
-			const validGroups = [
-				WORDPRESS_DEPS,
-				EXTERNAL_DEPS,
-				INTERNAL_DEPS,
-			];
+		function fixImportOrganization(
+			fixer: Rule.RuleFixer,
+			importNodes: ImportNode[],
+			groupedImports: GroupedImports
+		) {
+			const fixes: Rule.Fix[] = [];
 
 			// Sort imports within each group
-			const sortedGroups = {};
-			for ( const group of [
+			const orderedGroups: DepGroup[] = [
 				EXTERNAL_DEPS,
 				WORDPRESS_DEPS,
 				INTERNAL_DEPS,
-			] ) {
+			];
+			const sortedGroups: GroupedImports = {
+				'External dependencies': [],
+				'WordPress dependencies': [],
+				'Internal dependencies': [],
+			};
+			for ( const group of orderedGroups ) {
 				const importsInGroup = groupedImports[ group ];
 				sortedGroups[ group ] = [ ...importsInGroup ].sort( ( a, b ) =>
 					compareImports( a, b, importsInGroup )
@@ -1289,14 +1350,10 @@ module.exports = {
 			}
 
 			// Build the new import section
-			const newImports = [];
+			const newImports: string[] = [];
 			let firstGroup = true;
 
-			for ( const group of [
-				EXTERNAL_DEPS,
-				WORDPRESS_DEPS,
-				INTERNAL_DEPS,
-			] ) {
+			for ( const group of orderedGroups ) {
 				if ( sortedGroups[ group ].length === 0 ) {
 					continue;
 				}
@@ -1328,10 +1385,7 @@ module.exports = {
 			}
 
 			// Determine the start position for replacement
-			const replaceStart = determineReplaceStart(
-				importNodes,
-				validGroups
-			);
+			const replaceStart = determineReplaceStart( importNodes );
 
 			// Remove all existing imports and their comments
 			for ( let index = 0; index < importNodes.length; index++ ) {
@@ -1343,14 +1397,11 @@ module.exports = {
 							fixer,
 							node,
 							replaceStart,
-							validGroups,
 							newImports
 						)
 					);
 				} else {
-					fixes.push(
-						...processOtherImport( fixer, node, validGroups )
-					);
+					fixes.push( ...processOtherImport( fixer, node ) );
 				}
 			}
 
@@ -1359,7 +1410,7 @@ module.exports = {
 
 		return {
 			Program( node ) {
-				const importGroups = groupImports( node.body );
+				const importGroups = groupImports( node.body as AnyNode[] );
 
 				// Check the first import group normally
 				if ( importGroups.length > 0 ) {
@@ -1395,3 +1446,5 @@ module.exports = {
 		};
 	},
 };
+
+module.exports = rule;
