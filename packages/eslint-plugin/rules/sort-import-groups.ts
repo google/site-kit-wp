@@ -88,8 +88,7 @@ const rule: Rule.RuleModule = {
 		}
 
 		/**
-		 * Returns ESLint's leading comments for a node, narrowed to the
-		 * `Located` form (range and loc are guaranteed by ESLint).
+		 * Returns ESLint's leading comments for a node.
 		 *
 		 * @since n.e.x.t
 		 *
@@ -102,18 +101,16 @@ const rule: Rule.RuleModule = {
 
 		/**
 		 * Returns the textual name of an `ImportSpecifier`'s imported binding.
-		 * In modern ESTree, `imported` may be an `Identifier` or a `Literal`
-		 * (to support `import { 'a-b' as c } from ...`).
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param spec Import specifier.
+		 * @param specifier Import specifier.
 		 * @return Imported name.
 		 */
-		function importedName( spec: ESTree.ImportSpecifier ) {
-			return spec.imported.type === 'Identifier'
-				? spec.imported.name
-				: String( spec.imported.value ?? '' );
+		function importedName( specifier: ESTree.ImportSpecifier ) {
+			return specifier.imported.type === 'Identifier'
+				? specifier.imported.name
+				: String( specifier.imported.value ?? '' );
 		}
 
 		/**
@@ -169,15 +166,15 @@ const rule: Rule.RuleModule = {
 				return null;
 			}
 
-			// Get the last comment before this node
+			// Get the last comment before this node.
 			const lastComment = comments[ comments.length - 1 ];
 
-			// Only consider block comments
+			// Only consider block comments.
 			if ( lastComment.type !== 'Block' ) {
 				return null;
 			}
 
-			// Check if it's directly adjacent (no blank lines)
+			// Check if it's directly adjacent, with no blank lines between them.
 			const linesBetween = node.loc.start.line - lastComment.loc.end.line;
 			if ( linesBetween > 1 ) {
 				return null;
@@ -226,9 +223,9 @@ const rule: Rule.RuleModule = {
 		 * @return Normalized source.
 		 */
 		function normalizeImportSource( source: string ) {
-			// Normalize the paths for internal dependencies
+			// Normalize the paths for internal dependencies.
 			// Priority: googlesitekit-* < @/* < ../* < ./* < .
-			// Use prefixes that sort correctly: 0 < 1 < 2 < 3
+			// Use prefixes that sort correctly: 0 < 1 < 2 < 3.
 			if ( source.startsWith( 'googlesitekit-' ) ) {
 				return '~0~' + source;
 			}
@@ -262,16 +259,11 @@ const rule: Rule.RuleModule = {
 			nodeB: ImportNode,
 			sortedNodes: ImportNode[] | null = null
 		) {
-			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-			const sourceA = getImportSource( nodeA );
-			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-			const sourceB = getImportSource( nodeB );
-
-			// Check if imports are side-effect imports (no specifiers)
+			// Check if imports are side-effect imports (i.e., import '...' without any specifiers).
 			const isSideEffectA = isSideEffectImport( nodeA );
 			const isSideEffectB = isSideEffectImport( nodeB );
 
-			// Side-effect imports should always come first within their group
+			// Side-effect imports should always come first within their group.
 			if ( isSideEffectA && ! isSideEffectB ) {
 				return -1;
 			}
@@ -279,7 +271,7 @@ const rule: Rule.RuleModule = {
 				return 1;
 			}
 
-			// If both are side-effect imports, preserve their original order
+			// If both are side-effect imports, preserve their original order.
 			if ( isSideEffectA && isSideEffectB && sortedNodes ) {
 				const indexA = sortedNodes.indexOf( nodeA );
 				const indexB = sortedNodes.indexOf( nodeB );
@@ -288,7 +280,10 @@ const rule: Rule.RuleModule = {
 				}
 			}
 
-			// Sort alphabetically by source
+			const sourceA = getImportSource( nodeA );
+			const sourceB = getImportSource( nodeB );
+
+			// Sort alphabetically by source.
 			const normalizedA = normalizeImportSource( sourceA );
 			const normalizedB = normalizeImportSource( sourceB );
 
@@ -307,18 +302,21 @@ const rule: Rule.RuleModule = {
 			if ( node.type === 'ImportDeclaration' ) {
 				return String( node.source.value ?? '' );
 			}
-			// Handle require statements
+
+			// Handle require statements.
 			if ( node.declarations.length > 0 ) {
-				const decl = node.declarations[ 0 ];
+				const declaration = node.declarations[ 0 ];
 				if (
-					decl.init &&
-					decl.init.type === 'CallExpression' &&
-					decl.init.callee.type === 'Identifier' &&
-					decl.init.callee.name === 'require' &&
-					decl.init.arguments.length > 0 &&
-					decl.init.arguments[ 0 ].type === 'Literal'
+					declaration.init &&
+					declaration.init.type === 'CallExpression' &&
+					declaration.init.callee.type === 'Identifier' &&
+					declaration.init.callee.name === 'require' &&
+					declaration.init.arguments.length > 0 &&
+					declaration.init.arguments[ 0 ].type === 'Literal'
 				) {
-					return String( decl.init.arguments[ 0 ].value ?? '' );
+					return String(
+						declaration.init.arguments[ 0 ].value ?? ''
+					);
 				}
 			}
 			return '';
@@ -338,10 +336,10 @@ const rule: Rule.RuleModule = {
 			}
 			if ( node.type === 'VariableDeclaration' ) {
 				return node.declarations.some(
-					( decl ) =>
-						decl.init?.type === 'CallExpression' &&
-						decl.init.callee.type === 'Identifier' &&
-						decl.init.callee.name === 'require'
+					( declaration ) =>
+						declaration.init?.type === 'CallExpression' &&
+						declaration.init.callee.type === 'Identifier' &&
+						declaration.init.callee.name === 'require'
 				);
 			}
 			return false;
@@ -361,8 +359,8 @@ const rule: Rule.RuleModule = {
 			}
 
 			const importSpecifiers = node.specifiers.filter(
-				( spec ): spec is ESTree.ImportSpecifier =>
-					spec.type === 'ImportSpecifier'
+				( specifier ): specifier is ESTree.ImportSpecifier =>
+					specifier.type === 'ImportSpecifier'
 			);
 
 			if ( importSpecifiers.length <= 1 ) {
@@ -381,7 +379,7 @@ const rule: Rule.RuleModule = {
 						node: currSpec,
 						message: `Member '${ currName }' of the import declaration should be sorted alphabetically.`,
 						fix( fixer ) {
-							// Sort only the ImportSpecifier nodes
+							// Sort only the ImportSpecifier nodes.
 							const sorted = [ ...importSpecifiers ].sort(
 								( a, b ) => {
 									const nameA = importedName( a );
@@ -399,35 +397,38 @@ const rule: Rule.RuleModule = {
 
 							// Build the complete import statement with all specifiers
 							const allSpecifiers = node.specifiers;
-							const defaultSpec = allSpecifiers.find(
-								( s ): s is ESTree.ImportDefaultSpecifier =>
-									s.type === 'ImportDefaultSpecifier'
+							const defaultSpecifier = allSpecifiers.find(
+								( specifier ) =>
+									specifier.type === 'ImportDefaultSpecifier'
 							);
-							const namespaceSpec = allSpecifiers.find(
-								( s ): s is ESTree.ImportNamespaceSpecifier =>
-									s.type === 'ImportNamespaceSpecifier'
+							const namespaceSpecifier = allSpecifiers.find(
+								( specifier ) =>
+									specifier.type ===
+									'ImportNamespaceSpecifier'
 							);
 
 							const parts: string[] = [];
 
-							if ( defaultSpec ) {
-								parts.push( sourceCode.getText( defaultSpec ) );
+							if ( defaultSpecifier ) {
+								parts.push(
+									sourceCode.getText( defaultSpecifier )
+								);
 							}
 
-							if ( namespaceSpec ) {
+							if ( namespaceSpecifier ) {
 								parts.push(
-									sourceCode.getText( namespaceSpec )
+									sourceCode.getText( namespaceSpecifier )
 								);
 							}
 
 							if ( sorted.length > 0 ) {
 								const sortedText = sorted
-									.map( ( spec ) => {
-										const name = importedName( spec );
-										if ( name === spec.local.name ) {
+									.map( ( specifier ) => {
+										const name = importedName( specifier );
+										if ( name === specifier.local.name ) {
 											return name;
 										}
-										return `${ name } as ${ spec.local.name }`;
+										return `${ name } as ${ specifier.local.name }`;
 									} )
 									.join( ', ' );
 								parts.push( `{ ${ sortedText } }` );
@@ -510,7 +511,7 @@ const rule: Rule.RuleModule = {
 		 * @return True if reorganization is needed.
 		 */
 		function needsImportReorganization( importNodes: ImportNode[] ) {
-			// Expected order: EXTERNAL_DEPS, WORDPRESS_DEPS, INTERNAL_DEPS
+			// Expected order: EXTERNAL_DEPENDENCIES, WORDPRESS_DEPENDENCIES, INTERNAL_DEPENDENCIES.
 			const expectedOrder: DependencyGroup[] = [
 				EXTERNAL_DEPENDENCIES,
 				WORDPRESS_DEPENDENCIES,
@@ -539,20 +540,20 @@ const rule: Rule.RuleModule = {
 					( groupCounts[ change.group ] ?? 0 ) + 1;
 			}
 
-			// Check if any group appears multiple times (interleaved)
+			// Check if any group appears multiple times.
 			if ( Object.values( groupCounts ).some( ( count ) => count > 1 ) ) {
 				return true;
 			}
 
-			// Check if groups are in the wrong order
-			// Get the expected index for each group in the actual order
+			// Check if groups are in the wrong order.
+			// Get the expected index for each group in the actual order:
 			const actualOrder = groupChanges.map( ( change ) => change.group );
 			let lastExpectedIndex = -1;
 
 			for ( const group of actualOrder ) {
 				const expectedIndex = expectedOrder.indexOf( group );
 				if ( expectedIndex < lastExpectedIndex ) {
-					// Found a group that should come before a previous group
+					// Found a group that should come before a previous group.
 					return true;
 				}
 				lastExpectedIndex = expectedIndex;
@@ -574,7 +575,6 @@ const rule: Rule.RuleModule = {
 			importNodes: ImportNode[],
 			groupedImports: GroupedImports
 		) {
-			// Expected order
 			const expectedOrder: DependencyGroup[] = [
 				EXTERNAL_DEPENDENCIES,
 				WORDPRESS_DEPENDENCIES,
@@ -582,38 +582,42 @@ const rule: Rule.RuleModule = {
 			];
 
 			for ( let index = 1; index < importNodes.length; index++ ) {
-				const prevGroup = getImportGroup(
+				const previousGroup = getImportGroup(
 					getImportSource( importNodes[ index - 1 ] )
 				);
-				const currGroup = getImportGroup(
+				const currentGroup = getImportGroup(
 					getImportSource( importNodes[ index ] )
 				);
 
-				// Check if we've seen this group before
+				// Check if we've seen this group before.
 				let seenBefore = false;
 				for ( let index_ = 0; index_ < index - 1; index_++ ) {
 					if (
 						getImportGroup(
 							getImportSource( importNodes[ index_ ] )
-						) === currGroup
+						) === currentGroup
 					) {
 						seenBefore = true;
 						break;
 					}
 				}
 
-				// Report error if:
+				// Report an error if:
 				// 1. Group is interleaved (seen before AND different from previous), OR
-				// 2. Current group comes before previous group in the expected order
-				const prevExpectedIndex = expectedOrder.indexOf( prevGroup );
-				const currExpectedIndex = expectedOrder.indexOf( currGroup );
+				// 2. Current group comes before previous group in the expected order.
+				const prevExpectedIndex =
+					expectedOrder.indexOf( previousGroup );
+				const currExpectedIndex = expectedOrder.indexOf( currentGroup );
 				const wrongOrder = currExpectedIndex < prevExpectedIndex;
 
-				if ( ( seenBefore && prevGroup !== currGroup ) || wrongOrder ) {
+				if (
+					( seenBefore && previousGroup !== currentGroup ) ||
+					wrongOrder
+				) {
 					const source = getImportSource( importNodes[ index ] );
 					const message = seenBefore
-						? `Import from '${ source }' should be grouped with other ${ currGroup } imports.`
-						: `Import from '${ source }' should come before ${ prevGroup } imports.`;
+						? `Import from '${ source }' should be grouped with other ${ currentGroup } imports.`
+						: `Import from '${ source }' should come before ${ previousGroup } imports.`;
 
 					context.report( {
 						node: importNodes[ index ],
@@ -626,7 +630,7 @@ const rule: Rule.RuleModule = {
 							);
 						},
 					} );
-					break; // Only report once per group
+					break; // Only report once per group.
 				}
 			}
 		}
@@ -739,14 +743,14 @@ const rule: Rule.RuleModule = {
 			group: DependencyGroup
 		) {
 			const importsInGroup = importNodes.filter(
-				( n ) => getImportGroup( getImportSource( n ) ) === group
+				( node ) => getImportGroup( getImportSource( node ) ) === group
 			);
 
-			const sorted = [ ...importsInGroup ].sort( ( a, b ) =>
-				compareImports( a, b, importsInGroup )
+			const sorted = [ ...importsInGroup ].sort( ( nodeA, nodeB ) =>
+				compareImports( nodeA, nodeB, importsInGroup )
 			);
 
-			// Build the new sorted imports as a single string with no blank lines
+			// Build the new sorted imports as a single string with no blank lines.
 			const newImports: string[] = [];
 			for ( const node of sorted ) {
 				const nonDepComments = getNonDependencyComments( node );
@@ -763,30 +767,20 @@ const rule: Rule.RuleModule = {
 				newImports.push( sourceCode.getText( node ) );
 			}
 
-			// Determine the range to replace: from the first import to the last import in the group
+			// Determine the range to replace: from the first import to the last import in the group.
 			const firstImport = importsInGroup[ 0 ];
 			const lastImport = importsInGroup[ importsInGroup.length - 1 ];
 
-			// Find the start position (after any preceding dependency comment of the first import)
-			const startPos = firstImport.range[ 0 ];
-			const firstPrecedingComment =
-				getPrecedingCommentBlock( firstImport );
-			if (
-				firstPrecedingComment &&
-				isValidGroupComment(
-					normalizeCommentText( firstPrecedingComment.value )
-				)
-			) {
-				// Don't include the dependency comment, start after it
-			}
+			// Find the start position (after any preceding dependency comment of the first import).
+			const startPosition = firstImport.range[ 0 ];
 
 			// Find the end position of the last import
-			const endPos = lastImport.range[ 1 ];
+			const endPosition = lastImport.range[ 1 ];
 
 			// Replace the entire range with the sorted imports
 			return [
 				fixer.replaceTextRange(
-					[ startPos, endPos ],
+					[ startPosition, endPosition ],
 					newImports.join( '\n' )
 				),
 			];
@@ -818,17 +812,16 @@ const rule: Rule.RuleModule = {
 				return;
 			}
 
-			// Get any non-dependency comments that precede this import
-			const nonDepComments = getNonDependencyComments( node );
+			// Get any non-dependency comments that precede this import.
+			const nonDependencyComments = getNonDependencyComments( node );
 
-			// Determine the effective start line of this import
-			// (including any non-dependency comments)
+			// Determine the effective start line of this import (including any non-dependency comments).
 			let effectiveStartLine = node.loc.start.line;
-			if ( nonDepComments.length > 0 ) {
-				effectiveStartLine = nonDepComments[ 0 ].loc.start.line;
+			if ( nonDependencyComments.length > 0 ) {
+				effectiveStartLine = nonDependencyComments[ 0 ].loc.start.line;
 			}
 
-			// Check if there's more than one line between the imports
+			// Check if there's more than one line between the imports.
 			const linesBetween = effectiveStartLine - lastNode.loc.end.line;
 
 			if ( linesBetween > 1 ) {
@@ -866,9 +859,10 @@ const rule: Rule.RuleModule = {
 			importNodes: ImportNode[],
 			options: { needsReorganization: boolean }
 		) {
-			// Get imports in the current group for comparison
+			// Get imports in the current group for comparison.
 			const importsInGroup = importNodes.filter(
-				( n ) => getImportGroup( getImportSource( n ) ) === group
+				( importNode ) =>
+					getImportGroup( getImportSource( importNode ) ) === group
 			);
 
 			if (
@@ -901,7 +895,7 @@ const rule: Rule.RuleModule = {
 		 */
 		function createOrphanedCommentFix( comment: LComment ) {
 			return ( fixer: Rule.RuleFixer ) => {
-				// Remove the comment and any trailing newline
+				// Remove the comment and any trailing newline.
 				const commentEnd = comment.range[ 1 ];
 				const sourceAfter = sourceCode.text.slice( commentEnd );
 				const newlineMatch = sourceAfter.match( /^\n/ );
@@ -935,7 +929,7 @@ const rule: Rule.RuleModule = {
 					continue;
 				}
 
-				// Check if this comment directly precedes the first import
+				// Check if this comment directly precedes the first import.
 				const precedingComment =
 					getPrecedingCommentBlock( firstImport );
 				if ( precedingComment === comment ) {
@@ -970,7 +964,7 @@ const rule: Rule.RuleModule = {
 				const commentsBetween = leadingComments( currentImport );
 
 				for ( const comment of commentsBetween ) {
-					// Only check comments that are after the previous import
+					// Only check comments that are after the previous import.
 					if ( comment.range[ 0 ] <= prevImport.range[ 1 ] ) {
 						continue;
 					}
@@ -984,15 +978,15 @@ const rule: Rule.RuleModule = {
 						continue;
 					}
 
-					// Check if this comment directly precedes the current import
+					// Check if this comment directly precedes the current import.
 					const precedingComment =
 						getPrecedingCommentBlock( currentImport );
 					if ( precedingComment === comment ) {
-						// This is the legitimate comment for the current import, skip it
+						// This is the legitimate comment for the current import, skip it.
 						continue;
 					}
 
-					// This is an orphaned dependency comment
+					// This is an orphaned dependency comment.
 					context.report( {
 						node: currentImport,
 						message:
@@ -1087,18 +1081,18 @@ const rule: Rule.RuleModule = {
 			const comments = leadingComments( node );
 			const nonDepComments: LComment[] = [];
 
-			// First pass: identify which comments are non-dependency and close to the import
+			// First pass: identify which comments are non-dependency and close to the import.
 			const candidates: LComment[] = [];
 			for ( const comment of comments ) {
-				// Check if it's a dependency comment
+				// Check if it's a dependency comment.
 				if ( comment.type === 'Block' ) {
 					const commentText = normalizeCommentText( comment.value );
 					if ( isValidGroupComment( commentText ) ) {
-						continue; // Skip dependency comments
+						continue; // Skip dependency comments.
 					}
 				}
 
-				// Include this comment if it's close to the import (within 1 line)
+				// Include this comment if it's close to the import (within 1 line).
 				const linesBetween = node.loc.start.line - comment.loc.end.line;
 				if ( linesBetween <= 1 ) {
 					candidates.push( comment );
@@ -1106,15 +1100,15 @@ const rule: Rule.RuleModule = {
 			}
 
 			// Second pass: if we found comments close to the import,
-			// include any consecutive comments that lead up to them
+			// include any consecutive comments that lead up to them.
 			if ( candidates.length > 0 ) {
 				const firstCandidate = candidates[ 0 ];
 
-				// Work backwards from the first candidate to find all consecutive comments
+				// Work backwards from the first candidate to find all consecutive comments.
 				for ( let index = comments.length - 1; index >= 0; index-- ) {
 					const comment = comments[ index ];
 
-					// Skip dependency comments
+					// Skip dependency comments.
 					if ( comment.type === 'Block' ) {
 						const commentText = normalizeCommentText(
 							comment.value
@@ -1124,11 +1118,11 @@ const rule: Rule.RuleModule = {
 						}
 					}
 
-					// If this comment is at or before the first candidate
+					// If this comment is at or before the first candidate.
 					if ( comment.range[ 1 ] <= firstCandidate.range[ 0 ] ) {
 						// Check if it's consecutive with what we have
 						if ( nonDepComments.length === 0 ) {
-							// First comment we're adding, check if consecutive with first candidate
+							// First comment we're adding, check if consecutive with first candidate.
 							const linesBetween =
 								firstCandidate.loc.start.line -
 								comment.loc.end.line;
@@ -1136,21 +1130,21 @@ const rule: Rule.RuleModule = {
 								nonDepComments.unshift( comment );
 							}
 						} else {
-							// Check if consecutive with the first comment in our list
+							// Check if consecutive with the first comment in our list.
 							const linesBetween =
 								nonDepComments[ 0 ].loc.start.line -
 								comment.loc.end.line;
 							if ( linesBetween <= 1 ) {
 								nonDepComments.unshift( comment );
 							} else {
-								// Gap found, stop looking
+								// Gap found, stop looking.
 								break;
 							}
 						}
 					}
 				}
 
-				// Add the candidates
+				// Add the candidates.
 				for ( const candidate of candidates ) {
 					if ( ! nonDepComments.includes( candidate ) ) {
 						nonDepComments.push( candidate );
@@ -1173,18 +1167,18 @@ const rule: Rule.RuleModule = {
 			const firstImport = importNodes[ 0 ];
 			let replaceStart = firstImport.range[ 0 ];
 
-			// Check all comments before the first import
+			// Check all comments before the first import.
 			const commentsBefore = leadingComments( firstImport );
 
-			// Find all consecutive dependency comments before the first import
-			// Working backwards from the import
+			// Find all consecutive dependency comments before the first import,
+			// working backwards from the import.
 			let foundConsecutiveChain = false;
 			for ( let index = commentsBefore.length - 1; index >= 0; index-- ) {
 				const comment = commentsBefore[ index ];
 
-				// Only consider block comments
+				// Only consider block comments.
 				if ( comment.type !== 'Block' ) {
-					// Non-block comment breaks the chain
+					// Non-block comment breaks the chain.
 					if ( foundConsecutiveChain ) {
 						break;
 					}
@@ -1193,14 +1187,14 @@ const rule: Rule.RuleModule = {
 
 				const commentText = normalizeCommentText( comment.value );
 				if ( ! isValidGroupComment( commentText ) ) {
-					// Non-dependency comment breaks the chain
+					// Non-dependency comment breaks the chain.
 					if ( foundConsecutiveChain ) {
 						break;
 					}
 					continue;
 				}
 
-				// This is a dependency comment - check how far it is from what follows
+				// This is a dependency comment - check how far it is from what follows.
 				const nextItem: LComment | ImportNode =
 					index < commentsBefore.length - 1
 						? commentsBefore[ index + 1 ]
@@ -1208,12 +1202,12 @@ const rule: Rule.RuleModule = {
 				const linesBetween =
 					nextItem.loc.start.line - comment.loc.end.line;
 
-				// If it's reasonably close (within 3 lines), include it
+				// If it's reasonably close (within 3 lines), include it.
 				if ( linesBetween <= 3 ) {
 					replaceStart = comment.range[ 0 ];
 					foundConsecutiveChain = true;
 				} else if ( foundConsecutiveChain ) {
-					// Gap too large, stop looking
+					// Gap too large, stop looking.
 					break;
 				}
 			}
@@ -1240,7 +1234,7 @@ const rule: Rule.RuleModule = {
 		) {
 			const fixes: Rule.Fix[] = [];
 
-			// Check for preceding comment
+			// Check for preceding comment.
 			const precedingComment = getPrecedingCommentBlock( node );
 			if (
 				precedingComment &&
@@ -1249,28 +1243,28 @@ const rule: Rule.RuleModule = {
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
-				// This comment is already in the replace range, skip it
+				// This comment is already in the replace range, skip it.
 			} else if (
 				precedingComment &&
 				isValidGroupComment(
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
-				// This comment is before the replace range, remove it
+				// This comment is before the replace range, remove it.
 				fixes.push( fixer.removeRange( precedingComment.range ) );
 			}
 
-			// Remove any non-dependency comments that are not in the replace range
-			const nonDepComments = getNonDependencyComments( node );
-			for ( const comment of nonDepComments ) {
+			// Remove any non-dependency comments that are not in the replace range.
+			const nonDependencyComments = getNonDependencyComments( node );
+			for ( const comment of nonDependencyComments ) {
 				if ( comment.range[ 0 ] >= replaceStart ) {
-					// Already in replace range
+					// Already in replace range.
 					continue;
 				}
 				fixes.push( fixer.removeRange( comment.range ) );
 			}
 
-			// Replace first import (and preceding standalone comments) with all organized imports
+			// Replace first import (and preceding standalone comments) with all organized imports.
 			fixes.push(
 				fixer.replaceTextRange(
 					[ replaceStart, node.range[ 1 ] ],
@@ -1293,7 +1287,7 @@ const rule: Rule.RuleModule = {
 		function processOtherImport( fixer: Rule.RuleFixer, node: ImportNode ) {
 			const fixes: Rule.Fix[] = [];
 
-			// Check for preceding comment
+			// Check for preceding comment.
 			const precedingComment = getPrecedingCommentBlock( node );
 			if (
 				precedingComment &&
@@ -1301,11 +1295,11 @@ const rule: Rule.RuleModule = {
 					normalizeCommentText( precedingComment.value )
 				)
 			) {
-				// Remove the comment
+				// Remove the comment.
 				fixes.push( fixer.removeRange( precedingComment.range ) );
 			}
 
-			// Remove any non-dependency comments
+			// Remove any non-dependency comments.
 			const nonDepComments = getNonDependencyComments( node );
 			for ( const comment of nonDepComments ) {
 				fixes.push( fixer.removeRange( comment.range ) );
@@ -1333,7 +1327,7 @@ const rule: Rule.RuleModule = {
 		) {
 			const fixes: Rule.Fix[] = [];
 
-			// Sort imports within each group
+			// Sort imports within each group.
 			const orderedGroups: DependencyGroup[] = [
 				EXTERNAL_DEPENDENCIES,
 				WORDPRESS_DEPENDENCIES,
@@ -1352,7 +1346,7 @@ const rule: Rule.RuleModule = {
 				);
 			}
 
-			// Build the new import section
+			// Build the new import section.
 			const newImports: string[] = [];
 			let firstGroup = true;
 
@@ -1361,20 +1355,19 @@ const rule: Rule.RuleModule = {
 					continue;
 				}
 
-				// Add blank line before group (except first)
+				// Add a blank line before each dependency group (except the first group).
 				if ( ! firstGroup ) {
 					newImports.push( '' );
 				}
 				firstGroup = false;
 
-				// Add comment block
 				newImports.push( getExpectedCommentBlock( group ) );
 
-				// Add imports with their non-dependency comments
+				// Add imports with their non-dependency comments.
 				for ( const node of sortedGroups[ group ] ) {
 					const nonDepComments = getNonDependencyComments( node );
 
-					// Add any non-dependency comments before the import
+					// Add any non-dependency comments before the import.
 					for ( const comment of nonDepComments ) {
 						if ( comment.type === 'Line' ) {
 							newImports.push( `//${ comment.value }` );
@@ -1387,10 +1380,9 @@ const rule: Rule.RuleModule = {
 				}
 			}
 
-			// Determine the start position for replacement
 			const replaceStart = determineReplaceStart( importNodes );
 
-			// Remove all existing imports and their comments
+			// Remove all existing imports and their comments.
 			for ( let index = 0; index < importNodes.length; index++ ) {
 				const node = importNodes[ index ];
 
@@ -1415,12 +1407,12 @@ const rule: Rule.RuleModule = {
 			Program( node ) {
 				const importGroups = groupImports( node.body as AnyNode[] );
 
-				// Check the first import group normally
+				// Check the first import group normally.
 				if ( importGroups.length > 0 ) {
 					checkImportGroup( importGroups[ 0 ] );
 				}
 
-				// For any subsequent import groups (orphaned imports), report an error
+				// For any subsequent import groups (orphaned imports), report an error.
 				for ( let index = 1; index < importGroups.length; index++ ) {
 					const orphanedGroup = importGroups[ index ];
 					for ( const importNode of orphanedGroup ) {
@@ -1430,10 +1422,12 @@ const rule: Rule.RuleModule = {
 							node: importNode,
 							message: `Import from '${ source }' is separated from other imports. All imports should be grouped together at the top of the file.`,
 							fix( fixer ) {
-								// Merge all import groups and reorganize them
+								// Merge all import groups and reorganize them.
 								const allImports = importGroups.flat();
+
 								const groupedImports =
 									groupImportsByType( allImports );
+
 								return fixImportOrganization(
 									fixer,
 									allImports,
@@ -1441,7 +1435,7 @@ const rule: Rule.RuleModule = {
 								);
 							},
 						} );
-						// Only report once per orphaned group
+						// Only report once per orphaned group.
 						break;
 					}
 				}
