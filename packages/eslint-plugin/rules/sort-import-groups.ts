@@ -770,14 +770,10 @@ const rule: Rule.RuleModule = {
 			// Determine the range to replace: from the first import to the last import in the group.
 			const firstImport = importsInGroup[ 0 ];
 			const lastImport = importsInGroup[ importsInGroup.length - 1 ];
-
-			// Find the start position (after any preceding dependency comment of the first import).
 			const startPosition = firstImport.range[ 0 ];
-
-			// Find the end position of the last import
 			const endPosition = lastImport.range[ 1 ];
 
-			// Replace the entire range with the sorted imports
+			// Replace the entire range with the sorted imports.
 			return [
 				fixer.replaceTextRange(
 					[ startPosition, endPosition ],
