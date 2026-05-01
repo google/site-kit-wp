@@ -640,21 +640,33 @@ const rule: Rule.RuleModule = {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object}  node                        Import node.
-		 * @param {string}  source                      Import source.
-		 * @param {string}  group                       Import group.
-		 * @param {Object}  options                     Options object.
-		 * @param {boolean} options.needsReorganization Whether reorganization is needed.
+		 * @param {Object}      node                        Import node.
+		 * @param {string}      source                      Import source.
+		 * @param {string}      group                       Import group.
+		 * @param {Object}      options                     Options object.
+		 * @param {boolean}     options.needsReorganization Whether reorganization is needed.
+		 * @param {Object|null} options.previousNode        The last import node from the preceding group, or null if this is the first import.
 		 * @return {void}
 		 */
 		function checkCommentBlock(
 			node: ImportNode,
 			source: string,
 			group: DependencyGroup,
-			options: { needsReorganization: boolean }
+			options: {
+				needsReorganization: boolean;
+				previousNode: ImportNode | null;
+			}
 		) {
 			const precedingComment = getPrecedingCommentBlock( node );
 			const expectedComment = getExpectedCommentBlock( group );
+
+			// A blank line is needed before the comment when there is a preceding
+			// import (this is not the first group) and there isn't already a blank
+			// line in the source (detected by two consecutive newlines).
+			const needsBlankLineBefore =
+				options.previousNode !== null &&
+				node.range[ 0 ] >= 2 &&
+				sourceCode.text[ node.range[ 0 ] - 2 ] !== '\n';
 
 			if ( ! precedingComment ) {
 				if ( ! options.needsReorganization ) {
@@ -663,9 +675,10 @@ const rule: Rule.RuleModule = {
 						message: `Import from '${ source }' should be preceded by a "${ group }" comment block.`,
 						fix( fixer ) {
 							const nodeText = sourceCode.getText( node );
+							const prefix = needsBlankLineBefore ? '\n' : '';
 							return fixer.replaceText(
 								node,
-								`${ expectedComment }\n${ nodeText }`
+								`${ prefix }${ expectedComment }\n${ nodeText }`
 							);
 						},
 					} );
@@ -897,6 +910,34 @@ const rule: Rule.RuleModule = {
 				const newlineMatch = sourceAfter.match( /^\n/ );
 				const endPos = newlineMatch ? commentEnd + 1 : commentEnd;
 
+				// If the orphaned comment sits between an import line and the next
+				// group's header comment, removing it (and its newline) would leave
+				// the two items adjacent with no blank line. In that case, replace
+				// the removed range with a single newline to preserve the blank line.
+				const sourceBefore = sourceCode.text.slice(
+					0,
+					comment.range[ 0 ]
+				);
+				const prevCharIsNewline =
+					sourceBefore.length >= 1 &&
+					sourceBefore[ sourceBefore.length - 1 ] === '\n';
+				const prevPrevIsNotNewline =
+					sourceBefore.length >= 2 &&
+					sourceBefore[ sourceBefore.length - 2 ] !== '\n';
+				const textAfterRemoval = sourceCode.text.slice( endPos );
+				const nextIsComment = /^\s*\/\*\*/.test( textAfterRemoval );
+
+				if (
+					prevCharIsNewline &&
+					prevPrevIsNotNewline &&
+					nextIsComment
+				) {
+					return fixer.replaceTextRange(
+						[ comment.range[ 0 ], endPos ],
+						'\n'
+					);
+				}
+
 				return fixer.removeRange( [ comment.range[ 0 ], endPos ] );
 			};
 		}
@@ -1032,6 +1073,7 @@ const rule: Rule.RuleModule = {
 				if ( group !== currentGroup ) {
 					checkCommentBlock( node, source, group, {
 						needsReorganization,
+						previousNode: lastNode,
 					} );
 					currentGroup = group;
 					lastNode = null;
@@ -1075,7 +1117,7 @@ const rule: Rule.RuleModule = {
 		 */
 		function getNonDependencyComments( node: ImportNode ) {
 			const comments = leadingComments( node );
-			const nonDepComments: LComment[] = [];
+			const nonDependencyComments: LComment[] = [];
 
 			// First pass: identify which comments are non-dependency and close to the import.
 			const candidates: LComment[] = [];
@@ -1117,21 +1159,21 @@ const rule: Rule.RuleModule = {
 					// If this comment is at or before the first candidate.
 					if ( comment.range[ 1 ] <= firstCandidate.range[ 0 ] ) {
 						// Check if it's consecutive with what we have
-						if ( nonDepComments.length === 0 ) {
+						if ( nonDependencyComments.length === 0 ) {
 							// First comment we're adding, check if consecutive with first candidate.
 							const linesBetween =
 								firstCandidate.loc.start.line -
 								comment.loc.end.line;
 							if ( linesBetween <= 1 ) {
-								nonDepComments.unshift( comment );
+								nonDependencyComments.unshift( comment );
 							}
 						} else {
 							// Check if consecutive with the first comment in our list.
 							const linesBetween =
-								nonDepComments[ 0 ].loc.start.line -
+								nonDependencyComments[ 0 ].loc.start.line -
 								comment.loc.end.line;
 							if ( linesBetween <= 1 ) {
-								nonDepComments.unshift( comment );
+								nonDependencyComments.unshift( comment );
 							} else {
 								// Gap found, stop looking.
 								break;
@@ -1142,13 +1184,13 @@ const rule: Rule.RuleModule = {
 
 				// Add the candidates.
 				for ( const candidate of candidates ) {
-					if ( ! nonDepComments.includes( candidate ) ) {
-						nonDepComments.push( candidate );
+					if ( ! nonDependencyComments.includes( candidate ) ) {
+						nonDependencyComments.push( candidate );
 					}
 				}
 			}
 
-			return nonDepComments;
+			return nonDependencyComments;
 		}
 
 		/**
