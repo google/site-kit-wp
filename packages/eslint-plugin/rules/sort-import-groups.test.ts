@@ -471,6 +471,66 @@ import Banner from './Banner';
 `,
 		},
 
+		// Orphaned dependency comment block before first import (duplicate heading ahead of correct group heading).
+		{
+			code: `
+/**
+ * WordPress dependencies
+ */
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import React from 'react';
+`,
+			errors: [
+				{
+					message:
+						'Orphaned dependency comment block should be removed.',
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import React from 'react';
+`,
+		},
+
+		// Orphaned dependency comment block between imports (duplicate heading ahead of correct group heading).
+		{
+			code: `
+/**
+ * External dependencies
+ */
+import React from 'react';
+/**
+ * External dependencies
+ */
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+`,
+			errors: [
+				{
+					message:
+						'Orphaned dependency comment block should be removed.',
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+import React from 'react';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+`,
+		},
+
 		// Duplicate comment blocks within same group.
 		{
 			code: `
