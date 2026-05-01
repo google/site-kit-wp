@@ -359,7 +359,7 @@ import { useSelect } from 'googlesitekit-data';
 `,
 		},
 
-		// Empty and missing dependency groups.
+		// Empty and missing dependency comment blocks.
 		{
 			code: `
 /**
@@ -504,7 +504,7 @@ import Banner from './Banner';
 `,
 		},
 
-		// Orphaned dependency comment block before first import (duplicate heading ahead of correct group heading).
+		// Empty comment block before first valid comment block.
 		{
 			code: `
 /**
@@ -531,7 +531,7 @@ import React from 'react';
 `,
 		},
 
-		// Orphaned dependency comment block between imports (duplicate heading ahead of correct group heading).
+		// Empty comment block between valid comment blocks.
 		{
 			code: `
 /**
