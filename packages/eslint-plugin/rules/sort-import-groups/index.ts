@@ -25,6 +25,11 @@ import type * as ESTree from 'estree';
 /**
  * Internal dependencies
  */
+import {
+	EXTERNAL_DEPENDENCIES,
+	INTERNAL_DEPENDENCIES,
+	WORDPRESS_DEPENDENCIES,
+} from './constants';
 import type {
 	AnyNode,
 	DependencyGroup,
@@ -33,9 +38,6 @@ import type {
 	LComment,
 } from './types';
 import {
-	EXTERNAL_DEPENDENCIES,
-	INTERNAL_DEPENDENCIES,
-	WORDPRESS_DEPENDENCIES,
 	compareImports,
 	determineReplaceStart,
 	getExpectedCommentBlock,

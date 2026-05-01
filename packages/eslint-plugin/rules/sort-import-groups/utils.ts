@@ -24,6 +24,11 @@ import type * as ESTree from 'estree';
 /**
  * Internal dependencies
  */
+import {
+	EXTERNAL_DEPENDENCIES,
+	INTERNAL_DEPENDENCIES,
+	WORDPRESS_DEPENDENCIES,
+} from './constants';
 import type {
 	AnyNode,
 	DependencyGroup,
@@ -32,10 +37,6 @@ import type {
 	ImportNode,
 	LComment,
 } from './types';
-
-export const WORDPRESS_DEPENDENCIES: DependencyGroup = 'WordPress dependencies';
-export const EXTERNAL_DEPENDENCIES: DependencyGroup = 'External dependencies';
-export const INTERNAL_DEPENDENCIES: DependencyGroup = 'Internal dependencies';
 
 /**
  * Checks whether a comment text matches one of the dependency group headings.
