@@ -43,7 +43,7 @@ const ruleTesterTypeScript = new RuleTester( {
 
 ruleTester.run( 'sort-import-groups', rule, {
 	valid: [
-		// Properly sorted with all three groups
+		// Properly sorted with all three groups.
 		{
 			code: `
 /**
@@ -67,7 +67,7 @@ import Banner from './Banner';
 `,
 		},
 
-		// Only external dependencies
+		// Only external dependencies.
 		{
 			code: `
 /**
@@ -78,7 +78,7 @@ import React from 'react';
 `,
 		},
 
-		// Only WordPress dependencies
+		// Only WordPress dependencies.
 		{
 			code: `
 /**
@@ -89,7 +89,7 @@ import { __ } from '@wordpress/i18n';
 `,
 		},
 
-		// Only internal dependencies
+		// Only internal dependencies.
 		{
 			code: `
 /**
@@ -100,7 +100,7 @@ import Banner from './Banner';
 `,
 		},
 
-		// Sorted members within import
+		// Sorted members within import.
 		{
 			code: `
 /**
@@ -110,7 +110,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 `,
 		},
 
-		// Different internal dependency patterns
+		// Different internal dependency patterns.
 		{
 			code: `
 /**
@@ -123,7 +123,7 @@ import LocalComponent from './LocalComponent';
 `,
 		},
 
-		// Require statements
+		// Require statements.
 		{
 			code: `
 /**
@@ -134,7 +134,7 @@ const path = require( 'path' );
 `,
 		},
 
-		// Side-effect imports should come first and preserve their order
+		// Side-effect imports should come first and preserve their order.
 		{
 			code: `
 /**
@@ -163,7 +163,7 @@ import Banner from './Banner';
 	],
 
 	invalid: [
-		// Missing comment block for external dependencies
+		// Missing comment block for external dependencies.
 		{
 			code: `
 import PropTypes from 'prop-types';
@@ -184,7 +184,7 @@ import React from 'react';
 `,
 		},
 
-		// Missing comment block for WordPress dependencies
+		// Missing comment block for WordPress dependencies.
 		{
 			code: `
 import { useCallback } from '@wordpress/element';
@@ -205,7 +205,7 @@ import { __ } from '@wordpress/i18n';
 `,
 		},
 
-		// Missing comment block for internal dependencies
+		// Missing comment block for internal dependencies.
 		{
 			code: `
 import { useSelect } from 'googlesitekit-data';
@@ -226,7 +226,7 @@ import Banner from './Banner';
 `,
 		},
 
-		// Unsorted imports in same group
+		// Unsorted imports in same group.
 		{
 			code: `
 /**
@@ -250,7 +250,7 @@ import React from 'react';
 `,
 		},
 
-		// Unsorted WordPress dependencies
+		// Unsorted WordPress dependencies.
 		{
 			code: `
 /**
@@ -274,7 +274,7 @@ import { __ } from '@wordpress/i18n';
 `,
 		},
 
-		// Unsorted members
+		// Unsorted members.
 		{
 			code: `
 /**
@@ -296,7 +296,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
 `,
 		},
 
-		// Multiple groups without proper comments
+		// Multiple groups without proper comments.
 		{
 			code: `
 import PropTypes from 'prop-types';
@@ -333,7 +333,7 @@ import { useSelect } from 'googlesitekit-data';
 `,
 		},
 
-		// Wrong order - should reorganize
+		// Wrong order - should reorganize.
 		{
 			code: `
 import { useSelect } from 'googlesitekit-data';
@@ -359,7 +359,7 @@ import { useSelect } from 'googlesitekit-data';
 `,
 		},
 
-		// Unsorted internal dependencies
+		// Unsorted internal dependencies.
 		{
 			code: `
 /**
@@ -383,7 +383,7 @@ import LocalComponent from './LocalComponent';
 `,
 		},
 
-		// Mixed require and import - will need two passes to fully fix
+		// Mixed require and import - will need two passes to fully fix.
 		{
 			code: `
 const path = require( 'path' );
@@ -399,7 +399,7 @@ const globToRegExp = require( 'glob-to-regexp' );
 						"Import from 'glob-to-regexp' should be sorted alphabetically (before 'path').",
 				},
 			],
-			// First pass adds the comment
+			// First pass adds the comment.
 			output: `
 /**
  * External dependencies
@@ -409,7 +409,7 @@ const globToRegExp = require( 'glob-to-regexp' );
 `,
 		},
 
-		// Complex sorting scenario
+		// Complex sorting scenario.
 		{
 			code: `
 /**
@@ -471,7 +471,7 @@ import Banner from './Banner';
 `,
 		},
 
-		// Duplicate comment blocks within same group
+		// Duplicate comment blocks within same group.
 		{
 			code: `
 /**
@@ -506,7 +506,7 @@ import { __ } from '@wordpress/i18n';
 `,
 		},
 
-		// Orphaned imports after non-import code
+		// Orphaned imports after non-import code.
 		{
 			code: `
 /**
@@ -540,7 +540,38 @@ const someConstant = 'value';
 `,
 		},
 
-		// Side-effect imports in wrong order should preserve their original order
+		// Orphaned require after non-import code.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+const path = require( 'path' );
+
+const someConstant = 'value';
+
+const globToRegExp = require( 'glob-to-regexp' );
+`,
+			errors: [
+				{
+					message:
+						"Import from 'glob-to-regexp' is separated from other imports. All imports should be grouped together at the top of the file.",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+const globToRegExp = require( 'glob-to-regexp' );
+const path = require( 'path' );
+
+const someConstant = 'value';
+
+
+`,
+		},
+
+		// Side-effect imports in wrong order should preserve their original order.
 		{
 			code: `
 /**
@@ -570,11 +601,11 @@ import ReactDOM from 'react-dom';
 	],
 } );
 
-// TypeScript-specific tests
+// TypeScript-specific tests.
 ruleTesterTypeScript.run( 'sort-import-groups (TypeScript)', rule, {
 	valid: [],
 	invalid: [
-		// Unsorted members with TypeScript 'type' modifier should preserve it
+		// Unsorted members with TypeScript 'type' modifier should preserve it.
 		{
 			code: `
 /**
