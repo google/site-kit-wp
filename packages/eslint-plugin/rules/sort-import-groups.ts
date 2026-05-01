@@ -692,9 +692,18 @@ const rule: Rule.RuleModule = {
 						node,
 						message: `Import from '${ source }' should be preceded by a "${ group }" comment block, found "${ commentText }".`,
 						fix( fixer ) {
-							return fixer.replaceTextRange(
-								precedingComment.range,
-								expectedComment
+							if ( isValidGroupComment( commentText ) ) {
+								// Wrong dependency comment - replace it.
+								return fixer.replaceTextRange(
+									precedingComment.range,
+									expectedComment
+								);
+							}
+							// Non-dependency comment - preserve it and insert
+							// the dependency comment block before the import.
+							return fixer.insertTextBefore(
+								node,
+								`\n${ expectedComment }\n`
 							);
 						},
 					} );
