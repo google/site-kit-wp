@@ -128,6 +128,10 @@ export function getExpectedCommentBlock( group: DependencyGroup ): string {
 /**
  * Gets the preceding comment block for a node.
  *
+ * Walks back through leading comments, treating contiguous non-block (line)
+ * comments as transparent so the actual dependency block above them can still
+ * be located.
+ *
  * @since n.e.x.t
  *
  * @param sourceCode Source code facade from ESLint.
@@ -143,18 +147,24 @@ export function getPrecedingCommentBlock(
 		return null;
 	}
 
-	const lastComment = comments[ comments.length - 1 ];
+	let nextItemStartLine = node.loc.start.line;
 
-	if ( lastComment.type !== 'Block' ) {
-		return null;
+	for ( let index = comments.length - 1; index >= 0; index-- ) {
+		const comment = comments[ index ];
+		const linesBetween = nextItemStartLine - comment.loc.end.line;
+
+		if ( linesBetween > 1 ) {
+			return null;
+		}
+
+		if ( comment.type === 'Block' ) {
+			return comment;
+		}
+
+		nextItemStartLine = comment.loc.start.line;
 	}
 
-	const linesBetween = node.loc.start.line - lastComment.loc.end.line;
-	if ( linesBetween > 1 ) {
-		return null;
-	}
-
-	return lastComment;
+	return null;
 }
 
 /**

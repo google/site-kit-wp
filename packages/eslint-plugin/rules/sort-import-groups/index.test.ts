@@ -160,6 +160,19 @@ import { useSelect } from 'googlesitekit-data';
 import Banner from './Banner';
 `,
 		},
+
+		// Non-dependency line comment between dependency comment block
+		// and the first import in a group is allowed.
+		{
+			code: `
+/**
+ * Internal dependencies
+ */
+// We need to add types for imported SVGs.
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import BannerModal from './index';
+`,
+		},
 	],
 
 	invalid: [
@@ -763,20 +776,20 @@ import React from 'react';
  * Internal dependencies
  */
 import BannerModal from './index';
-// @ts-expect-error - We need to add types for imported SVGs.
+// We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 `,
 			errors: [
 				{
 					message:
-						'Import from \'react\' should be preceded by a "External dependencies" comment block, found "Some other comment.".',
+						"Import from '@/svg/graphics/welcome-modal-graphic.svg' should be sorted alphabetically (before './index').",
 				},
 			],
 			output: `
 /**
  * Internal dependencies
  */
-// @ts-expect-error - We need to add types for imported SVGs.
+// We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import BannerModal from './index';
 `,
