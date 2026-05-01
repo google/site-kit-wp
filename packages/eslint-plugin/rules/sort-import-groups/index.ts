@@ -25,14 +25,16 @@ import type * as ESTree from 'estree';
 /**
  * Internal dependencies
  */
-import {
+import type {
 	AnyNode,
 	DependencyGroup,
-	EXTERNAL_DEPENDENCIES,
 	GroupedImports,
-	INTERNAL_DEPENDENCIES,
 	ImportNode,
 	LComment,
+} from './types';
+import {
+	EXTERNAL_DEPENDENCIES,
+	INTERNAL_DEPENDENCIES,
 	WORDPRESS_DEPENDENCIES,
 	compareImports,
 	determineReplaceStart,
