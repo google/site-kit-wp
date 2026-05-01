@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * Register `esbuild-register` so Node can `require()` TypeScript rule files at
+ * lint time (e.g. via the pre-commit hook or `npm run lint:js`). Jest is
+ * unaffected because it transforms TypeScript files via its own Babel transformer.
+ */
+require( 'esbuild-register/dist/node' ).register();
+
 module.exports = {
 	'acronym-case': require( './acronym-case' ),
 	'function-declaration-consistency': require( './function-declaration-consistency' ),
