@@ -135,6 +135,14 @@
 		.googlesitekit-setup__wrapper {
 			border-radius: 0;
 		}
+
+		.googlesitekit-setup__reset-notice {
+			margin-right: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-right: $grid-gap-desktop;
+			}
+		}
 	}
 
 	.googlesitekit-setup__warning {
