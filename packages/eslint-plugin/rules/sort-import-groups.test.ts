@@ -729,6 +729,32 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 `,
 		},
+
+		// Non-dependency comment before first import.
+		{
+			code: `
+/**
+ * Some other comment.
+ */
+import React from 'react';
+`,
+			errors: [
+				{
+					message:
+						'Import from \'react\' should be preceded by a "External dependencies" comment block, found "Some other comment.".',
+				},
+			],
+			output: `
+/**
+ * Some other comment.
+ */
+
+/**
+ * External dependencies
+ */
+import React from 'react';
+`,
+		},
 	],
 } );
 
