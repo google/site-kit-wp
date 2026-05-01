@@ -1444,4 +1444,4 @@ const rule: Rule.RuleModule = {
 	},
 };
 
-module.exports = rule;
+export default rule;
