@@ -392,6 +392,41 @@ import { useSelect } from 'googlesitekit-data';
 `,
 		},
 
+		// Empty and missing dependency comment blocks, with extra empty lines.
+		{
+			code: `
+/**
+ * WordPress dependencies
+ */
+
+
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+import PropTypes from 'prop-types';
+`,
+			errors: [
+				{
+					message:
+						"Import from 'prop-types' should come before Internal dependencies imports.",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+
+`,
+		},
+
 		// Unsorted internal dependencies.
 		{
 			code: `

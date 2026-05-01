@@ -1198,8 +1198,8 @@ const rule: Rule.RuleModule = {
 				const linesBetween =
 					nextItem.loc.start.line - comment.loc.end.line;
 
-				// If it's reasonably close (within 3 lines), include it.
-				if ( linesBetween <= 3 ) {
+				// If it's reasonably close (within 4 lines), include it.
+				if ( linesBetween <= 4 ) {
 					replaceStart = comment.range[ 0 ];
 					foundConsecutiveChain = true;
 				} else if ( foundConsecutiveChain ) {
