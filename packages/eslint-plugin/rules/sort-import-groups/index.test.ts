@@ -755,6 +755,32 @@ import React from 'react';
 import React from 'react';
 `,
 		},
+
+		// Non-dependency comment sorted before first import.
+		{
+			code: `
+/**
+ * Internal dependencies
+ */
+import BannerModal from './index';
+// @ts-expect-error - We need to add types for imported SVGs.
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+`,
+			errors: [
+				{
+					message:
+						'Import from \'react\' should be preceded by a "External dependencies" comment block, found "Some other comment.".',
+				},
+			],
+			output: `
+/**
+ * Internal dependencies
+ */
+// @ts-expect-error - We need to add types for imported SVGs.
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import BannerModal from './index';
+`,
+		},
 	],
 } );
 
