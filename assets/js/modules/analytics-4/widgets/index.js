@@ -224,16 +224,26 @@ export function registerWidgets( widgets ) {
 					return false;
 				}
 
-				const availableAudiences =
-					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-				const configuredAudiences =
-					select( CORE_USER ).getConfiguredAudiences();
+				const isAnalyticsSetupComplete =
+					select( CORE_USER ).isAnalyticsSetupComplete();
 
 				const audienceSegmentationSetupCompletedBy =
 					select(
 						MODULES_ANALYTICS_4
 					).getAudienceSegmentationSetupCompletedBy();
+
+				if (
+					isAnalyticsSetupComplete &&
+					! audienceSegmentationSetupCompletedBy
+				) {
+					return true;
+				}
+
+				const availableAudiences =
+					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
+
+				const configuredAudiences =
+					select( CORE_USER ).getConfiguredAudiences();
 
 				return (
 					availableAudiences?.length &&
