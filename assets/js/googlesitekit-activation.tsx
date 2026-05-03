@@ -1,5 +1,7 @@
 /**
- * DashboardDetails component.
+ * Activation component.
+ *
+ * This JavaScript loads on every admin page. Reserved for later.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -23,35 +25,25 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import DashboardEntityApp from './components/DashboardEntityApp';
+import { ActivationApp } from './components/activation/activation-app';
+import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 import Root from './components/Root';
-import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-} from './googlesitekit/constants';
 
-// Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-entity-dashboard'
+		'js-googlesitekit-activation'
 	);
 
 	if ( renderTarget ) {
-		const { viewOnly } = renderTarget.dataset;
-
 		render(
-			<Root
-				viewContext={
-					viewOnly
-						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
-						: VIEW_CONTEXT_ENTITY_DASHBOARD
-				}
-			>
-				<DashboardEntityApp />
+			<Root viewContext={ VIEW_CONTEXT_ACTIVATION as never }>
+				<ActivationApp />
 			</Root>,
 			renderTarget
 		);
+
+		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}
 } );

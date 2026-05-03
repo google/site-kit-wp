@@ -1,7 +1,7 @@
 /**
- * Public Widgets API entrypoint.
+ * Ads module entrypoint.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,33 +20,17 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import Widgets from 'googlesitekit-widgets';
+import Notifications from 'googlesitekit-notifications';
 import {
 	registerStore,
-	createWidgets,
+	registerModule,
 	registerWidgets,
-} from './googlesitekit/widgets';
+	registerNotifications,
+} from './modules/ads';
 
 registerStore( Data );
-
-const Widgets = createWidgets( Data );
-registerWidgets( Widgets );
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
-}
-
-global.googlesitekit.widgets = Widgets;
-
-// This is only exported for Jest and is not used in production.
-export default Widgets;
-
-export const {
-	WIDGET_WIDTHS,
-	WIDGET_AREA_STYLES,
-	registerWidgetArea,
-	registerWidget,
-	assignWidgetArea,
-	assignWidget,
-	isWidgetAreaRegistered,
-	isWidgetRegistered,
-} = Widgets;
+registerModule( Modules );
+( registerWidgets as ( widgets?: unknown ) => void )( Widgets );
+registerNotifications( Notifications );

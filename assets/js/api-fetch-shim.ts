@@ -38,7 +38,9 @@ apiFetch.rootURLMiddleware = apiFetch.createRootURLMiddleware( rootURL );
 apiFetch.dedupeMiddleware = createDedupeMiddleware( {
 	onDuplicate: logDuplicate,
 } );
-apiFetch.preloadingMiddleware = createPreloadingMiddleware( preloadedData );
+apiFetch.preloadingMiddleware = createPreloadingMiddleware(
+	preloadedData as Record< string, unknown >
+);
 
 apiFetch.use( apiFetch.nonceMiddleware );
 apiFetch.use( apiFetch.mediaUploadMiddleware );

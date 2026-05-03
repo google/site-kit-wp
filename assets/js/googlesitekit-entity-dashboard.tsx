@@ -1,7 +1,7 @@
 /**
- * Key metrics setup.
+ * DashboardDetails component.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,33 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
+import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
-import KeyMetricsSetupApp from './components/key-metrics-setup/KeyMetricsSetupApp';
-import { VIEW_CONTEXT_KEY_METRICS_SETUP } from './googlesitekit/constants';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+} from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-key-metrics-setup'
+		'js-googlesitekit-entity-dashboard'
 	);
 
 	if ( renderTarget ) {
+		const { viewOnly } = renderTarget.dataset;
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_KEY_METRICS_SETUP }>
-				<KeyMetricsSetupApp />
+			<Root
+				viewContext={
+					( viewOnly
+						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_ENTITY_DASHBOARD ) as never
+				}
+			>
+				<DashboardEntityApp />
 			</Root>,
 			renderTarget
 		);

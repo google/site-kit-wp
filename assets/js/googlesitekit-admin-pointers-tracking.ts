@@ -21,9 +21,21 @@
  */
 import { trackEvent } from './util';
 
-const TRACKING_KEYS = [ 'view', 'click', 'dismiss' ];
+type TrackingKey = 'view' | 'click' | 'dismiss';
 
-function fireTrackingEvent( eventConfig ) {
+interface PointerEventConfig {
+	category?: string;
+	action?: string;
+	label?: string;
+}
+
+type PointerTrackingConfig = Partial<
+	Record< TrackingKey, PointerEventConfig >
+>;
+
+const TRACKING_KEYS: TrackingKey[] = [ 'view', 'click', 'dismiss' ];
+
+function fireTrackingEvent( eventConfig: PointerEventConfig | undefined ) {
 	if ( ! eventConfig || ! eventConfig.category || ! eventConfig.action ) {
 		return null;
 	}
@@ -36,17 +48,20 @@ function fireTrackingEvent( eventConfig ) {
 	return trackEvent( category, action );
 }
 
-function registerPointerTracking( slug, tracking ) {
+function registerPointerTracking(
+	slug: string,
+	tracking: PointerTrackingConfig
+): { onDismiss: ( () => void ) | null } {
 	if ( ! tracking || ! Object.keys( tracking ).length ) {
 		return { onDismiss: null };
 	}
 
-	const fired = TRACKING_KEYS.reduce(
+	const fired: Record< TrackingKey, boolean > = TRACKING_KEYS.reduce(
 		( acc, key ) => ( { ...acc, [ key ]: false } ),
-		{}
+		{} as Record< TrackingKey, boolean >
 	);
 
-	function fireOnce( key ) {
+	function fireOnce( key: TrackingKey ) {
 		if ( fired[ key ] || ! tracking[ key ] ) {
 			return null;
 		}
@@ -64,7 +79,7 @@ function registerPointerTracking( slug, tracking ) {
 		document.documentElement.ownerDocument;
 	const ctaSelector = `.${ slug } .googlesitekit-pointer-cta`;
 
-	function handleClick( event ) {
+	function handleClick( event: Event ) {
 		const target = event.target instanceof Element ? event.target : null;
 		if ( ! target || ! target.closest( ctaSelector ) ) {
 			return;
@@ -82,7 +97,8 @@ function registerPointerTracking( slug, tracking ) {
 
 		if ( shouldDeferNavigation ) {
 			track.finally( () => {
-				ownerDocument.defaultView.location.assign( href );
+				/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+				ownerDocument.defaultView!.location.assign( href );
 			} );
 		}
 	}

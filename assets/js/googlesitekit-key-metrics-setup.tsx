@@ -1,9 +1,7 @@
 /**
- * Activation component.
+ * Key metrics setup.
  *
- * This JavaScript loads on every admin page. Reserved for later.
- *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,23 +25,22 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ActivationApp } from './components/activation/activation-app';
-import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 import Root from './components/Root';
+import KeyMetricsSetupApp from './components/key-metrics-setup/KeyMetricsSetupApp';
+import { VIEW_CONTEXT_KEY_METRICS_SETUP } from './googlesitekit/constants';
 
+// Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-activation'
+		'js-googlesitekit-key-metrics-setup'
 	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
-				<ActivationApp />
+			<Root viewContext={ VIEW_CONTEXT_KEY_METRICS_SETUP as never }>
+				<KeyMetricsSetupApp />
 			</Root>,
 			renderTarget
 		);
-
-		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 	}
 } );

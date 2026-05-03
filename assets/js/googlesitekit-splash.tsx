@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2023 Google LLC
+ * DashboardSplash component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +25,23 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from './googlesitekit/constants';
-import { AdBlockingRecoveryApp } from './modules/adsense/components/setup';
+import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
+import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
+import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
-domReady( () => {
-	const renderTarget = document.getElementById(
-		'js-googlesitekit-ad-blocking-recovery'
-	);
+domReady( async () => {
+	if ( global._googlesitekitLegacyData.admin.resetSession ) {
+		await clearCache();
+	}
+
+	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_AD_BLOCKING_RECOVERY }>
-				<AdBlockingRecoveryApp />
+			<Root viewContext={ VIEW_CONTEXT_SPLASH as never }>
+				<DashboardSplashApp />
 			</Root>,
 			renderTarget
 		);

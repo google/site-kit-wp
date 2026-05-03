@@ -1,5 +1,5 @@
 /**
- * WPDashboard component.
+ * Adminbar component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -15,7 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
+
+/**
+ * External dependencies
+ */
+import { once } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -24,32 +28,51 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
+import { trackEvent } from './util';
 import Root from './components/Root';
+import AdminBarApp from './components/adminbar/AdminBarApp';
 import {
-	VIEW_CONTEXT_WP_DASHBOARD,
-	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_ADMIN_BAR,
+	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 } from './googlesitekit/constants';
-import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
-// Initialize the app once the DOM is ready.
-domReady( () => {
+// Initialize the whole adminbar app.
+const init = once( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-wp-dashboard'
+		'js-googlesitekit-adminbar-modules'
 	);
 
 	if ( renderTarget ) {
 		const { viewOnly } = renderTarget.dataset;
+
 		const viewContext = viewOnly
-			? VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY
-			: VIEW_CONTEXT_WP_DASHBOARD;
+			? VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY
+			: VIEW_CONTEXT_ADMIN_BAR;
 
 		render(
-			<Root viewContext={ viewContext }>
-				<WPDashboardApp />
+			<Root viewContext={ viewContext as never }>
+				<AdminBarApp />
 			</Root>,
 			renderTarget
 		);
+
+		trackEvent( viewContext, 'view_urlsummary' );
 	}
+} );
+
+domReady( () => {
+	const siteKitMenuItemElement = document.getElementById(
+		'wp-admin-bar-google-site-kit'
+	);
+
+	if ( ! siteKitMenuItemElement ) {
+		return;
+	}
+
+	siteKitMenuItemElement.addEventListener( 'mouseover', init, {
+		once: true,
+	} );
+	siteKitMenuItemElement.addEventListener( 'focusin', init, { once: true } );
 } );

@@ -1,7 +1,7 @@
 /**
- * DashboardSplash component.
+ * Metric selection.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,23 +25,20 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { clearCache } from './googlesitekit/api/cache';
 import Root from './components/Root';
-import DashboardSplashApp from './components/dashboard-splash/DashboardSplashApp';
-import { VIEW_CONTEXT_SPLASH } from './googlesitekit/constants';
+import FullScreenMetricSelectionApp from './components/KeyMetrics/FullScreenMetricSelectionApp';
+import { VIEW_CONTEXT_METRIC_SELECTION } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
-domReady( async () => {
-	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		await clearCache();
-	}
-
-	const renderTarget = document.getElementById( 'js-googlesitekit-splash' );
+domReady( () => {
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-metric-selection'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root viewContext={ VIEW_CONTEXT_SPLASH }>
-				<DashboardSplashApp />
+			<Root viewContext={ VIEW_CONTEXT_METRIC_SELECTION as never }>
+				<FullScreenMetricSelectionApp />
 			</Root>,
 			renderTarget
 		);

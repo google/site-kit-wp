@@ -26,7 +26,13 @@ import { omit } from 'lodash';
  */
 import { createTestRegistry } from '../../tests/js/utils';
 
-const registry = createTestRegistry();
+const registry = createTestRegistry() as unknown as {
+	subscribe: ( listener: () => void ) => void;
+	stores: Record<
+		string,
+		{ store: { dispatch: ( action: { type: string } ) => void } }
+	>;
+};
 const firstPartyStores = omit( registry.stores, 'core/data' );
 
 describe( 'all data stores', () => {

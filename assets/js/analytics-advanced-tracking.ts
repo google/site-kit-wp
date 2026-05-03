@@ -30,8 +30,12 @@ import setUpAdvancedTracking from './analytics-advanced-tracking/set-up-advanced
  *
  * @param {string} action   Event action / event name.
  * @param {Object} metadata Additional event metadata to send, or `null`.
+ * @return {void}
  */
-function sendEvent( action, metadata ) {
+function sendEvent(
+	action: string,
+	metadata: object | null | undefined
+): void {
 	window.gtag( 'event', action, metadata || undefined );
 }
 
