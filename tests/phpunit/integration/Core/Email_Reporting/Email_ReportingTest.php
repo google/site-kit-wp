@@ -83,6 +83,7 @@ class Email_ReportingTest extends TestCase {
 			'email_reporting_last_batch_sent',
 			'email_reporting_last_batch_failed',
 			'email_reporting_subscribers',
+			'email_reporting_enabled',
 		);
 
 		foreach ( $expected_keys as $key ) {
@@ -94,9 +95,30 @@ class Email_ReportingTest extends TestCase {
 		$email_reporting = $this->create_email_reporting();
 		$metrics         = $email_reporting->get_feature_metrics();
 
+		$boolean_metrics = array( 'email_reporting_enabled' );
+
 		foreach ( $metrics as $key => $value ) {
+			if ( in_array( $key, $boolean_metrics, true ) ) {
+				continue;
+			}
 			$this->assertIsInt( $value, sprintf( 'Metric %s should be an integer.', $key ) );
 		}
+	}
+
+	public function test_get_feature_metrics__email_reporting_enabled_reflects_setting() {
+		$email_reporting = $this->create_email_reporting();
+		$email_reporting->register();
+
+		$metrics = $email_reporting->get_feature_metrics();
+		$this->assertIsBool( $metrics['email_reporting_enabled'], 'email_reporting_enabled should be a boolean.' );
+		$this->assertTrue( $metrics['email_reporting_enabled'], 'email_reporting_enabled should default to true.' );
+
+		$settings = new Email_Reporting_Settings( $this->options );
+		$settings->set( array( 'enabled' => false ) );
+
+		$metrics = $email_reporting->get_feature_metrics();
+		$this->assertIsBool( $metrics['email_reporting_enabled'], 'email_reporting_enabled should remain a boolean after disabling.' );
+		$this->assertFalse( $metrics['email_reporting_enabled'], 'email_reporting_enabled should be false after disabling the setting.' );
 	}
 
 	public function test_get_feature_metrics__counts_completed_batch_correctly() {
@@ -147,6 +169,7 @@ class Email_ReportingTest extends TestCase {
 		$this->assertArrayHasKey( 'email_reporting_last_batch_sent', $metrics, 'Feature metrics should include email reporting last batch sent.' );
 		$this->assertArrayHasKey( 'email_reporting_last_batch_failed', $metrics, 'Feature metrics should include email reporting last batch failed.' );
 		$this->assertArrayHasKey( 'email_reporting_subscribers', $metrics, 'Feature metrics should include email reporting subscribers.' );
+		$this->assertArrayHasKey( 'email_reporting_enabled', $metrics, 'Feature metrics should include email reporting enabled flag.' );
 	}
 
 	public function test_register_schedules_initiators_when_enabled() {

@@ -346,6 +346,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			'email_reporting_last_batch_sent'   => $batch_counts['sent'],
 			'email_reporting_last_batch_failed' => $batch_counts['failed'],
 			'email_reporting_subscribers'       => $this->subscribed_users_query->get_subscriber_count(),
+			'email_reporting_enabled'           => $this->settings->is_email_reporting_enabled(),
 		);
 	}
 }
