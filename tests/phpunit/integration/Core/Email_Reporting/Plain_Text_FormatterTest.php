@@ -209,6 +209,12 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Manage subscription: https://example.com/unsubscribe', $result, 'Footer should contain hardcoded manage subscription link.' );
 		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Footer should contain hardcoded privacy policy link.' );
 		$this->assertStringContainsString( 'Help center:', $result, 'Footer should contain hardcoded help center link.' );
+
+		// Verify footer links appear as separate line entries.
+		$lines = explode( "\n", $result );
+		$this->assertContains( 'Manage subscription: https://example.com/unsubscribe', $lines, 'Manage subscription link should be on its own line.' );
+		$this->assertContains( 'Privacy Policy: https://policies.google.com/privacy', $lines, 'Privacy Policy link should be on its own line.' );
+		$this->assertContains( 'Help center: https://sitekit.withgoogle.com/support/?doc=get-support', $lines, 'Help center link should be on its own line.' );
 	}
 
 	public function test_format_section_dispatches_to_metrics_section() {

@@ -143,11 +143,28 @@ class Plain_Text_Formatter {
 		}
 
 		// Footer links (hardcoded to match HTML footer template).
-		$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
-		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+		$lines[] = '';
+		$lines   = self::append_footer_links( $lines, $unsubscribe_url );
 
 		return implode( "\n", $lines );
+	}
+
+	/**
+	 * Appends footer utility links as separate line entries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $lines           Existing lines array.
+	 * @param string $unsubscribe_url Unsubscribe URL for manage subscription link.
+	 * @return array Updated lines array with footer links appended.
+	 */
+	private static function append_footer_links( $lines, $unsubscribe_url ) {
+		if ( ! empty( $unsubscribe_url ) ) {
+			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+			$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+			$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+		}
+		return $lines;
 	}
 
 	/**
@@ -308,11 +325,8 @@ class Plain_Text_Formatter {
 
 		// Footer links (hardcoded to match HTML footer template).
 		$unsubscribe_url = $footer['unsubscribe_url'] ?? '';
-		if ( ! empty( $unsubscribe_url ) ) {
-			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
-			$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-			$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
-		}
+		$lines[]         = '';
+		$lines           = self::append_footer_links( $lines, $unsubscribe_url );
 
 		return implode( "\n", $lines );
 	}
