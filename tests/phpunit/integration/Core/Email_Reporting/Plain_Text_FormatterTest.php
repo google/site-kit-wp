@@ -202,13 +202,22 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$result = Plain_Text_Formatter::format_footer( $cta, $footer );
 
+		$expected_footer_block = implode(
+			"\n",
+			array(
+				'',
+				'',
+				'Manage subscription: https://example.com/unsubscribe',
+				'Privacy Policy: https://policies.google.com/privacy',
+				'Help center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+			)
+		);
+
 		$this->assertStringContainsString( str_repeat( '-', 50 ), $result, 'Footer should contain separator line.' );
 		$this->assertStringContainsString( 'View dashboard: https://example.com/dashboard', $result, 'Footer should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because you signed up.', $result, 'Footer should contain copy text.' );
 		$this->assertStringContainsString( 'Unsubscribe: https://example.com/unsubscribe', $result, 'Footer should contain unsubscribe link as separate line.' );
-		$this->assertStringContainsString( 'Manage subscription: https://example.com/unsubscribe', $result, 'Footer should contain hardcoded manage subscription link.' );
-		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Footer should contain hardcoded privacy policy link.' );
-		$this->assertStringContainsString( 'Help center:', $result, 'Footer should contain hardcoded help center link.' );
+		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 
 	public function test_format_section_dispatches_to_metrics_section() {
