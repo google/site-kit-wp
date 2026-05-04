@@ -63,11 +63,30 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
-	function buildSessionsReportOptions( dates: Record< string, unknown > ) {
+	function buildEngagementReportOptions( dates: Record< string, unknown > ) {
 		return {
 			...dates,
-			metrics: [ { name: 'sessions' } ],
-			reportID: 'analytics-4_site-goals_sessionsReportOptions',
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
+		};
+	}
+
+	function buildSecondaryEventsReportOptions(
+		dates: Record< string, unknown >,
+		secondaryEvents: string[]
+	) {
+		return {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: secondaryEvents,
+				},
+			},
+			reportID:
+				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
 		};
 	}
 
@@ -124,10 +143,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, sessionsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { container, getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -162,10 +181,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, sessionsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -197,10 +216,15 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
+		const secondaryEventsReport = buildSecondaryEventsReportOptions(
+			dates,
+			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
+		);
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, sessionsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+		provideAnalytics4MockReport( registry, secondaryEventsReport );
 
 		const { getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -226,7 +250,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
-		const sessionsReport = buildSessionsReportOptions( dates );
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -237,10 +261,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { totals: [] }, { options: sessionsReport } );
+			.receiveGetReport( { totals: [] }, { options: engagementReport } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ sessionsReport ] );
+			.finishResolution( 'getReport', [ engagementReport ] );
 
 		const { getAllByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -265,10 +289,14 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
+		const engagementReport = buildEngagementReportOptions( dates );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ primaryEventReport ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReport ] );
 
 		const { container } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,

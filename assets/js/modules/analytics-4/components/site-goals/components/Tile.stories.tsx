@@ -24,6 +24,14 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;
 
+// Type for Storybook story exports with custom properties
+type Story = {
+	( props: TileProps ): JSX.Element;
+	storyName?: string;
+	args?: TileProps & { setupRegistry?: ( registry: Registry ) => void };
+	scenario?: Record< string, unknown >;
+};
+
 function Template( {
 	setupRegistry = () => {},
 	...props
@@ -45,7 +53,7 @@ function Template( {
 	);
 }
 
-export const DefaultTile = Template.bind( {} );
+export const DefaultTile = Template.bind( {} ) as Story;
 DefaultTile.storyName = 'Default Tile';
 DefaultTile.args = {
 	title: 'Form Submissions',
@@ -55,9 +63,9 @@ DefaultTile.args = {
 	format: { style: 'decimal' },
 };
 
-export const PrimaryTile = Template.bind( {} );
-PrimaryTile.storyName = 'Primary Tile';
-PrimaryTile.args = {
+export const PrimaryPositiveTile = Template.bind( {} ) as Story;
+PrimaryPositiveTile.storyName = 'Primary Tile - Positive';
+PrimaryPositiveTile.args = {
 	title: 'Revenue',
 	subtitle: 'Total revenue',
 	currentValue: 52000,
@@ -65,9 +73,33 @@ PrimaryTile.args = {
 	format: { style: 'decimal' },
 	primary: true,
 };
-PrimaryTile.scenario = {};
+PrimaryPositiveTile.scenario = {};
 
-export const PercentFormat = Template.bind( {} );
+export const PrimaryNegativeTile = Template.bind( {} ) as Story;
+PrimaryNegativeTile.storyName = 'Primary Tile - Negative';
+PrimaryNegativeTile.args = {
+	title: 'Revenue',
+	subtitle: 'Total revenue',
+	currentValue: 48000,
+	previousValue: 52000,
+	format: { style: 'decimal' },
+	primary: true,
+};
+PrimaryNegativeTile.scenario = {};
+
+export const PrimaryNeutralTile = Template.bind( {} ) as Story;
+PrimaryNeutralTile.storyName = 'Primary Tile - Neutral';
+PrimaryNeutralTile.args = {
+	title: 'Revenue',
+	subtitle: 'Total revenue',
+	currentValue: 50000,
+	previousValue: 50000,
+	format: { style: 'decimal' },
+	primary: true,
+};
+PrimaryNeutralTile.scenario = {};
+
+export const PercentFormat = Template.bind( {} ) as Story;
 PercentFormat.storyName = 'Percent Format';
 PercentFormat.args = {
 	title: 'Conversion Rate',
@@ -77,7 +109,7 @@ PercentFormat.args = {
 	format: { style: 'percent', maximumFractionDigits: 1 },
 };
 
-export const WithInfoTooltip = Template.bind( {} );
+export const WithInfoTooltip = Template.bind( {} ) as Story;
 WithInfoTooltip.storyName = 'With Info Tooltip';
 WithInfoTooltip.args = {
 	title: 'Add to Cart',
@@ -89,7 +121,7 @@ WithInfoTooltip.args = {
 };
 WithInfoTooltip.scenario = {};
 
-export const NegativeChange = Template.bind( {} );
+export const NegativeChange = Template.bind( {} ) as Story;
 NegativeChange.storyName = 'Negative Change';
 NegativeChange.args = {
 	title: 'Form Submissions',
@@ -99,7 +131,7 @@ NegativeChange.args = {
 	format: { style: 'decimal' },
 };
 
-export const CustomDateRange = Template.bind( {} );
+export const CustomDateRange = Template.bind( {} ) as Story;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
 CustomDateRange.args = {
 	title: 'Form Submissions',

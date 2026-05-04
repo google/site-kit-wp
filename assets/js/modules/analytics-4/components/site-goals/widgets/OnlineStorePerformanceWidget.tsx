@@ -23,6 +23,7 @@ import type { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,27 +40,12 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
-import { createInterpolateElement } from '@wordpress/element';
-
-type ReportRow = {
-	dimensionValues?: Array< { value: string } >;
-	metricValues?: Array< { value: string } >;
-};
-
-type Report = {
-	rows: ReportRow[];
-	totals: ReportRow[];
-};
-
-const PERCENT_FORMAT = {
-	style: 'percent' as const,
-	signDisplay: 'never' as const,
-	maximumFractionDigits: 1,
-};
-
-const NUMBER_FORMAT = {
-	style: 'decimal' as const,
-};
+import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import {
+	NUMBER_FORMAT,
+	PERCENT_FORMAT,
+} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
+import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
 const EVENT_RATE_LABELS: Record< string, string > = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -70,63 +56,6 @@ const EVENT_TOTAL_LABELS: Record< string, string > = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
 };
-
-function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
-	return ( row: ReportRow ) =>
-		row?.dimensionValues?.[ dimensionIndex ]?.value === dateRangeSlug;
-}
-
-function processReports( eventsReport: Report, sessionsReport: Report ) {
-	const { rows: primaryEventRows = [] } = eventsReport || {};
-	const { totals: sessionsRows = [] } = sessionsReport || {};
-
-	// dateRange is at dimensionValues[1] since eventName is at [0].
-	const currentPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousPrimaryCount =
-		parseInt(
-			( primaryEventRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 1 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	// Get session counts.
-	const currentSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const currentRate =
-		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
-	const previousRate =
-		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
-
-	return {
-		currentRate,
-		previousRate,
-		currentPrimaryCount,
-		previousPrimaryCount,
-		currentSessions,
-	};
-}
 
 const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 	const { Widget, WidgetNull, WidgetReportError } = props;
@@ -146,64 +75,44 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		[]
 	);
 
-	const eventOptions = {
-		...dates,
-		metrics: [ { name: 'eventCount' } ],
-		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: {
-			eventName: primaryEvent,
-		},
-		reportID:
-			'analytics-4_online-store-performance-widget_primaryEventReportOptions',
-	};
+	const reportOptions: ReportOptions[] = [];
 
-	const sessionsOptions = {
-		...dates,
-		metrics: [ { name: 'sessions' } ],
-		reportID: 'analytics-4_site-goals_sessionsReportOptions',
-	};
+	if ( primaryEvent ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: primaryEvent,
+			},
+			reportID:
+				'analytics-4_online-store-performance-widget_primaryEventReportOptions',
+		} );
 
-	const [ primaryEventReport, sessionsReport ] = useInViewSelect(
-		( select: Select ) =>
-			primaryEvent
-				? [
-						select( MODULES_ANALYTICS_4 ).getReport( eventOptions ),
-						select( MODULES_ANALYTICS_4 ).getReport(
-							sessionsOptions
-						),
-				  ]
-				: [],
-		[ primaryEvent, eventOptions, sessionsOptions ]
-	);
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
+		} );
+	}
 
-	const loading = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ eventOptions ]
-				  ) ||
-				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ sessionsOptions ]
-				  )
-				: undefined,
-		[ primaryEvent, eventOptions ]
-	);
+	const [ primaryEventReport, engagementReport ] =
+		useInViewSelect(
+			( select: Select ) =>
+				reportOptions.map( ( options ) =>
+					select( MODULES_ANALYTICS_4 ).getReport( options )
+				),
+			reportOptions
+		) || [];
 
-	const error = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ eventOptions ]
-				  ) ||
-				  select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ sessionsOptions ]
-				  )
-				: undefined,
-		[]
+	const [ loading, error ] = useSelect(
+		( select: Select ) => [
+			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...reportOptions
+			),
+		],
+		reportOptions
 	);
 
 	if ( ! primaryEvent ) {
@@ -224,7 +133,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 		currentSessions,
 		currentRate,
 		previousRate,
-	} = processReports( primaryEventReport, sessionsReport );
+	} = processReports( primaryEventReport, engagementReport );
 
 	return (
 		<Widget>

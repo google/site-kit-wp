@@ -74,6 +74,10 @@ export const Tile: FC< TileProps > = ( props ) => {
 				className,
 				{
 					'googlesitekit-site-goals-tile--primary': primary,
+					'googlesitekit-site-goals-tile--primary__positive':
+						primary && currentValue > previousValue,
+					'googlesitekit-site-goals-tile--primary__negative':
+						primary && currentValue < previousValue,
 				}
 			) }
 		>

@@ -39,85 +39,11 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
-
-type ReportRow = {
-	dimensionValues?: Array< { value: string } >;
-	metricValues?: Array< { value: string } >;
-};
-
-type Report = {
-	rows: ReportRow[];
-	totals: ReportRow[];
-};
-
-const PERCENT_FORMAT = {
-	style: 'percent' as const,
-	signDisplay: 'never' as const,
-	maximumFractionDigits: 1,
-};
-
-const NUMBER_FORMAT = {
-	style: 'decimal' as const,
-};
-
-function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
-	return ( row: ReportRow ) =>
-		row?.dimensionValues?.[ dimensionIndex ]?.value === dateRangeSlug;
-}
-
-function processReports( eventsReport: Report, sessionsReport: Report ) {
-	const { rows: leadEventRows = [] } = eventsReport || {};
-	const { totals: sessionsRows = [] } = sessionsReport || {};
-
-	// Aggregate eventCount across all detected lead events per date range.
-	// dateRange is at dimensionValues[1] since eventName is at [0].
-	const currentPrimaryCount = ( leadEventRows as ReportRow[] )
-		.filter( makeFind( 'date_range_0', 1 ) )
-		.reduce(
-			( sum, row ) =>
-				sum +
-				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
-			0
-		);
-
-	const previousPrimaryCount = ( leadEventRows as ReportRow[] )
-		.filter( makeFind( 'date_range_1', 1 ) )
-		.reduce(
-			( sum, row ) =>
-				sum +
-				( parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0 ),
-			0
-		);
-
-	// Get session counts.
-	const currentSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_0', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const previousSessions =
-		parseInt(
-			( sessionsRows as ReportRow[] ).find(
-				makeFind( 'date_range_1', 0 )
-			)?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0;
-
-	const currentRate =
-		currentSessions === 0 ? 0 : currentPrimaryCount / currentSessions;
-	const previousRate =
-		previousSessions === 0 ? 0 : previousPrimaryCount / previousSessions;
-	return {
-		currentRate,
-		previousRate,
-		currentPrimaryCount,
-		previousPrimaryCount,
-		currentSessions,
-	};
-}
+import {
+	NUMBER_FORMAT,
+	PERCENT_FORMAT,
+} from '@/js/modules/analytics-4/components/site-goals/utils/formats';
+import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
 const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 	props
@@ -155,25 +81,28 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
 	};
 
-	const sessionsOptions = {
+	const engagementOptions = {
 		...dates,
-		metrics: [ { name: 'sessions' } ],
-		reportID: 'analytics-4_site-goals_sessionsReportOptions',
+		metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+		reportID: 'analytics-4_site-goals_engagementReportOptions',
 	};
 
-	const [ leadEventsReport, sessionsReport ] = useInViewSelect(
-		( select: Select ) => {
-			if ( ! hasLeadEvents ) {
-				return [];
-			}
+	const [ leadEventsReport, engagementReport ] =
+		useInViewSelect(
+			( select: Select ) => {
+				if ( ! hasLeadEvents ) {
+					return [];
+				}
 
-			return [
-				select( MODULES_ANALYTICS_4 ).getReport( eventsOptions ),
-				select( MODULES_ANALYTICS_4 ).getReport( sessionsOptions ),
-			];
-		},
-		[ hasLeadEvents, eventsOptions, sessionsOptions ]
-	);
+				return [
+					select( MODULES_ANALYTICS_4 ).getReport( eventsOptions ),
+					select( MODULES_ANALYTICS_4 ).getReport(
+						engagementOptions
+					),
+				];
+			},
+			[ hasLeadEvents, eventsOptions, engagementOptions ]
+		) || [];
 
 	const loading = useSelect(
 		( select: Select ) =>
@@ -184,7 +113,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 				  ) ||
 				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 						'getReport',
-						[ sessionsOptions ]
+						[ engagementOptions ]
 				  )
 				: undefined,
 		[]
@@ -196,7 +125,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 				eventsOptions,
 			] ) ||
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				sessionsOptions,
+				engagementOptions,
 			] ),
 		[]
 	);
@@ -219,7 +148,9 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		currentSessions,
 		currentRate,
 		previousRate,
-	} = processReports( leadEventsReport, sessionsReport );
+	} = processReports( leadEventsReport, engagementReport, {
+		aggregate: true,
+	} );
 
 	return (
 		<Widget>
