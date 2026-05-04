@@ -35,7 +35,7 @@ import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Link from '@/js/components/Link';
 import useQueryArg from '@/js/hooks/useQueryArg';
 
@@ -69,7 +69,7 @@ export default function AdBlockingRecoverySetupSuccessNotification( {
 		<Notification onView={ handleView }>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled the ad blocking recovery message',
 					'google-site-kit'

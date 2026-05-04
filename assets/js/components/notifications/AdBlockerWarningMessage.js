@@ -34,6 +34,7 @@ import { createInterpolateElement } from '@wordpress/element';
 import Link from '@/js/components/Link';
 import ExternalIcon from '@/svg/icons/external-rounded.svg';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AdBlockerWarningMessage( {
 	className,
@@ -47,7 +48,7 @@ export default function AdBlockerWarningMessage( {
 	return (
 		<Notice
 			className={ classnames( 'googlesitekit-notice--small', className ) }
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ createInterpolateElement(
 				sprintf(
 					/* translators: 1: The warning message. 2: "Get help" text. */

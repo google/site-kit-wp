@@ -25,6 +25,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function RegistrationDisabledNotice() {
 	const isMultisite = useSelect( ( select ) =>
@@ -37,7 +38,7 @@ export default function RegistrationDisabledNotice() {
 
 	return (
 		<Notice
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ sprintf(
 				/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */
 				__(

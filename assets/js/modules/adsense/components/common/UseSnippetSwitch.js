@@ -38,6 +38,7 @@ import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import Badge from '@/js/components/Badge';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function UseSnippetSwitch( props ) {
 	const {
@@ -94,14 +95,14 @@ export default function UseSnippetSwitch( props ) {
 			{ useSnippet && checkedMessage && (
 				<Notice
 					className="googlesitekit-notice--bottom-margin"
-					type={ Notice.TYPES.INFO }
+					type={ NOTICE_TYPES.INFO }
 					description={ checkedMessage }
 				/>
 			) }
 			{ ! useSnippet && uncheckedMessage && (
 				<Notice
 					className="googlesitekit-notice--bottom-margin"
-					type={ Notice.TYPES.INFO }
+					type={ NOTICE_TYPES.INFO }
 					description={ uncheckedMessage }
 				/>
 			) }

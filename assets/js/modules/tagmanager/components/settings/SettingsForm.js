@@ -48,6 +48,7 @@ import Notice from '@/js/components/Notice';
 import SettingsGroup from '@/js/components/settings/SettingsGroup';
 import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
 import { useFeature } from '@/js/hooks/useFeature';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
@@ -81,7 +82,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			{ hasModuleAccess === false && (
 				<Notice
 					className="googlesitekit-notice--bottom-margin"
-					type={ Notice.TYPES.INFO }
+					type={ NOTICE_TYPES.INFO }
 					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */

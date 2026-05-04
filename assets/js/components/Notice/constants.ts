@@ -17,7 +17,7 @@
 /**
  * Notice types that inform how a `<Notice />` component is styled.
  */
-export const enum TYPES {
+export const enum NOTICE_TYPES {
 	NEW = 'new',
 	SUCCESS = 'success',
 	WARNING = 'warning',
