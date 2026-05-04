@@ -32,7 +32,7 @@ import SetupForm from './SetupForm';
 jest.mock( '@/js/components/StoreErrorNotices', () => () => null );
 
 describe( 'SetupForm', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	const finishSetup = jest.fn();
 
