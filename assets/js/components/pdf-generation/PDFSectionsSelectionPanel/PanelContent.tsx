@@ -29,7 +29,7 @@ import { useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
@@ -82,7 +82,7 @@ export default function PanelContent( { closePanel }: PanelContentProps ) {
 				<SelectionPanelNotice
 					// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
 					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
-					type={ TYPES.ERROR }
+					type={ NOTICE_TYPES.ERROR }
 					description={ __(
 						'Select at least 1 topic',
 						'google-site-kit'

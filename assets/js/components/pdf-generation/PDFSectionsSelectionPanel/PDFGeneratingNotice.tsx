@@ -28,7 +28,7 @@ import { useSelect, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function PDFGeneratingNotice() {
 	const isGenerating = useSelect(
@@ -44,7 +44,7 @@ export default function PDFGeneratingNotice() {
 		<SelectionPanelNotice
 			// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
 			className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
-			type={ TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			title={ __( 'Your report is being generated', 'google-site-kit' ) }
 			description={ __(
 				'To create another report, please wait for the current download to complete.',
