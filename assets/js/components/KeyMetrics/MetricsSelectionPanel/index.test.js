@@ -146,43 +146,27 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 		} );
 
-		it( 'should display a settings link to edit personalized goals', async () => {
-			const { getByText, waitForRegistry } = render(
-				<MetricsSelectionPanel />,
-				{
-					registry,
-				}
-			);
+		it( 'should match snapshot without setupFlowRefresh enabled', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
 
 			await waitForRegistry();
 			await act( waitForDefaultTimeouts );
 
-			expect(
-				getByText(
-					/Edit your personalized goals or deactivate this widget in/i
-				)
-			).toBeInTheDocument();
+			expect( document.body ).toMatchSnapshot();
 		} );
 
-		it( 'should display updated settings copy when setupFlowRefresh is enabled', async () => {
-			const { getByText, queryByText, waitForRegistry } = render(
-				<MetricsSelectionPanel />,
-				{
-					registry,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
+		it( 'should match snapshot with setupFlowRefresh enabled', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
 
 			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
 
-			expect(
-				getByText( /Edit your personalized goals in/i )
-			).toBeInTheDocument();
-			expect(
-				queryByText(
-					/Edit your personalized goals or deactivate this widget in/i
-				)
-			).not.toBeInTheDocument();
+			expect( document.body ).toMatchSnapshot();
 		} );
 
 		it( 'should not display a settings link to edit personalized goals for a view-only user', async () => {

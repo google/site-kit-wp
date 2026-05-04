@@ -1,0 +1,603 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MetricsSelectionPanel Header should match snapshot with setupFlowRefresh enabled 1`] = `
+<body
+  class="googlesitekit-side-sheet-scroll-lock"
+>
+  <div />
+  <div>
+    <section
+      aria-hidden="false"
+      aria-modal="true"
+      class="googlesitekit-side-sheet googlesitekit-selection-panel googlesitekit-km-selection-panel googlesitekit-acr-km-selection-panel googlesitekit-side-sheet--open"
+      role="dialog"
+      style="--googlesitekit-side-sheet-top: 0px;"
+      tabindex="0"
+    >
+      <header
+        class="googlesitekit-selection-panel-header"
+      >
+        <div
+          class="googlesitekit-selection-panel-header__row"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
+            Select up to 8 metrics
+          </h3>
+          <button
+            class="googlesitekit-cta-link googlesitekit-selection-panel-header__close googlesitekit-cta-link--link-button"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <svg />
+            </span>
+          </button>
+        </div>
+        <p
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Edit your personalized goals in 
+          <button
+            class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <strong>
+                Settings
+              </strong>
+            </span>
+          </button>
+        </p>
+      </header>
+      <div
+        class="googlesitekit-selection-panel__content"
+      >
+        <div
+          class="googlesitekit-selection-panel-items"
+        >
+          <div
+            class="googlesitekit-chip-tab-group"
+          >
+            <div
+              class="googlesitekit-chip-tab-group__tab-items"
+            >
+              <div
+                class="googlesitekit-chip-tab-group__tab-items-row"
+              >
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item googlesitekit-chip-tab-group__chip-item--active mdc-button--raised"
+                  target="_self"
+                >
+                  <svg />
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Current selection
+                  </span>
+                </button>
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Visitors
+                  </span>
+                  <span
+                    class="googlesitekit-chip-tab-group__chip-item-count"
+                  >
+                    (
+                    1
+                    )
+                  </span>
+                </button>
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Driving traffic
+                  </span>
+                  <span
+                    class="googlesitekit-chip-tab-group__chip-item-count"
+                  >
+                    (
+                    1
+                    )
+                  </span>
+                </button>
+              </div>
+              <div
+                class="googlesitekit-chip-tab-group__tab-items-row"
+              >
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Content performance
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-chip-tab-group__tab-item"
+            >
+              <div
+                class="googlesitekit-selection-panel-item"
+              >
+                <div
+                  class="googlesitekit-selection-box"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-checkbox"
+                    >
+                      <input
+                        checked=""
+                        class="mdc-checkbox__native-control"
+                        id="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                        name="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                        type="checkbox"
+                        value="kmAnalyticsReturningVisitors"
+                      />
+                      <div
+                        class="mdc-checkbox__background"
+                      >
+                        <svg
+                          class="mdc-checkbox__checkmark"
+                          viewBox="0 0 12 9"
+                        >
+                          <path
+                            class="mdc-checkbox__checkmark-path"
+                            d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                            fill="none"
+                            stroke="none"
+                          />
+                        </svg>
+                        <div
+                          class="mdc-checkbox__mixedmark"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-checkbox__content"
+                    >
+                      <label
+                        for="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                      >
+                        Returning visitors
+                      </label>
+                      <div
+                        class="mdc-checkbox__description"
+                      >
+                        Portion of people who visited your site more than once
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-selection-panel-item"
+              >
+                <div
+                  class="googlesitekit-selection-box"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-checkbox"
+                    >
+                      <input
+                        checked=""
+                        class="mdc-checkbox__native-control"
+                        id="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                        name="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                        type="checkbox"
+                        value="kmSearchConsolePopularKeywords"
+                      />
+                      <div
+                        class="mdc-checkbox__background"
+                      >
+                        <svg
+                          class="mdc-checkbox__checkmark"
+                          viewBox="0 0 12 9"
+                        >
+                          <path
+                            class="mdc-checkbox__checkmark-path"
+                            d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                            fill="none"
+                            stroke="none"
+                          />
+                        </svg>
+                        <div
+                          class="mdc-checkbox__mixedmark"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-checkbox__content"
+                    >
+                      <label
+                        for="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                      >
+                        Top performing keywords
+                      </label>
+                      <div
+                        class="mdc-checkbox__description"
+                      >
+                        What people searched for before they came to your site
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-user-input__footer-container"
+      >
+        <footer
+          class="googlesitekit-selection-panel-footer"
+        >
+          <div
+            class="googlesitekit-selection-panel-footer__content"
+          >
+            <div
+              class="googlesitekit-selection-panel-footer__actions"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Cancel
+                </span>
+              </button>
+              <p
+                class="googlesitekit-selection-panel-footer__item-count"
+              >
+                2 selected 
+                <span
+                  class="googlesitekit-selection-panel-footer__item-count--max-count"
+                >
+                  (up to 8)
+                </span>
+              </p>
+              <button
+                class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Save selection
+                </span>
+              </button>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </section>
+    <span
+      class="googlesitekit-side-sheet-overlay"
+    />
+  </div>
+</body>
+`;
+
+exports[`MetricsSelectionPanel Header should match snapshot without setupFlowRefresh enabled 1`] = `
+<body
+  class="googlesitekit-side-sheet-scroll-lock"
+>
+  <div />
+  <div>
+    <section
+      aria-hidden="false"
+      aria-modal="true"
+      class="googlesitekit-side-sheet googlesitekit-selection-panel googlesitekit-km-selection-panel googlesitekit-acr-km-selection-panel googlesitekit-side-sheet--open"
+      role="dialog"
+      style="--googlesitekit-side-sheet-top: 0px;"
+      tabindex="0"
+    >
+      <header
+        class="googlesitekit-selection-panel-header"
+      >
+        <div
+          class="googlesitekit-selection-panel-header__row"
+        >
+          <h3
+            class="googlesitekit-typography googlesitekit-typography--headline googlesitekit-typography--small"
+          >
+            Select up to 8 metrics
+          </h3>
+          <button
+            class="googlesitekit-cta-link googlesitekit-selection-panel-header__close googlesitekit-cta-link--link-button"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <svg />
+            </span>
+          </button>
+        </div>
+        <p
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Edit your personalized goals or deactivate this widget in 
+          <button
+            class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
+          >
+            <span
+              class="googlesitekit-cta-link__contents"
+            >
+              <strong>
+                Settings
+              </strong>
+            </span>
+          </button>
+        </p>
+      </header>
+      <div
+        class="googlesitekit-selection-panel__content"
+      >
+        <div
+          class="googlesitekit-selection-panel-items"
+        >
+          <div
+            class="googlesitekit-chip-tab-group"
+          >
+            <div
+              class="googlesitekit-chip-tab-group__tab-items"
+            >
+              <div
+                class="googlesitekit-chip-tab-group__tab-items-row"
+              >
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item googlesitekit-chip-tab-group__chip-item--active mdc-button--raised"
+                  target="_self"
+                >
+                  <svg />
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Current selection
+                  </span>
+                </button>
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Visitors
+                  </span>
+                  <span
+                    class="googlesitekit-chip-tab-group__chip-item-count"
+                  >
+                    (
+                    1
+                    )
+                  </span>
+                </button>
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Driving traffic
+                  </span>
+                  <span
+                    class="googlesitekit-chip-tab-group__chip-item-count"
+                  >
+                    (
+                    1
+                    )
+                  </span>
+                </button>
+              </div>
+              <div
+                class="googlesitekit-chip-tab-group__tab-items-row"
+              >
+                <button
+                  class="mdc-button googlesitekit-chip-tab-group__chip-item mdc-button--raised"
+                  target="_self"
+                >
+                  <span
+                    class="mdc-button__label"
+                  >
+                    Content performance
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-chip-tab-group__tab-item"
+            >
+              <div
+                class="googlesitekit-selection-panel-item"
+              >
+                <div
+                  class="googlesitekit-selection-box"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-checkbox"
+                    >
+                      <input
+                        checked=""
+                        class="mdc-checkbox__native-control"
+                        id="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                        name="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                        type="checkbox"
+                        value="kmAnalyticsReturningVisitors"
+                      />
+                      <div
+                        class="mdc-checkbox__background"
+                      >
+                        <svg
+                          class="mdc-checkbox__checkmark"
+                          viewBox="0 0 12 9"
+                        >
+                          <path
+                            class="mdc-checkbox__checkmark-path"
+                            d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                            fill="none"
+                            stroke="none"
+                          />
+                        </svg>
+                        <div
+                          class="mdc-checkbox__mixedmark"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-checkbox__content"
+                    >
+                      <label
+                        for="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
+                      >
+                        Returning visitors
+                      </label>
+                      <div
+                        class="mdc-checkbox__description"
+                      >
+                        Portion of people who visited your site more than once
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="googlesitekit-selection-panel-item"
+              >
+                <div
+                  class="googlesitekit-selection-box"
+                >
+                  <div
+                    class="mdc-form-field"
+                  >
+                    <div
+                      class="mdc-checkbox"
+                    >
+                      <input
+                        checked=""
+                        class="mdc-checkbox__native-control"
+                        id="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                        name="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                        type="checkbox"
+                        value="kmSearchConsolePopularKeywords"
+                      />
+                      <div
+                        class="mdc-checkbox__background"
+                      >
+                        <svg
+                          class="mdc-checkbox__checkmark"
+                          viewBox="0 0 12 9"
+                        >
+                          <path
+                            class="mdc-checkbox__checkmark-path"
+                            d="M2.08301 5.28834L3.55703 7.29507C4.24647 8.23368 5.5034 8.23368 6.19285 7.29507L10.083 1.99902"
+                            fill="none"
+                            stroke="none"
+                          />
+                        </svg>
+                        <div
+                          class="mdc-checkbox__mixedmark"
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="mdc-checkbox__content"
+                    >
+                      <label
+                        for="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
+                      >
+                        Top performing keywords
+                      </label>
+                      <div
+                        class="mdc-checkbox__description"
+                      >
+                        What people searched for before they came to your site
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-user-input__footer-container"
+      >
+        <footer
+          class="googlesitekit-selection-panel-footer"
+        >
+          <div
+            class="googlesitekit-selection-panel-footer__content"
+          >
+            <div
+              class="googlesitekit-selection-panel-footer__actions"
+            >
+              <button
+                class="mdc-button mdc-button--tertiary"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Cancel
+                </span>
+              </button>
+              <p
+                class="googlesitekit-selection-panel-footer__item-count"
+              >
+                2 selected 
+                <span
+                  class="googlesitekit-selection-panel-footer__item-count--max-count"
+                >
+                  (up to 8)
+                </span>
+              </p>
+              <button
+                class="mdc-button googlesitekit-button-icon--spinner googlesitekit-button-icon--spinner__after mdc-button--raised"
+                target="_self"
+              >
+                <span
+                  class="mdc-button__label"
+                >
+                  Save selection
+                </span>
+              </button>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </section>
+    <span
+      class="googlesitekit-side-sheet-overlay"
+    />
+  </div>
+</body>
+`;
