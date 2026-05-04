@@ -68,12 +68,15 @@ export default function SettingsCardKeyMetrics() {
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 	const isPurposeAnswered = purposeAnswers.length > 0;
+
 	const shouldShowSummary = setupFlowRefreshEnabled
 		? isPurposeAnswered
 		: isUserInputCompleted;
+
 	const shouldShowSetupCTA = setupFlowRefreshEnabled
 		? ! isPurposeAnswered && ! isGetUserInputSettingsLoading
 		: isUserInputCompleted === false;
+
 	const shouldShowLoading = setupFlowRefreshEnabled
 		? isGetUserInputSettingsLoading
 		: isUserInputCompletedLoading;

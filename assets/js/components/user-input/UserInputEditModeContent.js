@@ -88,8 +88,6 @@ export default function UserInputEditModeContent( {
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
-	const shouldHideAnswerErrorMessage =
-		setupFlowRefreshEnabled && settingsView && currentValues.length === 0;
 	let submitButtonLabel = __( 'Save', 'google-site-kit' );
 
 	if ( setupFlowRefreshEnabled ) {
@@ -148,7 +146,7 @@ export default function UserInputEditModeContent( {
 				descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 				alignLeftOptions
 			/>
-			{ errorMessage && ! shouldHideAnswerErrorMessage && (
+			{ errorMessage && ! ( setupFlowRefreshEnabled && settingsView ) && (
 				<p className="googlesitekit-error-text">{ errorMessage }</p>
 			) }
 			{ settingsView && (

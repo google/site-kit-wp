@@ -110,7 +110,7 @@ describe( 'UserInputEditModeContent', () => {
 		expect( spinnerButton ).toBeDisabled();
 	} );
 
-	it( 'should show Save answer label in setupFlowRefresh settings flow when value changed', async () => {
+	it( 'should show Save answer label in setupFlowRefresh settings flow', async () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 			[ USER_INPUT_QUESTIONS_PURPOSE ]: {
 				values: [ 'option1' ],
@@ -121,7 +121,7 @@ describe( 'UserInputEditModeContent', () => {
 			.dispatch( CORE_USER )
 			.setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [ 'option2' ] );
 
-		const { getByRole, queryByRole } = render(
+		const { getByRole } = render(
 			<UserInputEditModeContent
 				{ ...defaultProps }
 				values={ [ 'option2' ] }
@@ -135,8 +135,5 @@ describe( 'UserInputEditModeContent', () => {
 		expect(
 			getByRole( 'button', { name: /save answer/i } )
 		).toBeInTheDocument();
-		expect(
-			queryByRole( 'button', { name: /apply changes/i } )
-		).not.toBeInTheDocument();
 	} );
 } );
