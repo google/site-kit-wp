@@ -52,6 +52,7 @@ import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 function getAccountLabel( userFullName, userEmail ) {
 	if ( userFullName && userEmail ) {
@@ -84,6 +85,11 @@ function getAccountLabel( userFullName, userEmail ) {
 
 export default function UserMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled && showProgress === 'true';
 
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
@@ -118,6 +124,9 @@ export default function UserMenu() {
 	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const showManageEmailReports =
+		emailReportingEnabled && ! isInitialSetupFlow;
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
@@ -277,7 +286,7 @@ export default function UserMenu() {
 					<MenuSection>
 						<Details />
 					</MenuSection>
-					{ emailReportingEnabled && (
+					{ showManageEmailReports && (
 						<MenuItem
 							id="manage-email-reports"
 							icon={ <ManageEmailReportsIcon width="24" /> }
