@@ -209,7 +209,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( errorObject, 'getReport', [
+			.setErrorForSelector( errorObject, 'getReport', [
 				singleEventReportOptions,
 			] );
 
@@ -236,7 +236,7 @@ InsufficientPermissions.args = {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( errorObject, 'getReport', [
+			.setErrorForSelector( errorObject, 'getReport', [
 				singleEventReportOptions,
 			] );
 
