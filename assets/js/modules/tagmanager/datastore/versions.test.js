@@ -374,7 +374,7 @@ describe( 'modules/tagmanager versions', () => {
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
-						.getError( 'getLiveContainerVersion', [
+						.getErrorForSelector( 'getLiveContainerVersion', [
 							accountID,
 							internalContainerID,
 						] )

@@ -306,7 +306,7 @@ class Initiator_TaskTest extends TestCase {
 
 		try {
 			// Thursday March 19 - should return previous complete week Mon Mar 9 – Sun Mar 15.
-			$timestamp       = strtotime( '2026-03-19 00:00:00 UTC' );
+			$timestamp       = strtotime( '2026-03-19 09:00:00 UTC' );
 			$reference_dates = Initiator_Task::build_reference_dates(
 				Email_Reporting_Settings::FREQUENCY_WEEKLY,
 				$timestamp
@@ -326,30 +326,30 @@ class Initiator_TaskTest extends TestCase {
 	public function data_build_reference_dates_uses_expected_period_length() {
 		return array(
 			// frequency, expected_current_days, expected_compare_days, timestamp.
-			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7, 7, strtotime( '2026-03-16 00:00:00 UTC' ) ),
-			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 28, 31, strtotime( '2026-03-01 00:00:00 UTC' ) ),
-			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 92, 92, strtotime( '2026-01-01 00:00:00 UTC' ) ),
+			'weekly'    => array( Email_Reporting_Settings::FREQUENCY_WEEKLY, 7, 7, strtotime( '2026-03-16 09:00:00 UTC' ) ),
+			'monthly'   => array( Email_Reporting_Settings::FREQUENCY_MONTHLY, 28, 31, strtotime( '2026-03-01 09:00:00 UTC' ) ),
+			'quarterly' => array( Email_Reporting_Settings::FREQUENCY_QUARTERLY, 92, 92, strtotime( '2026-01-01 09:00:00 UTC' ) ),
 		);
 	}
 
 	public function data_build_reference_dates_monthly_uses_previous_month_window() {
 		return array(
 			// timestamp, startDate, endDate, days, compareStartDate, compareEndDate.
-			'previous month has 28 days'             => array( strtotime( '2026-03-01 00:00:00 UTC' ), '2026-02-01', '2026-02-28', 28, '2026-01-01', '2026-01-31' ),
-			'previous month has 29 days (leap year)' => array( strtotime( '2024-03-01 00:00:00 UTC' ), '2024-02-01', '2024-02-29', 29, '2024-01-01', '2024-01-31' ),
-			'previous month has 30 days'             => array( strtotime( '2026-05-01 00:00:00 UTC' ), '2026-04-01', '2026-04-30', 30, '2026-03-01', '2026-03-31' ),
-			'previous month has 31 days'             => array( strtotime( '2026-08-01 00:00:00 UTC' ), '2026-07-01', '2026-07-31', 31, '2026-06-01', '2026-06-30' ),
+			'previous month has 28 days'             => array( strtotime( '2026-03-01 09:00:00 UTC' ), '2026-02-01', '2026-02-28', 28, '2026-01-01', '2026-01-31' ),
+			'previous month has 29 days (leap year)' => array( strtotime( '2024-03-01 09:00:00 UTC' ), '2024-02-01', '2024-02-29', 29, '2024-01-01', '2024-01-31' ),
+			'previous month has 30 days'             => array( strtotime( '2026-05-01 09:00:00 UTC' ), '2026-04-01', '2026-04-30', 30, '2026-03-01', '2026-03-31' ),
+			'previous month has 31 days'             => array( strtotime( '2026-08-01 09:00:00 UTC' ), '2026-07-01', '2026-07-31', 31, '2026-06-01', '2026-06-30' ),
 		);
 	}
 
 	public function data_build_reference_dates_quarterly_uses_previous_quarter_window() {
 		return array(
 			// timestamp, startDate, endDate, days, compareStartDate, compareEndDate.
-			'previous quarter has 90 days'        => array( strtotime( '2026-04-01 00:00:00 UTC' ), '2026-01-01', '2026-03-31', 90, '2025-10-01', '2025-12-31' ),
-			'previous quarter has 91 days (leap)' => array( strtotime( '2024-04-01 00:00:00 UTC' ), '2024-01-01', '2024-03-31', 91, '2023-10-01', '2023-12-31' ),
-			'previous quarter has 91 days (Q2)'   => array( strtotime( '2026-07-01 00:00:00 UTC' ), '2026-04-01', '2026-06-30', 91, '2026-01-01', '2026-03-31' ),
-			'previous quarter has 92 days'        => array( strtotime( '2026-10-01 00:00:00 UTC' ), '2026-07-01', '2026-09-30', 92, '2026-04-01', '2026-06-30' ),
-			'previous quarter has 92 days (Q4)'   => array( strtotime( '2026-01-01 00:00:00 UTC' ), '2025-10-01', '2025-12-31', 92, '2025-07-01', '2025-09-30' ),
+			'previous quarter has 90 days'        => array( strtotime( '2026-04-01 09:00:00 UTC' ), '2026-01-01', '2026-03-31', 90, '2025-10-01', '2025-12-31' ),
+			'previous quarter has 91 days (leap)' => array( strtotime( '2024-04-01 09:00:00 UTC' ), '2024-01-01', '2024-03-31', 91, '2023-10-01', '2023-12-31' ),
+			'previous quarter has 91 days (Q2)'   => array( strtotime( '2026-07-01 09:00:00 UTC' ), '2026-04-01', '2026-06-30', 91, '2026-01-01', '2026-03-31' ),
+			'previous quarter has 92 days'        => array( strtotime( '2026-10-01 09:00:00 UTC' ), '2026-07-01', '2026-09-30', 92, '2026-04-01', '2026-06-30' ),
+			'previous quarter has 92 days (Q4)'   => array( strtotime( '2026-01-01 09:00:00 UTC' ), '2025-10-01', '2025-12-31', 92, '2025-07-01', '2025-09-30' ),
 		);
 	}
 
@@ -384,7 +384,7 @@ class Initiator_TaskTest extends TestCase {
 			// Monthly triggered on March 7 - should still report February.
 			'monthly mid-period'   => array(
 				Email_Reporting_Settings::FREQUENCY_MONTHLY,
-				strtotime( '2026-03-07 00:00:00 UTC' ),
+				strtotime( '2026-03-07 09:00:00 UTC' ),
 				'2026-02-01',
 				'2026-02-28',
 				'2026-01-01',
@@ -393,7 +393,7 @@ class Initiator_TaskTest extends TestCase {
 			// Quarterly triggered on May 20 - should report Q1 (Jan-Mar).
 			'quarterly mid-period' => array(
 				Email_Reporting_Settings::FREQUENCY_QUARTERLY,
-				strtotime( '2026-05-20 00:00:00 UTC' ),
+				strtotime( '2026-05-20 09:00:00 UTC' ),
 				'2026-01-01',
 				'2026-03-31',
 				'2025-10-01',
@@ -402,7 +402,7 @@ class Initiator_TaskTest extends TestCase {
 			// Weekly triggered on Wednesday (start_of_week=Monday) - reports previous Mon-Sun.
 			'weekly mid-period'    => array(
 				Email_Reporting_Settings::FREQUENCY_WEEKLY,
-				strtotime( '2026-03-11 00:00:00 UTC' ), // Wednesday.
+				strtotime( '2026-03-11 09:00:00 UTC' ), // Wednesday.
 				'2026-03-02',
 				'2026-03-08',
 				'2026-02-23',
@@ -440,7 +440,7 @@ class Initiator_TaskTest extends TestCase {
 
 	public function data_build_reference_dates_weekly_start_of_week_variations() {
 		// Trigger on Wednesday 2026-03-11.
-		$timestamp = strtotime( '2026-03-11 00:00:00 UTC' );
+		$timestamp = strtotime( '2026-03-11 09:00:00 UTC' );
 		return array(
 			// Sunday start (0): week = Sun-Sat. Previous week: Sun Mar 1 – Sat Mar 7.
 			'sunday start'   => array( 0, $timestamp, '2026-03-01', '2026-03-07' ),
@@ -460,7 +460,7 @@ class Initiator_TaskTest extends TestCase {
 
 		try {
 			// Trigger in January - should report December of previous year.
-			$timestamp       = strtotime( '2026-01-15 00:00:00 UTC' );
+			$timestamp       = strtotime( '2026-01-15 09:00:00 UTC' );
 			$reference_dates = Initiator_Task::build_reference_dates(
 				Email_Reporting_Settings::FREQUENCY_MONTHLY,
 				$timestamp
@@ -485,7 +485,7 @@ class Initiator_TaskTest extends TestCase {
 
 		try {
 			// Trigger in Q1 2026 - should report Q4 2025, compare Q3 2025.
-			$timestamp       = strtotime( '2026-02-15 00:00:00 UTC' );
+			$timestamp       = strtotime( '2026-02-15 09:00:00 UTC' );
 			$reference_dates = Initiator_Task::build_reference_dates(
 				Email_Reporting_Settings::FREQUENCY_QUARTERLY,
 				$timestamp
@@ -511,11 +511,11 @@ class Initiator_TaskTest extends TestCase {
 		try {
 			$early = Initiator_Task::build_reference_dates(
 				Email_Reporting_Settings::FREQUENCY_MONTHLY,
-				strtotime( '2026-03-05 00:00:00 UTC' )
+				strtotime( '2026-03-05 09:00:00 UTC' )
 			);
 			$late  = Initiator_Task::build_reference_dates(
 				Email_Reporting_Settings::FREQUENCY_MONTHLY,
-				strtotime( '2026-03-20 00:00:00 UTC' )
+				strtotime( '2026-03-20 09:00:00 UTC' )
 			);
 
 			$this->assertSame( $early, $late, 'Different trigger times within the same month should produce identical reference dates.' );

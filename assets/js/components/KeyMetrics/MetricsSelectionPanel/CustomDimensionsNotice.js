@@ -42,7 +42,7 @@ import { elementsOverlap } from '@/js/util/geometry';
 import whenActive from '@/js/util/when-active';
 import useFormValue from '@/js/hooks/useFormValue';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 function CustomDimensionsNotice() {
 	const selectedMetrics = useFormValue(
@@ -122,7 +122,7 @@ function CustomDimensionsNotice() {
 	return (
 		<SelectionPanelNotice
 			ref={ noticeRef }
-			type={ TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ customDimensionMessage }
 			hideIcon
 		/>

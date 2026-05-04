@@ -30,7 +30,7 @@ import { FC, ElementType } from 'react';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface OnboardingActionRequiredProps {
@@ -51,7 +51,7 @@ const OnboardingActionRequired: FC< OnboardingActionRequiredProps > = ( {
 	return (
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<NoticeNotification
-				type={ TYPES.WARNING }
+				type={ NOTICE_TYPES.WARNING }
 				notificationID={ id }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(

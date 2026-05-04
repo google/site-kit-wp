@@ -49,7 +49,7 @@ export default function ExitSetup( { gaTrackingEventArgs } ) {
 			gaTrackingEventArgs.label
 		);
 
-		navigateTo( `${ adminURL }/plugins.php` );
+		navigateTo( adminURL );
 	}
 
 	return (

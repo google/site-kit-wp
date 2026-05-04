@@ -68,6 +68,7 @@ import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -119,8 +120,11 @@ export default function KeyMetricsSetupApp() {
 			) || []
 	);
 
-	const { saveUserInputSettings, saveInitialSetupSettings, clearError } =
-		useDispatch( CORE_USER );
+	const {
+		saveUserInputSettings,
+		saveInitialSetupSettings,
+		clearActionError,
+	} = useDispatch( CORE_USER );
 
 	// Trigger resolution of data availability state before the user proceeds to the dashboard.
 	useSelect( ( select ) => {
@@ -204,7 +208,7 @@ export default function KeyMetricsSetupApp() {
 	] );
 
 	const submitChanges = useCallback( async () => {
-		clearError( 'saveInitialSetupSettings', [
+		clearActionError( 'saveInitialSetupSettings', [
 			{
 				isAnalyticsSetupComplete: true,
 			},
@@ -215,7 +219,7 @@ export default function KeyMetricsSetupApp() {
 		if ( ! response.error ) {
 			await saveInitialSetup();
 		}
-	}, [ saveUserInputSettings, saveInitialSetup, clearError ] );
+	}, [ saveUserInputSettings, saveInitialSetup, clearActionError ] );
 
 	const { fetchSyncAvailableCustomDimensions, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
@@ -373,7 +377,7 @@ export default function KeyMetricsSetupApp() {
 														'Something went wrong, please try again',
 														'google-site-kit'
 													) }
-													type={ Notice.TYPES.ERROR }
+													type={ NOTICE_TYPES.ERROR }
 												/>
 											</div>
 										) }
@@ -391,7 +395,7 @@ export default function KeyMetricsSetupApp() {
 															'google-site-kit'
 														) }
 														type={
-															Notice.TYPES.ERROR
+															NOTICE_TYPES.ERROR
 														}
 													/>
 												</div>

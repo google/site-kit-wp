@@ -38,7 +38,7 @@ describe( 'InviteUserRow', () => {
 		id: 2,
 		name: 'MainAdminName',
 		email: 'someone@anybusiness.com',
-		role: 'administrator',
+		role: 'Administrator',
 	};
 
 	const mockOnInviteResult = jest.fn();
@@ -58,12 +58,12 @@ describe( 'InviteUserRow', () => {
 		);
 
 		expect( getByText( 'MainAdminName' ) ).toBeInTheDocument();
-		expect( getByText( '(administrator)' ) ).toBeInTheDocument();
+		expect( getByText( '(Administrator)' ) ).toBeInTheDocument();
 		expect( getByText( 'someone@anybusiness.com' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the role slug', () => {
-		const editorUser = { ...mockUser, role: 'editor' };
+	it( 'renders the role display name', () => {
+		const editorUser = { ...mockUser, role: 'Editor' };
 
 		const { getByText } = render(
 			<InviteUserRow
@@ -73,7 +73,7 @@ describe( 'InviteUserRow', () => {
 			{ registry }
 		);
 
-		expect( getByText( '(editor)' ) ).toBeInTheDocument();
+		expect( getByText( '(Editor)' ) ).toBeInTheDocument();
 	} );
 
 	it( 'shows "Send invite" button in default state', () => {

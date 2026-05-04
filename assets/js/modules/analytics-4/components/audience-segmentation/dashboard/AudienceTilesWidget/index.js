@@ -53,8 +53,11 @@ function AudienceTilesWidget( { Widget } ) {
 	const isSyncingAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSyncingAudiences()
 	);
-	const { clearErrors, maybeSyncAvailableAudiences, syncAvailableAudiences } =
-		useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		clearActionErrors,
+		maybeSyncAvailableAudiences,
+		syncAvailableAudiences,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
 	const isSettingUpAudiences = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isSettingUpAudiences()
@@ -93,7 +96,9 @@ function AudienceTilesWidget( { Widget } ) {
 				onRetry={
 					! insufficientPermissionsError
 						? async () => {
-								await clearErrors( 'syncAvailableAudiences' );
+								await clearActionErrors(
+									'syncAvailableAudiences'
+								);
 								await syncAvailableAudiences();
 						  }
 						: undefined

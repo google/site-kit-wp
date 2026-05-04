@@ -56,6 +56,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 		);
 		invariant( 'number' === typeof ttl, 'ttl must be a number' );
 	},
+	isAction: true,
 } );
 
 const fetchSendSurveyEventStore = createFetchStore( {
@@ -65,6 +66,7 @@ const fetchSendSurveyEventStore = createFetchStore( {
 	argsToParams: ( event, session ) => {
 		return { event, session };
 	},
+	isAction: true,
 } );
 
 const fetchGetSurveyTimeoutsStore = createFetchStore( {

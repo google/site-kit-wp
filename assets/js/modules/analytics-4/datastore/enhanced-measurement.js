@@ -162,6 +162,7 @@ const fetchUpdateEnhancedMeasurementSettingsStore = createFetchStore( {
 		);
 		validateEnhancedMeasurementSettings( enhancedMeasurementSettings );
 	},
+	isAction: true,
 } );
 
 // Actions

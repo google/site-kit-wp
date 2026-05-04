@@ -79,6 +79,7 @@ const fetchCreateCustomDimensionStore = createFetchStore( {
 			);
 		} );
 	},
+	isAction: true,
 } );
 
 const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
@@ -89,6 +90,7 @@ const fetchSyncAvailableCustomDimensionsStore = createFetchStore( {
 		state.settings = state.settings || {};
 		state.settings.availableCustomDimensions = dimensions;
 	} ),
+	isAction: true,
 } );
 
 const baseInitialState = {

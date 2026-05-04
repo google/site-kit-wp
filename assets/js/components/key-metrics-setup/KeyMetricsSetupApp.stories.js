@@ -41,7 +41,7 @@ export const WithSaveInputError = Template.bind( {} );
 WithSaveInputError.storyName = 'With error (save user input)';
 WithSaveInputError.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveError(
+		registry.dispatch( CORE_USER ).setErrorForAction(
 			{
 				code: 'test_code',
 				message: 'Test error message',
@@ -59,7 +59,7 @@ export const WithSaveInitialSetupError = Template.bind( {} );
 WithSaveInitialSetupError.storyName = 'With error (save initial setup)';
 WithSaveInitialSetupError.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveError(
+		registry.dispatch( CORE_USER ).setErrorForAction(
 			{
 				code: 'test_code',
 				message: 'Test error message',
@@ -71,7 +71,7 @@ WithSaveInitialSetupError.args = {
 			[]
 		);
 
-		registry.dispatch( CORE_USER ).receiveError(
+		registry.dispatch( CORE_USER ).setErrorForAction(
 			{
 				code: 'test_code',
 				message: 'Test error message',

@@ -55,7 +55,7 @@ ErrorOnCTAClick.storyName = 'ErrorOnCTAClick';
 ErrorOnCTAClick.scenario = {};
 ErrorOnCTAClick.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveError(
+		registry.dispatch( CORE_SITE ).setErrorForAction(
 			{
 				code: 'test_error',
 				message: 'Test Error',

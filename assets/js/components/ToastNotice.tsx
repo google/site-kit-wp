@@ -31,7 +31,7 @@ import { useState, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Notice from './Notice';
-import { TYPES } from './Notice/constants';
+import { NOTICE_TYPES } from './Notice/constants';
 
 export interface ToastNoticeProps {
 	/**
@@ -78,10 +78,9 @@ const ToastNotice: FC< ToastNoticeProps > = ( { title, onDismiss } ) => {
 
 	return (
 		<Notice
-			// @ts-expect-error - The `Notice` component is not yet typed.
 			className="googlesitekit-toast-notice"
 			title={ title }
-			type={ TYPES.SUCCESS }
+			type={ NOTICE_TYPES.SUCCESS }
 		/>
 	);
 };

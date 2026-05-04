@@ -36,6 +36,7 @@ import Notice from '@/js/components/Notice';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { USER_INPUT_LEGACY_SITE_PURPOSE_DISMISSED_ITEM_KEY } from './util/constants';
 import { trackEvent } from '@/js/util';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 	const viewContext = useViewContext();
@@ -84,7 +85,7 @@ export default function KeyMetricsSettingsSellProductsSubtleNotification() {
 
 	return (
 		<Notice
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			description={ __(
 				'To allow better personalization of suggested metrics, we have updated the answers list for this question with more accurate options. We recommend that you edit your answer.',
 				'google-site-kit'

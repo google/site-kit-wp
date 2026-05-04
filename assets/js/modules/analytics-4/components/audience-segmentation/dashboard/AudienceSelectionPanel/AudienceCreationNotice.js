@@ -54,6 +54,7 @@ import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import Notice from '@/js/components/Notice';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -328,7 +329,7 @@ export default function AudienceCreationNotice() {
 			</div>
 			{ ! hasAnalytics4EditScope && ! isEditScopeNoticeDismissed && (
 				<Notice
-					type={ Notice.TYPES.WARNING }
+					type={ NOTICE_TYPES.WARNING }
 					description={ __(
 						'Creating these groups require more data tracking. You will be directed to update your Analytics property.',
 						'google-site-kit'

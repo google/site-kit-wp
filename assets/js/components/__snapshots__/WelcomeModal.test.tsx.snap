@@ -5,7 +5,7 @@ exports[`WelcomeModal should show the data available variant when Analytics is c
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -16,38 +16,38 @@ exports[`WelcomeModal should show the data available variant when Analytics is c
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Welcome to Site Kit
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals
             </p>
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -84,7 +84,7 @@ exports[`WelcomeModal should show the data available variant when Analytics is n
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -95,38 +95,38 @@ exports[`WelcomeModal should show the data available variant when Analytics is n
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Welcome to Site Kit
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Initial setup complete! Take a look at the special features Site Kit added to your dashboard based on your site goals
             </p>
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -163,7 +163,7 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -174,38 +174,38 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Data gathering complete!
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.
             </p>
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -242,7 +242,7 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -253,38 +253,38 @@ exports[`WelcomeModal should show the data gathering complete variant when Analy
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Data gathering complete!
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Take this quick tour to see the most important parts of your dashboard. It will show you where to look to track your site’s success as you get more visitors.
             </p>
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -321,7 +321,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is c
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -332,31 +332,31 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is c
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Welcome to Site Kit
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Initial setup complete!
               <br />
@@ -365,7 +365,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is c
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--raised"
@@ -392,7 +392,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is n
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
+    class="mdc-dialog mdc-dialog--opening mdc-dialog--open googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -403,31 +403,31 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is n
         class="mdc-dialog__surface"
       >
         <div
-          class="googlesitekit-welcome-modal__content mdc-dialog__content"
+          class="googlesitekit-banner-modal__content mdc-dialog__content"
           id="mdc-dialog-content"
         >
           <div
-            class="googlesitekit-welcome-modal__graphic"
+            class="googlesitekit-banner-modal__graphic"
           >
             <svg />
             <button
               aria-label="Close"
-              class="mdc-button googlesitekit-welcome-modal__close-button mdc-button--raised"
+              class="mdc-button googlesitekit-banner-modal__close-button mdc-button--raised"
               target="_self"
             >
               <svg />
             </button>
           </div>
           <div
-            class="googlesitekit-welcome-modal__text"
+            class="googlesitekit-banner-modal__text"
           >
             <h1
-              class="googlesitekit-typography googlesitekit-welcome-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
+              class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
               Welcome to Site Kit
             </h1>
             <p
-              class="googlesitekit-typography googlesitekit-welcome-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
+              class="googlesitekit-typography googlesitekit-banner-modal__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Initial setup complete!
               <br />
@@ -436,7 +436,7 @@ exports[`WelcomeModal should show the gathering data variant when Analytics is n
           </div>
         </div>
         <footer
-          class="googlesitekit-welcome-modal__footer mdc-dialog__actions"
+          class="googlesitekit-banner-modal__footer mdc-dialog__actions"
         >
           <button
             class="mdc-button mdc-button--raised"

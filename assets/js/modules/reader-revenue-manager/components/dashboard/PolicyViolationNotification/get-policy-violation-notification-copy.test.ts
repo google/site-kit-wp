@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CONTENT_POLICY_STATES } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { getPolicyViolationNotificationCopy } from './get-policy-violation-notification-copy';
 
@@ -38,7 +38,7 @@ describe( 'getPolicyViolationNotificationCopy', () => {
 		);
 
 		expect( result ).toEqual( {
-			type: TYPES.ERROR,
+			type: NOTICE_TYPES.ERROR,
 			title: 'Action needed: Your Reader Revenue Manager account is terminated',
 			description:
 				'Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.',
@@ -56,7 +56,7 @@ describe( 'getPolicyViolationNotificationCopy', () => {
 				getPolicyViolationNotificationCopy( contentPolicyState );
 
 			expect( result ).toEqual( {
-				type: TYPES.WARNING,
+				type: NOTICE_TYPES.WARNING,
 				title: 'Action needed: Your Reader Revenue Manager account is restricted',
 				description:
 					'Your site has content that doesn’t follow the rules. To see more details and resolve the violation, please visit Publisher Center.',
@@ -75,7 +75,7 @@ describe( 'getPolicyViolationNotificationCopy', () => {
 				getPolicyViolationNotificationCopy( contentPolicyState );
 
 			expect( result ).toEqual( {
-				type: TYPES.WARNING,
+				type: NOTICE_TYPES.WARNING,
 				title: 'Action needed: fix a policy issue with Reader Revenue Manager',
 				description:
 					'Your site has content that breaks the rules for Reader Revenue Manager. To keep your account active and CTAs public, you must resolve all policy violations.',

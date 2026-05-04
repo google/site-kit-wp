@@ -129,7 +129,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveError( error, 'getReport', [ firstReportOptions ] );
+			.setErrorForSelector( error, 'getReport', [ firstReportOptions ] );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.finishResolution( 'getReport', [ firstReportOptions ] );

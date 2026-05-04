@@ -88,7 +88,7 @@ export const ErrorMessage = Template.bind( {} );
 ErrorMessage.storyName = 'Error message';
 ErrorMessage.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveError(
+		registry.dispatch( CORE_USER ).setErrorForAction(
 			{
 				code: 'test_code',
 				message: 'Test error message',

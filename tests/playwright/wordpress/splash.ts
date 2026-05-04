@@ -43,7 +43,7 @@ const playwrightLogoSvg = `<svg width="64" height="64" viewBox="0 0 400 400" fil
 /**
  * Generates HTML for the screencast splash screen shown at the start of every test.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  *
  * @param testTitle The full title of the current test (suite + test name).
  * @return An HTML string suitable for use with `page.setContent()`.

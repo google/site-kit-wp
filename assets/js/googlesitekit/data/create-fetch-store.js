@@ -46,7 +46,12 @@ function defaultValidateParams() {}
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearError, receiveError } = errorStoreActions;
+const {
+	clearSelectorError,
+	clearActionError,
+	setErrorForSelector,
+	setErrorForAction,
+} = errorStoreActions;
 
 /**
  * Creates a store object implementing the necessary infrastructure for a
@@ -97,6 +102,10 @@ const { clearError, receiveError } = errorStoreActions;
  *                                          essentially indicating that no arguments are supported/required.
  * @param {Function} [args.validateParams]  Optional. Function that validates the given parameters object created by `argsToParams`.
  *                                          Any invalid parameters should cause a respective error to be thrown.
+ * @param {boolean}  [args.isAction]        Optional. When true, errors from this fetch store are stored as action
+ *                                          errors (via `setErrorForAction`). Default is false, which stores errors as
+ *                                          selector errors (via `setErrorForSelector`). Set to true for fetch stores
+ *                                          that serve action-based operations rather than data-fetching selectors.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export function createFetchStore( {
@@ -105,6 +114,7 @@ export function createFetchStore( {
 	reducerCallback = defaultReducerCallback,
 	argsToParams = defaultArgsToParams,
 	validateParams = defaultValidateParams,
+	isAction = false,
 } ) {
 	invariant( baseName, 'baseName is required.' );
 	invariant(
@@ -160,6 +170,7 @@ export function createFetchStore( {
 			type: START_FETCH,
 		};
 
+		const clearError = isAction ? clearActionError : clearSelectorError;
 		yield clearError( baseName, args );
 
 		try {
@@ -177,7 +188,8 @@ export function createFetchStore( {
 		} catch ( fetchError ) {
 			error = fetchError;
 
-			yield receiveError( error, baseName, args );
+			const setError = isAction ? setErrorForAction : setErrorForSelector;
+			yield setError( error, baseName, args );
 
 			yield {
 				payload: { params },

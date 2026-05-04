@@ -34,7 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import { escapeURI } from '@/js/util/escape-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 
@@ -66,14 +66,14 @@ export default function EnhancedConversionsNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.INFO_ALT }
+				type={ NOTICE_TYPES.INFO_ALT }
 				title={ __(
 					'Boost your Analytics data with more metrics about your visitors',
 					'google-site-kit'
 				) }
 				description={ createInterpolateElement(
 					__(
-						'Site Kit now supports user-provided data collection, a feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. <a />',
+						'Site Kit now supports user-provided data collection, a feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. If you’ve already enabled this, no further action is required. <a />',
 						'google-site-kit'
 					),
 					{

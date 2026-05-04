@@ -31,6 +31,7 @@ import {
 	act,
 	fireEvent,
 	render,
+	setEnabledFeatures,
 	waitFor,
 } from '../../../../../../../tests/js/test-utils';
 import {
@@ -286,6 +287,36 @@ describe( 'SetupCTABanner', () => {
 			provideUserAuthentication( registry, { authenticated: false } );
 			provideUserCapabilities( registry, {
 				'googlesitekit_read_shared_module_data::["analytics-4"]': false,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
+		it( 'is active when analytics setup is not complete and `setupFlowRefresh` is enabled', async () => {
+			setEnabledFeatures( [ 'setupFlowRefresh' ] );
+
+			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+				isAnalyticsSetupComplete: false,
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is not active when analytics setup is complete and `setupFlowRefresh` is enabled', async () => {
+			setEnabledFeatures( [ 'setupFlowRefresh' ] );
+
+			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
+				isAnalyticsSetupComplete: true,
 			} );
 
 			const isActive = await notification.checkRequirements(
