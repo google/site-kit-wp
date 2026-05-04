@@ -70,7 +70,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 	const eventsOptions = {
 		...dates,
 		metrics: [ { name: 'eventCount' } ],
-		dimensions: [ 'eventName' ],
+		dimensions: [ { name: 'eventName' } ],
 		dimensionFilters: {
 			eventName: {
 				filterType: 'inListFilter',
