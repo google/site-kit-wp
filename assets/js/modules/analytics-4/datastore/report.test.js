@@ -957,7 +957,9 @@ describe( 'modules/analytics-4 report', () => {
 			it( 'should return the error for a single report with an error', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error1, 'getReport', [ reportOptions ] );
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions,
+					] );
 
 				const result = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -978,10 +980,14 @@ describe( 'modules/analytics-4 report', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error1, 'getReport', [ reportOptions1 ] );
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions1,
+					] );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
 
 				const result = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1013,7 +1019,9 @@ describe( 'modules/analytics-4 report', () => {
 				// Second report has an error
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
 
 				const result = registry
 					.select( MODULES_ANALYTICS_4 )
@@ -1045,7 +1053,9 @@ describe( 'modules/analytics-4 report', () => {
 				// Second report has an error
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveError( error2, 'getReport', [ reportOptions2 ] );
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
 
 				// Check in order: first (no error), then second (has error)
 				const result = registry
