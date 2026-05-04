@@ -151,7 +151,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_ADSENSE )
-			.receiveError( error, 'getReport', [ firstReportOptions ] );
+			.setErrorForSelector( error, 'getReport', [ firstReportOptions ] );
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.finishResolution( 'getReport', [ firstReportOptions ] );

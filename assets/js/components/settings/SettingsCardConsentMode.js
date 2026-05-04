@@ -40,6 +40,7 @@ import Layout from '@/js/components/layout/Layout';
 import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsCardConsentMode() {
 	const viewContext = useViewContext();
@@ -131,7 +132,7 @@ export default function SettingsCardConsentMode() {
 								<Row>
 									<Cell size={ 12 }>
 										<Notice
-											type={ Notice.TYPES.INFO }
+											type={ NOTICE_TYPES.INFO }
 											description={ __(
 												'If you have Google Ads campaigns for this site, it’s highly recommended to enable consent mode - otherwise, you won’t be able to collect any metrics on the effectiveness of your campaigns in regions like the European Economic Area.',
 												'google-site-kit'

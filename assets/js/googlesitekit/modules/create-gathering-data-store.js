@@ -83,6 +83,7 @@ export function createGatheringDataStore(
 	const fetchSaveDataAvailableStateStore = createFetchStore( {
 		baseName: 'saveDataAvailableState',
 		controlCallback: () => set( 'modules', moduleSlug, 'data-available' ),
+		isAction: true,
 	} );
 
 	const initialState = {

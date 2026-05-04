@@ -80,7 +80,7 @@ const baseActions = {
 			type: RESET_CLIENTS,
 		};
 
-		yield errorStoreActions.clearErrors( 'getClients' );
+		yield errorStoreActions.clearSelectorErrors( 'getClients' );
 
 		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
 			'getClients'

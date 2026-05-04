@@ -29,6 +29,7 @@ const fetchResetStore = createFetchStore( {
 	controlCallback: () => {
 		return set( 'core', 'site', 'reset' );
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {};

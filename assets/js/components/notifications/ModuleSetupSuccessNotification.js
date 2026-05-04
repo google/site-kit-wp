@@ -33,7 +33,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 
@@ -66,7 +66,7 @@ export default function ModuleSetupSuccessNotification( { id, Notification } ) {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ sprintf(
 					/* translators: %s: module name */

@@ -153,20 +153,38 @@ describe( 'ErrorNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it.each( errorCases )(
-		'should display an error notice when there is an insufficient permissions error while %s',
-		async ( _, storeFunctionName, args ) => {
-			args = addDatesToReportOptions( args, registry.select );
+	describe.each( errorCases )( 'while %s', ( _, storeFunctionName, args ) => {
+		function setError( error ) {
+			const resolvedArgs = addDatesToReportOptions(
+				args,
+				registry.select
+			);
 
-			const error = {
+			if ( storeFunctionName === 'syncAvailableAudiences' ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForAction(
+						error,
+						storeFunctionName,
+						resolvedArgs
+					);
+			} else {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector(
+						error,
+						storeFunctionName,
+						resolvedArgs
+					);
+			}
+		}
+
+		it( 'should display an error notice when there is an insufficient permissions error', async () => {
+			setError( {
 				code: 'test_error',
 				message: 'Error message.',
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+			} );
 
 			const { getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -188,23 +206,14 @@ describe( 'ErrorNotice', () => {
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
 				'insufficient_permissions_error'
 			);
-		}
-	);
+		} );
 
-	it.each( errorCases )(
-		'should render a "Get help" link when there is an insufficient permissions error while %s',
-		async ( _, storeFunctionName, args ) => {
-			args = addDatesToReportOptions( args, registry.select );
-
-			const error = {
+		it( 'should render a "Get help" link when there is an insufficient permissions error', async () => {
+			setError( {
 				code: 'test_error',
 				message: 'Error message.',
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+			} );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -224,23 +233,14 @@ describe( 'ErrorNotice', () => {
 					code: 'analytics-4_insufficient_permissions',
 				} )
 			);
-		}
-	);
+		} );
 
-	it.each( errorCases )(
-		'should render a "Request access" link when there is an insufficient permissions error while %s',
-		async ( _, storeFunctionName, args ) => {
-			args = addDatesToReportOptions( args, registry.select );
-
-			const error = {
+		it( 'should render a "Request access" link when there is an insufficient permissions error', async () => {
+			setError( {
 				code: 'test_error',
 				message: 'Error message.',
 				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+			} );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -271,23 +271,14 @@ describe( 'ErrorNotice', () => {
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
 				'insufficient_permissions_error_request_access'
 			);
-		}
-	);
+		} );
 
-	it.each( errorCases )(
-		'should display an error notice when %s fails',
-		async ( _, storeFunctionName, args ) => {
-			args = addDatesToReportOptions( args, registry.select );
-
-			const error = {
+		it( 'should display an error notice when the request fails', async () => {
+			setError( {
 				code: 'test_error',
 				message: 'Error message.',
 				data: {},
-			};
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+			} );
 
 			const { getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -305,23 +296,16 @@ describe( 'ErrorNotice', () => {
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_audiences-sidebar`,
 				'data_loading_error'
 			);
-		}
-	);
+		} );
 
-	it.each( errorCases )(
-		'should render a "Retry" button when %s fails',
-		async ( _, storeFunctionName, args ) => {
-			args = addDatesToReportOptions( args, registry.select );
-
+		it( 'should render a "Retry" button when the request fails', async () => {
 			const error = {
 				code: 'test_error',
 				message: 'Error message.',
 				data: {},
 			};
 
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, storeFunctionName, args );
+			setError( error );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SyncErrorNotice />,
@@ -373,8 +357,8 @@ describe( 'ErrorNotice', () => {
 			} else {
 				expect( invalidateResolutionSpy ).toHaveBeenCalledTimes( 1 );
 			}
-		}
-	);
+		} );
+	} );
 
 	describe( 'when a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
 		beforeEach( () => {
@@ -405,7 +389,7 @@ describe( 'ErrorNotice', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, 'getReport', [
+				.setErrorForSelector( error, 'getReport', [
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.getSiteKitAudiencesUserCountReportOptions(),

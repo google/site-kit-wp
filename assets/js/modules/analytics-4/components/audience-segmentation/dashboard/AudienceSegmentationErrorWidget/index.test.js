@@ -98,7 +98,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			waitForRegistry;
 
 		beforeEach( async () => {
-			await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 				{
 					code: 'test-error-code',
 					message: 'Test error message',
@@ -222,7 +222,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.setWebDataStreamID( webDataStreamID );
-			await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+			await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 				{
 					code: 'test-error-code',
 					message: 'Test error message',
@@ -311,7 +311,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	} );
 
 	it( 'should render a retry button when `onRetry` and `showRetryButton` props are passed', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',

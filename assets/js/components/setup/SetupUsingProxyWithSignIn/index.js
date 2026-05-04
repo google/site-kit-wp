@@ -45,7 +45,7 @@ import Header from './Header';
 import Splash from './Splash';
 import Actions from './Actions';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -190,7 +190,7 @@ export default function SetupUsingProxyWithSignIn() {
 											'Site Kit by Google was successfully reset.',
 											'google-site-kit'
 										) }
-										type={ TYPES.SUCCESS }
+										type={ NOTICE_TYPES.SUCCESS }
 									/>
 									<br />
 								</Fragment>

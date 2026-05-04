@@ -58,7 +58,7 @@ describe( 'ExitSetup', () => {
 		expect( container.querySelector( 'button' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should navigate to the plugins page when the user clicks the button', async () => {
+	it( 'should navigate to the WordPress dashboard when the user clicks the button', async () => {
 		const { getByRole } = render(
 			<ExitSetup
 				gaTrackingEventArgs={ {
@@ -78,7 +78,7 @@ describe( 'ExitSetup', () => {
 		} );
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/plugins.php'
+			'http://example.com/wp-admin'
 		);
 	} );
 

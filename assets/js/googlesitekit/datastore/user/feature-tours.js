@@ -75,6 +75,7 @@ const fetchDismissTourStore = createFetchStore( {
 	validateParams: ( { slug } = {} ) => {
 		invariant( slug, 'slug is required.' );
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

@@ -30,7 +30,7 @@ import { FC, ElementType } from 'react';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface PendingVerificationProps {
@@ -52,7 +52,7 @@ const PendingVerification: FC< PendingVerificationProps > = ( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ __(
 					'Your Reader Revenue Manager account was successfully set up!',

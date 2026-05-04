@@ -91,7 +91,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
 			),
 			requireDataIsAvailableOnLoad(),
-			asyncRequire( false, requireAudienceSegmentationSetupCompleted() )
+			asyncRequire( false, requireAudienceSegmentationSetupCompleted() ),
+			async ( { resolveSelect, select } ) => {
+				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
+					return true;
+				}
+				await resolveSelect( CORE_USER ).getInitialSetupSettings();
+				return ! select( CORE_USER ).isAnalyticsSetupComplete();
+			}
 		),
 		isDismissible: true,
 		dismissRetries: 1,

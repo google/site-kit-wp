@@ -74,6 +74,7 @@ const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 
 		invariant( Number.isInteger( date ), 'date must be an integer.' );
 	},
+	isAction: true,
 } );
 
 const baseActions = {};

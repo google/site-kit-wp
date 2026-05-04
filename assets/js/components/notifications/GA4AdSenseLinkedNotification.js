@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function GA4AdSenseLinkedNotification( { id, Notification } ) {
 	return (
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'Your AdSense and Analytics accounts are linked',
 					'google-site-kit'

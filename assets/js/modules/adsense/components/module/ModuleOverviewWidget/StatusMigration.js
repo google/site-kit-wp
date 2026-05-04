@@ -38,6 +38,7 @@ import {
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util/status';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function StatusMigration() {
 	const accountID = useSelect( ( select ) =>
@@ -107,7 +108,7 @@ export default function StatusMigration() {
 					{ isReady === undefined && <ProgressBar /> }
 					{ isReady === false && (
 						<Notice
-							type={ Notice.TYPES.WARNING }
+							type={ NOTICE_TYPES.WARNING }
 							description={ __(
 								'You need to redo setup to complete AdSense configuration',
 								'google-site-kit'
