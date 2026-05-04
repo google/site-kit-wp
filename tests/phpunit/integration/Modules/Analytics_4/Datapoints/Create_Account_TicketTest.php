@@ -184,6 +184,32 @@ class Create_Account_TicketTest extends TestCase {
 		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should include service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
 	}
 
+	public function test_create_request__without_setup_flow_refresh_feature_flag() {
+		$this->provision_account_ticket_request = null;
+
+		$data = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+			'showProgress'   => true,
+		);
+
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-account-ticket', $data );
+		$request      = $this->datapoint->create_request( $data_request );
+		$this->analytics->get_client()->execute( $request );
+
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $this->provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+
+		$redirect_uri = $account_ticket_request->getRedirectUri();
+		$this->assertStringNotContainsString( 'service_version=v3', $redirect_uri, 'Redirect URI should not include service_version when setupFlowRefresh is disabled.' );
+		$this->assertStringNotContainsString( 'show_progress=1', $redirect_uri, 'Redirect URI should not include show_progress when setupFlowRefresh is disabled.' );
+		$this->assertEquals( $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'], $redirect_uri, 'Redirect URI should match the base analytics redirect URI when setupFlowRefresh is disabled.' );
+	}
+
 	public function test_parse_response() {
 		$this->provision_account_ticket_request = null;
 
