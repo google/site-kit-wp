@@ -38,6 +38,7 @@ import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function WPConsentAPIRequirements() {
 	const viewContext = useViewContext();
@@ -277,7 +278,7 @@ export default function WPConsentAPIRequirements() {
 							) }
 							footer={
 								<Notice
-									type={ Notice.TYPES.INFO }
+									type={ NOTICE_TYPES.INFO }
 									className="googlesitekit-notice--small"
 									description={ __(
 										"Make sure you have installed a plugin compatible with WP Consent API (Site Kit isn't able to verify the compatibility of all WP plugins).",

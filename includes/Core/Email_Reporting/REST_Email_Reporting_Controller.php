@@ -471,7 +471,7 @@ class REST_Email_Reporting_Controller {
 	/**
 	 * Gets the primary role display name of the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param WP_User $user User object.
 	 * @return string

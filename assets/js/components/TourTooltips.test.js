@@ -76,7 +76,7 @@ function MockUIWrapper( { children } ) {
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-function renderTourTooltipsWithMockUI( registry, overrideProps = {} ) {
+function renderTourTooltipsWithMockUI( options, overrideProps = {} ) {
 	return render(
 		<MockUIWrapper>
 			<TourTooltips
@@ -86,7 +86,7 @@ function renderTourTooltipsWithMockUI( registry, overrideProps = {} ) {
 				{ ...overrideProps }
 			/>
 		</MockUIWrapper>,
-		{ registry }
+		options
 	);
 }
 
@@ -132,7 +132,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should display step title & content correctly', async () => {
-		const { findByRole } = renderTourTooltipsWithMockUI( registry );
+		const { findByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		const tourTooltip = await findByRole( 'alertdialog' );
 
@@ -143,7 +143,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should switch to next step when next button is clicked', () => {
-		const { getByRole } = renderTourTooltipsWithMockUI( registry );
+		const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
 
@@ -153,7 +153,7 @@ describe( 'TourTooltips', () => {
 	it( 'should not render next step button if on last step', () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, FINAL_STEP );
 
-		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
+		const { queryByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		expect(
 			queryByRole( 'button', { name: /next/i } )
@@ -163,7 +163,7 @@ describe( 'TourTooltips', () => {
 	it( 'should switch to previous step when back button is clicked', () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, SECOND_STEP );
 
-		const { getByRole } = renderTourTooltipsWithMockUI( registry );
+		const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		fireEvent.click( getByRole( 'button', { name: /back/i } ) );
 
@@ -171,7 +171,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should not render previous step button if on first step', () => {
-		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
+		const { queryByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		expect(
 			queryByRole( 'button', { name: /back/i } )
@@ -179,7 +179,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should add classes to `body` when the tour starts', () => {
-		const { baseElement } = renderTourTooltipsWithMockUI( registry );
+		const { baseElement } = renderTourTooltipsWithMockUI( { registry } );
 
 		expect( baseElement.classList ).toContain(
 			'googlesitekit-showing-feature-tour'
@@ -195,8 +195,9 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should remove classes from `body` when the tour ends', () => {
-		const { baseElement, getByRole } =
-			renderTourTooltipsWithMockUI( registry );
+		const { baseElement, getByRole } = renderTourTooltipsWithMockUI( {
+			registry,
+		} );
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
@@ -214,8 +215,9 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should update the step class when the step is changed', () => {
-		const { baseElement, getByRole } =
-			renderTourTooltipsWithMockUI( registry );
+		const { baseElement, getByRole } = renderTourTooltipsWithMockUI( {
+			registry,
+		} );
 
 		fireEvent.click( getByRole( 'button', { name: /next/i } ) );
 
@@ -230,7 +232,7 @@ describe( 'TourTooltips', () => {
 
 	it( 'should end tour when close icon is clicked', async () => {
 		const { getByRole, queryByRole, rerender } =
-			renderTourTooltipsWithMockUI( registry );
+			renderTourTooltipsWithMockUI( { registry } );
 
 		await act( () => {
 			fireEvent.click( getByRole( 'button', { name: /close/i } ) );
@@ -251,8 +253,9 @@ describe( 'TourTooltips', () => {
 	it( 'should end tour when "Got it" button is clicked', () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, FINAL_STEP );
 
-		const { getByRole, queryByRole } =
-			renderTourTooltipsWithMockUI( registry );
+		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI( {
+			registry,
+		} );
 
 		fireEvent.click( getByRole( 'button', { name: /got it/i } ) );
 
@@ -261,7 +264,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should persist tour completion after tour closed', () => {
-		const { getByRole } = renderTourTooltipsWithMockUI( registry );
+		const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
@@ -269,9 +272,12 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should not persist tour completion if tour is repeatable', () => {
-		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
-			isRepeatable: true,
-		} );
+		const { getByRole } = renderTourTooltipsWithMockUI(
+			{ registry },
+			{
+				isRepeatable: true,
+			}
+		);
 
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
 
@@ -279,9 +285,12 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should flush state on completion when tour is repeatable', () => {
-		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
-			isRepeatable: true,
-		} );
+		const { getByRole } = renderTourTooltipsWithMockUI(
+			{ registry },
+			{
+				isRepeatable: true,
+			}
+		);
 
 		// Verify initial state.
 		expect( select.getValue( RUN_KEY ) ).toBe( true );
@@ -296,7 +305,7 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should start tour if no persisted tour completion exists', () => {
-		renderTourTooltipsWithMockUI( registry );
+		renderTourTooltipsWithMockUI( { registry } );
 
 		expect( select.getValue( RUN_KEY ) ).toBe( true );
 	} );
@@ -304,7 +313,7 @@ describe( 'TourTooltips', () => {
 	it( 'should not start tour if persisted tour completion is found', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
 
-		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
+		const { queryByRole } = renderTourTooltipsWithMockUI( { registry } );
 
 		expect( queryByRole( 'alertdialog' ) ).not.toBeInTheDocument();
 	} );
@@ -312,9 +321,12 @@ describe( 'TourTooltips', () => {
 	it( 'should start repeatable tour even if persisted tour completion is found', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ TOUR_ID ] );
 
-		const { getByRole } = renderTourTooltipsWithMockUI( registry, {
-			isRepeatable: true,
-		} );
+		const { getByRole } = renderTourTooltipsWithMockUI(
+			{ registry },
+			{
+				isRepeatable: true,
+			}
+		);
 
 		expect( getByRole( 'alertdialog' ) ).toBeInTheDocument();
 	} );
@@ -324,16 +336,30 @@ describe( 'TourTooltips', () => {
 			const { controlled } = data;
 			expect( controlled ).toBe( true );
 		}
-		renderTourTooltipsWithMockUI( registry, {
-			callback,
-		} );
+		renderTourTooltipsWithMockUI(
+			{ registry },
+			{
+				callback,
+			}
+		);
+	} );
+
+	it( 'should not display the step indicator when there is only one step and `setupFlowRefresh` is enabled', () => {
+		const { queryByText } = renderTourTooltipsWithMockUI(
+			{ registry, features: [ 'setupFlowRefresh' ] },
+			{
+				steps: MOCK_STEPS.slice( 0, 1 ),
+			}
+		);
+
+		expect( queryByText( '1 / 1' ) ).not.toBeInTheDocument();
 	} );
 
 	describe( 'event tracking', () => {
 		beforeEach( () => mockTrackEvent.mockClear() );
 
 		it( 'tracks all events for a completed tour', async () => {
-			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 			await getByRole( 'alertdialog' );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -400,7 +426,7 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'tracks all events for a dismissed tour', async () => {
-			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 			await getByRole( 'alertdialog' );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -422,7 +448,7 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'tracks all events for a dismissed tour on the last step', async () => {
-			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 			await getByRole( 'alertdialog' );
 			// Go to step 2/3
 			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
@@ -448,7 +474,7 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'tracks events for navigating between steps', async () => {
-			const { getByRole } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole } = renderTourTooltipsWithMockUI( { registry } );
 			await getByRole( 'alertdialog' );
 			mockTrackEvent.mockClear();
 
@@ -494,9 +520,12 @@ describe( 'TourTooltips', () => {
 			}
 			const expectedCategory = gaEventCategory( TEST_VIEW_CONTEXT );
 
-			const { getByRole } = renderTourTooltipsWithMockUI( registry, {
-				gaEventCategory,
-			} );
+			const { getByRole } = renderTourTooltipsWithMockUI(
+				{ registry },
+				{
+					gaEventCategory,
+				}
+			);
 
 			await getByRole( 'alertdialog' );
 			mockTrackEvent.mockClear();

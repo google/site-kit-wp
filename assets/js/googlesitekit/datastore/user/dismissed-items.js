@@ -74,6 +74,7 @@ const fetchRemoveDismissedItemsStore = createFetchStore( {
 			'All slugs must be strings.'
 		);
 	},
+	isAction: true,
 } );
 
 const fetchDismissItemStore = createFetchStore( {
@@ -94,6 +95,7 @@ const fetchDismissItemStore = createFetchStore( {
 			'expiresInSeconds must be an integer.'
 		);
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

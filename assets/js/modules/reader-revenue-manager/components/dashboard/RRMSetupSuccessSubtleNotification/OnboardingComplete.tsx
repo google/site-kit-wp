@@ -31,7 +31,7 @@ import { FC, ElementType, ReactNode } from 'react';
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -169,7 +169,7 @@ const OnboardingComplete: FC< OnboardingCompleteProps > = ( {
 		<Notification gaTrackingEventArgs={ gaTrackingEventArgs }>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				gaTrackingEventArgs={ gaTrackingEventArgs }
 				title={ notificationContent.title }
 				description={ notificationContent.description }

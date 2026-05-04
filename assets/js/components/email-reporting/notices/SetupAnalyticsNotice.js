@@ -32,7 +32,7 @@ import {
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -129,7 +129,7 @@ export default function SetupAnalyticsNotice() {
 
 	return (
 		<NoticeWithIntersectionObserver
-			type={ TYPES.NEW }
+			type={ NOTICE_TYPES.NEW }
 			title={ __(
 				'Understand how visitors interact with your content',
 				'google-site-kit'

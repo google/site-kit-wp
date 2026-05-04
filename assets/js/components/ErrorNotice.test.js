@@ -75,7 +75,7 @@ describe( 'ErrorNotice', () => {
 
 		const selectorError = registry
 			.select( MODULES_TAGMANAGER )
-			.getError( 'getAccounts', [] );
+			.getErrorForSelector( 'getAccounts', [] );
 
 		return render(
 			<ErrorNotice

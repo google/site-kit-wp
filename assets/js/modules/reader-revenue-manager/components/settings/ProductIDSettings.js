@@ -36,6 +36,7 @@ import {
 import { ProductIDSelect } from '@/js/modules/reader-revenue-manager/components/common';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function ProductIDSettings( { hasModuleAccess } ) {
 	const productID = useSelect( ( select ) =>
@@ -81,7 +82,7 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 				! isOpenAccessNoticeDismissed && (
 					<div className="googlesitekit-rrm-settings-edit__product-id-warning-notice">
 						<Notice
-							type={ Notice.TYPES.WARNING }
+							type={ NOTICE_TYPES.WARNING }
 							description={ __(
 								'Selecting “open access” will allow your reader to access your content without a subscription',
 								'google-site-kit'
@@ -99,7 +100,7 @@ export default function ProductIDSettings( { hasModuleAccess } ) {
 			{ ! isInfoNoticeDismissed && (
 				<div className="googlesitekit-rrm-settings-edit__product-id-info-notice">
 					<Notice
-						type={ Notice.TYPES.INFO }
+						type={ NOTICE_TYPES.INFO }
 						title={ createInterpolateElement(
 							__(
 								'Use the new settings in the block editor to select different product IDs for individual pages or control where CTAs appear on an individual post. <learnMore>Learn more</learnMore>',

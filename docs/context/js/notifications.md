@@ -50,7 +50,7 @@ import { PRIORITY } from '../googlesitekit/notifications/constants';
 
 const PRIORITY = {
     ERROR_HIGH: 30,      // Critical errors
-    ERROR_LOW: 60,       // Non-critical errors  
+    ERROR_LOW: 60,       // Non-critical errors
     WARNING: 100,        // Warning messages
     INFO: 150,           // Informational messages
     SETUP_CTA_HIGH: 150, // High-priority setup CTAs
@@ -100,26 +100,26 @@ registerNotification('setup-success-banner', {
     areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
     groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
     viewContexts: [VIEW_CONTEXT_MAIN_DASHBOARD],
-    
+
     checkRequirements: async ({ select, resolveSelect, dispatch }) => {
         // Wait for required data to be available
         await Promise.all([
             resolveSelect(CORE_USER).getAuthentication(),
             resolveSelect(CORE_MODULES).getModules(),
         ]);
-        
+
         // Check URL parameters for setup success
         const notification = getQueryArg(location.href, 'notification');
         const moduleSlug = getQueryArg(location.href, 'slug');
-        
+
         if (notification === 'authentication_success' && moduleSlug) {
             const module = select(CORE_MODULES).getModule(moduleSlug);
             return module?.active === true;
         }
-        
+
         return false;
     },
-    
+
     isDismissible: true,
     dismissRetries: 2,  // Show up to 2 more times after dismissal
     featureFlag: 'enhancedNotifications',
@@ -143,13 +143,13 @@ function MyBannerNotification({ id, Notification }) {
                 type={TYPES.WARNING}  // INFO, WARNING, ERROR
                 title="Important Update Required"
                 description="Your Analytics connection needs to be updated to continue receiving data."
-                
+
                 learnMoreLink={{
                     url: 'https://example.com/docs',
                     label: 'Learn more about this update',
                     external: true
                 }}
-                
+
                 ctaButton={{
                     text: 'Update Now',
                     onClick: async () => {
@@ -159,7 +159,7 @@ function MyBannerNotification({ id, Notification }) {
                     dismissOnClick: true,  // Dismiss notification after click
                     dismissOptions: { expiresInSeconds: 0 }  // Permanent dismissal
                 }}
-                
+
                 dismissButton={{
                     onClick: async () => {
                         // Handle custom dismiss logic
@@ -167,7 +167,7 @@ function MyBannerNotification({ id, Notification }) {
                     },
                     dismissOptions: { expiresInSeconds: 86400 }  // Dismiss for 24 hours
                 }}
-                
+
                 gaTrackingEventArgs={{
                     category: 'Analytics Setup',
                     label: 'Update Banner',
@@ -195,16 +195,13 @@ function MyNoticeNotification({ id, Notification }) {
                 type={TYPES.SUCCESS}  // SUCCESS, WARNING, ERROR, INFO
                 title="Connection Successful"
                 description="Your Analytics account has been connected successfully."
-                
                 ctaButton={{
                     text: 'View Dashboard',
                     onClick: async () => {
                         navigateTo('/dashboard');
                     }
                 }}
-                
                 dismissButton
-                
                 gaTrackingEventArgs={{
                     category: 'Setup Success',
                     label: 'Analytics Connected'
@@ -229,14 +226,14 @@ function MyOverlayNotification({ id, Notification }) {
                 notificationID={id}
                 title="Account Linking Detected"
                 description="We detected that your Analytics and AdSense accounts are already linked."
-                
+
                 ctaButton={{
                     text: 'Continue Setup',
                     onClick: async () => {
                         await completeAccountLinking();
                     }
                 }}
-                
+
                 dismissButton={{
                     text: 'Skip for Now',
                     onClick: async () => {
@@ -244,7 +241,7 @@ function MyOverlayNotification({ id, Notification }) {
                     },
                     dismissOptions: { expiresInSeconds: 604800 }  // 7 days
                 }}
-                
+
                 gaTrackingEventArgs={{
                     category: 'Account Linking',
                     confirmAction: 'confirm_linking',
@@ -326,19 +323,19 @@ function DataDrivenNotification({ id, Notification }) {
     const accountName = useSelect((select) =>
         select(MODULES_ANALYTICS_4).getAccountName()
     );
-    
+
     const propertyName = useSelect((select) =>
         select(MODULES_ANALYTICS_4).getPropertyName()
     );
-    
+
     const isLoading = useSelect((select) =>
         !select(MODULES_ANALYTICS_4).hasFinishedResolution('getSettings')
     );
-    
+
     if (isLoading) {
         return null;  // Don't render until data is available
     }
-    
+
     return (
         <Notification>
             <BannerNotification
@@ -349,7 +346,7 @@ function DataDrivenNotification({ id, Notification }) {
                     accountName,
                     propertyName
                 )}
-                
+
                 ctaButton={{
                     text: __('View Analytics Dashboard', 'google-site-kit'),
                     onClick: async () => {
@@ -357,7 +354,7 @@ function DataDrivenNotification({ id, Notification }) {
                     },
                     dismissOnClick: true
                 }}
-                
+
                 dismissButton
             />
         </Notification>
@@ -379,11 +376,11 @@ function DashboardHeader() {
     return (
         <div className="dashboard-header">
             {/* Render notifications for the header area */}
-            <Notifications 
+            <Notifications
                 areaSlug={NOTIFICATION_AREAS.HEADER}
                 groupID={NOTIFICATION_GROUPS.DEFAULT}
             />
-            
+
             {/* Other header content */}
         </div>
     );
@@ -393,11 +390,11 @@ function DashboardMain() {
     return (
         <div className="dashboard-main">
             {/* Render setup CTAs */}
-            <Notifications 
+            <Notifications
                 areaSlug={NOTIFICATION_AREAS.DASHBOARD_TOP}
                 groupID={NOTIFICATION_GROUPS.SETUP_CTAS}
             />
-            
+
             {/* Dashboard content */}
         </div>
     );
@@ -416,14 +413,14 @@ function SpecificNotificationRenderer() {
     const notification = useSelect((select) =>
         select(CORE_NOTIFICATIONS).getNotification('my-notification-id')
     );
-    
+
     if (!notification) {
         return null;
     }
-    
+
     const { Component } = notification;
     const props = getNotificationComponentProps('my-notification-id');
-    
+
     return <Component {...props} />;
 }
 ```
@@ -438,25 +435,25 @@ import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/con
 
 function useNotificationActions() {
     const { dismissNotification } = useDispatch(CORE_NOTIFICATIONS);
-    
+
     const dismissPermanently = async (notificationId) => {
         await dismissNotification(notificationId, {
             expiresInSeconds: 0  // Permanent dismissal
         });
     };
-    
+
     const dismissTemporarily = async (notificationId, hours = 24) => {
         await dismissNotification(notificationId, {
             expiresInSeconds: hours * 3600
         });
     };
-    
+
     const dismissWithRetries = async (notificationId) => {
         // For notifications with dismissRetries > 0, this will
         // show the notification again until retry limit is reached
         await dismissNotification(notificationId);
     };
-    
+
     return {
         dismissPermanently,
         dismissTemporarily,
@@ -475,19 +472,19 @@ function useNotificationState(notificationId) {
     const notification = useSelect((select) =>
         select(CORE_NOTIFICATIONS).getNotification(notificationId)
     );
-    
+
     const isDismissed = useSelect((select) =>
         select(CORE_NOTIFICATIONS).isNotificationDismissed(notificationId)
     );
-    
+
     const isFinalDismissal = useSelect((select) =>
         select(CORE_NOTIFICATIONS).isNotificationDismissalFinal(notificationId)
     );
-    
+
     const seenDates = useSelect((select) =>
         select(CORE_NOTIFICATIONS).getNotificationSeenDates(notificationId)
     );
-    
+
     return {
         notification,
         isDismissed,
@@ -535,15 +532,15 @@ function TrackedNotification({ id, Notification }) {
             dismissAction: 'custom_dismiss'  // Custom dismiss action
         }
     );
-    
+
     const handleCustomAction = async () => {
         // Track custom event
         trackEvents.confirm('Custom Label', 1);
-        
+
         // Perform action
         await performCustomAction();
     };
-    
+
     return (
         <Notification>
             <BannerNotification
@@ -597,21 +594,21 @@ function ModuleNotifications() {
     const notifications = useSelect((select) =>
         select('modules/analytics-4/notifications').getNotifications()
     );
-    
+
     const isLoading = useSelect((select) =>
         !select('modules/analytics-4/notifications').hasFinishedResolution('getNotifications')
     );
-    
+
     if (isLoading) {
         return <LoadingSpinner />;
     }
-    
+
     return (
         <div>
             {notifications?.map((notification) => (
-                <NotificationFromServer 
-                    key={notification.id} 
-                    notification={notification} 
+                <NotificationFromServer
+                    key={notification.id}
+                    notification={notification}
                 />
             ))}
         </div>
@@ -630,13 +627,13 @@ import useViewOnly from '../hooks/useViewOnly';
 function ContextAwareNotification({ id, Notification }) {
     const viewContext = useViewContext();
     const isViewOnly = useViewOnly();
-    
+
     // Different content based on context
     const getTitle = () => {
         if (isViewOnly) {
             return __('Limited Access Dashboard', 'google-site-kit');
         }
-        
+
         switch (viewContext) {
             case VIEW_CONTEXT_MAIN_DASHBOARD:
                 return __('Main Dashboard Notice', 'google-site-kit');
@@ -646,13 +643,13 @@ function ContextAwareNotification({ id, Notification }) {
                 return __('General Notice', 'google-site-kit');
         }
     };
-    
+
     const getCTAText = () => {
-        return isViewOnly 
+        return isViewOnly
             ? __('Request Full Access', 'google-site-kit')
             : __('Configure Settings', 'google-site-kit');
     };
-    
+
     return (
         <Notification>
             <BannerNotification
@@ -729,7 +726,7 @@ const registerNotificationChain = () => {
             return !isAnalyticsConnected;
         }
     });
-    
+
     // Step 2: Configuration reminder (shows after step 1 is completed)
     registerNotification('setup-step-2', {
         Component: SetupStep2Notification,
@@ -750,20 +747,20 @@ const registerNotificationChain = () => {
 ```javascript
 function DynamicNotification({ id, Notification }) {
     const [dynamicContent, setDynamicContent] = useState(null);
-    
+
     useEffect(() => {
         const loadDynamicContent = async () => {
             const response = await api.get('dynamic-notification-content', { id });
             setDynamicContent(response);
         };
-        
+
         loadDynamicContent();
     }, [id]);
-    
+
     if (!dynamicContent) {
         return null;
     }
-    
+
     return (
         <Notification>
             <BannerNotification
@@ -789,19 +786,19 @@ import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/con
 function useNotificationQueue(groupID = NOTIFICATION_GROUPS.DEFAULT) {
     const viewContext = useViewContext();
     const { resetQueue } = useDispatch(CORE_NOTIFICATIONS);
-    
+
     const queuedNotifications = useSelect((select) =>
         select(CORE_NOTIFICATIONS).getQueuedNotifications(viewContext, groupID)
     );
-    
+
     const clearQueue = () => {
         resetQueue(groupID);
     };
-    
+
     const getQueueLength = () => queuedNotifications?.length || 0;
-    
+
     const getNextNotification = () => queuedNotifications?.[0];
-    
+
     return {
         queuedNotifications,
         queueLength: getQueueLength(),
@@ -814,13 +811,15 @@ function useNotificationQueue(groupID = NOTIFICATION_GROUPS.DEFAULT) {
 ## Best Practices
 
 ### Notification Development
+
 1. **Use appropriate layout components** (BannerNotification, NoticeNotification, OverlayNotification)
 2. **Follow standard component structure** with proper PropTypes
 3. **Implement proper checkRequirements** logic for conditional display
 4. **Use meaningful notification IDs** that describe the purpose
 5. **Consider view contexts** when registering notifications
 
-### User Experience  
+### User Experience
+
 1. **Use appropriate priorities** - errors should have higher priority than info
 2. **Make notifications dismissible** unless critical
 3. **Limit retry notifications** to avoid annoying users
@@ -828,6 +827,7 @@ function useNotificationQueue(groupID = NOTIFICATION_GROUPS.DEFAULT) {
 5. **Use progressive disclosure** for complex workflows
 
 ### Performance
+
 1. **Implement efficient checkRequirements** functions
 2. **Use proper data dependencies** in requirements checks
 3. **Avoid expensive operations** in notification rendering
@@ -835,6 +835,7 @@ function useNotificationQueue(groupID = NOTIFICATION_GROUPS.DEFAULT) {
 5. **Clean up dismissed notifications** from state
 
 ### Analytics
+
 1. **Use consistent tracking categories** across similar notifications
 2. **Track all user interactions** (view, dismiss, confirm, learn more)
 3. **Include meaningful labels and values** for analytics
@@ -842,6 +843,7 @@ function useNotificationQueue(groupID = NOTIFICATION_GROUPS.DEFAULT) {
 5. **Monitor notification performance** and user engagement
 
 ### Testing
+
 1. **Test notification requirements** logic thoroughly
 2. **Verify dismissal behavior** and retry limits
 3. **Test across different view contexts** and user permissions

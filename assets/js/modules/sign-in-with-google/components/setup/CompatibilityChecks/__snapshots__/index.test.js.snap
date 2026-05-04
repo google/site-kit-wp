@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CompatibilityChecks renders warning with multiple conflicting plugins 1`] = `
+<div>
+  <div
+    class="googlesitekit-notice-container"
+  >
+    <div
+      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-sign-in-with-google-compatibility-notice"
+      role="status"
+    >
+      <div
+        class="googlesitekit-notice__icon"
+      >
+        <svg />
+      </div>
+      <div
+        class="googlesitekit-notice__content"
+      >
+        <p
+          class="googlesitekit-notice__title"
+        >
+          Your site may not be ready for Sign in with Google
+        </p>
+        <div
+          class="googlesitekit-notice__description"
+        >
+          <p
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
+            The following plugins may prevent Sign in with Google from working properly:
+          </p>
+          <ul>
+            <li>
+              Hide Login
+            </li>
+            <li>
+              Hide Login 2
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
