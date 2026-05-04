@@ -1,5 +1,5 @@
 /**
- * User Input Preview Group.
+ * UserInputPreviewGroup component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,39 +21,53 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { type ComponentType } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useEffect, useCallback, useRef } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { trackEvent } from '@/js/util';
-import { getErrorMessageForAnswer } from './util/validation';
+import { getErrorMessageForAnswer } from '@/js/components/user-input/util/validation';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
-} from './util/constants';
-import { Button } from 'googlesitekit-components';
-import Link from '@/js/components/Link';
+} from '@/js/components/user-input/util/constants';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
-import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
-import UserInputPreviewAnswers from './UserInputPreviewAnswers';
-import UserInputEditModeContent from './UserInputEditModeContent';
-import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
+import AnswerQuestionButton from './AnswerQuestionButton';
+import EditLink from './EditLink';
+import PreviewContent from './PreviewContent';
+
+type UserInputQuestionSlug = keyof typeof USER_INPUT_MAX_ANSWERS;
+type FocusableElement = {
+	focus?: () => void;
+};
+
+interface UserInputPreviewGroupProps {
+	slug: UserInputQuestionSlug;
+	title: string;
+	subtitle?: string | ComponentType;
+	values: string[];
+	options?: Record< string, string >;
+	loading?: boolean;
+	settingsView?: boolean;
+	onChange?: () => void;
+}
 
 export default function UserInputPreviewGroup( {
 	slug,
@@ -64,26 +78,31 @@ export default function UserInputPreviewGroup( {
 	loading = false,
 	settingsView = false,
 	onChange,
-} ) {
+}: UserInputPreviewGroupProps ) {
 	const viewContext = useViewContext();
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
+	const isNavigating = useSelect(
+		( select: Select ) => select( CORE_LOCATION ).isNavigating(),
+		[]
 	);
-	const currentlyEditingSlug = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	const currentlyEditingSlug = useSelect(
+		( select: Select ) =>
+			select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY ),
+		[]
 	);
-	const isSavingSettings = useSelect( ( select ) => {
+	const isSavingSettings = useSelect( ( select: Select ) => {
 		const userInputSettings = select( CORE_USER ).getUserInputSettings();
 
 		return select( CORE_USER ).isSavingUserInputSettings(
 			userInputSettings
 		);
-	} );
+	}, [] );
 	const savedPurposeAnswer = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
+
+	const editButtonRef = useRef< FocusableElement | null >( null );
 
 	useEffect( () => {
 		// If user purpose is opened currently saved value was snapshot
@@ -112,6 +131,8 @@ export default function UserInputPreviewGroup( {
 		setupFlowRefreshEnabled && settingsView && ! hasAnswer;
 
 	const isScreenLoading = isSavingSettings || isNavigating;
+	const isEditControlDisabled =
+		isScreenLoading || ( !! currentlyEditingSlug && ! isEditing );
 
 	const gaEventCategory = `${ viewContext }_kmw`;
 
@@ -128,16 +149,6 @@ export default function UserInputPreviewGroup( {
 			} );
 		}
 	}, [ gaEventCategory, isEditing, setValues, slug ] );
-
-	const errorMessage = getErrorMessageForAnswer(
-		values,
-		USER_INPUT_MAX_ANSWERS[ slug ]
-	);
-	const previewErrorMessage = shouldUseAnswerQuestionCTA
-		? undefined
-		: errorMessage;
-
-	const editButtonRef = useRef();
 
 	const handleOnEditClick = useCallback( async () => {
 		if ( settingsView ) {
@@ -164,86 +175,18 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode,
 	] );
 
-	const Subtitle = typeof subtitle === 'function' ? subtitle : undefined;
-	const isEditControlDisabled =
-		isScreenLoading || ( !! currentlyEditingSlug && ! isEditing );
+	const errorMessage = getErrorMessageForAnswer(
+		values,
+		USER_INPUT_MAX_ANSWERS[ slug ]
+	);
+	const previewErrorMessage = shouldUseAnswerQuestionCTA
+		? undefined
+		: errorMessage;
 
-	function renderEditLink() {
-		if ( shouldUseAnswerQuestionCTA ) {
-			return null;
-		}
-
-		return (
-			<Link
-				onClick={ handleOnEditClick }
-				ref={ editButtonRef }
-				disabled={ isEditControlDisabled }
-				trailingIcon={ <ChevronDownIcon width={ 20 } height={ 20 } /> }
-				secondary
-				linkButton
-			>
-				{ isEditing
-					? __( 'Close', 'google-site-kit' )
-					: __( 'Edit', 'google-site-kit' ) }
-			</Link>
-		);
-	}
-
-	function renderSubtitle() {
-		if ( Subtitle ) {
-			return (
-				<div className="googlesitekit-user-input__preview-group-subtitle-component">
-					<Subtitle />
-				</div>
-			);
-		}
-
-		return <P>{ subtitle }</P>;
-	}
-
-	function renderAnswerQuestionButton() {
-		if ( ! shouldUseAnswerQuestionCTA || isEditing ) {
-			return null;
-		}
-
-		return (
-			<div className="googlesitekit-user-input__preview-group-answer-question">
-				<Button
-					onClick={ handleOnEditClick }
-					disabled={ isEditControlDisabled }
-				>
-					{ __( 'Answer question', 'google-site-kit' ) }
-				</Button>
-			</div>
-		);
-	}
-
-	function renderPreviewContent() {
-		if ( isEditing ) {
-			return (
-				<UserInputEditModeContent
-					slug={ slug }
-					options={ options }
-					onChange={ onChange }
-					settingsView={ settingsView }
-				/>
-			);
-		}
-
-		if ( ! shouldUseAnswerQuestionCTA || hasAnswer ) {
-			return (
-				<UserInputPreviewAnswers
-					values={ values }
-					options={ options }
-					loading={ loading }
-					errorMessage={ previewErrorMessage }
-					suppressError={ shouldUseAnswerQuestionCTA }
-				/>
-			);
-		}
-
-		return null;
-	}
+	const SubtitleComponent =
+		typeof subtitle === 'function'
+			? ( subtitle as ComponentType )
+			: undefined;
 
 	return (
 		<div
@@ -258,12 +201,12 @@ export default function UserInputPreviewGroup( {
 					'googlesitekit-user-input__preview-group-title',
 					{
 						'googlesitekit-user-input__preview-group-title-with-subtitle':
-							Subtitle || subtitle,
+							SubtitleComponent || subtitle,
 					}
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<P>{ title }</P>
+					<P size="medium">{ title }</P>
 				</LoadingWrapper>
 				<LoadingWrapper
 					loading={ loading }
@@ -271,18 +214,48 @@ export default function UserInputPreviewGroup( {
 					width="60px"
 					height="26px"
 				>
-					{ renderEditLink() }
+					{ ! shouldUseAnswerQuestionCTA && (
+						<EditLink
+							isEditing={ isEditing }
+							isDisabled={ isEditControlDisabled }
+							onClick={ handleOnEditClick }
+							linkRef={ editButtonRef }
+						/>
+					) }
 				</LoadingWrapper>
 			</div>
 
-			<LoadingWrapper>
+			<LoadingWrapper loading={ loading }>
 				<div className="googlesitekit-user-input__preview-group-subtitle">
-					{ renderSubtitle() }
+					{ SubtitleComponent ? (
+						<div className="googlesitekit-user-input__preview-group-subtitle-component">
+							<SubtitleComponent />
+						</div>
+					) : (
+						<P size="medium">{ subtitle }</P>
+					) }
 				</div>
 			</LoadingWrapper>
 
-			{ renderAnswerQuestionButton() }
-			{ renderPreviewContent() }
+			{ shouldUseAnswerQuestionCTA && ! isEditing && (
+				<AnswerQuestionButton
+					isDisabled={ isEditControlDisabled }
+					onClick={ handleOnEditClick }
+				/>
+			) }
+
+			<PreviewContent
+				isEditing={ isEditing }
+				shouldUseAnswerQuestionCTA={ shouldUseAnswerQuestionCTA }
+				hasAnswer={ hasAnswer }
+				slug={ slug }
+				options={ options }
+				onChange={ onChange }
+				settingsView={ settingsView }
+				values={ values }
+				loading={ loading }
+				errorMessage={ previewErrorMessage || undefined }
+			/>
 		</div>
 	);
 }

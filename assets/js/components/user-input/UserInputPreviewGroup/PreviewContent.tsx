@@ -1,0 +1,92 @@
+/**
+ * UserInputPreviewGroup PreviewContent component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import UserInputEditModeContent from '@/js/components/user-input/UserInputEditModeContent';
+import UserInputPreviewAnswers from '@/js/components/user-input/UserInputPreviewAnswers';
+
+interface PreviewContentProps {
+	isEditing: boolean;
+	shouldUseAnswerQuestionCTA: boolean;
+	hasAnswer: boolean;
+	slug: string;
+	options: Record< string, string >;
+	onChange?: () => void;
+	settingsView: boolean;
+	values: string[];
+	loading: boolean;
+	errorMessage?: string;
+}
+
+export default function PreviewContent( {
+	isEditing,
+	shouldUseAnswerQuestionCTA,
+	hasAnswer,
+	slug,
+	options,
+	onChange,
+	settingsView,
+	values,
+	loading,
+	errorMessage,
+}: PreviewContentProps ) {
+	if ( isEditing ) {
+		return (
+			<UserInputEditModeContent
+				slug={ slug }
+				options={ options }
+				onChange={ onChange }
+				settingsView={ settingsView }
+			/>
+		);
+	}
+
+	if ( ! shouldUseAnswerQuestionCTA || hasAnswer ) {
+		return (
+			<UserInputPreviewAnswers
+				values={ values }
+				options={ options }
+				loading={ loading }
+				errorMessage={ errorMessage }
+				suppressError={ shouldUseAnswerQuestionCTA }
+			/>
+		);
+	}
+
+	return null;
+}
+
+PreviewContent.propTypes = {
+	isEditing: PropTypes.bool.isRequired,
+	shouldUseAnswerQuestionCTA: PropTypes.bool.isRequired,
+	hasAnswer: PropTypes.bool.isRequired,
+	slug: PropTypes.string.isRequired,
+	options: PropTypes.shape( {} ).isRequired,
+	onChange: PropTypes.func,
+	settingsView: PropTypes.bool.isRequired,
+	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
+	loading: PropTypes.bool.isRequired,
+	errorMessage: PropTypes.string,
+};
