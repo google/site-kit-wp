@@ -31,6 +31,10 @@ import {
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
+import {
+	CORE_UI,
+	FORCED_IN_VIEW_WIDGET_AREAS,
+} from '@/js/googlesitekit/datastore/ui/constants';
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -81,6 +85,18 @@ describe( 'core/user feature-tours', () => {
 			const fetchDismissTourRegExp = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-tour'
 			);
+			let setUIValueSpy;
+
+			beforeEach( () => {
+				setUIValueSpy = jest.spyOn(
+					registry.dispatch( CORE_UI ),
+					'setValue'
+				);
+			} );
+
+			afterEach( () => {
+				setUIValueSpy.mockRestore();
+			} );
 
 			it( 'requires a slug parameter', () => {
 				expect( () =>
@@ -163,6 +179,17 @@ describe( 'core/user feature-tours', () => {
 					.dismissTour( testTourB.slug );
 
 				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'clears forced in-view widget areas in core/ui state', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				await registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
+
+				expect( setUIValueSpy ).toHaveBeenCalledWith(
+					FORCED_IN_VIEW_WIDGET_AREAS,
+					undefined
+				);
 			} );
 		} );
 
@@ -258,6 +285,28 @@ describe( 'core/user feature-tours', () => {
 				// Ensure the original tour in state ("testTourA") is still in state and that a
 				// newly-triggered tour does not overwrite the existing tour in-state.
 				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'sets forced in-view widget areas in core/ui state for tours with preloadWidgetAreas', async () => {
+				const setUIValueSpy = jest.spyOn(
+					registry.dispatch( CORE_UI ),
+					'setValue'
+				);
+
+				await registry.dispatch( CORE_USER ).triggerTour( {
+					...testTourA,
+					preloadWidgetAreas: [
+						'dashboard-header',
+						'audience-segments',
+					],
+				} );
+
+				expect( setUIValueSpy ).toHaveBeenCalledWith(
+					FORCED_IN_VIEW_WIDGET_AREAS,
+					[ 'dashboard-header', 'audience-segments' ]
+				);
+
+				setUIValueSpy.mockRestore();
 			} );
 		} );
 

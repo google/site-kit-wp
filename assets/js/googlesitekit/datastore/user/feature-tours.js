@@ -36,6 +36,10 @@ import {
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_UI,
+	FORCED_IN_VIEW_WIDGET_AREAS,
+} from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from './constants';
 import featureTours from '@/js/feature-tours';
 import { getItem } from '@/js/googlesitekit/api/cache';
@@ -100,7 +104,12 @@ const baseActions = {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 		},
 		function* ( slug ) {
-			const { select } = yield getRegistry();
+			const registry = yield getRegistry();
+			const { select } = registry;
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( FORCED_IN_VIEW_WIDGET_AREAS, undefined );
 
 			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
 				const response =
@@ -166,9 +175,19 @@ const baseActions = {
 	),
 
 	*triggerTour( tour ) {
-		const { select } = yield getRegistry();
+		const registry = yield getRegistry();
+		const { select } = registry;
 
 		if ( ! select( CORE_USER ).getCurrentTour() ) {
+			if ( tour?.preloadWidgetAreas?.length ) {
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						FORCED_IN_VIEW_WIDGET_AREAS,
+						tour.preloadWidgetAreas
+					);
+			}
+
 			yield baseActions.receiveCurrentTour( tour );
 		}
 	},
