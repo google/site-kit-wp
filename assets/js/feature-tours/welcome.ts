@@ -152,10 +152,9 @@ export function getWelcomeTour( {
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
-					target:
-						typeof windowHeight === 'number' && windowHeight < 930
-							? '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart'
-							: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+					target: isShortViewport( windowHeight )
+						? '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart'
+						: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
 				},
 				title: __(
 					'Track Search traffic trends, identify baselines',
@@ -222,7 +221,9 @@ export function getWelcomeTour( {
 			{
 				target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',
 				floaterProps: {
-					target: '.googlesitekit-km-change-metrics-cta',
+					target: isShortViewport( windowHeight )
+						? '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary'
+						: '.googlesitekit-km-change-metrics-cta',
 				},
 				title: __(
 					'Your goals, measured and clear',
@@ -234,7 +235,7 @@ export function getWelcomeTour( {
 				),
 				offset: -3,
 				spotlightPadding: 4,
-				placement: 'top-end',
+				placement: isShortViewport( windowHeight ) ? 'top' : 'top-end',
 				scrollToTop: true,
 			},
 			{
@@ -286,7 +287,7 @@ export function getWelcomeTour( {
 					'Find out what your audience loves and double down on what resonates most',
 					'google-site-kit'
 				),
-				offset: 25,
+				offset: isShortViewport( windowHeight ) ? 0 : 25,
 				spotlightPadding: 0,
 				placement: 'top',
 				scrollToTop: true,
@@ -294,4 +295,16 @@ export function getWelcomeTour( {
 			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
 		],
 	};
+}
+
+/**
+ * Returns whether the current viewport is not long enough to fully fit some of the steps.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} windowHeight The current window height.
+ * @return {boolean} Whether the viewport is short.
+ */
+function isShortViewport( windowHeight?: number ) {
+	return typeof windowHeight === 'number' && windowHeight < 930;
 }
