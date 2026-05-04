@@ -417,6 +417,9 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain title text.' );
 		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
+		$this->assertStringNotContainsString( 'Manage subscription:', $result, 'Simple email should omit Manage subscription link when unsubscribe URL is missing.' );
+		$this->assertStringNotContainsString( 'Privacy Policy:', $result, 'Simple email should omit Privacy Policy link when unsubscribe URL is missing.' );
+		$this->assertStringNotContainsString( 'Help center:', $result, 'Simple email should omit Help center link when unsubscribe URL is missing.' );
 	}
 
 	public function test_convert_links_to_text__converts_anchor_tags() {
