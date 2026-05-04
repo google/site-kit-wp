@@ -130,55 +130,12 @@ class EmailTest extends TestCase {
 		$this->assertNull( $this->email->get_last_error(), 'Last error should be null initially.' );
 	}
 
-	public function test_send_sets_alt_body_when_text_content_provided() {
-		$captured_alt_body = null;
-
-		// Capture the AltBody via phpmailer_init hook at high priority (after Site Kit sets it).
-		// Also clear recipients to prevent actual send attempt.
-		add_action(
-			'phpmailer_init',
-			function ( $phpmailer ) use ( &$captured_alt_body ) {
-				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
-				$captured_alt_body = $phpmailer->AltBody;
-				// Prevent actual send by clearing recipients.
-				$phpmailer->clearAllRecipients();
-			},
-			999 // Run after Site Kit's hook (priority 10).
-		);
-
-		$to           = 'test@example.com';
-		$subject      = 'Test Subject';
-		$content      = '<html><body>HTML Content</body></html>';
-		$text_content = 'Plain text content';
-
-		// Note: We don't assert on $result because the actual send will fail
-		// (recipients cleared). We only care that AltBody was set correctly.
-		$this->email->send( $to, $subject, $content, array(), $text_content );
-
-		$this->assertEquals( $text_content, $captured_alt_body, 'AltBody should be set to the text content.' );
-	}
-
-	public function test_send_does_not_set_alt_body_when_text_content_empty() {
+	public function test_send_does_not_register_any_phpmailer_init_hooks() {
 		// The pre_wp_mail filter was introduced in WordPress 5.7.
 		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
 			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
 		}
 
-		$alt_body_was_set = false;
-
-		// Check if our callback was added to phpmailer_init.
-		add_action(
-			'phpmailer_init',
-			function ( $phpmailer ) use ( &$alt_body_was_set ) {
-				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
-				if ( ! empty( $phpmailer->AltBody ) ) {
-					$alt_body_was_set = true;
-				}
-			},
-			999 // Run after any potential Site Kit callback.
-		);
-
-		// Use pre_wp_mail to simulate successful email sending.
 		add_filter(
 			'pre_wp_mail',
 			function () {
@@ -186,45 +143,234 @@ class EmailTest extends TestCase {
 			}
 		);
 
-		$to      = 'test@example.com';
-		$subject = 'Test Subject';
-		$content = '<html><body>HTML Content</body></html>';
-
-		// Send without text_content (empty string is default).
-		$result = $this->email->send( $to, $subject, $content );
-
-		$this->assertTrue( $result, 'Send should return true on success.' );
-		$this->assertFalse( $alt_body_was_set, 'AltBody should not be set when text_content is empty.' );
-	}
-
-	public function test_send_removes_phpmailer_init_hook_after_send() {
-		// The pre_wp_mail filter was introduced in WordPress 5.7.
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
-
-		// Use pre_wp_mail to simulate successful email sending.
-		add_filter(
-			'pre_wp_mail',
-			function () {
-				return true;
-			}
-		);
-
-		$to           = 'test@example.com';
-		$subject      = 'Test Subject';
-		$content      = '<html><body>HTML Content</body></html>';
-		$text_content = 'Plain text content';
-
-		// Count phpmailer_init callbacks before send.
 		$hooks_before = has_action( 'phpmailer_init' );
 
-		$this->email->send( $to, $subject, $content, array(), $text_content );
+		// Cover both code paths: with and without text_content.
+		$this->email->send( 'test@example.com', 'Test Subject', '<html><body>HTML</body></html>', array(), 'Plain text' );
+		$this->email->send( 'test@example.com', 'Test Subject', '<html><body>HTML only</body></html>' );
 
-		// Count phpmailer_init callbacks after send.
-		$hooks_after = has_action( 'phpmailer_init' );
+		$this->assertEquals(
+			$hooks_before,
+			has_action( 'phpmailer_init' ),
+			'Email::send() must not couple to PHPMailer — no phpmailer_init hooks should be registered before, during, or after a send.'
+		);
+	}
 
-		// The hook should be removed after send, so count should be same as before.
-		$this->assertEquals( $hooks_before, $hooks_after, 'phpmailer_init hook should be removed after send.' );
+	public function test_send_passes_multipart_body_when_text_content_provided() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$content      = '<html><body>HTML Content</body></html>';
+		$text_content = 'Plain text content';
+
+		$this->email->send( 'test@example.com', 'Test Subject', $content, array(), $text_content );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+
+		$message = $captured_atts['message'];
+		$this->assertNotEquals(
+			$content,
+			$message,
+			'When text_content is provided, the message passed to wp_mail() should be a multipart body, not the raw HTML.'
+		);
+		$this->assertStringContainsString( 'Content-Type: text/plain; charset=UTF-8', $message, 'Multipart body should declare a text/plain part.' );
+		$this->assertStringContainsString( 'Content-Type: text/html; charset=UTF-8', $message, 'Multipart body should declare a text/html part.' );
+		$this->assertStringContainsString( $text_content, $message, 'Multipart body should contain the plain text content.' );
+		$this->assertStringContainsString( $content, $message, 'Multipart body should contain the HTML content.' );
+		$this->assertMatchesRegularExpression(
+			'/--=_SiteKit_[A-Za-z0-9]{24}/',
+			$message,
+			'Multipart body should include the Site Kit boundary delimiter.'
+		);
+		$this->assertMatchesRegularExpression(
+			'/--=_SiteKit_[A-Za-z0-9]{24}--/',
+			$message,
+			'Multipart body should be terminated with the closing boundary delimiter.'
+		);
+
+		// Plain text part precedes HTML part (canonical multipart/alternative ordering).
+		$this->assertLessThan(
+			strpos( $message, 'Content-Type: text/html' ),
+			strpos( $message, 'Content-Type: text/plain' ),
+			'text/plain part should appear before the text/html part.'
+		);
+	}
+
+	public function test_send_normalises_lf_line_endings_to_crlf_in_multipart_body() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		// Source content uses LF only, mimicking Plain_Text_Formatter's implode( "\n", ... ).
+		$text_content = "Line 1\nLine 2\nLine 3";
+		$html_content = "<p>HTML Line 1</p>\n<p>HTML Line 2</p>";
+
+		$this->email->send( 'test@example.com', 'Test Subject', $html_content, array(), $text_content );
+
+		$message = $captured_atts['message'];
+
+		$this->assertStringContainsString(
+			"Line 1\r\nLine 2\r\nLine 3",
+			$message,
+			'Plain text content should be normalised to CRLF line endings before being embedded in the multipart body.'
+		);
+		$this->assertStringContainsString(
+			"<p>HTML Line 1</p>\r\n<p>HTML Line 2</p>",
+			$message,
+			'HTML content should be normalised to CRLF line endings before being embedded in the multipart body.'
+		);
+		$this->assertDoesNotMatchRegularExpression(
+			"/Line 1[^\r]\nLine 2/",
+			$message,
+			'Plain text content should not retain any bare LF line endings.'
+		);
+	}
+
+	public function test_send_adds_multipart_content_type_header_when_text_content_provided() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$this->email->send( 'test@example.com', 'Test Subject', '<p>HTML</p>', array(), 'Plain text' );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertIsArray( $captured_atts['headers'], 'Headers should be passed as an array.' );
+
+		$content_type_headers = array_values(
+			array_filter(
+				$captured_atts['headers'],
+				function ( $header ) {
+					return is_string( $header ) && 0 === stripos( ltrim( $header ), 'content-type:' );
+				}
+			)
+		);
+
+		$this->assertCount( 1, $content_type_headers, 'Exactly one Content-Type header should be present.' );
+		$this->assertMatchesRegularExpression(
+			'#^Content-Type: multipart/alternative; boundary="[^"]+"$#',
+			$content_type_headers[0],
+			'Content-Type header should declare multipart/alternative with a boundary parameter.'
+		);
+
+		// The boundary in the Content-Type header should match the boundary used in the body.
+		preg_match( '/boundary="([^"]+)"/', $content_type_headers[0], $header_boundary );
+		$this->assertNotEmpty( $header_boundary[1] ?? null, 'Boundary should be parseable from the Content-Type header.' );
+		$this->assertStringContainsString(
+			'--' . $header_boundary[1],
+			$captured_atts['message'],
+			'The boundary in the Content-Type header should be used as a delimiter in the body.'
+		);
+	}
+
+	public function test_send_adds_text_html_content_type_when_text_content_empty() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$content = '<html><body>HTML only</body></html>';
+
+		$this->email->send( 'test@example.com', 'Test Subject', $content );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertEquals(
+			$content,
+			$captured_atts['message'],
+			'Without text_content, the message passed to wp_mail() should equal the HTML content unchanged.'
+		);
+		$this->assertContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Without text_content, a single-part text/html Content-Type header should be present.'
+		);
+	}
+
+	public function test_send_respects_caller_supplied_content_type() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$content        = 'Plain body';
+		$caller_headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+
+		$this->email->send( 'test@example.com', 'Test Subject', $content, $caller_headers, 'Plain text alternative' );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertEquals(
+			$content,
+			$captured_atts['message'],
+			'When the caller supplies a Content-Type, the message should be passed through unchanged (no multipart composition).'
+		);
+
+		$content_type_headers = array_values(
+			array_filter(
+				$captured_atts['headers'],
+				function ( $header ) {
+					return is_string( $header ) && 0 === stripos( ltrim( $header ), 'content-type:' );
+				}
+			)
+		);
+
+		$this->assertCount( 1, $content_type_headers, 'Caller-supplied Content-Type should not be duplicated.' );
+		$this->assertEquals(
+			'Content-Type: text/plain; charset=UTF-8',
+			$content_type_headers[0],
+			'Caller-supplied Content-Type should be preserved verbatim.'
+		);
 	}
 }

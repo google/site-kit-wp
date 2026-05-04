@@ -66,10 +66,13 @@ class Email {
 	 *
 	 * Wraps wp_mail with a scoped listener for wp_mail_failed hook
 	 * to capture any errors during sending. When text_content is provided,
-	 * it will be set as the AltBody for multipart/alternative MIME emails.
+	 * the message is sent as a multipart/alternative MIME email containing
+	 * both the HTML body and the plain text alternative; otherwise it is
+	 * sent as a single-part text/html message.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Composes a real multipart/alternative body and signals HTML content explicitly so HTML survives pluggable wp_mail() replacements (e.g. Post SMTP).
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -100,10 +103,16 @@ class Email {
 	 *
 	 * Attaches a temporary listener to the wp_mail_failed hook to capture
 	 * any errors that occur during sending. When text_content is provided,
-	 * uses phpmailer_init hook to set AltBody for multipart MIME emails.
+	 * composes a real RFC 2046 multipart/alternative body and signals it via
+	 * the matching Content-Type header. The body and the header are passed
+	 * to wp_mail() through its public contract, so any compliant mailer —
+	 * WP core (PHPMailer), WP Mail SMTP, FluentSMTP, Post SMTP, and any
+	 * other drop-in replacement — sees both parts. No PHPMailer-specific
+	 * hooks are used; the message is self-describing on the wp_mail() API.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Composes a multipart/alternative body so HTML and plain text survive any pluggable wp_mail() replacement.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -115,25 +124,113 @@ class Email {
 	protected function send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content = '' ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
 
-		// Set up AltBody for multipart MIME email if text content is provided.
-		$alt_body_callback = null;
-		if ( ! empty( $text_content ) ) {
-			$alt_body_callback = function ( $phpmailer ) use ( $text_content ) {
-				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
-				$phpmailer->AltBody = $text_content;
-			};
-			add_action( 'phpmailer_init', $alt_body_callback );
+		if ( ! is_array( $headers ) ) {
+			$headers = array();
 		}
 
-		$result = wp_mail( $to, $subject, $content, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
+		$message = $content;
 
-		// Clean up hooks.
+		// When the caller supplied a Content-Type, respect it verbatim and
+		// skip both multipart composition and the default text/html injection
+		// so the caller's intent (e.g. plain text only) is preserved
+		// end-to-end.
+		if ( ! $this->headers_contain_content_type( $headers ) ) {
+			if ( '' !== $text_content ) {
+				// Compose a real multipart/alternative body and the matching
+				// Content-Type header. wp_mail() (and any drop-in replacement)
+				// forwards both onto the underlying mailer, which sees a
+				// self-describing message and emits both parts to the recipient.
+				$boundary  = '----=_SiteKit_' . wp_generate_password( 24, false );
+				$message   = $this->compose_multipart_body( $content, $text_content, $boundary );
+				$headers[] = 'Content-Type: multipart/alternative; boundary="' . $boundary . '"';
+			} else {
+				$headers[] = 'Content-Type: text/html; charset=UTF-8';
+			}
+		}
+
+		$result = wp_mail( $to, $subject, $message, $headers ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail
+
 		remove_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
-		if ( null !== $alt_body_callback ) {
-			remove_action( 'phpmailer_init', $alt_body_callback );
-		}
 
 		return $result;
+	}
+
+	/**
+	 * Checks whether a headers array already contains a Content-Type header.
+	 *
+	 * Performs a case-insensitive match on the header name only so that
+	 * caller-supplied Content-Type values (any media type) are preserved
+	 * verbatim and never duplicated.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $headers Headers array as accepted by wp_mail().
+	 * @return bool True if a Content-Type header is present, false otherwise.
+	 */
+	private function headers_contain_content_type( array $headers ) {
+		foreach ( $headers as $header ) {
+			if ( is_string( $header ) && 0 === stripos( ltrim( $header ), 'content-type:' ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Composes an RFC 2046 multipart/alternative body.
+	 *
+	 * Plain text is emitted first and HTML second per the multipart/alternative
+	 * convention (simplest to most complex). Lines use CRLF line endings and
+	 * 8bit transfer encoding so UTF-8 content passes through verbatim on
+	 * 8BITMIME-capable transports.
+	 *
+	 * Both parts are normalised to CRLF before embedding. Some downstream
+	 * mailers (notably Post SMTP) re-parse the multipart body line by line
+	 * via `explode(PHP_EOL, $body)` and concatenate captured lines without
+	 * re-inserting any delimiter; with CRLF normalisation each line keeps a
+	 * trailing CR through that parser, which preserves visible line breaks
+	 * in the recipient's plain-text view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $html_content HTML body.
+	 * @param string $text_content Plain text alternative.
+	 * @param string $boundary     Boundary delimiter (without leading dashes).
+	 * @return string The composed multipart body.
+	 */
+	private function compose_multipart_body( $html_content, $text_content, $boundary ) {
+		$crlf = "\r\n";
+
+		$text_content = $this->normalize_line_endings( $text_content );
+		$html_content = $this->normalize_line_endings( $html_content );
+
+		$body  = 'This is a multi-part message in MIME format.' . $crlf . $crlf;
+		$body .= '--' . $boundary . $crlf;
+		$body .= 'Content-Type: text/plain; charset=UTF-8' . $crlf;
+		$body .= 'Content-Transfer-Encoding: 8bit' . $crlf . $crlf;
+		$body .= $text_content . $crlf;
+		$body .= '--' . $boundary . $crlf;
+		$body .= 'Content-Type: text/html; charset=UTF-8' . $crlf;
+		$body .= 'Content-Transfer-Encoding: 8bit' . $crlf . $crlf;
+		$body .= $html_content . $crlf;
+		$body .= '--' . $boundary . '--' . $crlf;
+
+		return $body;
+	}
+
+	/**
+	 * Normalises line endings to CRLF (RFC 2046).
+	 *
+	 * Replaces any combination of `\r\n`, `\r`, or `\n` with a single CRLF.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Content to normalise.
+	 * @return string The content with CRLF line endings.
+	 */
+	private function normalize_line_endings( $content ) {
+		return preg_replace( "/\r\n|\r|\n/", "\r\n", $content );
 	}
 
 	/**
