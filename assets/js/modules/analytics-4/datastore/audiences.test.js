@@ -2812,7 +2812,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return error object if there is a user count report error', () => {
-				const { receiveError, receiveGetAudienceSettings } =
+				const { setErrorForSelector, receiveGetAudienceSettings } =
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
@@ -2824,7 +2824,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				receiveError( error, 'getReport', [
+				setErrorForSelector( error, 'getReport', [
 					getAudiencesUserCountReportOptions(
 						availableAudiencesFixture
 					),
@@ -2837,7 +2837,7 @@ describe( 'modules/analytics-4 audiences', () => {
 			} );
 
 			it( 'should return an error object if a Site Kit audience is in the partial data state, and the special case `newVsReturning` report returns an error', () => {
-				const { receiveError, receiveGetAudienceSettings } =
+				const { setErrorForSelector, receiveGetAudienceSettings } =
 					registry.dispatch( MODULES_ANALYTICS_4 );
 
 				const {
@@ -2868,7 +2868,7 @@ describe( 'modules/analytics-4 audiences', () => {
 					availableAudiences: availableAudiencesFixture,
 				} );
 
-				receiveError( error, 'getReport', [
+				setErrorForSelector( error, 'getReport', [
 					getSiteKitAudiencesUserCountReportOptions(),
 				] );
 

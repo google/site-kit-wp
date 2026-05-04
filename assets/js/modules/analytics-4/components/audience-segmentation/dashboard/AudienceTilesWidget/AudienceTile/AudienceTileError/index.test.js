@@ -121,7 +121,7 @@ describe( 'AudienceTileError', () => {
 	it( 'should correctly render the insufficient permissions variant', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( insufficientPermissionsError, 'getReport', [
+			.setErrorForSelector( insufficientPermissionsError, 'getReport', [
 				reportOptions,
 			] );
 
@@ -147,7 +147,9 @@ describe( 'AudienceTileError', () => {
 	it( 'should correctly render the generic error variant', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( notFoundError, 'getReport', [ reportOptions ] );
+			.setErrorForSelector( notFoundError, 'getReport', [
+				reportOptions,
+			] );
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 
@@ -207,7 +209,7 @@ describe( 'AudienceTileError', () => {
 	it( 'should track an event when "Request access" is clicked on the insufficient permissions error variant', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( insufficientPermissionsError, 'getReport', [
+			.setErrorForSelector( insufficientPermissionsError, 'getReport', [
 				reportOptions,
 			] );
 
@@ -281,7 +283,9 @@ describe( 'AudienceTileError', () => {
 	it( 'should track an event when "Retry" is clicked on the generic error variant', async () => {
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( notFoundError, 'getReport', [ reportOptions ] );
+			.setErrorForSelector( notFoundError, 'getReport', [
+				reportOptions,
+			] );
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
 

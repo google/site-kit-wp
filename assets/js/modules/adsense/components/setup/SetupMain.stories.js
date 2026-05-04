@@ -237,7 +237,7 @@ ErrorNotice.storyName = 'Error Notice';
 ErrorNotice.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
-		registry.dispatch( MODULES_ADSENSE ).receiveError(
+		registry.dispatch( MODULES_ADSENSE ).setErrorForSelector(
 			{
 				// Typically thrown when fetching accounts.
 				message: 'AdSense account is disapproved.',

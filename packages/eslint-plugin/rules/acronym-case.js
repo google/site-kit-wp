@@ -25,7 +25,7 @@ const { isImported, isFunction } = require( '../utils' );
  * Checks if the identifier should be ignored based on the acronym rules.
  *
  * @since 1.153.0
- * @since n.e.x.t Add names of types that should be ignored to the `allowedNames` array, and check against that in this function to determine if an identifier should be ignored.
+ * @since 1.178.0 Add names of types that should be ignored to the `allowedNames` array, and check against that in this function to determine if an identifier should be ignored.
  *
  * @param {Object}        node          The AST node to check.
  * @param {string}        name          The name of the identifier.

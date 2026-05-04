@@ -36,6 +36,7 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const ANYONE_CAN_REGISTER_DISABLED_NOTICE =
 	'sign-in-with-google-anyone-can-register-notice';
@@ -68,7 +69,7 @@ export default function AnyoneCanRegisterDisabledNotice() {
 	return (
 		<div className="googlesitekit-registration-disabled-notice">
 			<Notice
-				type={ Notice.TYPES.INFO }
+				type={ NOTICE_TYPES.INFO }
 				description={ createInterpolateElement(
 					sprintf(
 						/* translators: %1$s: Setting name, %2$s: Sign in with Google service name */

@@ -33,6 +33,7 @@ import { PropertySelect } from '@/js/modules/search-console/components/common';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
@@ -56,7 +57,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 
 			{ hasModuleAccess === false && (
 				<Notice
-					type={ Notice.TYPES.WARNING }
+					type={ NOTICE_TYPES.WARNING }
 					description={ createInterpolateElement(
 						sprintf(
 							/* translators: 1: module owner's name, 2: module name */

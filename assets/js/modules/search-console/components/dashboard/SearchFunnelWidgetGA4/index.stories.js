@@ -398,7 +398,7 @@ Error.args = {
 
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
-			.receiveError( error, 'getReport', [ searchConsoleArgs ] );
+			.setErrorForSelector( error, 'getReport', [ searchConsoleArgs ] );
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.finishResolution( 'getReport', [ searchConsoleArgs ] );
@@ -418,7 +418,7 @@ ErrorAnalytics.args = {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( error, 'getReport', [ ga4ReportArgs[ 0 ] ] );
+			.setErrorForSelector( error, 'getReport', [ ga4ReportArgs[ 0 ] ] );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ ga4ReportArgs[ 0 ] ] );

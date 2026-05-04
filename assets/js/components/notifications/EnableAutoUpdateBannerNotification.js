@@ -32,7 +32,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
@@ -83,7 +83,7 @@ export default function EnableAutoUpdateBannerNotification( {
 			<Notification>
 				<NoticeNotification
 					notificationID={ id }
-					type={ TYPES.SUCCESS }
+					type={ NOTICE_TYPES.SUCCESS }
 					gaTrackingEventArgs={ gaTrackingEventArgs }
 					title={ __(
 						'Thanks for enabling auto-updates',
@@ -106,7 +106,7 @@ export default function EnableAutoUpdateBannerNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.NEW }
+				type={ NOTICE_TYPES.NEW }
 				title={ __( 'Keep Site Kit up-to-date', 'google-site-kit' ) }
 				description={ __(
 					'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',

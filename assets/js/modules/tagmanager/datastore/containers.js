@@ -100,6 +100,7 @@ const fetchCreateContainerStore = createFetchStore( {
 		}
 		state.containers[ accountID ].push( container );
 	} ),
+	isAction: true,
 } );
 
 const baseInitialState = {

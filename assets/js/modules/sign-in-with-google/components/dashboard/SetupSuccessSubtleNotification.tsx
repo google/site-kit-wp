@@ -25,7 +25,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -67,7 +67,7 @@ const SetupSuccessSubtleNotification: FC<
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ sprintf(
 					/* translators: %s: Sign in with Google service name */
 					__( 'You successfully set up %s!', 'google-site-kit' ),

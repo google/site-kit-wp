@@ -32,8 +32,8 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import Notice from '@/js/components/Notice';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function ProductIDSubscriptionsNotification( {
 	id,
@@ -49,7 +49,7 @@ export default function ProductIDSubscriptionsNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ Notice.TYPES.WARNING }
+				type={ NOTICE_TYPES.WARNING }
 				description={ __(
 					'To complete your Reader Revenue Manager paywall setup, add your product IDs in settings',
 					'google-site-kit'

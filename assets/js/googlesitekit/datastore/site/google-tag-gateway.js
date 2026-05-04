@@ -88,6 +88,7 @@ const fetchSaveGoogleTagGatewaySettingsStore = createFetchStore( {
 			'settings must have only the `isEnabled` property.'
 		);
 	},
+	isAction: true,
 } );
 
 const fetchGetGTGServerRequirementStatusStore = createFetchStore( {

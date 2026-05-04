@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { EMAIL_REPORTS_DISABLED_NOTICE } from '@/js/components/email-reporting/notices/EmailReportingDisabledNotice';
@@ -52,7 +52,7 @@ export default function EmailReportingDisabledViewOnlyNotice() {
 
 	return (
 		<NoticeWithIntersectionObserver
-			type={ TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			title={ __( 'Email reports are unavailable', 'google-site-kit' ) }
 			description={ __(
 				'To enable email reports, contact your administrator',

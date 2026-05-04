@@ -154,7 +154,9 @@ describe( 'createFetchStore store', () => {
 				expect( action.next().value.type ).toEqual(
 					'START_FETCH_SAVE_SOME_DATA'
 				);
-				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
+				expect( action.next().value.type ).toEqual(
+					'CLEAR_SELECTOR_ERROR'
+				);
 				expect( action.next().value.type ).toEqual(
 					'FETCH_SAVE_SOME_DATA'
 				);
@@ -186,12 +188,14 @@ describe( 'createFetchStore store', () => {
 				expect( action.next().value.type ).toEqual(
 					'START_FETCH_SAVE_SOME_DATA'
 				);
-				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
+				expect( action.next().value.type ).toEqual(
+					'CLEAR_SELECTOR_ERROR'
+				);
 				expect( action.next().value.type ).toEqual(
 					'FETCH_SAVE_SOME_DATA'
 				);
 				expect( action.throw( error ).value.type ).toEqual(
-					'RECEIVE_ERROR'
+					'SET_ERROR_FOR_SELECTOR'
 				);
 				expect( action.next().value.type ).toEqual(
 					'CATCH_FETCH_SAVE_SOME_DATA'
@@ -263,7 +267,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error is stored in the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toEqual( errorResponse );
 				} );
 
@@ -288,7 +295,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error is stored in the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toEqual( errorResponse );
 
 					fetchMock.getOnce(
@@ -305,7 +315,10 @@ describe( 'createFetchStore store', () => {
 
 					// Verify that the error has been removed from the store.
 					expect(
-						select.getError( STORE_PARAMS.baseName, errorArgs )
+						select.getErrorForSelector(
+							STORE_PARAMS.baseName,
+							errorArgs
+						)
 					).toBeUndefined();
 				} );
 			} );

@@ -226,7 +226,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts purchased items' data from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param array $session_data An array containing EDD purchase session data.
 	 *
@@ -253,7 +253,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Extracts the cart's total from an EDD session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param array $session_data An array containing EDD purchase session data.
 	 *

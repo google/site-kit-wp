@@ -48,7 +48,12 @@ import { isValidAccountSelection } from '@/js/modules/analytics-4/utils/validati
 import { caseInsensitiveListSort } from '@/js/util/case-insensitive-sort';
 import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 
-const { receiveError, clearError, clearErrors } = errorStoreActions;
+const {
+	setErrorForAction,
+	clearActionError,
+	clearSelectorErrors,
+	clearActionErrors,
+} = errorStoreActions;
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
@@ -96,6 +101,7 @@ const fetchCreateAccountStore = createFetchStore( {
 	validateParams: ( { data } = {} ) => {
 		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
+	isAction: true,
 } );
 
 // Actions.
@@ -173,12 +179,12 @@ const baseActions = {
 			showProgress,
 		};
 
-		yield clearError( 'createAccount', [] );
+		yield clearActionError( 'createAccount', [] );
 		const { response, error } =
 			yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
 
 		if ( error ) {
-			yield receiveError( error, 'createAccount', [] );
+			yield setErrorForAction( error, 'createAccount', [] );
 		}
 
 		return { response, error };
@@ -211,7 +217,8 @@ const baseActions = {
 				payload: {},
 			};
 
-			yield clearErrors();
+			yield clearSelectorErrors();
+			yield clearActionErrors();
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				accountID,

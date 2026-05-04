@@ -34,6 +34,7 @@ import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	const module = useSelect( ( select ) =>
@@ -47,7 +48,7 @@ export default function AnalyticsSettingsNotice( { hasModuleAccess } ) {
 	if ( ! hasModuleAccess ) {
 		return (
 			<Notice
-				type={ Notice.TYPES.WARNING }
+				type={ NOTICE_TYPES.WARNING }
 				className="googlesitekit-analytics-settings-notice"
 				description={ createInterpolateElement(
 					sprintf(

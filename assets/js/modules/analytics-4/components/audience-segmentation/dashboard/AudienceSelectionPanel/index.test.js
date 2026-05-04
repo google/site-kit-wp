@@ -485,7 +485,7 @@ describe( 'AudienceSelectionPanel', () => {
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, 'getReport', [ reportOptions ] );
+				.setErrorForSelector( error, 'getReport', [ reportOptions ] );
 
 			const { waitForRegistry } = render( <AudienceSelectionPanel />, {
 				registry,
@@ -1856,7 +1856,9 @@ describe( 'AudienceSelectionPanel', () => {
 
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveError( error, 'getReport', [ reportOptions ] );
+						.setErrorForSelector( error, 'getReport', [
+							reportOptions,
+						] );
 				} );
 
 				const { getByText, waitForRegistry } = render(
