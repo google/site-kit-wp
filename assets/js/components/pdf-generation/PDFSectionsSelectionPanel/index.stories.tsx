@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ElementType, ReactNode } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
@@ -90,7 +95,7 @@ export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',
 	component: PDFSectionsSelectionPanel,
 	decorators: [
-		( Story: () => JSX.Element ) => {
+		( Story: ElementType ): ReactNode => {
 			function setupRegistry( registry: Registry ) {
 				registry
 					.dispatch( CORE_UI )

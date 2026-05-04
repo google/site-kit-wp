@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback } from '@wordpress/element';
 
 /**
@@ -27,6 +28,8 @@ import { Fragment, useCallback } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import { TYPES } from '@/js/components/Notice/constants';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
@@ -37,7 +40,6 @@ import Header from './Header';
 import Footer from './Footer';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 import PDFGeneratingNotice from './PDFGeneratingNotice';
-import SelectAtLeastOneSectionNotice from './SelectAtLeastOneSectionNotice';
 
 interface PanelContentProps {
 	closePanel: () => void;
@@ -76,7 +78,17 @@ export default function PanelContent( { closePanel }: PanelContentProps ) {
 					toggleSection={ toggleSection }
 				/>
 			</SelectionPanelContent>
-			{ ! hasSelection && <SelectAtLeastOneSectionNotice /> }
+			{ ! hasSelection && (
+				<SelectionPanelNotice
+					// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
+					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
+					type={ TYPES.ERROR }
+					description={ __(
+						'Select at least 1 topic',
+						'google-site-kit'
+					) }
+				/>
+			) }
 			<PDFGeneratingNotice />
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />
 		</Fragment>
