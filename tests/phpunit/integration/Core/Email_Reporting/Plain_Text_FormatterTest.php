@@ -220,6 +220,25 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 
+	public function test_format_footer_omits_utility_links_without_unsubscribe_url() {
+		$cta = array(
+			'label' => 'View dashboard',
+			'url'   => 'https://example.com/dashboard',
+		);
+
+		$footer = array(
+			'copy'            => 'You received this email because you signed up.',
+			'unsubscribe_url' => '',
+		);
+
+		$result = Plain_Text_Formatter::format_footer( $cta, $footer );
+
+		$this->assertStringNotContainsString( 'Unsubscribe:', $result, 'Footer should omit Unsubscribe link without unsubscribe URL.' );
+		$this->assertStringNotContainsString( 'Manage subscription:', $result, 'Footer should omit Manage subscription link without unsubscribe URL.' );
+		$this->assertStringNotContainsString( 'Privacy Policy:', $result, 'Footer should omit Privacy Policy link without unsubscribe URL.' );
+		$this->assertStringNotContainsString( 'Help center:', $result, 'Footer should omit Help center link without unsubscribe URL.' );
+	}
+
 	public function test_format_section_dispatches_to_metrics_section() {
 		$section = array(
 			'title'            => 'How many people are finding my site?',
