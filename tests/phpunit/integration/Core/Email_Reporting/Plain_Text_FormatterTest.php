@@ -339,11 +339,23 @@ class Plain_Text_FormatterTest extends TestCase {
 				'url'   => 'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 			),
 			'footer'                 => array(
-				'copy' => 'You received this email because your site admin invited you to use Site Kit email reports feature',
+				'copy'            => 'You received this email because your site admin invited you to use Site Kit email reports feature',
+				'unsubscribe_url' => 'https://example.com/unsubscribe',
 			),
 		);
 
 		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$expected_footer_block = implode(
+			"\n",
+			array(
+				'',
+				'',
+				'Manage subscription: https://example.com/unsubscribe',
+				'Privacy Policy: https://policies.google.com/privacy',
+				'Help center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+			)
+		);
 
 		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
@@ -354,6 +366,8 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Learn more: https://sitekit.withgoogle.com/support/?doc=email-reporting', $result, 'Simple email should contain Learn more link.' );
 		$this->assertStringContainsString( 'Get your report: https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard', $result, 'Simple email should contain CTA link.' );
 		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Simple email should contain footer copy.' );
+		$this->assertStringContainsString( 'Unsubscribe: https://example.com/unsubscribe', $result, 'Simple email should contain unsubscribe link.' );
+		$this->assertStringContainsString( $expected_footer_block, $result, 'Footer utility links should appear as a separate-line list preceded by a blank separator line.' );
 	}
 
 	public function test_format_simple_email_strips_html_from_title() {
