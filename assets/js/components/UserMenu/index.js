@@ -53,6 +53,35 @@ import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 
+function getAccountLabel( userFullName, userEmail ) {
+	if ( userFullName && userEmail ) {
+		return sprintf(
+			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
+			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
+			userFullName,
+			userEmail
+		);
+	}
+
+	if ( userFullName && ! userEmail ) {
+		return sprintf(
+			/* translators: Account info text. 1: User's (full) name. */
+			__( 'Google Account for %1$s', 'google-site-kit' ),
+			userFullName
+		);
+	}
+
+	if ( ! userFullName && userEmail ) {
+		return sprintf(
+			/* translators: Account info text. 1: User's email address. */
+			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
+			userEmail
+		);
+	}
+
+	return undefined;
+}
+
 export default function UserMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 
@@ -179,32 +208,7 @@ export default function UserMenu() {
 		return null;
 	}
 
-	let accountLabel;
-
-	if ( userFullName && userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
-			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
-			userFullName,
-			userEmail
-		);
-	}
-
-	if ( userFullName && ! userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's (full) name. */
-			__( 'Google Account for %1$s', 'google-site-kit' ),
-			userFullName
-		);
-	}
-
-	if ( ! userFullName && userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's email address. */
-			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
-			userEmail
-		);
-	}
+	const accountLabel = getAccountLabel( userFullName, userEmail );
 
 	return (
 		<Fragment>
