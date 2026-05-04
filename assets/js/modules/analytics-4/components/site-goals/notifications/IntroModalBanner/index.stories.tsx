@@ -86,6 +86,6 @@ EcommerceAndLead.args = {
 };
 
 export default {
-	title: 'Modules/Analytics4/SiteGoals/notifications/IntroModal',
+	title: 'Modules/Analytics4/Components/Site Goals/Notifications/IntroModal',
 	component: IntroModal,
 };
