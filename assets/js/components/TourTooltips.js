@@ -216,6 +216,13 @@ export default function TourTooltips( {
 		}
 	}
 
+	/**
+	 * Scrolls the step into view based on its height.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} step The step object.
+	 */
 	function scrollStepIntoView( step ) {
 		let element = step.target;
 

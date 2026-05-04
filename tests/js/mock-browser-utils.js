@@ -130,3 +130,14 @@ export function mockElementOffsets() {
 		restoreElementOffsets();
 	} );
 }
+
+/**
+ * Mocks the `scrollIntoView` method that is missing from the jsdom environment.
+ *
+ * @since n.e.x.t
+ */
+export function mockBrowserScrolling() {
+	beforeEach( () => {
+		Element.prototype.scrollIntoView = jest.fn();
+	} );
+}

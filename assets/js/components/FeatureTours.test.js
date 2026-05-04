@@ -25,8 +25,9 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../tests/js/utils';
-import { fireEvent, render } from '../../../tests/js/test-utils';
+} from 'tests/js/utils';
+import { fireEvent, render } from 'tests/js/test-utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import FeatureTours from './FeatureTours';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
@@ -35,6 +36,8 @@ describe( 'FeatureTours', () => {
 	let observeMock;
 	let disconnectMock;
 	const dashboardElementID = 'js-googlesitekit-main-dashboard';
+
+	mockBrowserScrolling();
 
 	function TourTooltipsWithMockUI() {
 		return (
@@ -77,7 +80,6 @@ describe( 'FeatureTours', () => {
 			this.observe = observeMock;
 			this.disconnect = disconnectMock;
 		} );
-		global.HTMLElement.prototype.scrollIntoView = () => {};
 	} );
 
 	it( 'properly shows the current tour', async () => {

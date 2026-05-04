@@ -25,7 +25,7 @@ import {
 	fireEvent,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/test-utils';
+} from 'tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -34,7 +34,8 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	subscribeUntil,
-} from '../../../../../tests/js/utils';
+} from 'tests/js/utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -78,6 +79,8 @@ describe( 'MetricsSelectionPanel', () => {
 		'^/google-site-kit/v1/core/user/data/key-metrics'
 	);
 
+	mockBrowserScrolling();
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -105,11 +108,6 @@ describe( 'MetricsSelectionPanel', () => {
 			postFrequency: {},
 			goals: {},
 		} );
-
-		// jsdom does not support scrollIntoView which is used by the last metric item
-		// to prevent it from hiding underneath the Custom Dimensions warning notice.
-		// See: https://github.com/jsdom/jsdom/issues/1695.
-		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Header', () => {
