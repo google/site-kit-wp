@@ -17,9 +17,40 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, getUserData } from './utils';
+import { classifyPII, ClassifiedField, getUserData } from './utils';
 
-global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
+interface OptinMonsterFormInput {
+	id?: string;
+	type?: string;
+	name?: string;
+	value?: unknown;
+	placeholder?: string;
+}
+
+interface OptinMonsterCampaign {
+	id: string;
+	type: string;
+	Form?: {
+		inputs?:
+			| OptinMonsterFormInput[]
+			| Record< string, OptinMonsterFormInput >;
+	};
+}
+
+interface OptinMonsterDetail {
+	Analytics: { type: string };
+	Campaign: OptinMonsterCampaign;
+}
+
+interface OptinMonsterEventData {
+	campaignID: string;
+	campaignType: string;
+	// eslint-disable-next-line camelcase
+	user_data?: unknown;
+}
+
+global.document.addEventListener( 'om.Analytics.track', ( event: Event ) => {
+	const { detail } = event as CustomEvent< OptinMonsterDetail >;
 	if ( 'conversion' === detail.Analytics.type ) {
 		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
@@ -28,7 +59,7 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 				? getUserDataFromOptinMonsterForm( detail.Campaign.Form )
 				: null;
 
-		const eventData = {
+		const eventData: OptinMonsterEventData = {
 			campaignID: detail.Campaign.id,
 			campaignType: detail.Campaign.type,
 		};
@@ -49,7 +80,9 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
  * @param {Object} form OptinMonster form object.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromOptinMonsterForm( form ) {
+function getUserDataFromOptinMonsterForm(
+	form: OptinMonsterCampaign[ 'Form' ]
+) {
 	if ( ! form || ! form.inputs ) {
 		return undefined;
 	}
@@ -65,7 +98,7 @@ function getUserDataFromOptinMonsterForm( form ) {
 
 	// Process each HTML input element to classify PII.
 	const detectedFields = formFields
-		.map( ( input ) => {
+		.map( ( input: OptinMonsterFormInput ) => {
 			// Skip hidden fields to avoid false positives.
 			if ( input.type === 'hidden' ) {
 				return null;
@@ -84,7 +117,7 @@ function getUserDataFromOptinMonsterForm( form ) {
 				label,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( field ): field is ClassifiedField => Boolean( field ) );
 
 	// Use shared utility function to extract user data.
 	return getUserData( detectedFields );

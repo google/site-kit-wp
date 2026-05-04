@@ -30,19 +30,37 @@
  *                                       parameter and the event metadata (may be `null`) as second parameter.
  * @return {Function} Returns parameter-less function to destroy the tracking, i.e. remove all added listeners.
  */
-export default function setUpAdvancedTracking(
-	eventConfigurations,
-	sendEvent
-) {
-	const toRemove = [];
+interface EventConfiguration {
+	action: string;
+	on: string;
+	selector: string;
+	metadata?: unknown;
+}
 
-	eventConfigurations.forEach( ( eventConfig ) => {
-		function handleDOMEvent( domEvent ) {
+type DOMEventListenerArgs = [
+	type: string,
+	listener: ( event: Event ) => void,
+	useCapture: boolean
+];
+
+export default function setUpAdvancedTracking(
+	eventConfigurations: EventConfiguration[],
+	sendEvent: ( action: string, metadata: unknown ) => void
+) {
+	const toRemove: DOMEventListenerArgs[] = [];
+
+	eventConfigurations.forEach( ( eventConfig: EventConfiguration ) => {
+		function handleDOMEvent( domEvent: Event ) {
 			if ( 'DOMContentLoaded' === eventConfig.on ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
-			} else if (
-				matches( domEvent.target, eventConfig.selector ) ||
-				matches( domEvent.target, eventConfig.selector.concat( ' *' ) )
+				return;
+			}
+			const target =
+				domEvent.target instanceof Element ? domEvent.target : null;
+			if (
+				target &&
+				( matches( target, eventConfig.selector ) ||
+					matches( target, eventConfig.selector.concat( ' *' ) ) )
 			) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			}
@@ -59,7 +77,7 @@ export default function setUpAdvancedTracking(
 
 	return () => {
 		toRemove.forEach( ( listenerArgs ) => {
-			document.removeEventListener.apply( document, listenerArgs );
+			document.removeEventListener( ...listenerArgs );
 		} );
 	};
 }
@@ -73,20 +91,27 @@ export default function setUpAdvancedTracking(
  * @param {string}  selector A selector to check for.
  * @return {boolean} True if the DOM element matches the selector, false otherwise.
  */
-function matches( element, selector ) {
+function matches( element: Element, selector: string ): boolean {
+	const elementWithFallbacks = element as Element & {
+		matchesSelector?: Element[ 'matches' ];
+		webkitMatchesSelector?: Element[ 'matches' ];
+		mozMatchesSelector?: Element[ 'matches' ];
+		msMatchesSelector?: Element[ 'matches' ];
+		oMatchesSelector?: Element[ 'matches' ];
+	};
 	// Use fallbacks for older browsers.
 	// See https://developer.mozilla.org/en-US/docs/Web/API/Element/matches#Polyfill.
 	const matcher =
-		element.matches ||
-		element.matchesSelector ||
-		element.webkitMatchesSelector ||
-		element.mozMatchesSelector ||
-		element.msMatchesSelector ||
-		element.oMatchesSelector ||
-		function ( s ) {
-			const elements = (
-				this.document || this.ownerDocument
-			).querySelectorAll( s );
+		elementWithFallbacks.matches ||
+		elementWithFallbacks.matchesSelector ||
+		elementWithFallbacks.webkitMatchesSelector ||
+		elementWithFallbacks.mozMatchesSelector ||
+		elementWithFallbacks.msMatchesSelector ||
+		elementWithFallbacks.oMatchesSelector ||
+		function ( this: Element, s: string ) {
+			const ownerDoc =
+				this.ownerDocument || ( this as unknown as Document );
+			const elements = ownerDoc.querySelectorAll( s );
 			let index = elements.length;
 			while ( --index >= 0 && elements.item( index ) !== this ) {}
 			return index > -1;

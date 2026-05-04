@@ -14,7 +14,49 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
+interface WCProduct {
+	id?: number;
+	name?: string;
+	price?: string | number;
+	variation?: string;
+	quantity?: number;
+	categories?: Array< { name: string } >;
+	[ key: string ]: unknown;
+}
+
+/* eslint-disable camelcase */
+interface WCPurchase {
+	id?: string | number;
+	totals?: {
+		total_price?: string | number;
+		currency_code?: string;
+		shipping_total?: number;
+		tax_total?: number;
+	};
+	items?: WCProduct[];
+	user_data?: unknown;
+}
+
+interface WCData {
+	currency?: string;
+	products?: WCProduct[];
+	purchase?: WCPurchase;
+	add_to_cart?: WCProduct;
+	eventsToTrack?: string[];
+}
+
+interface WCEventData {
+	value: number;
+	currency: string | undefined;
+	items: Record< string, unknown >[];
+	transaction_id?: string | number;
+	shipping?: number;
+	tax?: number;
+	user_data?: unknown;
+}
+/* eslint-enable camelcase */
+
+( ( jQuery: typeof global.jQuery ) => {
 	if ( ! jQuery ) {
 		return;
 	}
@@ -25,7 +67,7 @@
 		purchase,
 		add_to_cart: addToCart,
 		eventsToTrack,
-	} = global._googlesitekit?.wcdata || {};
+	} = ( global._googlesitekit?.wcdata as WCData | undefined ) || {};
 	const canTrackAddToCart = eventsToTrack?.includes( 'add_to_cart' );
 	const canTrackPurchase = eventsToTrack?.includes( 'purchase' );
 
@@ -41,12 +83,12 @@
 		const { id, totals, items, user_data: userData } = purchase;
 
 		const eventData = formatEventData(
-			totals.total_price,
-			totals.currency_code,
+			totals?.total_price,
+			totals?.currency_code,
 			items,
 			id,
-			totals.shipping_total,
-			totals.tax_total
+			totals?.shipping_total,
+			totals?.tax_total
 		);
 
 		// User data is already normalized from WooCommerce.php.
@@ -60,20 +102,29 @@
 	const $body = jQuery( 'body' );
 
 	if ( canTrackAddToCart ) {
-		$body.on( 'added_to_cart', ( event, fragments, cartHash, $button ) => {
+		$body.on( 'added_to_cart', ( ...handlerArgs: unknown[] ) => {
+			const $button = handlerArgs[ 3 ] as
+				| {
+						jquery?: string;
+						data( name: string ): unknown;
+				  }
+				| undefined;
 			// Return early if $button is not a valid jQuery element instance.
 			// This can happen when WooCommerce is customized by themes or third-party integrations.
 			if ( ! $button?.jquery ) {
 				return;
 			}
 
-			const productID = parseInt( $button.data( 'product_id' ), 10 );
+			const productID = parseInt(
+				String( $button.data( 'product_id' ) ),
+				10
+			);
 
 			if ( ! productID ) {
 				return;
 			}
 
-			const productData =
+			const productData: WCProduct =
 				globalProducts?.find(
 					( product ) => product?.id === productID
 				) || {};
@@ -89,12 +140,14 @@
 
 		jQuery(
 			'.products-block-post-template .product, .wc-block-product-template .product'
-		).each( function () {
+		).each( function ( this: unknown ) {
 			const $productCard = jQuery( this );
 			const productID = parseInt(
-				$productCard
-					.find( '[data-product_id]' )
-					.attr( 'data-product_id' ),
+				String(
+					$productCard
+						.find( '[data-product_id]' )
+						.attr( 'data-product_id' ) || ''
+				),
 				10
 			);
 
@@ -102,7 +155,8 @@
 				return;
 			}
 
-			$productCard.on( 'click', ( event ) => {
+			$productCard.on( 'click', ( ...clickArgs: unknown[] ) => {
+				const event = clickArgs[ 0 ] as { target: unknown };
 				const $target = jQuery( event.target );
 				const $button = $target.closest(
 					'.wc-block-components-product-button [data-product_id]'
@@ -117,7 +171,7 @@
 					return;
 				}
 
-				const productData =
+				const productData: WCProduct =
 					globalProducts?.find(
 						( product ) => product?.id === productID
 					) || {};
@@ -135,14 +189,14 @@
 	}
 
 	function formatEventData(
-		value,
-		currency,
-		products,
-		transactionID = null,
-		shipping = null,
-		tax = null
+		value: string | number | undefined,
+		currency: string | undefined,
+		products: WCProduct | WCProduct[] | undefined,
+		transactionID: string | number | null | undefined = null,
+		shipping: number | null | undefined = null,
+		tax: number | null | undefined = null
 	) {
-		const formattedData = {
+		const formattedData: WCEventData = {
 			value: formatPrice( value ),
 			currency,
 			items: [],
@@ -164,21 +218,23 @@
 			formattedData.tax = tax;
 		}
 
-		if ( products && products.length ) {
+		if ( Array.isArray( products ) && products.length ) {
 			for ( const product of products ) {
 				formattedData.items.push( formatProductData( product ) );
 			}
-		} else if ( products && products.id ) {
+		} else if ( products && ! Array.isArray( products ) && products.id ) {
 			formattedData.items = [ formatProductData( products ) ];
 		}
 
 		return formattedData;
 	}
 
-	function formatProductData( product ) {
+	function formatProductData(
+		product: WCProduct
+	): Record< string, unknown > {
 		const { id, name, price, variation, quantity, categories } = product;
 
-		const mappedItem = {
+		const mappedItem: Record< string, unknown > = {
 			item_id: id,
 			item_name: name,
 			price: formatPrice( price ),
@@ -217,7 +273,10 @@
 	 * @param {number} [currencyMinorUnit=2] The number decimals to show in the currency.
 	 * @return {number} The price of the product with decimals.
 	 */
-	function formatPrice( price, currencyMinorUnit = 2 ) {
-		return parseInt( price, 10 ) / 10 ** currencyMinorUnit;
+	function formatPrice(
+		price: string | number | undefined,
+		currencyMinorUnit = 2
+	) {
+		return parseInt( String( price ?? '0' ), 10 ) / 10 ** currencyMinorUnit;
 	}
 } )( global.jQuery );

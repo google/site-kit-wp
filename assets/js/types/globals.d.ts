@@ -54,6 +54,81 @@ interface GoogleSiteKitAPIFetchData {
 	rootURL?: string;
 }
 
+interface SiteKitFrontendGlobal {
+	gtagUserData?: boolean;
+	gtagEvent?: ( event: string, params?: unknown ) => void;
+	easyDigitalDownloadsCurrency?: string;
+	edddata?: { purchase?: Record< string, unknown > };
+	wcdata?: {
+		currency?: string;
+		products?: Array< Record< string, unknown > >;
+		purchase?: Record< string, unknown >;
+		// eslint-disable-next-line camelcase
+		add_to_cart?: Record< string, unknown >;
+		eventsToTrack?: string[];
+	};
+	[ key: string ]: unknown;
+}
+
+interface JQueryInstance {
+	on(
+		event: string,
+		handler: ( ...args: unknown[] ) => void
+	): JQueryInstance;
+	each( handler: ( this: unknown, index: number ) => void ): JQueryInstance;
+	find( selector: string ): JQueryInstance;
+	closest( selector: string ): JQueryInstance;
+	hasClass( className: string ): boolean;
+	attr( name: string ): string | undefined;
+	data( name: string ): unknown;
+	ready( handler: () => void ): JQueryInstance;
+	length: number;
+	jquery?: string;
+	// eslint-disable-next-line sitekit/acronym-case
+	[ key: number ]: HTMLElement;
+}
+
+interface JQueryLike {
+	( selector: unknown, context?: unknown ): JQueryInstance;
+	[ key: string ]: unknown;
+}
+
+interface MarionetteLike {
+	Object: {
+		extend( definition: Record< string, unknown > ): {
+			new (): unknown;
+		};
+	};
+	[ key: string ]: unknown;
+}
+
+interface BackboneLike {
+	Radio: {
+		channel( name: string ): unknown;
+	};
+	[ key: string ]: unknown;
+}
+
+interface MailchimpLike {
+	forms: {
+		on(
+			event: string,
+			handler: ( form: unknown, data: unknown ) => void
+		): void;
+	};
+	[ key: string ]: unknown;
+}
+
+interface PUMLike {
+	hooks: {
+		addAction(
+			name: string,
+			handler: ( ...args: unknown[] ) => void
+		): void;
+	};
+	[ key: string ]: unknown;
+}
+
 interface AdminPointerTrackingEventConfig {
 	category?: string;
 	action?: string;
@@ -81,6 +156,20 @@ declare global {
 	var _googlesitekitBaseData: GoogleSiteKitBaseData;
 	var _googlesitekitAPIFetchData: GoogleSiteKitAPIFetchData | undefined;
 	var _googlesitekitAnalyticsTrackingData: object[] | undefined;
+	var _googlesitekit: SiteKitFrontendGlobal | undefined;
+	var _googlesitekitConsentCategoryMap: Record< string, string[] >;
+	var _googlesitekitConsents: Record< string, string > | undefined;
+	var wp_consent_type: string | undefined;
+	var wp_fallback_consent_type: string | undefined;
+	var wp_has_consent: ( ( category: string ) => boolean ) | undefined;
+	var waitfor_consent_hook: unknown;
+	var gtag: ( ...args: unknown[] ) => void;
+	var jQuery: JQueryLike | undefined;
+	var Backbone: BackboneLike | undefined;
+	var Marionette: MarionetteLike | undefined;
+	var mc: unknown;
+	var mc4wp: MailchimpLike | undefined;
+	var PUM: PUMLike | undefined;
 	/* eslint-enable no-var, camelcase */
 
 	interface Window {

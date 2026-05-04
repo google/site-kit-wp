@@ -35,24 +35,24 @@ module.exports = ( mode ) => ( {
 	name: 'Frontend Modules',
 	entry: {
 		// Consent mode
-		'googlesitekit-consent-mode': './js/consent-mode/consent-mode.js',
+		'googlesitekit-consent-mode': './js/consent-mode/consent-mode.ts',
 		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
-			'./js/event-providers/contact-form-7.js',
+			'./js/event-providers/contact-form-7.ts',
 		'googlesitekit-events-provider-easy-digital-downloads':
-			'./js/event-providers/easy-digital-downloads.js',
+			'./js/event-providers/easy-digital-downloads.ts',
 		'googlesitekit-events-provider-mailchimp':
-			'./js/event-providers/mailchimp.js',
+			'./js/event-providers/mailchimp.ts',
 		'googlesitekit-events-provider-ninja-forms':
-			'./js/event-providers/ninja-forms.js',
+			'./js/event-providers/ninja-forms.ts',
 		'googlesitekit-events-provider-optin-monster':
-			'./js/event-providers/optin-monster.js',
+			'./js/event-providers/optin-monster.ts',
 		'googlesitekit-events-provider-popup-maker':
-			'./js/event-providers/popup-maker.js',
+			'./js/event-providers/popup-maker.ts',
 		'googlesitekit-events-provider-woocommerce':
-			'./js/event-providers/woocommerce.js',
+			'./js/event-providers/woocommerce.ts',
 		'googlesitekit-events-provider-wpforms':
-			'./js/event-providers/wpforms.js',
+			'./js/event-providers/wpforms.ts',
 	},
 	externals,
 	output: {

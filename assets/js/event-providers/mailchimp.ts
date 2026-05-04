@@ -17,18 +17,26 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, getUserData } from './utils';
+import { classifyPII, ClassifiedField, getUserData } from './utils';
 
-( ( mc4wp ) => {
+interface Mc4wpForm {
+	element: HTMLFormElement;
+}
+
+( ( mc4wp: typeof global.mc4wp ) => {
 	if ( ! mc4wp ) {
 		return;
 	}
 
-	mc4wp.forms.on( 'subscribed', ( mc4wpForm, data ) => {
+	mc4wp.forms.on( 'subscribed', ( mc4wpForm: unknown, data: unknown ) => {
 		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+		const formElement = ( mc4wpForm as Mc4wpForm ).element;
 
 		const userData = gtagUserDataEnabled
-			? getUserDataFromForm( mc4wpForm.element, data )
+			? getUserDataFromForm(
+					formElement,
+					data as Record< string, unknown >
+			  )
 			: null;
 
 		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
@@ -47,7 +55,10 @@ import { classifyPII, getUserData } from './utils';
  * @param {Object}          data The submitted form's data.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromForm( form, data ) {
+function getUserDataFromForm(
+	form: HTMLFormElement,
+	data: Record< string, unknown >
+) {
 	// eslint-disable-next-line sitekit/acronym-case
 	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
 		return undefined;
@@ -62,7 +73,9 @@ function getUserDataFromForm( form, data ) {
 				return null;
 			}
 
-			const input = form.querySelector( `[name='${ name }']` );
+			const input = form.querySelector(
+				`[name='${ name }']`
+			) as HTMLInputElement | null;
 
 			const type = input?.type;
 
@@ -78,7 +91,7 @@ function getUserDataFromForm( form, data ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( field ): field is ClassifiedField => Boolean( field ) );
 
 	return getUserData( detectedFields );
 }

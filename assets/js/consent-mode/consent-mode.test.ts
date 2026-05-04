@@ -36,8 +36,9 @@ describe( 'Consent mode', () => {
 
 	afterEach( () => {
 		gtagMock.mockReset();
-		delete global.gtag;
-		delete global._googlesitekitConsentCategoryMap;
+		delete ( global as Partial< typeof globalThis > ).gtag;
+		delete ( global as Partial< typeof globalThis > )
+			._googlesitekitConsentCategoryMap;
 		delete global.wp_consent_type;
 		delete global.wp_has_consent;
 		delete global._googlesitekitConsents;

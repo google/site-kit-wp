@@ -17,26 +17,37 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, getUserData } from './utils';
+import { classifyPII, ClassifiedField, getUserData } from './utils';
 
-( ( jQuery, PUM ) => {
+interface PUMFormArgs {
+	formProvider: string;
+}
+
+type FormLike = HTMLFormElement | { 0?: HTMLFormElement };
+
+( ( jQuery: typeof global.jQuery, PUM: typeof global.PUM ) => {
 	if ( ! jQuery || ! PUM ) {
 		return;
 	}
 
-	PUM.hooks.addAction( 'pum.integration.form.success', ( form, args ) => {
-		const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+	PUM.hooks.addAction(
+		'pum.integration.form.success',
+		( ...hookArgs: unknown[] ) => {
+			const form = hookArgs[ 0 ] as FormLike;
+			const args = hookArgs[ 1 ] as PUMFormArgs;
+			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
-		const userData =
-			gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
-				? getUserDataFromPMForm( form )
-				: undefined;
+			const userData =
+				gtagUserDataEnabled && shouldHandleProvider( args.formProvider )
+					? getUserDataFromPMForm( form )
+					: undefined;
 
-		global._googlesitekit?.gtagEvent?.(
-			'submit_lead_form',
-			userData ? { user_data: userData } : undefined
-		);
-	} );
+			global._googlesitekit?.gtagEvent?.(
+				'submit_lead_form',
+				userData ? { user_data: userData } : undefined
+			);
+		}
+	);
 } )( global.jQuery, global.PUM );
 
 const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
@@ -49,7 +60,7 @@ const HANDLED_PROVIDERS = [ 'wpforms', 'contactform7', 'ninjaforms', 'mc4wp' ];
  * @param {string} provider The form provider (plugin) slug.
  * @return {boolean} Whether this provider's submission should be handled here or not.
  */
-function shouldHandleProvider( provider ) {
+function shouldHandleProvider( provider: string ) {
 	return ! HANDLED_PROVIDERS.includes( provider );
 }
 
@@ -58,12 +69,13 @@ function shouldHandleProvider( provider ) {
  *
  * @since 1.162.0 Renamed to `getUserDataFromPMForm` because `getUserData` was extracted into a generic utility function.
  *
- * @param {Object} form A jQuery object or an HTMLFormElement instance.
+ * @param {Object} formArg A jQuery object or an HTMLFormElement instance.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromPMForm( form ) {
+function getUserDataFromPMForm( formArg: FormLike ) {
 	// eslint-disable-next-line sitekit/acronym-case
-	form = form instanceof HTMLFormElement ? form : form[ 0 ];
+	const form: HTMLFormElement | undefined =
+		formArg instanceof HTMLFormElement ? formArg : formArg[ 0 ];
 
 	if ( ! form ) {
 		return undefined;
@@ -72,7 +84,9 @@ function getUserDataFromPMForm( form ) {
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			const input = form.querySelector( `[name='${ name }']` );
+			const input = form.querySelector(
+				`[name='${ name }']`
+			) as HTMLInputElement | null;
 
 			const type = input?.type;
 
@@ -94,7 +108,7 @@ function getUserDataFromPMForm( form ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( field ): field is ClassifiedField => Boolean( field ) );
 
 	return getUserData( detectedFields );
 }

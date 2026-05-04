@@ -17,9 +17,24 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, getUserData } from './utils';
+import { classifyPII, ClassifiedField, getUserData } from './utils';
 
-( ( jQuery, Marionette, Backbone ) => {
+interface NinjaFormField {
+	label?: string;
+	type?: string;
+	value?: unknown;
+	key?: string;
+}
+
+interface NinjaSubmitEvent {
+	data: { fields: Record< string, NinjaFormField > };
+}
+
+( (
+	jQuery: typeof global.jQuery,
+	Marionette: typeof global.Marionette,
+	Backbone: typeof global.Backbone
+) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery || ! Marionette || ! Backbone ) {
 		return;
@@ -36,7 +51,7 @@ import { classifyPII, getUserData } from './utils';
 			);
 		},
 
-		actionSubmit( event ) {
+		actionSubmit( event: NinjaSubmitEvent ) {
 			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
 			const userData = gtagUserDataEnabled
@@ -55,7 +70,7 @@ import { classifyPII, getUserData } from './utils';
 	} );
 } )( global.jQuery, global.Marionette, global.Backbone );
 
-const NINJA_FORMS_TYPES = {
+const NINJA_FORMS_TYPES: Record< string, string > = {
 	phone: 'tel',
 	textbox: 'text',
 };
@@ -68,13 +83,15 @@ const NINJA_FORMS_TYPES = {
  * @param {Object<string, Object>} fields The submitted Ninja Form fields.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromNinjaFormFields( fields ) {
+function getUserDataFromNinjaFormFields(
+	fields: Record< string, NinjaFormField >
+) {
 	const detectedFields = Object.values( fields )
 		.map( ( field ) => {
 			const { label, type: nfType, value, key: name } = field;
 
 			// Ninja Forms types are not standard HTML input types, so we map them before calling classifyPII, which relies on standard HTML types.
-			const type = NINJA_FORMS_TYPES[ nfType ] ?? nfType;
+			const type = ( nfType && NINJA_FORMS_TYPES[ nfType ] ) || nfType;
 
 			return classifyPII( {
 				label,
@@ -83,7 +100,7 @@ function getUserDataFromNinjaFormFields( fields ) {
 				name,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( field ): field is ClassifiedField => Boolean( field ) );
 
 	return getUserData( detectedFields );
 }

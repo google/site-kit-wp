@@ -41,5 +41,8 @@ function sendEvent(
 
 const events = window._googlesitekitAnalyticsTrackingData || [];
 if ( Array.isArray( events ) ) {
-	setUpAdvancedTracking( events, sendEvent );
+	setUpAdvancedTracking(
+		events as Parameters< typeof setUpAdvancedTracking >[ 0 ],
+		sendEvent
+	);
 }

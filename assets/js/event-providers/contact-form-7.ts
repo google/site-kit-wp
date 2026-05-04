@@ -17,39 +17,39 @@
 /**
  * Internal dependencies
  */
-import { classifyPII, getUserData } from './utils';
+import { classifyPII, ClassifiedField, getUserData } from './utils';
 
-( ( jQuery ) => {
-	if ( ! jQuery ) {
-		return;
-	}
+interface WPCF7Detail {
+	// eslint-disable-next-line sitekit/acronym-case
+	contactFormId: number;
+	unitTag: string;
+}
 
-	jQuery( global.document.body ).on(
-		'wpformsAjaxSubmitSuccess',
-		( event ) => {
-			const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
+global.document.addEventListener( 'wpcf7mailsent', ( event: Event ) => {
+	const customEvent = event as CustomEvent< WPCF7Detail >;
+	const gtagUserDataEnabled = global._googlesitekit?.gtagUserData;
 
-			const userData = gtagUserDataEnabled
-				? getUserDataFromForm( event.target )
-				: null;
+	const userData = gtagUserDataEnabled
+		? getUserDataFromForm( event.target )
+		: null;
 
-			global._googlesitekit?.gtagEvent?.(
-				'submit_lead_form',
-				userData ? { user_data: userData } : undefined
-			);
-		}
-	);
-} )( global.jQuery );
+	global._googlesitekit?.gtagEvent?.( 'contact', {
+		// eslint-disable-next-line sitekit/acronym-case
+		event_category: customEvent.detail.contactFormId,
+		event_label: customEvent.detail.unitTag,
+		...( userData ? { user_data: userData } : {} ),
+	} );
+} );
 
 /**
- * Extracts and classifies user data from a WPForms form submission.
+ * Extracts and classifies user data from a Contact Form 7 form submission.
  *
  * @since 1.162.0 Renamed to `getUserDataFromForm` because `getUserData` was extracted into a generic utility function.
  *
  * @param {HTMLFormElement} form The submitted form element.
  * @return {Object|undefined} A user_data object containing detected PII (address, email, phone_number), or undefined if no PII found.
  */
-function getUserDataFromForm( form ) {
+function getUserDataFromForm( form: EventTarget | null ) {
 	// eslint-disable-next-line sitekit/acronym-case
 	if ( ! form || ! ( form instanceof HTMLFormElement ) ) {
 		return undefined;
@@ -58,19 +58,9 @@ function getUserDataFromForm( form ) {
 	const formData = new FormData( form );
 	const detectedFields = Array.from( formData.entries() )
 		.map( ( [ name, value ] ) => {
-			let input = form.querySelector( `[name='${ name }']` );
-
-			// WPForms creates dual inputs for special fields (e.g., phone numbers):
-			// - A visible input for UI/display purposes
-			// - A hidden input containing the actual raw value (positioned immediately after)
-			// When FormData gives us the hidden input, we switch to the visible input
-			// for better field type detection and label association.
-			if (
-				input?.type === 'hidden' &&
-				input?.previousSibling?.type !== 'hidden'
-			) {
-				input = input.previousSibling;
-			}
+			const input = form.querySelector(
+				`[name='${ name }']`
+			) as HTMLInputElement | null;
 
 			const type = input?.type;
 
@@ -91,7 +81,7 @@ function getUserDataFromForm( form ) {
 				value,
 			} );
 		} )
-		.filter( Boolean );
+		.filter( ( field ): field is ClassifiedField => Boolean( field ) );
 
 	return getUserData( detectedFields );
 }

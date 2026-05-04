@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-( ( jQuery ) => {
+interface EDDCartItemDetails {
+	total: string;
+	// eslint-disable-next-line camelcase
+	cart_item: string;
+}
+
+( ( jQuery: typeof global.jQuery ) => {
 	// eslint-disable-next-line no-undef
 	if ( ! jQuery ) {
 		return;
 	}
 
 	const body = jQuery( 'body' );
-	const currency = global._googlesitekit.easyDigitalDownloadsCurrency;
+	const currency = global._googlesitekit?.easyDigitalDownloadsCurrency;
 
-	body.on( 'edd_cart_item_added', ( event, details ) => {
+	body.on( 'edd_cart_item_added', ( ...args: unknown[] ) => {
+		const details = args[ 1 ] as EDDCartItemDetails;
 		const value = parseAmount( details.total );
 		const { id, name, price } = parseCartItemHTML( details.cart_item );
 
@@ -43,7 +50,7 @@
 	if ( global._googlesitekit?.edddata?.purchase ) {
 		global._googlesitekit?.gtagEvent?.( 'purchase', {
 			currency,
-			...global._googlesitekit.edddata.purchase,
+			...global._googlesitekit?.edddata?.purchase,
 		} );
 	}
 } )( global.jQuery );
@@ -56,17 +63,19 @@
  * @param {string} cartItemHTML The HTML string for the cart item.
  * @return {Object} An object containing the item's `id`, `name` and `price`.
  */
-export function parseCartItemHTML( cartItemHTML ) {
+export function parseCartItemHTML( cartItemHTML: string ) {
 	const parser = new DOMParser();
 	const doc = parser.parseFromString( cartItemHTML, 'text/html' );
 
+	/* eslint-disable sitekit/acronym-case */
 	const id =
-		// eslint-disable-next-line sitekit/acronym-case
-		doc.querySelector( '.edd-remove-from-cart' )?.dataset.downloadId || '';
+		( doc.querySelector( '.edd-remove-from-cart' ) as HTMLElement | null )
+			?.dataset.downloadId || '';
+	/* eslint-enable sitekit/acronym-case */
 	const name =
-		doc.querySelector( '.edd-cart-item-title' )?.textContent.trim() || '';
+		doc.querySelector( '.edd-cart-item-title' )?.textContent?.trim() || '';
 	const price =
-		doc.querySelector( '.edd-cart-item-price' )?.textContent.trim() || '';
+		doc.querySelector( '.edd-cart-item-price' )?.textContent?.trim() || '';
 
 	return {
 		id,
@@ -83,7 +92,7 @@ export function parseCartItemHTML( cartItemHTML ) {
  * @param {string} amount The amount string.
  * @return {number} The amount as a number.
  */
-function parseAmount( amount ) {
+function parseAmount( amount: string ) {
 	let normalizedNumericPrice = amount.replace( /[^\d.,]/g, '' ).trim();
 
 	const lastComma = normalizedNumericPrice.lastIndexOf( ',' );

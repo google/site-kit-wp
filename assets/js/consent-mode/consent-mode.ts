@@ -20,18 +20,20 @@
 import { isEqual } from 'lodash';
 
 ( function () {
-	function actionConsentChange( event ) {
-		if ( event.detail ) {
-			const consentParameters = {};
+	function actionConsentChange( event: Event ) {
+		const detail = ( event as CustomEvent< Record< string, string > > )
+			.detail;
+		if ( detail ) {
+			const consentParameters: Record< string, string > = {};
 			let hasConsentParameters = false;
-			Object.keys( event.detail ).forEach( ( category ) => {
+			Object.keys( detail ).forEach( ( category ) => {
 				if ( global._googlesitekitConsentCategoryMap[ category ] ) {
-					const status = event.detail[ category ];
+					const status = detail[ category ];
 					const mappedStatus =
 						status === 'allow' ? 'granted' : 'denied';
 					const parameters =
 						global._googlesitekitConsentCategoryMap[ category ];
-					parameters.forEach( ( parameter ) => {
+					parameters.forEach( ( parameter: string ) => {
 						consentParameters[ parameter ] = mappedStatus;
 					} );
 					hasConsentParameters = !! parameters.length;
@@ -52,7 +54,7 @@ import { isEqual } from 'lodash';
 		if ( ! ( global.wp_consent_type || global.wp_fallback_consent_type ) ) {
 			return;
 		}
-		const consentParameters = {};
+		const consentParameters: Record< string, string > = {};
 		let hasConsentParameters = false;
 		Object.entries( global._googlesitekitConsentCategoryMap ).forEach(
 			( [ category, parameters ] ) => {
@@ -60,7 +62,7 @@ import { isEqual } from 'lodash';
 					global.wp_has_consent &&
 					global.wp_has_consent( category )
 				) {
-					parameters.forEach( ( parameter ) => {
+					parameters.forEach( ( parameter: string ) => {
 						consentParameters[ parameter ] = 'granted';
 					} );
 					hasConsentParameters =

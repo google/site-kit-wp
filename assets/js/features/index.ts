@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-export const enabledFeatures = new Set(
-	global?._googlesitekitBaseData?.enabledFeatures || []
+export const enabledFeatures = new Set< string >(
+	( global?._googlesitekitBaseData?.enabledFeatures as string[] ) || []
 );
 
 /**
@@ -31,8 +31,8 @@ export const enabledFeatures = new Set(
  * @return {boolean} `true` if a feature is enabled; `false` otherwise.
  */
 export function isFeatureEnabled(
-	feature,
-	_enabledFeatures = enabledFeatures
+	feature: string,
+	_enabledFeatures: Set< string > = enabledFeatures
 ) {
 	if ( ! ( _enabledFeatures instanceof Set ) ) {
 		return false;
