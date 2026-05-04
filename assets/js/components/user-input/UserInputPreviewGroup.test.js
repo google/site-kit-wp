@@ -66,7 +66,7 @@ describe( 'UserInputPreviewGroup', () => {
 		onChange: jest.fn(),
 	};
 
-	it( 'should show Answer question CTA and hide Edit for unanswered question in setupFlowRefresh settings flow', () => {
+	it( 'should show the "Answer question" button and hide the Edit link for an unanswered question when the `setupFlowRefresh` feature flag is enabled', () => {
 		const { container, getByRole, queryByRole } = render(
 			<UserInputPreviewGroup { ...baseProps } />,
 			{
@@ -86,7 +86,7 @@ describe( 'UserInputPreviewGroup', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should expand to edit mode when Answer question is clicked', () => {
+	it( 'should expand to the edit mode when the "Answer question" button is clicked', () => {
 		const { getByRole } = render(
 			<UserInputPreviewGroup { ...baseProps } />,
 			{
@@ -99,6 +99,12 @@ describe( 'UserInputPreviewGroup', () => {
 
 		expect(
 			getByRole( 'button', { name: /save answer/i } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'radio', { name: /option 1/i } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'radio', { name: /option 2/i } )
 		).toBeInTheDocument();
 	} );
 } );
