@@ -154,14 +154,9 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 
 	return (
 		<Widget>
-			{ ! error && (
-				<WidgetHeaderTitle
-					title={ __(
-						'Lead generation performance',
-						'google-site-kit'
-					) }
-				/>
-			) }
+			<WidgetHeaderTitle
+				title={ __( 'Lead generation performance', 'google-site-kit' ) }
+			/>
 
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 

@@ -143,7 +143,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
 
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
-			{ ! loading && ! error && (
+			{ ! loading && (
 				<TilesGroup
 					className="googlesitekit-site-goals-primary-action"
 					title={ __( 'Key action', 'google-site-kit' ) }
