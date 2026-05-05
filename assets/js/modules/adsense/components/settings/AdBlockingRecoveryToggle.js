@@ -45,6 +45,7 @@ import {
 import { parseAccountIDFromExistingTag } from '@/js/modules/adsense/util';
 import Notice from '@/js/components/Notice';
 import useFormValue from '@/js/hooks/useFormValue';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();
@@ -208,7 +209,7 @@ export default function AdBlockingRecoveryToggle() {
 			</div>
 			{ existingAdBlockingRecoveryTag && (
 				<Notice
-					type={ Notice.TYPES.INFO }
+					type={ NOTICE_TYPES.INFO }
 					description={ existingAdBlockingRecoveryTagMessage }
 				/>
 			) }

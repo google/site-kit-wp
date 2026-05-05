@@ -626,7 +626,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			} );
 
 			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin/plugins.php'
+				'http://example.com/wp-admin'
 			);
 		} );
 

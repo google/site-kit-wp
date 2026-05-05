@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 function OfflineNotification() {
 	const [ dismissed, setDismissed ] = useState( false );
@@ -44,8 +45,8 @@ function OfflineNotification() {
 		<div aria-live="polite">
 			{ ! isOnline && ! dismissed && (
 				<Notice
-					className="googlesitekit-notice-snackbar--bottom-right"
-					type={ Notice.TYPES.WARNING }
+					className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right"
+					type={ NOTICE_TYPES.WARNING }
 					description={ __(
 						'You are currently offline. Some features may not be available.',
 						'google-site-kit'

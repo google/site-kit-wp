@@ -36,6 +36,7 @@ const fetchDisconnectStore = createFetchStore( {
 	reducerCallback: createReducer( ( state, disconnected ) => {
 		state.disconnected = disconnected;
 	} ),
+	isAction: true,
 } );
 
 const baseInitialState = {

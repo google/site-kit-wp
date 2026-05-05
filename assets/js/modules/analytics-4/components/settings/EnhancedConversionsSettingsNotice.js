@@ -45,9 +45,10 @@ import { ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS } from '@/js/modules/analyt
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function EnhancedConversionsSettingsNotice( {
-	type = Notice.TYPES.INFO,
+	type = NOTICE_TYPES.INFO,
 } ) {
 	const id = ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS;
 
@@ -113,7 +114,7 @@ export default function EnhancedConversionsSettingsNotice( {
 			) }
 			description={ createInterpolateElement(
 				__(
-					'Site Kit now supports user-provided data collection, a free feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. <a />',
+					'Site Kit now supports user-provided data collection, a feature which helps you get a more complete and reliable count of your sales and leads from your website, even when people switch devices. To activate, turn on the setting for collecting user data in your Analytics account. If you’ve already enabled this, no further action is required. <a />',
 					'google-site-kit'
 				),
 				{
@@ -142,5 +143,5 @@ export default function EnhancedConversionsSettingsNotice( {
 }
 
 EnhancedConversionsSettingsNotice.propTypes = {
-	type: PropTypes.oneOf( Object.values( Notice.TYPES ) ),
+	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
 };

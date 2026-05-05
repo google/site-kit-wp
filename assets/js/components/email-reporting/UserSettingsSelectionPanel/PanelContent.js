@@ -41,7 +41,7 @@ import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
 import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
 import Notices from './Notices';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -151,7 +151,7 @@ PanelContent.propTypes = {
 	notice: PropTypes.shape( {
 		title: PropTypes.string,
 		text: PropTypes.string,
-		type: PropTypes.oneOf( Object.values( TYPES ) ),
+		type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
 	} ),
 	isUserSubscribed: PropTypes.bool,
 	isSavingSettings: PropTypes.bool,

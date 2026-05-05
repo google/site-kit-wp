@@ -33,7 +33,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
@@ -66,7 +66,7 @@ export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 		<Notification>
 			<BannerNotification
 				notificationID={ id }
-				type={ TYPES.ERROR }
+				type={ NOTICE_TYPES.ERROR }
 				title={ __(
 					'Site Kit needs additional permissions to detect updates to tags on your site',
 					'google-site-kit'

@@ -155,7 +155,6 @@
 @import "components/dashboard/googlesitekit-DashboardPageSpeed";
 @import "components/dashboard/googlesitekit-ReportMetric";
 @import "components/dashboard/googlesitekit-subtle-notification";
-@import "components/dashboard/googlesitekit-welcome-modal";
 
 // Dashboard Wizard
 @import "components/dashboard/wizard/googlesitekit-wizard";
@@ -229,8 +228,14 @@
 // Banner
 @import "components/banner/googlesitekit-banner";
 
+// Banner Modal
+@import "components/banner-modal/googlesitekit-banner-modal";
+
 // Notice
 @import "components/notice/googlesitekit-notice";
+
+// PDF export
+@import "components/pdf-export/googlesitekit-pdf-report-error-snackbar";
 
 // Toast Notice
 @import "components/toast-notice/googlesitekit-toast-notice";

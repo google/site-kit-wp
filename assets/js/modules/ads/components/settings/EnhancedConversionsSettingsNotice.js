@@ -43,9 +43,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function EnhancedConversionsSettingsNotice( {
-	type = Notice.TYPES.INFO,
+	type = NOTICE_TYPES.INFO,
 } ) {
 	const id = ENHANCED_CONVERSIONS_NOTIFICATION_ADS;
 
@@ -95,12 +96,12 @@ export default function EnhancedConversionsSettingsNotice( {
 		<Notice
 			type={ type }
 			title={ __(
-				'Boost your data and Ads results with enhanced conversions',
+				'Improve your measurement with enhanced conversions',
 				'google-site-kit'
 			) }
 			description={ createInterpolateElement(
 				__(
-					'Site Kit now supports enhanced conversions. This feature helps your ads count sales and leads more accurately, even across different devices, so your budget is spent smarter. To turn this on, simply agree to the terms of service in your Ads account and enable enhanced conversions. <a />',
+					'Site Kit now supports enhanced conversions, which improves the accuracy of your conversion measurement by sending first-party data from your website to Google in a privacy-safe way. Accept the terms of service in your Google Ads account to get started. If you’ve already done this, no further action is required. <a />',
 					'google-site-kit'
 				),
 				{
@@ -129,5 +130,5 @@ export default function EnhancedConversionsSettingsNotice( {
 }
 
 EnhancedConversionsSettingsNotice.propTypes = {
-	type: PropTypes.oneOf( Object.values( Notice.TYPES ) ),
+	type: PropTypes.oneOf( Object.values( NOTICE_TYPES ) ),
 };

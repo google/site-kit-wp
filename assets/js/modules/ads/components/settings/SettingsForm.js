@@ -27,7 +27,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
@@ -149,7 +149,7 @@ export default function SettingsForm() {
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				{ gtagUserDataEnabled && (
 					<EnhancedConversionsSettingsNotice
-						type={ TYPES.INFO_ALT }
+						type={ NOTICE_TYPES.INFO_ALT }
 					/>
 				) }
 			</SettingsGroup>

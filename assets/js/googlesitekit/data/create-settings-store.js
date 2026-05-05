@@ -44,7 +44,7 @@ import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-err
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
-const { clearError, receiveError } = errorStoreActions;
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 // Invariant error messages.
 export const INVARIANT_DOING_SUBMIT_CHANGES =
@@ -145,6 +145,7 @@ export function createSettingsStore(
 		validateParams: ( { values } = {} ) => {
 			invariant( isPlainObject( values ), 'values is required.' );
 		},
+		isAction: true,
 	} );
 
 	// This will be populated further down with reducer functions for individual settings.
@@ -212,7 +213,7 @@ export function createSettingsStore(
 		*saveSettings() {
 			const registry = yield commonActions.getRegistry();
 
-			yield clearError( 'saveSettings', [] );
+			yield clearActionError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
 			const { response, error } =
@@ -221,7 +222,7 @@ export function createSettingsStore(
 				);
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
-				yield receiveError( error, 'saveSettings', [] );
+				yield setErrorForAction( error, 'saveSettings', [] );
 			}
 
 			return { response, error };

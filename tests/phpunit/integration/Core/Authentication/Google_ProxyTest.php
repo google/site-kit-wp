@@ -171,9 +171,13 @@ class Google_ProxyTest extends TestCase {
 				'url'                    => home_url(),
 				'action_uri'             => admin_url( 'index.php' ),
 				'name'                   => get_bloginfo( 'name' ),
-				'return_uri'             => admin_url( 'plugins.php' ),
+				'return_uri'             => admin_url( 'index.php' ),
 				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+				'analytics_redirect_uri' => add_query_arg(
+					'service_version',
+					'v3',
+					add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) )
+				),
 			),
 			$this->google_proxy->get_site_fields(),
 			'Site fields should contain all required site information.'

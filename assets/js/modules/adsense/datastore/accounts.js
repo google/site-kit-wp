@@ -58,7 +58,7 @@ const baseActions = {
 			type: RESET_ACCOUNTS,
 		};
 
-		yield errorStoreActions.clearErrors( 'getAccounts' );
+		yield errorStoreActions.clearSelectorErrors( 'getAccounts' );
 
 		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
 			'getAccounts'

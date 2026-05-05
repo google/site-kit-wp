@@ -30,7 +30,7 @@ import Layout from '@/js/components/layout/Layout';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '@/js/material-components';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsInactiveModules() {
 	const modules = useSelect( ( select ) =>
@@ -58,7 +58,7 @@ export default function SettingsInactiveModules() {
 					'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future',
 					'google-site-kit'
 				) }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 			/>
 		);
 	}

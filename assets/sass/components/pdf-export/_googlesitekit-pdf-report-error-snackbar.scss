@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * PDF report error snackbar styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +16,18 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
+.googlesitekit-pdf-report-error-snackbar {
+	.googlesitekit-notice__dismiss--icon {
+		path {
+			color: $c-utility-on-error-container;
+		}
+	}
 
-export default function Description( { className, children } ) {
-	return (
-		<p
-			className={ classnames(
-				'googlesitekit-notice__description',
-				className
-			) }
-		>
-			{ children }
-		</p>
-	);
+	.googlesitekit-notice__cta {
+		color: $c-utility-on-error-container;
+	}
+
+	.googlesitekit-notice__cta.mdc-button--tertiary:not(:disabled) {
+		color: $c-utility-on-error-container;
+	}
 }
-
-Description.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
-};
