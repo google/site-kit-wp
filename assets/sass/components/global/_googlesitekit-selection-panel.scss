@@ -76,6 +76,11 @@
 		color: $c-surfaces-on-surface-variant;
 		display: flex;
 		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
+		
+		.googlesitekit-cta-link__contents {
+			height: 15px;
+			width: 15px;
+		}
 	}
 
 	.googlesitekit-selection-panel__loading {
