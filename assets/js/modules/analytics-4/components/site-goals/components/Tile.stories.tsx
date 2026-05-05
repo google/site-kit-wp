@@ -15,20 +15,22 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { Tile, type TileProps } from './Tile';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type Registry = any;
-
 // Type for Storybook story exports with custom properties
 type Story = {
 	( props: TileProps ): JSX.Element;
 	storyName?: string;
-	args?: TileProps & { setupRegistry?: ( registry: Registry ) => void };
+	args?: TileProps & { setupRegistry?: ( registry: WPDataRegistry ) => void };
 	scenario?: Record< string, unknown >;
 };
 
@@ -36,7 +38,7 @@ function Template( {
 	setupRegistry = () => {},
 	...props
 }: {
-	setupRegistry?: ( registry: Registry ) => void;
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
 } & TileProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -149,7 +151,7 @@ CustomDateRange.args = {
 	currentValue: 3600,
 	previousValue: 3100,
 	format: { style: 'decimal' },
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 	},
 };
