@@ -32,6 +32,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
@@ -67,67 +68,47 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		[]
 	);
 
-	const eventsOptions = {
-		...dates,
-		metrics: [ { name: 'eventCount' } ],
-		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: detectedLeadEvents || [],
-			},
-		},
-		reportID:
-			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
-	};
+	const reportOptions: ReportOptions[] = [];
 
-	const engagementOptions = {
-		...dates,
-		metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-		reportID: 'analytics-4_site-goals_engagementReportOptions',
-	};
+	if ( hasLeadEvents ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: detectedLeadEvents || [],
+				},
+			},
+			reportID:
+				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
+		} );
+
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
+		} );
+	}
 
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
-			( select: Select ) => {
-				if ( ! hasLeadEvents ) {
-					return [];
-				}
-
-				return [
-					select( MODULES_ANALYTICS_4 ).getReport( eventsOptions ),
-					select( MODULES_ANALYTICS_4 ).getReport(
-						engagementOptions
-					),
-				];
-			},
-			[ hasLeadEvents, eventsOptions, engagementOptions ]
+			( select: Select ) =>
+				reportOptions.map( ( options ) =>
+					select( MODULES_ANALYTICS_4 ).getReport( options )
+				),
+			reportOptions
 		) || [];
 
-	const loading = useSelect(
-		( select: Select ) =>
-			hasLeadEvents
-				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ eventsOptions ]
-				  ) ||
-				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ engagementOptions ]
-				  )
-				: undefined,
-		[]
-	);
-
-	const error = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				eventsOptions,
-			] ) ||
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				engagementOptions,
-			] ),
-		[]
+	const [ loading, error ] = useSelect(
+		( select: Select ) => [
+			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...reportOptions
+			),
+		],
+		reportOptions
 	);
 
 	if ( ! hasLeadEvents ) {
