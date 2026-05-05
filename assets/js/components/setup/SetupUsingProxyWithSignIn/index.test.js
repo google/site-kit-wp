@@ -417,6 +417,31 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			).toBeInTheDocument();
 		} );
 
+		it( 'should track the `click_learn_more_link` event when the Analytics opt-in "Learn more" link is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_SPLASH,
+				'click_learn_more_link',
+				'analytics_checkbox'
+			);
+		} );
+
 		it( 'should not render the Analytics checkbox when the Analytics module is already active', async () => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules(
 				coreModulesFixture.map( ( module ) => {
