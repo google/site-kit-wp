@@ -131,6 +131,16 @@ NegativeChange.args = {
 	format: { style: 'decimal' },
 };
 
+export const ZeroDataPreviousRange = Template.bind( {} ) as Story;
+ZeroDataPreviousRange.storyName = 'Zero Data (Previous Range)';
+ZeroDataPreviousRange.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 980,
+	previousValue: 0,
+	format: { style: 'decimal' },
+};
+
 export const CustomDateRange = Template.bind( {} ) as Story;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
 CustomDateRange.args = {

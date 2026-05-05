@@ -102,7 +102,7 @@ export const Tile: FC< TileProps > = ( props ) => {
 							previousValue={ previousValue }
 							currentValue={ currentValue }
 						/>
-						{ comparisonDays && (
+						{ comparisonDays && previousValue !== 0 && (
 							<p className="googlesitekit-site-goals-tile__comparison-label">
 								{ sprintf(
 									/* translators: %d: number of days in the comparison period */
