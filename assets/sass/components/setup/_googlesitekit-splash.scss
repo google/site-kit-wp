@@ -109,6 +109,7 @@
 
 		.googlesitekit-setup__splash-graphic-screenshot {
 			height: 100%;
+			overflow: hidden;
 			width: 100%;
 
 			@media (max-width: $bp-desktop) {
@@ -116,14 +117,18 @@
 			}
 
 			svg {
+				display: block;
 				margin: 0 4%;
 				position: relative;
-				top: 40px;
 				z-index: 11;
 
 				@media (max-width: $bp-desktop) {
 					left: 0;
 				}
+			}
+
+			svg:first-child {
+				top: 40px;
 			}
 		}
 
@@ -136,6 +141,11 @@
 				margin-bottom: $grid-gap-desktop;
 				overflow: hidden;
 			}
+
+			@media (min-width: $bp-nonTablet) {
+				max-height: var(--googlesitekit-splash-available-height);
+				overflow: hidden;
+			}
 		}
 
 		.googlesitekit-setup__content {
@@ -144,6 +154,7 @@
 			}
 
 			@media (min-width: $bp-nonTablet) {
+				min-height: var(--googlesitekit-splash-available-height);
 				padding-bottom: $grid-gap-desktop;
 			}
 		}

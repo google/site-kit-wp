@@ -24,7 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useLayoutEffect,
+	useRef,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -39,6 +44,7 @@ import SplashScreenshotSVG from './SetupFlowSVG';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
+import { useWindowHeight } from '@/js/hooks/useWindowSize';
 import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
@@ -62,7 +68,21 @@ export default function SplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
+	const contentRef = useRef();
+	const windowHeight = useWindowHeight();
 	const { setValues } = useDispatch( CORE_FORMS );
+
+	useLayoutEffect( () => {
+		if ( contentRef.current ) {
+			const offsetFromTop =
+				contentRef.current.getBoundingClientRect().top + global.scrollY;
+			const availableHeight = windowHeight - offsetFromTop;
+			contentRef.current.style.setProperty(
+				'--googlesitekit-splash-available-height',
+				`${ Math.max( 0, availableHeight ) }px`
+			);
+		}
+	}, [ windowHeight ] );
 
 	const checked = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
@@ -89,7 +109,7 @@ export default function SplashContent( {
 	} );
 
 	return (
-		<Row className="googlesitekit-setup__content">
+		<Row ref={ contentRef } className="googlesitekit-setup__content">
 			<Cell
 				smSize={ 4 }
 				mdSize={ 8 }
