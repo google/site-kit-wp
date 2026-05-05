@@ -37,17 +37,8 @@ import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-repo
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type Registry = any;
-
-// Type for Storybook story exports with custom properties
-type Story = {
-	( props: never ): JSX.Element;
-	storyName?: string;
-	args?: { setupRegistry?: ( registry: Registry ) => void };
-	scenario?: Record< string, unknown >;
-};
+import { Story } from '@/js/types/Story';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
 // Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
 const dates = {
@@ -92,7 +83,7 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsLeadGenerationPerformance'
 )( LeadGenerationPerformanceWidget );
 
-function commonSetup( registry: Registry ) {
+function commonSetup( registry: WPDataRegistry ) {
 	provideModules( registry, [
 		{
 			slug: MODULE_SLUG_ANALYTICS_4,
@@ -118,7 +109,7 @@ function commonSetup( registry: Registry ) {
 function Template( {
 	setupRegistry,
 }: {
-	setupRegistry: ( registry: Registry ) => void;
+	setupRegistry: ( registry: WPDataRegistry ) => void;
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -130,7 +121,7 @@ function Template( {
 export const Ready = Template.bind( {} ) as Story;
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
@@ -140,7 +131,7 @@ Ready.args = {
 export const ReadyMultipleEvents = Template.bind( {} ) as Story;
 ReadyMultipleEvents.storyName = 'Ready (Multiple Events)';
 ReadyMultipleEvents.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -156,7 +147,7 @@ ReadyMultipleEvents.args = {
 export const Loading = Template.bind( {} ) as Story;
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -167,7 +158,7 @@ Loading.args = {
 export const ZeroData = Template.bind( {} ) as Story;
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 
 		const report = getAnalytics4MockResponse( singleEventReportOptions );
@@ -195,7 +186,7 @@ ZeroData.args = {
 export const Error = Template.bind( {} ) as Story;
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 
 		const errorObject = {
@@ -222,7 +213,7 @@ Error.args = {
 export const InsufficientPermissions = Template.bind( {} ) as Story;
 InsufficientPermissions.storyName = 'Insufficient Permissions';
 InsufficientPermissions.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 
 		const errorObject = {

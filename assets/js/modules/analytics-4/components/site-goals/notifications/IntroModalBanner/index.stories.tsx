@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { ComponentProps } from 'react';
-
-/**
  * Internal dependencies
  */
 import IntroModal from './index';
@@ -30,15 +25,14 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { Story } from '@/js/types/Story';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry types are not available for Storybook setup callbacks.
-type Registry = any;
-
-interface TemplateArgs {
-	setupRegistry: ( registry: Registry ) => void;
-}
-
-function Template( { setupRegistry }: TemplateArgs ) {
+function Template( {
+	setupRegistry,
+}: {
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
+} ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<IntroModal />
@@ -46,36 +40,30 @@ function Template( { setupRegistry }: TemplateArgs ) {
 	);
 }
 
-type StoryWithMetadata = typeof Template & {
-	storyName?: string;
-	scenario?: Record< string, never >;
-	args?: ComponentProps< typeof Template >;
-};
-
-export const Ecommerce = Template.bind( {} ) as StoryWithMetadata;
+export const Ecommerce = Template.bind( {} ) as Story;
 Ecommerce.storyName = 'Ecommerce Only';
 Ecommerce.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
 
-export const Lead = Template.bind( {} ) as StoryWithMetadata;
+export const Lead = Template.bind( {} ) as Story;
 Lead.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 	},
 };
 
-export const EcommerceAndLead = Template.bind( {} ) as StoryWithMetadata;
+export const EcommerceAndLead = Template.bind( {} ) as Story;
 EcommerceAndLead.storyName = 'Ecommerce And Lead';
 EcommerceAndLead.scenario = {};
 EcommerceAndLead.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [

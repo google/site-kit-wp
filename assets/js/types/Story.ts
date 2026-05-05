@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-declare module '*.svg' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
-}
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
-declare module '*.svg?url' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
-}
+/**
+ * Storybook story with custom properties, a story name, etc.
+ *
+ * This type is used in our stories throughout the plugin.
+ */
+export type Story< PropTypes = Record< string, unknown > > = {
+	( props: PropTypes ): JSX.Element;
+	storyName?: string;
+	args?: {
+		setupRegistry?: ( registry: WPDataRegistry ) => void;
+		[ key: string ]: unknown;
+	};
+	scenario?: Record< string, unknown >;
+};
