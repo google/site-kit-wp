@@ -794,6 +794,32 @@ import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import BannerModal from './index';
 `,
 		},
+
+		// Non-dependency comment sorted after first import.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+/* eslint-disable-next-line */
+const jest = require( 'jest' );
+const { sync: spawn } = require( 'cross-spawn' );
+`,
+			errors: [
+				{
+					message:
+						"Import from 'cross-spawn' should be sorted alphabetically (before 'jest').",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+const { sync: spawn } = require( 'cross-spawn' );
+/* eslint-disable-next-line */
+const jest = require( 'jest' );
+`,
+		},
 	],
 } );
 

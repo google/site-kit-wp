@@ -129,8 +129,10 @@ export function getExpectedCommentBlock( group: DependencyGroup ): string {
  * Gets the preceding comment block for a node.
  *
  * Walks back through leading comments, treating contiguous non-block (line)
- * comments as transparent so the actual dependency block above them can still
- * be located.
+ * comments and non-dependency block comments as transparent so the actual
+ * dependency block above them can still be located. If no dependency group
+ * block is found, falls back to the closest non-group block comment so that
+ * "wrong comment" errors can still be reported.
  *
  * @since n.e.x.t
  *
@@ -148,23 +150,30 @@ export function getPrecedingCommentBlock(
 	}
 
 	let nextItemStartLine = node.loc.start.line;
+	let firstNonGroupBlock: LComment | null = null;
 
 	for ( let index = comments.length - 1; index >= 0; index-- ) {
 		const comment = comments[ index ];
 		const linesBetween = nextItemStartLine - comment.loc.end.line;
 
 		if ( linesBetween > 1 ) {
-			return null;
+			break;
 		}
 
 		if ( comment.type === 'Block' ) {
-			return comment;
+			const commentText = normalizeCommentText( comment.value );
+			if ( isValidGroupComment( commentText ) ) {
+				return comment;
+			}
+			if ( firstNonGroupBlock === null ) {
+				firstNonGroupBlock = comment;
+			}
 		}
 
 		nextItemStartLine = comment.loc.start.line;
 	}
 
-	return null;
+	return firstNonGroupBlock;
 }
 
 /**

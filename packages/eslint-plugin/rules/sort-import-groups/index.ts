@@ -256,8 +256,21 @@ const rule: Rule.RuleModule = {
 
 			const firstImport = importsInGroup[ 0 ];
 			const lastImport = importsInGroup[ importsInGroup.length - 1 ];
-			const startPosition = firstImport.range[ 0 ];
+			let startPosition = firstImport.range[ 0 ];
 			const endPosition = lastImport.range[ 1 ];
+
+			// Extend the replacement range to include any leading
+			// non-dependency comments associated with the first import so
+			// they get repositioned (or removed) along with their import.
+			const firstImportNonDependencyComments = getNonDependencyComments(
+				sourceCode,
+				firstImport
+			);
+			for ( const comment of firstImportNonDependencyComments ) {
+				if ( comment.range[ 0 ] < startPosition ) {
+					startPosition = comment.range[ 0 ];
+				}
+			}
 
 			return [
 				fixer.replaceTextRange(
