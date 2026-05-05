@@ -24,8 +24,7 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useSelect } from 'googlesitekit-data';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -119,21 +118,20 @@ export default function SetupEnhancedMeasurementSwitch() {
 		]
 	);
 
-	const isAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const [ isAutoSubmit ] = useFormValue( FORM_SETUP, 'autoSubmit' );
 
-	const isEnhancedMeasurementEnabled = useFormValue(
-		ENHANCED_MEASUREMENT_FORM,
-		ENHANCED_MEASUREMENT_ENABLED
-	);
+	const [ isEnhancedMeasurementEnabled, setIsEnhancedMeasurementEnabled ] =
+		useFormValue( ENHANCED_MEASUREMENT_FORM, ENHANCED_MEASUREMENT_ENABLED );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
 		if ( ! isAutoSubmit && isEnhancedMeasurementEnabled === undefined ) {
-			setValues( ENHANCED_MEASUREMENT_FORM, {
-				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-			} );
+			setIsEnhancedMeasurementEnabled( true );
 		}
-	}, [ isAutoSubmit, isEnhancedMeasurementEnabled, setValues ] );
+	}, [
+		isAutoSubmit,
+		isEnhancedMeasurementEnabled,
+		setIsEnhancedMeasurementEnabled,
+	] );
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;

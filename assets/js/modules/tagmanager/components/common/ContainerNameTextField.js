@@ -31,12 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { TextField } from 'googlesitekit-components';
 import { isUniqueContainerName } from '@/js/modules/tagmanager/util';
@@ -47,14 +46,16 @@ export default function ContainerNameTextField( { label, name } ) {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
-	const containerName = useFormValue( FORM_SETUP, name );
+	const [ containerName, setContainerName ] = useFormValue(
+		FORM_SETUP,
+		name
+	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
+			setContainerName( currentTarget.value );
 		},
-		[ name, setValues ]
+		[ setContainerName ]
 	);
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );

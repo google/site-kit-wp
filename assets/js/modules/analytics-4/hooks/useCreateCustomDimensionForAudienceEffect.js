@@ -23,7 +23,6 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -48,12 +47,18 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);
-
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setIsAutoCreatingCustomDimensionsForAudience ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
+	);
+	const [ , setIsRetrying ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isRetrying'
+	);
 
 	const {
 		fetchCreateCustomDimension,
@@ -78,16 +83,12 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
 			await fetchSyncAvailableCustomDimensions();
 
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				isAutoCreatingCustomDimensionsForAudience: false,
-				isRetrying: false,
-			} );
+			setIsAutoCreatingCustomDimensionsForAudience( false );
+			setIsRetrying( false );
 		}
 		if ( isGA4Connected && hasAnalyticsEditScope && autoSubmit ) {
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				autoSubmit: false,
-				isAutoCreatingCustomDimensionsForAudience: true,
-			} );
+			setAutoSubmit( false );
+			setIsAutoCreatingCustomDimensionsForAudience( true );
 			createDimensionsAndUpdateForm();
 		}
 	}, [
@@ -98,7 +99,9 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		isGA4Connected,
 		propertyID,
 		receiveIsCustomDimensionGatheringData,
-		setValues,
+		setAutoSubmit,
+		setIsAutoCreatingCustomDimensionsForAudience,
+		setIsRetrying,
 	] );
 
 	return null;

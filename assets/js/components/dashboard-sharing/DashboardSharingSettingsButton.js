@@ -45,7 +45,7 @@ export default function DashboardSharingSettingsButton() {
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
 
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
 	);

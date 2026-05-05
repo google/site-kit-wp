@@ -30,14 +30,13 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	MODULES_TAGMANAGER,
 	FORM_SETUP,
 	CONTAINER_CREATE,
 } from '@/js/modules/tagmanager/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 import useFormValue from '@/js/hooks/useFormValue';
 
@@ -52,17 +51,19 @@ export default function WebContainerNameTextField() {
 	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialContainerName = useFormValue( FORM_SETUP, 'containerName' );
+	const [ initialContainerName, setInitialContainerName ] = useFormValue(
+		FORM_SETUP,
+		'containerName'
+	);
 
 	let containerName = siteName;
 	if ( ! containerName && isURL( referenceSiteURL ) ) {
 		containerName = new URL( referenceSiteURL ).hostname;
 	}
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	useMount( () => {
 		if ( ! initialContainerName ) {
-			setValues( FORM_SETUP, { containerName } );
+			setInitialContainerName( containerName );
 		}
 	} );
 

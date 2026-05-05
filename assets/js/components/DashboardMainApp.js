@@ -30,7 +30,7 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
@@ -72,7 +72,6 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import CoreDashboardEffects from './CoreDashboardEffects';
@@ -104,12 +103,13 @@ export default function DashboardMainApp() {
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
 	);
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [
+		temporaryPersistedPermissionsError,
+		setTemporaryPersistedPermissionsError,
+	] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);
@@ -173,13 +173,11 @@ export default function DashboardMainApp() {
 			temporaryPersistedPermissionsError !== undefined &&
 			hasReceivedGrantedScopes
 		) {
-			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
-				permissionsError: {},
-			} );
+			setTemporaryPersistedPermissionsError( {} );
 		}
 	}, [
 		hasReceivedGrantedScopes,
-		setValues,
+		setTemporaryPersistedPermissionsError,
 		temporaryPersistedPermissionsError,
 	] );
 

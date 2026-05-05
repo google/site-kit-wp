@@ -30,13 +30,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	AUDIENCE_SELECTED,
 	AUDIENCE_SELECTION_CHANGED,
 	AUDIENCE_SELECTION_FORM,
 } from './constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
@@ -58,9 +57,13 @@ export default function AudienceItem( {
 } ) {
 	const newBadgeSlug = `${ AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX }${ slug }`;
 
-	const selectedItems = useFormValue(
+	const [ selectedItems, setSelectedItems ] = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
+	);
+	const [ , setAudienceSelectionChanged ] = useFormValue(
+		AUDIENCE_SELECTION_FORM,
+		AUDIENCE_SELECTION_CHANGED
 	);
 	const hasNewBadgeBeenSeen = useSelect( ( select ) =>
 		select( CORE_USER ).hasExpirableItem( newBadgeSlug )
@@ -83,24 +86,22 @@ export default function AudienceItem( {
 		errors.push( siteKitUserCountReportError );
 	}
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const temporarilyHidden = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( `audience-tile-${ slug }` )
 	);
 
 	const onCheckboxChange = useCallback(
 		( event ) => {
-			setValues( AUDIENCE_SELECTION_FORM, {
-				[ AUDIENCE_SELECTED ]: event.target.checked
+			setSelectedItems(
+				event.target.checked
 					? selectedItems.concat( [ slug ] )
 					: selectedItems.filter(
 							( selectedItem ) => selectedItem !== slug
-					  ),
-				[ AUDIENCE_SELECTION_CHANGED ]: true,
-			} );
+					  )
+			);
+			setAudienceSelectionChanged( true );
 		},
-		[ selectedItems, setValues, slug ]
+		[ selectedItems, setSelectedItems, setAudienceSelectionChanged, slug ]
 	);
 
 	// Show the new badge if it has not been seen yet, or the badge has been

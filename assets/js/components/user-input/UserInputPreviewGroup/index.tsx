@@ -96,7 +96,7 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	}, [] );
-	const savedPurposeAnswer = useFormValue(
+	const [ savedPurposeAnswer ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
