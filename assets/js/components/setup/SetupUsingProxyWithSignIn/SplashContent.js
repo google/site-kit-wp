@@ -39,6 +39,7 @@ import SplashScreenshotSVG from './SetupFlowSVG';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
@@ -48,6 +49,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { trackEvent } from '@/js/util';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -62,6 +64,8 @@ export default function SplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
+	const viewContext = useViewContext();
+
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const checked = useFormValue(
@@ -179,7 +183,17 @@ export default function SplashContent( {
 								),
 								{
 									LearnMoreLink: (
-										<Link href={ learnMoreLink } external>
+										<Link
+											href={ learnMoreLink }
+											onClick={ () => {
+												trackEvent(
+													`${ viewContext }`,
+													'click_learn_more_link',
+													'analytics_checkbox'
+												);
+											} }
+											external
+										>
 											{ __(
 												'Learn more',
 												'google-site-kit'
