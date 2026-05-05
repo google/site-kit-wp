@@ -24,7 +24,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { Grid, Cell, Row } from '@/js/material-components';
 import { FC, MouseEvent, ReactNode } from 'react';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
-import { DismissButtonProps } from '@/js/components/Notice/DismissButtonProps';
+import { DismissButtonProps } from '@/js/components/Notice/DismissButton';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 interface NoticeNotificationProps {
