@@ -35,6 +35,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	waitFor,
+	within,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../tests/js/test-utils';
@@ -643,6 +644,54 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( getByText( /Why is this required?/ ) ).toBeInTheDocument();
 
 			await waitForRegistry();
+		} );
+
+		it( 'should track the `click_learn_more_link` event when the CTA tooltip "Learn more" link is clicked', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			const stepHintInfoTooltip = container.querySelector(
+				'.googlesitekit-setup__step-hint .googlesitekit-info-tooltip'
+			);
+			expect( stepHintInfoTooltip ).toBeInTheDocument();
+
+			fireEvent.mouseOver( stepHintInfoTooltip );
+
+			await waitFor( () => {
+				expect(
+					document.querySelector(
+						'.googlesitekit-setup__step-hint-tooltip'
+					)
+				).toBeInTheDocument();
+			} );
+
+			const tooltipContent = document.querySelector(
+				'.googlesitekit-setup__step-hint-tooltip'
+			);
+
+			fireEvent.click(
+				within( tooltipContent ).getByRole( 'link', {
+					name: /Learn more/i,
+				} )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_SPLASH,
+				'click_learn_more_link',
+				'cta_tooltip'
+			);
 		} );
 
 		it( 'should track GA events on CTA click', async () => {
