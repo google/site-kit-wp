@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { type FC } from 'react';
 
 /**
  * Internal dependencies
@@ -40,7 +40,7 @@ interface PreviewContentProps {
 	errorMessage?: string;
 }
 
-export default function PreviewContent( {
+const PreviewContent: FC< PreviewContentProps > = ( {
 	isEditing,
 	shouldUseAnswerQuestionCTA,
 	hasAnswer,
@@ -51,7 +51,7 @@ export default function PreviewContent( {
 	values,
 	loading,
 	errorMessage,
-}: PreviewContentProps ) {
+}: PreviewContentProps ) => {
 	if ( isEditing ) {
 		return (
 			<UserInputEditModeContent
@@ -76,17 +76,6 @@ export default function PreviewContent( {
 	}
 
 	return null;
-}
-
-PreviewContent.propTypes = {
-	isEditing: PropTypes.bool.isRequired,
-	shouldUseAnswerQuestionCTA: PropTypes.bool.isRequired,
-	hasAnswer: PropTypes.bool.isRequired,
-	slug: PropTypes.string.isRequired,
-	options: PropTypes.shape( {} ).isRequired,
-	onChange: PropTypes.func,
-	settingsView: PropTypes.bool.isRequired,
-	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
-	loading: PropTypes.bool.isRequired,
-	errorMessage: PropTypes.string,
 };
+
+export default PreviewContent;

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import { type ComponentType } from 'react';
+import { type FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -37,25 +36,20 @@ interface AnswerQuestionButtonProps {
 	onClick: () => void;
 }
 
-// Button is a JS component with incomplete TS declaration.
-const UntypedButton = Button as unknown as ComponentType<
-	Record< string, unknown >
->;
-
-export default function AnswerQuestionButton( {
+const AnswerQuestionButton: FC< AnswerQuestionButtonProps > = ( {
 	isDisabled,
 	onClick,
-}: AnswerQuestionButtonProps ) {
+}: AnswerQuestionButtonProps ) => {
 	return (
 		<div className="googlesitekit-user-input__preview-group-answer-question">
-			<UntypedButton onClick={ onClick } disabled={ isDisabled }>
-				{ __( 'Answer question', 'google-site-kit' ) }
-			</UntypedButton>
+			{
+				// @ts-expect-error - The `Button` component is not typed yet.
+				<Button onClick={ onClick } disabled={ isDisabled }>
+					{ __( 'Answer question', 'google-site-kit' ) }
+				</Button>
+			}
 		</div>
 	);
-}
-
-AnswerQuestionButton.propTypes = {
-	isDisabled: PropTypes.bool.isRequired,
-	onClick: PropTypes.func.isRequired,
 };
+
+export default AnswerQuestionButton;

@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import { type RefObject, type ComponentType } from 'react';
+import { type FC, type RefObject } from 'react';
 
 /**
  * WordPress dependencies
@@ -41,19 +40,15 @@ interface EditLinkProps {
 	linkRef: RefObject< { focus?: () => void } >;
 }
 
-// Link is a JS component with incomplete TS declaration.
-const UntypedLink = Link as unknown as ComponentType<
-	Record< string, unknown >
->;
-
-export default function EditLink( {
+const EditLink: FC< EditLinkProps > = ( {
 	isEditing,
 	isDisabled,
 	onClick,
 	linkRef,
-}: EditLinkProps ) {
+} ) => {
 	return (
-		<UntypedLink
+		// @ts-expect-error - The `Link` component is not typed yet.
+		<Link
 			onClick={ onClick }
 			ref={ linkRef }
 			disabled={ isDisabled }
@@ -64,13 +59,8 @@ export default function EditLink( {
 			{ isEditing
 				? __( 'Close', 'google-site-kit' )
 				: __( 'Edit', 'google-site-kit' ) }
-		</UntypedLink>
+		</Link>
 	);
-}
-
-EditLink.propTypes = {
-	isEditing: PropTypes.bool.isRequired,
-	isDisabled: PropTypes.bool.isRequired,
-	onClick: PropTypes.func.isRequired,
-	linkRef: PropTypes.shape( { current: PropTypes.instanceOf( Element ) } ),
 };
+
+export default EditLink;

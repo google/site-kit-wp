@@ -301,7 +301,7 @@ exports[`MetricsSelectionPanel Header should match snapshot with setupFlowRefres
 </body>
 `;
 
-exports[`MetricsSelectionPanel Header should match snapshot without setupFlowRefresh enabled 1`] = `
+exports[`MetricsSelectionPanel Header should render correctly 1`] = `
 <body
   class="googlesitekit-side-sheet-scroll-lock"
 >

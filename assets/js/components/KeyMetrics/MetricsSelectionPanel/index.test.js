@@ -146,7 +146,7 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 		} );
 
-		it( 'should match snapshot without setupFlowRefresh enabled', async () => {
+		it( 'should render correctly', async () => {
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 			} );

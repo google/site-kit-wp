@@ -110,7 +110,7 @@ describe( 'UserInputEditModeContent', () => {
 		expect( spinnerButton ).toBeDisabled();
 	} );
 
-	it( 'should show Save answer label in setupFlowRefresh settings flow', async () => {
+	it( 'should show a "Save answer" button in the settings flow when the `setupFlowRefresh` feature flag is enabled', async () => {
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
 			[ USER_INPUT_QUESTIONS_PURPOSE ]: {
 				values: [ 'option1' ],
