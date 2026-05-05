@@ -17,7 +17,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import type { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,30 +30,52 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
-export default function DismissButton( {
+export interface DismissButtonProps {
+	label?: string;
+	dismissOptions?: {
+		expiresInSeconds?: number;
+		skipHidingFromQueue?: boolean;
+	};
+	onClick?: (
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) => void;
+	disabled?: boolean;
+	href?: string;
+	external?: boolean;
+	variant?: 'text' | 'icon';
+	icon?: ReactNode;
+	ariaLabel?: string;
+}
+
+const DismissButton: FC< DismissButtonProps > = ( {
 	label = __( 'Got it', 'google-site-kit' ),
 	onClick,
 	disabled,
 	href,
 	external = false,
-} ) {
+	variant = 'text',
+	icon,
+	ariaLabel,
+} ) => {
 	return (
+		// @ts-expect-error - `Button` component typing is incomplete.
 		<Button
+			className={ classnames( {
+				'googlesitekit-notice__dismiss': variant === 'icon',
+				'googlesitekit-notice__dismiss--icon': variant === 'icon',
+			} ) }
 			onClick={ onClick }
 			disabled={ disabled }
 			href={ href }
 			target={ external ? '_blank' : undefined }
-			tertiary
+			tertiary={ variant !== 'icon' }
+			icon={ variant === 'icon' ? icon : undefined }
+			aria-label={ variant === 'icon' ? ariaLabel : undefined }
+			hideTooltipTitle={ variant === 'icon' }
 		>
-			{ label }
+			{ variant !== 'icon' ? label : undefined }
 		</Button>
 	);
-}
-
-DismissButton.propTypes = {
-	label: PropTypes.string,
-	onClick: PropTypes.func.isRequired,
-	disabled: PropTypes.bool,
-	href: PropTypes.string,
-	external: PropTypes.bool,
 };
+
+export default DismissButton;
