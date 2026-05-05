@@ -46,6 +46,7 @@ import {
 	PERMISSION_AUTHENTICATE,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -1111,4 +1112,71 @@ describe( 'WelcomeModal', () => {
 			);
 		}
 	);
+
+	describe( 'when setupFlowRefresh is enabled', () => {
+		it( 'should dismiss the initial setup notification timeout when the modal renders in the data available variant', async () => {
+			provideDataAvailableVariantData();
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: { success: true },
+			} );
+
+			const { waitForRegistry } = render( <WelcomeModal />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+						expiration: 604800, // WEEK_IN_SECONDS = 7 * 24 * 60 * 60
+					},
+				},
+			} );
+		} );
+
+		it( 'should dismiss the initial setup notification timeout when the modal renders in the gathering data variant', async () => {
+			provideGatheringDataVariantData();
+
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: { success: true },
+			} );
+
+			const { waitForRegistry } = render( <WelcomeModal />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+						expiration: 604800, // WEEK_IN_SECONDS = 7 * 24 * 60 * 60
+					},
+				},
+			} );
+		} );
+
+		it( 'should not dismiss the initial setup notification timeout when setupFlowRefresh is disabled', async () => {
+			provideDataAvailableVariantData();
+
+			const { waitForRegistry } = render( <WelcomeModal />, {
+				registry,
+				features: [], // setupFlowRefresh disabled
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( false );
+		} );
+	} );
 } );
