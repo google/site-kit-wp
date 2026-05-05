@@ -18,7 +18,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import type { MouseEvent, ReactNode } from 'react';
+import type { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -47,7 +47,7 @@ export interface DismissButtonProps {
 	ariaLabel?: string;
 }
 
-export default function DismissButton( {
+const DismissButton: FC< DismissButtonProps > = ( {
 	label = __( 'Got it', 'google-site-kit' ),
 	onClick,
 	disabled,
@@ -56,7 +56,7 @@ export default function DismissButton( {
 	variant = 'text',
 	icon,
 	ariaLabel,
-}: DismissButtonProps ) {
+} ) => {
 	return (
 		// @ts-expect-error - `Button` component typing is incomplete.
 		<Button
@@ -76,4 +76,6 @@ export default function DismissButton( {
 			{ variant !== 'icon' ? label : undefined }
 		</Button>
 	);
-}
+};
+
+export default DismissButton;

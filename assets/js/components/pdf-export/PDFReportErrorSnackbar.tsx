@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { MouseEvent, ReactNode } from 'react';
+import type { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -49,7 +49,7 @@ interface PDFReportErrorSnackbarProps {
 	dismissAriaLabel?: string;
 }
 
-export default function PDFReportErrorSnackbar( {
+const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 	onRetry = () => {},
 	onDismiss = () => {},
 	title = __(
@@ -59,7 +59,7 @@ export default function PDFReportErrorSnackbar( {
 	description,
 	retryLabel = __( 'Retry', 'google-site-kit' ),
 	dismissAriaLabel = __( 'Dismiss PDF report error', 'google-site-kit' ),
-}: PDFReportErrorSnackbarProps ) {
+} ) => {
 	const helpURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getDocumentationLinkURL( 'pdf-reporting' ),
@@ -96,4 +96,6 @@ export default function PDFReportErrorSnackbar( {
 			} }
 		/>
 	);
-}
+};
+
+export default PDFReportErrorSnackbar;

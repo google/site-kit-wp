@@ -111,16 +111,7 @@ const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 							{ actionContent }
 
 							{ hasDismissAction && (
-								<DismissButton
-									label={ dismissButton?.label }
-									onClick={ dismissButton?.onClick }
-									disabled={ dismissButton?.disabled }
-									href={ dismissButton?.href }
-									external={ dismissButton?.external }
-									variant={ dismissButton?.variant }
-									icon={ dismissButton?.icon }
-									ariaLabel={ dismissButton?.ariaLabel }
-								/>
+								<DismissButton { ...( dismissButton || {} ) } />
 							) }
 							{ hasCTAAction && (
 								<CTAButton
