@@ -34,6 +34,7 @@ export default function CTAButton( {
 	href,
 	external = false,
 	hideExternalIndicator = false,
+	tertiary = false,
 } ) {
 	let trailingIconToUse;
 	if ( external && ! hideExternalIndicator ) {
@@ -50,6 +51,7 @@ export default function CTAButton( {
 			href={ href }
 			target={ external ? '_blank' : undefined }
 			trailingIcon={ trailingIconToUse }
+			tertiary={ tertiary }
 		>
 			{ label }
 		</SpinnerButton>
@@ -64,4 +66,5 @@ CTAButton.propTypes = {
 	href: PropTypes.string,
 	external: PropTypes.bool,
 	hideExternalIndicator: PropTypes.bool,
+	tertiary: PropTypes.bool,
 };
