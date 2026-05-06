@@ -574,5 +574,135 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				expect( haveLostEventsForCurrentMetrics ).toEqual( true );
 			} );
 		} );
+
+		describe( 'getPrimaryEcommerceEvent', () => {
+			it( 'should return undefined when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryEcommerceEvent()
+				).toBeUndefined();
+			} );
+
+			it( 'should return "purchase" when both purchase and add_to_cart are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryEcommerceEvent()
+				).toBe( ENUM_CONVERSION_EVENTS.PURCHASE );
+			} );
+
+			it( 'should return "add_to_cart" when only add_to_cart is detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryEcommerceEvent()
+				).toBe( ENUM_CONVERSION_EVENTS.ADD_TO_CART );
+			} );
+
+			it( 'should return undefined when no ecommerce events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryEcommerceEvent()
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined when detected events is an empty array', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPrimaryEcommerceEvent()
+				).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getDetectedLeadEvents', () => {
+			it( 'should return undefined when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getDetectedLeadEvents()
+				).toBeUndefined();
+			} );
+
+			it( 'should return all detected lead events', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getDetectedLeadEvents()
+				).toEqual( [
+					ENUM_CONVERSION_EVENTS.CONTACT,
+					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				] );
+			} );
+
+			it( 'should return empty array when no lead events are detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getDetectedLeadEvents()
+				).toEqual( [] );
+			} );
+
+			it( 'should return empty array when detected events is an empty array', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getDetectedLeadEvents()
+				).toEqual( [] );
+			} );
+		} );
 	} );
 } );

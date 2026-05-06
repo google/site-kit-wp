@@ -43,6 +43,7 @@ import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
 	MODULES_ANALYTICS_4,
+	ENUM_CONVERSION_EVENTS,
 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
@@ -365,6 +366,54 @@ export const selectors = {
 			);
 		}
 	),
+
+	/**
+	 * Returns the primary ecommerce event based on detected events and fallback priority.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|undefined)} The primary ecommerce event name, or undefined if none detected or events not yet loaded.
+	 */
+	getPrimaryEcommerceEvent: createRegistrySelector( ( select ) => () => {
+		const detectedEvents =
+			select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+		if ( detectedEvents === undefined ) {
+			return undefined;
+		}
+
+		// Check for the primary ecommerce events in order of priority.
+		if ( detectedEvents.includes( ENUM_CONVERSION_EVENTS.PURCHASE ) ) {
+			return ENUM_CONVERSION_EVENTS.PURCHASE;
+		}
+
+		// Check for the secondary ecommerce events.
+		if ( detectedEvents.includes( ENUM_CONVERSION_EVENTS.ADD_TO_CART ) ) {
+			return ENUM_CONVERSION_EVENTS.ADD_TO_CART;
+		}
+
+		return undefined;
+	} ),
+
+	/**
+	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Array|undefined)} Array of detected lead event names, or undefined if events not yet loaded.
+	 */
+	getDetectedLeadEvents: createRegistrySelector( ( select ) => () => {
+		const detectedEvents =
+			select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+		if ( detectedEvents === undefined ) {
+			return undefined;
+		}
+
+		return CONVERSION_REPORTING_LEAD_EVENTS.filter( ( event ) =>
+			detectedEvents.includes( event )
+		);
+	} ),
 
 	/**
 	 * Checks if there are new conversion events after initial events were detected. Regardless of how KM were setup.

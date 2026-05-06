@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import WelcomeModal from './WelcomeModal';
@@ -26,14 +31,12 @@ import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type Registry = any;
+import { Story } from '@/js/types/Story';
 
 function Template( {
 	setupRegistry,
 }: {
-	setupRegistry: ( registry: Registry ) => void;
+	setupRegistry: ( registry: WPDataRegistry ) => void;
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -42,10 +45,10 @@ function Template( {
 	);
 }
 
-export const DataAvailable = Template.bind( {} );
+export const DataAvailable = Template.bind( {} ) as Story;
 DataAvailable.storyName = 'Data Available';
 DataAvailable.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsGatheringData( false );
@@ -53,10 +56,10 @@ DataAvailable.args = {
 };
 DataAvailable.scenario = {};
 
-export const GatheringData = Template.bind( {} );
+export const GatheringData = Template.bind( {} ) as Story;
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsGatheringData( true );
@@ -64,10 +67,10 @@ GatheringData.args = {
 };
 GatheringData.scenario = {};
 
-export const DataGatheringComplete = Template.bind( {} );
+export const DataGatheringComplete = Template.bind( {} ) as Story;
 DataGatheringComplete.storyName = 'Data Gathering Complete';
 DataGatheringComplete.args = {
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry ) => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.receiveIsGatheringData( false );
