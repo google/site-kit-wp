@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { getByText } from '@testing-library/dom';
-import { act } from '@testing-library/react';
 
 /**
  * Internal dependencies
@@ -40,6 +39,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useInView } from '@/js/hooks/useInView';
 import {
+	act,
 	createTestRegistry,
 	render,
 	provideModules,

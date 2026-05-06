@@ -85,18 +85,6 @@ describe( 'core/user feature-tours', () => {
 			const fetchDismissTourRegExp = new RegExp(
 				'^/google-site-kit/v1/core/user/data/dismiss-tour'
 			);
-			let setUIValueSpy;
-
-			beforeEach( () => {
-				setUIValueSpy = jest.spyOn(
-					registry.dispatch( CORE_UI ),
-					'setValue'
-				);
-			} );
-
-			afterEach( () => {
-				setUIValueSpy.mockRestore();
-			} );
 
 			it( 'requires a slug parameter', () => {
 				expect( () =>
@@ -186,10 +174,11 @@ describe( 'core/user feature-tours', () => {
 
 				await registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
 
-				expect( setUIValueSpy ).toHaveBeenCalledWith(
-					FORCED_IN_VIEW_WIDGET_AREAS,
-					undefined
-				);
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toBeUndefined();
 			} );
 		} );
 
@@ -288,22 +277,16 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'sets forced in-view widget areas for tours with preloadWidgetAreas', async () => {
-				const setUIValueSpy = jest.spyOn(
-					registry.dispatch( CORE_UI ),
-					'setValue'
-				);
-
 				await registry.dispatch( CORE_USER ).triggerTour( {
 					...testTourA,
 					preloadWidgetAreas: [ 'widget-area-1', 'widget-area-2' ],
 				} );
 
-				expect( setUIValueSpy ).toHaveBeenCalledWith(
-					FORCED_IN_VIEW_WIDGET_AREAS,
-					[ 'widget-area-1', 'widget-area-2' ]
-				);
-
-				setUIValueSpy.mockRestore();
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toEqual( [ 'widget-area-1', 'widget-area-2' ] );
 			} );
 		} );
 
