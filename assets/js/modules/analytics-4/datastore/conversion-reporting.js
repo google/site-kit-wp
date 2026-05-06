@@ -372,7 +372,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string|undefined)} The primary ecommerce event name, or undefined if none detected or events not yet loaded.
+	 * @return {('purchase'|'add_to_cart'|undefined)} The primary ecommerce event name, or undefined if none detected or events not yet loaded.
 	 */
 	getPrimaryEcommerceEvent: createRegistrySelector( ( select ) => () => {
 		const detectedEvents =

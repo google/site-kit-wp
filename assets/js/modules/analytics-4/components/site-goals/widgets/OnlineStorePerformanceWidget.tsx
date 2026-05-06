@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -28,7 +28,7 @@ import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect, type Select } from 'googlesitekit-data';
+import { useSelect, useInViewSelect, Select } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -40,27 +40,29 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
-import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
-const EVENT_RATE_LABELS: Record< string, string > = {
+const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
 	add_to_cart: __( 'Add to Cart Rate', 'google-site-kit' ),
 };
 
-const EVENT_TOTAL_LABELS: Record< string, string > = {
+const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
 };
 
-const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( props ) => {
-	const { Widget, WidgetNull, WidgetReportError } = props;
-
-	const primaryEvent: string = useSelect(
+const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
+	Widget,
+	WidgetNull,
+	WidgetReportError,
+} ) => {
+	const primaryEvent: 'purchase' | 'add_to_cart' | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
