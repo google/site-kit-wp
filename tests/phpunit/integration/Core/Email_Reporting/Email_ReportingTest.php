@@ -98,6 +98,8 @@ class Email_ReportingTest extends TestCase {
 		$metrics         = $email_reporting->get_feature_metrics();
 
 		foreach ( $metrics as $key => $value ) {
+			// This setting is a boolean and tested below, so don't
+			// expect this one to be an integer.
 			if ( 'email_reporting_enabled' === $key ) {
 				continue;
 			}
