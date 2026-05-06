@@ -1134,7 +1134,7 @@ describe( 'WelcomeModal', () => {
 				body: {
 					data: {
 						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-						expiration: 604800, // WEEK_IN_SECONDS = 7 * 24 * 60 * 60
+						expiration: 604800,
 					},
 				},
 			} );
@@ -1160,7 +1160,7 @@ describe( 'WelcomeModal', () => {
 				body: {
 					data: {
 						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-						expiration: 604800, // WEEK_IN_SECONDS = 7 * 24 * 60 * 60
+						expiration: 604800,
 					},
 				},
 			} );
@@ -1171,7 +1171,6 @@ describe( 'WelcomeModal', () => {
 
 			const { waitForRegistry } = render( <WelcomeModal />, {
 				registry,
-				features: [], // setupFlowRefresh disabled
 			} );
 
 			await waitForRegistry();
