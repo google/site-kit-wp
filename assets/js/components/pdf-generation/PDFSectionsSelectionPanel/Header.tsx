@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,7 +36,7 @@ interface HeaderProps {
 	closePanel: () => void;
 }
 
-export default function Header( { closePanel }: HeaderProps ) {
+const Header: FC< HeaderProps > = ( { closePanel } ) => {
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Download your Site Kit report', 'google-site-kit' ) }
@@ -53,4 +58,6 @@ export default function Header( { closePanel }: HeaderProps ) {
 			</P>
 		</SelectionPanelHeader>
 	);
-}
+};
+
+export default Header;

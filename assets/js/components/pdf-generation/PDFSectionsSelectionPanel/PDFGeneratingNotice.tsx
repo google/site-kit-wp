@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,7 +35,7 @@ import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
-export default function PDFGeneratingNotice() {
+const PDFGeneratingNotice: FC = () => {
 	const isGenerating = useSelect(
 		( select: Select ) => select( CORE_UI ).getValue( PDF_GENERATING_KEY ),
 		[]
@@ -53,4 +58,6 @@ export default function PDFGeneratingNotice() {
 			hideIcon
 		/>
 	);
-}
+};
+
+export default PDFGeneratingNotice;

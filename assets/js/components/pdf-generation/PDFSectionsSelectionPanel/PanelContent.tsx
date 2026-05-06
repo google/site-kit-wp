@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -45,7 +50,7 @@ interface PanelContentProps {
 	closePanel: () => void;
 }
 
-export default function PanelContent( { closePanel }: PanelContentProps ) {
+const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 	const selectedSections =
 		( useFormValue(
 			FORM_PDF_DOWNLOAD,
@@ -93,4 +98,6 @@ export default function PanelContent( { closePanel }: PanelContentProps ) {
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />
 		</Fragment>
 	);
-}
+};
+
+export default PanelContent;

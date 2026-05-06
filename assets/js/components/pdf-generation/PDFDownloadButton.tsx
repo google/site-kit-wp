@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -32,7 +37,7 @@ import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/co
 // @ts-expect-error - We need to add types for imported SVGs.
 import DownloadIcon from '@/svg/icons/download.svg';
 
-export default function PDFDownloadButton() {
+const PDFDownloadButton: FC = () => {
 	const isOpen = useSelect(
 		( select: Select ) =>
 			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
@@ -56,4 +61,6 @@ export default function PDFDownloadButton() {
 			tertiary
 		/>
 	);
-}
+};
+
+export default PDFDownloadButton;

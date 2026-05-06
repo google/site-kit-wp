@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -35,7 +40,7 @@ interface FooterProps {
 	hasSelection: boolean;
 }
 
-export default function Footer( { closePanel, hasSelection }: FooterProps ) {
+const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 	const isGenerating = useSelect(
 		( select: Select ) => select( CORE_UI ).getValue( PDF_GENERATING_KEY ),
 		[]
@@ -68,4 +73,6 @@ export default function Footer( { closePanel, hasSelection }: FooterProps ) {
 			</div>
 		</footer>
 	);
-}
+};
+
+export default Footer;

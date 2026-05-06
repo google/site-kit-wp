@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -33,10 +38,10 @@ interface PDFSectionCheckboxesProps {
 	toggleSection: ( slug: string ) => void;
 }
 
-export default function PDFSectionCheckboxes( {
+const PDFSectionCheckboxes: FC< PDFSectionCheckboxesProps > = ( {
 	selectedSections,
 	toggleSection,
-}: PDFSectionCheckboxesProps ) {
+} ) => {
 	return (
 		<div
 			className="googlesitekit-pdf-download-panel__sections"
@@ -64,4 +69,6 @@ export default function PDFSectionCheckboxes( {
 			) ) }
 		</div>
 	);
-}
+};
+
+export default PDFSectionCheckboxes;

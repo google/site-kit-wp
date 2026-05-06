@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -38,7 +43,7 @@ import InViewProvider from '@/js/components/InViewProvider';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
 
-export default function PDFSectionsSelectionPanel() {
+const PDFSectionsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
 		( select: Select ) =>
 			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
@@ -80,4 +85,6 @@ export default function PDFSectionsSelectionPanel() {
 			</SelectionPanel>
 		</InViewProvider>
 	);
-}
+};
+
+export default PDFSectionsSelectionPanel;
