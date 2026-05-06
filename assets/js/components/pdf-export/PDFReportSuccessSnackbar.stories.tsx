@@ -24,11 +24,6 @@ import PDFReportSuccessSnackbar, {
 	PDFReportSuccessSnackbarProps,
 } from './PDFReportSuccessSnackbar';
 
-export default {
-	title: 'Components/PDFExport/PDFReportSuccessSnackbar',
-	component: PDFReportSuccessSnackbar,
-};
-
 function Template( props: PDFReportSuccessSnackbarProps ) {
 	return <PDFReportSuccessSnackbar { ...props } />;
 }
@@ -42,3 +37,8 @@ Default.args = {
 	disableAutoDismiss: true,
 };
 Default.scenario = {};
+
+export default {
+	title: 'Components/PDFExport/PDFReportSuccessSnackbar',
+	component: PDFReportSuccessSnackbar,
+};
