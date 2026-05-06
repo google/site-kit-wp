@@ -66,7 +66,7 @@ const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 		[]
 	);
 	const defaultDescription = createInterpolateElement(
-		__( 'Please try again or <a>get help</a>.', 'google-site-kit' ),
+		__( 'Please try again or <a>get help</a>', 'google-site-kit' ),
 		{
 			a: (
 				// @ts-expect-error - The `Link` component is not typed yet.
