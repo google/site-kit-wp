@@ -172,6 +172,12 @@ describe( 'core/user feature-tours', () => {
 			it( 'clears forced in-view widget areas', async () => {
 				muteFetch( fetchDismissTourRegExp, [] );
 
+				registry
+					.dispatch( CORE_UI )
+					.setValue( FORCED_IN_VIEW_WIDGET_AREAS, [
+						'widget-area-1',
+					] );
+
 				await registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
 
 				expect(
@@ -277,6 +283,12 @@ describe( 'core/user feature-tours', () => {
 			} );
 
 			it( 'sets forced in-view widget areas for tours with preloadWidgetAreas', async () => {
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toBeUndefined();
+
 				await registry.dispatch( CORE_USER ).triggerTour( {
 					...testTourA,
 					preloadWidgetAreas: [ 'widget-area-1', 'widget-area-2' ],
