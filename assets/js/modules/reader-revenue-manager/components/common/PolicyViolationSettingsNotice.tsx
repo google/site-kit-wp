@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,7 +29,7 @@ import { useState, useCallback, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useSelect, Select } from 'googlesitekit-data';
 import { useInView } from '@/js/hooks/useInView';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {

@@ -133,19 +133,9 @@ class Plain_Text_Formatter {
 		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
 			$lines[] = $footer_copy;
-			$lines[] = '';
 		}
 
-		// Unsubscribe link.
-		if ( ! empty( $unsubscribe_url ) ) {
-			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $unsubscribe_url );
-			$lines[] = '';
-		}
-
-		// Footer links (hardcoded to match HTML footer template).
-		$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
-		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+		$lines = self::append_footer_links( $lines, $unsubscribe_url );
 
 		return implode( "\n", $lines );
 	}
@@ -297,24 +287,39 @@ class Plain_Text_Formatter {
 		// Footer copy.
 		if ( ! empty( $footer['copy'] ) ) {
 			$lines[] = $footer['copy'];
-			$lines[] = '';
 		}
 
-		// Unsubscribe link.
-		if ( ! empty( $footer['unsubscribe_url'] ) ) {
-			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $footer['unsubscribe_url'] );
-			$lines[] = '';
-		}
-
-		// Footer links (hardcoded to match HTML footer template).
-		$unsubscribe_url = $footer['unsubscribe_url'] ?? '';
-		if ( ! empty( $unsubscribe_url ) ) {
-			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
-			$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-			$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
-		}
+		$lines = self::append_footer_links( $lines, $footer['unsubscribe_url'] ?? '' );
 
 		return implode( "\n", $lines );
+	}
+
+	/**
+	 * Appends the footer utility links to the lines buffer.
+	 *
+	 * Privacy Policy and Help center always render. Unsubscribe and
+	 * Manage subscription are only added when the unsubscribe URL is
+	 * available, matching the HTML footer template.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $lines           Lines buffer to append to.
+	 * @param string $unsubscribe_url Unsubscribe URL used for the unsubscribe and manage subscription links.
+	 * @return array Updated lines buffer.
+	 */
+	protected static function append_footer_links( array $lines, string $unsubscribe_url ): array {
+		$lines[] = '';
+
+		if ( ! empty( $unsubscribe_url ) ) {
+			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $unsubscribe_url );
+			$lines[] = '';
+			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+		}
+
+		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
+		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+
+		return $lines;
 	}
 
 	/**

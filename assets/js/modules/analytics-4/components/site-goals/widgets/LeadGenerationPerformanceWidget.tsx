@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -27,7 +27,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect, type Select } from 'googlesitekit-data';
+import { useSelect, useInViewSelect, Select } from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -46,11 +46,11 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
-const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
-	props
-) => {
-	const { Widget, WidgetNull, WidgetReportError } = props;
-
+const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
+	Widget,
+	WidgetNull,
+	WidgetReportError,
+} ) => {
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),

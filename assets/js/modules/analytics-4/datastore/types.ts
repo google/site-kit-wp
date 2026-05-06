@@ -15,11 +15,10 @@
  */
 
 /**
- * Type definitions for Analytics 4 report options.
+ * Analytics 4 report options.
  *
  * @since n.e.x.t
  */
-
 export type ReportOptions = {
 	startDate: string;
 	endDate: string;
