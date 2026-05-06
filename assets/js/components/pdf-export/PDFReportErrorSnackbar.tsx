@@ -35,7 +35,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Link from '@/js/components/Link';
-// @ts-expect-error SVG module type is not currently declared.
 import CloseIcon from '@/svg/icons/close.svg';
 
 interface PDFReportErrorSnackbarProps {

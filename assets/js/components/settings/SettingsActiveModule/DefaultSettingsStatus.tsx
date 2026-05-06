@@ -36,9 +36,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import { Button } from '@/js/googlesitekit-components';
 import P from '@/js/components/Typography/P';
-// @ts-expect-error - We need to add types for imported SVGs.
 import ConnectedIcon from '@/svg/icons/connected.svg';
-// @ts-expect-error - We need to add types for imported SVGs.
 import WarningIcon from '@/svg/icons/warning-v2.svg';
 
 export default function DefaultSettingsStatus( { slug }: { slug: string } ) {

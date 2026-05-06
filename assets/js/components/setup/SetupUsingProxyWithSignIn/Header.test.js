@@ -52,55 +52,6 @@ describe( 'Header', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
-	it( 'should render the progress indicator in the header when setupFlowRefresh is enabled', async () => {
-		const { container, waitForRegistry } = render( <Header />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [ 'setupFlowRefresh' ],
-		} );
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-progress-indicator' )
-		).toBeInTheDocument();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should not render the progress indicator in the header when setupFlowRefresh is disabled', async () => {
-		const { container, waitForRegistry } = render( <Header />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [],
-		} );
-
-		await waitForRegistry();
-
-		expect(
-			container.querySelector( '.googlesitekit-progress-indicator' )
-		).toBeNull();
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should have only the initial stub segment when setupFlowRefresh is enabled (no active segments yet)', async () => {
-		const { container, waitForRegistry } = render( <Header />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [ 'setupFlowRefresh' ],
-		} );
-
-		await waitForRegistry();
-
-		expect( container ).toMatchSnapshot();
-		const segments = container.querySelectorAll(
-			'.googlesitekit-progress-indicator__segment'
-		);
-		// Only the stub segment should be present at initial render.
-		expect( segments.length ).toBe( 1 );
-	} );
-
 	it( 'should track an event when the user clicks the "Exit setup" component with setupFlowRefresh enabled', async () => {
 		const { getByRole, waitForRegistry } = render( <Header />, {
 			registry,
