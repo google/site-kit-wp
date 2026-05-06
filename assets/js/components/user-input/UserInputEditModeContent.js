@@ -42,23 +42,19 @@ import {
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from './util/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserInputEditModeContent( {
 	onChange,
 	options,
 	settingsView,
 	slug,
-	values,
 } ) {
-	const answerHasError = hasErrorForAnswer( values );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
 	const editButtonRef = useRef();
-	const errorMessage = getErrorMessageForAnswer(
-		values,
-		USER_INPUT_MAX_ANSWERS[ slug ]
-	);
 	const gaEventCategory = `${ useViewContext() }_kmw`;
 	const hasSettingChanged = useSelect( ( select ) =>
 		select( CORE_USER ).hasUserInputSettingChanged( slug )
@@ -73,6 +69,12 @@ export default function UserInputEditModeContent( {
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingUserInputSettings( userInputSettings )
 	);
+	const currentValues = userInputSettings?.[ slug ]?.values || [];
+	const answerHasError = hasErrorForAnswer( currentValues );
+	const errorMessage = getErrorMessageForAnswer(
+		currentValues,
+		USER_INPUT_MAX_ANSWERS[ slug ]
+	);
 	const userInputValuesHaveErrors = hasErrorForAnswer(
 		userInputSettings?.[ slug ]?.values || []
 	);
@@ -86,6 +88,13 @@ export default function UserInputEditModeContent( {
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
+	let submitButtonLabel = __( 'Save', 'google-site-kit' );
+
+	if ( setupFlowRefreshEnabled ) {
+		submitButtonLabel = __( 'Save answer', 'google-site-kit' );
+	} else if ( hasSettingChanged || isSavingSettings ) {
+		submitButtonLabel = __( 'Apply changes', 'google-site-kit' );
+	}
 
 	const toggleEditMode = useCallback( () => {
 		if ( isEditing ) {
@@ -137,7 +146,7 @@ export default function UserInputEditModeContent( {
 				descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 				alignLeftOptions
 			/>
-			{ errorMessage && (
+			{ errorMessage && ! ( setupFlowRefreshEnabled && settingsView ) && (
 				<p className="googlesitekit-error-text">{ errorMessage }</p>
 			) }
 			{ settingsView && (
@@ -158,9 +167,7 @@ export default function UserInputEditModeContent( {
 							}
 							isSaving={ isScreenLoading }
 						>
-							{ hasSettingChanged || isSavingSettings
-								? __( 'Apply changes', 'google-site-kit' )
-								: __( 'Save', 'google-site-kit' ) }
+							{ submitButtonLabel }
 						</SpinnerButton>
 						<Button
 							disabled={ isScreenLoading }

@@ -31,7 +31,6 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import BannerModal from '@/js/components/BannerModal/index';
-// @ts-expect-error - We need to add types for imported SVGs.
 import SiteGoalsIntroModalLeadGraphic from '@/svg/graphics/site-goals-intro-modal-lead.svg';
 import Link from '@/js/components/Link';
 import type { IntroModalVariantProps } from './types';

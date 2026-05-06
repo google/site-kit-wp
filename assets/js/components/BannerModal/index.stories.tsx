@@ -25,8 +25,8 @@ import { ComponentProps } from 'react';
  * Internal dependencies
  */
 import BannerModal from './index';
-// @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import { Story } from '@/js/types/Story';
 
 type BannerModalStoryProps = ComponentProps< typeof BannerModal >;
 
@@ -34,7 +34,7 @@ function Template( args: BannerModalStoryProps ) {
 	return <BannerModal { ...args } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind( {} ) as Story< BannerModalStoryProps >;
 Default.storyName = 'Default';
 Default.args = {
 	Graphic: WelcomeModalGraphic,

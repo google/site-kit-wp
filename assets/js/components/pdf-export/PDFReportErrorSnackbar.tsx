@@ -35,7 +35,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Link from '@/js/components/Link';
-// @ts-expect-error SVG module type is not currently declared.
 import CloseIcon from '@/svg/icons/close.svg';
 
 interface PDFReportErrorSnackbarProps {
@@ -66,7 +65,7 @@ const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 		[]
 	);
 	const defaultDescription = createInterpolateElement(
-		__( 'Please try again or <a>get help</a>.', 'google-site-kit' ),
+		__( 'Please try again or <a>get help</a>', 'google-site-kit' ),
 		{
 			a: (
 				<Link href={ helpURL }>

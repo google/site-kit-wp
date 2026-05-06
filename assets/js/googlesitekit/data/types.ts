@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet. */
-
+/* eslint-disable @typescript-eslint/no-explicit-any -- The `Select` type is intentionally generic for now. */
 export type Select = ( select: any ) => any;

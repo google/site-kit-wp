@@ -64,6 +64,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
 
 export default function UserInputPreview( props ) {
 	const {
@@ -73,6 +74,7 @@ export default function UserInputPreview( props ) {
 		loading = false,
 		settingsView = false,
 	} = props;
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const previewContainer = useRef();
 	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
 	const handleModal = useCallback( () => {
@@ -233,10 +235,15 @@ export default function UserInputPreview( props ) {
 							height="16px"
 						>
 							<p className="googlesitekit-settings-user-input__heading">
-								{ __(
-									'Edit your answers for more personalized metrics:',
-									'google-site-kit'
-								) }
+								{ setupFlowRefreshEnabled
+									? __(
+											'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
+											'google-site-kit'
+									  )
+									: __(
+											'Edit your answers for more personalized metrics:',
+											'google-site-kit'
+									  ) }
 							</p>
 						</LoadingWrapper>
 					</div>
