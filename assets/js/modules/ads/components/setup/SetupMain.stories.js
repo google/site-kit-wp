@@ -22,6 +22,7 @@
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
+	PLUGINS,
 } from '@/js/modules/ads/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -89,7 +90,10 @@ WithGoogleForWooCommerceConflict.args = {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				'google-listings-and-ads': { conversionID: 'AW-123456789' },
+				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+					active: true,
+					conversionID: 'AW-123456789',
+				},
 			},
 		} );
 
