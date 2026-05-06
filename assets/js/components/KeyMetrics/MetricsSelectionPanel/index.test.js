@@ -58,10 +58,7 @@ import {
 	KEY_METRICS_SELECTION_FORM,
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/components/KeyMetrics/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
@@ -160,7 +157,7 @@ describe( 'MetricsSelectionPanel', () => {
 			expect( document.body ).toMatchSnapshot();
 		} );
 
-		it( 'should match snapshot with setupFlowRefresh enabled', async () => {
+		it( 'should render correctly with the `setupFlowRefresh` feature flag enabled', async () => {
 			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
 				registry,
 				features: [ 'setupFlowRefresh' ],
@@ -188,12 +185,12 @@ describe( 'MetricsSelectionPanel', () => {
 			);
 		} );
 
-		it( 'should not display a settings link to edit personalized goals when `setupFlowRefresh` is enabled', async () => {
+		it( 'should not display a settings link to edit personalized goals for a view-only user when `setupFlowRefresh` is enabled', async () => {
 			const { container, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
 				{
 					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 					features: [ 'setupFlowRefresh' ],
 				}
 			);
@@ -201,7 +198,7 @@ describe( 'MetricsSelectionPanel', () => {
 			await waitForRegistry();
 
 			expect( container ).not.toHaveTextContent(
-				'Edit your personalized goals or deactivate this widget in'
+				'Edit your personalized goals in'
 			);
 		} );
 	} );

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MetricsSelectionPanel Header should match snapshot with setupFlowRefresh enabled 1`] = `
+exports[`MetricsSelectionPanel Header should render correctly 1`] = `
 <body
   class="googlesitekit-side-sheet-scroll-lock"
 >
@@ -38,7 +38,7 @@ exports[`MetricsSelectionPanel Header should match snapshot with setupFlowRefres
         <p
           class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
         >
-          Edit your personalized goals in 
+          Edit your personalized goals or deactivate this widget in 
           <button
             class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
           >
@@ -301,7 +301,7 @@ exports[`MetricsSelectionPanel Header should match snapshot with setupFlowRefres
 </body>
 `;
 
-exports[`MetricsSelectionPanel Header should render correctly 1`] = `
+exports[`MetricsSelectionPanel Header should render correctly with the \`setupFlowRefresh\` feature flag enabled 1`] = `
 <body
   class="googlesitekit-side-sheet-scroll-lock"
 >
@@ -339,7 +339,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
         <p
           class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
         >
-          Edit your personalized goals or deactivate this widget in 
+          Edit your personalized goals in 
           <button
             class="googlesitekit-cta-link googlesitekit-cta-link--secondary"
           >
