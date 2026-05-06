@@ -181,7 +181,7 @@ describe( 'core/user feature-tours', () => {
 				expect( store.getState().currentTour ).toEqual( testTourA );
 			} );
 
-			it( 'clears forced in-view widget areas in core/ui state', async () => {
+			it( 'clears forced in-view widget areas', async () => {
 				muteFetch( fetchDismissTourRegExp, [] );
 
 				await registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
@@ -287,7 +287,7 @@ describe( 'core/user feature-tours', () => {
 				expect( store.getState().currentTour ).toEqual( testTourA );
 			} );
 
-			it( 'sets forced in-view widget areas in core/ui state for tours with preloadWidgetAreas', async () => {
+			it( 'sets forced in-view widget areas for tours with preloadWidgetAreas', async () => {
 				const setUIValueSpy = jest.spyOn(
 					registry.dispatch( CORE_UI ),
 					'setValue'
@@ -295,15 +295,12 @@ describe( 'core/user feature-tours', () => {
 
 				await registry.dispatch( CORE_USER ).triggerTour( {
 					...testTourA,
-					preloadWidgetAreas: [
-						'dashboard-header',
-						'audience-segments',
-					],
+					preloadWidgetAreas: [ 'widget-area-1', 'widget-area-2' ],
 				} );
 
 				expect( setUIValueSpy ).toHaveBeenCalledWith(
 					FORCED_IN_VIEW_WIDGET_AREAS,
-					[ 'dashboard-header', 'audience-segments' ]
+					[ 'widget-area-1', 'widget-area-2' ]
 				);
 
 				setUIValueSpy.mockRestore();
