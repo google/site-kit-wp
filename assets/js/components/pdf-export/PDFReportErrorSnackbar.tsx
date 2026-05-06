@@ -69,7 +69,6 @@ const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 		__( 'Please try again or <a>get help</a>.', 'google-site-kit' ),
 		{
 			a: (
-				// @ts-expect-error - The `Link` component is not typed yet.
 				<Link href={ helpURL }>
 					{ __( 'Get help', 'google-site-kit' ) }
 				</Link>
