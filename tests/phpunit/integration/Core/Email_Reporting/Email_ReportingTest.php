@@ -106,6 +106,20 @@ class Email_ReportingTest extends TestCase {
 		}
 	}
 
+	public function test_get_feature_metrics__email_reporting_enabled_reflects_setting() {
+		$email_reporting = $this->create_email_reporting();
+		$settings        = new Email_Reporting_Settings( $this->options );
+
+		$metrics = $email_reporting->get_feature_metrics();
+		$this->assertIsBool( $metrics['email_reporting_enabled'], 'email_reporting_enabled metric should be a boolean.' );
+		$this->assertTrue( $metrics['email_reporting_enabled'], 'email_reporting_enabled metric should be true by default.' );
+
+		$settings->set( array( 'enabled' => false ) );
+
+		$metrics = $email_reporting->get_feature_metrics();
+		$this->assertFalse( $metrics['email_reporting_enabled'], 'email_reporting_enabled metric should be false after disabling the setting.' );
+	}
+
 	public function test_get_feature_metrics__counts_completed_batch_correctly() {
 		$this->register_email_log();
 		$this->delete_email_logs();
