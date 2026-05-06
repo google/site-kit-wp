@@ -17,10 +17,7 @@
 /**
  * Internal dependencies
  */
-import type {
-	Report,
-	ReportRow,
-} from '@/js/modules/analytics-4/datastore/types';
+import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 /**
  * Creates a find callback for locating rows by date range slug at a specific dimension index.

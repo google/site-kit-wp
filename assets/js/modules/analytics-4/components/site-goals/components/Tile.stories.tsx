@@ -22,7 +22,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { Tile, type TileProps } from './Tile';
+import { Tile, TileProps } from './Tile';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
