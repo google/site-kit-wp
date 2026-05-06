@@ -17,34 +17,25 @@
  */
 
 /**
- * External dependencies
- */
-import type { ReactNode } from 'react';
-
-/**
  * Internal dependencies
  */
-import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
-
-type TemplateProps = {
-	onRetryDownload: () => void;
-	onDismiss: () => void;
-	onAutoDismiss?: () => void;
-	disableAutoDismiss?: boolean;
-	title?: string;
-	description?: ReactNode;
-};
+import { Story } from '@/js/types/Story';
+import PDFReportSuccessSnackbar, {
+	PDFReportSuccessSnackbarProps,
+} from './PDFReportSuccessSnackbar';
 
 export default {
 	title: 'Components/PDFExport/PDFReportSuccessSnackbar',
 	component: PDFReportSuccessSnackbar,
 };
 
-function Template( args: TemplateProps ) {
-	return <PDFReportSuccessSnackbar { ...args } />;
+function Template( props: PDFReportSuccessSnackbarProps ) {
+	return <PDFReportSuccessSnackbar { ...props } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< PDFReportSuccessSnackbarProps >;
 Default.args = {
 	onRetryDownload: () => {},
 	onDismiss: () => {},

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { MouseEvent, ReactNode } from 'react';
+import type { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,10 +33,9 @@ import { __ } from '@wordpress/i18n';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Link from '@/js/components/Link';
-// @ts-expect-error SVG module type is not currently declared.
 import CloseIcon from '@/svg/icons/close.svg';
 
-interface PDFReportSuccessSnackbarProps {
+export interface PDFReportSuccessSnackbarProps {
 	onRetryDownload?: () => void;
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
@@ -49,7 +48,7 @@ interface PDFReportSuccessSnackbarProps {
 	dismissAriaLabel?: string;
 }
 
-export default function PDFReportSuccessSnackbar( {
+const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 	onRetryDownload = () => {},
 	onDismiss = () => {},
 	onAutoDismiss = () => {},
@@ -58,7 +57,7 @@ export default function PDFReportSuccessSnackbar( {
 	title = __( 'Your report was generated successfully!', 'google-site-kit' ),
 	description,
 	dismissAriaLabel = __( 'Dismiss PDF report success', 'google-site-kit' ),
-}: PDFReportSuccessSnackbarProps ) {
+} ) => {
 	useEffect( () => {
 		if ( disableAutoDismiss ) {
 			return () => {};
@@ -100,4 +99,6 @@ export default function PDFReportSuccessSnackbar( {
 			} }
 		/>
 	);
-}
+};
+
+export default PDFReportSuccessSnackbar;
