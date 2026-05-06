@@ -92,8 +92,9 @@ describe( 'PDFReportProgressSnackbar', () => {
 	} );
 
 	it( 'calls onCancel when the Cancel button is clicked', () => {
-		const onCancel = jest.fn( ( event: MouseEvent< HTMLButtonElement > ) =>
-			event.preventDefault()
+		const onCancel = jest.fn(
+			( event: MouseEvent< HTMLAnchorElement | HTMLButtonElement > ) =>
+				event.preventDefault()
 		);
 		const { getByRole } = render(
 			<PDFReportProgressSnackbar onCancel={ onCancel } />
