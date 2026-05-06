@@ -50,6 +50,8 @@ class Email_ReportingTest extends TestCase {
 		$this->reset_feature_flag = $this->enable_feature( 'proactiveUserEngagement' );
 
 		delete_option( Email_Reporting_Settings::OPTION );
+
+		( new Email_Reporting_Settings( $this->options ) )->register();
 	}
 
 	public function tear_down() {
@@ -78,6 +80,7 @@ class Email_ReportingTest extends TestCase {
 		$metrics         = $email_reporting->get_feature_metrics();
 
 		$expected_keys = array(
+			'email_reporting_enabled',
 			'email_reporting_total_sent',
 			'email_reporting_total_failed',
 			'email_reporting_last_batch_sent',
@@ -95,6 +98,10 @@ class Email_ReportingTest extends TestCase {
 		$metrics         = $email_reporting->get_feature_metrics();
 
 		foreach ( $metrics as $key => $value ) {
+			if ( 'email_reporting_enabled' === $key ) {
+				continue;
+			}
+
 			$this->assertIsInt( $value, sprintf( 'Metric %s should be an integer.', $key ) );
 		}
 	}
@@ -142,6 +149,7 @@ class Email_ReportingTest extends TestCase {
 
 		$metrics = apply_filters( 'googlesitekit_feature_metrics', array() );
 
+		$this->assertArrayHasKey( 'email_reporting_enabled', $metrics, 'Feature metrics should include email reporting enabled.' );
 		$this->assertArrayHasKey( 'email_reporting_total_sent', $metrics, 'Feature metrics should include email reporting total sent.' );
 		$this->assertArrayHasKey( 'email_reporting_total_failed', $metrics, 'Feature metrics should include email reporting total failed.' );
 		$this->assertArrayHasKey( 'email_reporting_last_batch_sent', $metrics, 'Feature metrics should include email reporting last batch sent.' );
