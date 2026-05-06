@@ -69,6 +69,7 @@ const fetchSetAdminBarSettingsStore = createFetchStore( {
 			'enabled must be of boolean type'
 		);
 	},
+	isAction: true,
 } );
 
 const baseInitialState = {

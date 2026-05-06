@@ -40,6 +40,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const SubtleNotificationWithIntersectionObserver =
 	withIntersectionObserver( Notice );
@@ -154,7 +155,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 			</p>
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
-					type={ Notice.TYPES.WARNING }
+					type={ NOTICE_TYPES.WARNING }
 					title={ createInterpolateElement(
 						__(
 							'Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. <a>Learn more</a>',

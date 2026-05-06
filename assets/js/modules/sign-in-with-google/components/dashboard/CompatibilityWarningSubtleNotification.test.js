@@ -38,11 +38,11 @@ const NOTIFICATION_ID = 'sign-in-with-google-compatibility-warning';
 
 const conflictingPluginsChecks = {
 	checks: {
-		conflicting_plugins: [
-			{
+		conflicting_plugins: {
+			'security-plugin/security-plugin.php': {
 				pluginName: 'Security Plugin',
 			},
-		],
+		},
 	},
 };
 

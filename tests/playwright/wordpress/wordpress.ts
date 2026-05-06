@@ -331,7 +331,7 @@ export class WordPress {
 	/**
 	 * Declares a test step that is shown in the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param  title Step name.
 	 * @param  body  Step body.

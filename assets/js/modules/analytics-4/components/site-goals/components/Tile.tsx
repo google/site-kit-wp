@@ -17,8 +17,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
-import { ReactElementLike } from 'prop-types';
+import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
 
 /**
@@ -39,7 +38,7 @@ export interface TileProps {
 	className?: string;
 	title: string;
 	subtitle: string;
-	infoTooltip?: string | ReactElementLike;
+	infoTooltip?: ReactNode;
 	currentValue: number;
 	previousValue: number;
 	format: {
@@ -50,18 +49,16 @@ export interface TileProps {
 	primary?: boolean;
 }
 
-export const Tile: FC< TileProps > = ( props ) => {
-	const {
-		className,
-		title,
-		subtitle,
-		infoTooltip,
-		currentValue,
-		previousValue,
-		format,
-		primary,
-	} = props;
-
+export const Tile: FC< TileProps > = ( {
+	className,
+	title,
+	subtitle,
+	infoTooltip,
+	currentValue,
+	previousValue,
+	format,
+	primary,
+} ) => {
 	const comparisonDays = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
 		[]
@@ -102,7 +99,7 @@ export const Tile: FC< TileProps > = ( props ) => {
 							previousValue={ previousValue }
 							currentValue={ currentValue }
 						/>
-						{ comparisonDays && (
+						{ comparisonDays && previousValue !== 0 && (
 							<p className="googlesitekit-site-goals-tile__comparison-label">
 								{ sprintf(
 									/* translators: %d: number of days in the comparison period */

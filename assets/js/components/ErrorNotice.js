@@ -35,6 +35,7 @@ import { useSelect, useDispatch } from 'googlesitekit-data';
 import { isPermissionScopeError, isErrorRetryable } from '@/js/util/errors';
 import Notice from './Notice';
 import { sanitizeHTML } from '@/js/util';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function ErrorNotice( {
 	className,
@@ -127,7 +128,7 @@ export default function ErrorNotice( {
 	return (
 		<Notice
 			className={ className }
-			type={ Notice.TYPES.ERROR }
+			type={ NOTICE_TYPES.ERROR }
 			description={
 				// The error messages that come from the server/API can contain
 				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize

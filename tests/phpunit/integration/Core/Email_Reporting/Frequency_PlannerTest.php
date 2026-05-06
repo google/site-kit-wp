@@ -74,11 +74,11 @@ class Frequency_PlannerTest extends TestCase {
 
 	public function weekly_provider() {
 		return array(
-			'sunday start, mid-week'                 => array( 0, '2024-05-15 15:00:00', '2024-05-19 00:00:00', 'Should reach upcoming Sunday at midnight.' ),
-			'monday start, morning of same day'      => array( 1, '2024-05-13 09:30:00', '2024-05-20 00:00:00', 'Once the day has started, schedule for the following week.' ),
-			'monday start, afternoon of same day'    => array( 1, '2024-05-13 12:00:00', '2024-05-20 00:00:00', 'Past the target weekday should roll to next week.' ),
-			'wednesday start from sunday'            => array( 3, '2024-05-12 18:00:00', '2024-05-15 00:00:00', 'Start on Wednesday from Sunday evening.' ),
-			'saturday start from saturday afternoon' => array( 6, '2024-05-11 16:45:00', '2024-05-18 00:00:00', 'Hit Saturday afternoon and schedule for following Saturday.' ),
+			'sunday start, mid-week'                 => array( 0, '2024-05-15 15:00:00', '2024-05-19 09:00:00', 'Should reach upcoming Sunday at the trigger hour.' ),
+			'monday start, morning of same day'      => array( 1, '2024-05-13 09:30:00', '2024-05-20 09:00:00', 'Once the day has started, schedule for the following week.' ),
+			'monday start, afternoon of same day'    => array( 1, '2024-05-13 12:00:00', '2024-05-20 09:00:00', 'Past the target weekday should roll to next week.' ),
+			'wednesday start from sunday'            => array( 3, '2024-05-12 18:00:00', '2024-05-15 09:00:00', 'Start on Wednesday from Sunday evening.' ),
+			'saturday start from saturday afternoon' => array( 6, '2024-05-11 16:45:00', '2024-05-18 09:00:00', 'Hit Saturday afternoon and schedule for following Saturday.' ),
 		);
 	}
 
@@ -98,10 +98,10 @@ class Frequency_PlannerTest extends TestCase {
 
 	public function monthly_provider() {
 		return array(
-			'middle of month to first of next' => array( '2024-05-15 12:00:00', 'UTC', '2024-06-01 00:00:00', 'Should advance to first day of next month.' ),
-			'last day before midnight'         => array( '2024-05-31 23:59:59', 'UTC', '2024-06-01 00:00:00', 'Edge near month boundary still jumps to next month.' ),
-			'handles year wrap'                => array( '2024-12-20 10:00:00', 'UTC', '2025-01-01 00:00:00', 'December should roll into next calendar year.' ),
-			'timezone shift preserved'         => array( '2024-07-10 18:00:00', 'America/Los_Angeles', '2024-08-01 00:00:00', 'Local timezone should be respected.' ),
+			'middle of month to first of next' => array( '2024-05-15 12:00:00', 'UTC', '2024-06-01 09:00:00', 'Should advance to first day of next month.' ),
+			'last day before midnight'         => array( '2024-05-31 23:59:59', 'UTC', '2024-06-01 09:00:00', 'Edge near month boundary still jumps to next month.' ),
+			'handles year wrap'                => array( '2024-12-20 10:00:00', 'UTC', '2025-01-01 09:00:00', 'December should roll into next calendar year.' ),
+			'timezone shift preserved'         => array( '2024-07-10 18:00:00', 'America/Los_Angeles', '2024-08-01 09:00:00', 'Local timezone should be respected.' ),
 		);
 	}
 
@@ -121,15 +121,15 @@ class Frequency_PlannerTest extends TestCase {
 
 	public function quarterly_provider() {
 		return array(
-			'middle of q4 rolls to jan 1'            => array( '2024-11-15 12:00:00', '2025-01-01 00:00:00', 'Should advance to first day of the next quarter.' ),
-			'first month of quarter jumped properly' => array( '2024-04-10 08:00:00', '2024-07-01 00:00:00', 'Second quarter should move to start of third.' ),
-			'last day of quarter next midnight'      => array( '2024-09-30 18:30:00', '2024-10-01 00:00:00', 'End of quarter should yield next quarter start.' ),
-			'first day of quarter midday'            => array( '2024-07-01 12:00:00', '2024-10-01 00:00:00', 'Being on day one later in the day jumps three months ahead.' ),
-			'late december moves to january'         => array( '2024-12-31 23:59:59', '2025-01-01 00:00:00', 'Quarterly transition across year boundary.' ),
+			'middle of q4 rolls to jan 1'            => array( '2024-11-15 12:00:00', '2025-01-01 09:00:00', 'Should advance to first day of the next quarter.' ),
+			'first month of quarter jumped properly' => array( '2024-04-10 08:00:00', '2024-07-01 09:00:00', 'Second quarter should move to start of third.' ),
+			'last day of quarter next midnight'      => array( '2024-09-30 18:30:00', '2024-10-01 09:00:00', 'End of quarter should yield next quarter start.' ),
+			'first day of quarter midday'            => array( '2024-07-01 12:00:00', '2024-10-01 09:00:00', 'Being on day one later in the day jumps three months ahead.' ),
+			'late december moves to january'         => array( '2024-12-31 23:59:59', '2025-01-01 09:00:00', 'Quarterly transition across year boundary.' ),
 		);
 	}
 
-	public function test_next_occurrence_respects_site_timezone_midnight() {
+	public function test_next_occurrence_respects_site_timezone_trigger_hour() {
 		$base_timestamp = ( new DateTimeImmutable( '2024-03-01 00:30:00', new DateTimeZone( 'UTC' ) ) )->getTimestamp();
 		$utc_timezone   = new DateTimeZone( 'UTC' );
 		$la_timezone    = new DateTimeZone( 'America/Los_Angeles' );
@@ -150,9 +150,28 @@ class Frequency_PlannerTest extends TestCase {
 		$utc_next_date = ( new DateTimeImmutable( '@' . $utc_next ) )->setTimezone( $utc_timezone );
 		$la_next_date  = ( new DateTimeImmutable( '@' . $la_next ) )->setTimezone( $la_timezone );
 
-		$this->assertSame( '00:00:00', $utc_next_date->format( 'H:i:s' ), 'UTC next occurrence should resolve to midnight.' );
-		$this->assertSame( '00:00:00', $la_next_date->format( 'H:i:s' ), 'Los Angeles next occurrence should resolve to midnight.' );
+		$this->assertSame( '09:00:00', $utc_next_date->format( 'H:i:s' ), 'UTC next occurrence should resolve to the trigger hour.' );
+		$this->assertSame( '09:00:00', $la_next_date->format( 'H:i:s' ), 'Los Angeles next occurrence should resolve to the trigger hour.' );
 		$this->assertSame( '2024-04-01', $utc_next_date->format( 'Y-m-d' ), 'UTC next monthly occurrence should be April 1st.' );
 		$this->assertSame( '2024-03-01', $la_next_date->format( 'Y-m-d' ), 'Los Angeles next monthly occurrence should be March 1st.' );
+	}
+
+	public function test_trigger_hour_constant_is_applied_consistently() {
+		$timezone  = new DateTimeZone( 'UTC' );
+		$timestamp = ( new DateTimeImmutable( '2024-01-01 00:00:00', $timezone ) )->getTimestamp();
+
+		$weekly    = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_WEEKLY, $timestamp, $timezone );
+		$monthly   = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_MONTHLY, $timestamp, $timezone );
+		$quarterly = $this->planner->next_occurrence( Email_Reporting_Settings::FREQUENCY_QUARTERLY, $timestamp, $timezone );
+
+		$weekly_date    = ( new DateTimeImmutable( '@' . $weekly ) )->setTimezone( $timezone );
+		$monthly_date   = ( new DateTimeImmutable( '@' . $monthly ) )->setTimezone( $timezone );
+		$quarterly_date = ( new DateTimeImmutable( '@' . $quarterly ) )->setTimezone( $timezone );
+
+		$expected_hour = sprintf( '%02d:00:00', Frequency_Planner::TRIGGER_HOUR );
+
+		$this->assertSame( $expected_hour, $weekly_date->format( 'H:i:s' ), 'Weekly occurrence should use the trigger hour.' );
+		$this->assertSame( $expected_hour, $monthly_date->format( 'H:i:s' ), 'Monthly occurrence should use the trigger hour.' );
+		$this->assertSame( $expected_hour, $quarterly_date->format( 'H:i:s' ), 'Quarterly occurrence should use the trigger hour.' );
 	}
 }

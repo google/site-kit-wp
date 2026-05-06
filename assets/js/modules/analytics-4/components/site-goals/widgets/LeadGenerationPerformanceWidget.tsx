@@ -22,7 +22,6 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -33,6 +32,7 @@ import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
@@ -68,67 +68,47 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		[]
 	);
 
-	const eventsOptions = {
-		...dates,
-		metrics: [ { name: 'eventCount' } ],
-		dimensions: [ 'eventName' ],
-		dimensionFilters: {
-			eventName: {
-				filterType: 'inListFilter',
-				value: detectedLeadEvents || [],
-			},
-		},
-		reportID:
-			'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
-	};
+	const reportOptions: ReportOptions[] = [];
 
-	const engagementOptions = {
-		...dates,
-		metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-		reportID: 'analytics-4_site-goals_engagementReportOptions',
-	};
+	if ( hasLeadEvents ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: detectedLeadEvents || [],
+				},
+			},
+			reportID:
+				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
+		} );
+
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+			reportID: 'analytics-4_site-goals_engagementReportOptions',
+		} );
+	}
 
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
-			( select: Select ) => {
-				if ( ! hasLeadEvents ) {
-					return [];
-				}
-
-				return [
-					select( MODULES_ANALYTICS_4 ).getReport( eventsOptions ),
-					select( MODULES_ANALYTICS_4 ).getReport(
-						engagementOptions
-					),
-				];
-			},
-			[ hasLeadEvents, eventsOptions, engagementOptions ]
+			( select: Select ) =>
+				reportOptions.map( ( options ) =>
+					select( MODULES_ANALYTICS_4 ).getReport( options )
+				),
+			reportOptions
 		) || [];
 
-	const loading = useSelect(
-		( select: Select ) =>
-			hasLeadEvents
-				? ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ eventsOptions ]
-				  ) ||
-				  ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-						'getReport',
-						[ engagementOptions ]
-				  )
-				: undefined,
-		[]
-	);
-
-	const error = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				eventsOptions,
-			] ) ||
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				engagementOptions,
-			] ),
-		[]
+	const [ loading, error ] = useSelect(
+		( select: Select ) => [
+			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...reportOptions
+			),
+		],
+		reportOptions
 	);
 
 	if ( ! hasLeadEvents ) {
@@ -149,96 +129,67 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = (
 		currentSessions,
 		currentRate,
 		previousRate,
-		currentEngagementRate,
-		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
 
 	return (
 		<Widget>
-			{ ! error && (
-				<WidgetHeaderTitle
-					title={ __(
-						'Lead generation performance',
-						'google-site-kit'
-					) }
-				/>
-			) }
+			<WidgetHeaderTitle
+				title={ __( 'Lead generation performance', 'google-site-kit' ) }
+			/>
 
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-primary-action"
-						title={ __( 'Key action', 'google-site-kit' ) }
-					>
-						<Tile
-							title={ __(
-								'Form completion rate',
-								'google-site-kit'
-							) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentRate }
-							previousValue={ previousRate }
-							format={ PERCENT_FORMAT }
-							primary
-						/>
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
+						title={ __(
+							'Form completion rate',
+							'google-site-kit'
+						) }
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( '%s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
 
-						<Tile
-							title={ __(
-								'Total form completions',
-								'google-site-kit'
-							) }
-							subtitle={
-								detectedLeadEvents.length === 1
-									? sprintf(
-											/* translators: %s: GA4 event name */
-											__(
-												'"%s" events',
-												'google-site-kit'
-											),
-											detectedLeadEvents[ 0 ]
-									  )
-									: sprintf(
-											/* translators: %d: number of detected event types */
-											_n(
-												'%d event type',
-												'%d event types',
-												detectedLeadEvents.length,
-												'google-site-kit'
-											),
-											detectedLeadEvents.length
-									  )
-							}
-							currentValue={ currentPrimaryCount }
-							previousValue={ previousPrimaryCount }
-							format={ NUMBER_FORMAT }
-						/>
-					</TilesGroup>
-
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
-						title={ __( 'Visitor engagement', 'google-site-kit' ) }
-					>
-						<Tile
-							title={ __( 'Engagement rate', 'google-site-kit' ) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentEngagementRate }
-							previousValue={ previousEngagementRate }
-							format={ PERCENT_FORMAT }
-						/>
-					</TilesGroup>
-				</Fragment>
+					<Tile
+						title={ __(
+							'Total form completions',
+							'google-site-kit'
+						) }
+						subtitle={
+							detectedLeadEvents.length === 1
+								? sprintf(
+										/* translators: %s: GA4 event name */
+										__( '"%s" events', 'google-site-kit' ),
+										detectedLeadEvents[ 0 ]
+								  )
+								: sprintf(
+										/* translators: %d: number of detected event types */
+										_n(
+											'%d event type',
+											'%d event types',
+											detectedLeadEvents.length,
+											'google-site-kit'
+										),
+										detectedLeadEvents.length
+								  )
+						}
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
 		</Widget>
 	);

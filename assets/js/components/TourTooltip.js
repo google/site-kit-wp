@@ -98,7 +98,7 @@ export default function TourTooltip( {
 					) }
 					{ setupFlowRefreshEnabled && (
 						<p className="googlesitekit-tooltip-steps">
-							{ index + 1 } / { size }
+							{ size > 1 && `${ index + 1 } / ${ size }` }
 						</p>
 					) }
 					<div className="googlesitekit-tooltip-buttons">

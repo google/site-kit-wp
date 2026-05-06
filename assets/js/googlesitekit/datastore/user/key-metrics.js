@@ -67,7 +67,7 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 
-const { receiveError, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 const SET_KEY_METRICS_SETTING = 'SET_KEY_METRICS_SETTING';
 
@@ -102,6 +102,7 @@ const fetchSaveKeyMetricsSettingsStore = createFetchStore( {
 	validateParams: ( settings ) => {
 		invariant( isPlainObject( settings ), 'Settings should be an object.' );
 	},
+	isAction: true,
 } );
 
 const baseActions = {
@@ -139,7 +140,7 @@ const baseActions = {
 			'key metric settings should be an object to save.'
 		);
 
-		yield clearError( 'saveKeyMetricsSettings', [] );
+		yield clearActionError( 'saveKeyMetricsSettings', [] );
 
 		const registry = yield commonActions.getRegistry();
 		const keyMetricsSettings = registry
@@ -156,7 +157,7 @@ const baseActions = {
 
 		if ( error ) {
 			// Store error manually since saveKeyMetrics signature differs from fetchSaveKeyMetricsStore.
-			yield receiveError( error, 'saveKeyMetricsSettings', [] );
+			yield setErrorForAction( error, 'saveKeyMetricsSettings', [] );
 		} else if ( isEmpty( settings ) || settings.widgetSlugs ) {
 			// Update the `keyMetricsSetupCompletedBy` value to mark setup completed.
 			// This will be handled automatically on the back end.

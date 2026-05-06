@@ -91,7 +91,7 @@ const baseActions = {
 			type: RESET_SITES,
 		};
 
-		yield errorStoreActions.clearErrors( 'getSites' );
+		yield errorStoreActions.clearSelectorErrors( 'getSites' );
 
 		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
 			'getSites'

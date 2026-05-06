@@ -15,28 +15,23 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
-import { Tile, type TileProps } from './Tile';
+import { Tile, TileProps } from './Tile';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type Registry = any;
-
-// Type for Storybook story exports with custom properties
-type Story = {
-	( props: TileProps ): JSX.Element;
-	storyName?: string;
-	args?: TileProps & { setupRegistry?: ( registry: Registry ) => void };
-	scenario?: Record< string, unknown >;
-};
+import { Story } from '@/js/types/Story';
 
 function Template( {
 	setupRegistry = () => {},
 	...props
 }: {
-	setupRegistry?: ( registry: Registry ) => void;
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
 } & TileProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -53,7 +48,7 @@ function Template( {
 	);
 }
 
-export const DefaultTile = Template.bind( {} ) as Story;
+export const DefaultTile = Template.bind( {} ) as Story< TileProps >;
 DefaultTile.storyName = 'Default Tile';
 DefaultTile.args = {
 	title: 'Form Submissions',
@@ -63,7 +58,7 @@ DefaultTile.args = {
 	format: { style: 'decimal' },
 };
 
-export const PrimaryPositiveTile = Template.bind( {} ) as Story;
+export const PrimaryPositiveTile = Template.bind( {} ) as Story< TileProps >;
 PrimaryPositiveTile.storyName = 'Primary Tile - Positive';
 PrimaryPositiveTile.args = {
 	title: 'Revenue',
@@ -75,7 +70,7 @@ PrimaryPositiveTile.args = {
 };
 PrimaryPositiveTile.scenario = {};
 
-export const PrimaryNegativeTile = Template.bind( {} ) as Story;
+export const PrimaryNegativeTile = Template.bind( {} ) as Story< TileProps >;
 PrimaryNegativeTile.storyName = 'Primary Tile - Negative';
 PrimaryNegativeTile.args = {
 	title: 'Revenue',
@@ -87,7 +82,7 @@ PrimaryNegativeTile.args = {
 };
 PrimaryNegativeTile.scenario = {};
 
-export const PrimaryNeutralTile = Template.bind( {} ) as Story;
+export const PrimaryNeutralTile = Template.bind( {} ) as Story< TileProps >;
 PrimaryNeutralTile.storyName = 'Primary Tile - Neutral';
 PrimaryNeutralTile.args = {
 	title: 'Revenue',
@@ -99,7 +94,7 @@ PrimaryNeutralTile.args = {
 };
 PrimaryNeutralTile.scenario = {};
 
-export const PercentFormat = Template.bind( {} ) as Story;
+export const PercentFormat = Template.bind( {} ) as Story< TileProps >;
 PercentFormat.storyName = 'Percent Format';
 PercentFormat.args = {
 	title: 'Conversion Rate',
@@ -109,7 +104,7 @@ PercentFormat.args = {
 	format: { style: 'percent', maximumFractionDigits: 1 },
 };
 
-export const WithInfoTooltip = Template.bind( {} ) as Story;
+export const WithInfoTooltip = Template.bind( {} ) as Story< TileProps >;
 WithInfoTooltip.storyName = 'With Info Tooltip';
 WithInfoTooltip.args = {
 	title: 'Add to Cart',
@@ -121,7 +116,7 @@ WithInfoTooltip.args = {
 };
 WithInfoTooltip.scenario = {};
 
-export const NegativeChange = Template.bind( {} ) as Story;
+export const NegativeChange = Template.bind( {} ) as Story< TileProps >;
 NegativeChange.storyName = 'Negative Change';
 NegativeChange.args = {
 	title: 'Form Submissions',
@@ -131,7 +126,17 @@ NegativeChange.args = {
 	format: { style: 'decimal' },
 };
 
-export const CustomDateRange = Template.bind( {} ) as Story;
+export const ZeroDataPreviousRange = Template.bind( {} ) as Story< TileProps >;
+ZeroDataPreviousRange.storyName = 'Zero Data (Previous Range)';
+ZeroDataPreviousRange.args = {
+	title: 'Form Submissions',
+	subtitle: 'Total submissions',
+	currentValue: 980,
+	previousValue: 0,
+	format: { style: 'decimal' },
+};
+
+export const CustomDateRange = Template.bind( {} ) as Story< TileProps >;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
 CustomDateRange.args = {
 	title: 'Form Submissions',
@@ -139,7 +144,7 @@ CustomDateRange.args = {
 	currentValue: 3600,
 	previousValue: 3100,
 	format: { style: 'decimal' },
-	setupRegistry: ( registry: Registry ) => {
+	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 	},
 };

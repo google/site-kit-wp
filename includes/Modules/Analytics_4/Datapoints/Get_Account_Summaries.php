@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnaly
 /**
  * Class for the account summaries listing datapoint.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Get_Account_Summaries extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -54,7 +54,7 @@ class Get_Account_Summaries extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param GoogleAnalyticsAdminV1betaListAccountSummariesResponse $response List account summaries API response.
 	 * @param Data_Request                                           $data     Data request object.

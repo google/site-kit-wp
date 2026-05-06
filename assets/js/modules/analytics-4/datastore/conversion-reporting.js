@@ -84,7 +84,7 @@ export const selectors = {
 	/**
 	 * Checks if any ecommerce conversion reporting events have been detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @return {(boolean|undefined)} True if any ecommerce conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */
@@ -99,7 +99,7 @@ export const selectors = {
 	/**
 	 * Checks if any lead conversion reporting events have been detected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @return {(boolean|undefined)} True if any lead conversion reporting events are detected, otherwise false. Undefined if detected events are not loaded yet.
 	 */
@@ -394,34 +394,6 @@ export const selectors = {
 
 		return undefined;
 	} ),
-
-	/**
-	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {string} primaryEvent The primary ecommerce event to exclude.
-	 * @return {(Array|undefined)} Array of secondary ecommerce event names, or undefined if events not yet loaded.
-	 */
-	getSecondaryEcommerceEvents: createRegistrySelector(
-		( select ) => ( state, primaryEvent ) => {
-			const detectedEvents =
-				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
-
-			if ( detectedEvents === undefined ) {
-				return undefined;
-			}
-
-			const primaryIndex =
-				CONVERSION_REPORTING_ECOMMERCE_EVENTS.indexOf( primaryEvent );
-
-			// Secondary events are those below the primary in hierarchy order.
-			return CONVERSION_REPORTING_ECOMMERCE_EVENTS.slice(
-				primaryIndex + 1
-			).filter( ( event ) => detectedEvents.includes( event ) );
-		}
-	),
 
 	/**
 	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.

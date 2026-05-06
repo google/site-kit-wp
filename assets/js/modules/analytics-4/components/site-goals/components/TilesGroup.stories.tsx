@@ -15,20 +15,23 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
-import { TilesGroup, type TilesGroupProps } from './TilesGroup';
+import { TilesGroup, TilesGroupProps } from './TilesGroup';
 import { Tile } from './Tile';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
-type Registry = any;
+import { Story } from '@/js/types/Story';
 
 function Template( {
 	setupRegistry = () => {},
 	...props
 }: {
-	setupRegistry?: ( registry: Registry ) => void;
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
 } & TilesGroupProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
@@ -44,7 +47,7 @@ function Template( {
 	);
 }
 
-export const SingleTile = Template.bind( {} );
+export const SingleTile = Template.bind( {} ) as Story< TilesGroupProps >;
 SingleTile.storyName = 'Single Tile';
 SingleTile.args = {
 	title: 'Conversions',
@@ -60,7 +63,7 @@ SingleTile.args = {
 	),
 };
 
-export const MultipleTiles = Template.bind( {} );
+export const MultipleTiles = Template.bind( {} ) as Story< TilesGroupProps >;
 MultipleTiles.storyName = 'Multiple Tiles';
 MultipleTiles.args = {
 	title: 'Conversions',
@@ -93,7 +96,7 @@ MultipleTiles.args = {
 	],
 };
 
-export const NegativeChanges = Template.bind( {} );
+export const NegativeChanges = Template.bind( {} ) as Story< TilesGroupProps >;
 NegativeChanges.storyName = 'Negative Changes';
 NegativeChanges.args = {
 	title: 'Conversions',

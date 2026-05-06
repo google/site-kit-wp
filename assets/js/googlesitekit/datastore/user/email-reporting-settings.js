@@ -89,6 +89,7 @@ const fetchSaveEmailReportingSettingsStore = createFetchStore( {
 			);
 		}
 	},
+	isAction: true,
 } );
 
 // Actions

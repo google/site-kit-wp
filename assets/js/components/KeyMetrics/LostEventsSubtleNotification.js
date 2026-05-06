@@ -29,6 +29,7 @@ import { createInterpolateElement } from '@wordpress/element';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function LostEventsSubtleNotification( {
 	onSelectMetricsCallback,
@@ -41,7 +42,7 @@ export default function LostEventsSubtleNotification( {
 	);
 	return (
 		<Notice
-			type={ Notice.TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			title={ __( 'Unavailable metrics data', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(

@@ -29,7 +29,7 @@ import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice/index';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function CreatePropertyInfoNotice() {
 	const documentationURL = useSelect( ( select ) => {
@@ -38,7 +38,7 @@ export default function CreatePropertyInfoNotice() {
 
 	return (
 		<Notice
-			type={ TYPES.INFO }
+			type={ NOTICE_TYPES.INFO }
 			description={ createInterpolateElement(
 				__(
 					'Got a Google Analytics property and want to find out how to use it with Site Kit? <a>Learn more</a>',

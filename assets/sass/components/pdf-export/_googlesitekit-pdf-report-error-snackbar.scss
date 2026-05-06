@@ -1,4 +1,6 @@
 /**
+ * PDF report error snackbar styles.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +16,18 @@
  * limitations under the License.
  */
 
-export interface DismissButtonProps {
-	label?: string;
-	dismissOptions?: {
-		expiresInSeconds?: number;
-		skipHidingFromQueue?: boolean;
-	};
-	onClick?: (
-		event: React.MouseEvent< HTMLAnchorElement | HTMLButtonElement >
-	) => void;
-	disabled?: boolean;
-	tertiary?: boolean;
-	href?: string;
-	external?: boolean;
+.googlesitekit-pdf-report-error-snackbar {
+	.googlesitekit-notice__dismiss--icon {
+		path {
+			color: $c-utility-on-error-container;
+		}
+	}
+
+	.googlesitekit-notice__cta {
+		color: $c-utility-on-error-container;
+	}
+
+	.googlesitekit-notice__cta.mdc-button--tertiary:not(:disabled) {
+		color: $c-utility-on-error-container;
+	}
 }

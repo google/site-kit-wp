@@ -161,11 +161,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Sales Rate + Total Sales + Engagement rate
+		).toHaveLength( 2 );
 		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
-		expect( getByText( '"purchase" events' ) ).toBeInTheDocument();
-		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
+		expect( getByText( '“purchase” events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'falls back to add_to_cart when purchase is not detected', async () => {
@@ -197,7 +196,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Total products added to cart' )
 		).toBeInTheDocument();
-		expect( getByText( '"add_to_cart" events' ) ).toBeInTheDocument();
+		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -307,133 +306,5 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
-	} );
-
-	it( 'renders engagement rate tile with compare values', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const primaryEventReport = buildPrimaryEventReportOptions(
-			dates,
-			ENUM_CONVERSION_EVENTS.PURCHASE
-		);
-		const engagementReport = buildEngagementReportOptions( dates );
-
-		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, engagementReport );
-
-		const { getByText, waitForRegistry } = render(
-			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
-	} );
-
-	it( 'renders add_to_cart secondary tile when primary is purchase', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [
-				ENUM_CONVERSION_EVENTS.PURCHASE,
-				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
-			] );
-
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const primaryEventReport = buildPrimaryEventReportOptions(
-			dates,
-			ENUM_CONVERSION_EVENTS.PURCHASE
-		);
-		const engagementReport = buildEngagementReportOptions( dates );
-		const secondaryEventsReport = buildSecondaryEventsReportOptions(
-			dates,
-			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
-		);
-
-		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, engagementReport );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.ADD_TO_CART },
-							{ value: 'date_range_0' },
-						],
-						metricValues: [ { value: '50' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.ADD_TO_CART },
-							{ value: 'date_range_1' },
-						],
-						metricValues: [ { value: '40' } ],
-					},
-				],
-			},
-			{ options: secondaryEventsReport }
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ secondaryEventsReport ] );
-
-		const { getByText, waitForRegistry } = render(
-			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect(
-			getByText( 'Total products added to cart' )
-		).toBeInTheDocument();
-		expect( getByText( '"add_to_cart" events' ) ).toBeInTheDocument();
-	} );
-
-	it( 'does not render secondary add_to_cart tile when primary is add_to_cart', async () => {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
-
-		const dates = registry.select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const primaryEventReport = buildPrimaryEventReportOptions(
-			dates,
-			ENUM_CONVERSION_EVENTS.ADD_TO_CART
-		);
-		const engagementReport = buildEngagementReportOptions( dates );
-
-		provideAnalytics4MockReport( registry, primaryEventReport );
-		provideAnalytics4MockReport( registry, engagementReport );
-
-		const { getAllByText, queryByText, waitForRegistry } = render(
-			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		// "Total products added to cart" appears exactly once — in the primary action section only.
-		// No secondary ecommerce tile should appear in the visitor engagement section.
-		expect( getAllByText( 'Total products added to cart' ) ).toHaveLength(
-			1
-		);
-		// Primary add_to_cart tile in primary action should still render.
-		expect( queryByText( '"add_to_cart" events' ) ).toBeInTheDocument();
-		// No additional secondary add_to_cart subtitle in visitor engagement section.
-		expect( queryByText( 'Visitor engagement' ) ).toBeInTheDocument();
 	} );
 } );
