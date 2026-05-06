@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
@@ -69,7 +69,7 @@ export default function SetupSuccessNotification( { id, Notification } ) {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'Congrats on completing the setup for PageSpeed Insights!',
 					'google-site-kit'

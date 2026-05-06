@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, type Select } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export interface AnalyticsAccountCreationErrorNoticeProps {
@@ -114,8 +114,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 
 	return (
 		<Notice
-			// @ts-expect-error - The `Notice` component is not typed yet.
-			type={ TYPES.ERROR }
+			type={ NOTICE_TYPES.ERROR }
 			title={ title }
 			description={ description }
 			ctaButton={ ctaButton }

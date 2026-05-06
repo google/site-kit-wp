@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-welcome-modal {
+	.googlesitekit-banner-modal {
 		.mdc-dialog__surface {
 			overflow: hidden;
 		}
@@ -28,7 +28,7 @@
 		}
 	}
 
-	.googlesitekit-welcome-modal__graphic {
+	.googlesitekit-banner-modal__graphic {
 		background-image: linear-gradient(to bottom, $c-site-kit-sk-50, $c-white);
 		max-height: 200px;
 		position: relative;
@@ -38,7 +38,7 @@
 		}
 	}
 
-	.googlesitekit-welcome-modal__close-button {
+	.googlesitekit-banner-modal__close-button {
 		position: absolute;
 		right: 12px;
 		top: 12px;
@@ -84,7 +84,7 @@
 		}
 	}
 
-	.googlesitekit-welcome-modal__text {
+	.googlesitekit-banner-modal__text {
 		padding: 0 $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
@@ -92,15 +92,15 @@
 		}
 	}
 
-	.googlesitekit-welcome-modal__title {
+	.googlesitekit-banner-modal__title {
 		margin: 25px 0 0;
 	}
 
-	.googlesitekit-welcome-modal__description {
+	.googlesitekit-banner-modal__description {
 		margin: 8px 0 0;
 	}
 
-	.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+	.googlesitekit-banner-modal__footer.mdc-dialog__actions {
 		border-top: none;
 		margin-top: 23px;
 		padding: 0 $grid-gap-phone $grid-gap-phone $grid-gap-phone;
@@ -111,15 +111,15 @@
 	}
 
 	@media (height < 520px) {
-		.googlesitekit-welcome-modal__graphic {
+		.googlesitekit-banner-modal__graphic {
 			display: none;
 		}
 
-		.googlesitekit-welcome-modal__title {
+		.googlesitekit-banner-modal__title {
 			margin-top: 20px;
 		}
 
-		.googlesitekit-welcome-modal__footer.mdc-dialog__actions {
+		.googlesitekit-banner-modal__footer.mdc-dialog__actions {
 			margin-top: 16px;
 		}
 	}

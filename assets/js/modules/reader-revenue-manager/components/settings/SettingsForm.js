@@ -42,6 +42,7 @@ import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/set
 import Notice from '@/js/components/Notice';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Typography from '@/js/components/Typography';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const publicationID = useSelect( ( select ) =>
@@ -165,7 +166,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				{ ! hasModuleAccess && (
 					<Notice
 						className="googlesitekit-moduleaccess-warning-notice"
-						type={ Notice.TYPES.WARNING }
+						type={ NOTICE_TYPES.WARNING }
 						description={ createInterpolateElement(
 							sprintf(
 								/* translators: %s: module owner's name */

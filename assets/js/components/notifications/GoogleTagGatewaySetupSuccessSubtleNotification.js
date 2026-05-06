@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export const GOOGLE_TAG_GATEWAY_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-gtg';
@@ -43,7 +43,7 @@ export default function GoogleTagGatewaySetupSuccessSubtleNotification( {
 		<Notification>
 			<NoticeNotification
 				notificationID={ id }
-				type={ TYPES.SUCCESS }
+				type={ NOTICE_TYPES.SUCCESS }
 				title={ __(
 					'You successfully enabled Google tag gateway for advertisers!',
 					'google-site-kit'

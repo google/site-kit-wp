@@ -1,4 +1,6 @@
 /**
+ * IntroModalBanner types.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +16,9 @@
  * limitations under the License.
  */
 
-export interface DismissButtonProps {
-	label?: string;
-	dismissOptions?: {
-		expiresInSeconds?: number;
-		skipHidingFromQueue?: boolean;
-	};
-	onClick?: (
-		event: React.MouseEvent< HTMLAnchorElement | HTMLButtonElement >
-	) => void;
-	disabled?: boolean;
-	tertiary?: boolean;
-	href?: string;
-	external?: boolean;
+export interface IntroModalVariantProps {
+	onView: () => void;
+	onConfirm: () => void;
+	onClickLearnMore: () => void;
+	onDismiss: () => void;
 }

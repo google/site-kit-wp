@@ -40,7 +40,7 @@ import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_USER } from './constants';
 
-const { receiveError, clearError } = errorStoreActions;
+const { setErrorForAction, clearActionError } = errorStoreActions;
 
 function validateUserAudienceSettings( settings ) {
 	invariant(
@@ -91,6 +91,7 @@ const fetchSaveUserAudienceSettingsStore = createFetchStore( {
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: validateUserAudienceSettings,
+	isAction: true,
 } );
 
 // Actions
@@ -120,7 +121,7 @@ const baseActions = {
 			);
 		},
 		function* ( settings = {} ) {
-			yield clearError( 'saveUserAudienceSettings', [] );
+			yield clearActionError( 'saveUserAudienceSettings', [] );
 
 			const registry = yield commonActions.getRegistry();
 			const audienceSettings = yield commonActions.await(
@@ -162,7 +163,11 @@ const baseActions = {
 				);
 
 			if ( error ) {
-				yield receiveError( error, 'saveUserAudienceSettings', [] );
+				yield setErrorForAction(
+					error,
+					'saveUserAudienceSettings',
+					[]
+				);
 			}
 
 			return { response, error };
@@ -184,7 +189,9 @@ const baseActions = {
 			type: RESET_AUDIENCE_SETTINGS,
 		};
 
-		yield errorStoreActions.clearErrors( 'getUserAudienceSettings' );
+		yield errorStoreActions.clearSelectorErrors(
+			'getUserAudienceSettings'
+		);
 
 		return dispatch( CORE_USER ).invalidateResolutionForStoreSelector(
 			'getUserAudienceSettings'

@@ -17,15 +17,15 @@
 /**
  * Internal dependencies
  */
-import Notice from '@/js/components/Notice';
+import Notice, { NoticeProps } from '@/js/components/Notice';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { Grid, Cell, Row } from '@/js/material-components';
 import { FC, MouseEvent, ReactNode } from 'react';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
-import { DismissButtonProps } from '@/js/components/Notice/DismissButtonProps';
-import { TYPES } from '@/js/components/Notice/constants';
+import { DismissButtonProps } from '@/js/components/Notice/DismissButton';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 interface NoticeNotificationProps {
 	notificationID: string;
@@ -35,12 +35,11 @@ interface NoticeNotificationProps {
 	dismissButton?: DismissButtonProps;
 	ctaButton?: Record< string, unknown >;
 	gaTrackingEventArgs?: GATrackingEventArgs;
-	type: TYPES;
+	type: NOTICE_TYPES;
 }
 
-const NoticeNotification: FC< NoticeNotificationProps > = ( {
+const NoticeNotification: FC< NoticeNotificationProps & NoticeProps > = ( {
 	notificationID,
-	children,
 	dismissButton,
 	ctaButton,
 	gaTrackingEventArgs,
@@ -91,7 +90,6 @@ const NoticeNotification: FC< NoticeNotificationProps > = ( {
 			{ /* @ts-expect-error `<Row>` component is not yet typed. */ }
 			<Row>
 				<Cell size={ 12 } alignMiddle>
-					{ /* @ts-expect-error `<Notice>` component is not yet typed. */ }
 					<Notice
 						dismissButton={ {
 							...dismissButton,
@@ -102,9 +100,7 @@ const NoticeNotification: FC< NoticeNotificationProps > = ( {
 							onClick: handleCTAClickWithTrackEvent,
 						} }
 						{ ...props }
-					>
-						{ children }
-					</Notice>
+					/>
 				</Cell>
 			</Row>
 		</Grid>

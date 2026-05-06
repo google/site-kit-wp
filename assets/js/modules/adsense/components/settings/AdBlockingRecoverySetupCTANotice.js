@@ -39,6 +39,7 @@ import {
 } from '@/js/modules/adsense/util';
 import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AdBlockingRecoverySetupCTANotice() {
 	const inView = useInView();
@@ -102,7 +103,7 @@ export default function AdBlockingRecoverySetupCTANotice() {
 
 	return (
 		<Notice
-			type={ Notice.TYPES.INFO }
+			type={ NOTICE_TYPES.INFO }
 			title={ __( 'Ad blocking recovery', 'google-site-kit' ) }
 			description={ createInterpolateElement(
 				__(

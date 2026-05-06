@@ -29,7 +29,7 @@ import { useCallback } from '@wordpress/element';
 import { useSelect } from 'googlesitekit-data';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
@@ -71,7 +71,7 @@ export default function EmailReportingDisabledNotice() {
 
 	return (
 		<NoticeWithIntersectionObserver
-			type={ TYPES.WARNING }
+			type={ NOTICE_TYPES.WARNING }
 			title={ __( 'Email reports are disabled', 'google-site-kit' ) }
 			description={ __(
 				'This feature was disabled for all users. You can enable email report subscriptions in settings.',

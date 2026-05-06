@@ -321,7 +321,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( "should not render the `Retry` button if the error's `selectorData.name` is not `getReport`", async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -348,7 +348,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_REASON_INSUFFICIENT_PERMISSIONS`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -375,7 +375,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error reason is `ERROR_CODE_MISSING_REQUIRED_SCOPE`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -402,7 +402,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should not render the `Retry` button if the error is an auth error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -430,7 +430,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render the `Retry` button if the error selector name is `getReport`', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',
@@ -467,10 +467,10 @@ describe( 'ReportError', () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, baseName, args );
+				.setErrorForSelector( error, baseName, args );
 		}
 		// The following error object is not retry-able.
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -507,7 +507,7 @@ describe( 'ReportError', () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, baseName, args );
+				.setErrorForSelector( error, baseName, args );
 		}
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
@@ -536,7 +536,7 @@ describe( 'ReportError', () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveError( error, baseName, args );
+				.setErrorForSelector( error, baseName, args );
 		}
 
 		const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
@@ -625,7 +625,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link without prefix text on non-retryable error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: 'Test error message',
@@ -659,7 +659,7 @@ describe( 'ReportError', () => {
 	} );
 
 	it( 'should render `Get help` link with prefix text on retryable error', async () => {
-		await registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
+		await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test-error-code',
 				message: 'Test error message',

@@ -23,7 +23,7 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 /**
  * Class for the properties listing datapoint.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Get_Properties extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing.
@@ -61,7 +61,7 @@ class Get_Properties extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.178.0
 	 *
 	 * @param GoogleAnalyticsAdminV1betaListPropertiesResponse $response List properties API response.
 	 * @param Data_Request                                     $data     Data request object.

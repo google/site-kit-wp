@@ -23,15 +23,13 @@ import {
 	createInterpolateElement,
 	useCallback,
 	useState,
-	Fragment,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * External dependencies
  */
-import { ReactElement, useEffect, useRef } from 'react';
-import { useIntersection } from 'react-use';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
@@ -46,13 +44,8 @@ import {
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { Button } from 'googlesitekit-components';
-import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
-import P from '@/js/components/Typography/P';
-import Typography from '@/js/components/Typography';
+import BannerModal from '@/js/components/BannerModal/index';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-// @ts-expect-error - We need to add types for imported SVGs.
-import CloseIcon from '@/svg/icons/close.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 // @ts-expect-error - We need to add types for imported SVGs.
@@ -79,7 +72,7 @@ const VARIANT_TRACKING_LABELS = {
  * Determines whether the given modal variant should be rendered based on the
  * data gathering complete modal active state.
  *
- * @since n.e.x.t
+ * @since 1.178.0
  *
  * @param {Object}        options                                    The options.
  * @param {MODAL_VARIANT} options.modalVariant                       The computed modal variant.
@@ -214,21 +207,7 @@ export default function WelcomeModal() {
 		triggerOnDemandTour( welcomeTour );
 	}, [ closeAndDismissModal, triggerOnDemandTour, welcomeTour ] );
 
-	const intersectionRef = useRef( null );
-
-	const intersectionEntry = useIntersection( intersectionRef, {
-		threshold: 0.25,
-	} );
-	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const inView = !! intersectionEntry?.intersectionRatio;
-
-	useEffect( () => {
-		if ( ! inView || hasBeenInView ) {
-			return;
-		}
-
-		setHasBeenInView( true );
-
+	const handleView = useCallback( () => {
 		trackEvent(
 			`${ viewContext }_welcome-modal`,
 			'view_notice',
@@ -256,7 +235,7 @@ export default function WelcomeModal() {
 		}
 
 		trackSetupEventsOnce();
-	}, [ inView, hasBeenInView, viewContext, modalVariant ] );
+	}, [ viewContext, modalVariant ] );
 
 	const trackConfirmation = useCallback( () => {
 		trackEvent(
@@ -273,6 +252,11 @@ export default function WelcomeModal() {
 			VARIANT_TRACKING_LABELS[ modalVariant ]
 		);
 	}, [ viewContext, modalVariant ] );
+
+	const handleClose = useCallback( () => {
+		trackDismissal();
+		closeAndDismissModalWithTooltip();
+	}, [ trackDismissal, closeAndDismissModalWithTooltip ] );
 
 	const isDataGatheringCompleteModalActive = useSelect(
 		( select: Select ) =>
@@ -331,94 +315,48 @@ export default function WelcomeModal() {
 			break;
 	}
 
+	const Graphic =
+		modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE
+			? WelcomeModalDataGatheringCompleteGraphic
+			: WelcomeModalGraphic;
+
+	const ctaButton =
+		modalVariant === MODAL_VARIANT.GATHERING_DATA
+			? {
+					label: __( 'Get started', 'google-site-kit' ),
+					onClick: () => {
+						trackConfirmation();
+						closeAndDismissModal();
+					},
+			  }
+			: {
+					label: __( 'Start tour', 'google-site-kit' ),
+					onClick: () => {
+						trackConfirmation();
+						startTourAndClose();
+					},
+			  };
+
+	const dismissButton =
+		modalVariant !== MODAL_VARIANT.GATHERING_DATA
+			? {
+					label: __( 'Maybe later', 'google-site-kit' ),
+					onClick: () => {
+						trackDismissal();
+						closeAndDismissModalWithTooltip();
+					},
+			  }
+			: undefined;
+
 	return (
-		<Dialog
-			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-welcome-modal"
-			onClose={ () => {
-				trackDismissal();
-				closeAndDismissModalWithTooltip();
-			} }
-			open
-		>
-			<DialogContent className="googlesitekit-welcome-modal__content">
-				<div
-					ref={ intersectionRef }
-					className="googlesitekit-welcome-modal__graphic"
-				>
-					{ modalVariant === MODAL_VARIANT.DATA_GATHERING_COMPLETE ? (
-						<WelcomeModalDataGatheringCompleteGraphic />
-					) : (
-						<WelcomeModalGraphic />
-					) }
-
-					<Button
-						// @ts-expect-error - The `Button` component is not typed yet.
-						className="googlesitekit-welcome-modal__close-button"
-						icon={ <CloseIcon width={ 10 } height={ 10 } /> }
-						onClick={ () => {
-							trackDismissal();
-							closeAndDismissModalWithTooltip();
-						} }
-						aria-label={ __( 'Close', 'google-site-kit' ) }
-						hideTooltipTitle
-					/>
-				</div>
-
-				<div className="googlesitekit-welcome-modal__text">
-					<Typography
-						as="h1"
-						className="googlesitekit-welcome-modal__title"
-						size="large"
-						type="headline"
-					>
-						{ title }
-					</Typography>
-
-					<P
-						type="body"
-						size="medium"
-						className="googlesitekit-welcome-modal__description"
-					>
-						{ description }
-					</P>
-				</div>
-			</DialogContent>
-
-			<DialogFooter className="googlesitekit-welcome-modal__footer">
-				{ modalVariant === MODAL_VARIANT.GATHERING_DATA ? (
-					// @ts-expect-error - The `Button` component is not typed yet.
-					<Button
-						onClick={ () => {
-							trackConfirmation();
-							closeAndDismissModal();
-						} }
-					>
-						{ __( 'Get started', 'google-site-kit' ) }
-					</Button>
-				) : (
-					<Fragment>
-						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button
-							onClick={ () => {
-								trackDismissal();
-								closeAndDismissModalWithTooltip();
-							} }
-							tertiary
-						>
-							{ __( 'Maybe later', 'google-site-kit' ) }
-						</Button>
-						{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-						<Button
-							onClick={ () => {
-								trackConfirmation();
-								startTourAndClose();
-							} }
-						>
-							{ __( 'Start tour', 'google-site-kit' ) }
-						</Button>
-					</Fragment>
-				) }
-			</DialogFooter>
-		</Dialog>
+		<BannerModal
+			Graphic={ Graphic }
+			onView={ handleView }
+			onClose={ handleClose }
+			title={ title }
+			description={ description }
+			ctaButton={ ctaButton }
+			dismissButton={ dismissButton }
+		/>
 	);
 }

@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
-import { addQueryArgs, getQueryArg } from '@wordpress/url';
-import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -42,10 +46,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import useViewContext from '@/js/hooks/useViewContext';
 import Header from './Header';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
 import Splash from './Splash';
 import Actions from './Actions';
-import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import ResetNotice from './ResetNotice';
 import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -174,52 +178,46 @@ export default function SetupUsingProxyWithSignIn() {
 		]
 	);
 
+	const splashSetupContent = (
+		<Layout rounded={ ! setupFlowRefreshEnabled }>
+			<Splash>
+				{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
+					<Actions
+						proxySetupURL={ proxySetupURL }
+						onButtonClick={ onButtonClick }
+						forwardableParams={ forwardableParams }
+						complete={ complete }
+						inProgressFeedback={ inProgressFeedback }
+						ctaFeedback={ ctaFeedback }
+					/>
+				) }
+			</Splash>
+		</Layout>
+	);
+
 	return (
 		<Fragment>
 			<Header />
-			<div className="googlesitekit-setup">
-				<Grid>
-					<Row>
-						<Cell size={ 12 }>
-							{ getQueryArg( location.href, 'notification' ) ===
-								'reset_success' && (
-								<Fragment>
-									<Notice
-										id="reset_success"
-										title={ __(
-											'Site Kit by Google was successfully reset.',
-											'google-site-kit'
-										) }
-										type={ TYPES.SUCCESS }
-									/>
-									<br />
-								</Fragment>
-							) }
-							<Layout rounded>
-								<Splash>
-									{ ( {
-										complete,
-										inProgressFeedback,
-										ctaFeedback,
-									} ) => (
-										<Actions
-											proxySetupURL={ proxySetupURL }
-											onButtonClick={ onButtonClick }
-											forwardableParams={
-												forwardableParams
-											}
-											complete={ complete }
-											inProgressFeedback={
-												inProgressFeedback
-											}
-											ctaFeedback={ ctaFeedback }
-										/>
-									) }
-								</Splash>
-							</Layout>
-						</Cell>
-					</Row>
-				</Grid>
+			<div
+				className={ classnames( 'googlesitekit-setup', {
+					'googlesitekit-initial-setup': setupFlowRefreshEnabled,
+				} ) }
+			>
+				{ setupFlowRefreshEnabled ? (
+					<Fragment>
+						<ProgressIndicator />
+						{ splashSetupContent }
+					</Fragment>
+				) : (
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<ResetNotice />
+								{ splashSetupContent }
+							</Cell>
+						</Row>
+					</Grid>
+				) }
 			</div>
 		</Fragment>
 	);

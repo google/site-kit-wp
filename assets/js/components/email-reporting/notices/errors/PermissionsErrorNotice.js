@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useSelect } from '@/js/googlesitekit-data';
 import Notice from '@/js/components/Notice';
-import { TYPES } from '@/js/components/Notice/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -63,7 +63,7 @@ export default function PermissionsErrorNotice( { moduleSlug } ) {
 	return (
 		<NoticeWithIntersectionObserver
 			className="googlesitekit-email-reporting__admin-settings-notice"
-			type={ TYPES.ERROR }
+			type={ NOTICE_TYPES.ERROR }
 			title={ __(
 				'Email reports are failing to send',
 				'google-site-kit'
