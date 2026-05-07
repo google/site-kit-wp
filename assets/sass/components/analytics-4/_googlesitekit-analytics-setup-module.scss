@@ -134,6 +134,27 @@
 			// Ensure that these styles are only applied within Analytics setup.
 			.googlesitekit-analytics-setup__form {
 
+				.googlesitekit-setup-module__action {
+
+					@media (max-width: $bp-desktop) {
+						align-items: center;
+						background: $c-base;
+						border-top: 1px solid $c-border-light;
+						bottom: 0;
+						display: flex;
+						gap: $grid-gap-phone;
+						margin-left: -$grid-gap-phone; // Compensate for the padding of the container.
+						padding: 24px $grid-gap-phone;
+						position: fixed;
+						width: 100%;
+						z-index: 1;  // Overlay the WordPress footer.
+
+						.googlesitekit-setup-module__sub-action {
+							margin-top: 0;
+						}
+					}
+				}
+
 				.googlesitekit-analytics-enable-enhanced-measurement {
 
 					.googlesitekit-module-settings-group__helper-text {
