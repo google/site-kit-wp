@@ -32,6 +32,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 import type { GoalDriverComponentProps } from './types';
 
@@ -63,13 +64,13 @@ export default {
 	component: VisitorTypeGoalDriver,
 	decorators: [
 		(
-			Story: () => ReactElement,
+			StoryComponent: () => ReactElement,
 			{ args }: { args: VisitorTypeGoalDriverStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
 					<div className="googlesitekit-widget__body">
-						<Story />
+						<StoryComponent />
 					</div>
 				</div>
 			);
@@ -107,9 +108,12 @@ function Template( props: VisitorTypeGoalDriverStoryProps ) {
 	return <VisitorTypeGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< VisitorTypeGoalDriverStoryProps >;
 Default.args = {
 	goalType: 'lead',
+	title: 'Leads by visitor type',
 	rows: [
 		{ label: 'Returning visitors', value: '60.5%' },
 		{ label: 'New visitors', value: '39.5%' },
@@ -119,21 +123,27 @@ Default.args = {
 };
 Default.scenario = {};
 
-export const Loading = Template.bind( {} );
+export const Loading = Template.bind(
+	{}
+) as Story< VisitorTypeGoalDriverStoryProps >;
 Loading.args = {
 	...Default.args,
 	rows: [],
 	loading: true,
 };
 
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind(
+	{}
+) as Story< VisitorTypeGoalDriverStoryProps >;
 NoData.args = {
 	...Default.args,
 	rows: [],
 	loading: false,
 };
 
-export const Error = Template.bind( {} );
+export const Error = Template.bind(
+	{}
+) as Story< VisitorTypeGoalDriverStoryProps >;
 Error.args = {
 	...Default.args,
 	rows: [],
