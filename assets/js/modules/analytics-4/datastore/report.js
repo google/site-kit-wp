@@ -281,6 +281,51 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Determines whether any of the provided reports are currently loading.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}   state         Data store's state.
+	 * @param {Object[]} reportOptions Report options to check the loading state for. Each entry should be an object of options that would be passed to `getReport` selector.
+	 * @return {boolean|undefined} Returns `true` any of the provided reports are loading, `false` if none of the provided reports are loading.
+	 */
+	areReportsLoading: createRegistrySelector(
+		( select ) =>
+			( state, ...reportOptions ) =>
+				reportOptions.some(
+					( options ) =>
+						! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+							'getReport',
+							[ options ]
+						)
+				)
+	),
+
+	/**
+	 * Returns the first error found among the provided report options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}   state         Data store's state.
+	 * @param {Object[]} reportOptions Report options to check for errors. Each entry should be an object of options that would be passed to `getReport` selector.
+	 * @return {(Object|undefined)} Returns the first error object found, or `undefined` if no errors exist.
+	 */
+	getFirstReportError: createRegistrySelector(
+		( select ) =>
+			( state, ...reportOptions ) => {
+				for ( const options of reportOptions ) {
+					const error = select(
+						MODULES_ANALYTICS_4
+					).getErrorForSelector( 'getReport', [ options ] );
+					if ( error ) {
+						return error;
+					}
+				}
+				return undefined;
+			}
+	),
+
+	/**
 	 * Determines whether Analytics 4 has zero data or not.
 	 *
 	 * @since 1.95.0

@@ -236,7 +236,11 @@
 
 // PDF export
 @import "components/pdf-export/googlesitekit-pdf-report-error-snackbar";
+<<<<<<< enhancement/12508-pdf-report-progress-snackbar
 @import "components/pdf-export/googlesitekit-pdf-report-progress-snackbar";
+=======
+@import "components/pdf-export/googlesitekit-pdf-report-success-snackbar";
+>>>>>>> develop
 
 // Toast Notice
 @import "components/toast-notice/googlesitekit-toast-notice";

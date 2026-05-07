@@ -40,7 +40,6 @@ import BannerNotification from '@/js/googlesitekit/notifications/components/layo
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
-// @ts-expect-error - We need to add types for imported SVGs.
 import ActivateAnalyticsSVG from '@/svg/graphics/activate-analytics-graphic.svg?url';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
@@ -57,7 +56,7 @@ const ActivateAnalyticsNotification: FC<
 
 	const tooltipSettings = {
 		tooltipSlug: id,
-		title: __(
+		content: __(
 			'You can always set up Analytics from Settings later',
 			'google-site-kit'
 		),
