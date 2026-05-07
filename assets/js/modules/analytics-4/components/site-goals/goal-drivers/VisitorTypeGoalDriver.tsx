@@ -34,12 +34,6 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import type { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	let title = __( 'Leads by visitor type', 'google-site-kit' );
-
-	if ( props.goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Sales by visitor type', 'google-site-kit' );
-	}
-
 	const noDataMetricLabel =
 		props.goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'sales', 'google-site-kit' )
@@ -47,7 +41,7 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 
 	return (
 		<TableTile
-			title={ title }
+			title={ props.title || '' }
 			rows={ props.rows }
 			loading={ props.loading }
 			error={ props.error }
