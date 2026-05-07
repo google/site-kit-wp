@@ -81,6 +81,7 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 							className="googlesitekit-site-goals-goal-drivers-section__tile"
 						>
 							<DriverComponent
+								title={ driver.title }
 								rows={ driver.rows }
 								totalRows={ driver.totalRows }
 								loading={ driver.loading }
