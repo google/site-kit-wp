@@ -1,5 +1,5 @@
 /**
- * GoalDriversSection component tests.
+ * GoalDriverTiles component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,11 +34,8 @@ import {
 	setViewportWidth,
 } from '../../../../../../../tests/js/viewport-width-utils';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
-import GoalDriversSection from './GoalDriversSection';
-import type {
-	GoalDriverComponentProps,
-	GoalDriversSectionDriver,
-} from './types';
+import GoalDriverTiles from './GoalDriverTiles';
+import type { GoalDriverComponentProps, GoalDriverTilesDriver } from './types';
 
 const MockGoalDriver: FC< GoalDriverComponentProps > = ( {
 	limit,
@@ -47,7 +44,7 @@ const MockGoalDriver: FC< GoalDriverComponentProps > = ( {
 	return <div>{ `rows-limit-${ limit }-goal-${ goalType }` }</div>;
 };
 
-const drivers: GoalDriversSectionDriver[] = [
+const drivers: GoalDriverTilesDriver[] = [
 	{
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 		Component: MockGoalDriver,
@@ -71,7 +68,7 @@ const drivers: GoalDriversSectionDriver[] = [
 	},
 ];
 
-describe( 'GoalDriversSection', () => {
+describe( 'GoalDriverTiles', () => {
 	let originalViewportWidth: number;
 
 	beforeEach( () => {
@@ -85,7 +82,7 @@ describe( 'GoalDriversSection', () => {
 
 	it( 'renders one row with three tiles and defaults to 3 rows', () => {
 		const { container, getAllByText } = render(
-			<GoalDriversSection
+			<GoalDriverTiles
 				drivers={ drivers }
 				goalType={ GOAL_TYPES.LEAD }
 				hasExpandableRows
@@ -103,7 +100,7 @@ describe( 'GoalDriversSection', () => {
 
 	it( 'toggles all tiles between 3 and 6 rows', () => {
 		const { getByRole, getAllByText } = render(
-			<GoalDriversSection
+			<GoalDriverTiles
 				drivers={ drivers }
 				goalType={ GOAL_TYPES.LEAD }
 				hasExpandableRows
@@ -127,7 +124,7 @@ describe( 'GoalDriversSection', () => {
 
 	it( 'does not render Show more when no expandable rows exist', () => {
 		const { queryByRole } = render(
-			<GoalDriversSection
+			<GoalDriverTiles
 				drivers={ drivers }
 				hasExpandableRows={ false }
 				goalType={ GOAL_TYPES.LEAD }
@@ -141,7 +138,7 @@ describe( 'GoalDriversSection', () => {
 
 	it( 'passes goalType through to driver components', () => {
 		const { getAllByText } = render(
-			<GoalDriversSection
+			<GoalDriverTiles
 				drivers={ drivers }
 				goalType={ GOAL_TYPES.LEAD }
 				hasExpandableRows
@@ -155,7 +152,7 @@ describe( 'GoalDriversSection', () => {
 		setViewportWidth( 600 );
 
 		const { queryByRole, getAllByText } = render(
-			<GoalDriversSection
+			<GoalDriverTiles
 				drivers={ drivers }
 				goalType={ GOAL_TYPES.LEAD }
 				hasExpandableRows

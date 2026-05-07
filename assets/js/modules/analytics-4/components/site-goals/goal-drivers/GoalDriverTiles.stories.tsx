@@ -1,5 +1,5 @@
 /**
- * GoalDriversSection component stories.
+ * GoalDriverTiles component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -22,6 +22,11 @@
 import type { ReactElement } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
@@ -32,11 +37,12 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import GoalDriversSection from './GoalDriversSection';
+import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import GoalDriverTiles from './GoalDriverTiles';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
-import type { GoalDriversSectionDriver, GoalType } from './types';
+import type { GoalDriverTilesDriver, GoalType } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -54,8 +60,8 @@ const RETRYABLE_ERROR = {
 	},
 };
 
-interface GoalDriversSectionStoryProps {
-	drivers: GoalDriversSectionDriver[];
+interface GoalDriverTilesStoryProps {
+	drivers: GoalDriverTilesDriver[];
 	hasExpandableRows: boolean;
 	goalType: GoalType;
 	setupRegistry?: (
@@ -65,7 +71,7 @@ interface GoalDriversSectionStoryProps {
 	useRetryableError?: boolean;
 }
 
-const drivers: GoalDriversSectionDriver[] = [
+const drivers: GoalDriverTilesDriver[] = [
 	{
 		id: 'topTrafficChannels',
 		Component: TopTrafficChannelsGoalDriver,
@@ -131,12 +137,12 @@ const drivers: GoalDriversSectionDriver[] = [
 ];
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDriversSection',
-	component: GoalDriversSection,
+	title: 'Modules/Analytics4/Site Goals/GoalDriverTiles',
+	component: GoalDriverTiles,
 	decorators: [
 		(
 			Story: () => ReactElement,
-			{ args }: { args: GoalDriversSectionStoryProps }
+			{ args }: { args: GoalDriverTilesStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
@@ -163,7 +169,7 @@ function Template( {
 	errorSelectorArgs,
 	useRetryableError = false,
 	...args
-}: GoalDriversSectionStoryProps ) {
+}: GoalDriverTilesStoryProps ) {
 	const retryableError = useSelect(
 		( select: Select ) => {
 			if ( ! useRetryableError || ! errorSelectorArgs ) {
@@ -181,13 +187,23 @@ function Template( {
 	const driversWithError = useRetryableError
 		? args.drivers.map( ( driver ) => ( {
 				...driver,
-				error: retryableError,
+				error: retryableError || RETRYABLE_ERROR,
 				loading: false,
 				rows: [],
 		  } ) )
 		: args.drivers;
 
-	return <GoalDriversSection { ...args } drivers={ driversWithError } />;
+	return (
+		<TilesGroup
+			className="googlesitekit-site-goals-goal-drivers-group"
+			title={ __(
+				'What’s helping you reach your goals?',
+				'google-site-kit'
+			) }
+		>
+			<GoalDriverTiles { ...args } drivers={ driversWithError } />
+		</TilesGroup>
+	);
 }
 
 export const Default = Template.bind( {} );
@@ -252,8 +268,12 @@ Error.args = {
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( RETRYABLE_ERROR, 'getReport', [
+			.setErrorForSelector( RETRYABLE_ERROR, 'getReport', [
 				RETRYABLE_REPORT_OPTIONS,
 			] );
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ RETRYABLE_REPORT_OPTIONS ] );
 	},
 };

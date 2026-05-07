@@ -1,5 +1,5 @@
 /**
- * GoalDriversSection component.
+ * GoalDriverTiles component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,31 +24,30 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import type {
-	GoalDriversSectionDriver,
+	GoalDriverTilesDriver,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
-interface GoalDriversSectionProps {
-	drivers?: GoalDriversSectionDriver[];
+interface GoalDriverTilesProps {
+	drivers?: GoalDriverTilesDriver[];
 	hasExpandableRows?: boolean;
 	goalType: GoalType;
 }
 
-const GoalDriversSection: FC< GoalDriversSectionProps > = ( {
+const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 	drivers = [],
 	hasExpandableRows = false,
 	goalType,
@@ -67,19 +66,7 @@ const GoalDriversSection: FC< GoalDriversSectionProps > = ( {
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
 
 	return (
-		<section className="googlesitekit-site-goals-goal-drivers-section">
-			<Typography
-				as="h4"
-				type="title"
-				size="medium"
-				className="googlesitekit-site-goals-goal-drivers-section__title"
-			>
-				{ __(
-					'What’s helping you reach your goals?',
-					'google-site-kit'
-				) }
-			</Typography>
-
+		<Fragment>
 			<div className="googlesitekit-site-goals-goal-drivers-section__tiles">
 				{ drivers.map( ( driver ) => {
 					const DriverComponent = driver.Component;
@@ -117,8 +104,8 @@ const GoalDriversSection: FC< GoalDriversSectionProps > = ( {
 						: __( 'Show more', 'google-site-kit' ) }
 				</Link>
 			) }
-		</section>
+		</Fragment>
 	);
 };
 
-export default GoalDriversSection;
+export default GoalDriverTiles;
