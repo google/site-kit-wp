@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -49,7 +49,7 @@ interface GoalTypeListProps {
 	onToggleDriver: ( driverID: GoalDriverID, isChecked: boolean ) => void;
 }
 
-export default function GoalTypeList( {
+const GoalTypeList: FC< GoalTypeListProps > = ( {
 	listID,
 	title,
 	options,
@@ -57,7 +57,7 @@ export default function GoalTypeList( {
 	isExpanded,
 	onToggleExpand,
 	onToggleDriver,
-}: GoalTypeListProps ) {
+} ) => {
 	const selectedSet = useMemo(
 		() => new Set( selectedIDs ),
 		[ selectedIDs ]
@@ -131,4 +131,6 @@ export default function GoalTypeList( {
 			) }
 		</section>
 	);
-}
+};
+
+export default GoalTypeList;
