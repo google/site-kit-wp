@@ -81,16 +81,25 @@ describe( 'Widget', () => {
 		} );
 
 		// The body should be visible by default.
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).not.toBeInTheDocument();
 
 		fireEvent.click( header );
 		// Snapshot should mark the body as collapsed.
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).toBeInTheDocument();
 
 		fireEvent.click( header );
 		// Snapshot should mark the body as visible again (eg. no collapsed
 		// CSS class).
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should toggle the collapsible widget body when the header is toggled with the keyboard', () => {
@@ -110,16 +119,22 @@ describe( 'Widget', () => {
 		} );
 
 		// The body should be visible by default.
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).not.toBeInTheDocument();
 
 		fireEvent.keyUp( header, { key: 'Enter' } );
 		// Snapshot should mark the body as collapsed.
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).toBeInTheDocument();
 
 		fireEvent.keyUp( header, { key: 'Enter' } );
 		// Snapshot should mark the body as visible again (eg. no collapsed
 		// CSS class).
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should hide the collapsible widget body when `defaultCollapsed` is true', () => {
@@ -139,12 +154,16 @@ describe( 'Widget', () => {
 			name: 'Expand section',
 		} );
 
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).toBeInTheDocument();
 
 		// Should expand the body when the header is clicked, even
 		// when `defaultCollapsed` is true.
 		fireEvent.keyUp( header, { key: 'Enter' } );
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should allow the parent component to control the collapsed state', () => {
@@ -172,6 +191,8 @@ describe( 'Widget', () => {
 		);
 
 		// The body should not be visible when `isCollapsed` is true.
-		expect( container ).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget__body--collapsed' )
+		).toBeInTheDocument();
 	} );
 } );
