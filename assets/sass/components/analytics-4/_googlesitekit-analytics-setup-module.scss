@@ -22,8 +22,63 @@
 
 		&.googlesitekit-feature--setupFlowRefresh {
 
-			.googlesitekit-setup-module__inputs {
+			.googlesitekit-setup-module__inputs--grid-layout {
 				align-items: start;
+
+				@media (max-width: $bp-desktop) {
+					display: grid;
+					gap: 36px;
+					grid-template-columns: minmax(0, 1fr);
+					margin-bottom: 36px;
+
+					.googlesitekit-setup-module__input-wrapper {
+						margin: 0;
+						max-width: none;
+						min-width: 0;
+						width: 100%;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--account {
+						margin-top: $grid-gap-phone;
+					}
+				}
+
+				@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+					// gap: $grid-gap-phone;
+					gap: 40px $grid-gap-desktop;
+					grid-template-columns: repeat(2, 1fr);
+					margin-bottom: 40px;
+
+					.googlesitekit-setup-module__input-wrapper--account {
+						grid-column: 1;
+						grid-row: 1;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--property {
+						grid-column: 1;
+						grid-row: 2;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--webdatastream {
+						grid-column: 2;
+						grid-row: 2;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--webdatastream-name {
+						grid-column: 1;
+						grid-row: 3;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--country {
+						grid-column: 1;
+						grid-row: 1;
+					}
+
+					.googlesitekit-setup-module__input-wrapper--timezone {
+						grid-column: 2;
+						grid-row: 1;
+					}
+				}
 
 				.googlesitekit-setup__step-hint {
 					margin: 7px 0 0 15px;
@@ -37,6 +92,21 @@
 					@media (min-width: $bp-tablet) {
 						width: 280px;
 					}
+
+					@media (max-width: $bp-desktop) {
+						max-width: none;
+						width: 100%;
+					}
+				}
+
+				@media (max-width: $bp-desktop) {
+
+					.googlesitekit-analytics__select-account,
+					.googlesitekit-analytics-4__select-property,
+					.googlesitekit-analytics-4__select-webdatastream {
+						max-width: none;
+						width: 100%;
+					}
 				}
 			}
 
@@ -44,6 +114,14 @@
 				font-size: $fs-body-lg;
 				letter-spacing: $ls-m;
 				margin-bottom: 0;
+
+				@media (max-width: $bp-desktop) {
+					margin-bottom: 12px;
+				}
+
+				@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+					margin-bottom: 6px;
+				}
 			}
 
 			.googlesitekit-plugin-conversion-tracking-notice {
