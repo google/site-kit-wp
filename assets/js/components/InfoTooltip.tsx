@@ -20,20 +20,31 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import { Tooltip } from 'googlesitekit-components';
 import InfoIcon from '@/svg/icons/info-green.svg';
+import { FC, ReactNode } from 'react';
 
-export default function InfoTooltip( { onOpen, title, tooltipClassName } ) {
+interface InfoTooltipProps {
+	onOpen?: () => void;
+	title?: ReactNode;
+	tooltipClassName?: string;
+}
+
+const InfoTooltip: FC< InfoTooltipProps > = ( {
+	onOpen,
+	title,
+	tooltipClassName,
+} ) => {
 	if ( ! title ) {
 		return null;
 	}
 
 	return (
+		// @ts-expect-error `Tooltip` is not typed.
 		<Tooltip
 			className="googlesitekit-info-tooltip"
 			tooltipClassName={ classnames(
@@ -47,15 +58,11 @@ export default function InfoTooltip( { onOpen, title, tooltipClassName } ) {
 			onOpen={ onOpen }
 			interactive
 		>
-			<span tabIndex="0" role="tooltip">
+			<span tabIndex={ 0 } role="tooltip">
 				<InfoIcon width="16" height="16" />
 			</span>
 		</Tooltip>
 	);
-}
-
-InfoTooltip.propTypes = {
-	onOpen: PropTypes.func,
-	title: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
-	tooltipClassName: PropTypes.string,
 };
+
+export default InfoTooltip;

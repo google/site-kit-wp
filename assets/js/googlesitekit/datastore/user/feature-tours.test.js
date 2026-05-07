@@ -31,6 +31,10 @@ import {
 	FEATURE_TOUR_COOLDOWN_SECONDS,
 	FEATURE_TOUR_LAST_DISMISSED_AT,
 } from './feature-tours';
+import {
+	CORE_UI,
+	FORCED_IN_VIEW_WIDGET_AREAS,
+} from '@/js/googlesitekit/datastore/ui/constants';
 
 describe( 'core/user feature-tours', () => {
 	let registry;
@@ -164,6 +168,24 @@ describe( 'core/user feature-tours', () => {
 
 				expect( store.getState().currentTour ).toEqual( testTourA );
 			} );
+
+			it( 'clears forced in-view widget areas', async () => {
+				muteFetch( fetchDismissTourRegExp, [] );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( FORCED_IN_VIEW_WIDGET_AREAS, [
+						'widget-area-1',
+					] );
+
+				await registry.dispatch( CORE_USER ).dismissTour( 'test-tour' );
+
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toBeUndefined();
+			} );
 		} );
 
 		describe( 'receiveCurrentTour', () => {
@@ -258,6 +280,25 @@ describe( 'core/user feature-tours', () => {
 				// Ensure the original tour in state ("testTourA") is still in state and that a
 				// newly-triggered tour does not overwrite the existing tour in-state.
 				expect( store.getState().currentTour ).toEqual( testTourA );
+			} );
+
+			it( 'sets forced in-view widget areas for tours with preloadWidgetAreas', async () => {
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toBeUndefined();
+
+				await registry.dispatch( CORE_USER ).triggerTour( {
+					...testTourA,
+					preloadWidgetAreas: [ 'widget-area-1', 'widget-area-2' ],
+				} );
+
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+				).toEqual( [ 'widget-area-1', 'widget-area-2' ] );
 			} );
 		} );
 

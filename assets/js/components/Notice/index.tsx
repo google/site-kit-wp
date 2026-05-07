@@ -32,10 +32,24 @@ import Icon from './Icon';
 import Title from './Title';
 import Description from './Description';
 import CTAButton from './CTAButton';
-import DismissButton from './DismissButton';
+import DismissButton, { DismissButtonProps } from './DismissButton';
 import { NOTICE_TYPES } from './constants';
-import { DismissButtonProps } from './DismissButtonProps';
 
+function hasDismissButtonAction( dismissButton?: DismissButtonProps ) {
+	if ( dismissButton?.variant === 'icon' ) {
+		return (
+			!! dismissButton.icon &&
+			!! dismissButton.ariaLabel &&
+			( dismissButton.onClick || dismissButton.href )
+		);
+	}
+
+	return (
+		!! dismissButton?.label ||
+		!! dismissButton?.onClick ||
+		!! dismissButton?.href
+	);
+}
 export interface NoticeProps {
 	actionContent?: ReactNode;
 	className?: string;
@@ -62,6 +76,12 @@ const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 		},
 		ref
 	) => {
+		const hasDismissAction = hasDismissButtonAction( dismissButton );
+		const hasCTAAction =
+			!! ctaButton?.label && ( ctaButton?.onClick || ctaButton?.href );
+		const hasActionContent =
+			!! actionContent || hasDismissAction || hasCTAAction;
+
 		return (
 			<div className="googlesitekit-notice-container" ref={ ref }>
 				<div
@@ -86,46 +106,35 @@ const Notice: FC< NoticeProps > = forwardRef< HTMLDivElement, NoticeProps >(
 						{ children }
 					</div>
 
-					{ ( dismissButton?.label ||
-						dismissButton?.onClick ||
-						( ctaButton?.label &&
-							( ctaButton?.onClick || ctaButton?.href ) ) ||
-						actionContent ) && (
+					{ hasActionContent && (
 						<div className="googlesitekit-notice__action">
 							{ actionContent }
 
-							{ ( dismissButton?.label ||
-								dismissButton?.onClick ) && (
-								<DismissButton
-									label={ dismissButton.label }
-									// @ts-expect-error `DismissButton` component is not yet typed.
-									onClick={ dismissButton.onClick }
-									disabled={ dismissButton.disabled }
-									href={ dismissButton.href }
-									external={ dismissButton.external }
+							{ hasDismissAction && (
+								<DismissButton { ...( dismissButton || {} ) } />
+							) }
+							{ hasCTAAction && (
+								<CTAButton
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									label={ ctaButton.label }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									onClick={ ctaButton.onClick }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									inProgress={ ctaButton.inProgress }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									disabled={ ctaButton.disabled }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									href={ ctaButton.href }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									external={ ctaButton.external }
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									hideExternalIndicator={
+										ctaButton.hideExternalIndicator
+									}
+									// @ts-expect-error `CTAButton` component is not yet typed.
+									tertiary={ ctaButton.tertiary }
 								/>
 							) }
-							{ ctaButton?.label &&
-								( ctaButton?.onClick || ctaButton?.href ) && (
-									<CTAButton
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										label={ ctaButton.label }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										onClick={ ctaButton.onClick }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										inProgress={ ctaButton.inProgress }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										disabled={ ctaButton.disabled }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										href={ ctaButton.href }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										external={ ctaButton.external }
-										// @ts-expect-error `CTAButton` component is not yet typed.
-										hideExternalIndicator={
-											ctaButton.hideExternalIndicator
-										}
-									/>
-								) }
 						</div>
 					) }
 				</div>

@@ -360,6 +360,25 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
+	it( 'should not render the progress indicator when setupFlowRefresh is disabled', async () => {
+		const { container, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-progress-indicator' )
+		).toBeNull();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
 		const initialSetupSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/initial-setup-settings'
@@ -826,6 +845,47 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				);
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
 			} );
+		} );
+
+		it( 'should render the progress indicator', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( '.googlesitekit-progress-indicator' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should have only the initial stub segment in the progress indicator (no active segments yet)', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
+			const segments = container.querySelectorAll(
+				'.googlesitekit-progress-indicator__segment'
+			);
+			// Only the stub segment should be present at initial render.
+			expect( segments.length ).toBe( 1 );
 		} );
 	} );
 } );

@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-export interface DismissButtonProps {
-	label?: string;
-	dismissOptions?: {
-		expiresInSeconds?: number;
-		skipHidingFromQueue?: boolean;
-	};
-	onClick?: (
-		event: React.MouseEvent< HTMLAnchorElement | HTMLButtonElement >
-	) => void;
-	disabled?: boolean;
-	tertiary?: boolean;
-	href?: string;
-	external?: boolean;
+declare module '*.svg' {
+	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
+	export default content;
+}
+
+declare module '*.svg?url' {
+	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
+	export default content;
 }
