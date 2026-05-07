@@ -26,14 +26,22 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import StepHint from '@/js/components/setup/StepHint';
 
 export default function WebDataStreamHint() {
+	const viewContext = useViewContext();
+
 	const learnMoreLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ga4-data-stream' )
 	);
+
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const isInitialSetupFlow = !! showProgress;
 
 	return (
 		<StepHint
@@ -50,6 +58,15 @@ export default function WebDataStreamHint() {
 					a: (
 						<Link
 							href={ learnMoreLink }
+							onClick={ () => {
+								trackEvent(
+									isInitialSetupFlow
+										? `${ viewContext }_setup`
+										: viewContext,
+									'click_learn_more_link',
+									'analytics_data_stream'
+								);
+							} }
 							external
 							hideExternalIndicator
 						/>

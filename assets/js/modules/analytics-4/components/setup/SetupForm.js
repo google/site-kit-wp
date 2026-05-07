@@ -110,6 +110,8 @@ export default function SetupForm( { finishSetup } ) {
 		ENHANCED_MEASUREMENT_ENABLED
 	);
 
+	const isInitialSetupFlow = !! showProgress;
+
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -177,6 +179,15 @@ export default function SetupForm( { finishSetup } ) {
 						LearnMoreLink: setupFlowRefreshEnabled ? (
 							<Link
 								href={ pluginConversionsDocumentationURL }
+								onClick={ () => {
+									trackEvent(
+										isInitialSetupFlow
+											? `${ viewContext }_setup`
+											: viewContext,
+										'click_learn_more_link',
+										'plugin_conversion_tracking'
+									);
+								} }
 								external
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
