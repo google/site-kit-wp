@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import GoalDriverTile from '@/js/modules/analytics-4/components/site-goals/goal-drivers/GoalDriverTile';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import type { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
@@ -42,7 +42,21 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = (
 		title = __( 'Top traffic channels driving sales', 'google-site-kit' );
 	}
 
-	return <GoalDriverTile title={ title } { ...props } />;
+	const noDataMetricLabel =
+		props.goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'sales', 'google-site-kit' )
+			: __( 'leads', 'google-site-kit' );
+
+	return (
+		<TableTile
+			title={ title }
+			rows={ props.rows }
+			loading={ props.loading }
+			error={ props.error }
+			limit={ props.limit }
+			noDataMetricLabel={ noDataMetricLabel }
+		/>
+	);
 };
 
 export default TopTrafficChannelsGoalDriver;

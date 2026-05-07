@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, type Select } from 'googlesitekit-data';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import GoalDriverTile from '@/js/modules/analytics-4/components/site-goals/goal-drivers/GoalDriverTile';
 import type { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
@@ -106,12 +106,20 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 		[ pageURLs, props.rows ]
 	);
 
+	const noDataMetricLabel =
+		props.goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'sales', 'google-site-kit' )
+			: __( 'leads', 'google-site-kit' );
+
 	return (
-		<GoalDriverTile
+		<TableTile
 			title={ title }
 			headerLabel={ headerLabel }
-			{ ...props }
 			rows={ rowsWithURLs }
+			loading={ props.loading }
+			error={ props.error }
+			limit={ props.limit }
+			noDataMetricLabel={ noDataMetricLabel }
 		/>
 	);
 };
