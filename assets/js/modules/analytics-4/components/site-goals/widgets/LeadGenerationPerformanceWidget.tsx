@@ -43,7 +43,7 @@ import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
-	GoalDriversSection,
+	GoalDriverTiles,
 	useGoalDriversData,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
@@ -157,7 +157,13 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				title={ __( 'Lead generation performance', 'google-site-kit' ) }
 			/>
 
-			{ loading && <PreviewBlock width="100%" height="100px" /> }
+			{ loading && (
+				<PreviewBlock
+					className="googlesitekit-site-goals-tiles-group"
+					width="100%"
+					height="100px"
+				/>
+			) }
 
 			{ ! loading && (
 				<TilesGroup
@@ -210,11 +216,19 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				</TilesGroup>
 			) }
 
-			<GoalDriversSection
-				drivers={ drivers }
-				hasExpandableRows={ hasExpandableRows }
-				goalType={ GOAL_TYPES.LEAD }
-			/>
+			<TilesGroup
+				className="googlesitekit-site-goals-goal-drivers-group"
+				title={ __(
+					'What’s helping you reach your goals?',
+					'google-site-kit'
+				) }
+			>
+				<GoalDriverTiles
+					drivers={ drivers }
+					hasExpandableRows={ hasExpandableRows }
+					goalType={ GOAL_TYPES.LEAD }
+				/>
+			</TilesGroup>
 		</Widget>
 	);
 };
