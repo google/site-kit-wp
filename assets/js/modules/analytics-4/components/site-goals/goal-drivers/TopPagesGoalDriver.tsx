@@ -41,12 +41,6 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import type { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	let title = __( 'Top pages driving leads', 'google-site-kit' );
-
-	if ( props.goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top pages driving sales', 'google-site-kit' );
-	}
-
 	const headerLabel = __( 'Events', 'google-site-kit' );
 
 	const pagePaths = useMemo(
@@ -113,7 +107,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 
 	return (
 		<TableTile
-			title={ title }
+			title={ props.title || '' }
 			headerLabel={ headerLabel }
 			rows={ rowsWithURLs }
 			loading={ props.loading }
