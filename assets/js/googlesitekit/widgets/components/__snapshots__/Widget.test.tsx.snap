@@ -1,0 +1,365 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Widget should allow the parent component to control the collapsed state 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible googlesitekit-widget__header--collapsed"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body googlesitekit-widget__body--collapsed"
+      id="googlesitekit-widget-body-5"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should hide the collapsible widget body when \`defaultCollapsed\` is true 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-4"
+      aria-expanded="false"
+      aria-label="Expand section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible googlesitekit-widget__header--collapsed"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body googlesitekit-widget__body--collapsed"
+      id="googlesitekit-widget-body-4"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should hide the collapsible widget body when \`defaultCollapsed\` is true 2`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-4"
+      aria-expanded="true"
+      aria-label="Hide section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+      id="googlesitekit-widget-body-4"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is clicked 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-2"
+      aria-expanded="true"
+      aria-label="Hide section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+      id="googlesitekit-widget-body-2"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is clicked 2`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-2"
+      aria-expanded="false"
+      aria-label="Expand section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible googlesitekit-widget__header--collapsed"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body googlesitekit-widget__body--collapsed"
+      id="googlesitekit-widget-body-2"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is clicked 3`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-2"
+      aria-expanded="true"
+      aria-label="Hide section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+      id="googlesitekit-widget-body-2"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is toggled with the keyboard 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-3"
+      aria-expanded="true"
+      aria-label="Hide section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+      id="googlesitekit-widget-body-3"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is toggled with the keyboard 2`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-3"
+      aria-expanded="false"
+      aria-label="Expand section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible googlesitekit-widget__header--collapsed"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body googlesitekit-widget__body--collapsed"
+      id="googlesitekit-widget-body-3"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Widget should toggle the collapsible widget body when the header is toggled with the keyboard 3`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--collapsible-test-widget googlesitekit-widget--with-header"
+  >
+    <div
+      aria-controls="googlesitekit-widget-body-3"
+      aria-expanded="true"
+      aria-label="Hide section"
+      class="googlesitekit-widget__header googlesitekit-widget__header--collapsible"
+      role="button"
+      tabindex="0"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        <div
+          class="googlesitekit-widget__header-inner"
+        >
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 4px; margin-right: 8px;"
+          >
+            <svg />
+          </span>
+          Collapsible Test Widget
+        </div>
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+      id="googlesitekit-widget-body-3"
+    >
+      <div>
+        Collapsible Widget Body
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -54,7 +54,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			className = '',
 			children,
 			collapsible = false,
-			defaultCollapsed = false,
+			defaultCollapsed,
 			isCollapsed: isCollapsedProp,
 			Header,
 			headerContents,
@@ -64,7 +64,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 		},
 		ref
 	) => {
-		const [ isCollapsed, setIsCollapsed ] = useState( defaultCollapsed );
+		const [ isCollapsed, setIsCollapsed ] = useState( !! defaultCollapsed );
 
 		const instanceID = useInstanceId( Widget );
 
@@ -100,12 +100,17 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			}
 		} );
 
-		let ariaLabel: string | undefined;
+		// Check if the widget is collapsible and uncontrolled (i.e.
+		// `isCollapsed` prop is not provided). If so, set the appropriate
+		// aria-label for the toggle button.
+		const collapsibleAndUncontrolled =
+			!! collapsible && isCollapsedProp === undefined;
 
-		if ( !! collapsible ) {
+		let ariaLabel: string | undefined;
+		if ( collapsibleAndUncontrolled ) {
 			ariaLabel = isCollapsed
 				? __( 'Expand section', 'google-site-kit' )
-				: __( 'Collapse section', 'google-site-kit' );
+				: __( 'Hide section', 'google-site-kit' );
 		}
 
 		return (
@@ -122,10 +127,18 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 				{ Header && (
 					<div
 						aria-expanded={
-							!! collapsible ? ! isCollapsed : undefined
+							collapsibleAndUncontrolled
+								? ! isCollapsed
+								: undefined
 						}
-						aria-controls={ `googlesitekit-widget-body-${ instanceID }` }
-						aria-label={ ariaLabel }
+						aria-controls={
+							collapsibleAndUncontrolled
+								? `googlesitekit-widget-body-${ instanceID }`
+								: undefined
+						}
+						aria-label={
+							collapsibleAndUncontrolled ? ariaLabel : undefined
+						}
 						className={ classnames(
 							'googlesitekit-widget__header',
 							{
@@ -136,10 +149,12 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 							}
 						) }
 						onClick={
-							!! collapsible ? toggleIsCollapsed : undefined
+							collapsibleAndUncontrolled
+								? toggleIsCollapsed
+								: undefined
 						}
 						onKeyUp={
-							!! collapsible
+							collapsibleAndUncontrolled
 								? ( event ) => {
 										if ( event.key === 'Enter' ) {
 											toggleIsCollapsed();
@@ -147,12 +162,14 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 								  }
 								: undefined
 						}
-						role="button"
-						tabIndex={ 0 }
+						role={
+							collapsibleAndUncontrolled ? 'button' : undefined
+						}
+						tabIndex={ collapsibleAndUncontrolled ? 0 : undefined }
 					>
 						<Header>
-							{ !! collapsible && (
-								<div className="googlesitekit-widget__header-inner">
+							<div className="googlesitekit-widget__header-inner">
+								{ !! collapsible && (
 									<IconWrapper
 										marginLeft={ 4 }
 										marginRight={ 8 }
@@ -166,9 +183,9 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 											} ) }
 										/>
 									</IconWrapper>
-									{ headerContents }
-								</div>
-							) }
+								) }
+								{ headerContents }
+							</div>
 						</Header>
 					</div>
 				) }
@@ -176,7 +193,11 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 					className={ classnames( 'googlesitekit-widget__body', {
 						'googlesitekit-widget__body--collapsed': !! isCollapsed,
 					} ) }
-					id={ `googlesitekit-widget-body-${ instanceID } ` }
+					id={
+						!! collapsible
+							? `googlesitekit-widget-body-${ instanceID }`
+							: undefined
+					}
 				>
 					{ children }
 				</div>
