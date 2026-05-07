@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useMemo } from '@wordpress/element';
@@ -57,7 +62,7 @@ function flattenSelections( selections?: GoalDriverSelectionState ): string[] {
 	);
 }
 
-export default function Footer( { isOpen, closePanel }: FooterProps ) {
+const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const selectedDrivers = useFormValue(
@@ -94,4 +99,6 @@ export default function Footer( { isOpen, closePanel }: FooterProps ) {
 			maxSelectedItemCount={ SITE_GOALS_MAX_SELECTED_DRIVERS * 2 }
 		/>
 	);
-}
+};
+
+export default Footer;
