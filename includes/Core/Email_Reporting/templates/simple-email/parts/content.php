@@ -87,7 +87,7 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 				);
 				?>
 				<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
-				<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+				<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 				<?php endif; ?>
 			</p>
 			<?php endforeach; ?>
