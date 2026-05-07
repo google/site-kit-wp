@@ -34,7 +34,7 @@ import useVisitorTypeGoalDriverData from '@/js/modules/analytics-4/components/si
 import type {
 	GoalDriverData,
 	GoalDriverCatalogEntry,
-	GoalDriversSectionDriver,
+	GoalDriverTilesDriver,
 	UseGoalDriversDataArgs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
@@ -72,7 +72,7 @@ export default function useGoalDriversData( {
 		[ topPages, topTrafficChannels, visitorType ]
 	);
 
-	const drivers: GoalDriversSectionDriver[] = useMemo(
+	const drivers: GoalDriverTilesDriver[] = useMemo(
 		() =>
 			activeDriverIDs
 				.map( ( driverID ) => {
