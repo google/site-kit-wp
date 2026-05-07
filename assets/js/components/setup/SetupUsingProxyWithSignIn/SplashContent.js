@@ -196,7 +196,7 @@ export default function SplashContent( {
 												href={ learnMoreLink }
 												onClick={ () => {
 													trackEvent(
-														`${ viewContext }`,
+														viewContext,
 														'click_learn_more_link',
 														'analytics_checkbox'
 													);
