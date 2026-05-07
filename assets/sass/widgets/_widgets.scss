@@ -72,6 +72,25 @@
 			line-height: $lh-title-md;
 			margin: 0;
 		}
+
+		&.googlesitekit-widget__header--collapsible {
+			cursor: pointer;
+			font-weight: $fw-bold;
+
+			.googlesitekit-widget__header-inner  {
+				padding: 4px;
+			}
+
+			&:focus .googlesitekit-widget__header-inner  {
+				box-shadow: none;
+				outline: 1px dotted $c-interactive-focus;
+				outline-offset: 0;
+			}
+		}
+	}
+
+	.googlesitekit-widget__header-icon--is-collapsed {
+		rotate: 180deg;
 	}
 
 	/**
@@ -83,6 +102,10 @@
 
 	.googlesitekit-widget.googlesitekit-widget--no-padding .googlesitekit-widget__body {
 		padding: 0;
+	}
+
+	.googlesitekit-widget__body.googlesitekit-widget__body--is-collapsed {
+		display: none;
 	}
 
 	/**

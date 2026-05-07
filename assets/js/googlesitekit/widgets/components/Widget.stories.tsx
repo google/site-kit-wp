@@ -17,17 +17,24 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * Internal dependencies
  */
 import {
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import Widget from './Widget';
+import Widget, { WidgetProps } from './Widget';
 import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { Story as StoryType } from '@/js/types/Story';
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
-function BoxesWidgets( { children } ) {
+const BoxesWidgets: FC = ( { children } ) => {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
 			<Row className="googlesitekit-widget-area-widgets">
@@ -35,9 +42,9 @@ function BoxesWidgets( { children } ) {
 			</Row>
 		</Grid>
 	);
-}
+};
 
-function CompositeWidgets( { children } ) {
+const CompositeWidgets: FC = ( { children } ) => {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--composite">
 			<Row className="googlesitekit-widget-area-widgets">
@@ -49,17 +56,17 @@ function CompositeWidgets( { children } ) {
 			</Row>
 		</Grid>
 	);
-}
+};
 
-function QuarterWidgetInGrid( props ) {
+const QuarterWidgetInGrid: FC< WidgetProps > = ( props ) => {
 	return (
 		<Cell mdSize={ 4 } lgSize={ 3 }>
 			<Widget { ...props } />
 		</Cell>
 	);
-}
+};
 
-export function WidgetsInBoxesLayout() {
+export const WidgetsInBoxesLayout: FC = () => {
 	return (
 		<BoxesWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -73,9 +80,33 @@ export function WidgetsInBoxesLayout() {
 			) ) }
 		</BoxesWidgets>
 	);
-}
+};
 
-export function WidgetsInCompositeLayout() {
+export const WidgetWithCollapsibleHeader: FC = () => {
+	return (
+		<BoxesWidgets>
+			<Cell mdSize={ 8 } lgSize={ 12 }>
+				<Widget
+					collapsibleTitle="Collapsible Widget"
+					Header={ ( { children } = {} ) => <div>{ children }</div> }
+					widgetSlug="widget-lorem"
+					collapsible
+				>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+					do eiusmod tempor incididunt ut labore et dolore magna
+					aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+					ullamco laboris nisi ut aliquip ex ea commodo consequat.
+					Duis aute irure dolor in reprehenderit in voluptate velit
+					esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+					occaecat cupidatat non proident, sunt in culpa qui officia
+					deserunt mollit anim id est laborum.
+				</Widget>
+			</Cell>
+		</BoxesWidgets>
+	);
+};
+
+export const WidgetsInCompositeLayout: FC = () => {
 	return (
 		<CompositeWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -89,9 +120,33 @@ export function WidgetsInCompositeLayout() {
 			) ) }
 		</CompositeWidgets>
 	);
-}
+};
 
-export function WidgetsWithoutPaddingInBoxesLayout() {
+export const WidgetsWithCollapsibleHeaderInCompositeLayout: FC = () => {
+	return (
+		<CompositeWidgets>
+			{ [ 1, 2, 3, 4 ].map( ( count ) => (
+				<Cell mdSize={ 8 } lgSize={ 12 } key={ `widget${ count }` }>
+					<Widget
+						collapsibleTitle={ `Collapsible Widget Header #${ count }` }
+						Header={ ( { children } = {} ) => (
+							<div>{ children }</div>
+						) }
+						widgetSlug={ `widget${ count }` }
+						collapsible
+					>
+						{ count === 4 && (
+							<div>Widget with more body content.</div>
+						) }
+						{ count !== 4 && <div>Widget body content.</div> }
+					</Widget>
+				</Cell>
+			) ) }
+		</CompositeWidgets>
+	);
+};
+
+export const WidgetsWithoutPaddingInBoxesLayout: FC = () => {
 	return (
 		<BoxesWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -106,9 +161,9 @@ export function WidgetsWithoutPaddingInBoxesLayout() {
 			) ) }
 		</BoxesWidgets>
 	);
-}
+};
 
-export function WidgetsWithoutPaddingInCompositeLayout() {
+export const WidgetsWithoutPaddingInCompositeLayout: FC = () => {
 	return (
 		<CompositeWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -123,9 +178,9 @@ export function WidgetsWithoutPaddingInCompositeLayout() {
 			) ) }
 		</CompositeWidgets>
 	);
-}
+};
 
-export function WidgetsWithHeaderAndFooterInBoxesLayout() {
+export const WidgetsWithHeaderAndFooterInBoxesLayout: FC = () => {
 	return (
 		<BoxesWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -141,9 +196,9 @@ export function WidgetsWithHeaderAndFooterInBoxesLayout() {
 			) ) }
 		</BoxesWidgets>
 	);
-}
+};
 
-export function WidgetsWithHeaderAndFooterInCompositeLayout() {
+export const WidgetsWithHeaderAndFooterInCompositeLayout: FC = () => {
 	return (
 		<CompositeWidgets>
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
@@ -159,14 +214,14 @@ export function WidgetsWithHeaderAndFooterInCompositeLayout() {
 			) ) }
 		</CompositeWidgets>
 	);
-}
+};
 
 export default {
 	title: 'Components/Widget',
 	component: Widget,
 	decorators: [
-		( Story ) => {
-			function setupRegistry( registry ) {
+		( Story: StoryType ) => {
+			function setupRegistry( registry: WPDataRegistry ) {
 				provideUserCapabilities( registry );
 				provideModules( registry );
 			}
