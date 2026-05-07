@@ -26,6 +26,7 @@ import { useMemo } from '@wordpress/element';
  */
 import {
 	GOAL_DRIVER_CATALOG,
+	getGoalDriverContent,
 	resolveGoalDriverIDs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/registry';
 import useTopTrafficChannelsGoalDriverData from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useTopTrafficChannelsGoalDriverData';
@@ -33,12 +34,9 @@ import useTopPagesGoalDriverData from '@/js/modules/analytics-4/components/site-
 import useVisitorTypeGoalDriverData from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useVisitorTypeGoalDriverData';
 import type {
 	GoalDriverData,
-	GoalDriverCatalogEntry,
 	GoalDriverTilesDriver,
 	UseGoalDriversDataArgs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-
-type CombinedGoalDriver = GoalDriverData & GoalDriverCatalogEntry;
 
 export default function useGoalDriversData( {
 	goalType,
@@ -59,8 +57,8 @@ export default function useGoalDriversData( {
 	} );
 
 	const activeDriverIDs = useMemo(
-		() => resolveGoalDriverIDs( selectedDriverIDs ),
-		[ selectedDriverIDs ]
+		() => resolveGoalDriverIDs( selectedDriverIDs, goalType ),
+		[ goalType, selectedDriverIDs ]
 	);
 
 	const dataByID: Record< GoalDriverData[ 'id' ], GoalDriverData > = useMemo(
@@ -72,27 +70,28 @@ export default function useGoalDriversData( {
 		[ topPages, topTrafficChannels, visitorType ]
 	);
 
-	const drivers: GoalDriverTilesDriver[] = useMemo(
-		() =>
-			activeDriverIDs
-				.map( ( driverID ) => {
-					const metadata = GOAL_DRIVER_CATALOG[ driverID ];
-					const data = dataByID[ driverID ];
+	const drivers: GoalDriverTilesDriver[] = useMemo( () => {
+		const mappedDrivers: GoalDriverTilesDriver[] = [];
 
-					if ( ! metadata || ! data ) {
-						return null;
-					}
+		activeDriverIDs.forEach( ( driverID ) => {
+			const metadata = GOAL_DRIVER_CATALOG[ driverID ];
+			const data = dataByID[ driverID ];
 
-					return {
-						...metadata,
-						...data,
-					};
-				} )
-				.filter(
-					( driver ): driver is CombinedGoalDriver => driver !== null
-				),
-		[ activeDriverIDs, dataByID ]
-	);
+			if ( ! metadata || ! data ) {
+				return;
+			}
+
+			const content = getGoalDriverContent( goalType, driverID );
+
+			mappedDrivers.push( {
+				...metadata,
+				...data,
+				title: content?.title,
+			} );
+		} );
+
+		return mappedDrivers;
+	}, [ activeDriverIDs, dataByID, goalType ] );
 
 	const loading = drivers.some( ( driver ) => driver.loading );
 	const error = drivers.find( ( driver ) => !! driver.error )?.error;
