@@ -34,31 +34,31 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 	GoalDriverTiles,
+	resolveGoalDriverSelectionState,
 	useGoalDriversData,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
-
-// TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
-const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
-	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-	GOAL_DRIVER_IDS.TOP_PAGES,
-	GOAL_DRIVER_IDS.VISITOR_TYPE,
-];
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -80,10 +80,24 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
 	);
+
+	const effectiveSelectedDrivers = useSelect(
+		( select: Select ) =>
+			select( CORE_FORMS ).getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_EFFECTIVE_DRIVERS
+			),
+		[]
+	) as { [ key: string ]: string[] } | undefined;
+
+	const resolvedSelections = resolveGoalDriverSelectionState(
+		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
+	);
+
 	const { drivers, hasExpandableRows } = useGoalDriversData( {
 		goalType: GOAL_TYPES.ECOMMERCE,
 		primaryEvent,
-		selectedDriverIDs: DEFAULT_SELECTED_GOAL_DRIVER_IDS,
+		selectedDriverIDs: resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
 	} );
 
 	const dates = useSelect(
@@ -116,13 +130,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
+	const onlineStorePerformanceReportDependencies = [
+		dates?.startDate,
+		dates?.endDate,
+		dates?.compareStartDate,
+		dates?.compareEndDate,
+		primaryEvent,
+	];
+
 	const [ primaryEventReport, engagementReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptions
+			onlineStorePerformanceReportDependencies
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -132,7 +154,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptions
+		onlineStorePerformanceReportDependencies
 	);
 
 	if ( ! primaryEvent ) {
@@ -229,6 +251,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					'What’s helping you reach your goals?',
 					'google-site-kit'
 				) }
+				headerCTA={ <ChangeGoalDriversLink /> }
 			>
 				<GoalDriverTiles
 					drivers={ drivers }
