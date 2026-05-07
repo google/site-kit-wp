@@ -87,8 +87,8 @@ export const WidgetWithCollapsibleHeader: FC = () => {
 		<BoxesWidgets>
 			<Cell mdSize={ 8 } lgSize={ 12 }>
 				<Widget
-					collapsibleTitle="Collapsible Widget"
 					Header={ ( { children } = {} ) => <div>{ children }</div> }
+					headerContents="Collapsible Widget"
 					widgetSlug="widget-lorem"
 					collapsible
 				>
@@ -128,10 +128,10 @@ export const WidgetsWithCollapsibleHeaderInCompositeLayout: FC = () => {
 			{ [ 1, 2, 3, 4 ].map( ( count ) => (
 				<Cell mdSize={ 8 } lgSize={ 12 } key={ `widget${ count }` }>
 					<Widget
-						collapsibleTitle={ `Collapsible Widget Header #${ count }` }
 						Header={ ( { children } = {} ) => (
 							<div>{ children }</div>
 						) }
+						headerContents={ `Collapsible Widget Header #${ count }` }
 						widgetSlug={ `widget${ count }` }
 						collapsible
 					>

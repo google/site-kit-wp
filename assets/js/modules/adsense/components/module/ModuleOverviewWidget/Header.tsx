@@ -26,16 +26,18 @@ import { sprintf, _n } from '@wordpress/i18n';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import { useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
+import { FC } from 'react';
 
-function Header() {
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
+const Header: FC = () => {
+	const currentDayCount = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
+		[]
 	);
 
 	return (
-		<WidgetHeaderTitle
-			title={ sprintf(
+		<WidgetHeaderTitle>
+			{ sprintf(
 				/* translators: %s: number of days */
 				_n(
 					'Performance over the last %s day',
@@ -45,8 +47,8 @@ function Header() {
 				),
 				currentDayCount
 			) }
-		/>
+		</WidgetHeaderTitle>
 	);
-}
+};
 
 export default Header;

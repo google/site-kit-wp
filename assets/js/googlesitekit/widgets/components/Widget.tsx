@@ -26,6 +26,7 @@ import { ElementType, FC, ReactNode, useEffect, useState } from 'react';
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,14 +34,15 @@ import { forwardRef } from '@wordpress/element';
 import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from '@/js/components/IconWrapper';
 import { useMount } from 'react-use';
+import { useInstanceId } from '@wordpress/compose';
 
 export interface WidgetProps {
 	className?: string;
 	collapsible?: boolean;
-	collapsibleTitle?: ReactNode;
 	defaultCollapsed?: boolean;
 	isCollapsed?: boolean;
 	Header?: ElementType;
+	headerContents?: ReactNode;
 	Footer?: ElementType;
 	noPadding?: boolean;
 	widgetSlug: string;
@@ -52,10 +54,10 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			className = '',
 			children,
 			collapsible = false,
-			collapsibleTitle,
 			defaultCollapsed = false,
 			isCollapsed: isCollapsedProp,
 			Header,
+			headerContents,
 			Footer,
 			noPadding = false,
 			widgetSlug,
@@ -63,6 +65,8 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 		ref
 	) => {
 		const [ isCollapsed, setIsCollapsed ] = useState( defaultCollapsed );
+
+		const instanceID = useInstanceId( Widget );
 
 		// If the `isCollapsed` prop is provided, it will control the collapsed
 		// state of the widget. This allows the parent component to manage the
@@ -96,6 +100,14 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			}
 		} );
 
+		let ariaLabel: string | undefined;
+
+		if ( !! collapsible ) {
+			ariaLabel = isCollapsed
+				? __( 'Expand section', 'google-site-kit' )
+				: __( 'Collapse section', 'google-site-kit' );
+		}
+
 		return (
 			<div
 				className={ classnames(
@@ -112,12 +124,14 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 						aria-expanded={
 							!! collapsible ? ! isCollapsed : undefined
 						}
+						aria-controls={ `googlesitekit-widget-body-${ instanceID }` }
+						aria-label={ ariaLabel }
 						className={ classnames(
 							'googlesitekit-widget__header',
 							{
 								'googlesitekit-widget__header--collapsible':
 									collapsible,
-								'googlesitekit-widget__header--is-collapsed':
+								'googlesitekit-widget__header--collapsed':
 									isCollapsed,
 							}
 						) }
@@ -127,11 +141,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 						onKeyUp={
 							!! collapsible
 								? ( event ) => {
-										if (
-											event.key === 'Enter' ||
-											// Space key, see: https://www.w3.org/TR/uievents-key/#keys-whitespace
-											event.key === ' '
-										) {
+										if ( event.key === 'Enter' ) {
 											toggleIsCollapsed();
 										}
 								  }
@@ -156,7 +166,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 											} ) }
 										/>
 									</IconWrapper>
-									{ collapsibleTitle }
+									{ headerContents }
 								</div>
 							) }
 						</Header>
@@ -166,6 +176,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 					className={ classnames( 'googlesitekit-widget__body', {
 						'googlesitekit-widget__body--collapsed': !! isCollapsed,
 					} ) }
+					id={ `googlesitekit-widget-body-${ instanceID } ` }
 				>
 					{ children }
 				</div>
