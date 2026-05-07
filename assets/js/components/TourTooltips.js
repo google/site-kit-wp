@@ -38,6 +38,7 @@ import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
 import { isFeatureEnabled } from '@/js/features';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 
@@ -79,6 +80,17 @@ export const floaterProps = {
 			filter: 'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
 		},
 	},
+};
+
+const defaultStepOptions = {
+	disableBeacon: true,
+	isFixed: true,
+	placement: 'auto',
+};
+
+const responsiveStepOptions = {
+	placement: 'top',
+	offset: 0,
 };
 
 // GA Event Tracking actions (do not change!)
@@ -217,7 +229,7 @@ export default function TourTooltips( {
 	}
 
 	/**
-	 * Scrolls the step into view based on its height.
+	 * Scrolls the step into view.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -234,29 +246,23 @@ export default function TourTooltips( {
 			return;
 		}
 
-		if ( ! step.scrollToTop ) {
+		if ( ! step.responsive ) {
 			element.scrollIntoView( { block: 'center' } );
 			return;
 		}
 
-		const availableHeight = window.innerHeight;
-		const { height, top } = element.getBoundingClientRect();
 		const tooltip = document.querySelector( '.__floater' );
 
 		if ( ! tooltip ) {
 			return;
 		}
 
+		const { top } = element.getBoundingClientRect();
 		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
 
-		if ( height + tooltipHeight > availableHeight ) {
-			window.scrollTo( {
-				top: top - tooltipHeight - 60 + window.scrollY,
-			} );
-			return;
-		}
-
-		element.scrollIntoView( { block: 'center' } );
+		window.scrollTo( {
+			top: top - tooltipHeight - 60 + window.scrollY,
+		} );
 	}
 
 	/**
@@ -310,12 +316,18 @@ export default function TourTooltips( {
 	// Start tour on initial render.
 	useMount( startTour );
 
-	const parsedSteps = steps.map( ( step ) => ( {
-		disableBeacon: true,
-		isFixed: true,
-		placement: 'auto',
-		...step,
-	} ) );
+	const breakpoint = useBreakpoint();
+
+	const parsedSteps = steps.map( ( step ) =>
+		step.responsive && breakpoint === BREAKPOINT_SMALL
+			? {
+					...defaultStepOptions,
+					...step,
+					...responsiveStepOptions,
+					floaterProps: { ...step.floaterProps, target: step.target },
+			  }
+			: { ...defaultStepOptions, ...step }
+	);
 
 	// Customize floater props based on feature flag.
 	const customFloaterProps = setupFlowRefreshEnabled
