@@ -1,4 +1,6 @@
 /**
+ * Site Goals Goal Drivers hooks exports.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +16,7 @@
  * limitations under the License.
  */
 
-declare module '*.svg' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
-}
-
-declare module '*.svg?url' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
-}
+export { default as useGoalDriversData } from './useGoalDriversData';
+export { default as useTopTrafficChannelsGoalDriverData } from './useTopTrafficChannelsGoalDriverData';
+export { default as useTopPagesGoalDriverData } from './useTopPagesGoalDriverData';
+export { default as useVisitorTypeGoalDriverData } from './useVisitorTypeGoalDriverData';

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ReactElement } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -55,7 +60,6 @@ function Template() {
 						description={ createInterpolateElement(
 							'Use the new settings in the block editor select different product IDs for individual pages or control where CTAs appear on an individual post. You can also configure a different product ID for a group of posts in the <a>Categories</a> or <a>Tags section</a>. <a>Learn more</a>',
 							{
-								// @ts-expect-error `Link` is not typed.
 								a: <Link href="#" />,
 							}
 						) }
@@ -130,7 +134,6 @@ function Template() {
 						description={ createInterpolateElement(
 							'You need to complete the 2 steps below or you will lose all Analytics tracking. <a>Learn more</a>',
 							{
-								// @ts-expect-error `Link` is not typed.
 								a: <Link href="#" />,
 							}
 						) }
@@ -145,7 +148,6 @@ function Template() {
 						description={ createInterpolateElement(
 							'You need to complete the 2 steps below or you will lose all Analytics tracking. <a>Learn more</a>',
 							{
-								// @ts-expect-error `Link` is not typed.
 								a: <Link href="#" />,
 							}
 						) }
@@ -167,7 +169,6 @@ function Template() {
 						description={ createInterpolateElement(
 							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics. Add them to your dashboard to get a better understanding of how users interact with your site. <a>Learn more</a>',
 							{
-								// @ts-expect-error `Link` is not typed.
 								a: <Link href="#" />,
 							}
 						) }
@@ -186,7 +187,6 @@ function Template() {
 						description={ createInterpolateElement(
 							'We’ve extended your metrics selection with metrics that aren’t available by default in Analytics!',
 							{
-								// @ts-expect-error `Link` is not typed.
 								a: <Link href="#" />,
 							}
 						) }
@@ -249,8 +249,7 @@ AllNotices.scenario = {};
 export default {
 	title: 'Components/Notice',
 	decorators: [
-		// @ts-expect-error Stories are not automatically typed.
-		( Story ) => {
+		( Story: () => ReactElement ) => {
 			return (
 				<div>
 					<Story />

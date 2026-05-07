@@ -46,7 +46,6 @@ const EditLink: FC< EditLinkProps > = ( {
 	linkRef,
 } ) => {
 	return (
-		// @ts-expect-error - The `Link` component is not typed yet.
 		<Link
 			onClick={ onClick }
 			ref={ linkRef }

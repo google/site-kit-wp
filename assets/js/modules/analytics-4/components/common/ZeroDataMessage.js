@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -32,46 +32,52 @@ import { __ } from '@wordpress/i18n';
 import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-export default function ZeroDataMessage( { skipPrefix } ) {
+export default function ZeroDataMessage( { skipPrefix, metricLabel } ) {
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
+	);
+	const dataLabel = metricLabel || __( 'visitors', 'google-site-kit' );
+	/* translators: %s: metric category label, e.g. visitors, leads, or sales. */
+	const pageNoDataMessage = __(
+		'No data to display: your page hasn’t received any %s yet',
+		'google-site-kit'
+	);
+	/* translators: %s: metric category label, e.g. visitors, leads, or sales. */
+	const siteNoDataMessage = __(
+		'No data to display: your site hasn’t received any %s yet',
+		'google-site-kit'
+	);
+	/* translators: %s: metric category label, e.g. visitors, leads, or sales. */
+	const pageNoDataMessageWithoutPrefix = __(
+		'Your page hasn’t received any %s yet',
+		'google-site-kit'
+	);
+	/* translators: %s: metric category label, e.g. visitors, leads, or sales. */
+	const siteNoDataMessageWithoutPrefix = __(
+		'Your site hasn’t received any %s yet',
+		'google-site-kit'
 	);
 
 	if ( skipPrefix ) {
 		return url ? (
 			<span>
-				{ __(
-					'Your page hasn’t received any visitors yet',
-					'google-site-kit'
-				) }
+				{ sprintf( pageNoDataMessageWithoutPrefix, dataLabel ) }
 			</span>
 		) : (
 			<span>
-				{ __(
-					'Your site hasn’t received any visitors yet',
-					'google-site-kit'
-				) }
+				{ sprintf( siteNoDataMessageWithoutPrefix, dataLabel ) }
 			</span>
 		);
 	}
 
 	return url ? (
-		<span>
-			{ __(
-				'No data to display: your page hasn’t received any visitors yet',
-				'google-site-kit'
-			) }
-		</span>
+		<span>{ sprintf( pageNoDataMessage, dataLabel ) }</span>
 	) : (
-		<span>
-			{ __(
-				'No data to display: your site hasn’t received any visitors yet',
-				'google-site-kit'
-			) }
-		</span>
+		<span>{ sprintf( siteNoDataMessage, dataLabel ) }</span>
 	);
 }
 
 ZeroDataMessage.propTypes = {
+	metricLabel: PropTypes.string,
 	skipPrefix: PropTypes.bool,
 };

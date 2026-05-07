@@ -78,10 +78,7 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 			'google-site-kit'
 		),
 		{
-			a: (
-				// @ts-expect-error - The `Link` component is not typed yet.
-				<Link onClick={ onRetryDownload } />
-			),
+			a: <Link onClick={ onRetryDownload } />,
 		}
 	);
 

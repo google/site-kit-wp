@@ -89,13 +89,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 				'google-site-kit'
 			),
 			{
-				a: (
-					<Link
-						// @ts-expect-error - The `Link` component is not currently typed.
-						href={ analyticsAccountLimitHelpURL }
-						external
-					/>
-				),
+				a: <Link href={ analyticsAccountLimitHelpURL } external />,
 			}
 		);
 		ctaButton = {
@@ -109,13 +103,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 				'google-site-kit'
 			),
 			{
-				a: (
-					<Link
-						// @ts-expect-error - The `Link` component is not currently typed.
-						href={ additionalAnalyticsSupportURL }
-						external
-					/>
-				),
+				a: <Link href={ additionalAnalyticsSupportURL } external />,
 			}
 		);
 		ctaButton = {

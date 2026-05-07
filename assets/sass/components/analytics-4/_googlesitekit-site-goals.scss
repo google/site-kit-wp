@@ -20,13 +20,16 @@
 		margin-top: 34px;
 	}
 
-	.googlesitekit-site-goals-tiles-group__title {
-		color: $c-surfaces-on-surface;
-		font-size: $fs-title-md;
-		font-weight: $fw-medium;
-		letter-spacing: $ls-xxs;
-		line-height: 20px;
-		margin: 0 0 12px;
+	.googlesitekit-site-goals-tiles-group {
+
+		.googlesitekit-site-goals-tiles-group__title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xxs;
+			line-height: $lh-title-md;
+			margin: 0 0 12px;
+		}
 	}
 
 	.googlesitekit-site-goals-tiles-group__tiles {
