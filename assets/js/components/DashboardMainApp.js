@@ -44,6 +44,7 @@ import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -388,6 +389,7 @@ export default function DashboardMainApp() {
 			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
+			{ siteGoalsEnabled && <SiteGoalsSelectionPanel /> }
 
 			{ showWelcomeModal && <WelcomeModal /> }
 
