@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -30,13 +35,13 @@ interface SiteGoalsSelectionPanelHeaderProps {
 	closePanel: () => void;
 }
 
-export default function Header( {
-	closePanel,
-}: SiteGoalsSelectionPanelHeaderProps ) {
+const Header: FC< SiteGoalsSelectionPanelHeaderProps > = ( { closePanel } ) => {
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Select metrics', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
 		/>
 	);
-}
+};
+
+export default Header;
