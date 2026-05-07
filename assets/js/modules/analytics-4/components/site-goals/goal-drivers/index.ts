@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export { default as GoalDriversSection } from './GoalDriversSection';
+export { default as GoalDriverTiles } from './GoalDriverTiles';
 export { GOAL_DRIVER_CATALOG, resolveGoalDriverIDs } from './registry';
 export {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -39,5 +39,5 @@ export type {
 	GoalDriverRow,
 	GoalDriverData,
 	GoalDriverComponentProps,
-	GoalDriversSectionDriver,
+	GoalDriverTilesDriver,
 } from './types';
