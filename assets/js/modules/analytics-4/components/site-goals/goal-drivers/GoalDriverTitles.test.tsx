@@ -17,9 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { render } from '../../../../../../../tests/js/test-utils';
+import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
+import { getGoalDriverOptions } from './registry';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
@@ -27,59 +34,65 @@ import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 const rows = [ { label: 'Direct', value: '60%' } ];
 
 describe( 'Goal driver titles', () => {
-	it( 'renders Top traffic channels title based on goal type', () => {
-		const { getByText, queryByText, rerender } = render(
-			<TopTrafficChannelsGoalDriver goalType="lead" rows={ rows } />
+	it( 'returns goal-specific titles for panel and widget usage', () => {
+		const ecommerceOptions = getGoalDriverOptions( GOAL_TYPES.ECOMMERCE );
+		const leadOptions = getGoalDriverOptions( GOAL_TYPES.LEAD );
+
+		expect( ecommerceOptions ).toContainEqual(
+			expect.objectContaining( {
+				id: GOAL_DRIVER_IDS.TOP_PAGES,
+				title: 'Top pages driving sales',
+			} )
 		);
+		expect( leadOptions ).toContainEqual(
+			expect.objectContaining( {
+				id: GOAL_DRIVER_IDS.TOP_PAGES,
+				title: 'Top pages driving leads',
+			} )
+		);
+	} );
+
+	it( 'renders passed title for top traffic channels', () => {
+		const { getByText } = render(
+			<TopTrafficChannelsGoalDriver
+				goalType={ GOAL_TYPES.LEAD }
+				rows={ rows }
+				title="Top traffic channels driving leads"
+			/>
+		);
+
 		expect(
 			getByText( 'Top traffic channels driving leads' )
 		).toBeInTheDocument();
-
-		rerender(
-			<TopTrafficChannelsGoalDriver goalType="ecommerce" rows={ rows } />
-		);
-
-		expect(
-			getByText( 'Top traffic channels driving sales' )
-		).toBeInTheDocument();
-		expect(
-			queryByText( 'Top traffic channels driving leads' )
-		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders Top pages title based on goal type', () => {
-		const { getByText, queryByText, rerender } = render(
-			<TopPagesGoalDriver goalType="lead" rows={ rows } />
+	it( 'renders passed title for top pages and visitor type', () => {
+		const { getByText } = render(
+			<Fragment>
+				<TopPagesGoalDriver
+					goalType={ GOAL_TYPES.LEAD }
+					rows={ rows }
+					title="Top pages driving leads"
+				/>
+				<VisitorTypeGoalDriver
+					goalType={ GOAL_TYPES.LEAD }
+					rows={ rows }
+					title="Leads by visitor type"
+				/>
+			</Fragment>
 		);
+
 		expect( getByText( 'Top pages driving leads' ) ).toBeInTheDocument();
-
-		rerender( <TopPagesGoalDriver goalType="ecommerce" rows={ rows } /> );
-
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Top pages driving leads' )
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'renders Visitor type title based on goal type', () => {
-		const { getByText, queryByText, rerender } = render(
-			<VisitorTypeGoalDriver goalType="lead" rows={ rows } />
-		);
 		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
-
-		rerender(
-			<VisitorTypeGoalDriver goalType="ecommerce" rows={ rows } />
-		);
-
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Leads by visitor type' )
-		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders zero-data message when no rows are available', () => {
 		const { getByText, rerender } = render(
-			<TopTrafficChannelsGoalDriver goalType="lead" rows={ [] } />
+			<TopTrafficChannelsGoalDriver
+				goalType={ GOAL_TYPES.LEAD }
+				rows={ [] }
+				title="Top traffic channels driving leads"
+			/>
 		);
 
 		expect(
@@ -89,7 +102,11 @@ describe( 'Goal driver titles', () => {
 		).toBeInTheDocument();
 
 		rerender(
-			<TopTrafficChannelsGoalDriver goalType="ecommerce" rows={ [] } />
+			<TopTrafficChannelsGoalDriver
+				goalType={ GOAL_TYPES.ECOMMERCE }
+				rows={ [] }
+				title="Top traffic channels driving sales"
+			/>
 		);
 
 		expect(
