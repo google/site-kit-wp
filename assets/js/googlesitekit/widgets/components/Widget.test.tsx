@@ -195,4 +195,23 @@ describe( 'Widget', () => {
 			container.querySelector( '.googlesitekit-widget__body--collapsed' )
 		).toBeInTheDocument();
 	} );
+
+	it( 'should warn users when both `defaultCollapsed` and `isCollapsed` are provided', () => {
+		render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Collapsible Test Widget"
+				widgetSlug="collapsible-test-widget"
+				defaultCollapsed
+				isCollapsed
+				collapsible
+			>
+				<div>Collapsible Widget Body</div>
+			</Widget>
+		);
+
+		expect( console ).toHaveWarned(
+			'Error in `Widget` compoenent:The `defaultCollapsed` prop should not be used together with the `isCollapsed` prop. Providing the `isCollapsed` prop means the `Widget` component for slug "collapsible-test-widget" is controlled by its parent component, and the `defaultCollapsed` prop will be ignored.'
+		);
+	} );
 } );
