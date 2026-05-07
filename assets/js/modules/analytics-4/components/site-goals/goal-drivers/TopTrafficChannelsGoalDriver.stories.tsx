@@ -32,6 +32,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import type { GoalDriverComponentProps } from './types';
 
@@ -64,13 +65,13 @@ export default {
 	component: TopTrafficChannelsGoalDriver,
 	decorators: [
 		(
-			Story: () => ReactElement,
+			StoryComponent: () => ReactElement,
 			{ args }: { args: TopTrafficChannelsGoalDriverStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
 					<div className="googlesitekit-widget__body">
-						<Story />
+						<StoryComponent />
 					</div>
 				</div>
 			);
@@ -108,9 +109,12 @@ function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
 	return <TopTrafficChannelsGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Default.args = {
 	goalType: 'lead',
+	title: 'Top traffic channels driving leads',
 	rows: [
 		{ label: 'Direct', value: '30.5%' },
 		{ label: 'Organic search', value: '24.7%' },
@@ -121,21 +125,27 @@ Default.args = {
 };
 Default.scenario = {};
 
-export const Loading = Template.bind( {} );
+export const Loading = Template.bind(
+	{}
+) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Loading.args = {
 	...Default.args,
 	rows: [],
 	loading: true,
 };
 
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind(
+	{}
+) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 NoData.args = {
 	...Default.args,
 	rows: [],
 	loading: false,
 };
 
-export const Error = Template.bind( {} );
+export const Error = Template.bind(
+	{}
+) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Error.args = {
 	...Default.args,
 	rows: [],
