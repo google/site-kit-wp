@@ -25,7 +25,7 @@ import { useClickAway } from 'react-use';
  * WordPress dependencies
  */
 import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
@@ -53,35 +53,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
-
-function getAccountLabel( userFullName, userEmail ) {
-	if ( userFullName && userEmail ) {
-		return sprintf(
-			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
-			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
-			userFullName,
-			userEmail
-		);
-	}
-
-	if ( userFullName && ! userEmail ) {
-		return sprintf(
-			/* translators: Account info text. 1: User's (full) name. */
-			__( 'Google Account for %1$s', 'google-site-kit' ),
-			userFullName
-		);
-	}
-
-	if ( ! userFullName && userEmail ) {
-		return sprintf(
-			/* translators: Account info text. 1: User's email address. */
-			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
-			userEmail
-		);
-	}
-
-	return undefined;
-}
+import { getAccountLabel } from './utils';
 
 export default function UserMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
