@@ -408,7 +408,8 @@ describe( 'WelcomeModal', () => {
 			expect( tooltipState ).toMatchObject( {
 				isTooltipVisible: true,
 				tooltipSlug: 'welcome-modal',
-				title: 'You can always take the dashboard tour from the help menu',
+				content:
+					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
 			} );
 
@@ -885,7 +886,8 @@ describe( 'WelcomeModal', () => {
 			expect( tooltipState ).toMatchObject( {
 				isTooltipVisible: true,
 				tooltipSlug: 'welcome-modal',
-				title: 'You can always take the dashboard tour from the help menu',
+				content:
+					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
 			} );
 
