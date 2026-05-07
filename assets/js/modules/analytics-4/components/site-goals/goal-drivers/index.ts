@@ -17,7 +17,15 @@
  */
 
 export { default as GoalDriverTiles } from './GoalDriverTiles';
-export { GOAL_DRIVER_CATALOG, resolveGoalDriverIDs } from './registry';
+export {
+	GOAL_DRIVER_CATALOG,
+	getGoalDriverContent,
+	getGoalDriverOptions,
+	getGoalDriverTitle,
+	getGoalTypeDriverIDs,
+	resolveGoalDriverIDs,
+	resolveGoalDriverSelectionState,
+} from './registry';
 export {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -40,4 +48,5 @@ export type {
 	GoalDriverData,
 	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
+	GoalDriverSelectionState,
 } from './types';
