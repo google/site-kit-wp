@@ -43,7 +43,7 @@ import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
-	GoalDriversSection,
+	GoalDriverTiles,
 	useGoalDriversData,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -161,7 +161,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				title={ __( 'Online store performance', 'google-site-kit' ) }
 			/>
 
-			{ loading && <PreviewBlock width="100%" height="100px" /> }
+			{ loading && (
+				<PreviewBlock
+					className="googlesitekit-site-goals-tiles-group"
+					width="100%"
+					height="100px"
+				/>
+			) }
 
 			{ ! loading && (
 				<TilesGroup
@@ -217,11 +223,19 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				</TilesGroup>
 			) }
 
-			<GoalDriversSection
-				drivers={ drivers }
-				hasExpandableRows={ hasExpandableRows }
-				goalType={ GOAL_TYPES.ECOMMERCE }
-			/>
+			<TilesGroup
+				className="googlesitekit-site-goals-goal-drivers-group"
+				title={ __(
+					'What’s helping you reach your goals?',
+					'google-site-kit'
+				) }
+			>
+				<GoalDriverTiles
+					drivers={ drivers }
+					hasExpandableRows={ hasExpandableRows }
+					goalType={ GOAL_TYPES.ECOMMERCE }
+				/>
+			</TilesGroup>
 		</Widget>
 	);
 };
