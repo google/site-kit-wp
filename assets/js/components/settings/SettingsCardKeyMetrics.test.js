@@ -143,4 +143,91 @@ describe( 'SettingsCardKeyMetrics', () => {
 			container.querySelector( '.googlesitekit-notice--new' )
 		).not.toBeInTheDocument();
 	} );
+
+	it( 'should show questionnaire UI when setupFlowRefresh is enabled and purpose is answered', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'sell_products' ],
+				scope: 'site',
+			},
+			postFrequency: {
+				values: [ 'daily' ],
+				scope: 'site',
+			},
+			goals: {
+				values: [ 'driving_sales' ],
+				scope: 'site',
+			},
+		} );
+
+		const { container, getByText, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'What is the main purpose of this site?' )
+		).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-notice--new' )
+		).not.toBeInTheDocument();
+
+		expect( container ).not.toHaveTextContent(
+			'Display key metrics in dashboard'
+		);
+	} );
+
+	it( 'should display `Personalized metrics` title when setupFlowRefresh is enabled', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+
+		const { getByText, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'Personalized metrics' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should show subtle notification CTA when setupFlowRefresh is enabled and purpose is unanswered', async () => {
+		await registry
+			.dispatch( CORE_USER )
+			.receiveIsUserInputCompleted( false );
+
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+
+		const { container, queryByText, waitForRegistry } = render(
+			<SettingsCardKeyMetrics />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-notice--new' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'What is the main purpose of this site?' )
+		).not.toBeInTheDocument();
+	} );
 } );

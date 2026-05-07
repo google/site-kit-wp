@@ -60,10 +60,15 @@ export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 	const googleListingsAndAdsConnectedAdsID = useSelect( ( select ) =>
 		select( MODULES_ADS ).getGoogleForWooCommerceConversionID()
 	);
+	const isGoogleForWooCommerceActivated = useSelect( ( select ) =>
+		select( MODULES_ADS ).isGoogleForWooCommerceActivated()
+	);
 
-	const isDuplicateAdsIDDetected =
+	const hasDuplicateAdsID =
 		!! currentConversionID &&
 		currentConversionID === googleListingsAndAdsConnectedAdsID;
+	const shouldShowDuplicateAdsIDWarning =
+		hasDuplicateAdsID && !! isGoogleForWooCommerceActivated;
 
 	const submitForm = useCallback(
 		async ( event ) => {
@@ -93,7 +98,7 @@ export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 				<ConversionIDTextField hideHeading />
 			</div>
 
-			{ isDuplicateAdsIDDetected && (
+			{ shouldShowDuplicateAdsIDWarning && (
 				<Notice
 					className="googlesitekit-notice--small googlesitekit-ads-setup__ads-id-conflict-warning"
 					type={ NOTICE_TYPES.WARNING }
@@ -107,11 +112,7 @@ export default function SetupForm( { finishSetup, isNavigatingToOAuthURL } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<SpinnerButton
-					disabled={
-						! canSubmitChanges ||
-						isSaving ||
-						isDuplicateAdsIDDetected
-					}
+					disabled={ ! canSubmitChanges || isSaving }
 					isSaving={ isSaving }
 					onClick={ submitForm }
 				>

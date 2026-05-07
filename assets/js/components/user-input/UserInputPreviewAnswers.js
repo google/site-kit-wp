@@ -24,17 +24,18 @@ import LoadingWrapper from '@/js/components/LoadingWrapper';
 export default function UserInputPreviewAnswers( {
 	loading,
 	errorMessage,
+	suppressError = false,
 	options,
 	values,
 } ) {
 	return (
 		<div className="googlesitekit-user-input__preview-answers">
 			<LoadingWrapper loading={ loading } width="340px" height="36px">
-				{ errorMessage && (
+				{ errorMessage && ! suppressError && (
 					<p className="googlesitekit-error-text">{ errorMessage }</p>
 				) }
 
-				{ ! errorMessage &&
+				{ ( ! errorMessage || suppressError ) &&
 					values.map( ( value ) => (
 						<div
 							key={ value }

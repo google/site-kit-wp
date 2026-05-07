@@ -32,8 +32,14 @@ import {
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
 } from '@/js/googlesitekit/widgets/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
+	CORE_UI,
+	FORCED_IN_VIEW_WIDGET_AREAS,
+} from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useInView } from '@/js/hooks/useInView';
+import {
+	act,
 	createTestRegistry,
 	render,
 	provideModules,
@@ -81,6 +87,12 @@ function WidgetComponentEmpty( { WidgetNull } ) {
 
 function WidgetComponentErrored() {
 	throw new Error( 'Site Kit error message.' );
+}
+
+function WidgetComponentInView() {
+	const inView = useInView();
+
+	return <div>In view: { inView ? 'yes' : 'no' }</div>;
 }
 
 function createWidgets( registry, areaName, widgets ) {
@@ -143,6 +155,35 @@ describe( 'WidgetAreaRenderer', () => {
 		expect(
 			container.firstChild.querySelectorAll( '.googlesitekit-widget' )
 		).toHaveLength( 3 );
+	} );
+
+	it( 'should override in-view state when the current area is forced in-view', async () => {
+		createWidgets( registry, areaName, [
+			{
+				Component: WidgetComponentInView,
+				slug: 'inview-widget',
+				width: WIDGET_WIDTHS.FULL,
+			},
+		] );
+
+		const { container, waitForRegistry } = render(
+			<WidgetAreaRenderer slug={ areaName } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'In view: no' );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( FORCED_IN_VIEW_WIDGET_AREAS, [ areaName ] );
+		} );
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'In view: yes' );
 	} );
 
 	it( 'should only render widgets the user has access to in a view-only viewContext', async () => {

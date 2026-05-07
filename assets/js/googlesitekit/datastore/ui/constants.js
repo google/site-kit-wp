@@ -19,3 +19,4 @@
 export const CORE_UI = 'core/ui';
 
 export const ACTIVE_CONTEXT_ID = 'activeContextID';
+export const FORCED_IN_VIEW_WIDGET_AREAS = 'forced-in-view-widget-areas';

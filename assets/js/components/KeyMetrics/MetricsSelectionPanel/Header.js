@@ -38,10 +38,12 @@ import { MAX_SELECTED_METRICS_COUNT } from '@/js/components/KeyMetrics/constants
 import Link from '@/js/components/Link';
 import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { useFeature } from '@/js/hooks/useFeature';
 import P from '@/js/components/Typography/P';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	const adminSettingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAdminSettingsURL()
@@ -69,10 +71,15 @@ export default function Header( { closePanel } ) {
 			{ ! isViewOnly && (
 				<P>
 					{ createInterpolateElement(
-						__(
-							'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
-							'google-site-kit'
-						),
+						setupFlowRefreshEnabled
+							? __(
+									'Edit your personalized goals in <link><strong>Settings</strong></link>',
+									'google-site-kit'
+							  )
+							: __(
+									'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
+									'google-site-kit'
+							  ),
 						{
 							link: (
 								<Link

@@ -46,9 +46,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import BannerModal from '@/js/components/BannerModal/index';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-// @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
-// @ts-expect-error - We need to add types for imported SVGs.
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { trackEvent } from '@/js/util';
