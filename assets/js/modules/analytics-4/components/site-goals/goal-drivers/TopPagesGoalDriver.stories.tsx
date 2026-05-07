@@ -32,6 +32,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import type { GoalDriverComponentProps } from './types';
 
@@ -63,13 +64,13 @@ export default {
 	component: TopPagesGoalDriver,
 	decorators: [
 		(
-			Story: () => ReactElement,
+			StoryComponent: () => ReactElement,
 			{ args }: { args: TopPagesGoalDriverStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
 					<div className="googlesitekit-widget__body">
-						<Story />
+						<StoryComponent />
 					</div>
 				</div>
 			);
@@ -107,9 +108,12 @@ function Template( props: TopPagesGoalDriverStoryProps ) {
 	return <TopPagesGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Default = Template.bind( {} );
+export const Default = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
 Default.args = {
 	goalType: 'lead',
+	title: 'Top pages driving leads',
 	rows: [
 		{
 			label: 'What do "L" or "N" car stickers mean?',
@@ -132,21 +136,27 @@ Default.args = {
 };
 Default.scenario = {};
 
-export const Loading = Template.bind( {} );
+export const Loading = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
 Loading.args = {
 	...Default.args,
 	rows: [],
 	loading: true,
 };
 
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
 NoData.args = {
 	...Default.args,
 	rows: [],
 	loading: false,
 };
 
-export const Error = Template.bind( {} );
+export const Error = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
 Error.args = {
 	...Default.args,
 	rows: [],
