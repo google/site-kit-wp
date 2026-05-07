@@ -140,4 +140,8 @@ export function mockBrowserScrolling() {
 	beforeEach( () => {
 		Element.prototype.scrollIntoView = jest.fn();
 	} );
+
+	afterEach( () => {
+		Element.prototype.scrollIntoView = undefined;
+	} );
 }
