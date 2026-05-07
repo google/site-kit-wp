@@ -94,9 +94,14 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 
 			<?php /* CTA Button (conditionally rendered). */ ?>
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
-			<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px;<?php echo $has_bottom_graphic ? ' margin-bottom: 12px;' : ''; ?>">
+				<?php
+				// Padding lives on the td because Outlook ignores margin on tables.
+				$cta_padding_top    = $has_bottom_graphic ? '0' : '4px';
+				$cta_padding_bottom = $has_bottom_graphic ? '12px' : '0';
+				?>
+			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
 				<tr>
-					<td>
+					<td style="padding: <?php echo esc_attr( $cta_padding_top ); ?> 0 <?php echo esc_attr( $cta_padding_bottom ); ?> 0;">
 						<?php
 						$render_shared_part(
 							'dashboard-link',
