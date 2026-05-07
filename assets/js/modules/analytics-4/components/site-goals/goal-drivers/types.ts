@@ -59,7 +59,7 @@ export interface GoalDriverCatalogEntry {
 
 export type GoalDriverCatalog = Record< GoalDriverID, GoalDriverCatalogEntry >;
 
-export interface GoalDriversSectionDriver {
+export interface GoalDriverTilesDriver {
 	id: GoalDriverID;
 	Component?: ComponentType< GoalDriverComponentProps >;
 	rows: GoalDriverRow[];
