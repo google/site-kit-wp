@@ -36,12 +36,6 @@ import type { GoalDriverComponentProps } from '@/js/modules/analytics-4/componen
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = (
 	props
 ) => {
-	let title = __( 'Top traffic channels driving leads', 'google-site-kit' );
-
-	if ( props.goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top traffic channels driving sales', 'google-site-kit' );
-	}
-
 	const noDataMetricLabel =
 		props.goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'sales', 'google-site-kit' )
@@ -49,7 +43,7 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = (
 
 	return (
 		<TableTile
-			title={ title }
+			title={ props.title || '' }
 			rows={ props.rows }
 			loading={ props.loading }
 			error={ props.error }
