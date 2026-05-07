@@ -1,5 +1,5 @@
 /**
- * Viewport width utilities.
+ * Viewport utilities.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -38,5 +38,30 @@ export function setViewportWidth( viewportWidth ) {
 	Object.defineProperty( global, 'innerWidth', {
 		configurable: true,
 		value: viewportWidth,
+	} );
+}
+
+/**
+ * Retrieves the viewport height.
+ *
+ * @since n.e.x.t
+ *
+ * @return {number} The current viewport height.
+ */
+export function getViewportHeight() {
+	return global.innerHeight;
+}
+
+/**
+ * Sets the viewport height.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} viewportHeight The viewport height to set.
+ */
+export function setViewportHeight( viewportHeight ) {
+	Object.defineProperty( global, 'innerHeight', {
+		configurable: true,
+		value: viewportHeight,
 	} );
 }

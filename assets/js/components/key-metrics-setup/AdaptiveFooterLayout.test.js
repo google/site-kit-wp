@@ -17,6 +17,10 @@
  */
 
 import { render, waitFor, act } from '../../../../tests/js/test-utils';
+import {
+	getViewportHeight,
+	setViewportHeight,
+} from '../../../../tests/js/viewport-utils';
 import AdaptiveFooterLayout from './AdaptiveFooterLayout';
 
 describe( 'AdaptiveFooterLayout', () => {
@@ -29,7 +33,7 @@ describe( 'AdaptiveFooterLayout', () => {
 	beforeEach( () => {
 		contentBottom = 0;
 		footerHeight = 0;
-		originalInnerHeight = window.innerHeight;
+		originalInnerHeight = getViewportHeight();
 
 		originalGetBoundingClientRect =
 			HTMLElement.prototype.getBoundingClientRect;
@@ -88,7 +92,7 @@ describe( 'AdaptiveFooterLayout', () => {
 			);
 		}
 
-		window.innerHeight = originalInnerHeight;
+		setViewportHeight( originalInnerHeight );
 	} );
 
 	function renderComponent() {
@@ -107,7 +111,7 @@ describe( 'AdaptiveFooterLayout', () => {
 	it( 'should apply inline class when content and footer fit in viewport', async () => {
 		contentBottom = 300;
 		footerHeight = 100;
-		window.innerHeight = 500;
+		setViewportHeight( 500 );
 
 		const { container } = renderComponent();
 
@@ -121,7 +125,7 @@ describe( 'AdaptiveFooterLayout', () => {
 	it( 'should keep footer sticky when content and footer do not fit in viewport', async () => {
 		contentBottom = 500;
 		footerHeight = 200;
-		window.innerHeight = 600;
+		setViewportHeight( 600 );
 
 		const { container } = renderComponent();
 
@@ -135,7 +139,7 @@ describe( 'AdaptiveFooterLayout', () => {
 	it( 'should recalculate mode on resize', async () => {
 		contentBottom = 500;
 		footerHeight = 200;
-		window.innerHeight = 600;
+		setViewportHeight( 600 );
 
 		const { container } = renderComponent();
 
@@ -147,7 +151,7 @@ describe( 'AdaptiveFooterLayout', () => {
 
 		contentBottom = 300;
 		footerHeight = 100;
-		window.innerHeight = 500;
+		setViewportHeight( 500 );
 
 		act( () => {
 			window.dispatchEvent( new Event( 'resize' ) );
