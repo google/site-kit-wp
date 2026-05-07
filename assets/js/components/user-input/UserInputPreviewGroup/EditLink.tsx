@@ -30,7 +30,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-// @ts-expect-error - We need to add types for imported SVGs.
 import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 
 interface EditLinkProps {

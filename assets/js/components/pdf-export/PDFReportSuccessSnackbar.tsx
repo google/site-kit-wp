@@ -1,5 +1,5 @@
 /**
- * PDF report error snackbar.
+ * PDF report success snackbar.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,69 +24,73 @@ import type { FC, MouseEvent, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import Link from '@/js/components/Link';
 import CloseIcon from '@/svg/icons/close.svg';
 
-interface PDFReportErrorSnackbarProps {
-	onRetry?: () => void;
+export interface PDFReportSuccessSnackbarProps {
+	onRetryDownload?: () => void;
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) => void;
+	onAutoDismiss?: () => void;
+	autoDismissMS?: number;
+	disableAutoDismiss?: boolean;
 	title?: string;
 	description?: ReactNode;
-	retryLabel?: string;
 	dismissAriaLabel?: string;
 }
 
-const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
-	onRetry = () => {},
+const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
+	onRetryDownload = () => {},
 	onDismiss = () => {},
-	title = __(
-		'There was a problem generating your report',
-		'google-site-kit'
-	),
+	onAutoDismiss = () => {},
+	autoDismissMS = 10000,
+	disableAutoDismiss = false,
+	title = __( 'Your report was generated successfully!', 'google-site-kit' ),
 	description,
-	retryLabel = __( 'Retry', 'google-site-kit' ),
-	dismissAriaLabel = __( 'Dismiss PDF report error', 'google-site-kit' ),
+	dismissAriaLabel = __( 'Dismiss PDF report success', 'google-site-kit' ),
 } ) => {
-	const helpURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getDocumentationLinkURL( 'pdf-reporting' ),
-		[]
-	);
+	useEffect( () => {
+		if ( disableAutoDismiss ) {
+			return () => {};
+		}
+
+		const timeoutID = setTimeout( () => {
+			onAutoDismiss();
+		}, autoDismissMS );
+
+		return () => {
+			clearTimeout( timeoutID );
+		};
+	}, [ autoDismissMS, disableAutoDismiss, onAutoDismiss ] );
+
 	const defaultDescription = createInterpolateElement(
-		__( 'Please try again or <a>get help</a>', 'google-site-kit' ),
+		__(
+			'The PDF report has been automatically downloaded to your downloads folder. <a>Click here</a> if the download didn’t start automatically.',
+			'google-site-kit'
+		),
 		{
 			a: (
 				// @ts-expect-error - The `Link` component is not typed yet.
-				<Link href={ helpURL }>
-					{ __( 'Get help', 'google-site-kit' ) }
-				</Link>
+				<Link onClick={ onRetryDownload } />
 			),
 		}
 	);
 
 	return (
 		<Notice
-			type={ NOTICE_TYPES.ERROR }
-			className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right googlesitekit-pdf-report-error-snackbar googlesitekit-notice-snackbar--content--small"
+			type={ NOTICE_TYPES.SUCCESS }
+			className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right googlesitekit-pdf-report-success-snackbar googlesitekit-notice-snackbar--content--small"
 			title={ title }
 			description={ description || defaultDescription }
-			ctaButton={ {
-				label: retryLabel,
-				onClick: onRetry,
-				tertiary: true,
-			} }
 			dismissButton={ {
 				variant: 'icon',
 				icon: <CloseIcon width={ 10 } height={ 10 } />,
@@ -97,4 +101,4 @@ const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 	);
 };
 
-export default PDFReportErrorSnackbar;
+export default PDFReportSuccessSnackbar;
