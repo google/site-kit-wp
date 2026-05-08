@@ -144,10 +144,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 2 );
+		).toHaveLength( 3 ); // Form completion rate + Total form completions + Engagement rate
 		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
 		expect( getByText( '"generate_lead" events' ) ).toBeInTheDocument();
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 	} );
 
 	it( 'aggregates event counts across multiple detected lead events', async () => {
@@ -311,5 +312,68 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'renders engagement rate tile with compare values', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render secondary ecommerce tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		// No secondary ecommerce tiles should appear in lead generation widget.
+		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Total products added to cart' )
+		).not.toBeInTheDocument();
 	} );
 } );

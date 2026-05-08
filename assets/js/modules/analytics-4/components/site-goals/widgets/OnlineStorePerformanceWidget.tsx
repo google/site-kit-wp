@@ -23,7 +23,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,7 +40,11 @@ import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeade
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import type {
+	Report,
+	ReportRow,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -57,6 +61,40 @@ const EVENT_TOTAL_LABELS = {
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
 };
 
+function processSecondaryEventsReport(
+	secondaryEventsReport: Report | undefined,
+	secondaryEvents: string[]
+) {
+	if ( ! secondaryEventsReport || ! secondaryEvents.length ) {
+		return [];
+	}
+
+	const { rows = [] } = secondaryEventsReport;
+
+	return secondaryEvents.map( ( eventName ) => ( {
+		eventName,
+		label: EVENT_TOTAL_LABELS[ eventName ] || eventName,
+		currentCount:
+			parseInt(
+				( rows as ReportRow[] ).find(
+					( row ) =>
+						row?.dimensionValues?.[ 0 ]?.value === eventName &&
+						row?.dimensionValues?.[ 1 ]?.value === 'date_range_0'
+				)?.metricValues?.[ 0 ]?.value ?? '',
+				10
+			) || 0,
+		previousCount:
+			parseInt(
+				( rows as ReportRow[] ).find(
+					( row ) =>
+						row?.dimensionValues?.[ 0 ]?.value === eventName &&
+						row?.dimensionValues?.[ 1 ]?.value === 'date_range_1'
+				)?.metricValues?.[ 0 ]?.value ?? '',
+				10
+			) || 0,
+	} ) );
+}
+
 const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	Widget,
 	WidgetNull,
@@ -66,6 +104,16 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
+	);
+
+	const secondaryEcommerceEvents: string[] = useSelect(
+		( select: Select ) =>
+			primaryEvent
+				? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+						primaryEvent
+				  )
+				: [],
+		[ primaryEvent ]
 	);
 
 	const dates = useSelect(
@@ -98,7 +146,23 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	const [ primaryEventReport, engagementReport ] =
+	if ( secondaryEcommerceEvents?.length ) {
+		reportOptions.push( {
+			...dates,
+			metrics: [ { name: 'eventCount' } ],
+			dimensions: [ { name: 'eventName' } ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: secondaryEcommerceEvents,
+				},
+			},
+			reportID:
+				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+		} );
+	}
+
+	const [ primaryEventReport, engagementReport, secondaryEventsReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
@@ -135,7 +199,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		currentSessions,
 		currentRate,
 		previousRate,
+		currentEngagementRate,
+		previousEngagementRate,
 	} = processReports( primaryEventReport, engagementReport );
+
+	const secondaryEventTiles = processSecondaryEventsReport(
+		secondaryEventsReport,
+		secondaryEcommerceEvents || []
+	);
 
 	return (
 		<Widget>
@@ -145,58 +216,98 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
-			{ ! loading && (
-				<TilesGroup
-					className="googlesitekit-site-goals-primary-action"
-					title={ __( 'Key action', 'google-site-kit' ) }
-				>
-					<Tile
-						title={
-							EVENT_RATE_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
-							/* translators: %s: formatted number of total sessions */
-							__( '%s total sessions', 'google-site-kit' ),
-							numFmt( currentSessions, NUMBER_FORMAT )
-						) }
-						infoTooltip={ createInterpolateElement(
-							__(
-								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
-								'google-site-kit'
-							),
-							{
-								a: (
-									// eslint-disable-next-line
-									<a
-										href="#"
-										target="_blank"
-										rel="noreferrer noopener"
-									/>
-								),
+			{ ! loading && ! error && (
+				<Fragment>
+					<TilesGroup
+						className="googlesitekit-site-goals-primary-action"
+						title={ __( 'Key action', 'google-site-kit' ) }
+					>
+						<Tile
+							title={
+								EVENT_RATE_LABELS[ primaryEvent ] ||
+								__( 'Unknown Event', 'google-site-kit' )
 							}
-						) }
-						currentValue={ currentRate }
-						previousValue={ previousRate }
-						format={ PERCENT_FORMAT }
-						primary
-					/>
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							infoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// eslint-disable-next-line
+										<a
+											href="#"
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
+							currentValue={ currentRate }
+							previousValue={ previousRate }
+							format={ PERCENT_FORMAT }
+							primary
+						/>
 
-					<Tile
-						title={
-							EVENT_TOTAL_LABELS[ primaryEvent ] ||
-							__( 'Unknown Event', 'google-site-kit' )
-						}
-						subtitle={ sprintf(
-							/* translators: %s: GA4 event name */
-							__( '“%s” events', 'google-site-kit' ),
-							primaryEvent
+						<Tile
+							title={
+								EVENT_TOTAL_LABELS[ primaryEvent ] ||
+								__( 'Unknown Event', 'google-site-kit' )
+							}
+							subtitle={ sprintf(
+								/* translators: %s: GA4 event name */
+								__( '“%s” events', 'google-site-kit' ),
+								primaryEvent
+							) }
+							currentValue={ currentPrimaryCount }
+							previousValue={ previousPrimaryCount }
+							format={ NUMBER_FORMAT }
+						/>
+					</TilesGroup>
+
+					<TilesGroup
+						className="googlesitekit-site-goals-visitor-engagement"
+						title={ __( 'Visitor engagement', 'google-site-kit' ) }
+					>
+						<Tile
+							title={ __( 'Engagement rate', 'google-site-kit' ) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentEngagementRate }
+							previousValue={ previousEngagementRate }
+							format={ PERCENT_FORMAT }
+						/>
+						{ secondaryEventTiles.map(
+							( {
+								eventName,
+								label,
+								currentCount,
+								previousCount,
+							} ) => (
+								<Tile
+									key={ eventName }
+									title={ label }
+									subtitle={ sprintf(
+										/* translators: %s: GA4 event name */
+										__( '"%s" events', 'google-site-kit' ),
+										eventName
+									) }
+									currentValue={ currentCount }
+									previousValue={ previousCount }
+									format={ NUMBER_FORMAT }
+								/>
+							)
 						) }
-						currentValue={ currentPrimaryCount }
-						previousValue={ previousPrimaryCount }
-						format={ NUMBER_FORMAT }
-					/>
-				</TilesGroup>
+					</TilesGroup>
+				</Fragment>
 			) }
 		</Widget>
 	);

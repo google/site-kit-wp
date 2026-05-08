@@ -22,6 +22,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -129,6 +130,8 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		currentSessions,
 		currentRate,
 		previousRate,
+		currentEngagementRate,
+		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
@@ -142,54 +145,76 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && (
-				<TilesGroup
-					className="googlesitekit-site-goals-primary-action"
-					title={ __( 'Key action', 'google-site-kit' ) }
-				>
-					<Tile
-						title={ __(
-							'Form completion rate',
-							'google-site-kit'
-						) }
-						subtitle={ sprintf(
-							/* translators: %s: formatted number of total sessions */
-							__( '%s total sessions', 'google-site-kit' ),
-							numFmt( currentSessions, NUMBER_FORMAT )
-						) }
-						currentValue={ currentRate }
-						previousValue={ previousRate }
-						format={ PERCENT_FORMAT }
-						primary
-					/>
+				<Fragment>
+					<TilesGroup
+						className="googlesitekit-site-goals-primary-action"
+						title={ __( 'Key action', 'google-site-kit' ) }
+					>
+						<Tile
+							title={ __(
+								'Form completion rate',
+								'google-site-kit'
+							) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentRate }
+							previousValue={ previousRate }
+							format={ PERCENT_FORMAT }
+							primary
+						/>
 
-					<Tile
-						title={ __(
-							'Total form completions',
-							'google-site-kit'
-						) }
-						subtitle={
-							detectedLeadEvents.length === 1
-								? sprintf(
-										/* translators: %s: GA4 event name */
-										__( '"%s" events', 'google-site-kit' ),
-										detectedLeadEvents[ 0 ]
-								  )
-								: sprintf(
-										/* translators: %d: number of detected event types */
-										_n(
-											'%d event type',
-											'%d event types',
-											detectedLeadEvents.length,
-											'google-site-kit'
-										),
-										detectedLeadEvents.length
-								  )
-						}
-						currentValue={ currentPrimaryCount }
-						previousValue={ previousPrimaryCount }
-						format={ NUMBER_FORMAT }
-					/>
-				</TilesGroup>
+						<Tile
+							title={ __(
+								'Total form completions',
+								'google-site-kit'
+							) }
+							subtitle={
+								detectedLeadEvents.length === 1
+									? sprintf(
+											/* translators: %s: GA4 event name */
+											__(
+												'"%s" events',
+												'google-site-kit'
+											),
+											detectedLeadEvents[ 0 ]
+									  )
+									: sprintf(
+											/* translators: %d: number of detected event types */
+											_n(
+												'%d event type',
+												'%d event types',
+												detectedLeadEvents.length,
+												'google-site-kit'
+											),
+											detectedLeadEvents.length
+									  )
+							}
+							currentValue={ currentPrimaryCount }
+							previousValue={ previousPrimaryCount }
+							format={ NUMBER_FORMAT }
+						/>
+					</TilesGroup>
+
+					<TilesGroup
+						className="googlesitekit-site-goals-visitor-engagement"
+						title={ __( 'Visitor engagement', 'google-site-kit' ) }
+					>
+						<Tile
+							title={ __( 'Engagement rate', 'google-site-kit' ) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentEngagementRate }
+							previousValue={ previousEngagementRate }
+							format={ PERCENT_FORMAT }
+						/>
+					</TilesGroup>
+				</Fragment>
 			) }
 		</Widget>
 	);
