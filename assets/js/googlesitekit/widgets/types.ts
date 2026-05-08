@@ -1,0 +1,41 @@
+/**
+ * Type definitions for widgets.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import type { ComponentType } from 'react';
+
+/**
+ * Widget interface.
+ *
+ * Represents a registered widget with its configuration and settings.
+ *
+ * @since 1.170.0
+ */
+export interface Widget {
+	slug: string;
+	Component: ComponentType;
+	priority: number;
+	width: string | string[];
+	wrapWidget: boolean;
+	modules?: string | string[];
+	isActive?: () => boolean;
+	isPreloaded?: () => boolean;
+	hideOnBreakpoints?: string[];
+}

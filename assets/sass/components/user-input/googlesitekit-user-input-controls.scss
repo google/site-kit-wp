@@ -1,0 +1,162 @@
+/**
+ * User Input controls styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-user-input__select-options {
+		margin: 0 0 20px;
+		max-width: 100%;
+		width: max-content;
+	}
+
+	.googlesitekit-user-input__select-option {
+		align-items: center;
+		display: flex;
+		padding: 20px 0;
+
+		@media (min-width: $bp-tablet) {
+			padding: 10px 0;
+		}
+		.mdc-radio {
+			margin-right: 8px;
+		}
+
+		label {
+			color: $c-surfaces-on-background;
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
+	}
+
+	.googlesitekit-user-input__select-option:not(:last-child) {
+		border-bottom: 1px solid $c-mercury;
+	}
+
+	.googlesitekit-user-input__text-options {
+		border: 2px solid $c-jumbo;
+		border-radius: 4px;
+		margin: 13px 0 8px;
+		padding: 0 12px;
+
+		@media (min-width: $bp-tablet) {
+			margin-top: 0;
+		}
+
+		> div {
+			margin: 12px;
+			margin-left: 0;
+		}
+
+		svg {
+			color: $c-white;
+		}
+
+		.mdc-text-field,
+		.mdc-text-field__input {
+			background-color: transparent;
+		}
+
+		.mdc-text-field {
+			height: 32px;
+			width: 100%;
+		}
+
+		.mdc-text-field__input {
+			border: none;
+			margin: 0;
+			padding: 0 6px;
+
+			&::placeholder {
+				color: $c-user-input-placeholder;
+			}
+		}
+
+		.mdc-line-ripple {
+			display: none;
+		}
+	}
+
+	.googlesitekit-user-input__text-option {
+		align-items: center;
+		background-color: $c-content-primary-container;
+		border-radius: $br-xs;
+		color: $c-content-on-primary-container;
+		display: inline-flex;
+		font-size: $fs-body-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-s;
+		line-height: $lh-body-md;
+		padding: 3px 3px 3px 12px;
+		white-space: nowrap;
+
+		button {
+			border-radius: 100px;
+			margin: 0;
+			min-width: 35px;
+			padding: 0 12px;
+
+			svg {
+
+				path {
+					fill: $c-user-input-color;
+				}
+			}
+		}
+
+		.mdc-text-field {
+			width: auto;
+
+			.mdc-text-field__input {
+				color: $c-user-input-color;
+				font-weight: 500;
+			}
+		}
+	}
+
+	.googlesitekit-user-input__text-option + div {
+		margin-top: 0;
+	}
+
+	.googlesitekit-user-input__text-options > div:last-child {
+		margin-right: 0;
+	}
+
+	.googlesitekit-user-input__buttons {
+
+		button {
+			letter-spacing: $ls-s;
+
+			&.mdc-button {
+				border: none;
+				padding: 10px 16px;
+			}
+
+			&.googlesitekit-cta-link {
+				color: $c-surfaces-on-background-variant;
+			}
+
+			// "Complete setup" becomes "Complete" on mobile screens.
+			span.googlesitekit-user-input__responsive-text {
+				@media (max-width: $bp-mobileOnly) {
+					display: none;
+				}
+			}
+		}
+	}
+}

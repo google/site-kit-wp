@@ -1,0 +1,380 @@
+/**
+ * Variables.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "variables-mui3";
+
+/*
+ * Colors
+ * Names from http://chir.ag/projects/name-that-color/
+ */
+
+$c-white: #fff;
+$c-alabaster: #f8fafb;
+$c-mercury: #ebeef0;
+$c-silver: #b8bdb9;
+$c-silver-2: #cbd0d3;
+$c-header-gray: #f8fafb;
+$c-athens-gray: #edf0f4;
+$c-jumbo: #999f9b; // 3.82 contrast
+$c-boulder: #7b807d;
+$c-gray-cx: #7b807d;
+$c-device-icon-gray: #5f6561;
+$c-scarpa-flow: #5f6561;
+$c-cape-cod: #333935;
+$c-nearblack: #232824;
+$c-black: #000;
+$c-cornflower-blue: #6380b8; // 3.56 contrast
+$c-royal-blue: #446199; // 4.5 contrast
+$c-denim: #7f9cd4;
+$c-allports: #6380b8;
+$c-cerulean: #9bb8f0;
+$c-deep-sky-blue: #bed4ff;
+$c-picton-blue: #6380b8;
+$c-scooter: #bed4ff;
+$c-golden-rod-yellow: #ffe4b1;
+$c-selective-yellow: #fece72;
+$c-yellow-900: #e77d5b;
+$c-sun: #e1b155;
+$c-orange-roughy: #cc6240;
+$c-valencia: #ac4220;
+$c-cinnabar: #cc6240;
+$c-red-600: #ac4220;
+$c-rangitoto: #232824;
+$c-chateau-green: #88b146;
+$c-elm: #5c9271;
+$c-green-700: #4d760b;
+$c-purple-heart: #6e48ab;
+$c-jewel: #395d00;
+$c-mango-tango: #e77d5b;
+$c-thunderbird: #ac4220;
+$c-solitude: #f8faff;
+$c-heather: #b8bdb9;
+$c-gallery: #ededed;
+$c-porcelain: #ebeef0;
+$c-pumice: #c4c7c5;
+$c-vivid-blue: #1a73e8;
+$c-fiord: #1b3870;
+$c-iron: #dadce0;
+$c-shark: #232824;
+$c-oslo-gray: #7b807d;
+$c-jordy-blue: #7f9cd4;
+$c-pizazz: #fece72;
+$c-tundora: #464b48;
+$c-davys-grey: #5b5b61;
+$c-aqua-haze: #ebeef0;
+$c-salomie-40: rgba(255, 220, 130, 0.4);
+$c-mine-shaft: #333;
+$c-boulder: #757575;
+$c-mariner: #3367d6;
+$c-woodsmoke: #131418;
+
+// WordPress core pallete
+// see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/
+// For use primarily outside of Site Kit screens.
+$wp-colors: (
+	white: #fff,
+	black: #000,
+	gray-0: #f6f7f7,
+	gray-2: #f0f0f1,
+	gray-5: #dcdcde,
+	gray-10: #c3c4c7,
+	gray-20: #a7aaad,
+	gray-30: #8c8f94,
+	gray-40: #787c82,
+	gray-50: #646970,
+	gray-60: #50575e,
+	gray-70: #3c434a,
+	gray-80: #2c3338,
+	gray-90: #1d2327,
+	gray-100: #101517,
+	blue-0: #f0f6fc,
+	blue-5: #c5d9ed,
+	blue-10: #9ec2e6,
+	blue-20: #72aee6,
+	blue-30: #4f94d4,
+	blue-40: #3582c4,
+	blue-50: #2271b1,
+	blue-60: #135e96,
+	blue-70: #0a4b78,
+	blue-80: #043959,
+	blue-90: #01263a,
+	blue-100: #00131c,
+	red-0: #fcf0f1,
+	red-5: #facfd2,
+	red-10: #ffabaf,
+	red-20: #ff8085,
+	red-30: #f86368,
+	red-40: #e65054,
+	red-50: #d63638,
+	red-60: #b32d2e,
+	red-70: #8a2424,
+	red-80: #691c1c,
+	red-90: #451313,
+	red-100: #240a0a,
+	yellow-0: #fcf9e8,
+	yellow-5: #f5e6ab,
+	yellow-10: #f2d675,
+	yellow-20: #f0c33c,
+	yellow-30: #dba617,
+	yellow-40: #bd8600,
+	yellow-50: #996800,
+	yellow-60: #755100,
+	yellow-70: #614200,
+	yellow-80: #4a3200,
+	yellow-90: #362400,
+	yellow-100: #211600,
+	green-0: #edfaef,
+	green-5: #b8e6bf,
+	green-10: #68de7c,
+	green-20: #1ed14b,
+	green-30: #00ba37,
+	green-40: #00a32a,
+	green-50: #008a20,
+	green-60: #007017,
+	green-70: #005c12,
+	green-80: #00450c,
+	green-90: #003008,
+	green-100: #001c05
+);
+
+// PageSpeed Insights colors
+$c-pagespeed-fast: $c-utility-success;
+$c-pagespeed-average: $c-utility-warning;
+$c-pagespeed-slow: $c-utility-error;
+
+$c-base: $c-white;
+$c-primary: $c-surfaces-on-surface;
+$c-secondary: $c-cape-cod;
+$c-tertiary: $c-scarpa-flow;
+$c-brand: $c-royal-blue;
+$c-highlight: $c-cornflower-blue;
+$c-subtle: $c-jumbo;
+$c-link: $c-content-secondary;
+$c-link-wpdb: map-get($wp-colors, "blue-50");
+$c-link-wpdb-hover: map-get($wp-colors, "blue-60");
+$c-input: $c-royal-blue;
+$c-disabled: $c-silver;
+$c-required: $c-valencia;
+$c-error: $c-utility-error;
+$c-warning: $c-utility-warning;
+$c-success: $c-utility-success;
+$c-wp-notice: $c-orange-roughy;
+$c-wp-notice-alt: $c-deep-sky-blue;
+
+$c-background: $c-mercury;
+$c-background-subtle: $c-surfaces-surface-1;
+$c-background-brand: $c-royal-blue;
+$c-background-notice: $c-golden-rod-yellow;
+$c-background-notice-warning: $c-golden-rod-yellow;
+$c-background-notice-info: $c-surfaces-surface-1;
+$c-background-notice-suggestion: $c-solitude;
+
+$c-border: $c-boulder;
+$c-border-light: $c-surfaces-inverse-on-surface;
+$c-border-medium: $c-silver;
+$c-border-brand: $c-royal-blue;
+$c-border-notice-info-hover: $c-jordy-blue;
+
+$c-text-notice: rgba($c-black, 0.7);
+$c-text-notice-warning: rgba($c-black, 0.7);
+$c-text-notice-info: $c-surfaces-on-surface;
+$c-text-notice-suggestion: $c-denim;
+$c-text-notice-info-selected-text: $c-surfaces-on-surface;
+
+$c-icon-notice: $c-sun;
+$c-icon-notice-warning: $c-sun;
+$c-icon-notice-info: $c-denim;
+$c-icon-notice-suggestion: $c-denim;
+
+$c-chart-1: $c-cornflower-blue;
+$c-chart-2: $c-teal-t-300;
+$c-chart-3: $c-elm;
+$c-chart-4: $c-purple-heart;
+
+$c-progress-bg: $c-solitude;
+
+$c-user-input-options: $c-cape-cod;
+$c-user-input-note: $c-device-icon-gray;
+$c-user-input-placeholder: $c-heather;
+$c-user-input-color: $c-content-on-primary-container;
+
+// Badge
+$c-badge-background: $c-alabaster;
+$c-badge-text: $c-cape-cod;
+$c-splash-analytics-recommended-badge-bg: $c-site-kit-sk-10;
+
+// Entity Search
+$c-entity-search-button: $c-surfaces-on-surface-variant;
+$c-entity-search-input-border: $c-utility-outline;
+$c-entity-search-autocomplete-options: $c-surfaces-on-surface;
+$c-entity-search-autocomplete-bg-hover: $c-interactive-secondary-hover;
+
+// Setup Analytics Notice
+$c-setup-analytics-notice-bg: $c-alabaster;
+$c-setup-analytics-notice-text: $c-cape-cod;
+
+// Analytics CTAs
+$c-search-funnel-analytics-cta-bg: $c-surfaces-surface-1;
+$c-search-funnel-analytics-cta-icon: $c-silver-2;
+
+// Overlay
+$c-overlay: rgba($c-black, 0.6);
+
+// Google MDC Theme Overrides
+$mdc-theme-primary: $c-content-primary;
+$mdc-theme-secondary: $c-brand;
+$mdc-theme-on-primary: $c-base;
+$mdc-theme-on-secondary: $c-base;
+
+// Fonts
+$f-primary: "Google Sans Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$f-secondary: "Google Sans Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+// Font weights
+$fw-light: 300;
+$fw-normal: 400;
+$fw-medium: 500;
+$fw-semi-bold: 600;
+$fw-bold: 700;
+
+// Transitions
+$t-default: 0.2s;
+$t-speed-1: 0.1s;
+$t-speed-2: 0.3s;
+$t-speed-3: 0.5s;
+$t-speed-4: 1s;
+
+// Padding Variables
+$grid-gap-phone: 16px;
+$grid-gap-desktop: 24px;
+
+// Width Variables (breakpoints)
+$width-xsmall: 450;
+$width-tablet: 600;
+$width-wpAdminBarTablet: 783;
+$width-desktop: 960;
+$width-xlarge: 1280;
+$width-xxlarge: 1440;
+$width-xxxlarge: 1500;
+$page-content-max-width: 1366px;
+
+// Container widths (for container queries)
+$container-width-desktop: 800px;
+
+// Custom Media Breakpoints
+$bp-xsmallOnly: $width-xsmall - 1 + px;
+$bp-mobileOnly: $width-tablet - 1 + px;
+$bp-tablet: $width-tablet + px;
+$bp-nonMobile: $width-tablet + 1 + px;
+$bp-nonTablet: $width-desktop + 1 + px;
+$bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
+$bp-desktop: $width-desktop + px;
+$bp-xlarge: $width-xlarge + px;
+$bp-xxlarge: $width-xxlarge + px;
+$bp-xxxlarge: $width-xxxlarge + px;
+
+// Specific for WP Dashboard
+$bp-wpdb1: 800px;
+$bp-wpdb2: 1300px;
+$bp-wpdb3: 1500px;
+$bp-wpdb4: 2200px;
+
+// Custom max width for setup content
+$max-width-setup-content: 465px;
+
+// Google MDC Layout Grid Overrides
+
+/* stylelint-disable */
+$mdc-layout-grid-breakpoints: (
+	desktop: 961px,
+	tablet: 601px,
+	phone: 0px
+);
+/* stylelint-enable */
+
+$mdc-button-min-height: 40px;
+$mdc-button-callout-min-height: 32px;
+$mdc-typography-font-family: $f-primary;
+$mdc-typography-styles-subtitle1: (
+	font-size: $fs-body-md,
+);
+$mdc-text-field-error: $c-utility-error;
+$mdc-text-field-placeholder-ink-color: $c-interactive-on-disable-container;
+$mdc-text-field-label: $c-interactive-on-disable-container;
+$mdc-switch-label-margin-left: 10px;
+
+// Custom max width for settings notice content
+$max-width-settings-notice-content: 1098px;
+
+/*
+ * Custom z-Index values
+ *
+ * Important values within the WordPress dashboard are as follows:
+ * - Top admin bar and its child menus, at z-index 99999
+ * - Left most main/side admin menu wrapper, at z-index 9990
+ * - The left most main/side admin menu sub menus on hover, at z-index 9999
+ *
+ * It is important to note that WordPress generally employs a 10 step jump
+ * in values when moving between z-index layers and this should be adhered
+ * to where possible.
+ */
+
+// Ensures header does not interfere with important wp dashboard menu elements.
+$z-index-sk-side-sheet: 10000;
+$z-index-sk-side-sheet-overlay: 9990;
+$z-index-sk-header: 9980;
+$z-index-sk-overlay-notification: 9970;
+$z-index-sk-notice-snackbar: 9;
+
+// Start Authorize Application screen specific styles.
+$c-authorize-application-background: $c-base;
+$c-authorize-application-sys-light-primary: #0b57d0;
+$c-authorize-application-sys-light-on-primary: $c-base;
+$c-authorize-application-sys-light-on-surface: #1f1f1f;
+$c-authorize-application-sys-light-outline: #747775;
+$c-authorize-application-code-background: $c-gallery;
+$c-authorize-application-divider: $c-pumice;
+$c-authorize-application-brand-color: $c-vivid-blue;
+
+$fs-authorize-application-headline-sm: 24px;
+$fs-authorize-application-title-lg: 18px;
+$fs-authorize-application-label-lg: 14px;
+$fs-authorize-application-label-md: 12px;
+$fs-authorize-application-body-md: 14px;
+$fs-authorize-application-footer-lg: 16px;
+
+$lh-authorize-application-headline-sm: 32px;
+$lh-authorize-application-title-lg: 24px;
+$lh-authorize-application-label-lg: 20px;
+$lh-authorize-application-label-md: 16px;
+$lh-authorize-application-body-md: 20px;
+
+// End Authorize Application screen specific styles.
+
+// Start Reader Revenue Manager block editor specific styles.
+$c-reader-revenue-manager-button-background: $c-base;
+$c-reader-revenue-manager-button-border: $c-iron;
+$c-reader-revenue-manager-button-text: $c-vivid-blue;
+
+$f-reader-revenue-manager-button: "Google Sans", Roboto-Regular, sans-serif, arial;
+
+// End Reader Revenue Manager block editor specific styles.
+
+// Setup CTA specific styles.
+$cta-gap-phone: 4px;
+$cta-gap-tablet: 10px;

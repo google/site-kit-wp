@@ -1,0 +1,133 @@
+name: Code Linting and JS Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-css-lint-test.yml'
+      - '**.js'
+      - '**.ts'
+      - '**.tsx'
+      - '**.json'
+      - '**.scss'
+      - '.eslint*'
+      - '.nvmrc'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!feature-flags.json'
+      - '!composer.json'
+  pull_request:
+    branches:
+      - develop
+      - main
+      - 'feature/**'
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-css-lint-test.yml'
+      - '**.js'
+      - '**.ts'
+      - '**.tsx'
+      - '**.json'
+      - '**.scss'
+      - '.eslint*'
+      - '.nvmrc'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!feature-flags.json'
+      - '!composer.json'
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+concurrency:
+  group: js-css-lint-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  css-lint:
+    name: CSS Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets --include-workspace-root
+      - name: CSS Lint
+        run: npm run lint:css
+  js-lint:
+    name: JS Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci --workspaces --include-workspace-root
+      - name: JS Lint
+        run: npm run lint:js
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets -w storybook -w tests/js -w tests/e2e --include-workspace-root
+      - name: Type check
+        run: npm run typecheck
+  js-test:
+    name: JS Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      JEST_RESULTS_FILE: jest-results.json
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets -w storybook -w tests/js --include-workspace-root
+      - name: Jest Tests
+        id: test-js
+        run: npm run test:js -- -- --json --outputFile=../../${{ env.JEST_RESULTS_FILE }}
+        continue-on-error: true
+      - name: Check for catastrophic suite failures
+        id: check-catastrophic
+        run: bash tests/js/bin/check-catastrophic-jest-failures.sh "${{ env.JEST_RESULTS_FILE }}"
+      - name: Jest Tests (Retry Failures 1)
+        id: test-js-retry-1
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js.outcome == 'failure'
+        continue-on-error: true
+      - name: Jest Tests (Retry Failures 2)
+        id: test-js-retry-2
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js-retry-1.outcome == 'failure'
+        continue-on-error: true
+      - name: Jest Tests (Retry Failures 3)
+        run: npm run test:js -- -- --onlyFailures
+        if: steps.test-js-retry-2.outcome == 'failure'
+      - name: Clean up Jest results file
+        run: |
+          if [ -f ${{ env.JEST_RESULTS_FILE }} ]; then
+            rm -f ${{ env.JEST_RESULTS_FILE }}
+          fi

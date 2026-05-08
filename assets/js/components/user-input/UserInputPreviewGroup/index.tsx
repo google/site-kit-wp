@@ -1,0 +1,277 @@
+/**
+ * UserInputPreviewGroup component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import { type ComponentType } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useCallback, useRef } from '@wordpress/element';
+import { usePrevious } from '@wordpress/compose';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { trackEvent } from '@/js/util';
+import { getErrorMessageForAnswer } from '@/js/components/user-input/util/validation';
+import useViewContext from '@/js/hooks/useViewContext';
+import {
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from '@/js/components/user-input/util/constants';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import { useFeature } from '@/js/hooks/useFeature';
+import useFormValue from '@/js/hooks/useFormValue';
+import P from '@/js/components/Typography/P';
+import AnswerQuestionButton from './AnswerQuestionButton';
+import EditLink from './EditLink';
+import PreviewContent from './PreviewContent';
+
+type UserInputQuestionSlug = keyof typeof USER_INPUT_MAX_ANSWERS;
+type FocusableElement = {
+	focus?: () => void;
+};
+
+interface UserInputPreviewGroupProps {
+	slug: UserInputQuestionSlug;
+	title: string;
+	subtitle?: string | ComponentType;
+	values: string[];
+	options?: Record< string, string >;
+	loading?: boolean;
+	settingsView?: boolean;
+	onChange?: () => void;
+}
+
+export default function UserInputPreviewGroup( {
+	slug,
+	title,
+	subtitle,
+	values,
+	options = {},
+	loading = false,
+	settingsView = false,
+	onChange,
+}: UserInputPreviewGroupProps ) {
+	const viewContext = useViewContext();
+	const isNavigating = useSelect(
+		( select: Select ) => select( CORE_LOCATION ).isNavigating(),
+		[]
+	);
+	const currentlyEditingSlug = useSelect(
+		( select: Select ) =>
+			select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY ),
+		[]
+	);
+	const isSavingSettings = useSelect( ( select: Select ) => {
+		const userInputSettings = select( CORE_USER ).getUserInputSettings();
+
+		return select( CORE_USER ).isSavingUserInputSettings(
+			userInputSettings
+		);
+	}, [] );
+	const savedPurposeAnswer = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
+	);
+	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
+
+	const editButtonRef = useRef< FocusableElement | null >( null );
+
+	useEffect( () => {
+		// If user purpose is opened currently saved value was snapshot
+		// and it will differ from previous value. Once modal is closed
+		// the edit button will be toggled, and snapshotted value will be undefined
+		// while previously it had value, that will mark that modal is closed and we should
+		// return focus to the edit button.
+		if (
+			slug === USER_INPUT_QUESTIONS_PURPOSE &&
+			previousPurposeAnswer !== savedPurposeAnswer &&
+			savedPurposeAnswer === undefined
+		) {
+			setTimeout( () => {
+				editButtonRef.current?.focus?.();
+			}, 100 );
+		}
+	}, [ savedPurposeAnswer, previousPurposeAnswer, slug ] );
+
+	const { setValues } = useDispatch( CORE_UI );
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
+
+	const isEditing = currentlyEditingSlug === slug;
+	const hasAnswer = values.length > 0;
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const shouldUseAnswerQuestionCTA =
+		setupFlowRefreshEnabled && settingsView && ! hasAnswer;
+
+	const isScreenLoading = isSavingSettings || isNavigating;
+	const isEditControlDisabled =
+		isScreenLoading || ( !! currentlyEditingSlug && ! isEditing );
+
+	const gaEventCategory = `${ viewContext }_kmw`;
+
+	const toggleEditMode = useCallback( () => {
+		if ( isEditing ) {
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+			} );
+			editButtonRef.current?.focus?.();
+		} else {
+			trackEvent( gaEventCategory, 'question_edit', slug );
+			setValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: slug,
+			} );
+		}
+	}, [ gaEventCategory, isEditing, setValues, slug ] );
+
+	const handleOnEditClick = useCallback( async () => {
+		if ( settingsView ) {
+			if (
+				isScreenLoading ||
+				( !! currentlyEditingSlug && ! isEditing )
+			) {
+				return;
+			}
+
+			// Do not preserve changes if preview group is collapsed with individual CTAs.
+			if ( isEditing ) {
+				await resetUserInputSettings();
+			}
+		}
+
+		toggleEditMode();
+	}, [
+		settingsView,
+		isScreenLoading,
+		currentlyEditingSlug,
+		isEditing,
+		resetUserInputSettings,
+		toggleEditMode,
+	] );
+
+	const errorMessage = getErrorMessageForAnswer(
+		values,
+		USER_INPUT_MAX_ANSWERS[ slug ]
+	);
+	const previewErrorMessage = shouldUseAnswerQuestionCTA
+		? undefined
+		: errorMessage;
+
+	const SubtitleComponent =
+		typeof subtitle === 'function'
+			? ( subtitle as ComponentType )
+			: undefined;
+
+	return (
+		<div
+			className={ classnames( 'googlesitekit-user-input__preview-group', {
+				'googlesitekit-user-input__preview-group--editing': isEditing,
+				'googlesitekit-user-input__preview-group--individual-cta':
+					settingsView,
+			} ) }
+		>
+			<div
+				className={ classnames(
+					'googlesitekit-user-input__preview-group-title',
+					{
+						'googlesitekit-user-input__preview-group-title-with-subtitle':
+							SubtitleComponent || subtitle,
+					}
+				) }
+			>
+				<LoadingWrapper loading={ loading } width="340px" height="21px">
+					<P size="medium">{ title }</P>
+				</LoadingWrapper>
+				<LoadingWrapper
+					loading={ loading }
+					className="googlesitekit-margin-left-auto"
+					width="60px"
+					height="26px"
+				>
+					{ ! shouldUseAnswerQuestionCTA && (
+						<EditLink
+							isEditing={ isEditing }
+							isDisabled={ isEditControlDisabled }
+							onClick={ handleOnEditClick }
+							linkRef={ editButtonRef }
+						/>
+					) }
+				</LoadingWrapper>
+			</div>
+
+			<LoadingWrapper loading={ loading }>
+				<div className="googlesitekit-user-input__preview-group-subtitle">
+					{ SubtitleComponent ? (
+						<div className="googlesitekit-user-input__preview-group-subtitle-component">
+							<SubtitleComponent />
+						</div>
+					) : (
+						<P size="medium">{ subtitle }</P>
+					) }
+				</div>
+			</LoadingWrapper>
+
+			{ shouldUseAnswerQuestionCTA && ! isEditing && (
+				<AnswerQuestionButton
+					isDisabled={ isEditControlDisabled }
+					onClick={ handleOnEditClick }
+					slug={ slug }
+					gaEventCategory={ gaEventCategory }
+				/>
+			) }
+
+			<PreviewContent
+				isEditing={ isEditing }
+				shouldUseAnswerQuestionCTA={ shouldUseAnswerQuestionCTA }
+				hasAnswer={ hasAnswer }
+				slug={ slug }
+				options={ options }
+				onChange={ onChange }
+				settingsView={ settingsView }
+				values={ values }
+				loading={ loading }
+				errorMessage={ previewErrorMessage || undefined }
+			/>
+		</div>
+	);
+}
+
+UserInputPreviewGroup.propTypes = {
+	slug: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	subtitle: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.elementType,
+	] ),
+	values: PropTypes.arrayOf( PropTypes.string ).isRequired,
+	options: PropTypes.shape( {} ),
+	loading: PropTypes.bool,
+	settingsView: PropTypes.bool,
+	onChange: PropTypes.func,
+};

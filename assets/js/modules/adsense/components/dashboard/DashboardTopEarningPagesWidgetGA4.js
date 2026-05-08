@@ -1,0 +1,332 @@
+/**
+ * AdBlockerWarningWidget component.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import { useIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { compose } from '@wordpress/compose';
+import { __, _x } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import {
+	ADSENSE_GA4_TOP_EARNING_PAGES_NOTICE_DISMISSED_ITEM_KEY as DISMISSED_KEY,
+	MODULE_SLUG_ADSENSE,
+} from '@/js/modules/adsense/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
+import { numFmt, trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import whenActive from '@/js/util/when-active';
+import SourceLink from '@/js/components/SourceLink';
+import Link from '@/js/components/Link';
+import PreviewTable from '@/js/components/PreviewTable';
+import ReportTable from '@/js/components/ReportTable';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+
+function DashboardTopEarningPagesWidgetGA4( {
+	WidgetNull,
+	WidgetReportError,
+	Widget,
+} ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isGatheringData()
+	);
+
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const adSenseAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'pagePath', 'adSourceName' ],
+		metrics: [ { name: 'totalAdRevenue' } ],
+		dimensionFilters: {
+			adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+		},
+		orderby: [ { metric: { metricName: 'totalAdRevenue' }, desc: true } ],
+		limit: 5,
+		reportID: 'adsense_top-earning-pages-widget-ga4_widget_args',
+	};
+
+	const data = useInViewSelect(
+		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+			args,
+		] )
+	);
+
+	const titles = useInViewSelect(
+		( select ) =>
+			! error
+				? select( MODULES_ANALYTICS_4 ).getPageTitles( data, args )
+				: undefined,
+		[ data, args ]
+	);
+
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ args ]
+			) ||
+			( ! error && titles === undefined )
+	);
+
+	const isDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( DISMISSED_KEY )
+	);
+
+	const analyticsMainURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+			'content-publisher-overview',
+			generateDateRangeArgs( { startDate, endDate } )
+		);
+	} );
+
+	const isAdSenseLinked = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAdSenseLinked()
+	);
+
+	const isAdblockerActive = useSelect( ( select ) =>
+		select( CORE_USER ).isAdBlockerActive()
+	);
+
+	const trackingRef = useRef();
+
+	// This function works around the fact that useRef does not trigger a re-render when its value changes.
+	// This meant that if you scrolled slowly, the trackingRef would be null when the intersection observer
+	// was created, and the observer would never detect the component as in view.
+	// Full discussion: https://github.com/google/site-kit-wp/issues/8212#issuecomment-1954275748
+	const [ trackingRefReady, setTrackingRefReady ] = useState( false );
+	function updateTrackingRef( element ) {
+		trackingRef.current = element;
+		if ( element && ! trackingRefReady ) {
+			setTrackingRefReady( true );
+		}
+	}
+
+	const viewContext = useViewContext();
+
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const inView = !! intersectionEntry?.intersectionRatio;
+
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			if ( isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_widget'
+				);
+			}
+
+			if ( ! isAdSenseLinked ) {
+				trackEvent(
+					`${ viewContext }_top-earning-pages-widget`,
+					'view_notification'
+				);
+			}
+
+			setHasBeenInView( true );
+		}
+	}, [ inView, viewContext, isAdSenseLinked, hasBeenInView ] );
+
+	function onClickAdSenseLinkedCTA() {
+		trackEvent(
+			`${ viewContext }_top-earning-pages-widget`,
+			'click_learn_more_link'
+		);
+	}
+
+	if ( isDismissed ) {
+		return <WidgetNull />;
+	}
+
+	if ( ! isAdSenseLinked && viewOnlyDashboard ) {
+		return <WidgetNull />;
+	}
+
+	if ( isAdblockerActive ) {
+		return (
+			<Widget Footer={ Footer }>
+				<AdBlockerWarning moduleSlug="adsense" />
+			</Widget>
+		);
+	}
+
+	if ( loading || isGatheringData === undefined ) {
+		return (
+			<Widget Footer={ Footer } noPadding>
+				<PreviewTable rows={ 5 } padding />
+			</Widget>
+		);
+	}
+
+	if ( ! isAdSenseLinked && ! viewOnlyDashboard ) {
+		return (
+			<Widget Footer={ Footer } ref={ updateTrackingRef }>
+				<AdSenseLinkCTA onClick={ onClickAdSenseLinkedCTA } />
+			</Widget>
+		);
+	}
+
+	if ( error ) {
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+			</Widget>
+		);
+	}
+
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+				href={ analyticsMainURL }
+				external
+			/>
+		);
+	}
+
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--medium';
+	const tableColumns = [
+		{
+			columnHeaderClassName: columnClassName,
+			title: __( 'Top Earning Pages', 'google-site-kit' ),
+			tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+			primary: true,
+			Component( { row } ) {
+				const [ { value: url } ] = row.dimensionValues;
+				const title = titles[ url ];
+
+				const serviceURL = useSelect( ( select ) => {
+					return ! viewOnlyDashboard
+						? select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+								'all-pages-and-screens',
+								{
+									filters: {
+										unifiedPagePathScreen: url,
+									},
+									dates: {
+										startDate,
+										endDate,
+									},
+								}
+						  )
+						: null;
+				} );
+
+				if ( viewOnlyDashboard ) {
+					return <span>{ title }</span>;
+				}
+
+				return (
+					<Link
+						href={ serviceURL }
+						title={ title }
+						external
+						hideExternalIndicator
+					>
+						{ title }
+					</Link>
+				);
+			},
+		},
+		{
+			columnHeaderClassName: columnClassName,
+			title: __( 'Earnings', 'google-site-kit' ),
+			tooltip: __( 'Earnings', 'google-site-kit' ),
+			field: 'metricValues.0.value',
+			Component( { fieldValue } ) {
+				return (
+					<span>
+						{ numFmt( fieldValue, {
+							style: 'currency',
+							currency: data?.metadata?.currencyCode,
+						} ) }
+					</span>
+				);
+			},
+		},
+	];
+
+	return (
+		<Widget Footer={ Footer } ref={ updateTrackingRef } noPadding>
+			<TableOverflowContainer>
+				<ReportTable
+					rows={ data?.rows || [] }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
+				/>
+			</TableOverflowContainer>
+		</Widget>
+	);
+}
+
+DashboardTopEarningPagesWidgetGA4.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+	WidgetNull: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
+
+export default compose(
+	whenActive( { moduleName: MODULE_SLUG_ADSENSE } ),
+	whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )
+)( DashboardTopEarningPagesWidgetGA4 );

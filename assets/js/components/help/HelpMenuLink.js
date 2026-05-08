@@ -1,0 +1,78 @@
+/**
+ * HelpMenuLink component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Link from '@/js/components/Link';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useFeature } from '@/js/hooks/useFeature';
+
+function HelpMenuLink( { children, href, gaEventLabel, onClick, icon } ) {
+	const viewContext = useViewContext();
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	const handleClick = useCallback( async () => {
+		onClick?.();
+		if ( gaEventLabel ) {
+			await trackEvent(
+				`${ viewContext }_headerbar_helpmenu`,
+				setupFlowRefreshEnabled
+					? 'click_menu_item'
+					: 'click_outgoing_link',
+				gaEventLabel
+			);
+		}
+	}, [ onClick, gaEventLabel, viewContext, setupFlowRefreshEnabled ] );
+
+	return (
+		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">
+			<Link
+				className="mdc-list-item__text"
+				href={ href }
+				role="menuitem"
+				onClick={ handleClick }
+				leadingIcon={ icon }
+				external
+				hideExternalIndicator
+			>
+				{ children }
+			</Link>
+		</li>
+	);
+}
+
+HelpMenuLink.propTypes = {
+	children: PropTypes.node.isRequired,
+	href: PropTypes.string,
+	gaEventLabel: PropTypes.string,
+	onClick: PropTypes.func,
+};
+
+export default HelpMenuLink;

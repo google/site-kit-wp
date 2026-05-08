@@ -1,0 +1,18 @@
+[
+	{
+		"id": "administrator",
+		"displayName": "Administrator"
+	},
+	{
+		"id": "editor",
+		"displayName": "Editor"
+	},
+	{
+		"id": "author",
+		"displayName": "Author"
+	},
+	{
+		"id": "contributor",
+		"displayName": "Contributor"
+	}
+]

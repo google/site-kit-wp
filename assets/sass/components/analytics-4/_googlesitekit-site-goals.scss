@@ -1,0 +1,170 @@
+/**
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group {
+		margin-top: 34px;
+	}
+
+	.googlesitekit-site-goals-tiles-group__title {
+		color: $c-surfaces-on-surface;
+		font-size: $fs-title-md;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xxs;
+		line-height: 20px;
+		margin: 0 0 12px;
+	}
+
+	.googlesitekit-site-goals-tiles-group__tiles {
+		align-items: stretch;
+		display: flex;
+	}
+
+	.googlesitekit-site-goals-tile {
+		border-left: 2px solid $c-surfaces-surface-1;
+		display: flex;
+		flex-direction: column;
+		margin-left: 42px;
+		padding: 14px 0;
+		width: 323px;
+
+		.googlesitekit-site-goals-tile__inner {
+			padding-left: 14px;
+		}
+
+		.googlesitekit-site-goals-tile__header {
+			align-items: center;
+			display: flex;
+			margin-bottom: 6px;
+
+			.googlesitekit-info-tooltip {
+				color: $c-teal-t-500;
+				height: 16px;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__title {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0 8px 0 0;
+			position: relative;
+
+			&::before {
+				background-color: $c-surfaces-surface-1;
+				border-radius: 50%;
+				content: "";
+				display: block;
+				height: 9px;
+				left: -19.5px;
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 9px;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__body {
+			display: flex;
+			flex: 1;
+		}
+
+		.googlesitekit-site-goals-tile__metric-container {
+			flex: 1;
+		}
+
+		.googlesitekit-site-goals-tile__metric {
+			color: $c-surfaces-on-surface;
+			font-family: $f-secondary;
+			font-size: $fs-headline-sm;
+			font-weight: $fw-normal;
+			line-height: 28px;
+		}
+
+		.googlesitekit-site-goals-tile__subtext {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-label-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin: 1px 0 0;
+		}
+
+		.googlesitekit-site-goals-tile__change-container {
+			align-items: flex-end;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+
+			.googlesitekit-change-badge {
+				margin: 0;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__comparison-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-label-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin: 2px 0 0;
+			text-align: right;
+		}
+
+		&.googlesitekit-site-goals-tile--primary {
+			padding: 18px;
+
+			.googlesitekit-site-goals-tile__inner {
+				padding: 0;
+			}
+
+			.googlesitekit-site-goals-tile__title {
+				&::before {
+					left: -23.5px;
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__positive {
+				background: $c-green-g-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+
+			&.googlesitekit-site-goals-tile--primary__negative {
+				background: $c-red-r-10;
+				border-left: none;
+
+				.googlesitekit-site-goals-tile__title {
+					&::before {
+						display: none;
+					}
+				}
+			}
+		}
+
+		&:first-child {
+			margin-left: 0;
+		}
+	}
+}

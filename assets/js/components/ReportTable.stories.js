@@ -1,0 +1,157 @@
+/**
+ * ReportTable Component Stories.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import ReportTable from './ReportTable';
+import Layout from './layout/Layout';
+import Link from './Link';
+import {
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import NewBadge from './NewBadge';
+import { useSelect } from 'googlesitekit-data';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+
+function Template( args ) {
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+	const defaultRows = Object.values( modules );
+
+	return <ReportTable rows={ defaultRows } { ...args } />;
+}
+
+function createBasicArgs() {
+	return {
+		columns: [
+			{
+				title: 'Name',
+				description: 'Module name',
+				primary: true,
+				Component( { row } ) {
+					return (
+						<Link
+							href={ row.homepage }
+							children={ row.name }
+							external
+						/>
+					);
+				},
+			},
+			{
+				title: 'Description',
+				description: 'Module description',
+				field: 'description',
+			},
+			{
+				title: 'Icon',
+				Component( { row } ) {
+					return row.Icon && <row.Icon width={ 33 } />;
+				},
+			},
+		],
+	};
+}
+
+export const ReportTableBasic = Template.bind( {} );
+ReportTableBasic.storyName = 'Basic';
+ReportTableBasic.args = createBasicArgs();
+ReportTableBasic.scenario = {};
+
+export const ReportTableTabbedLayout = Template.bind( {} );
+ReportTableTabbedLayout.storyName = 'Tabbed Layout';
+ReportTableTabbedLayout.args = { ...createBasicArgs(), tabbedLayout: true };
+ReportTableTabbedLayout.scenario = {};
+
+export const ReportTableGatheringData = Template.bind( {} );
+ReportTableGatheringData.storyName = 'Gathering Data';
+ReportTableGatheringData.args = {
+	rows: [],
+	columns: [
+		{
+			title: 'Top search queries for your site',
+			primary: true,
+			field: 'queries',
+		},
+		{
+			title: 'Impressions',
+			description: 'Impressions description',
+			field: 'impressions',
+		},
+		{
+			title: 'Clicks',
+			field: 'clicks',
+		},
+	],
+	gatheringData: true,
+};
+
+export const ReportTableWithNewBadge = Template.bind( {} );
+ReportTableWithNewBadge.storyName = 'With New Badge';
+ReportTableWithNewBadge.args = {
+	rows: [],
+	columns: [
+		{
+			title: 'Title 1',
+			field: 'title1',
+		},
+		{
+			title: 'Title 2',
+			field: 'title2',
+			badge: (
+				<NewBadge
+					tooltipTitle="Tooltip title for the badge in the table header."
+					learnMoreLink="#"
+				/>
+			),
+		},
+		{
+			title: 'Title 3',
+			field: 'title3',
+		},
+	],
+};
+
+export default {
+	title: 'Components/ReportTable',
+	component: ReportTable,
+	decorators: [
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Layout>
+						<Story />
+					</Layout>
+				</WithRegistrySetup>
+			);
+		},
+	],
+};

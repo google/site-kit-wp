@@ -1,0 +1,186 @@
+/**
+ * ViewOnlyMenu Component Stories.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
+ * Internal dependencies
+ */
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteConnection,
+	provideUserCapabilities,
+} from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+	CORE_USER,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { Cell, Grid, Row } from '@/js/material-components';
+import ViewOnlyMenu from './';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+
+function Template() {
+	return (
+		<header className="googlesitekit-header">
+			<Grid>
+				<Row>
+					<Cell size={ 12 }>
+						<div
+							style={ {
+								display: 'flex',
+								justifyContent: 'flex-end',
+							} }
+						>
+							<ViewOnlyMenu />
+						</div>
+					</Cell>
+				</Row>
+			</Grid>
+		</header>
+	);
+}
+
+const commonModuleCapabilities = {
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		MODULE_SLUG_SEARCH_CONSOLE
+	) ]: true,
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		MODULE_SLUG_PAGESPEED_INSIGHTS
+	) ]: true,
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		MODULE_SLUG_ANALYTICS_4
+	) ]: true,
+};
+
+export const CanAuthenticate = Template.bind( {} );
+CanAuthenticate.storyName = 'Can Authenticate';
+CanAuthenticate.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: true,
+				...commonModuleCapabilities,
+			} );
+		}
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+CanAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			...commonModuleCapabilities,
+		} );
+	},
+};
+
+export const CannotAuthenticate = Template.bind( {} );
+CannotAuthenticate.storyName = 'Cannot Authenticate';
+CannotAuthenticate.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: false,
+				...commonModuleCapabilities,
+			} );
+		}
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+CannotAuthenticate.args = {
+	setupRegistry: ( registry ) => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: false,
+			...commonModuleCapabilities,
+		} );
+	},
+};
+
+export default {
+	title: 'Components/ViewOnlyMenu',
+	component: ViewOnlyMenu,
+	decorators: [
+		( Story, { args } ) => {
+			function setupRegistry( registry ) {
+				provideSiteConnection( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						owner: {
+							id: '1',
+							login: 'Admin 1',
+						},
+					},
+					{
+						slug: MODULE_SLUG_PAGESPEED_INSIGHTS,
+						owner: {
+							id: '2',
+							login: 'Admin 2',
+						},
+					},
+				] );
+				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
+
+				// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+				fetchMock.post(
+					RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+					( url, { body } ) => {
+						const { data } = JSON.parse( body );
+
+						return { body: data };
+					}
+				);
+
+				if ( args?.setupRegistry ) {
+					args.setupRegistry( registry );
+				}
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
+	parameters: { padding: 0 },
+};

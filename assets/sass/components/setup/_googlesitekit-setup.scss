@@ -1,0 +1,251 @@
+/**
+ * Setup styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-setup {
+
+		@include googlesitekit-inner-padding;
+		padding-top: 10px;
+
+		.googlesitekit-layout {
+			overflow: hidden;
+		}
+
+		.googlesitekit-opt-in {
+			margin-bottom: 8px;
+			margin-top: 8px;
+		}
+
+		.googlesitekit-setup__step {
+			border-bottom: 1px solid $c-border-light;
+			margin-bottom: $grid-gap-phone;
+			padding-bottom: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: $grid-gap-desktop;
+				padding-bottom: $grid-gap-desktop;
+			}
+
+			&:last-child {
+				border-bottom: none;
+				margin-bottom: 0;
+				padding-bottom: 0;
+			}
+		}
+
+		.googlesitekit-setup__title {
+			display: inline-block;
+			margin: 0.67em 0;
+		}
+
+		.googlesitekit-setup__notice {
+			font-weight: 500;
+		}
+
+		.googlesitekit-setup__description + .googlesitekit-setup__notice {
+			margin-top: 1em;
+		}
+
+		.googlesitekit-setup__notice-text {
+			display: inline-block;
+			margin-left: 5px;
+			vertical-align: middle;
+		}
+
+		.googlesitekit-setup__footer {
+			border-top: 1px solid $c-border-light;
+		}
+
+		.googlesitekit-setup__splash {
+			border-bottom: 1px solid $c-border-light;
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		.googlesitekit-setup__step-hint {
+			display: flex;
+			gap: 4px;
+			margin: 13px 0 12px;
+			padding: 0 8px;
+
+			p {
+				color: $c-surfaces-on-background-variant;
+				font-size: $fs-body-sm;
+				letter-spacing: $ls-xs;
+				line-height: $lh-body-sm;
+				margin: 0;
+			}
+
+			.googlesitekit-info-tooltip {
+				color: $c-content-secondary;
+				display: flex;
+			}
+		}
+	}
+
+	.googlesitekit-setup-compat {
+		max-width: 60rem;
+	}
+
+	.googlesitekit-start-setup-wrap {
+		display: flex;
+	}
+
+	.googlesitekit-start-setup {
+		margin-right: $grid-gap-phone / 2;
+	}
+
+	.googlesitekit-start-setup + .googlesitekit-cta-link {
+		margin-left: $grid-gap-phone / 2;
+	}
+
+	.googlesitekit-setup__wrapper {
+		background-color: $c-base;
+		border-radius: $br-sm;
+
+		.googlesitekit-setup__intro-title {
+			color: $c-primary;
+			font-family: $f-secondary;
+			font-size: $fs-title-sm;
+			font-weight: $fw-bold;
+			line-height: $lh-title-sm;
+			margin: 0 0 17px;
+		}
+	}
+
+	.googlesitekit-initial-setup {
+		padding: 0;
+
+		.googlesitekit-setup__wrapper {
+			border-radius: 0;
+		}
+
+		.googlesitekit-setup__reset-notice {
+			margin-right: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-right: $grid-gap-desktop;
+			}
+		}
+	}
+
+	.googlesitekit-setup__warning {
+		align-items: center;
+		display: flex;
+
+		svg {
+			color: $c-warning;
+			width: 34px;
+		}
+
+		div {
+			flex: 1;
+			margin: 0 0 0 $grid-gap-desktop;
+		}
+	}
+
+	// feature: user-input
+	.googlesitekit-setup__content {
+		margin: 0 auto;
+		max-width: $max-width-setup-content;
+		padding: 2rem 0;
+
+		@media (min-width: $bp-nonTablet) {
+			max-width: none;
+			padding: 0;
+		}
+
+		.googlesitekit-setup__description {
+			margin: 0;
+		}
+
+		.googlesitekit-opt-in {
+			margin: 2rem 0;
+		}
+	}
+
+	.googlesitekit-setup__icon {
+		text-align: center;
+
+		svg {
+			height: auto;
+			max-width: 100%;
+		}
+
+		@media (min-width: $bp-nonTablet) {
+			align-self: center;
+			order: 2;
+		}
+	}
+
+	.googlesitekit-setup-analytics-notice {
+		background-color: $c-setup-analytics-notice-bg;
+		border-radius: 16px;
+		display: flex;
+		flex-direction: column-reverse;
+		margin: 24px 0 0;
+		padding: 16px;
+
+		@media (min-width: $bp-tablet) {
+			padding: 24px;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			align-items: center;
+			flex-flow: row nowrap;
+		}
+
+		label {
+			color: $c-setup-analytics-notice-text;
+			font-size: $fs-body-lg;
+			letter-spacing: $ls-m;
+			line-height: $lh-body-lg;
+			padding-top: 8px;
+		}
+
+		.mdc-form-field {
+			align-items: flex-start;
+		}
+	}
+
+	.googlesitekit-setup-analytics-notice__icon {
+		margin: 0 0 24px;
+
+		@media (min-width: $bp-xlarge) {
+			margin: 0;
+			padding-left: 24px;
+		}
+
+		svg {
+			display: block;
+			margin: 0 auto;
+			max-width: 378px;
+			width: 100%;
+
+			@media (min-width: $bp-xlarge) {
+				margin: 0;
+				width: 378px;
+			}
+		}
+	}
+}
+
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-setup__step-hint-tooltip {
+	max-width: 220px;
+}

@@ -1,0 +1,33 @@
+{
+	"config": {
+		"storybook_wordpress_version": "5.5.1",
+		"puppeteer": {
+			"skip": {
+				"download": true
+			}
+		}
+	},
+	"scripts": {
+		"prebuild": "npm run remove-dist",
+		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
+		"start": "storybook dev -p 9001 -c . --no-version-updates",
+		"remove-dist": "rimraf ../dist/",
+		"test": "./bin/run-tests.sh"
+	},
+	"devDependencies": {
+		"@babel/preset-react": "^7.26.3",
+		"@storybook/addon-viewport": "^8.6.12",
+		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+		"@storybook/react-webpack5": "^8.6.12",
+		"@storybook/test": "^8.6.12",
+		"@storybook/test-runner": "^0.23.0",
+		"css-loader": "^7.1.2",
+		"mini-css-extract-plugin": "^2.9.2",
+		"postcss-loader": "^8.1.1",
+		"sass": "^1.30.0",
+		"sass-loader": "^16.0.5",
+		"storybook": "^8.6.12",
+		"url-loader": "^4.1.1",
+		"webpack": "^5.99.7"
+	}
+}

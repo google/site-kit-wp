@@ -1,0 +1,99 @@
+/**
+ * Audience Segmentation ConnectAnalyticsCTAWidget styles.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-lean-cta-banner {
+		display: flex;
+		flex-direction: column;
+
+		@media (min-width: $bp-nonTablet) {
+			align-items: center;
+			flex: 1;
+			flex-direction: row;
+			padding-inline: 36px;
+		}
+
+		.googlesitekit-lean-cta-banner__body {
+			display: flex;
+			flex-direction: column;
+			padding-block: 20px;
+			padding-inline: $grid-gap-phone;
+
+			@media (min-width: $bp-nonMobile) {
+				align-items: center;
+				flex-direction: row;
+				padding-inline: $grid-gap-desktop;
+			}
+
+			@media (min-width: $bp-nonTablet) {
+				flex: 0 1 auto;
+				margin-right: $grid-gap-desktop;
+				padding: 0;
+			}
+
+			.googlesitekit-lean-cta-banner__body-icon {
+				display: flex;
+				margin-bottom: 6px;
+
+				@media (min-width: $bp-nonMobile) {
+					justify-content: right;
+					margin-bottom: 0;
+				}
+			}
+
+			.googlesitekit-lean-cta-banner__body-content {
+
+				p {
+					margin: 0 0 4px;
+				}
+
+				@media (min-width: $bp-nonMobile) {
+					margin-left: 20px;
+				}
+
+				@media (min-width: $bp-nonTablet) {
+					margin-left: $grid-gap-desktop;
+				}
+			}
+		}
+
+		.googlesitekit-lean-cta-banner__graphic {
+			display: flex;
+			justify-content: center;
+			padding-inline: $grid-gap-desktop;
+
+			svg {
+				max-height: 128px;
+			}
+
+			@media (min-width: $bp-nonMobile) {
+				padding-inline: 0;
+
+				svg {
+					height: 150px;
+					max-height: unset;
+				}
+			}
+
+			@media (min-width: $bp-nonTablet) {
+				flex: 1 1 auto;
+			}
+		}
+	}
+}

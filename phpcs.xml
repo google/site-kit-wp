@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<ruleset name="Site Kit by Google Project Rules">
+
+	<rule ref="WordPress-Docs">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress-Extra">
+		<!-- Ignore WordPress core file naming conventions since Site Kit uses PSR-4 -->
+		<exclude name="WordPress.Files.FileName"/>
+		<!-- Site Kit doesn't use base64 encoding functions to "obfuscate code" -->
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
+		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
+		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
+	</rule>
+
+	<!-- Use correct textdomain -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="google-site-kit"/>
+				<!-- Use default text domain when relying on WP core strings. -->
+				<element value="default"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Include only WordPress-VIP-Go rules but not the ruleset since it makes WPCS less strict -->
+	<rule ref="WordPressVIPMinimum.Functions">
+		<!-- Allow user meta since for Site Kit there is no alternative -->
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_add_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_delete_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_get_user_meta"/>
+		<exclude name="WordPressVIPMinimum.Functions.RestrictedFunctions.user_meta_update_user_meta"/>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Performance"/>
+	<rule ref="WordPressVIPMinimum.Files">
+		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant"/>
+		<exclude name="WordPressVIPMinimum.Files.IncludingFile.UsingVariable"/>
+	</rule>
+	<rule ref="WordPressVIPMinimum.UserExperience"/>
+	<rule ref="WordPressVIPMinimum.Security"/>
+	<rule ref="VariableAnalysis">
+		<!-- This sniff is severely broken, flaggin e.g. $this as undefined variable -->
+		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable"/>
+		<!-- This sniff flags unused exception variables which cannot be avoided -->
+		<exclude name="VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable"/>
+	</rule>
+	<rule ref="Universal.Operators.DisallowShortTernary">
+		<!-- Allow short ternary -->
+		<exclude name="Universal.Operators.DisallowShortTernary.Found" />
+	</rule>
+
+	<!-- Set the maximum allowed cyclomatic complexity -->
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="20"/>
+		</properties>
+	</rule>
+
+	<!-- Custom Site Kit rules -->
+	<rule ref="SiteKit.PHPUnit.RequireAssertionMessage"/>
+
+	<!-- Show details about violated sniffs -->
+	<arg value="s"/>
+
+	<!-- Iterate over all PHP files by default -->
+	<arg name="extensions" value="php"/>
+	<file>.</file>
+
+	<!-- Temporarily disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped" />
+	</rule>
+
+	<!-- Test-specific exclusions -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.DB.SlowDBQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!-- Third-party and generated code -->
+	<exclude-pattern>dist/*</exclude-pattern>
+	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>packages/apiclient-services-*</exclude-pattern>
+	<exclude-pattern>tests/phpstan/*</exclude-pattern>
+	<exclude-pattern>third-party/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>gtg/measurement.php</exclude-pattern>
+
+	<!-- Check for cross-version support for PHP 7.4 and higher. -->
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_supported_wp_version" value="5.2"/>
+	<rule ref="PHPCompatibilityWP" />
+
+</ruleset>

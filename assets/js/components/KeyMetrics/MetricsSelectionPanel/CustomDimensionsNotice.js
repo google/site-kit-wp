@@ -1,0 +1,134 @@
+/**
+ * Key Metrics Selection Panel Notice
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { usePrevious } from '@wordpress/compose';
+import { useEffect, useRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { useInViewSelect } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	MODULES_ANALYTICS_4,
+	EDIT_SCOPE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	KEY_METRICS_SELECTED,
+	KEY_METRICS_SELECTION_FORM,
+} from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { elementsOverlap } from '@/js/util/geometry';
+import whenActive from '@/js/util/when-active';
+import useFormValue from '@/js/hooks/useFormValue';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+
+function CustomDimensionsNotice() {
+	const selectedMetrics = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		KEY_METRICS_SELECTED
+	);
+
+	const requiredCustomDimensions = selectedMetrics?.flatMap( ( tileName ) => {
+		const tile = KEY_METRICS_WIDGETS[ tileName ];
+		return tile?.requiredCustomDimensions || [];
+	} );
+
+	const hasMissingCustomDimensions = useInViewSelect(
+		( select ) => {
+			if ( ! requiredCustomDimensions?.length ) {
+				return false;
+			}
+
+			return ! select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+				requiredCustomDimensions
+			);
+		},
+		[ requiredCustomDimensions ]
+	);
+
+	const hasAnalytics4EditScope = useInViewSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+
+	// This is called here to ensure that the list of available custom dimensions is
+	// synced and loaded, preventing flickers of the notice.
+	useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAvailableCustomDimensions()
+	);
+
+	const previousHasMissingCustomDimensions = usePrevious(
+		hasMissingCustomDimensions
+	);
+	const noticeRef = useRef();
+
+	// Scroll the metric item being overlapped by the notice that appears
+	// when the item selected (normally the last item in the panel) requires
+	// custom dimension permissions.
+	useEffect( () => {
+		if (
+			hasMissingCustomDimensions &&
+			previousHasMissingCustomDimensions === false
+		) {
+			const currentFocusedElement = global.document.activeElement;
+
+			if (
+				currentFocusedElement &&
+				currentFocusedElement.closest(
+					'.googlesitekit-selection-panel-item'
+				) &&
+				elementsOverlap( noticeRef.current, currentFocusedElement )
+			) {
+				currentFocusedElement.scrollIntoView();
+			}
+		}
+	}, [ hasMissingCustomDimensions, previousHasMissingCustomDimensions ] );
+
+	if ( hasMissingCustomDimensions === false ) {
+		return null;
+	}
+
+	const customDimensionMessage = hasAnalytics4EditScope
+		? __(
+				'The metrics you selected require more data tracking. We will update your Analytics property after saving your selection.',
+				'google-site-kit'
+		  )
+		: __(
+				'The metrics you selected require more data tracking. You will be directed to update your Analytics property after saving your selection.',
+				'google-site-kit'
+		  );
+
+	return (
+		<SelectionPanelNotice
+			ref={ noticeRef }
+			type={ NOTICE_TYPES.WARNING }
+			description={ customDimensionMessage }
+			hideIcon
+		/>
+	);
+}
+
+export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
+	CustomDimensionsNotice
+);

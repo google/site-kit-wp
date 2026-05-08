@@ -1,0 +1,1069 @@
+/**
+ * `modules/analytics-4` data store: report tests.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { setUsingCache } from 'googlesitekit-api';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import {
+	createTestRegistry,
+	untilResolved,
+	freezeFetch,
+	subscribeUntil,
+	muteFetch,
+	createWaitForRegistry,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
+import { DAY_IN_SECONDS } from '@/js/util';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import * as fixtures from './__fixtures__';
+
+describe( 'modules/analytics-4 report', () => {
+	let registry;
+	let waitForRegistry;
+
+	beforeAll( () => {
+		setUsingCache( false );
+	} );
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		waitForRegistry = createWaitForRegistry( registry );
+	} );
+
+	afterAll( () => {
+		setUsingCache( true );
+	} );
+
+	describe( 'selectors', () => {
+		const zeroDataReport = { totals: [ {} ] };
+		const analytics4ReportRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report'
+		);
+		const dataAvailableRegexp = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/data-available'
+		);
+
+		describe( 'getReport', () => {
+			const options = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				compareStartDate: '2022-11-01',
+				compareEndDate: '2022-11-02',
+				dimensions: [
+					// Provide dimensions in both string and array formats.
+					'sessionDefaultChannelGrouping',
+					{
+						name: 'pageTitle',
+					},
+				],
+				metrics: [
+					'sessions',
+					{
+						name: 'PageViews',
+					},
+					{
+						name: 'total',
+						expression: 'totalUsers',
+					},
+				],
+			};
+
+			it( 'uses a resolver to make a network request', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				const initialReport = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options );
+
+				expect( initialReport ).toEqual( undefined );
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					options
+				);
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( report ).toEqual( fixtures.report );
+			} );
+
+			it( 'does not make a network request if report for given options is already present', async () => {
+				// Load data into this store so there are matches for the data we're about to select,
+				// even though the selector hasn't fulfilled yet.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, { options } );
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					options
+				);
+
+				expect( fetchMock ).not.toHaveFetched();
+				expect( report ).toEqual( fixtures.report );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				registry.select( MODULES_ANALYTICS_4 ).getReport( options );
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					options
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options );
+				expect( report ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getPageTitles', () => {
+			it( 'generates a map using a getReport call.', async () => {
+				const startDate = '2021-01-01';
+				const endDate = '2021-01-31';
+				const pagePaths = [ '/', '/one/', '/two/' ];
+
+				const pageTitlesArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath', 'pageTitle' ],
+					dimensionFilters: {
+						pagePath: pagePaths,
+					},
+					metrics: [
+						{
+							name: 'screenPageViews',
+						},
+					],
+					orderby: [
+						{
+							metric: { metricName: 'screenPageViews' },
+							desc: true,
+						},
+					],
+					limit: 15,
+					reportID:
+						'analytics-4_get-page-titles_store:selector_options',
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.pageTitles, {
+						options: pageTitlesArgs,
+					} );
+
+				const report = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					pageTitlesArgs
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				const titles = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPageTitles( report, { startDate, endDate } );
+
+				expect( titles ).toStrictEqual( {
+					'/': 'HOME',
+					'/one/': 'ONE',
+					'/two/': 'TWO',
+				} );
+			} );
+		} );
+
+		describe( 'isGatheringData', () => {
+			it( 'should return `undefined` if getReport is not resolved yet', async () => {
+				freezeFetch( analytics4ReportRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForRegistry();
+
+				expect( fetchMock ).toHaveFetched( analytics4ReportRegexp );
+			} );
+
+			it( 'should return FALSE if the returned report has data', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+				} );
+
+				muteFetch( dataAvailableRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( false );
+			} );
+
+			it( 'should return TRUE if report API returns error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: response,
+					status: 500,
+				} );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				// Wait for resolvers to run.
+				await waitForRegistry();
+
+				expect( isGatheringData() ).toBe( true );
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( dataAvailableRegexp );
+			} );
+
+			it( 'should return TRUE if propertyCreateTime is 0', async () => {
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					authenticated: true,
+				} );
+
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: zeroDataReport,
+				} );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyCreateTime: 0,
+				} );
+
+				muteFetch( dataAvailableRegexp );
+
+				const { isGatheringData } =
+					registry.select( MODULES_ANALYTICS_4 );
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( isGatheringData() ).toBe( true );
+			} );
+
+			describe.each( [
+				[ 'undefined', undefined ],
+				[ 'null', null ],
+				[ 'empty', {} ],
+				[ 'a zero data report', zeroDataReport ],
+				[
+					'a report with rows but zero data',
+					{
+						...fixtures.report,
+						totals: [ { metricValues: [ { value: '0' } ] } ],
+					},
+				],
+			] )( 'when the returned report is %s', ( _, body ) => {
+				beforeEach( () => {
+					fetchMock.getOnce( analytics4ReportRegexp, {
+						body,
+					} );
+				} );
+
+				it( 'should return undefined if getSettings is not resolved yet', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					freezeFetch(
+						new RegExp(
+							'^/google-site-kit/v1/modules/analytics-4/data/settings'
+						)
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForRegistry();
+
+					// Verify that isGatheringData still returns undefined due to getSettings not being resolved yet, while hasZeroData now returns true.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForRegistry();
+				} );
+
+				it( 'should return TRUE if the connnected GA4 property is under three days old', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					// Create a timestamp that is two and a half days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 2.5 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( true );
+				} );
+
+				it( 'should return FALSE if the connected GA4 property is older than three days', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: true,
+					} );
+
+					muteFetch( dataAvailableRegexp );
+
+					// Create a timestamp that is four days ago.
+					const createTime = new Date(
+						Date.now() - DAY_IN_SECONDS * 4 * 1000
+					).toISOString();
+
+					const property = {
+						...fixtures.properties[ 0 ],
+						createTime,
+					};
+					const propertyID = property._id;
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetSettings( {} );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetProperty( property, { propertyID } );
+
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.setPropertyID( propertyID );
+
+					const { isGatheringData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					expect( isGatheringData() ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() => isGatheringData() !== undefined
+					);
+
+					expect( isGatheringData() ).toBe( false );
+				} );
+
+				it( 'should return TRUE without checking for property settings if the report has zero data and user is not authenticated', async () => {
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						authenticated: false,
+					} );
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for resolvers to run.
+					await waitForRegistry();
+
+					// Verify that isGatheringData now returns TRUE if hasZeroData now returns true but the user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+
+					await waitForRegistry();
+				} );
+
+				it( 'should return undefined if getAuthentication is not resolved yet', async () => {
+					fetchMock.getOnce(
+						new RegExp(
+							'^/google-site-kit/v1/core/user/data/authentication'
+						),
+						{
+							authenticated: false,
+						}
+					);
+
+					const { isGatheringData, hasZeroData } =
+						registry.select( MODULES_ANALYTICS_4 );
+
+					// The first call to isGatheringData returns undefined because the call to hasZeroData returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					expect( hasZeroData() ).toBeUndefined();
+
+					// Wait for the next tick to allow getReport to resolve. We don't use waitForDefaultTimeouts as the longer timeout in that function
+					// can allow the getAuthenticated call to resolve too, which we don't want here.
+					await new Promise( ( resolve ) => {
+						setTimeout( resolve, 1 );
+					} );
+
+					// The second call to isGatheringData returns undefined because the call to isAuthenticated returns undefined.
+					expect( isGatheringData() ).toBeUndefined();
+					// This confirms that hasZeroData is now resolved.
+					expect( hasZeroData() ).toBe( true );
+
+					await untilResolved(
+						registry,
+						CORE_USER
+					).getAuthentication();
+
+					// Verify that isGatheringData now returns TRUE as the call to getAuthentication has resolved and user is not authenticated.
+					expect( isGatheringData() ).toBe( true );
+					expect( hasZeroData() ).toBe( true );
+				} );
+			} );
+		} );
+
+		describe( 'hasZeroData', () => {
+			describe.each( [
+				[
+					'using the default report args',
+					{
+						// Don't include `startDate` and `endDate` here - they'll be calculated dynamically.
+						expectedReportQueryParams: {
+							'dimensions[0][name]': 'date',
+							'metrics[0][name]': 'totalUsers',
+							_locale: 'user',
+						},
+					},
+				],
+				[
+					'provided with custom report args',
+					{
+						reportArgs: {
+							startDate: '2022-11-02',
+							endDate: '2022-11-04',
+							dimensions: [ 'pageTitle' ],
+							metrics: [ 'PageViews' ],
+						},
+						expectedReportQueryParams: {
+							startDate: '2022-11-02',
+							endDate: '2022-11-04',
+							'dimensions[0][name]': 'pageTitle',
+							'metrics[0][name]': 'PageViews',
+							_locale: 'user',
+						},
+					},
+				],
+			] )(
+				'when %s',
+				( _, { reportArgs, expectedReportQueryParams } ) => {
+					beforeEach( () => {
+						// Provide a reference date to ensure the date range is consistent for the default report.
+						registry
+							.dispatch( CORE_USER )
+							.setReferenceDate( '2024-05-01' );
+
+						// For the default report args case, calculate dates dynamically.
+						if ( ! reportArgs ) {
+							const dates = registry
+								.select( CORE_USER )
+								.getDateRangeDates( {
+									compare: true,
+									offsetDays: DATE_RANGE_OFFSET,
+								} );
+
+							// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+							expectedReportQueryParams.startDate =
+								dates.compareStartDate;
+							expectedReportQueryParams.endDate = dates.endDate;
+						}
+					} );
+
+					it( 'should return `undefined` if getReport has not resolved yet', async () => {
+						freezeFetch( analytics4ReportRegexp );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						// Wait for resolvers to run.
+						await waitForRegistry();
+					} );
+
+					it( 'should make a request for the correct report', async () => {
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: fixtures.report,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						// Wait for resolvers to run.
+						await waitForRegistry();
+
+						expect( fetchMock ).toHaveFetchedTimes( 1 );
+						expect( fetchMock ).toHaveFetched(
+							analytics4ReportRegexp,
+							{
+								query: expectedReportQueryParams,
+							}
+						);
+					} );
+
+					it( 'should return TRUE if report API returns error', async () => {
+						const response = {
+							code: 'internal_server_error',
+							message: 'Internal server error',
+							data: { status: 500 },
+						};
+
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: response,
+							status: 500,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						// Wait for resolvers to run.
+						await waitForRegistry();
+
+						expect( hasZeroData( reportArgs ) ).toBe( true );
+						expect( console ).toHaveErrored();
+					} );
+
+					it( 'should return TRUE if isZeroReport is true', async () => {
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: zeroDataReport,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						await subscribeUntil(
+							registry,
+							() => hasZeroData( reportArgs ) !== undefined
+						);
+
+						expect( hasZeroData( reportArgs ) ).toBe( true );
+					} );
+
+					it( 'should return FALSE if isZeroReport returns FALSE', async () => {
+						expect( isZeroReport( fixtures.report ) ).toBe( false );
+						fetchMock.getOnce( analytics4ReportRegexp, {
+							body: fixtures.report,
+						} );
+
+						const { hasZeroData } =
+							registry.select( MODULES_ANALYTICS_4 );
+
+						expect( hasZeroData( reportArgs ) ).toBeUndefined();
+
+						await subscribeUntil(
+							registry,
+							() => hasZeroData( reportArgs ) !== undefined
+						);
+
+						expect( hasZeroData( reportArgs ) ).toBe( false );
+					} );
+				}
+			);
+		} );
+
+		describe( 'getSampleReportArgs', () => {
+			it( 'should return report arguments relative to the current reference date', () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-05-01' );
+
+				// Calculate expected dates using the same method as `getSampleReportArgs`.
+				const dates = registry.select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+					offsetDays: DATE_RANGE_OFFSET,
+				} );
+
+				const args = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSampleReportArgs();
+
+				// `getSampleReportArgs` uses `compareStartDate` as `startDate`.
+				expect( args.startDate ).toBe( dates.compareStartDate );
+				expect( args.endDate ).toBe( dates.endDate );
+				expect( args.metrics?.[ 0 ]?.name ).toBe( 'totalUsers' );
+				expect( args.dimensions?.[ 0 ] ).toBe( 'date' );
+				expect( args.url ).toBeUndefined();
+			} );
+
+			it( 'should include the URL property from the current entity URL', () => {
+				const entityURL = 'http://example.com';
+				provideSiteInfo( registry, { currentEntityURL: entityURL } );
+
+				const args = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSampleReportArgs();
+
+				expect( args.url ).toBe( entityURL );
+			} );
+		} );
+
+		describe( 'getReportForAllAudiences', () => {
+			const getAudiencesEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/audiences'
+			);
+
+			const audiences = fixtures.audiences.map( ( { name } ) => name );
+
+			it( 'should trigger a separate report for each provided audience', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setAvailableAudiences( fixtures.availableAudiences );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: fixtures.availableAudiences.reduce(
+							( acc, { name } ) => {
+								acc[ name ] = 20201220;
+								return acc;
+							},
+							{}
+						),
+						customDimension: {},
+						property: {},
+					},
+				} );
+
+				const options = {
+					startDate: '2022-11-02',
+					endDate: '2022-11-04',
+					compareStartDate: '2022-11-01',
+					compareEndDate: '2022-11-02',
+					dimensions: [
+						{
+							name: 'pageTitle',
+						},
+					],
+					metrics: [
+						{
+							name: 'PageViews',
+						},
+						{
+							name: 'total',
+							expression: 'totalUsers',
+						},
+					],
+				};
+
+				fetchMock.get( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				fetchMock.getOnce( getAudiencesEndpoint, {
+					body: fixtures.audiences,
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
+
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getReport(
+					{
+						...options,
+						dimensionFilters: {
+							audienceResourceName:
+								fixtures.audiences[
+									fixtures.audiences.length - 1
+								].name,
+						},
+					}
+				);
+
+				const reports = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportForAllAudiences( options, audiences );
+
+				expect( reports ).toEqual(
+					Array( fixtures.audiences.length ).fill( fixtures.report )
+				);
+
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
+			} );
+		} );
+
+		describe( 'areReportsLoading', () => {
+			const reportOptions = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'totalUsers' ],
+			};
+
+			it( 'should return false when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading();
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when a report has not finished resolution', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions );
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'should return false when a report has finished resolution', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions );
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when at least one report is still loading', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report is loading
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has finished
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions2,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( true );
+			} );
+
+			it( 'should return false when all reports have finished resolution', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// Both reports have finished
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions2,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when all reports are still loading', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// Both reports are loading
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions1 ] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.startResolution( 'getReport', [ reportOptions2 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.areReportsLoading( reportOptions1, reportOptions2 );
+
+				expect( result ).toBe( true );
+			} );
+		} );
+
+		describe( 'getFirstReportError', () => {
+			const reportOptions = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'totalUsers' ],
+			};
+
+			const error1 = {
+				code: 'error_code_1',
+				message: 'Error message 1',
+				data: { status: 500 },
+			};
+
+			const error2 = {
+				code: 'error_code_2',
+				message: 'Error message 2',
+				data: { status: 400 },
+			};
+
+			it( 'should return undefined when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError();
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should return undefined when no reports have errors', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions );
+
+				expect( result ).toBeUndefined();
+			} );
+
+			it( 'should return the error for a single report with an error', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions );
+
+				expect( result ).toEqual( error1 );
+			} );
+
+			it( 'should return the first error when multiple reports have errors', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions1,
+					] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error1 );
+			} );
+
+			it( 'should return the first error when only the second report has an error', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report has no error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has an error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error2 );
+			} );
+
+			it( 'should return undefined when only the second report has an error but first is checked first', () => {
+				const reportOptions1 = {
+					...reportOptions,
+					metrics: [ 'sessions' ],
+				};
+				const reportOptions2 = {
+					...reportOptions,
+					metrics: [ 'pageViews' ],
+				};
+
+				// First report has no error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				// Second report has an error
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				// Check in order: first (no error), then second (has error)
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getFirstReportError( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( error2 );
+			} );
+		} );
+	} );
+} );

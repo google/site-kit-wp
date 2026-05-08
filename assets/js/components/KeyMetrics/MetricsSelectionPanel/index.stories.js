@@ -1,0 +1,117 @@
+/**
+ * MetricsSelectionPanel Component Stories.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import {
+	provideKeyMetrics,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../../tests/js/utils';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import MetricsSelectionPanel from './';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+
+function Template( { viewContext } ) {
+	return (
+		<ViewContextProvider
+			value={ viewContext || VIEW_CONTEXT_MAIN_DASHBOARD }
+		>
+			<MetricsSelectionPanel />
+		</ViewContextProvider>
+	);
+}
+
+export const Default = Template.bind( {} );
+Default.storyName = 'Default';
+Default.scenario = {};
+
+export const ViewOnly = Template.bind( {} );
+ViewOnly.storyName = 'View-only user';
+ViewOnly.args = {
+	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+};
+
+export default {
+	title: 'Key Metrics/MetricsSelectionPanel',
+	component: MetricsSelectionPanel,
+	decorators: [
+		( Story ) => {
+			function setupRegistry( registry ) {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry, {
+					postTypes: [ { slug: 'post', label: 'Post' } ],
+				} );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				provideKeyMetricsWidgetRegistrations(
+					registry,
+					Object.keys( KEY_METRICS_WIDGETS ).reduce(
+						( acc, widget ) => ( {
+							...acc,
+							[ widget ]: {
+								modules: [
+									MODULE_SLUG_SEARCH_CONSOLE,
+									MODULE_SLUG_ANALYTICS_4,
+									MODULE_SLUG_ADSENSE,
+								],
+							},
+						} ),
+						{}
+					)
+				);
+
+				provideKeyMetrics( registry, { widgetSlugs: [] } );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY, true );
+			}
+
+			return (
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			);
+		},
+	],
+};

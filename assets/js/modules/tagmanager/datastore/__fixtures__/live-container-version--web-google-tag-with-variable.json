@@ -1,0 +1,157 @@
+{
+  "accountId": "100",
+  "containerId": "299",
+  "containerVersionId": "1",
+  "deleted": null,
+  "description": null,
+  "fingerprint": "1704574515138",
+  "name": "Live Version with Google tag",
+  "path": "accounts/100/containers/299/versions/1",
+  "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/100/containers/299/versions/1?apiLink=version",
+  "container": {
+    "accountId": "100",
+    "containerId": "299",
+    "domainName": null,
+    "fingerprint": "1656459960111",
+    "name": "Test Web with Google Tag",
+    "notes": null,
+    "path": "accounts/100/containers/299",
+    "publicId": "GTM-G000GL3",
+    "tagIds": [
+      "GTM-G000GL3"
+    ],
+    "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/100/containers/299/workspaces?apiLink=container",
+    "taggingServerUrls": null,
+    "usageContext": [
+      "web"
+    ],
+    "features": {
+      "supportBuiltInVariables": true,
+      "supportClients": false,
+      "supportEnvironments": true,
+      "supportFolders": true,
+      "supportGtagConfigs": false,
+      "supportTags": true,
+      "supportTemplates": true,
+      "supportTriggers": true,
+      "supportUserPermissions": true,
+      "supportVariables": true,
+      "supportVersions": true,
+      "supportWorkspaces": true,
+      "supportZones": true
+    }
+  },
+  "tag": [
+    {
+      "accountId": "100",
+      "blockingRuleId": null,
+      "blockingTriggerId": null,
+      "containerId": "299",
+      "fingerprint": "1707586537289",
+      "firingRuleId": null,
+      "firingTriggerId": [
+        "2147479553"
+      ],
+      "liveOnly": null,
+      "monitoringMetadataTagNameKey": null,
+      "name": "Google Tag Variable",
+      "notes": null,
+      "parentFolderId": null,
+      "path": null,
+      "paused": null,
+      "scheduleEndMs": null,
+      "scheduleStartMs": null,
+      "tagFiringOption": "oncePerEvent",
+      "tagId": "12",
+      "tagManagerUrl": null,
+      "type": "googtag",
+      "workspaceId": null,
+      "parameter": [
+        {
+          "key": "tagId",
+          "type": "template",
+          "value": "{{My Google Tag ID}}"
+        }
+      ],
+      "monitoringMetadata": {
+        "key": null,
+        "type": "map",
+        "value": null
+      },
+      "consentSettings": {
+        "consentStatus": "notSet"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "disablingTriggerId": null,
+      "enablingTriggerId": null,
+      "fingerprint": "1707586872873",
+      "name": "My Google Tag ID",
+      "notes": null,
+      "parentFolderId": null,
+      "path": null,
+      "scheduleEndMs": null,
+      "scheduleStartMs": null,
+      "tagManagerUrl": null,
+      "type": "c",
+      "variableId": "13",
+      "workspaceId": null,
+      "parameter": [
+        {
+          "key": "value",
+          "type": "template",
+          "value": "G-ABC12DE34F"
+        }
+      ],
+      "formatValue": {
+        "caseConversionType": null
+      }
+    }
+  ],
+  "builtInVariable": [
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page URL",
+      "path": null,
+      "type": "pageUrl",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page Hostname",
+      "path": null,
+      "type": "pageHostname",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Page Path",
+      "path": null,
+      "type": "pagePath",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Referrer",
+      "path": null,
+      "type": "referrer",
+      "workspaceId": null
+    },
+    {
+      "accountId": "100",
+      "containerId": "299",
+      "name": "Event",
+      "path": null,
+      "type": "event",
+      "workspaceId": null
+    }
+  ]
+}

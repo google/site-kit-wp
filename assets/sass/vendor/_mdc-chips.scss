@@ -1,0 +1,14 @@
+// Overrides for .mdc-chip
+.googlesitekit-plugin .mdc-chip {
+	border-radius: $br-lg;
+	font-weight: 500;
+	height: auto;
+	padding: 8px 12px;
+
+	@media (min-width: $bp-wpAdminBarTablet) {
+		font-size: $fs-body-lg;
+		letter-spacing: $ls-m;
+		margin: 4px 16px;
+		padding: 12px 16px;
+	}
+}

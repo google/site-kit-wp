@@ -1,0 +1,224 @@
+/**
+ * DashboardPopularKeywordsWidget component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '@/js/modules/search-console/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PreviewTable from '@/js/components/PreviewTable';
+import SourceLink from '@/js/components/SourceLink';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import ReportTable from '@/js/components/ReportTable';
+import Link from '@/js/components/Link';
+import { numFmt } from '@/js/util';
+import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
+import useViewOnly from '@/js/hooks/useViewOnly';
+
+export default function DashboardPopularKeywordsWidget( props ) {
+	const { Widget, WidgetReportError } = props;
+
+	const viewOnlyDashboard = useViewOnly();
+
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const reportArgs = {
+		...dateRangeDates,
+		dimensions: 'query',
+		limit: 10,
+		reportID:
+			'search-console_dashboard-popular-keywords-widget_widget_reportArgs',
+	};
+
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+	if ( url ) {
+		reportArgs.url = url;
+	}
+
+	const data = useInViewSelect(
+		( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ),
+		[ reportArgs ]
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+				'getReport',
+				[ reportArgs ]
+			)
+	);
+	const baseServiceURL = useSelect( ( select ) => {
+		if ( viewOnlyDashboard ) {
+			return null;
+		}
+
+		return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+			...generateDateRangeArgs( dateRangeDates ),
+			page: url ? `!${ url }` : undefined,
+		} );
+	} );
+
+	function Footer() {
+		return (
+			<SourceLink
+				className="googlesitekit-data-block__source"
+				name={ _x(
+					'Search Console',
+					'Service name',
+					'google-site-kit'
+				) }
+				href={ baseServiceURL }
+				external
+			/>
+		);
+	}
+
+	if ( error ) {
+		return (
+			<Widget Footer={ Footer }>
+				<WidgetReportError
+					moduleSlug="search-console"
+					error={ error }
+				/>
+			</Widget>
+		);
+	}
+
+	if ( loading || isGatheringData === undefined ) {
+		return (
+			<Widget Footer={ Footer } noPadding>
+				<PreviewTable padding />
+			</Widget>
+		);
+	}
+
+	const columnClassName =
+		'googlesitekit-typography googlesitekit-typography--title ';
+	const tableColumns = [
+		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--medium`,
+			title: url
+				? __( 'Top search queries for your page', 'google-site-kit' )
+				: __( 'Top search queries for your site', 'google-site-kit' ),
+			description: __(
+				'Most searched for keywords related to your content',
+				'google-site-kit'
+			),
+			primary: true,
+			field: 'keys.0',
+			Component( { fieldValue } ) {
+				const searchAnalyticsURL = useSelect( ( select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
+					const dates = select( CORE_USER ).getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} );
+					const entityURL = select( CORE_SITE ).getCurrentEntityURL();
+					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
+						{
+							...generateDateRangeArgs( dates ),
+							query: `!${ fieldValue }`,
+							page: entityURL ? `!${ entityURL }` : undefined,
+						}
+					);
+				} );
+
+				if ( viewOnlyDashboard ) {
+					return <span>{ fieldValue }</span>;
+				}
+
+				return (
+					<Link
+						href={ searchAnalyticsURL }
+						external
+						hideExternalIndicator
+					>
+						{ fieldValue }
+					</Link>
+				);
+			},
+		},
+		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
+			title: __( 'Clicks', 'google-site-kit' ),
+			description: __(
+				'Number of times users clicked on your content in search results',
+				'google-site-kit'
+			),
+			Component( { row } ) {
+				return (
+					<span>{ numFmt( row.clicks, { style: 'decimal' } ) }</span>
+				);
+			},
+		},
+		{
+			columnHeaderClassName: `${ columnClassName } googlesitekit-typography--small`,
+			title: __( 'Impressions', 'google-site-kit' ),
+			description: __(
+				'Counted each time your content appears in search results',
+				'google-site-kit'
+			),
+			Component( { row } ) {
+				return (
+					<span>
+						{ numFmt( row.impressions, { style: 'decimal' } ) }
+					</span>
+				);
+			},
+		},
+	];
+
+	return (
+		<Widget Footer={ Footer } noPadding>
+			<TableOverflowContainer>
+				<ReportTable
+					rows={ data }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
+				/>
+			</TableOverflowContainer>
+		</Widget>
+	);
+}

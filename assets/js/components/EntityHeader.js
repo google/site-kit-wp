@@ -1,0 +1,139 @@
+/**
+ * EntityHeader component.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useThrottle } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
+import { useCallback, useRef, useState } from '@wordpress/element';
+
+/**
+ * External dependencies
+ */
+import { useEvent } from 'react-use';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import BackspaceIcon from '@/svg/icons/keyboard-backspace.svg';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import Link from './Link';
+import P from './Typography/P';
+import { shortenURL } from '@/js/util/urls';
+import { trackEvent } from '@/js/util';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+} from '@/js/hooks/useDashboardType';
+import useViewContext from '@/js/hooks/useViewContext';
+
+function EntityHeader() {
+	const viewContext = useViewContext();
+	const dashboardType = useDashboardType();
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+	const entityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+
+	const headerDetailsRef = useRef();
+	const [ url, setURL ] = useState( entityURL );
+
+	const shortenEntityURL = useCallback( () => {
+		if ( ! headerDetailsRef.current ) {
+			return;
+		}
+
+		// Remove 40 px for margins + SVG at the end of the URL link.
+		const availableWidth = headerDetailsRef.current.clientWidth - 40;
+
+		const urlFontSize = global
+			.getComputedStyle( headerDetailsRef.current.lastChild, null )
+			.getPropertyValue( 'font-size' );
+		const fontSize = parseFloat( urlFontSize );
+
+		// 2 is appox. the minimum character constant for sans-serif fonts:
+		// https://pearsonified.com/characters-per-line/
+		const maxChars = ( availableWidth * 2 ) / fontSize;
+
+		setURL( shortenURL( entityURL, maxChars ) );
+	}, [ entityURL ] );
+
+	const throttledShortenEntityURL = useThrottle( shortenEntityURL, 150 );
+
+	useEvent( 'resize', throttledShortenEntityURL );
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const returnURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const onClick = useCallback( () => {
+		trackEvent( `${ viewContext }_navigation`, 'return_to_dashboard' );
+		navigateTo( returnURL );
+	}, [ returnURL, navigateTo, viewContext ] );
+
+	if (
+		DASHBOARD_TYPE_ENTITY !== dashboardType ||
+		entityURL === null ||
+		currentEntityTitle === null
+	) {
+		return null;
+	}
+
+	return (
+		<div className="googlesitekit-entity-header">
+			<div className="googlesitekit-entity-header__back">
+				<Button
+					icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
+					// This is duplicated because on small screens, the text supplied to the
+					// Button is rendered as a sub-component and is set to `display: none`,
+					// but the button itself remains on-screen (and thus this aria-label is
+					// accessible to screen-readers).
+					aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
+					onClick={ onClick }
+					text
+					tertiary
+				>
+					{ __( 'Back to dashboard', 'google-site-kit' ) }
+				</Button>
+			</div>
+
+			<div
+				ref={ headerDetailsRef }
+				className="googlesitekit-entity-header__details"
+			>
+				<P>{ currentEntityTitle }</P>
+				<Link
+					href={ entityURL }
+					aria-label={ entityURL }
+					secondary
+					external
+				>
+					{ url }
+				</Link>
+			</div>
+		</div>
+	);
+}
+
+export default EntityHeader;

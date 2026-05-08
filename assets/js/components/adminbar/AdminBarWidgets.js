@@ -1,0 +1,133 @@
+/**
+ * Admin Bar widgets.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+import AdminBarImpressions from './AdminBarImpressions';
+import AdminBarClicks from './AdminBarClicks';
+import AdminBarUniqueVisitorsGA4 from './AdminBarUniqueVisitorsGA4';
+import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
+import AdminBarActivateAnalyticsCTA from './AdminBarActivateAnalyticsCTA';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Row, Cell } from '@/js/material-components';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+
+// Widget slugs.
+const WIDGET_IMPRESSIONS = 'adminBarImpressions';
+const WIDGET_CLICKS = 'adminBarClicks';
+const WIDGET_VISITORS = 'adminBarUniqueVisitors';
+const WIDGET_SESSIONS = 'adminBarSessions';
+
+// Search Console widgets.
+const AdminBarImpressionsWidget =
+	withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
+const AdminBarClicksWidget =
+	withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
+
+// Analytics 4 Widgets.
+const AdminBarUniqueVisitorsGA4Widget = withWidgetComponentProps(
+	WIDGET_VISITORS
+)( AdminBarUniqueVisitorsGA4 );
+const AdminBarSessionsGA4Widget =
+	withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessionsGA4 );
+
+export default function AdminBarWidgets() {
+	const analyticsModuleAvailable = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleAvailable( MODULE_SLUG_ANALYTICS_4 )
+	);
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ANALYTICS_4 )
+	);
+	const canViewSharedAnalytics = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_ANALYTICS_4
+		)
+	);
+	const canViewSharedSearchConsole = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToShareableModule(
+			MODULE_SLUG_SEARCH_CONSOLE
+		)
+	);
+
+	const searchConsoleSize = canViewSharedAnalytics
+		? { lg: 3, md: 2 }
+		: { lg: 6, md: 4 };
+	const analyticsSize = canViewSharedSearchConsole
+		? { lg: 3, md: 2 }
+		: { lg: 6, md: 4 };
+
+	return (
+		<Row>
+			{ canViewSharedSearchConsole && (
+				<Fragment>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarImpressionsWidget />
+					</Cell>
+					<Cell
+						lgSize={ searchConsoleSize.lg }
+						mdSize={ searchConsoleSize.md }
+					>
+						<AdminBarClicksWidget />
+					</Cell>
+				</Fragment>
+			) }
+
+			{ analyticsModuleConnected &&
+				analyticsModuleActive &&
+				canViewSharedAnalytics && (
+					<Fragment>
+						<Cell
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
+						>
+							<AdminBarUniqueVisitorsGA4Widget />
+						</Cell>
+						<Cell
+							lgSize={ analyticsSize.lg }
+							mdSize={ analyticsSize.md }
+						>
+							<AdminBarSessionsGA4Widget />
+						</Cell>
+					</Fragment>
+				) }
+
+			{ analyticsModuleAvailable &&
+				( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<Cell lgSize={ 6 } mdSize={ 4 }>
+						<AdminBarActivateAnalyticsCTA />
+					</Cell>
+				) }
+		</Row>
+	);
+}

@@ -1,0 +1,60 @@
+{
+  "session": {
+    "session_id": "test_id",
+    "session_token": "test_token"
+  },
+  "survey_payload": {
+    "language": "en_US",
+    "question": [
+      {
+        "question_ordinal": 1,
+        "question_text": "During Key Metrics setup, you picked \"Other\" for your site’s purpose. What is your site's purpose?",
+        "question_type": "open_text",
+        "trigger_condition": [
+        {
+          "question_ordinal": 0,
+          "answer_ordinal": [
+          0
+          ]
+        }
+        ],
+        "question": {
+        "subtitle": "",
+        "placeholder": ""
+        }
+      },
+      {
+        "question_ordinal": 2,
+        "question_text": "During Key Metrics setup, you picked \"Other\" for how frequently you create content. How frequently do you create content?",
+        "question_type": "open_text",
+        "trigger_condition": [],
+        "question": {
+        "subtitle": "",
+        "placeholder": ""
+        }
+      },
+      {
+        "question_ordinal": 3,
+        "question_text": "During Key Metrics setup, you picked \"Other\" for your site’s goals. What are the main goals for your site?",
+        "question_type": "open_text",
+        "trigger_condition": [],
+        "question": {
+        "subtitle": "",
+        "placeholder": ""
+        }
+      }
+    ],
+    "completion": [
+      {
+        "completion_ordinal": 1,
+        "completion_title": "Thanks for sharing your thoughts!",
+        "completion_text": "If you have more feedback, find us on our WordPress.org support forum.",
+        "follow_up_text": "Let’s go",
+        "follow_up_url": "https://wordpress.org/support/plugin/google-site-kit/reviews/#new-post",
+        "trigger_condition": null
+      }
+    ]
+  },
+  "no_available_survey_reason": "",
+  "survey_id": "user_input_answered_other_survey"
+}

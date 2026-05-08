@@ -1,0 +1,114 @@
+/**
+ * Type scale stories stylesheet.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "../../../../assets/sass/config/variables";
+
+.googlesitekit-story--type-scale {
+	.googlesitekit-type-scale {
+		font-family: var(--type-scale-f);
+
+		.googlesitekit-widget__body {
+			display: flex;
+			flex-direction: column;
+			gap: 24px;
+		}
+
+		h2,
+		p {
+			margin: 0;
+		}
+
+		p.lg {
+			font-size: var(--type-scale-fs-lg);
+			line-height: var(--type-scale-lh-lg);
+		}
+		p.md {
+			font-size: var(--type-scale-fs-md);
+			line-height: var(--type-scale-lh-md);
+		}
+		p.sm {
+			font-size: var(--type-scale-fs-sm);
+			line-height: var(--type-scale-lh-sm);
+		}
+	}
+
+	.googlesitekit-type-scale--display {
+		--type-scale-f: #{$f-secondary};
+		--type-scale-fs-lg: #{$fs-display-lg};
+		--type-scale-lh-lg: #{$lh-display-lg};
+		--type-scale-fs-md: #{$fs-display-md};
+		--type-scale-lh-md: #{$lh-display-md};
+		--type-scale-fs-sm: #{$fs-display-sm};
+		--type-scale-lh-sm: #{$lh-display-sm};
+	}
+
+	.googlesitekit-type-scale--headline {
+		--type-scale-f: #{$f-secondary};
+		--type-scale-fs-lg: #{$fs-headline-lg};
+		--type-scale-lh-lg: #{$lh-headline-lg};
+		--type-scale-fs-md: #{$fs-headline-md};
+		--type-scale-lh-md: #{$lh-headline-md};
+		--type-scale-fs-sm: #{$fs-headline-sm};
+		--type-scale-lh-sm: #{$lh-headline-sm};
+	}
+
+	.googlesitekit-type-scale--title {
+		--type-scale-f: #{$f-primary};
+		--type-scale-fs-lg: #{$fs-title-lg};
+		--type-scale-lh-lg: #{$lh-title-lg};
+		--type-scale-fs-md: #{$fs-title-md};
+		--type-scale-lh-md: #{$lh-title-md};
+		--type-scale-fs-sm: #{$fs-title-sm};
+		--type-scale-lh-sm: #{$lh-title-sm};
+	}
+
+	.googlesitekit-type-scale--label {
+		--type-scale-f: #{$f-primary};
+		--type-scale-fs-lg: #{$fs-label-lg};
+		--type-scale-lh-lg: #{$lh-label-lg};
+		--type-scale-fs-md: #{$fs-label-md};
+		--type-scale-lh-md: #{$lh-label-md};
+		--type-scale-fs-sm: #{$fs-label-sm};
+		--type-scale-lh-sm: #{$lh-label-sm};
+	}
+
+	.googlesitekit-type-scale--body {
+		--type-scale-f: #{$f-primary};
+		--type-scale-fs-lg: #{$fs-body-lg};
+		--type-scale-lh-lg: #{$lh-body-lg};
+		--type-scale-fs-md: #{$fs-body-md};
+		--type-scale-lh-md: #{$lh-body-md};
+		--type-scale-fs-sm: #{$fs-body-sm};
+		--type-scale-lh-sm: #{$lh-body-sm};
+	}
+
+	.googlesitekit-type-scale--link {
+		--type-scale-f: #{$f-primary};
+		--type-scale-fs-lg: #{$fs-link-lg};
+		--type-scale-lh-lg: #{$lh-link-lg};
+		--type-scale-fs-md: #{$fs-link-md};
+		--type-scale-lh-md: #{$lh-link-md};
+		--type-scale-fs-sm: #{$fs-link-sm};
+		--type-scale-lh-sm: #{$lh-link-sm};
+
+		p {
+			color: $c-content-secondary;
+			text-decoration: underline;
+		}
+	}
+}

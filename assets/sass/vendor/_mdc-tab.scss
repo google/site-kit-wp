@@ -1,0 +1,36 @@
+// Overrides for .mdc-tab
+.googlesitekit-plugin {
+
+	.mdc-tab {
+
+		@include mdc-tab-active-text-label-color($c-content-primary);
+		@include mdc-tab-states-color($c-content-primary);
+
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+		line-height: 1;
+		text-transform: none;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			color: $c-content-primary;
+			outline: none;
+		}
+
+		&[disabled] {
+			cursor: default;
+		}
+
+		&[disabled] .mdc-tab__ripple {
+			display: none;
+		}
+
+		&[disabled] .mdc-tab__text-label {
+			color: $c-jumbo;
+			opacity: 0.6;
+		}
+	}
+}

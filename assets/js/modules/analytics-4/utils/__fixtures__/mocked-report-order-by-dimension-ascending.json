@@ -1,0 +1,389 @@
+{
+	"dimensionHeaders": [
+		{ "name": "date" },
+		{ "name": "sessionDefaultChannelGrouping" }
+	],
+	"metricHeaders": [ { "name": "totalUsers", "type": "TYPE_INTEGER" } ],
+	"rowCount": 50,
+	"rows": [
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Direct" }
+			],
+			"metricValues": [ { "value": "55" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Organic Search" }
+			],
+			"metricValues": [ { "value": "14" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Paid Social" }
+			],
+			"metricValues": [ { "value": "3" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "(other)" }
+			],
+			"metricValues": [ { "value": "13" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Email" }
+			],
+			"metricValues": [ { "value": "17" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Affiliates" }
+			],
+			"metricValues": [ { "value": "39" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Referral" }
+			],
+			"metricValues": [ { "value": "10" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Paid Search" }
+			],
+			"metricValues": [ { "value": "73" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Video" }
+			],
+			"metricValues": [ { "value": "89" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201201" },
+				{ "value": "Display" }
+			],
+			"metricValues": [ { "value": "62" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Direct" }
+			],
+			"metricValues": [ { "value": "98" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Organic Search" }
+			],
+			"metricValues": [ { "value": "7" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Paid Social" }
+			],
+			"metricValues": [ { "value": "27" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "(other)" }
+			],
+			"metricValues": [ { "value": "91" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Email" }
+			],
+			"metricValues": [ { "value": "86" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Affiliates" }
+			],
+			"metricValues": [ { "value": "53" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Referral" }
+			],
+			"metricValues": [ { "value": "38" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Paid Search" }
+			],
+			"metricValues": [ { "value": "71" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Video" }
+			],
+			"metricValues": [ { "value": "21" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201202" },
+				{ "value": "Display" }
+			],
+			"metricValues": [ { "value": "74" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Direct" }
+			],
+			"metricValues": [ { "value": "66" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Organic Search" }
+			],
+			"metricValues": [ { "value": "80" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Paid Social" }
+			],
+			"metricValues": [ { "value": "16" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "(other)" }
+			],
+			"metricValues": [ { "value": "22" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Email" }
+			],
+			"metricValues": [ { "value": "45" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Affiliates" }
+			],
+			"metricValues": [ { "value": "34" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Referral" }
+			],
+			"metricValues": [ { "value": "23" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Paid Search" }
+			],
+			"metricValues": [ { "value": "91" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Video" }
+			],
+			"metricValues": [ { "value": "38" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201203" },
+				{ "value": "Display" }
+			],
+			"metricValues": [ { "value": "66" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Direct" }
+			],
+			"metricValues": [ { "value": "19" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Organic Search" }
+			],
+			"metricValues": [ { "value": "75" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Paid Social" }
+			],
+			"metricValues": [ { "value": "74" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "(other)" }
+			],
+			"metricValues": [ { "value": "47" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Email" }
+			],
+			"metricValues": [ { "value": "53" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Affiliates" }
+			],
+			"metricValues": [ { "value": "12" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Referral" }
+			],
+			"metricValues": [ { "value": "83" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Paid Search" }
+			],
+			"metricValues": [ { "value": "14" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Video" }
+			],
+			"metricValues": [ { "value": "72" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201204" },
+				{ "value": "Display" }
+			],
+			"metricValues": [ { "value": "57" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Direct" }
+			],
+			"metricValues": [ { "value": "79" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Organic Search" }
+			],
+			"metricValues": [ { "value": "56" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Paid Social" }
+			],
+			"metricValues": [ { "value": "93" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "(other)" }
+			],
+			"metricValues": [ { "value": "59" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Email" }
+			],
+			"metricValues": [ { "value": "95" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Affiliates" }
+			],
+			"metricValues": [ { "value": "90" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Referral" }
+			],
+			"metricValues": [ { "value": "53" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Paid Search" }
+			],
+			"metricValues": [ { "value": "58" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Video" }
+			],
+			"metricValues": [ { "value": "56" } ]
+		},
+		{
+			"dimensionValues": [
+				{ "value": "20201205" },
+				{ "value": "Display" }
+			],
+			"metricValues": [ { "value": "69" } ]
+		}
+	],
+	"totals": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_TOTAL" },
+				{ "value": "RESERVED_TOTAL" }
+			],
+			"metricValues": [ { "value": "69" } ]
+		}
+	],
+	"minimums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MIN" },
+				{ "value": "RESERVED_MIN" }
+			],
+			"metricValues": [ { "value": "55" } ]
+		}
+	],
+	"maximums": [
+		{
+			"dimensionValues": [
+				{ "value": "RESERVED_MAX" },
+				{ "value": "RESERVED_MAX" }
+			],
+			"metricValues": [ { "value": "69" } ]
+		}
+	],
+	"metadata": { "currencyCode": "USD", "timeZone": "America/Los_Angeles" },
+	"kind": "analyticsData#runReport"
+}

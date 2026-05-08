@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChipMultiSelect renders correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-chip-multi-select"
+  >
+    <div
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="channels"
+      tabindex="0"
+    >
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Channels
+      </div>
+    </div>
+    <div
+      class="mdc-chip mdc-chip--selected googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="locations"
+      tabindex="0"
+    >
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Locations
+      </div>
+    </div>
+    <div
+      class="mdc-chip googlesitekit-chip googlesitekit-chip-multi-select__item"
+      data-chip-id="devices"
+      tabindex="0"
+    >
+      <div
+        class="mdc-chip__checkmark"
+      >
+        <svg />
+      </div>
+      <div
+        class="mdc-chip__text"
+      >
+        Devices
+      </div>
+    </div>
+  </div>
+</div>
+`;

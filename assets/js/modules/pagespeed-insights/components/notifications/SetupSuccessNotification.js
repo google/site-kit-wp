@@ -1,0 +1,96 @@
+/**
+ * SetupSuccessNotification component.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
+import { ANCHOR_ID_SPEED } from '@/js/googlesitekit/constants';
+
+export default function SetupSuccessNotification( { id, Notification } ) {
+	const breakpoint = useBreakpoint();
+
+	const [ , setNotification ] = useQueryArg( 'notification' );
+	const [ , setSlug ] = useQueryArg( 'slug' );
+
+	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+
+	function onDismiss() {
+		setNotification( undefined );
+		setSlug( undefined );
+	}
+
+	const anchorLink = `#${ ANCHOR_ID_SPEED }`;
+	function onJumpLinkClick( event ) {
+		event.preventDefault();
+
+		dismissNotification( id );
+		onDismiss();
+
+		global.history.replaceState( {}, '', anchorLink );
+		global.scrollTo( {
+			top: getNavigationalScrollTop( anchorLink, breakpoint ),
+			behavior: 'smooth',
+		} );
+	}
+
+	return (
+		<Notification>
+			<NoticeNotification
+				notificationID={ id }
+				type={ NOTICE_TYPES.SUCCESS }
+				title={ __(
+					'Congrats on completing the setup for PageSpeed Insights!',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Jump to the bottom of the dashboard to see how fast your home page is',
+					'google-site-kit'
+				) }
+				dismissButton={ {
+					onClick: onDismiss,
+				} }
+				ctaButton={ {
+					label: __( 'Show me', 'google-site-kit' ),
+					onClick: onJumpLinkClick,
+				} }
+			/>
+		</Notification>
+	);
+}
+
+SetupSuccessNotification.propTypes = {
+	id: PropTypes.string.isRequired,
+	Notification: PropTypes.elementType.isRequired,
+};

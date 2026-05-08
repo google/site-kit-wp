@@ -1,0 +1,178 @@
+/**
+ * EnhancedMeasurementSwitch component.
+ *
+ * Site Kit by Google, Copyright 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useDispatch } from 'googlesitekit-data';
+import { ProgressBar, Switch } from 'googlesitekit-components';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	ENHANCED_MEASUREMENT_ENABLED,
+	ENHANCED_MEASUREMENT_FORM,
+	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
+} from '@/js/modules/analytics-4/datastore/constants';
+import SupportLink from '@/js/components/SupportLink';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import Tick from '@/svg/icons/tick.svg';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+
+export default function EnhancedMeasurementSwitch( {
+	className,
+	onClick,
+	disabled = false,
+	loading = false,
+	formName = ENHANCED_MEASUREMENT_FORM,
+	isEnhancedMeasurementAlreadyEnabled = false,
+	showTick = false,
+} ) {
+	const isEnhancedMeasurementEnabled = useFormValue(
+		formName,
+		ENHANCED_MEASUREMENT_ENABLED
+	);
+
+	const viewContext = useViewContext();
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const isInitialSetupFlow = !! showProgress;
+
+	const handleClick = useCallback( () => {
+		setValues( formName, {
+			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
+		} );
+
+		trackEvent(
+			`${ viewContext }_analytics`,
+			// If the current status of enhanced measurement is enabled,
+			// then it means that we disabled it, otherwise enabled it.
+			isEnhancedMeasurementEnabled
+				? 'deactivate_enhanced_measurement'
+				: 'activate_enhanced_measurement'
+		);
+
+		onClick?.();
+	}, [
+		formName,
+		isEnhancedMeasurementEnabled,
+		onClick,
+		setValues,
+		viewContext,
+	] );
+
+	useMount( () => {
+		// Ensure the Enhanced Measurement activation banner won't be shown if we've updated the setting
+		// via the switch.
+		setValues( ENHANCED_MEASUREMENT_FORM, {
+			[ ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER ]: true,
+		} );
+	} );
+
+	return (
+		<div
+			className={ classnames(
+				'googlesitekit-analytics-enable-enhanced-measurement',
+				className,
+				{
+					'googlesitekit-analytics-enable-enhanced-measurement--loading':
+						loading,
+				}
+			) }
+		>
+			{ loading && (
+				<ProgressBar
+					className="googlesitekit-analytics-enable-enhanced-measurement__progress--settings-edit"
+					small
+				/>
+			) }
+			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
+				<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label">
+					{ showTick && (
+						<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick">
+							<Tick />
+						</div>
+					) }
+					{ __(
+						'Enhanced measurement is enabled for this web data stream',
+						'google-site-kit'
+					) }
+				</div>
+			) }
+			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
+				<Switch
+					label={ __(
+						'Enable enhanced measurement',
+						'google-site-kit'
+					) }
+					checked={ isEnhancedMeasurementEnabled }
+					disabled={ disabled }
+					onClick={ handleClick }
+					hideLabel={ false }
+				/>
+			) }
+			<p className="googlesitekit-module-settings-group__helper-text">
+				{ createInterpolateElement(
+					__(
+						'This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). <a>Learn more</a>',
+						'google-site-kit'
+					),
+					{
+						a: (
+							<SupportLink
+								path="/analytics/answer/9216061"
+								onClick={ () => {
+									trackEvent(
+										isInitialSetupFlow
+											? `${ viewContext }_setup`
+											: viewContext,
+										'click_learn_more_link',
+										'enhanced_measurement'
+									);
+								} }
+								external
+							/>
+						),
+					}
+				) }
+			</p>
+		</div>
+	);
+}
+
+EnhancedMeasurementSwitch.propTypes = {
+	onClick: PropTypes.func,
+	disabled: PropTypes.bool,
+	loading: PropTypes.bool,
+	isEnhancedMeasurementAlreadyEnabled: PropTypes.bool,
+	showTick: PropTypes.bool,
+};

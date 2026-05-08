@@ -1,0 +1,43 @@
+/**
+ * Dashboard Sharing Feature Tour styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Style overrides for when the dashboardSharing feature tour is active.
+body.googlesitekit-showing-feature-tour--dashboardSharing {
+
+	.googlesitekit-sharing-settings-dialog {
+		// Override properties that are normally transitioned.
+		.mdc-dialog__container,
+		.mdc-dialog__scrim {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/*
+	Joyride requires that a step's target is visible before initializing the
+	step and uses window.getComputedStyle to check all the target's parents are
+	visible. This is somewhat of a hack around this limitation by forcing the
+	modal to be displayed but still hidden by putting it behind/underneath
+	everything else until it is opened when called for in the tour.
+	*/
+	.googlesitekit-sharing-settings-dialog:not(.mdc-dialog--open, .mdc-dialog--opening) {
+		display: flex !important;
+		opacity: 0;
+		z-index: -99;
+	}
+}

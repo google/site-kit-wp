@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DashboardEntryPoint should render the module setup component when the setupModuleSlug prop is passed 1`] = `
+<div>
+  <div>
+    ModuleSetup
+    {"moduleSlug":"analytics-4"}
+  </div>
+</div>
+`;
+
+exports[`DashboardEntryPoint should render the unified dashboard 1`] = `
+<div>
+  <div>
+    DashboardMainApp
+    {}
+  </div>
+</div>
+`;

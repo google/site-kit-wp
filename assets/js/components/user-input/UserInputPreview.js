@@ -1,0 +1,346 @@
+/**
+ * User Input Preview.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useSelect, useDispatch } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	getUserInputAnswers,
+	USER_INPUT_QUESTIONS_GOALS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	USER_INPUT_QUESTION_POST_FREQUENCY,
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_QUESTIONS_LIST,
+	FORM_USER_INPUT_QUESTION_SNAPSHOT,
+} from './util/constants';
+import UserInputPreviewGroup from './UserInputPreviewGroup';
+import UserInputQuestionNotice from './UserInputQuestionNotice';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import CancelUserInputButton from './CancelUserInputButton';
+import { hasErrorForAnswer } from './util/validation';
+import Portal from '@/js/components/Portal';
+import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useFeature } from '@/js/hooks/useFeature';
+
+export default function UserInputPreview( props ) {
+	const {
+		goBack,
+		submitChanges,
+		error,
+		loading = false,
+		settingsView = false,
+	} = props;
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const previewContainer = useRef();
+	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
+	const handleModal = useCallback( () => {
+		toggleIsModalOpen( false );
+	}, [ toggleIsModalOpen ] );
+	const settings = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+	const isSavingSettings = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingUserInputSettings( settings )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const isEditing = useSelect(
+		( select ) =>
+			!! select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+	const isScreenLoading = isSavingSettings || isNavigating;
+
+	const {
+		USER_INPUT_ANSWERS_PURPOSE,
+		USER_INPUT_ANSWERS_POST_FREQUENCY,
+		USER_INPUT_ANSWERS_GOALS,
+	} = getUserInputAnswers();
+
+	const [ page ] = useQueryArg( 'page' );
+
+	const hasError = USER_INPUT_QUESTIONS_LIST.some( ( slug ) =>
+		hasErrorForAnswer( settings?.[ slug ]?.values || [] )
+	);
+
+	const onSaveClick = useCallback( () => {
+		if ( hasError || isScreenLoading ) {
+			return;
+		}
+
+		submitChanges();
+	}, [ hasError, isScreenLoading, submitChanges ] );
+
+	const { saveUserInputSettings } = useDispatch( CORE_USER );
+
+	const savedPurposeSnapshot = useFormValue(
+		FORM_USER_INPUT_QUESTION_SNAPSHOT,
+		USER_INPUT_QUESTIONS_PURPOSE
+	);
+
+	const savedPurpose = useSelect( ( select ) =>
+		select( CORE_USER ).getSavedUserInputSettings()
+	);
+
+	const currentMetrics = useSelect( ( select ) => {
+		if (
+			savedPurpose === undefined ||
+			! savedPurpose?.purpose?.values?.length
+		) {
+			return [];
+		}
+
+		return select( CORE_USER ).getAnswerBasedMetrics(
+			savedPurpose?.purpose?.values?.[ 0 ]
+		);
+	} );
+
+	const includeConversionTailoredMetrics = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).shouldIncludeConversionTailoredMetrics()
+	);
+	const newMetrics = useSelect( ( select ) =>
+		select( CORE_USER ).getAnswerBasedMetrics(
+			null,
+			includeConversionTailoredMetrics
+		)
+	);
+
+	const { resetUserInputSettings } = useDispatch( CORE_USER );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues: setUIValues } = useDispatch( CORE_UI );
+
+	async function openModalIfMetricsChanged() {
+		const differenceInMetrics = newMetrics.filter(
+			( x ) => ! currentMetrics.includes( x )
+		);
+
+		if ( 0 !== differenceInMetrics.length ) {
+			toggleIsModalOpen( true );
+		} else {
+			await saveUserInputSettings();
+
+			if ( savedPurposeSnapshot?.length ) {
+				await resetUserInputSettings();
+				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+					[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
+				} );
+			}
+			setUIValues( {
+				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
+			} );
+		}
+	}
+
+	useEffect( () => {
+		if (
+			! previewContainer?.current ||
+			page?.startsWith( 'googlesitekit-settings' )
+		) {
+			return;
+		}
+
+		const buttonElement =
+			previewContainer.current.querySelector( '.mdc-button' );
+		if ( buttonElement ) {
+			setTimeout( () => {
+				buttonElement.focus();
+			}, 50 );
+		}
+	}, [ page ] );
+
+	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const currentlyEditingSlug = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
+	);
+
+	useEffect( () => {
+		const purposeValues = [ ...( settings?.purpose?.values || [] ) ];
+		if (
+			USER_INPUT_QUESTIONS_PURPOSE === currentlyEditingSlug &&
+			purposeValues.includes( 'sell_products_or_service' )
+		) {
+			setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [
+				'sell_products',
+			] );
+			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
+				[ USER_INPUT_QUESTIONS_PURPOSE ]: [
+					'sell_products_or_service',
+				],
+			} );
+		}
+	}, [ settings, setUserInputSetting, currentlyEditingSlug, setValues ] );
+
+	return (
+		<div
+			className={ classnames( 'googlesitekit-user-input__preview', {
+				'googlesitekit-user-input__preview--editing': isEditing,
+			} ) }
+			ref={ previewContainer }
+		>
+			<div className="googlesitekit-user-input__preview-contents">
+				{ ! settingsView && (
+					<p className="googlesitekit-user-input__preview-subheader">
+						{ __( 'Review your answers', 'google-site-kit' ) }
+					</p>
+				) }
+				{ settingsView && (
+					<div className="googlesitekit-settings-user-input__heading-container">
+						<LoadingWrapper
+							loading={ loading }
+							width="275px"
+							height="16px"
+						>
+							<p className="googlesitekit-settings-user-input__heading">
+								{ setupFlowRefreshEnabled
+									? __(
+											'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
+											'google-site-kit'
+									  )
+									: __(
+											'Edit your answers for more personalized metrics:',
+											'google-site-kit'
+									  ) }
+							</p>
+						</LoadingWrapper>
+					</div>
+				) }
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_PURPOSE }
+					title={ __(
+						'What is the main purpose of this site?',
+						'google-site-kit'
+					) }
+					subtitle={
+						settings?.purpose?.values.includes(
+							'sell_products_or_service'
+						)
+							? KeyMetricsSettingsSellProductsSubtleNotification
+							: null
+					}
+					values={ settings?.purpose?.values || [] }
+					options={ USER_INPUT_ANSWERS_PURPOSE }
+					loading={ loading }
+					settingsView={ settingsView }
+					onChange={ openModalIfMetricsChanged }
+				/>
+
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTION_POST_FREQUENCY }
+					title={ __(
+						'How often do you create new content for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.postFrequency?.values || [] }
+					options={ USER_INPUT_ANSWERS_POST_FREQUENCY }
+					loading={ loading }
+					settingsView={ settingsView }
+				/>
+
+				<UserInputPreviewGroup
+					slug={ USER_INPUT_QUESTIONS_GOALS }
+					title={ __(
+						'What are your top 3 goals for this site?',
+						'google-site-kit'
+					) }
+					values={ settings?.goals?.values || [] }
+					options={ USER_INPUT_ANSWERS_GOALS }
+					loading={ loading }
+					settingsView={ settingsView }
+				/>
+
+				{ error && <ErrorNotice error={ error } /> }
+			</div>
+
+			{ ! settingsView && (
+				<Fragment>
+					<div className="googlesitekit-user-input__preview-notice">
+						<UserInputQuestionNotice />
+					</div>
+					<div className="googlesitekit-user-input__footer googlesitekit-user-input__buttons">
+						<div className="googlesitekit-user-input__footer-nav">
+							<SpinnerButton
+								className="googlesitekit-user-input__buttons--next"
+								onClick={ onSaveClick }
+								disabled={ hasError || isScreenLoading }
+								isSaving={ isScreenLoading }
+							>
+								{ __( 'Save', 'google-site-kit' ) }
+							</SpinnerButton>
+							<Button
+								className="googlesitekit-user-input__buttons--back"
+								onClick={ goBack }
+								disabled={ isScreenLoading }
+								tertiary
+							>
+								{ __( 'Back', 'google-site-kit' ) }
+							</Button>
+						</div>
+						<div className="googlesitekit-user-input__footer-cancel">
+							<CancelUserInputButton
+								disabled={ isScreenLoading }
+							/>
+						</div>
+					</div>
+				</Fragment>
+			) }
+			<Portal>
+				<ConfirmSitePurposeChangeModal
+					dialogActive={ isModalOpen }
+					handleDialog={ handleModal }
+				/>
+			</Portal>
+		</div>
+	);
+}
+
+UserInputPreview.propTypes = {
+	submitChanges: PropTypes.func,
+	goBack: PropTypes.func,
+	error: PropTypes.object,
+	loading: PropTypes.bool,
+	settingsView: PropTypes.bool,
+};

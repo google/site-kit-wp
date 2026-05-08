@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`core/notifications Notifications actions registerNotification should register the notification with the given settings and component 1`] = `
+<div>
+  Hello 
+  world
+  !
+</div>
+`;

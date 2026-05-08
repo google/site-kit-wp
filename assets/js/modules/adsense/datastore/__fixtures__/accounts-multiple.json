@@ -1,0 +1,52 @@
+[
+  {
+    "name": "accounts/pub-2833782679114991",
+    "displayName": "Test Account",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:51:03.000Z",
+    "_id": "pub-2833782679114991",
+    "state": "READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115192",
+    "displayName": "Additional Account",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:51:03.000Z",
+    "_id": "pub-3772192679115192",
+    "state": "READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115193",
+    "displayName": "Test Account Ready",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:52:03.000Z",
+    "_id": "pub-3772192679115193",
+    "state": "READY"
+  },
+  {
+    "name": "accounts/pub-3772192679115194",
+    "displayName": "Test Account Needs Attention",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:53:03.000Z",
+    "_id": "pub-3772192679115194",
+    "state": "NEEDS_ATTENTION"
+  },
+  {
+    "name": "accounts/pub-3772192679115195",
+    "displayName": "Test Account Unspecified",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:53:03.000Z",
+    "_id": "pub-3772192679115195",
+    "state": "STATE_UNSPECIFIED"
+  }
+]

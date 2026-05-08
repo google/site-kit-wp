@@ -1,0 +1,108 @@
+/**
+ * SetupSuccessContent component.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
+
+/**
+ * Internal dependencies
+ */
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { trackEvent } from '@/js/util';
+import useViewContext from '@/js/hooks/useViewContext';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { Button } from 'googlesitekit-components';
+import P from '@/js/components/Typography/P';
+import CheckFill from '@/svg/icons/check-fill.svg';
+
+export const SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION =
+	'show_settings_visitor_groups_success_notification';
+
+const SetupSuccessContent = forwardRef( ( props, ref ) => {
+	const viewContext = useViewContext();
+
+	const dashboardURL = useSelect( ( select ) => {
+		const url = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-dashboard'
+		);
+
+		return addQueryArgs( url, {
+			widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+		} );
+	} );
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setValue } = useDispatch( CORE_UI );
+
+	function dismissNotificationForUser() {
+		setValue( SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION, false );
+	}
+
+	function handleDismiss() {
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-settings-success`,
+			'dismiss_notification'
+		).finally( dismissNotificationForUser );
+	}
+
+	function scrollToWidgetArea() {
+		trackEvent(
+			`${ viewContext }_audiences-setup-cta-settings-success`,
+			'confirm_notification'
+		).finally( async () => {
+			await dismissNotificationForUser();
+			navigateTo( dashboardURL );
+		} );
+	}
+
+	return (
+		<div
+			ref={ ref }
+			className="googlesitekit-settings-visitor-groups__setup-success googlesitekit-subtle-notification"
+		>
+			<div className="googlesitekit-subtle-notification__icon">
+				<CheckFill width={ 24 } height={ 24 } />
+			</div>
+			<div className="googlesitekit-subtle-notification__content">
+				<P>
+					{ __(
+						'We’ve added the visitor groups section to your dashboard!',
+						'google-site-kit'
+					) }
+				</P>
+			</div>
+			<div className="googlesitekit-subtle-notification__action">
+				<Button onClick={ handleDismiss } tertiary>
+					{ __( 'Got it', 'google-site-kit' ) }
+				</Button>
+				<Button onClick={ scrollToWidgetArea }>
+					{ __( 'Show me', 'google-site-kit' ) }
+				</Button>
+			</div>
+		</div>
+	);
+} );
+
+export default SetupSuccessContent;

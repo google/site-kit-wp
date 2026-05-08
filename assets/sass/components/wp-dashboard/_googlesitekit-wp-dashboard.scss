@@ -1,0 +1,154 @@
+/**
+ * WP dashboard styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#google_dashboard_widget { // stylelint-disable-line selector-id-pattern
+
+	// WP Override
+	h2.hndle {
+		line-height: 1;
+	}
+
+	.googlesitekit-wp-dashboard {
+
+		.googlesitekit-wp-dashboard__cta {
+			border-bottom: 1px solid $c-border-light;
+			margin: 0 -12px;
+			padding: 0 12px 12px;
+		}
+	}
+
+	.googlesitekit-data-block .googlesitekit-data-block__datapoint,
+	.googlesitekit-data-block .googlesitekit-data-block__title,
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-family: inherit;
+	}
+
+	.googlesitekit-table .googlesitekit-table__head-item {
+		font-size: inherit;
+	}
+
+	.mdc-button {
+
+		&.googlesitekit-button-icon--spinner__running {
+
+			svg circle {
+				stroke: $c-white;
+			}
+
+			&.googlesitekit-button-icon--spinner__before {
+				.mdc-button__label {
+					margin-inline-start: 8px;
+				}
+			}
+
+			&.googlesitekit-button-icon--spinner__after {
+				.mdc-button__label {
+					margin-inline-end: 8px;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard-loading {
+
+		.googlesitekit-wp-dashboard-stats {
+			display: block;
+		}
+
+		.googlesitekit-preview-block {
+			&.googlesitekit-wp-dashboard-loading {
+				min-height: 30px;
+			}
+
+			&.googlesitekit-wp-dashboard__cta {
+				min-height: 18px;
+			}
+
+			&.googlesitekit-wp-dashboard-loading__search_console_active_and_connected,
+			&.googlesitekit-wp-dashboard-loading__can_view_analytics {
+				min-height: 95px;
+			}
+
+			&.googlesitekit-wp-dashboard-stats__cta {
+				min-height: 300px;
+				width: 100%;
+			}
+
+			&.googlesitekit-unique-visitors-chart-widget {
+				min-height: 320px;
+			}
+
+			&.googlesitekit-search-console-widget {
+				min-height: 580px;
+
+				@media (max-width: $bp-mobileOnly) {
+					min-height: 330px;
+				}
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard-analytics-activate-cta {
+		min-height: 310px;
+
+		// SFR design is smaller, remove min-height.
+		&:has(.googlesitekit-activate-analytics-cta) {
+			min-height: auto;
+		}
+	}
+
+	.googlesitekit-wp-dashboard-analytics_active_and_connected {
+		min-height: 935px;
+
+		@media (max-width: $bp-mobileOnly) {
+			min-height: 780px;
+		}
+
+		&.googlesitekit-wp-dashboard-search_console_active_and_connected {
+			min-height: 650px;
+
+			.googlesitekit-search-console-widget {
+
+				&:not(.googlesitekit-search-console-widget--empty-data) {
+					min-height: 430px;
+
+					@media (max-width: $bp-mobileOnly) {
+						min-height: 220px;
+					}
+				}
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard-search_console_active_and_connected {
+		min-height: 125px;
+	}
+
+	.googlesitekit-wp-dashboard-search_console_active_and_connected.googlesitekit-wp-dashboard-analytics-activate-cta {
+		min-height: 420px;
+
+		// SFR design is smaller, remove min-height.
+		&:has(.googlesitekit-activate-analytics-cta) {
+			min-height: auto;
+		}
+	}
+
+	.googlesitekit-chart div[dir] {
+		width: 100% !important;
+	}
+}

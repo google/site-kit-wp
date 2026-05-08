@@ -1,0 +1,29 @@
+{
+  "G-500": {
+    "path": "accounts/6065484567/containers/98369876",
+    "accountId": "6065484567",
+    "containerId": "98369876",
+    "name": "example.com",
+    "publicId": "G-2B7M8YQ1K6",
+    "usageContext": [ "web" ],
+    "fingerprint": "1670406303456",
+    "tagManagerUrl":
+      "https://tagmanager.google.com/#/container/accounts/6065484567/containers/98369876/workspaces?apiLink=container",
+    "features": {
+      "supportUserPermissions": false,
+      "supportEnvironments": false,
+      "supportWorkspaces": false,
+      "supportGtagConfigs": true,
+      "supportBuiltInVariables": true,
+      "supportClients": false,
+      "supportFolders": false,
+      "supportTags": false,
+      "supportTemplates": false,
+      "supportTriggers": false,
+      "supportVariables": false,
+      "supportVersions": false,
+      "supportZones": false
+    },
+    "tagIds": [ "G-500", "GT-12345" ]
+  }
+}

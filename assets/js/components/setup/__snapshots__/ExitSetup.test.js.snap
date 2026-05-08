@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExitSetup should render correctly 1`] = `
+<div>
+  <button
+    class="mdc-button mdc-button--tertiary"
+    target="_self"
+  >
+    <span
+      class="mdc-button__label"
+    >
+      Exit setup
+    </span>
+  </button>
+</div>
+`;

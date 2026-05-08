@@ -1,0 +1,73 @@
+/**
+ * Overlay styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-overlay {
+	align-items: center;
+	background: rgba($c-background, 0.8);
+	cursor: not-allowed;
+	display: flex;
+	height: 100%;
+	inset: 0 0 0 0;
+	justify-content: center;
+	position: absolute;
+	width: 100%;
+	z-index: 10;
+
+	.googlesitekit-overlay__icon {
+		align-items: center;
+		background: $c-background-subtle;
+		border-radius: 50%;
+		display: flex;
+		height: 60px;
+		justify-content: center;
+		margin: 0 auto;
+		width: 60px;
+
+		svg {
+			color: $c-cape-cod;
+		}
+	}
+
+	.googlesitekit-overlay__title {
+		margin-bottom: 0;
+		padding: 0 $grid-gap-phone;
+		text-align: center;
+	}
+}
+
+.googlesitekit-overlay--compress {
+	.googlesitekit-overlay__wrapper {
+		align-items: center;
+		display: flex;
+	}
+
+	.googlesitekit-overlay__icon {
+		height: 40px;
+		width: 40px;
+
+		.svg {
+			height: 20px;
+			width: auto;
+		}
+	}
+
+	.googlesitekit-overlay__title {
+		margin-top: 0;
+		padding-right: 0;
+	}
+}

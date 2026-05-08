@@ -1,0 +1,419 @@
+/**
+ * UserSettingsSelectionPanel tests.
+ *
+ * Site Kit by Google, Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideUserInfo,
+	render,
+	waitFor,
+} from '../../../../../tests/js/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
+
+// This suite tests panel behavior; mock the invite list to avoid async datastore
+// updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
+jest.mock(
+	'@/js/components/email-reporting/InviteOthersToSubscribe',
+	() => () => null
+);
+
+describe( 'UserSettingsSelectionPanel', () => {
+	const features = [ 'proactiveUserEngagement' ];
+	const emailReportingSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
+	);
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideModules( registry );
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		provideUserInfo( registry, { wpEmail: 'someone@anybusiness.com' } );
+		provideUserCapabilities( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: false,
+			frequency: 'monthly',
+		} );
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingSettings( {
+			enabled: true,
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		mockSurveyEndpoints();
+	} );
+
+	afterEach( () => {
+		jest.restoreAllMocks();
+	} );
+
+	it( 'renders header subheading in admin view', () => {
+		const { getByText } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		const heading = getByText( 'Email reports subscription' );
+		expect( heading ).toBeInTheDocument();
+
+		const headerElement = heading.closest( 'header' );
+		expect( headerElement ).toBeInTheDocument();
+
+		expect(
+			getByText( 'You can always deactivate this feature in', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'does not render header subheading in view-only', () => {
+		provideUserInfo( registry, { wpEmail: 'viewer@example.com' } );
+
+		const { getByText, queryByText } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				features,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect( getByText( 'Email reports subscription' ) ).toBeInTheDocument();
+
+		expect(
+			queryByText( /you can always deactivate this feature in/i )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'displays the user email in the explanatory copy when available', () => {
+		const { getByText } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			getByText(
+				'You’ll receive the report to your WordPress user email',
+				{ exact: false }
+			)
+		).toBeInTheDocument();
+		expect( getByText( 'someone@anybusiness.com' ) ).toBeInTheDocument();
+	} );
+
+	it( 'opens the side sheet when the UI key is true', () => {
+		provideUserInfo( registry, { wpEmail: 'open@example.com' } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		const dialog = getByRole( 'dialog' );
+		expect( dialog ).toHaveAttribute( 'aria-hidden', 'false' );
+	} );
+
+	it( 'hides admin screen tooltip when the panel opens', async () => {
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+		} );
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect(
+				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+			).toMatchObject( { isTooltipVisible: false } )
+		);
+	} );
+
+	it( 'calls saveEmailReportingSettings with subscribed true when subscribing', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Subscribe' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: true } );
+	} );
+
+	it( 'shows the updated subscribe success notice copy after subscribing', async () => {
+		const expectedSettings = {
+			subscribed: true,
+			frequency: 'monthly',
+		};
+		fetchMock.postOnce( emailReportingSettingsEndpoint, {
+			body: expectedSettings,
+			status: 200,
+		} );
+
+		const { getByRole, getByText } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				features,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Subscribe' } ) );
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( emailReportingSettingsEndpoint, {
+				body: {
+					data: {
+						settings: expectedSettings,
+					},
+				},
+			} )
+		);
+
+		await waitFor( () =>
+			expect(
+				getByText( 'You’ve successfully subscribed to email reports!' )
+			).toBeInTheDocument()
+		);
+		expect(
+			getByText(
+				'Look for a confirmation email in your inbox. If you don’t see it, check your spam folder.',
+				{ exact: false }
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'calls saveEmailReportingSettings with subscribed false when unsubscribing', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.setEmailReportingSettings( {
+			subscribed: true,
+		} );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Unsubscribe' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy ).toHaveBeenCalledWith( { subscribed: false } );
+	} );
+
+	it( 'calls saveEmailReportingSettings without arguments when updating settings', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.setEmailReportingSettings( {
+			subscribed: true,
+		} );
+		const saveSpy = jest
+			.spyOn( coreUserDispatch, 'saveEmailReportingSettings' )
+			.mockResolvedValue( { error: null } );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Update Settings' } ) );
+
+		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
+	} );
+
+	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {
+		jest.useFakeTimers();
+
+		registry.dispatch( CORE_SITE ).receiveGetEmailReportingErrors( {
+			errors: {
+				unknown: [ 'Module report error.' ],
+			},
+			error_data: {
+				unknown: {
+					status: 500,
+					reason: '',
+					category_id: 'report_error',
+					module_slug: 'search-console',
+				},
+			},
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+		).toBe( true );
+
+		const goToSettingsButton = getByRole( 'button', {
+			name: 'Go to settings',
+		} );
+		goToSettingsButton.setAttribute( 'href', '#' );
+		fireEvent.click( goToSettingsButton );
+
+		await waitFor( () =>
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
+			).toBe( false )
+		);
+
+		act( () => {
+			jest.runOnlyPendingTimers();
+		} );
+
+		jest.useRealTimers();
+	} );
+
+	it( 'resets email reporting settings when the panel closes', async () => {
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		coreUserDispatch.receiveGetEmailReportingSettings( {
+			subscribed: true,
+			frequency: 'weekly',
+		} );
+		coreUserDispatch.setEmailReportingSettings( {
+			subscribed: false,
+		} );
+		expect(
+			registry.select( CORE_USER ).haveEmailReportingSettingsChanged()
+		).toBe( true );
+
+		const resetSpy = jest.spyOn(
+			coreUserDispatch,
+			'resetEmailReportingSettings'
+		);
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			features,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitFor( () =>
+			expect(
+				document.querySelector(
+					'.googlesitekit-selection-panel-header__close'
+				)
+			).toBeInTheDocument()
+		);
+
+		const closeButton = document.querySelector(
+			'.googlesitekit-selection-panel-header__close'
+		);
+		fireEvent.click( closeButton );
+
+		await waitFor( () => expect( resetSpy ).toHaveBeenCalledTimes( 1 ) );
+		expect(
+			registry.select( CORE_USER ).getEmailReportingSettings()
+		).toEqual( {
+			subscribed: true,
+			frequency: 'weekly',
+		} );
+		expect(
+			registry.select( CORE_USER ).haveEmailReportingSettingsChanged()
+		).toBe( false );
+	} );
+} );
+
+describe( 'Footer', () => {
+	it( 'renders default description when no notice is provided', () => {
+		const { getByText } = render( <SelectionPanelFooter /> );
+
+		expect(
+			getByText(
+				/All email reports sent are generated by Site Kit using data from your dashboard/i
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders a notice with dismiss button when notice prop is provided', () => {
+		const onDismiss = jest.fn();
+		const { getByText, getByRole } = render(
+			<SelectionPanelFooter
+				notice={ { type: 'error', text: 'There was a problem.' } }
+				onNoticeDismiss={ onDismiss }
+			/>
+		);
+
+		expect( getByText( 'There was a problem.' ) ).toBeInTheDocument();
+
+		const dismissButton = getByRole( 'button', { name: 'Got it' } );
+		fireEvent.click( dismissButton );
+
+		expect( onDismiss ).toHaveBeenCalled();
+	} );
+} );

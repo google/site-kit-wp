@@ -1,0 +1,135 @@
+description = "Implements a GitHub issue locally with automated review and iteration using subagents"
+
+prompt = """
+You are orchestrating the implementation of GitHub issue #{{args}} from the google/site-kit-wp repository. You coordinate specialized subagents through a quality workflow.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- This is a LOCAL implementation — DO NOT create commits, pull requests, or push to remote
+- You are the orchestrator — delegate work to subagents, do not implement code yourself
+- You control the iteration loop and data flow between agents
+
+--- PHASE 1: FETCH GITHUB ISSUE ---
+
+Fetch issue #{{args}} from `google/site-kit-wp` using GitHub MCP tools.
+Fallback: `!{gh issue view {{args}} --json title,body}`
+
+Extract:
+1. **Issue title**
+2. **Acceptance criteria** (between `## Acceptance criteria` and `## Implementation Brief`)
+3. **Implementation brief** (between `## Implementation Brief` and `## QA Brief`)
+
+**STOP and report** if: issue not found, API unavailable, body empty, or section markers missing.
+
+--- PHASE 2+3: IMPLEMENT ---
+
+Delegate to @implementer with the following message:
+
+"Implement GitHub issue #{{args}}: [issue title].
+
+ACCEPTANCE CRITERIA:
+[paste extracted acceptance criteria]
+
+IMPLEMENTATION BRIEF:
+[paste extracted implementation brief]"
+
+Save the implementation summary returned by the agent.
+
+--- PHASE 4: CODE REVIEW ---
+
+Delegate to @code-reviewer with the following message:
+
+"Review the implementation of GitHub issue #{{args}}: [issue title].
+This is iteration [n] of the review.
+
+ACCEPTANCE CRITERIA:
+[paste extracted acceptance criteria]
+
+IMPLEMENTATION BRIEF:
+[paste extracted implementation brief]
+
+IMPLEMENTATION SUMMARY:
+[paste summary from implementer or fixer]"
+
+Extract the **score** and **violations** from the review results.
+
+--- PHASE 5: ITERATION LOOP ---
+
+IF score >= 0.85 → skip to Phase 6.
+
+OTHERWISE, iterate (max 3 total review cycles):
+
+1. Delegate to @fixer:
+
+   "Fix the following violations from review iteration [n] of issue #{{args}}.
+
+   REVIEW RESULTS:
+   [paste the full CODE REVIEW RESULTS from the reviewer]"
+
+2. Save the updated implementation summary from fixer.
+
+3. Delegate to @code-reviewer again with the updated summary (same format as Phase 4, incrementing the iteration number).
+
+4. Extract the new score.
+   - Score >= 0.85 → proceed to Phase 6
+   - Score < 0.85 and iterations < 3 → repeat from step 1
+   - Score < 0.85 and iterations = 3 → graceful exit (below)
+
+**Graceful Exit** (score < 0.85 after 3 iterations):
+
+```
+IMPLEMENTATION INCOMPLETE - MANUAL INTERVENTION REQUIRED
+=========================================================
+Final Score: [score] | Iterations: 3 | Status: Needs manual review
+
+Files Created ([n]): [paths]
+Files Modified ([n]): [paths]
+Files Deleted ([n]): [paths]
+
+REMAINING ISSUES:
+Context Violations ([n]): [list each with fix instructions]
+Quality Issues ([n]): [critical and high priority list]
+
+TOP FIXES NEEDED:
+1. [Fix description] — Files: [...] — Action: [...] — Reference: [context doc+section]
+2. [Fix description] — Files: [...] — Action: [...]
+[up to 5 items]
+
+WHAT WAS COMPLETED: [aspects that meet quality standards]
+
+NEXT STEPS: Review changes → fix violations → run tests (npm run test:js / composer run test) → lint → manual review
+```
+
+Stop after providing this summary.
+
+--- PHASE 6: DOCUMENTATION (score >= 0.85 only) ---
+
+Delegate to @documenter:
+
+"Review the implementation of issue #{{args}} and determine if new architectural documentation is needed.
+
+IMPLEMENTATION SUMMARY:
+[paste final implementation summary]"
+
+--- FINAL SUMMARY ---
+
+If score >= 0.85:
+
+```
+IMPLEMENTATION COMPLETE ✓
+=========================
+Issue #{{args}}: [title] | Score: [score] | Iterations: [n]
+
+Files Created ([n]): [paths + descriptions]
+Files Modified ([n]): [paths + descriptions]
+Files Deleted ([n]): [paths + reasons]
+
+Highlights: [key features and notable technical decisions]
+Quality: All principles followed | Tests executed and passed | Linting passed
+Documentation: [created/not needed]
+
+Next steps: Review changes → npm run test:js / composer run test → npm run lint → manual test → git commit → open PR
+```
+
+Begin with Phase 1: Fetch GitHub Issue #{{args}}
+"""

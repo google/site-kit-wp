@@ -1,0 +1,154 @@
+/**
+ * CTA link styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-cta-link {
+	align-items: center;
+	cursor: pointer;
+	display: inline-flex;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+	padding: 0;
+	text-align: left;
+	text-decoration: none;
+
+	svg {
+		fill: currentColor;
+	}
+
+	&:hover {
+		svg {
+			fill: currentColor;
+		}
+	}
+
+	.googlesitekit-page & {
+		color: $c-link;
+
+		&:hover {
+			color: $c-link;
+			text-decoration: underline;
+		}
+	}
+
+	&.googlesitekit-cta-link--secondary {
+		color: $c-content-secondary;
+
+		svg {
+			fill: currentColor;
+		}
+
+		&:hover {
+			color: $c-content-secondary;
+
+			svg {
+				fill: currentColor;
+			}
+		}
+	}
+
+	&.googlesitekit-cta-link--caps {
+		text-transform: uppercase;
+	}
+
+	&.googlesitekit-cta-link--danger {
+		// Overriding default styles.
+		color: $c-error;
+	}
+
+	&.googlesitekit-cta-link--small {
+		font-size: $fs-body-sm;
+		letter-spacing: $ls-xs;
+	}
+
+	&.googlesitekit-cta-link--standalone {
+		display: flex;
+	}
+
+	&.googlesitekit-cta-link--inverse {
+		color: $c-content-on-primary;
+
+		&:hover {
+			color: $c-content-on-primary;
+		}
+	}
+
+	&.googlesitekit-cta-link--disabled {
+		color: $c-disabled;
+		cursor: default;
+	}
+
+	&.googlesitekit-cta-link--danger:hover {
+		color: $c-error;
+	}
+
+	&.googlesitekit-cta-link--disabled:hover {
+		color: $c-disabled;
+		text-decoration: none;
+	}
+
+	&.googlesitekit-cta-link--no-flex {
+		display: inline;
+	}
+}
+
+/**
+ * CTA button styles for buttons with link styling.
+ *
+ * These are specific overrides for buttons that have the
+ * `.googlesitekit-cta-link` class, and thus are placed after other
+ * button styles.
+ *
+ * Because of this we override the `no-descending-specificity` Stylelint
+ * rule which wants these styles higher up in the file, which would be
+ * confusing (and possibly not override existing styles properly).
+ */
+/* stylelint-disable no-descending-specificity */
+button {
+	&.googlesitekit-cta-link {
+		color: $c-content-primary;
+
+		svg {
+			fill: currentColor;
+		}
+
+		&:hover {
+			color: $c-content-primary-hover;
+
+			svg {
+				fill: currentColor;
+			}
+		}
+	}
+
+	&.googlesitekit-cta-link--link-button {
+		padding: 2px 10px;
+
+		&:focus {
+			background-color: rgba($c-content-primary, 0.08);
+			outline: none;
+		}
+
+		&.googlesitekit-cta-link--secondary {
+			&:focus {
+				background-color: rgba($c-content-secondary, 0.08);
+			}
+		}
+	}
+}
+/* stylelint-enable no-descending-specificity */

@@ -1,0 +1,145 @@
+/**
+ * Entity Header Banner styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-entity-header {
+		align-items: center;
+		background-color: $c-surfaces-surface;
+		border-bottom: 1px solid transparent;
+		color: $c-surfaces-on-surface-variant;
+		display: flex;
+		justify-content: space-between;
+		padding: $grid-gap-phone;
+		-webkit-position: sticky;
+		position: sticky;
+		top: 120px;
+		z-index: 9; // Should be below _googlesitekit-dashboard-navigation.
+
+		@media (min-width: $bp-tablet) {
+			padding-left: $grid-gap-desktop * 1.5;
+			padding-right: $grid-gap-desktop * 1.5;
+		}
+
+		.googlesitekit-navigation--is-sticky + & {
+			border-bottom: 1px solid $c-utility-divider;
+		}
+
+		body.admin-bar & {
+
+			@media (min-width: $width-tablet + 1 + px) {
+				top: 183px;
+			}
+
+			@media (min-width: $bp-wpAdminBarTablet) {
+				top: 169px;
+			}
+
+			@media (min-width: $width-desktop + 1 + px) {
+				top: 185px;
+			}
+		}
+
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
+			position: static;
+		}
+	}
+
+	.googlesitekit-entity-header__back {
+		height: auto;
+		min-width: 20%;
+		padding-right: 30px;
+
+		&::before,
+		&::after {
+			display: none;
+		}
+
+		.mdc-button {
+			height: 100%;
+			padding-left: 0; // Override 8px padding on .mdc-button which pushes arrow further inside the page.
+		}
+
+		.mdc-button:not(:disabled) {
+			color: $c-surfaces-on-surface-variant;
+
+			&:hover {
+				background-color: $c-interactive-tertiary-hover;
+				color: $c-surfaces-on-background;
+				text-decoration: none;
+
+				&::before {
+					background-color: $c-interactive-tertiary-hover;
+					opacity: 1;
+				}
+			}
+		}
+
+		.mdc-button__label {
+			font-family: $f-secondary;
+			font-size: $fs-body-md;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+			margin: 0 0 0 8px;
+			text-align: left;
+			text-transform: none;
+
+			@media (min-width: $bp-tablet) {
+				font-family: $f-primary;
+			}
+		}
+	}
+
+	.googlesitekit-entity-header__details {
+		font-size: $fs-body-sm;
+		font-weight: $fw-medium;
+		letter-spacing: $ls-xs;
+		line-height: $lh-body-sm;
+		overflow: hidden;
+		text-align: right;
+		white-space: nowrap;
+		width: 100%;
+
+		p {
+			font-family: $f-secondary;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			@media (min-width: $bp-tablet) {
+				margin: 0;
+			}
+		}
+
+		a {
+			margin: 4px; // Allow outline on focus to be visible.
+			max-width: 100%;
+			text-decoration: underline;
+
+			&:hover,
+			&:focus {
+				color: $c-content-primary-hover;
+			}
+		}
+	}
+}

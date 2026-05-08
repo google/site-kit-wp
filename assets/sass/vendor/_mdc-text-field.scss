@@ -1,0 +1,67 @@
+.googlesitekit-plugin {
+	// Overrides for .mdc-text-field
+	.mdc-text-field {
+
+		@include mdc-text-field-ink-color($c-surfaces-on-surface);
+		@include mdc-text-field-label-color($c-surfaces-on-surface);
+		@include mdc-text-field-caret-color($c-content-primary);
+		@include mdc-text-field-focused-outline-color($c-content-primary);
+		@include mdc-text-field-hover-outline-color($c-border);
+		@include mdc-text-field-outline-color($c-utility-outline);
+		@include mdc-text-field-textarea-stroke-color($c-utility-outline);
+		@include mdc-text-field-textarea-shape-radius($br-xs);
+
+		width: 250px;
+
+		.mdc-notched-outline__notch {
+			// Override added padding from mdc styles.
+			padding-right: 0;
+
+			// !important needed to override inline style from component.
+			width: auto !important;
+		}
+
+		@media (min-width: $bp-tablet) {
+			width: 350px;
+		}
+	}
+
+	.mdc-text-field--textarea {
+		max-width: 650px;
+		width: 100%;
+	}
+
+	.mdc-text-field--error,
+	.mdc-text-field--error.mdc-text-field--textarea {
+
+		@include mdc-text-field-focused-outline-color($c-error);
+		@include mdc-text-field-hover-outline-color($c-error);
+		@include mdc-text-field-outline-color($c-error);
+		@include mdc-text-field-textarea-stroke-color($c-error);
+		@include mdc-text-field-label-color($c-error);
+
+		&:not(.mdc-text-field--focused) {
+
+			.mdc-floating-label--float-above {
+				color: $c-error;
+			}
+		}
+
+		+ .mdc-text-field-helper-line .mdc-text-field-helper-text {
+			color: $c-error;
+		}
+	}
+
+	.mdc-text-field--textarea.mdc-text-field--focused {
+		border-color: $c-input;
+	}
+
+	.mdc-text-field--textarea .mdc-text-field__input {
+		box-shadow: none;
+		padding: 8px 12px 12px;
+	}
+
+	.mdc-text-field--textarea:not(.mdc-text-field--disabled) .mdc-text-field__input:focus { // :not comes from MDC
+		border-color: $c-input;
+	}
+}

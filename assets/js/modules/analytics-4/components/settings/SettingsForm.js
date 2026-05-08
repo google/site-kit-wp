@@ -1,0 +1,115 @@
+/**
+ * Analytics 4 Settings form.
+ *
+ * Site Kit by Google, Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { useSelect } from 'googlesitekit-data';
+import { TrackingExclusionSwitches } from '@/js/modules/analytics-4/components/common';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import SettingsControls from './SettingsControls';
+import ConversionTrackingToggle from '@/js/components/conversion-tracking/ConversionTrackingToggle';
+import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
+import EntityOwnershipChangeNotice from '@/js/components/settings/EntityOwnershipChangeNotice';
+import GoogleTagGatewayToggle from '@/js/components/google-tag-gateway/GoogleTagGatewayToggle';
+import Link from '@/js/components/Link';
+import SettingsGroup from '@/js/components/settings/SettingsGroup';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { useFeature } from '@/js/hooks/useFeature';
+import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
+
+export default function SettingsForm( { hasModuleAccess } ) {
+	const gtgEnabled = useFeature( 'googleTagGateway' );
+	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getAccountID()
+	);
+
+	const conversionTrackingDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL(
+			'plugin-conversion-tracking'
+		)
+	);
+
+	return (
+		<Fragment>
+			<SettingsControls hasModuleAccess={ hasModuleAccess } />
+
+			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
+
+			{ hasModuleAccess && (
+				<EntityOwnershipChangeNotice
+					slug={ [ MODULE_SLUG_ANALYTICS_4 ] }
+				/>
+			) }
+
+			<SettingsGroup
+				title={ __( 'Improve your measurement', 'google-site-kit' ) }
+			>
+				<SettingsEnhancedMeasurementSwitch
+					hasModuleAccess={ hasModuleAccess }
+				/>
+				<ConversionTrackingToggle>
+					{ createInterpolateElement(
+						__(
+							'To track the performance of your campaigns, Site Kit will enable plugin conversion tracking. <a>Learn more</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									href={ conversionTrackingDocumentationURL }
+									aria-label={ __(
+										'Learn more about conversion tracking',
+										'google-site-kit'
+									) }
+									external
+								/>
+							),
+						}
+					) }
+				</ConversionTrackingToggle>
+				{ gtgEnabled && <GoogleTagGatewayToggle /> }
+				{ gtagUserDataEnabled && (
+					<EnhancedConversionsSettingsNotice
+						type={ NOTICE_TYPES.INFO_ALT }
+					/>
+				) }
+			</SettingsGroup>
+		</Fragment>
+	);
+}
+
+SettingsForm.propTypes = {
+	hasModuleAccess: PropTypes.bool,
+};
