@@ -130,10 +130,22 @@
 	}
 
 	.googlesitekit-initial-setup {
+		display: flex;
+		flex-direction: column;
+		min-height: calc(100vh - 218px);
 		padding: 0;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-height: calc(100vh - 185px);
+		}
+
+		> .googlesitekit-layout {
+			flex-grow: 1;
+		}
 
 		.googlesitekit-setup__wrapper {
 			border-radius: 0;
+			flex-grow: 1;
 		}
 
 		.googlesitekit-setup__reset-notice {
