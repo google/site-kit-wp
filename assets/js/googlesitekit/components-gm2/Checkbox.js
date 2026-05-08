@@ -71,6 +71,7 @@ export default function Checkbox( props ) {
 				) : (
 					<Fragment>
 						<input
+							aria-checked={ checked ? 'true' : 'false' }
 							className="mdc-checkbox__native-control"
 							type="checkbox"
 							id={ id }
