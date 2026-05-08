@@ -30,7 +30,7 @@ describe( 'Checkbox', () => {
 		onChange: jest.fn(),
 	};
 
-	it( 'should set `aria-checked` to "true" when `checked` is true', () => {
+	it( 'sets `aria-checked` to "true" when `checked` is true', () => {
 		const { getByRole } = render(
 			<Checkbox { ...defaultProps } checked>
 				Label
@@ -43,7 +43,7 @@ describe( 'Checkbox', () => {
 		);
 	} );
 
-	it( 'should set `aria-checked` to "false" when `checked` is false', () => {
+	it( 'sets `aria-checked` to "false" when `checked` is false', () => {
 		const { getByRole } = render(
 			<Checkbox { ...defaultProps } checked={ false }>
 				Label
@@ -56,7 +56,7 @@ describe( 'Checkbox', () => {
 		);
 	} );
 
-	it( 'should default `aria-checked` to "false" when `checked` is not provided', () => {
+	it( 'defaults `aria-checked` to "false" when `checked` is not provided', () => {
 		const { getByRole } = render(
 			<Checkbox { ...defaultProps }>Label</Checkbox>
 		);
