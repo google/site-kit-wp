@@ -175,6 +175,11 @@ describe( 'WelcomeModal', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		fetchMock.post( dismissItemEndpoint, {
+			body: { success: true },
+			status: 200,
+		} );
+
 		provideUserCapabilities( registry, {
 			[ PERMISSION_AUTHENTICATE ]: true,
 		} );
@@ -326,7 +331,7 @@ describe( 'WelcomeModal', () => {
 
 				await waitFor( () => {
 					// Wait for the dismissal to complete.
-					expect( fetchMock ).toHaveFetchedTimes( 2 );
+					expect( fetchMock ).toHaveFetchedTimes( 3 );
 				} );
 
 				expect( container ).toBeEmptyDOMElement();
@@ -346,7 +351,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 2 );
+					expect( fetchMock ).toHaveFetchedTimes( 3 );
 				} );
 
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
@@ -415,7 +420,7 @@ describe( 'WelcomeModal', () => {
 			} );
 
 			await waitFor( () => {
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
 		}
 	);
@@ -447,7 +452,7 @@ describe( 'WelcomeModal', () => {
 		fireEvent.click( closeButton );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 3 );
 		} );
 
 		const tooltipState = registry
@@ -484,7 +489,7 @@ describe( 'WelcomeModal', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Start tour' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 3 );
 		} );
 
 		expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
@@ -625,7 +630,7 @@ describe( 'WelcomeModal', () => {
 
 				await waitFor( () => {
 					// Wait for the dismissal to complete.
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				expect( container ).toBeEmptyDOMElement();
@@ -645,7 +650,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
@@ -672,7 +677,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				const tooltipState = registry
@@ -993,6 +998,7 @@ describe( 'WelcomeModal', () => {
 	] )(
 		'when the $variant variant of the welcome modal is shown',
 		( {
+			variant,
 			expectedLabel,
 			provideData,
 			confirmationButton,
@@ -1000,7 +1006,11 @@ describe( 'WelcomeModal', () => {
 		} ) => {
 			beforeEach( () => {
 				provideData();
-				freezeFetch( dismissItemEndpoint );
+				if ( variant === 'data gathering complete' ) {
+					return;
+				}
+
+				freezeFetch( dismissItemEndpoint, { repeat: 3 } );
 			} );
 
 			it( 'should track the `setup_flow_v3_complete_site_setup` and `setup_flow_v3_complete_user_setup` events only once', async () => {
@@ -1075,6 +1085,10 @@ describe( 'WelcomeModal', () => {
 					} )
 				);
 
+				if ( variant === 'data gathering complete' ) {
+					await waitForRegistry();
+				}
+
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
 					'test-context_welcome-modal',
@@ -1104,6 +1118,10 @@ describe( 'WelcomeModal', () => {
 						} )
 					);
 
+					if ( variant === 'data gathering complete' ) {
+						await waitForRegistry();
+					}
+
 					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 					expect( mockTrackEvent ).toHaveBeenCalledWith(
 						'test-context_welcome-modal',
@@ -1115,7 +1133,7 @@ describe( 'WelcomeModal', () => {
 		}
 	);
 
-	it.each( [
+	describe.each( [
 		{
 			variant: 'data available',
 			provideVariantData: provideDataAvailableVariantData,
@@ -1125,31 +1143,55 @@ describe( 'WelcomeModal', () => {
 			provideVariantData: provideGatheringDataVariantData,
 		},
 	] )(
-		'should dismiss the initial setup notification timeout when the modal renders in the $variant variant',
-		async ( { provideVariantData } ) => {
-			provideVariantData();
-
-			fetchMock.postOnce( dismissItemEndpoint, {
-				body: { success: true },
+		'when setupFlowRefresh is enabled and the modal renders in the $variant variant',
+		( { provideVariantData } ) => {
+			beforeEach( () => {
+				provideVariantData();
+				fetchMock.postOnce( dismissItemEndpoint, {
+					body: { success: true },
+				} );
 			} );
 
-			const { waitForRegistry } = render( <WelcomeModal />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			} );
+			it( 'should dismiss the initial setup notification timeout', async () => {
+				const { waitForRegistry } = render( <WelcomeModal />, {
+					registry,
+					features: [ 'setupFlowRefresh' ],
+				} );
 
-			await waitForRegistry();
+				await waitForRegistry();
 
-			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+				expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
 
-			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-				body: {
-					data: {
-						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-						expiration: 604800,
+				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+					body: {
+						data: {
+							slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+							expiration: 604800,
+						},
 					},
-				},
+				} );
 			} );
 		}
 	);
+
+	it( 'should dismiss the initial setup notification timeout when setupFlowRefresh is disabled', async () => {
+		provideDataAvailableVariantData();
+
+		const { waitForRegistry } = render( <WelcomeModal />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+
+		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+					expiration: 604800,
+				},
+			},
+		} );
+	} );
 } );
