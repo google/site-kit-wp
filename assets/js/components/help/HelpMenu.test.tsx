@@ -69,7 +69,7 @@ describe( 'HelpMenu', () => {
 
 	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
 		it( 'should render the correct menu items', () => {
-			const { container } = render( <HelpMenu />, {
+			const { container } = render( <HelpMenu showFeatureTour />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],
@@ -78,21 +78,36 @@ describe( 'HelpMenu', () => {
 			expect( container ).toMatchSnapshot();
 		} );
 
-		it( 'should render the "Get help with AdSense" menu item when AdSense is active', () => {
-			provideModules( registry, [ { slug: 'adsense', active: true } ] );
-
-			const { container, getByText } = render( <HelpMenu />, {
+		it( 'should not render "Start a feature tour" when `showFeatureTour` is false', () => {
+			const { queryByText } = render( <HelpMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],
 			} );
+
+			expect(
+				queryByText( 'Start a feature tour' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render the "Get help with AdSense" menu item when AdSense is active', () => {
+			provideModules( registry, [ { slug: 'adsense', active: true } ] );
+
+			const { container, getByText } = render(
+				<HelpMenu showFeatureTour />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
 
 			expect( container ).toMatchSnapshot();
 			expect( getByText( 'Get help with AdSense' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should track the `open_helpmenu` event when the help menu is opened', () => {
-			const { getByRole } = render( <HelpMenu />, {
+			const { getByRole } = render( <HelpMenu showFeatureTour />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],
@@ -115,7 +130,7 @@ describe( 'HelpMenu', () => {
 		] )(
 			'should track the `click_menu_item` event when clicking the "%s" button, with the label set to `%s`',
 			( linkText, expectedLabel ) => {
-				const { getByText } = render( <HelpMenu />, {
+				const { getByText } = render( <HelpMenu showFeatureTour />, {
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 					features: [ 'setupFlowRefresh' ],
@@ -135,7 +150,7 @@ describe( 'HelpMenu', () => {
 		it( 'should track the `click_menu_item` event for the "Get help with AdSense" menu item when AdSense is active', () => {
 			provideModules( registry, [ { slug: 'adsense', active: true } ] );
 
-			const { getByText } = render( <HelpMenu />, {
+			const { getByText } = render( <HelpMenu showFeatureTour />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],
@@ -152,11 +167,14 @@ describe( 'HelpMenu', () => {
 		} );
 
 		it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
-			const { getByText, waitForRegistry } = render( <HelpMenu />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+			const { getByText, waitForRegistry } = render(
+				<HelpMenu showFeatureTour />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
 
 			await waitForRegistry();
 

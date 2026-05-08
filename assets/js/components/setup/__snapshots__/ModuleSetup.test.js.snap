@@ -134,29 +134,6 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                   role="none"
                   tabindex="-1"
                 >
-                  <button
-                    class="googlesitekit-cta-link mdc-list-item__text"
-                    role="menuitem"
-                    tabindex="-1"
-                  >
-                    <span
-                      class="googlesitekit-icon-wrapper"
-                      style="margin-right: 5px;"
-                    >
-                      <svg />
-                    </span>
-                    <span
-                      class="googlesitekit-cta-link__contents"
-                    >
-                      Start a feature tour
-                    </span>
-                  </button>
-                </li>
-                <li
-                  class="googlesitekit-help-menu-link mdc-list-item"
-                  role="none"
-                  tabindex="-1"
-                >
                   <a
                     aria-label="Send feedback (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
