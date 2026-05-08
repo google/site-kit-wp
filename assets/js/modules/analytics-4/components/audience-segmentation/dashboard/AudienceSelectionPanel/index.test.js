@@ -61,14 +61,10 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/utils';
+} from 'tests/js/utils';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
+import { act, fireEvent, render, waitFor } from 'tests/js/test-utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import * as tracking from '@/js/util/tracking';
 import AudienceSelectionPanel from '.';
@@ -100,6 +96,8 @@ describe( 'AudienceSelectionPanel', () => {
 	const dismissedItemsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismissed-items'
 	);
+
+	mockBrowserScrolling();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -162,11 +160,6 @@ describe( 'AudienceSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
 		muteFetch( expirableItemEndpoint );
-
-		// jsdom does not support scrollIntoView which is used by the last metric item
-		// to prevent it from hiding underneath the Custom Dimensions warning notice.
-		// See: https://github.com/jsdom/jsdom/issues/1695.
-		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	afterEach( () => {

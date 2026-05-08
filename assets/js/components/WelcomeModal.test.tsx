@@ -36,6 +36,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from 'tests/js/utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -64,7 +65,6 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
-	windowHeight: global.innerHeight,
 } );
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
@@ -83,6 +83,8 @@ describe( 'WelcomeModal', () => {
 	const dismissItemEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/dismiss-item'
 	);
+
+	mockBrowserScrolling();
 
 	function provideDataAvailableVariantData() {
 		provideModules( registry, [
