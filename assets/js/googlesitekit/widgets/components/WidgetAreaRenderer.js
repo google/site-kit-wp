@@ -44,6 +44,7 @@ import {
 import {
 	CORE_UI,
 	ACTIVE_CONTEXT_ID,
+	FORCED_IN_VIEW_WIDGET_AREAS,
 } from '@/js/googlesitekit/datastore/ui/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
 import {
@@ -129,22 +130,27 @@ export default function WidgetAreaRenderer( { slug, contextID } ) {
 	const activeContextID = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
 	);
+	const forcedInViewWidgetAreas = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( FORCED_IN_VIEW_WIDGET_AREAS )
+	);
+
+	const isInView =
+		( activeContextID
+			? activeContextID === contextID
+			: !! intersectionEntry?.intersectionRatio ) ||
+		forcedInViewWidgetAreas?.includes( slug );
 
 	const [ inViewState, setInViewState ] = useState( {
 		key: `WidgetAreaRenderer-${ slug }`,
-		value: activeContextID
-			? activeContextID === contextID
-			: !! intersectionEntry?.intersectionRatio,
+		value: isInView,
 	} );
 
 	useEffect( () => {
 		setInViewState( {
 			key: `WidgetAreaRenderer-${ slug }`,
-			value: activeContextID
-				? activeContextID === contextID
-				: !! intersectionEntry?.intersectionRatio,
+			value: isInView,
 		} );
-	}, [ intersectionEntry, slug, activeContextID, contextID ] );
+	}, [ slug, isInView ] );
 
 	const ctaWithSmallWindow = CTA && windowWidth <= 782;
 

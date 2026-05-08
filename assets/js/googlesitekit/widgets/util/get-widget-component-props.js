@@ -37,13 +37,27 @@ import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDash
 import { forwardRef } from '@wordpress/element';
 
 /**
+ * Widget props type.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} WidgetComponentProps
+ * @property {string} widgetSlug The widget's slug.
+ * @property {WPComponent} Widget The Widget component scoped to the widget instance.
+ * @property {WPComponent} WidgetRecoverableModules The WidgetRecoverableModules component scoped to the widget instance.
+ * @property {WPComponent} WidgetReportZero The WidgetReportZero component scoped to the widget instance.
+ * @property {WPComponent} WidgetReportError The WidgetReportError component scoped to the widget instance.
+ * @property {WPComponent} WidgetNull The WidgetNull component scoped to the widget instance.
+ */
+
+/**
  * Gets the props to pass to a widget's component.
  *
  * @since 1.25.0
  * @since 1.107.0 Added `widgetSlug` to the returned props.
  *
  * @param {string} widgetSlug The widget's slug.
- * @return {Object} Props to pass to the widget component.
+ * @return {WidgetComponentProps} Props to pass to the widget component.
  */
 export const getWidgetComponentProps = memize( ( widgetSlug ) => {
 	// Scope widget-specific components to the widget instance so that the

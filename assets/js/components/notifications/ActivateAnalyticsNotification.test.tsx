@@ -266,7 +266,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 		expect( tooltip ).toEqual( {
 			isTooltipVisible: true,
 			tooltipSlug: ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
-			title: 'You can always set up Analytics from Settings later',
+			content: 'You can always set up Analytics from Settings later',
 			dismissLabel: 'Got it',
 		} );
 	} );
@@ -361,7 +361,7 @@ describe( 'ActivateAnalyticsNotification', () => {
 		expect( tooltip ).toEqual( {
 			isTooltipVisible: true,
 			tooltipSlug: ACTIVATE_ANALYTICS_CTA_WIDGET_SLUG,
-			title: 'You can always set up Analytics from Settings later',
+			content: 'You can always set up Analytics from Settings later',
 			dismissLabel: 'Got it',
 		} );
 	} );
