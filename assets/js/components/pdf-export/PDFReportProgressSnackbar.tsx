@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import type { MouseEvent, ReactNode } from 'react';
+import type { FC, MouseEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -45,7 +45,7 @@ interface PDFReportProgressSnackbarProps {
 	className?: string;
 }
 
-export default function PDFReportProgressSnackbar( {
+const PDFReportProgressSnackbar: FC< PDFReportProgressSnackbarProps > = ( {
 	progress = 0,
 	onCancel,
 	title = __( 'Generating your PDF report', 'google-site-kit' ),
@@ -55,7 +55,7 @@ export default function PDFReportProgressSnackbar( {
 	),
 	cancelLabel = __( 'Cancel', 'google-site-kit' ),
 	className,
-}: PDFReportProgressSnackbarProps ) {
+} ) => {
 	return (
 		<Notice
 			className={ classnames(
@@ -83,4 +83,6 @@ export default function PDFReportProgressSnackbar( {
 			/>
 		</Notice>
 	);
-}
+};
+
+export default PDFReportProgressSnackbar;
