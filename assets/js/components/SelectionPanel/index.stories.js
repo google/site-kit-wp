@@ -87,9 +87,7 @@ function Template( {
 	return (
 		<SelectionPanel isOpen>
 			<SelectionPanelHeader title="Select items">
-				<P type="body" size="small">
-					Select items from the selection below
-				</P>
+				<P>Select items from the selection below</P>
 			</SelectionPanelHeader>
 			<SelectionPanelItems
 				availableSavedItems={ availableSavedItems }

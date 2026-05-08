@@ -69,7 +69,7 @@ export default function Header( { closePanel } ) {
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
-				<P type="body" size="small">
+				<P>
 					{ createInterpolateElement(
 						setupFlowRefreshEnabled
 							? __(

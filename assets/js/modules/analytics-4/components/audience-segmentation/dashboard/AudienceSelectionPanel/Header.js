@@ -64,7 +64,7 @@ export default function Header( { closePanel } ) {
 			onCloseClick={ closePanel }
 		>
 			{ ! isViewOnly && (
-				<P type="body" size="small">
+				<P>
 					{ createInterpolateElement(
 						__(
 							'You can deactivate this widget in <link><strong>Settings</strong></link>',

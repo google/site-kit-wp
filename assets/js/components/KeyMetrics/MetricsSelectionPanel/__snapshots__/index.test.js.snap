@@ -36,7 +36,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
           </button>
         </div>
         <p
-          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
         >
           Edit your personalized goals or deactivate this widget in 
           <button
@@ -337,7 +337,7 @@ exports[`MetricsSelectionPanel Header should render correctly with the \`setupFl
           </button>
         </div>
         <p
-          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
         >
           Edit your personalized goals in 
           <button
