@@ -246,7 +246,7 @@ export default function TourTooltips( {
 			return;
 		}
 
-		if ( ! step.responsive ) {
+		if ( ! step.isResponsive ) {
 			element.scrollIntoView( { block: 'center' } );
 			return;
 		}
@@ -319,12 +319,12 @@ export default function TourTooltips( {
 	const breakpoint = useBreakpoint();
 
 	const parsedSteps = steps.map( ( step ) =>
-		step.responsive && breakpoint === BREAKPOINT_SMALL
+		step.isResponsive && breakpoint === BREAKPOINT_SMALL
 			? {
 					...defaultStepOptions,
 					...step,
 					...responsiveStepOptions,
-					floaterProps: { ...step.floaterProps, target: step.target },
+					floaterProps: { ...step.floaterProps, target: step.target }, // The floater's target is overridden to match the step's target to make it positioned above its corresponding widget. This makes the floater's position consistent in the screen during the tour.
 			  }
 			: { ...defaultStepOptions, ...step }
 	);

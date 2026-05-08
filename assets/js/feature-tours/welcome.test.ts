@@ -40,7 +40,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 		offset: -3,
 		spotlightPadding: 4,
 		placement: 'top-end',
-		responsive: true,
+		isResponsive: true,
 	},
 	{
 		target: '.googlesitekit-widget--analyticsAllTrafficGA4',
@@ -58,7 +58,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 		offset: 35,
 		spotlightPadding: 0,
 		placement: 'top',
-		responsive: true,
+		isResponsive: true,
 	},
 	{
 		target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
@@ -73,7 +73,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 		offset: 14,
 		spotlightPadding: 4,
 		placement: 'top',
-		responsive: true,
+		isResponsive: true,
 	},
 	{
 		target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
@@ -91,7 +91,7 @@ const ANALYTICS_CONNECTED_TOUR_COMMON_STEPS = [
 		offset: 25,
 		spotlightPadding: 0,
 		placement: 'top',
-		responsive: true,
+		isResponsive: true,
 	},
 ];
 
@@ -112,7 +112,7 @@ const SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS = [
 		offset: 0,
 		spotlightPadding: 0,
 		placement: 'top',
-		responsive: true,
+		isResponsive: true,
 	},
 	{
 		target: '.googlesitekit-widget--searchConsolePopularKeywords',
@@ -130,7 +130,7 @@ const SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS = [
 		offset: 0,
 		spotlightPadding: 0,
 		placement: 'top',
-		responsive: true,
+		isResponsive: true,
 	},
 ];
 
