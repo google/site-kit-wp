@@ -13,6 +13,7 @@ exports[`Actions should render correctly 1`] = `
         class="mdc-checkbox"
       >
         <input
+          aria-checked="false"
           class="mdc-checkbox__native-control"
           id="googlesitekit-opt-in"
           name="optIn"
@@ -104,6 +105,7 @@ exports[`Actions should render the reset button when the site is resettable 1`] 
         class="mdc-checkbox"
       >
         <input
+          aria-checked="false"
           class="mdc-checkbox__native-control"
           id="googlesitekit-opt-in"
           name="optIn"
@@ -204,6 +206,7 @@ exports[`Actions view-only button should render the button for a second admin wh
         class="mdc-checkbox"
       >
         <input
+          aria-checked="false"
           class="mdc-checkbox__native-control"
           id="googlesitekit-opt-in"
           name="optIn"

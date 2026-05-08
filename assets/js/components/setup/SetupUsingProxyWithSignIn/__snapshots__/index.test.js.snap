@@ -658,6 +658,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                             class="mdc-checkbox"
                           >
                             <input
+                              aria-checked="false"
                               class="mdc-checkbox__native-control"
                               id="googlesitekit-analytics-setup-opt-in"
                               name="googlesitekit-analytics-setup-opt-in"
@@ -1073,6 +1074,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             class="mdc-checkbox"
                           >
                             <input
+                              aria-checked="false"
                               class="mdc-checkbox__native-control"
                               id="googlesitekit-analytics-setup-opt-in"
                               name="googlesitekit-analytics-setup-opt-in"
@@ -1403,6 +1405,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2057,6 +2060,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2422,6 +2426,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2787,6 +2792,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"

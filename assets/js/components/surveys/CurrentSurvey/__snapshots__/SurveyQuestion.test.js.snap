@@ -56,6 +56,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-1"
               name="SurveyQuestionMultiSelect-0-answer-1"
@@ -99,6 +100,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-2"
               name="SurveyQuestionMultiSelect-0-answer-2"
@@ -142,6 +144,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-3"
               name="SurveyQuestionMultiSelect-0-answer-3"
@@ -185,6 +188,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-4"
               name="SurveyQuestionMultiSelect-0-answer-4"
@@ -228,6 +232,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-5"
               name="SurveyQuestionMultiSelect-0-answer-5"
@@ -271,6 +276,7 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
             class="mdc-checkbox"
           >
             <input
+              aria-checked="false"
               class="mdc-checkbox__native-control"
               id="SurveyQuestionMultiSelect-0-answer-6"
               name="SurveyQuestionMultiSelect-0-answer-6"
