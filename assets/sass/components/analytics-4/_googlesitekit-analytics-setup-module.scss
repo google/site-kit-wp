@@ -204,4 +204,13 @@
 			}
 		}
 	}
+
+	.googlesitekit-initial-setup--analytics-4 {
+		background-color: $c-base;
+		padding: 0 0 89px; // 89px is the height of the sticky footer on the initial Analytics setup screen.
+
+		@media (min-width: $bp-nonTablet) {
+			padding-bottom: 0;
+		}
+	}
 }
