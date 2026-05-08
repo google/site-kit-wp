@@ -51,7 +51,6 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { useFeature } from '@/js/hooks/useFeature';
 import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
@@ -162,13 +161,7 @@ export default function WelcomeModal() {
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 	const [ , setNotification ] = useQueryArg( 'notification' );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	useEffect( () => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return;
-		}
-
 		if (
 			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
 			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
@@ -177,7 +170,7 @@ export default function WelcomeModal() {
 				expiresInSeconds: WEEK_IN_SECONDS,
 			} );
 		}
-	}, [ setupFlowRefreshEnabled, modalVariant, dismissItem ] );
+	}, [ modalVariant, dismissItem ] );
 
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',

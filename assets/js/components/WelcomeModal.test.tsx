@@ -1115,9 +1115,19 @@ describe( 'WelcomeModal', () => {
 		}
 	);
 
-	describe( 'when setupFlowRefresh is enabled', () => {
-		it( 'should dismiss the initial setup notification timeout when the modal renders in the data available variant', async () => {
-			provideDataAvailableVariantData();
+	it.each( [
+		{
+			variant: 'data available',
+			provideVariantData: provideDataAvailableVariantData,
+		},
+		{
+			variant: 'gathering data',
+			provideVariantData: provideGatheringDataVariantData,
+		},
+	] )(
+		'should dismiss the initial setup notification timeout when the modal renders in the $variant variant',
+		async ( { provideVariantData } ) => {
+			provideVariantData();
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: { success: true },
@@ -1140,44 +1150,6 @@ describe( 'WelcomeModal', () => {
 					},
 				},
 			} );
-		} );
-
-		it( 'should dismiss the initial setup notification timeout when the modal renders in the gathering data variant', async () => {
-			provideGatheringDataVariantData();
-
-			fetchMock.postOnce( dismissItemEndpoint, {
-				body: { success: true },
-			} );
-
-			const { waitForRegistry } = render( <WelcomeModal />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			} );
-
-			await waitForRegistry();
-
-			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
-
-			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-				body: {
-					data: {
-						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-						expiration: 604800,
-					},
-				},
-			} );
-		} );
-
-		it( 'should not dismiss the initial setup notification timeout when setupFlowRefresh is disabled', async () => {
-			provideDataAvailableVariantData();
-
-			const { waitForRegistry } = render( <WelcomeModal />, {
-				registry,
-			} );
-
-			await waitForRegistry();
-
-			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( false );
-		} );
-	} );
+		}
+	);
 } );

@@ -273,9 +273,9 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const { hideSetupCTAs } = useSelect( ( select ) => {
+	const hideSetupCTAs = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
-			return { hideSetupCTAs: false };
+			return false;
 		}
 
 		const initialSetupNotificationTimeoutDismissed = select(
@@ -290,14 +290,11 @@ export default function DashboardMainApp() {
 		const firstHeaderNotificationID =
 			queuedHeaderNotifications?.[ 0 ]?.id || null;
 
-		return {
-			hideSetupCTAs:
-				initialSetupNotificationTimeoutDismissed ||
-				firstHeaderNotificationID ===
-					'activate-analytics-notification' ||
-				firstHeaderNotificationID ===
-					'connect-more-services-notification',
-		};
+		return (
+			initialSetupNotificationTimeoutDismissed ||
+			firstHeaderNotificationID === 'activate-analytics-notification' ||
+			firstHeaderNotificationID === 'connect-more-services-notification'
+		);
 	} );
 
 	useMonitorInternetConnection();
