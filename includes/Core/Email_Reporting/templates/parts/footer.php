@@ -35,7 +35,7 @@
 					$unsubscribe_link = '';
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
-							'<a class="link" href="%s" style="color:#108080; text-decoration:none;">%s</a>',
+							'<a class="link" href="%s" style="text-decoration:none;">%s</a>',
 							esc_url( $footer['unsubscribe_url'] ),
 							esc_html__( 'here', 'google-site-kit' )
 						);
