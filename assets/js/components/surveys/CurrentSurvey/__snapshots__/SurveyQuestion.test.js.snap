@@ -87,7 +87,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Pepperoni
           </label>
-          
         </div>
       </div>
       <div
@@ -131,7 +130,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Mushrooms
           </label>
-          
         </div>
       </div>
       <div
@@ -175,7 +173,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Sausage
           </label>
-          
         </div>
       </div>
       <div
@@ -219,7 +216,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Black Olives
           </label>
-          
         </div>
       </div>
       <div
@@ -263,7 +259,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Sweetcorn
           </label>
-          
         </div>
       </div>
       <div
@@ -307,7 +302,6 @@ exports[`SurveyQuestion should render a multi select question correctly 1`] = `
           >
             Other
           </label>
-          
         </div>
         <span
           class="screen-reader-text"

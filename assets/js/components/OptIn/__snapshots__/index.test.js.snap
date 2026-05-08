@@ -68,7 +68,6 @@ exports[`OptIn should render correctly 1`] = `
           </a>
         </span>
       </label>
-      
     </div>
   </div>
 </div>
@@ -120,7 +119,6 @@ exports[`OptIn should show a spinner when tracking is loading 1`] = `
           </a>
         </span>
       </label>
-      
     </div>
   </div>
 </div>
