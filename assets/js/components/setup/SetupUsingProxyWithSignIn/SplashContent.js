@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -70,6 +71,11 @@ export default function SplashContent( {
 	title,
 } ) {
 	const viewContext = useViewContext();
+
+	// Add the initial setup class to the body when the component mounts.
+	useMount( () => {
+		global.document.body.classList.add( 'googlesitekit-setup-flow' );
+	} );
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
