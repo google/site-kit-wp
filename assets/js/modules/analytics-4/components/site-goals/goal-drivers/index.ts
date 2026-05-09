@@ -33,7 +33,6 @@ export {
 	useTopPagesGoalDriverData,
 	useVisitorTypeGoalDriverData,
 } from './hooks';
-export { getDetectedLeadEvents, getPrimaryEcommerceEvent } from './utils';
 export type {
 	GoalDriverID,
 	GoalDriverRow,

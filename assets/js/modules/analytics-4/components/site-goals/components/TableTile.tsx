@@ -19,62 +19,26 @@
 /**
  * External dependencies
  */
-import type { FC, ReactElement, ReactNode } from 'react';
+import type { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import MetricTileTable from '@/js/components/KeyMetrics/MetricTileTable';
 import Link from '@/js/components/Link';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-
-interface InlineTileWidgetProps {
-	children: ReactNode;
-}
-
-function InlineTileWidget( { children }: InlineTileWidgetProps ) {
-	return children as ReactElement;
-}
+import Typography from '@/js/components/Typography';
+import ZeroDataMessage from './ZeroDataMessage';
 
 export interface TableTileRow {
 	label: string;
 	value: string | number;
 	url?: string;
-}
-
-interface TableTileLabelCellProps {
-	row: TableTileRow;
-	fieldValue?: unknown;
-}
-
-function TableTileLabelCell( {
-	row,
-	fieldValue,
-}: TableTileLabelCellProps ): ReactElement {
-	const label = String( fieldValue ?? '' );
-
-	if ( row.url ) {
-		return (
-			<Link
-				href={ row.url }
-				title={ label }
-				external
-				hideExternalIndicator
-			>
-				{ label }
-			</Link>
-		);
-	}
-
-	return <span>{ label }</span>;
+	pagePath?: string;
 }
 
 export interface TableTileProps {
 	title: string;
 	headerLabel?: string;
 	rows?: TableTileRow[];
-	loading?: boolean;
-	error?: unknown;
 	limit?: number;
 	noDataMetricLabel?: string;
 }
@@ -83,41 +47,70 @@ const TableTile: FC< TableTileProps > = ( {
 	title,
 	headerLabel,
 	rows = [],
-	loading = false,
-	error,
 	limit,
 	noDataMetricLabel,
 } ) => {
-	function ZeroState() {
-		return <ZeroDataMessage metricLabel={ noDataMetricLabel } />;
-	}
+	const visibleRows = rows.slice( 0, limit || rows.length );
 
 	return (
 		<div className="googlesitekit-table-tile">
-			<MetricTileTable
-				Widget={ InlineTileWidget }
-				title={ title }
-				headerLabel={ headerLabel }
-				moduleSlug="analytics-4"
-				rows={ rows }
-				columns={ [
-					{
-						field: 'label',
-						Component: TableTileLabelCell,
-						className:
-							'googlesitekit-table-tile__cell googlesitekit-table-tile__cell--label',
-					},
-					{
-						field: 'value',
-						className:
-							'googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value',
-					},
-				] }
-				loading={ loading }
-				error={ error }
-				limit={ limit }
-				ZeroState={ ZeroState }
-			/>
+			<div className="googlesitekit-table-tile__header">
+				<Typography
+					as="h3"
+					type="title"
+					size="small"
+					className="googlesitekit-table-tile__title"
+				>
+					{ title }
+				</Typography>
+				{ !! headerLabel && (
+					<Typography
+						as="span"
+						type="body"
+						size="medium"
+						className="googlesitekit-table-tile__header-label"
+					>
+						{ headerLabel }
+					</Typography>
+				) }
+			</div>
+
+			<div className="googlesitekit-table-tile__body">
+				{ rows.length === 0 && (
+					<div className="googlesitekit-table-tile__zero-state">
+						<ZeroDataMessage metricLabel={ noDataMetricLabel } />
+					</div>
+				) }
+
+				{ rows.length > 0 && (
+					<div className="googlesitekit-table-tile__rows">
+						{ visibleRows.map( ( row, index ) => (
+							<div
+								key={ `${ row.label }-${ index }` }
+								className="googlesitekit-table-tile__row"
+							>
+								<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--label">
+									{ row.url ? (
+										<Link
+											href={ row.url }
+											title={ row.label }
+											external
+											hideExternalIndicator
+										>
+											{ row.label }
+										</Link>
+									) : (
+										<span>{ row.label }</span>
+									) }
+								</div>
+								<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value">
+									{ row.value }
+								</div>
+							</div>
+						) ) }
+					</div>
+				) }
+			</div>
 		</div>
 	);
 };

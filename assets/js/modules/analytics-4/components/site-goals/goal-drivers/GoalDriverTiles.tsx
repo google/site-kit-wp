@@ -35,16 +35,27 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+} from './constants';
 import type {
+	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
 	GoalType,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+} from './types';
 
 interface GoalDriverTilesProps {
 	drivers?: GoalDriverTilesDriver[];
 	hasExpandableRows?: boolean;
 	goalType: GoalType;
+}
+
+interface RenderableGoalDriver extends GoalDriverTilesDriver {
+	Component: FC< GoalDriverComponentProps >;
+}
+
+function isRenderableGoalDriver(
+	driver: GoalDriverTilesDriver
+): driver is RenderableGoalDriver {
+	return !! driver.Component;
 }
 
 const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
@@ -64,16 +75,13 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 		isExpanded && ! isMobileBreakpoint
 			? GOAL_DRIVER_ROW_LIMIT_EXPANDED
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
+	const filteredDrivers = drivers.filter( isRenderableGoalDriver );
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-site-goals-goal-drivers-section__tiles">
-				{ drivers.map( ( driver ) => {
+				{ filteredDrivers.map( ( driver ) => {
 					const DriverComponent = driver.Component;
-
-					if ( ! DriverComponent ) {
-						return null;
-					}
 
 					return (
 						<div
@@ -81,12 +89,9 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 							className="googlesitekit-site-goals-goal-drivers-section__tile"
 						>
 							<DriverComponent
-								rows={ driver.rows }
-								totalRows={ driver.totalRows }
-								loading={ driver.loading }
-								error={ driver.error }
-								limit={ limit }
 								goalType={ goalType }
+								limit={ limit }
+								{ ...driver }
 							/>
 						</div>
 					);

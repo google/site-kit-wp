@@ -116,8 +116,6 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 			title={ title }
 			headerLabel={ headerLabel }
 			rows={ rowsWithURLs }
-			loading={ props.loading }
-			error={ props.error }
 			limit={ props.limit }
 			noDataMetricLabel={ noDataMetricLabel }
 		/>

@@ -80,7 +80,12 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
 	);
-	const { drivers, hasExpandableRows } = useGoalDriversData( {
+	const {
+		drivers,
+		loading: goalDriversLoading,
+		error: goalDriversError,
+		hasExpandableRows,
+	} = useGoalDriversData( {
 		goalType: GOAL_TYPES.ECOMMERCE,
 		primaryEvent,
 		selectedDriverIDs: DEFAULT_SELECTED_GOAL_DRIVER_IDS,
@@ -116,13 +121,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
+	const onlineStorePerformanceReportDependencies = [
+		dates?.startDate,
+		dates?.endDate,
+		dates?.compareStartDate,
+		dates?.compareEndDate,
+		primaryEvent,
+	];
+
 	const [ primaryEventReport, engagementReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptions
+			onlineStorePerformanceReportDependencies
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -132,17 +145,22 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptions
+		onlineStorePerformanceReportDependencies
 	);
+	const isLoading = loading || goalDriversLoading;
+	const combinedError = error || goalDriversError;
 
 	if ( ! primaryEvent ) {
 		return <WidgetNull />;
 	}
 
-	if ( error ) {
+	if ( combinedError ) {
 		return (
 			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+				<WidgetReportError
+					moduleSlug="analytics-4"
+					error={ combinedError }
+				/>
 			</Widget>
 		);
 	}
@@ -161,15 +179,15 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				title={ __( 'Online store performance', 'google-site-kit' ) }
 			/>
 
-			{ loading && (
+			{ isLoading && (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"
 					width="100%"
-					height="100px"
+					height="320px"
 				/>
 			) }
 
-			{ ! loading && (
+			{ ! isLoading && (
 				<TilesGroup
 					className="googlesitekit-site-goals-primary-action"
 					title={ __( 'Key action', 'google-site-kit' ) }
@@ -223,19 +241,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				</TilesGroup>
 			) }
 
-			<TilesGroup
-				className="googlesitekit-site-goals-goal-drivers-group"
-				title={ __(
-					'What’s helping you reach your goals?',
-					'google-site-kit'
-				) }
-			>
-				<GoalDriverTiles
-					drivers={ drivers }
-					hasExpandableRows={ hasExpandableRows }
-					goalType={ GOAL_TYPES.ECOMMERCE }
-				/>
-			</TilesGroup>
+			{ ! isLoading && (
+				<TilesGroup
+					className="googlesitekit-site-goals-goal-drivers-group"
+					title={ __(
+						'What’s helping you reach your goals?',
+						'google-site-kit'
+					) }
+				>
+					<GoalDriverTiles
+						drivers={ drivers }
+						hasExpandableRows={ hasExpandableRows }
+						goalType={ GOAL_TYPES.ECOMMERCE }
+					/>
+				</TilesGroup>
+			) }
 		</Widget>
 	);
 };

@@ -36,8 +36,6 @@ export interface GoalDriverRow {
 export interface GoalDriverComponentProps {
 	rows?: GoalDriverRow[];
 	totalRows?: number;
-	loading?: boolean;
-	error?: unknown;
 	limit?: number;
 	goalType: GoalType;
 }
@@ -64,8 +62,6 @@ export interface GoalDriverTilesDriver {
 	Component?: ComponentType< GoalDriverComponentProps >;
 	rows: GoalDriverRow[];
 	totalRows: number;
-	loading: boolean;
-	error?: unknown;
 	order?: number;
 	defaultEnabled?: boolean;
 }

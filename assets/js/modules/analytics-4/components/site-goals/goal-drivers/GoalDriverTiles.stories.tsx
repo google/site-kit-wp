@@ -29,46 +29,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { Story } from '@/js/types/Story';
 import GoalDriverTiles from './GoalDriverTiles';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 import type { GoalDriverTilesDriver, GoalType } from './types';
 
-const RETRYABLE_REPORT_OPTIONS = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensions: [ 'sessionDefaultChannelGroup' ],
-	metrics: [ { name: 'eventCount' } ],
-};
-
-const RETRYABLE_ERROR = {
-	code: 400,
-	message: 'Data loading failed',
-	data: {
-		status: 400,
-		reason: 'badRequest',
-	},
-};
-
 interface GoalDriverTilesStoryProps {
 	drivers: GoalDriverTilesDriver[];
 	hasExpandableRows: boolean;
 	goalType: GoalType;
-	setupRegistry?: (
-		registry: Parameters< typeof provideModules >[ 0 ]
-	) => Promise< void > | void;
-	errorSelectorArgs?: Record< string, unknown >;
-	useRetryableError?: boolean;
 }
 
 const drivers: GoalDriverTilesDriver[] = [
@@ -84,7 +56,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Paid search', value: '5.2%' },
 		],
 		totalRows: 6,
-		loading: false,
 	},
 	{
 		id: 'topPages',
@@ -122,7 +93,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			},
 		],
 		totalRows: 6,
-		loading: false,
 	},
 	{
 		id: 'visitorType',
@@ -132,67 +102,24 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'New visitors', value: '39.5%' },
 		],
 		totalRows: 2,
-		loading: false,
 	},
 ];
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDriverTiles',
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles',
 	component: GoalDriverTiles,
 	decorators: [
-		(
-			Story: () => ReactElement,
-			{ args }: { args: GoalDriverTilesStoryProps }
-		) => {
-			const wrappedStory = (
-				<div className="googlesitekit-widget">
-					<div className="googlesitekit-widget__body">
-						<Story />
-					</div>
+		( StoryComponent: () => ReactElement ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<StoryComponent />
 				</div>
-			);
-
-			if ( ! args.setupRegistry ) {
-				return wrappedStory;
-			}
-
-			return (
-				<WithRegistrySetup func={ args.setupRegistry }>
-					{ wrappedStory }
-				</WithRegistrySetup>
-			);
-		},
+			</div>
+		),
 	],
 };
 
-function Template( {
-	errorSelectorArgs,
-	useRetryableError = false,
-	...args
-}: GoalDriverTilesStoryProps ) {
-	const retryableError = useSelect(
-		( select: Select ) => {
-			if ( ! useRetryableError || ! errorSelectorArgs ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[ errorSelectorArgs ]
-			);
-		},
-		[ errorSelectorArgs, useRetryableError ]
-	);
-
-	const driversWithError = useRetryableError
-		? args.drivers.map( ( driver ) => ( {
-				...driver,
-				error: retryableError || RETRYABLE_ERROR,
-				loading: false,
-				rows: [],
-		  } ) )
-		: args.drivers;
-
+function Template( args: GoalDriverTilesStoryProps ) {
 	return (
 		<TilesGroup
 			className="googlesitekit-site-goals-goal-drivers-group"
@@ -201,20 +128,22 @@ function Template( {
 				'google-site-kit'
 			) }
 		>
-			<GoalDriverTiles { ...args } drivers={ driversWithError } />
+			<GoalDriverTiles { ...args } />
 		</TilesGroup>
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.args = {
+export const Ready = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
+Ready.args = {
 	drivers,
 	hasExpandableRows: true,
 	goalType: 'lead',
 };
-Default.scenario = {};
+Ready.scenario = {};
 
-export const NoShowMore = Template.bind( {} );
+export const NoShowMore = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
 NoShowMore.args = {
 	drivers: drivers.map( ( driver ) => ( {
 		...driver,
@@ -225,55 +154,12 @@ NoShowMore.args = {
 	goalType: 'lead',
 };
 
-export const Loading = Template.bind( {} );
-Loading.args = {
-	drivers: drivers.map( ( driver ) => ( {
-		...driver,
-		rows: [],
-		loading: true,
-	} ) ),
-	hasExpandableRows: false,
-	goalType: 'lead',
-};
-
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 NoData.args = {
+	...Ready.args,
 	drivers: drivers.map( ( driver ) => ( {
 		...driver,
 		rows: [],
-		loading: false,
 	} ) ),
 	hasExpandableRows: false,
-	goalType: 'lead',
-};
-
-export const Error = Template.bind( {} );
-Error.args = {
-	drivers,
-	hasExpandableRows: false,
-	goalType: 'lead',
-	useRetryableError: true,
-	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
-	setupRegistry: async (
-		registry: Parameters< typeof provideModules >[ 0 ]
-	) => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setErrorForSelector( RETRYABLE_ERROR, 'getReport', [
-				RETRYABLE_REPORT_OPTIONS,
-			] );
-
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ RETRYABLE_REPORT_OPTIONS ] );
-	},
 };

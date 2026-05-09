@@ -72,7 +72,7 @@ export default function useGoalDriversData( {
 		[ topPages, topTrafficChannels, visitorType ]
 	);
 
-	const drivers: GoalDriverTilesDriver[] = useMemo(
+	const combinedDrivers = useMemo(
 		() =>
 			activeDriverIDs
 				.map( ( driverID ) => {
@@ -94,9 +94,31 @@ export default function useGoalDriversData( {
 		[ activeDriverIDs, dataByID ]
 	);
 
-	const loading = drivers.some( ( driver ) => driver.loading );
-	const error = drivers.find( ( driver ) => !! driver.error )?.error;
-	const hasExpandableRows = drivers.some(
+	const drivers: GoalDriverTilesDriver[] = useMemo(
+		() =>
+			combinedDrivers.map(
+				( {
+					id,
+					order,
+					defaultEnabled,
+					Component,
+					rows,
+					totalRows,
+				} ) => ( {
+					id,
+					order,
+					defaultEnabled,
+					Component,
+					rows,
+					totalRows,
+				} )
+			),
+		[ combinedDrivers ]
+	);
+
+	const loading = combinedDrivers.some( ( driver ) => driver.loading );
+	const error = combinedDrivers.find( ( driver ) => !! driver.error )?.error;
+	const hasExpandableRows = combinedDrivers.some(
 		( driver ) => driver.totalRows > 3
 	);
 

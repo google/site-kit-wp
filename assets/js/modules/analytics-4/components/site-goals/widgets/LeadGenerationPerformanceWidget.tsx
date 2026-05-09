@@ -71,7 +71,12 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
-	const { drivers, hasExpandableRows } = useGoalDriversData( {
+	const {
+		drivers,
+		loading: goalDriversLoading,
+		error: goalDriversError,
+		hasExpandableRows,
+	} = useGoalDriversData( {
 		goalType: GOAL_TYPES.LEAD,
 		primaryEvent: detectedLeadEvents,
 		selectedDriverIDs: DEFAULT_SELECTED_GOAL_DRIVER_IDS,
@@ -110,13 +115,22 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
+	const leadGenerationPerformanceReportDependencies = [
+		dates?.startDate,
+		dates?.endDate,
+		dates?.compareStartDate,
+		dates?.compareEndDate,
+		hasLeadEvents,
+		detectedLeadEvents?.join( ',' ),
+	];
+
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptions
+			leadGenerationPerformanceReportDependencies
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -126,17 +140,22 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptions
+		leadGenerationPerformanceReportDependencies
 	);
+	const isLoading = loading || goalDriversLoading;
+	const combinedError = error || goalDriversError;
 
 	if ( ! hasLeadEvents ) {
 		return <WidgetNull />;
 	}
 
-	if ( error ) {
+	if ( combinedError ) {
 		return (
 			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
+				<WidgetReportError
+					moduleSlug="analytics-4"
+					error={ combinedError }
+				/>
 			</Widget>
 		);
 	}
@@ -157,15 +176,15 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				title={ __( 'Lead generation performance', 'google-site-kit' ) }
 			/>
 
-			{ loading && (
+			{ isLoading && (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"
 					width="100%"
-					height="100px"
+					height="320px"
 				/>
 			) }
 
-			{ ! loading && (
+			{ ! isLoading && (
 				<TilesGroup
 					className="googlesitekit-site-goals-primary-action"
 					title={ __( 'Key action', 'google-site-kit' ) }
@@ -216,19 +235,21 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				</TilesGroup>
 			) }
 
-			<TilesGroup
-				className="googlesitekit-site-goals-goal-drivers-group"
-				title={ __(
-					'What’s helping you reach your goals?',
-					'google-site-kit'
-				) }
-			>
-				<GoalDriverTiles
-					drivers={ drivers }
-					hasExpandableRows={ hasExpandableRows }
-					goalType={ GOAL_TYPES.LEAD }
-				/>
-			</TilesGroup>
+			{ ! isLoading && (
+				<TilesGroup
+					className="googlesitekit-site-goals-goal-drivers-group"
+					title={ __(
+						'What’s helping you reach your goals?',
+						'google-site-kit'
+					) }
+				>
+					<GoalDriverTiles
+						drivers={ drivers }
+						hasExpandableRows={ hasExpandableRows }
+						goalType={ GOAL_TYPES.LEAD }
+					/>
+				</TilesGroup>
+			) }
 		</Widget>
 	);
 };

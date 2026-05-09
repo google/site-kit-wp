@@ -170,4 +170,195 @@
 			margin-left: 0;
 		}
 	}
+
+	.googlesitekit-site-goals-goal-drivers-group {
+
+		.googlesitekit-site-goals-tiles-group__tiles {
+			display: block;
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__tiles {
+			display: grid;
+			gap: 8px;
+			grid-template-columns: 1fr;
+
+			@media (min-width: $bp-tablet) {
+				align-items: start;
+				gap: 42px;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__tile {
+			min-width: 0;
+			padding: 8px 0 8px 19px;
+			position: relative;
+
+			@media (min-width: $bp-tablet) {
+				height: 100%;
+				padding: 8px 0 8px 24px;
+			}
+
+			&::before {
+				background: $c-utility-divider;
+				bottom: 0;
+				content: "";
+				left: 0;
+				position: absolute;
+				top: 0;
+				width: 2px;
+			}
+
+			&::after {
+				background: $c-utility-divider;
+				border-radius: 50%;
+				content: "";
+				height: 9px;
+				left: -3.5px;
+				position: absolute;
+				top: 12px;
+				width: 9px;
+			}
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__show-more.googlesitekit-cta-link {
+			color: $c-content-secondary;
+			display: block;
+			font-size: $fs-label-sm;
+			font-weight: $fw-medium;
+			letter-spacing: $ls-xs;
+			line-height: 16px;
+			margin-top: 18px;
+			width: fit-content;
+		}
+
+		.googlesitekit-site-goals-goal-drivers-section__show-more.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
+			padding-left: 0;
+			padding-right: 0;
+
+			&:focus,
+			&:focus-visible {
+				background-color: transparent;
+			}
+		}
+	}
+
+	.googlesitekit-table-tile {
+		min-height: auto;
+		padding: 0;
+
+		.googlesitekit-table-tile__header {
+			align-items: start;
+			column-gap: 8px;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			min-width: 0;
+		}
+
+		.googlesitekit-table-tile__title.googlesitekit-typography {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-title-sm;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-title-sm;
+			margin: 0 0 8px;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: normal;
+
+			@media (min-width: $bp-tablet) {
+				white-space: nowrap;
+			}
+		}
+
+		.googlesitekit-table-tile__header-label.googlesitekit-typography {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-sm;
+			margin: 0 0 8px;
+		}
+
+		.googlesitekit-table-tile__body {
+			display: block;
+			margin-top: 6px;
+		}
+
+		.googlesitekit-table-tile__rows {
+			display: block;
+		}
+
+		.googlesitekit-table-tile__row {
+			column-gap: 8px;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			min-width: 0;
+		}
+
+		.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+			margin-top: 8px;
+		}
+
+		.googlesitekit-table-tile__loading {
+			display: grid;
+			gap: 8px;
+		}
+
+		.googlesitekit-table-tile__zero-state,
+		.googlesitekit-table-tile__error {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
+		}
+
+		.googlesitekit-table-tile__error-title {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-table-tile__error-help-link {
+			margin-top: 4px;
+		}
+
+		.googlesitekit-table-tile__cell--label,
+		.googlesitekit-table-tile__cell--value {
+			color: $c-surfaces-on-surface;
+			font-size: $fs-body-md;
+			letter-spacing: 0;
+		}
+
+		.googlesitekit-table-tile__cell--label {
+			font-weight: $fw-medium;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+
+			.googlesitekit-cta-link {
+				display: block;
+				font-weight: $fw-normal;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.googlesitekit-cta-link__contents {
+				display: block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+		}
+
+		.googlesitekit-table-tile__cell--value {
+			font-weight: $fw-normal;
+			justify-self: end;
+			padding-left: 8px;
+			text-align: right;
+			white-space: nowrap;
+		}
+	}
 }

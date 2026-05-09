@@ -66,7 +66,7 @@ function getDefaultGoalDriverIDs(): GoalDriverID[] {
 export function resolveGoalDriverIDs(
 	selectedDriverIDs: string[] = []
 ): GoalDriverID[] {
-	if ( ! Array.isArray( selectedDriverIDs ) || ! selectedDriverIDs.length ) {
+	if ( ! selectedDriverIDs.length ) {
 		return getDefaultGoalDriverIDs();
 	}
 

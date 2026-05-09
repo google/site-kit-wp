@@ -64,17 +64,9 @@ export default function useTopPagesGoalDriverData( {
 		[]
 	);
 
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames ),
-		[ eventNames ]
-	);
-
 	const reportOptions = useMemo( () => {
+		const eventNames = normalizePrimaryEvents( primaryEvent );
+
 		if ( ! dates || ! eventNames.length ) {
 			return undefined;
 		}
@@ -82,7 +74,7 @@ export default function useTopPagesGoalDriverData( {
 		return {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
-			dimensionFilters,
+			dimensionFilters: getDimensionFiltersForEvents( eventNames ),
 			metrics: [ { name: 'eventCount' } ],
 			orderby: [
 				{
@@ -94,7 +86,7 @@ export default function useTopPagesGoalDriverData( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
 		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
+	}, [ dates, primaryEvent, goalType ] );
 
 	const report = useSelect(
 		( select: Select ) =>

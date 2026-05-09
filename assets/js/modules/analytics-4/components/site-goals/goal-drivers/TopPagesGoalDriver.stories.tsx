@@ -24,91 +24,34 @@ import type { ReactElement } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import type { GoalDriverComponentProps } from './types';
 
-const RETRYABLE_REPORT_OPTIONS = {
-	startDate: '2020-08-11',
-	endDate: '2020-09-07',
-	dimensions: [ 'pagePath' ],
-	metrics: [ { name: 'eventCount' } ],
-};
-
-const RETRYABLE_ERROR = {
-	code: 400,
-	message: 'Data loading failed',
-	data: {
-		status: 400,
-		reason: 'badRequest',
-	},
-};
-
-interface TopPagesGoalDriverStoryProps extends GoalDriverComponentProps {
-	setupRegistry?: (
-		registry: Parameters< typeof provideModules >[ 0 ]
-	) => Promise< void > | void;
-	errorSelectorArgs?: Record< string, unknown >;
-}
+interface TopPagesGoalDriverStoryProps extends GoalDriverComponentProps {}
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDrivers/TopPages',
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles/TopPages',
 	component: TopPagesGoalDriver,
 	decorators: [
-		(
-			Story: () => ReactElement,
-			{ args }: { args: TopPagesGoalDriverStoryProps }
-		) => {
-			const wrappedStory = (
-				<div className="googlesitekit-widget">
-					<div className="googlesitekit-widget__body">
-						<Story />
-					</div>
+		( StoryComponent: () => ReactElement ) => (
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<StoryComponent />
 				</div>
-			);
-
-			if ( ! args.setupRegistry ) {
-				return wrappedStory;
-			}
-
-			return (
-				<WithRegistrySetup func={ args.setupRegistry }>
-					{ wrappedStory }
-				</WithRegistrySetup>
-			);
-		},
+			</div>
+		),
 	],
 };
 
 function Template( props: TopPagesGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
-	const storyError = useSelect(
-		( select: Select ) => {
-			if ( ! errorSelectorArgs ) {
-				return error;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[ errorSelectorArgs ]
-			);
-		},
-		[ error, errorSelectorArgs ]
-	);
-
-	return <TopPagesGoalDriver { ...args } error={ storyError } />;
+	return <TopPagesGoalDriver { ...props } />;
 }
 
-export const Default = Template.bind( {} );
-Default.args = {
+export const Ready = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
+Ready.args = {
 	goalType: 'lead',
 	rows: [
 		{
@@ -127,47 +70,14 @@ Default.args = {
 			url: 'https://analytics.google.com/',
 		},
 	],
-	loading: false,
 	limit: 3,
 };
-Default.scenario = {};
+Ready.scenario = {};
 
-export const Loading = Template.bind( {} );
-Loading.args = {
-	...Default.args,
-	rows: [],
-	loading: true,
-};
-
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind(
+	{}
+) as Story< TopPagesGoalDriverStoryProps >;
 NoData.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
-	loading: false,
-};
-
-export const Error = Template.bind( {} );
-Error.args = {
-	...Default.args,
-	rows: [],
-	loading: false,
-	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
-	setupRegistry: async (
-		registry: Parameters< typeof provideModules >[ 0 ]
-	) => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-
-		await registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( RETRYABLE_ERROR, 'getReport', [
-				RETRYABLE_REPORT_OPTIONS,
-			] );
-	},
 };

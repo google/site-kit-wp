@@ -551,7 +551,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReport ] );
 
-		const { container } = render(
+		const { container, unmount } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -560,9 +560,124 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
 		expect(
-			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-km-widget-tile__loading'
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
 			)
-		).toHaveLength( 3 );
+		).not.toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders loading state while goal driver reports are being resolved', () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ], {
+			loading: true,
+		} );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).not.toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders WidgetReportError when a goal drivers report has an error', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		const goalDriverDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const goalDriverReportOptions = {
+			...goalDriverDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Data loading failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ goalDriverReportOptions ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ goalDriverReportOptions ] );
+
+		const { getByText, waitForRegistry, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+		unmount();
+		await waitForRegistry();
 	} );
 } );
