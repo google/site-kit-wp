@@ -132,11 +132,11 @@
 	.googlesitekit-initial-setup {
 		display: flex;
 		flex-direction: column;
-		min-height: calc(100vh - 218px);
+		min-height: calc(100vh - 118px); // 46px admin bar + 72px header
 		padding: 0;
 
 		@media (min-width: $bp-wpAdminBarTablet) {
-			min-height: calc(100vh - 185px);
+			min-height: calc(100vh - 160px); // 32px admin bar + 88px header + 40px WP footer
 		}
 
 		> .googlesitekit-layout {
