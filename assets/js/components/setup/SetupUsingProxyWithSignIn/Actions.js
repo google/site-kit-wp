@@ -166,6 +166,13 @@ export default function Actions( {
 							a: (
 								<Link
 									href={ learnMoreLink }
+									onClick={ () => {
+										trackEvent(
+											viewContext,
+											'click_learn_more_link',
+											'cta_tooltip'
+										);
+									} }
 									external
 									hideExternalIndicator
 								/>
