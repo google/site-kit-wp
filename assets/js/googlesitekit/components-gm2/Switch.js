@@ -76,6 +76,7 @@ function Switch( { onClick, label, checked, disabled, hideLabel } ) {
 							className="mdc-switch__native-control"
 							role="switch"
 							checked={ checked }
+							aria-checked={ checked }
 							disabled={ disabled }
 							readOnly
 						/>
