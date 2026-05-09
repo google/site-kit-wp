@@ -261,3 +261,10 @@
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-setup__step-hint-tooltip {
 	max-width: 220px;
 }
+
+body.googlesitekit-setup-flow {
+
+	#wpbody-content {
+		padding-bottom: 0;
+	}
+}
