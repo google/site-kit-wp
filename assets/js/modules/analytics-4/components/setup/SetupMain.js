@@ -99,12 +99,19 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const [ accountCreationErrorCode ] = useQueryArg(
+		'accountCreationErrorCode'
+	);
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
+	// Show the Create Account screen when an account creation error is present,
+	// even if the user has existing accounts, so the error can be surfaced inline
+	// and the user can retry or continue without Analytics.
 	const isCreateAccount =
 		ACCOUNT_CREATE === accountID ||
-		( Array.isArray( accounts ) && ! accounts.length );
-
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+		( Array.isArray( accounts ) && ! accounts.length ) ||
+		( setupFlowRefreshEnabled && !! accountCreationErrorCode );
 
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
 
