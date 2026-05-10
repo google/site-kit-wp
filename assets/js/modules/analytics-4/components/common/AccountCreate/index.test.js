@@ -183,9 +183,21 @@ describe( 'AccountCreate', () => {
 			await waitForRegistry();
 
 			// Verify the cache is cleared for the `analytics-4` module.
+			// Note: the `core/forms` snapshot cache entry is also expected
+			// here because navigating to the Terms of Service URL persists
+			// the form values (so they can be restored if the user returns
+			// with an account creation error).
 			const cacheKeys = await getKeys();
-			expect( cacheKeys ).toHaveLength( 1 );
-			expect( cacheKeys[ 0 ] ).toContain( searchConsoleItemCacheKey );
+			expect(
+				cacheKeys.some( ( key ) =>
+					key.includes( searchConsoleItemCacheKey )
+				)
+			).toBe( true );
+			expect(
+				cacheKeys.some( ( key ) =>
+					key.includes( MODULE_SLUG_ANALYTICS_4 )
+				)
+			).toBe( false );
 		} );
 
 		it( 'should make a request to the `create-account-ticket` endpoint when clicking the Create Account button', async () => {
