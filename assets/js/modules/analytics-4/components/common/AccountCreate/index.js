@@ -39,7 +39,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { ProgressBar } from 'googlesitekit-components';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
 	FORM_ACCOUNT_CREATE,
@@ -63,6 +63,7 @@ import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+import Actions from './Actions';
 import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
 import useViewContext from '@/js/hooks/useViewContext';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
@@ -72,7 +73,6 @@ import P from '@/js/components/Typography/P';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
 
-// eslint-disable-next-line complexity
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
@@ -376,37 +376,15 @@ export default function AccountCreate( { className } ) {
 				) }
 			</P>
 
-			<div className="googlesitekit-setup-module__action">
-				<Button
-					disabled={ ! canSubmitAccountCreate }
-					onClick={ handleSubmit }
-				>
-					{ __( 'Create Account', 'google-site-kit' ) }
-				</Button>
-
-				{ accounts && !! accounts.length && (
-					<Button
-						className="googlesitekit-setup-module__sub-action"
-						onClick={ handleBack }
-						tertiary
-					>
-						{ __( 'Back', 'google-site-kit' ) }
-					</Button>
-				) }
-
-				{ hasAccountCreationError && isInitialSetupFlow && (
-					<Button
-						className="googlesitekit-setup-module__sub-action"
-						onClick={ handleContinueWithoutAnalytics }
-						tertiary
-					>
-						{ __(
-							'Continue without Analytics',
-							'google-site-kit'
-						) }
-					</Button>
-				) }
-			</div>
+			<Actions
+				canSubmitAccountCreate={ canSubmitAccountCreate }
+				onCreateAccount={ handleSubmit }
+				accounts={ accounts }
+				onBack={ handleBack }
+				hasAccountCreationError={ hasAccountCreationError }
+				isInitialSetupFlow={ isInitialSetupFlow }
+				onContinueWithoutAnalytics={ handleContinueWithoutAnalytics }
+			/>
 		</div>
 	);
 }
