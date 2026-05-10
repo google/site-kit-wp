@@ -378,4 +378,142 @@ describe( 'AccountCreate', () => {
 			} );
 		} );
 	} );
+
+	describe( 'account creation error state', () => {
+		it( 'should render the AnalyticsAccountCreationErrorNotice when an error code is present', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			const { getByText, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Analytics account creation failed' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not render the error notice when the `setupFlowRefresh` feature flag is disabled', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+			const { queryByText, waitForRegistry } = render(
+				<AccountCreate />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				queryByText( 'Analytics account creation failed' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should retry the account creation process when the Retry button is clicked', async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=max_accounts_reached';
+
+			fetchMock.post(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				),
+				{
+					body: { accountTicketId: 'abc123' }, // eslint-disable-line sitekit/acronym-case
+					status: 200,
+				}
+			);
+			muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
+
+			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+				)
+			);
+		} );
+
+		describe( 'Continue without Analytics button', () => {
+			it( 'should render the button when an error is present and the user is in the initial setup flow', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
+
+				const { getByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					getByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				).toBeInTheDocument();
+			} );
+
+			it( 'should not render the button when the user is not in the initial setup flow', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
+
+				const { queryByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				expect(
+					queryByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'should navigate to the dashboard when clicked', async () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
+
+				const { getByRole, waitForRegistry } = render(
+					<AccountCreate />,
+					{
+						registry,
+						features: [ 'setupFlowRefresh' ],
+					}
+				);
+
+				await waitForRegistry();
+
+				fireEvent.click(
+					getByRole( 'button', {
+						name: /continue without analytics/i,
+					} )
+				);
+
+				await waitForRegistry();
+
+				expect( global.location.assign ).toHaveBeenCalledWith(
+					expect.stringContaining( 'page=googlesitekit-dashboard' )
+				);
+			} );
+		} );
+	} );
 } );
