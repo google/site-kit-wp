@@ -62,6 +62,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
+import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
 import useViewContext from '@/js/hooks/useViewContext';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
@@ -71,6 +72,7 @@ import P from '@/js/components/Typography/P';
 import Link from '@/js/components/Link';
 import Null from '@/js/components/Null';
 
+// eslint-disable-next-line complexity
 export default function AccountCreate( { className } ) {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
@@ -117,9 +119,12 @@ export default function AccountCreate( { className } ) {
 			'plugin-conversion-tracking'
 		);
 	} );
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
 
 	const viewContext = useViewContext();
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues, createSnapshot } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
@@ -133,10 +138,14 @@ export default function AccountCreate( { className } ) {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
 				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
+				// Snapshot the `CORE_FORMS` store so the account creation
+				// form values are restored if the user returns with an
+				// error from the Terms of Service screen.
+				await createSnapshot();
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo, createSnapshot ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -156,6 +165,13 @@ export default function AccountCreate( { className } ) {
 
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
+	const accountCreationErrorCode = getQueryArg(
+		location.href,
+		'accountCreationErrorCode'
+	);
+	const hasAccountCreationError =
+		setupFlowRefreshEnabled && !! accountCreationErrorCode;
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -243,6 +259,12 @@ export default function AccountCreate( { className } ) {
 		[ rollbackSettings ]
 	);
 
+	// Navigate the user directly to the dashboard without setting up Analytics.
+	const handleContinueWithoutAnalytics = useCallback( () => {
+		setIsNavigating( true );
+		navigateTo( dashboardURL );
+	}, [ navigateTo, dashboardURL ] );
+
 	if (
 		isDoingCreateAccount ||
 		isNavigating ||
@@ -258,6 +280,13 @@ export default function AccountCreate( { className } ) {
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
+
+			{ hasAccountCreationError && (
+				<AnalyticsAccountCreationErrorNotice
+					errorCode={ accountCreationErrorCode }
+					onRetry={ handleSubmit }
+				/>
+			) }
 
 			{ ! isInitialSetupFlow && (
 				<Typography as="h3" type="title" size="large">
@@ -362,6 +391,19 @@ export default function AccountCreate( { className } ) {
 						tertiary
 					>
 						{ __( 'Back', 'google-site-kit' ) }
+					</Button>
+				) }
+
+				{ hasAccountCreationError && isInitialSetupFlow && (
+					<Button
+						className="googlesitekit-setup-module__sub-action"
+						onClick={ handleContinueWithoutAnalytics }
+						tertiary
+					>
+						{ __(
+							'Continue without Analytics',
+							'google-site-kit'
+						) }
 					</Button>
 				) }
 			</div>
