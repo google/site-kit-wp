@@ -481,7 +481,7 @@ class Worker_TaskTest extends TestCase {
 				'report@example.com',
 				'Subject',
 				$this->stringContains( 'Email' ),
-				$this->mock_headers,
+				array( 'From: Site Kit <wordpress@example.org>' ),
 				'Plain text email content'
 			)
 			->willReturn( true );
@@ -797,7 +797,7 @@ class Worker_TaskTest extends TestCase {
 				$this->callback( fn( $to ) => in_array( $to, array( 'one@example.com', 'two@example.com' ), true ) ),
 				'Subject',
 				$this->stringContains( 'Email' ),
-				$this->mock_headers,
+				array( 'From: Site Kit <wordpress@example.org>' ),
 				'Plain text email content'
 			)
 			->willReturn( true );
