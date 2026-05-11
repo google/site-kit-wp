@@ -108,7 +108,7 @@ describe( 'AdaptiveFooterLayout', () => {
 		);
 	}
 
-	it( 'should apply inline class when content and footer fit in viewport', async () => {
+	it( 'should apply the inline class when content and footer fit in viewport', async () => {
 		contentBottom = 300;
 		footerHeight = 100;
 		setViewportHeight( 500 );
@@ -122,7 +122,7 @@ describe( 'AdaptiveFooterLayout', () => {
 		} );
 	} );
 
-	it( 'should keep footer sticky when content and footer do not fit in viewport', async () => {
+	it( 'should not apply the inline class when content and footer do not fit in viewport', async () => {
 		contentBottom = 500;
 		footerHeight = 200;
 		setViewportHeight( 600 );
