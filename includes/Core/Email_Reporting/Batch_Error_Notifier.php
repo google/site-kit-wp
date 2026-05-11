@@ -293,7 +293,6 @@ class Batch_Error_Notifier {
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'error-email' ),
-			'footer_type'            => 'standard',
 		);
 	}
 
