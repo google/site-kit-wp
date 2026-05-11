@@ -202,6 +202,7 @@
 		.googlesitekit-user-input__preview-group--individual-cta {
 
 			&:not(.googlesitekit-user-input__preview-group--editing) {
+				padding-top: 10px;
 				pointer-events: none;
 
 				&::after {
