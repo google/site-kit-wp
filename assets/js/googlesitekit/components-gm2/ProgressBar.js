@@ -92,7 +92,12 @@ export default function ProgressBar( {
 			<div className="mdc-linear-progress__buffer" />
 			<div
 				className="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-				style={ { transform, '--googlesitekit-progress': progress } }
+				style={ {
+					transform,
+					...( progress && {
+						'--googlesitekit-progress': progress,
+					} ),
+				} }
 			>
 				<span className="mdc-linear-progress__bar-inner" />
 			</div>
