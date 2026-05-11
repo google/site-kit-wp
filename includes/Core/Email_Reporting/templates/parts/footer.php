@@ -30,7 +30,7 @@
 				</div>
 			<?php endif; ?>
 			<?php if ( ! empty( $footer['copy'] ) ) : ?>
-				<p class="text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-bottom: 30px; text-align: left;">
+				<p class="text-secondary" style="font-size:12px; line-height:16px; font-weight:500; color:#6C726E; margin-top: 0; margin-bottom: 30px; text-align: left;">
 					<?php
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
