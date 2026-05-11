@@ -1087,16 +1087,14 @@ describe( 'WelcomeModal', () => {
 					} )
 				);
 
-				if ( variant === 'data gathering complete' ) {
-					await waitForRegistry();
-				}
-
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'test-context_welcome-modal',
-					'confirm_notice',
-					expectedLabel
-				);
+				await waitFor( () => {
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						'test-context_welcome-modal',
+						'confirm_notice',
+						expectedLabel
+					);
+				} );
 			} );
 
 			it.each( dismissalButtons )(
@@ -1120,22 +1118,20 @@ describe( 'WelcomeModal', () => {
 						} )
 					);
 
-					if ( variant === 'data gathering complete' ) {
-						await waitForRegistry();
-					}
-
-					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-					expect( mockTrackEvent ).toHaveBeenCalledWith(
-						'test-context_welcome-modal',
-						'dismiss_notice',
-						expectedLabel
-					);
+					await waitFor( () => {
+						expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+						expect( mockTrackEvent ).toHaveBeenCalledWith(
+							'test-context_welcome-modal',
+							'dismiss_notice',
+							expectedLabel
+						);
+					} );
 				}
 			);
 		}
 	);
 
-	describe.each( [
+	it.each( [
 		{
 			variant: 'data available',
 			provideVariantData: provideDataAvailableVariantData,
@@ -1145,39 +1141,35 @@ describe( 'WelcomeModal', () => {
 			provideVariantData: provideGatheringDataVariantData,
 		},
 	] )(
-		'when setupFlowRefresh is enabled and the modal renders in the $variant variant',
-		( { provideVariantData } ) => {
-			beforeEach( () => {
-				provideVariantData();
-				fetchMock.postOnce( dismissItemEndpoint, {
-					body: { success: true },
-				} );
+		'should dismiss the initial setup notification timeout when setupFlowRefresh is enabled and the modal renders in the $variant variant',
+		async ( { provideVariantData } ) => {
+			provideVariantData();
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: { success: true },
 			} );
 
-			it( 'should dismiss the initial setup notification timeout', async () => {
-				const { waitForRegistry } = render( <WelcomeModal />, {
-					registry,
-					features: [ 'setupFlowRefresh' ],
-				} );
+			const { waitForRegistry } = render( <WelcomeModal />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
 
-				await waitForRegistry();
+			await waitForRegistry();
 
-				expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
 
-				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
-					body: {
-						data: {
-							slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-							expiration: 604800,
-						},
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+						expiration: 604800,
 					},
-				} );
+				},
 			} );
 		}
 	);
 
-	it( 'should dismiss the initial setup notification timeout when setupFlowRefresh is disabled', async () => {
-		provideDataAvailableVariantData();
+	it( 'should not dismiss the initial setup notification timeout when the modal variant is DATA_GATHERING_COMPLETE', async () => {
+		provideDataGatheringCompleteVariantData();
 
 		const { waitForRegistry } = render( <WelcomeModal />, {
 			registry,
@@ -1185,13 +1177,10 @@ describe( 'WelcomeModal', () => {
 
 		await waitForRegistry();
 
-		expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
-
-		expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint, {
 			body: {
 				data: {
 					slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
-					expiration: 604800,
 				},
 			},
 		} );
