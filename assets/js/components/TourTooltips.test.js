@@ -24,7 +24,8 @@ import {
 	createTestRegistry,
 	fireEvent,
 	act,
-} from '../../../tests/js/test-utils';
+} from 'tests/js/test-utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -96,6 +97,8 @@ describe( 'TourTooltips', () => {
 	let dismissTourSpy;
 	// store value to return default functionality on test teardown
 	const nativeCreateRange = global.document.createRange;
+
+	mockBrowserScrolling();
 
 	beforeAll( () => {
 		// `react-joyride` is calling `createRange` internally — method must be mocked.

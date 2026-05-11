@@ -31,6 +31,13 @@
 	}
 }
 
+.googlesitekit-tooltip-body {
+	box-sizing: border-box;
+	max-width: 332px;
+	padding: 32px $grid-gap-phone 0;
+}
+
+
 .googlesitekit-tour-tooltip {
 
 	.googlesitekit-tooltip-card {
@@ -68,13 +75,6 @@
 	margin-bottom: 8px;
 	margin-top: 0;
 }
-
-.googlesitekit-tooltip-body {
-	box-sizing: border-box;
-	max-width: 332px;
-	padding: 32px $grid-gap-phone 0;
-}
-
 .googlesitekit-tooltip-content {
 	color: $c-content-on-primary;
 }
@@ -246,6 +246,27 @@
 	.googlesitekit-tooltip-actions {
 		padding: $grid-gap-phone;
 	}
+
+	&.googlesitekit-tour-tooltip--no-title {
+
+		.googlesitekit-tooltip-body {
+			max-width: 223px;
+		}
+
+		.googlesitekit-tooltip-content {
+			font-size: $fs-body-md;
+		}
+
+		.googlesitekit-tooltip-button {
+			background-color: transparent;
+			color: $c-content-on-primary;
+		}
+
+		.googlesitekit-tooltip-actions {
+			padding: 0 $grid-gap-phone;
+		}
+	}
+
 }
 
 // Old design styles - override Typography when setupFlowRefresh is disabled.
