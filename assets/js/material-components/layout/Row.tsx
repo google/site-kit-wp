@@ -1,5 +1,5 @@
 /**
- * Material UI > Layout > Grid component.
+ * Material UI > Layout > Row component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,28 +19,25 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
 
-const Grid = forwardRef(
-	(
-		{ alignLeft, fill, className, children, collapsed, ...otherProps },
-		ref
-	) => {
+interface RowProps {
+	className?: string;
+}
+
+const Row: FC< RowProps > = forwardRef< HTMLDivElement, RowProps >(
+	( { className = '', children, ...otherProps }, ref ) => {
 		return (
 			<div
-				className={ classnames( 'mdc-layout-grid', className, {
-					'mdc-layout-grid--align-left': alignLeft,
-					'mdc-layout-grid--collapsed': collapsed,
-					'mdc-layout-grid--fill': fill,
-				} ) }
-				{ ...otherProps }
 				ref={ ref }
+				className={ classnames( 'mdc-layout-grid__inner', className ) }
+				{ ...otherProps }
 			>
 				{ children }
 			</div>
@@ -48,18 +45,4 @@ const Grid = forwardRef(
 	}
 );
 
-Grid.displayName = 'Grid';
-
-Grid.propTypes = {
-	alignLeft: PropTypes.bool,
-	fill: PropTypes.bool,
-	className: PropTypes.string,
-	collapsed: PropTypes.bool,
-	children: PropTypes.node,
-};
-
-Grid.defaultProps = {
-	className: '',
-};
-
-export default Grid;
+export default Row;
