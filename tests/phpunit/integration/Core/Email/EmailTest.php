@@ -126,6 +126,110 @@ class EmailTest extends TestCase {
 		$this->assertEquals( $content, $captured_atts['message'], 'Content should match.' );
 	}
 
+	public function test_send_adds_default_content_type_header_when_none_supplied() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$this->email->send( 'test@example.com', 'Test Subject', '<p>HTML Content</p>' );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertIsArray( $captured_atts['headers'], 'Headers should be passed as an array.' );
+		$this->assertContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default text/html Content-Type header should be present when no caller Content-Type is supplied.'
+		);
+	}
+
+	public function test_send_preserves_caller_supplied_content_type_header() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$caller_content_type = 'Content-Type: text/plain; charset=ISO-8859-1';
+		$this->email->send(
+			'test@example.com',
+			'Test Subject',
+			'Plain content',
+			array( $caller_content_type )
+		);
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertContains(
+			$caller_content_type,
+			$captured_atts['headers'],
+			'Caller-supplied Content-Type should be preserved verbatim.'
+		);
+		$this->assertNotContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default Content-Type should not be added when a caller Content-Type is already present.'
+		);
+	}
+
+	public function test_send_preserves_caller_supplied_content_type_header_case_insensitive() {
+		// The pre_wp_mail filter was introduced in WordPress 5.7.
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+
+		$captured_atts = null;
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+
+		$caller_content_type = 'content-type: text/plain; charset=UTF-8';
+		$this->email->send(
+			'test@example.com',
+			'Test Subject',
+			'Plain content',
+			array( $caller_content_type )
+		);
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertContains(
+			$caller_content_type,
+			$captured_atts['headers'],
+			'Lowercase caller Content-Type should be preserved verbatim.'
+		);
+		$this->assertNotContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default Content-Type should not be added when a Content-Type header is present in any case.'
+		);
+	}
+
 	public function test_get_last_error() {
 		$this->assertNull( $this->email->get_last_error(), 'Last error should be null initially.' );
 	}
