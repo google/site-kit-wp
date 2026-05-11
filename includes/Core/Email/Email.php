@@ -64,17 +64,20 @@ class Email {
 	/**
 	 * Sends an email using wp_mail with error tracking.
 	 *
-	 * Wraps wp_mail with a scoped listener for wp_mail_failed hook
-	 * to capture any errors during sending. When text_content is provided,
-	 * it will be set as the AltBody for multipart/alternative MIME emails.
+	 * Captures wp_mail_failed errors during sending. Adds a default
+	 * Content-Type: text/html; charset=UTF-8 header when no caller header is
+	 * supplied, so wp_mail replacements that bypass PHPMailer still deliver
+	 * HTML. When text_content is provided, it's set as the AltBody for
+	 * multipart/alternative MIME emails.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Inject default Content-Type: text/html header when no caller Content-Type is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
 	 * @param string       $content      Message contents (HTML).
-	 * @param array        $headers      Optional. Additional headers. Default empty array.
+	 * @param array        $headers      Optional. Additional headers. A default Content-Type: text/html; charset=UTF-8 is added when no caller Content-Type is supplied. Default empty array.
 	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool|WP_Error True if the email was sent successfully, WP_Error on failure.
 	 */
@@ -98,14 +101,12 @@ class Email {
 	/**
 	 * Sends an email via wp_mail while capturing any errors.
 	 *
-	 * Attaches a temporary listener to the wp_mail_failed hook to capture
-	 * any errors that occur during sending. Injects a default
-	 * Content-Type: text/html header when no caller-supplied Content-Type is
-	 * present, so any wp_mail implementation that respects the headers
-	 * argument treats the body as HTML. When text_content is provided, uses
-	 * the phpmailer_init hook to set AltBody for multipart MIME emails;
-	 * PHPMailer then upgrades the content type to multipart/alternative and
-	 * attaches the plain text alternate.
+	 * Attaches a temporary listener to wp_mail_failed to capture errors during
+	 * sending. Injects a default Content-Type: text/html header when no caller
+	 * Content-Type is present, so wp_mail replacements that respect the headers
+	 * argument deliver HTML. When text_content is set, uses phpmailer_init to
+	 * attach it as AltBody. PHPMailer then upgrades the content type to
+	 * multipart/alternative.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
@@ -125,12 +126,9 @@ class Email {
 			$headers = array();
 		}
 
-		// Ensure the email is delivered as HTML by default. wp_mail
-		// implementations that bypass PHPMailer (and therefore the
-		// phpmailer_init hook below) still receive the correct Content-Type
-		// via the headers argument. When PHPMailer is active and text_content
-		// is provided, this is upgraded to multipart/alternative as the
-		// AltBody is attached.
+		// Default to HTML for wp_mail replacements that bypass the
+		// phpmailer_init hook below. PHPMailer upgrades this to
+		// multipart/alternative when AltBody is attached.
 		if ( ! $this->headers_contain_content_type( $headers ) ) {
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		}
@@ -157,11 +155,10 @@ class Email {
 	}
 
 	/**
-	 * Checks whether the supplied headers array already contains a Content-Type header.
+	 * Checks whether the headers array already contains a Content-Type header.
 	 *
-	 * Detection is case-insensitive so a caller-supplied Content-Type
-	 * (e.g. content-type:, CONTENT-TYPE:) is respected verbatim and not
-	 * double-set with the default text/html value.
+	 * Detection is case-insensitive so any caller-supplied Content-Type is
+	 * respected verbatim and the default text/html value isn't added on top.
 	 *
 	 * @since n.e.x.t
 	 *
