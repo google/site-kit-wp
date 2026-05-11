@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { sprintf, _n } from '@wordpress/i18n';
@@ -24,10 +29,9 @@ import { sprintf, _n } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import { Select, useSelect } from 'googlesitekit-data';
-import { FC } from 'react';
 
 const Header: FC = () => {
 	const currentDayCount = useSelect(

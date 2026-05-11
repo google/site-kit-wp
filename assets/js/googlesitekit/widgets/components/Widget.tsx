@@ -20,12 +20,14 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { ElementType, FC, ReactNode, useEffect, useState } from 'react';
+import { ElementType, FC, ReactNode } from 'react';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { forwardRef } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { forwardRef, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,8 +35,6 @@ import { __ } from '@wordpress/i18n';
  */
 import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from '@/js/components/IconWrapper';
-import { useMount } from 'react-use';
-import { useInstanceId } from '@wordpress/compose';
 
 export interface WidgetProps {
 	className?: string;
