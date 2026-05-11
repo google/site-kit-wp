@@ -48,26 +48,13 @@ describe( 'PDFReportSuccessSnackbar', () => {
 		expect(
 			getByText( /automatically downloaded to your downloads folder/i )
 		).toBeInTheDocument();
-		expect(
-			getByRole( 'button', { name: /click here/i } )
-		).toBeInTheDocument();
+		expect( getByRole( 'link', { name: /click here/i } ) ).toHaveAttribute(
+			'href',
+			'#'
+		);
 		expect(
 			getByRole( 'button', { name: /dismiss pdf report success/i } )
 		).toBeInTheDocument();
-	} );
-
-	it( 'calls onRetryDownload when the inline link is clicked', () => {
-		const onRetryDownload = jest.fn();
-		const { getByRole } = render(
-			<PDFReportSuccessSnackbar
-				onRetryDownload={ onRetryDownload }
-				disableAutoDismiss
-			/>
-		);
-
-		fireEvent.click( getByRole( 'button', { name: /click here/i } ) );
-
-		expect( onRetryDownload ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'calls onDismiss when the close icon is clicked', () => {

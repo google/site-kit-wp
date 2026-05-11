@@ -36,7 +36,6 @@ import Link from '@/js/components/Link';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export interface PDFReportSuccessSnackbarProps {
-	onRetryDownload?: () => void;
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) => void;
@@ -49,7 +48,6 @@ export interface PDFReportSuccessSnackbarProps {
 }
 
 const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
-	onRetryDownload = () => {},
 	onDismiss = () => {},
 	onAutoDismiss = () => {},
 	autoDismissMS = 10000,
@@ -80,7 +78,7 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 		{
 			a: (
 				// @ts-expect-error - The `Link` component is not typed yet.
-				<Link onClick={ onRetryDownload } />
+				<Link href="#" />
 			),
 		}
 	);
