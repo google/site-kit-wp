@@ -99,11 +99,17 @@ class Email {
 	 * Sends an email via wp_mail while capturing any errors.
 	 *
 	 * Attaches a temporary listener to the wp_mail_failed hook to capture
-	 * any errors that occur during sending. When text_content is provided,
-	 * uses phpmailer_init hook to set AltBody for multipart MIME emails.
+	 * any errors that occur during sending. Injects a default
+	 * Content-Type: text/html header when no caller-supplied Content-Type is
+	 * present, so any wp_mail implementation that respects the headers
+	 * argument treats the body as HTML. When text_content is provided, uses
+	 * the phpmailer_init hook to set AltBody for multipart MIME emails;
+	 * PHPMailer then upgrades the content type to multipart/alternative and
+	 * attaches the plain text alternate.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Inject default Content-Type: text/html header when no caller Content-Type is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -114,6 +120,20 @@ class Email {
 	 */
 	protected function send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content = '' ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
+
+		if ( ! is_array( $headers ) ) {
+			$headers = array();
+		}
+
+		// Ensure the email is delivered as HTML by default. wp_mail
+		// implementations that bypass PHPMailer (and therefore the
+		// phpmailer_init hook below) still receive the correct Content-Type
+		// via the headers argument. When PHPMailer is active and text_content
+		// is provided, this is upgraded to multipart/alternative as the
+		// AltBody is attached.
+		if ( ! $this->headers_contain_content_type( $headers ) ) {
+			$headers[] = 'Content-Type: text/html; charset=UTF-8';
+		}
 
 		// Set up AltBody for multipart MIME email if text content is provided.
 		$alt_body_callback = null;
@@ -134,6 +154,32 @@ class Email {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Checks whether the supplied headers array already contains a Content-Type header.
+	 *
+	 * Detection is case-insensitive so a caller-supplied Content-Type
+	 * (e.g. content-type:, CONTENT-TYPE:) is respected verbatim and not
+	 * double-set with the default text/html value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $headers Headers array passed to wp_mail.
+	 * @return bool True if a Content-Type header is present, false otherwise.
+	 */
+	private function headers_contain_content_type( array $headers ): bool {
+		foreach ( $headers as $header ) {
+			if ( ! is_string( $header ) ) {
+				continue;
+			}
+
+			if ( 0 === stripos( ltrim( $header ), 'Content-Type:' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
