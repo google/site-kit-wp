@@ -35,7 +35,7 @@
 					$unsubscribe_link = '';
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
-							'<a class="link" href="%s" style="color:#108080; text-decoration:none;">%s</a>',
+							'<a class="link" href="%s" style="text-decoration:none;">%s</a>',
 							esc_url( $footer['unsubscribe_url'] ),
 							esc_html__( 'here', 'google-site-kit' )
 						);
@@ -50,7 +50,7 @@
 			$footer_links = array();
 			if ( ! empty( $footer['unsubscribe_url'] ) ) {
 				$footer_links[] = array(
-					'label' => __( 'Manage subscription', 'google-site-kit' ),
+					'label' => __( 'Manage Subscription', 'google-site-kit' ),
 					'url'   => $footer['unsubscribe_url'],
 				);
 			}
@@ -59,7 +59,7 @@
 				'url'   => 'https://policies.google.com/privacy',
 			);
 			$footer_links[] = array(
-				'label' => __( 'Help center', 'google-site-kit' ),
+				'label' => __( 'Help Center', 'google-site-kit' ),
 				'url'   => add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
 			);
 

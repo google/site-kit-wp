@@ -144,6 +144,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
                       class="mdc-checkbox"
                     >
                       <input
+                        aria-checked="true"
                         checked=""
                         class="mdc-checkbox__native-control"
                         id="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
@@ -200,6 +201,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
                       class="mdc-checkbox"
                     >
                       <input
+                        aria-checked="true"
                         checked=""
                         class="mdc-checkbox__native-control"
                         id="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"
@@ -445,6 +447,7 @@ exports[`MetricsSelectionPanel Header should render correctly with the \`setupFl
                       class="mdc-checkbox"
                     >
                       <input
+                        aria-checked="true"
                         checked=""
                         class="mdc-checkbox__native-control"
                         id="key-metric-selection-checkbox-kmAnalyticsReturningVisitors"
@@ -501,6 +504,7 @@ exports[`MetricsSelectionPanel Header should render correctly with the \`setupFl
                       class="mdc-checkbox"
                     >
                       <input
+                        aria-checked="true"
                         checked=""
                         class="mdc-checkbox__native-control"
                         id="key-metric-selection-checkbox-kmSearchConsolePopularKeywords"

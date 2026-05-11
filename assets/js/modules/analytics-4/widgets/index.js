@@ -232,23 +232,9 @@ export function registerWidgets( widgets ) {
 						MODULES_ANALYTICS_4
 					).getAudienceSegmentationSetupCompletedBy();
 
-				if (
+				return (
 					isAnalyticsSetupComplete &&
 					! audienceSegmentationSetupCompletedBy
-				) {
-					return true;
-				}
-
-				const availableAudiences =
-					select( MODULES_ANALYTICS_4 ).getAvailableAudiences();
-
-				const configuredAudiences =
-					select( CORE_USER ).getConfiguredAudiences();
-
-				return (
-					availableAudiences?.length &&
-					configuredAudiences === null &&
-					audienceSegmentationSetupCompletedBy === null
 				);
 			},
 		},

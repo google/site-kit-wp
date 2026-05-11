@@ -87,16 +87,21 @@ $card_bottom_pad    = $has_bottom_graphic ? '0' : '12px';
 				);
 				?>
 				<?php if ( 0 === $index && ! empty( $learn_more_url ) ) : ?>
-				<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="color: #108080; text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
+				<a class="link" href="<?php echo esc_url( $learn_more_url ); ?>" style="text-decoration: none;" target="_blank" rel="noopener"><?php echo esc_html__( 'Learn more', 'google-site-kit' ); ?></a>
 				<?php endif; ?>
 			</p>
 			<?php endforeach; ?>
 
 			<?php /* CTA Button (conditionally rendered). */ ?>
 			<?php if ( ! empty( $cta['url'] ) ) : ?>
-			<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px;<?php echo $has_bottom_graphic ? ' margin-bottom: 12px;' : ''; ?>">
+				<?php
+				// Padding lives on the td because Outlook ignores margin on tables.
+				$cta_padding_top    = $has_bottom_graphic ? '0' : '4px';
+				$cta_padding_bottom = $has_bottom_graphic ? '12px' : '0';
+				?>
+			<table role="presentation" cellpadding="0" cellspacing="0" border="0">
 				<tr>
-					<td>
+					<td style="padding: <?php echo esc_attr( $cta_padding_top ); ?> 0 <?php echo esc_attr( $cta_padding_bottom ); ?> 0;">
 						<?php
 						$render_shared_part(
 							'dashboard-link',

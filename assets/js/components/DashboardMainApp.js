@@ -321,7 +321,7 @@ export default function DashboardMainApp() {
 				<EntitySearchInput />
 				<DateRangeSelector />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu />
+				<HelpMenu showFeatureTour />
 			</Header>
 
 			<div className="googlesitekit-page-content">

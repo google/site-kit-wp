@@ -79,7 +79,7 @@ export default function Header( { closePanel, isLoading } ) {
 				</Fragment>
 			) }
 			{ ! isLoading && ! isViewOnly && isEmailReportingEnabled && (
-				<P type="body" size="small">
+				<P>
 					{ createInterpolateElement(
 						__(
 							'You can always deactivate this feature in <link>Settings</link>',

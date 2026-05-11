@@ -52,7 +52,7 @@ import DocumentationIcon from '@/svg/icons/documentation.svg';
 import HelpIcon from '@/svg/icons/help.svg';
 import AdsenseHelpIcon from '@/svg/icons/adsense-help.svg';
 
-export default function HelpMenu( { children } ) {
+export default function HelpMenu( { children, showFeatureTour = false } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
@@ -136,12 +136,19 @@ export default function HelpMenu( { children } ) {
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
-		{
-			gaEventLabel: 'start_tour',
-			onClick: handleStartFeatureTour,
-			icon: <CompassIcon width={ 24 } height={ 24 } />,
-			children: __( 'Start a feature tour', 'google-site-kit' ),
-		},
+		...( showFeatureTour
+			? [
+					{
+						gaEventLabel: 'start_tour',
+						onClick: handleStartFeatureTour,
+						icon: <CompassIcon width={ 24 } height={ 24 } />,
+						children: __(
+							'Start a feature tour',
+							'google-site-kit'
+						),
+					},
+			  ]
+			: [] ),
 		{
 			gaEventLabel: 'send_feedback',
 			href: 'https://wordpress.org/support/plugin/google-site-kit/reviews/',
@@ -201,4 +208,5 @@ export default function HelpMenu( { children } ) {
 
 HelpMenu.propTypes = {
 	children: PropTypes.node,
+	showFeatureTour: PropTypes.bool,
 };

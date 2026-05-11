@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import type { ChangeEvent, FC, KeyboardEvent, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,23 +32,37 @@ import { Fragment } from '@wordpress/element';
  */
 import Spinner from '@/js/components/Spinner';
 
-export default function Checkbox( props ) {
-	const {
-		onChange,
-		id,
-		name,
-		value,
-		checked,
-		disabled,
-		children,
-		tabIndex,
-		onKeyDown,
-		loading,
-		alignLeft,
-		description,
-		badge,
-	} = props;
+export interface CheckboxProps {
+	onChange: ( event: ChangeEvent< HTMLInputElement > ) => void;
+	onKeyDown?: ( event: KeyboardEvent< HTMLInputElement > ) => void;
+	id: string;
+	name: string;
+	value: string;
+	checked?: boolean;
+	disabled?: boolean;
+	children: ReactNode;
+	tabIndex?: number;
+	loading?: boolean;
+	alignLeft?: boolean;
+	description?: ReactNode;
+	badge?: ReactNode;
+}
 
+const Checkbox: FC< CheckboxProps > = ( {
+	onChange,
+	id,
+	name,
+	value,
+	checked = false,
+	disabled = false,
+	children,
+	tabIndex,
+	onKeyDown,
+	loading = false,
+	alignLeft = false,
+	description,
+	badge,
+} ) => {
 	const label = !! badge ? (
 		<div className="mdc-checkbox__label-wrapper">
 			<label htmlFor={ id }>{ children }</label>
@@ -71,6 +85,7 @@ export default function Checkbox( props ) {
 				) : (
 					<Fragment>
 						<input
+							aria-checked={ checked ? 'true' : 'false' }
 							className="mdc-checkbox__native-control"
 							type="checkbox"
 							id={ id }
@@ -113,30 +128,6 @@ export default function Checkbox( props ) {
 			) }
 		</div>
 	);
-}
-
-Checkbox.propTypes = {
-	onChange: PropTypes.func.isRequired,
-	onKeyDown: PropTypes.func,
-	id: PropTypes.string.isRequired,
-	name: PropTypes.string.isRequired,
-	value: PropTypes.string.isRequired,
-	checked: PropTypes.bool,
-	disabled: PropTypes.bool,
-	children: PropTypes.node.isRequired,
-	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
-	loading: PropTypes.bool,
-	alignLeft: PropTypes.bool,
-	description: PropTypes.node,
-	badge: PropTypes.node,
 };
 
-Checkbox.defaultProps = {
-	checked: false,
-	disabled: false,
-	tabIndex: undefined,
-	onKeyDown: null,
-	loading: false,
-	alignLeft: false,
-	description: '',
-};
+export default Checkbox;
