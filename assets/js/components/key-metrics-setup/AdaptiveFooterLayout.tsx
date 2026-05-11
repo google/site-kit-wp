@@ -20,22 +20,30 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useLayoutEffect, useRef, useState } from '@wordpress/element';
 
-export default function AdaptiveFooterLayout( {
+interface AdaptiveFooterLayoutProps {
+	className: string;
+	inlineClassName: string;
+	footerClassName: string;
+	footer: ReactNode;
+	children?: ReactNode;
+}
+
+const AdaptiveFooterLayout: FC< AdaptiveFooterLayoutProps > = ( {
 	className,
 	inlineClassName,
 	footerClassName,
 	footer,
 	children,
-} ) {
-	const contentRef = useRef();
-	const footerRef = useRef();
+} ) => {
+	const contentRef = useRef< HTMLDivElement >( null );
+	const footerRef = useRef< HTMLDivElement >( null );
 	const [ footerInline, setFooterInline ] = useState( false );
 
 	useLayoutEffect( () => {
@@ -54,7 +62,9 @@ export default function AdaptiveFooterLayout( {
 				contentRef.current.getBoundingClientRect().bottom;
 			const footerHeight = footerRef.current.offsetHeight;
 
-			setFooterInline( contentBottom + footerHeight <= view.innerHeight );
+			setFooterInline(
+				contentBottom + footerHeight <= view!.innerHeight
+			);
 		}
 
 		checkFits();
@@ -76,12 +86,6 @@ export default function AdaptiveFooterLayout( {
 			</div>
 		</div>
 	);
-}
-
-AdaptiveFooterLayout.propTypes = {
-	className: PropTypes.string.isRequired,
-	inlineClassName: PropTypes.string.isRequired,
-	footerClassName: PropTypes.string.isRequired,
-	footer: PropTypes.node.isRequired,
-	children: PropTypes.node,
 };
+
+export default AdaptiveFooterLayout;

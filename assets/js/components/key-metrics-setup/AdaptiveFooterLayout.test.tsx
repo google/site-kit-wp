@@ -24,11 +24,11 @@ import {
 import AdaptiveFooterLayout from './AdaptiveFooterLayout';
 
 describe( 'AdaptiveFooterLayout', () => {
-	let originalGetBoundingClientRect;
-	let originalOffsetHeight;
-	let contentBottom;
-	let footerHeight;
-	let originalInnerHeight;
+	let originalGetBoundingClientRect: ( this: Element ) => DOMRect;
+	let originalOffsetHeight: PropertyDescriptor | undefined;
+	let contentBottom: number;
+	let footerHeight: number;
+	let originalInnerHeight: number;
 
 	beforeEach( () => {
 		contentBottom = 0;
@@ -53,7 +53,7 @@ describe( 'AdaptiveFooterLayout', () => {
 					bottom: contentBottom,
 					width: 0,
 					height: 0,
-				};
+				} as DOMRect;
 			}
 
 			return {
@@ -65,12 +65,13 @@ describe( 'AdaptiveFooterLayout', () => {
 				bottom: 0,
 				width: 0,
 				height: 0,
-			};
+			} as DOMRect;
 		};
 
 		Object.defineProperty( HTMLElement.prototype, 'offsetHeight', {
 			configurable: true,
-			get() {
+			// eslint-disable-next-line sitekit/acronym-case
+			get( this: HTMLElement ) {
 				if ( this.classList?.contains( 'test-footer' ) ) {
 					return footerHeight;
 				}
