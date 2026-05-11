@@ -34,7 +34,6 @@ import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
-// @ts-expect-error - We need to add types for imported SVGs.
 import DownloadIcon from '@/svg/icons/download.svg';
 
 const PDFDownloadButton: FC = () => {
