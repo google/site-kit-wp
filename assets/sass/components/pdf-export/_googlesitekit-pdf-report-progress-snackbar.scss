@@ -43,5 +43,15 @@
 		@media (min-width: $bp-tablet) {
 			top: 16.5px;
 		}
+
+		.mdc-linear-progress__bar-inner {
+			border-radius: $br-lg;
+
+			// The parent is scaled horizontally to show progress, which would stretch these
+			// rounded corners into a flat ellipse. The inverse scale below cancels that out,
+			// while the top-right origin keeps the rounded cap anchored to the leading edge.
+			transform: scaleX(calc(1 / var(--progress, 1)));
+			transform-origin: top right;
+		}
 	}
 }
