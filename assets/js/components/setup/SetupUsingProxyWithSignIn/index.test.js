@@ -35,6 +35,7 @@ import {
 	fireEvent,
 	provideSiteInfo,
 	waitFor,
+	within,
 	provideModuleRegistrations,
 	act,
 } from '../../../../../tests/js/test-utils';
@@ -359,6 +360,25 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
+	it( 'should not render the progress indicator when setupFlowRefresh is disabled', async () => {
+		const { container, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-progress-indicator' )
+		).toBeNull();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
 		const initialSetupSettingsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/initial-setup-settings'
@@ -414,6 +434,31 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 					/Get visitor insights by connecting Google Analytics as part of setup/
 				)
 			).toBeInTheDocument();
+		} );
+
+		it( 'should track the `click_learn_more_link` event when the Analytics opt-in "Learn more" link is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_SPLASH,
+				'click_learn_more_link',
+				'analytics_checkbox'
+			);
 		} );
 
 		it( 'should not render the Analytics checkbox when the Analytics module is already active', async () => {
@@ -645,6 +690,54 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			await waitForRegistry();
 		} );
 
+		it( 'should track the `click_learn_more_link` event when the CTA tooltip "Learn more" link is clicked', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			const stepHintInfoTooltip = container.querySelector(
+				'.googlesitekit-setup__step-hint .googlesitekit-info-tooltip'
+			);
+			expect( stepHintInfoTooltip ).toBeInTheDocument();
+
+			fireEvent.mouseOver( stepHintInfoTooltip );
+
+			await waitFor( () => {
+				expect(
+					document.querySelector(
+						'.googlesitekit-setup__step-hint-tooltip'
+					)
+				).toBeInTheDocument();
+			} );
+
+			const tooltipContent = document.querySelector(
+				'.googlesitekit-setup__step-hint-tooltip'
+			);
+
+			fireEvent.click(
+				within( tooltipContent ).getByRole( 'link', {
+					name: /Learn more/i,
+				} )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_SPLASH,
+				'click_learn_more_link',
+				'cta_tooltip'
+			);
+		} );
+
 		it( 'should track GA events on CTA click', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<SetupUsingProxyWithSignIn />,
@@ -752,6 +845,47 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				);
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
 			} );
+		} );
+
+		it( 'should render the progress indicator', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( '.googlesitekit-progress-indicator' )
+			).toBeInTheDocument();
+
+			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should have only the initial stub segment in the progress indicator (no active segments yet)', async () => {
+			const { container, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).toMatchSnapshot();
+			const segments = container.querySelectorAll(
+				'.googlesitekit-progress-indicator__segment'
+			);
+			// Only the stub segment should be present at initial render.
+			expect( segments.length ).toBe( 1 );
 		} );
 	} );
 } );

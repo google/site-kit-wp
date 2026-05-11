@@ -298,7 +298,7 @@ export default function DashboardMainApp() {
 				<DateRangeSelector />
 				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu />
+				<HelpMenu showFeatureTour />
 			</Header>
 
 			<div className="googlesitekit-page-content">

@@ -48,7 +48,7 @@
 		}
 
 		p {
-			color: $c-surfaces-on-surface;
+			color: $c-surfaces-on-surface-variant;
 			font-size: $fs-body-sm;
 			letter-spacing: $ls-xs;
 			line-height: $lh-body-sm;
@@ -76,6 +76,12 @@
 		color: $c-surfaces-on-surface-variant;
 		display: flex;
 		padding: 8px; // Tweak the padding to ensure the link is aligned in its focus state.
+
+		.googlesitekit-cta-link__contents {
+			display: inline-flex;
+			height: 15px;
+			width: 15px;
+		}
 	}
 
 	.googlesitekit-selection-panel__loading {

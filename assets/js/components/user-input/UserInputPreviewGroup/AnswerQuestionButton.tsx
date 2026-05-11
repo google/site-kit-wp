@@ -1,5 +1,7 @@
 /**
- * Site Kit by Google, Copyright 2025 Google LLC
+ * UserInputPreviewGroup AnswerQuestionButton component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { type FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,30 +31,25 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 
-export default function DismissButton( {
-	label = __( 'Got it', 'google-site-kit' ),
-	onClick,
-	disabled,
-	href,
-	external = false,
-} ) {
-	return (
-		<Button
-			onClick={ onClick }
-			disabled={ disabled }
-			href={ href }
-			target={ external ? '_blank' : undefined }
-			tertiary
-		>
-			{ label }
-		</Button>
-	);
+interface AnswerQuestionButtonProps {
+	isDisabled: boolean;
+	onClick: () => void;
 }
 
-DismissButton.propTypes = {
-	label: PropTypes.string,
-	onClick: PropTypes.func.isRequired,
-	disabled: PropTypes.bool,
-	href: PropTypes.string,
-	external: PropTypes.bool,
+const AnswerQuestionButton: FC< AnswerQuestionButtonProps > = ( {
+	isDisabled,
+	onClick,
+}: AnswerQuestionButtonProps ) => {
+	return (
+		<div className="googlesitekit-user-input__preview-group-answer-question">
+			{
+				// @ts-expect-error - The `Button` component is not typed yet.
+				<Button onClick={ onClick } disabled={ isDisabled }>
+					{ __( 'Answer question', 'google-site-kit' ) }
+				</Button>
+			}
+		</div>
+	);
 };
+
+export default AnswerQuestionButton;

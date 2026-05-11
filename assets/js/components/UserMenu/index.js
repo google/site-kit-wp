@@ -25,7 +25,7 @@ import { useClickAway } from 'react-use';
  * WordPress dependencies
  */
 import { Fragment, useState, useRef, useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
@@ -52,9 +52,16 @@ import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useFeature } from '@/js/hooks/useFeature';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import { getAccountLabel } from './utils';
 
 export default function UserMenu() {
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+
+	const isInitialSetupFlow =
+		setupFlowRefreshEnabled && showProgress === 'true';
 
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
@@ -89,6 +96,9 @@ export default function UserMenu() {
 	const menuButtonRef = useRef();
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const showManageEmailReports =
+		emailReportingEnabled && ! isInitialSetupFlow;
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => {
@@ -179,32 +189,7 @@ export default function UserMenu() {
 		return null;
 	}
 
-	let accountLabel;
-
-	if ( userFullName && userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's (full) name 2: User's email address. */
-			__( 'Google Account for %1$s (Email: %2$s)', 'google-site-kit' ),
-			userFullName,
-			userEmail
-		);
-	}
-
-	if ( userFullName && ! userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's (full) name. */
-			__( 'Google Account for %1$s', 'google-site-kit' ),
-			userFullName
-		);
-	}
-
-	if ( ! userFullName && userEmail ) {
-		accountLabel = sprintf(
-			/* translators: Account info text. 1: User's email address. */
-			__( 'Google Account (Email: %1$s)', 'google-site-kit' ),
-			userEmail
-		);
-	}
+	const accountLabel = getAccountLabel( userFullName, userEmail );
 
 	return (
 		<Fragment>
@@ -273,7 +258,7 @@ export default function UserMenu() {
 					<MenuSection>
 						<Details />
 					</MenuSection>
-					{ emailReportingEnabled && (
+					{ showManageEmailReports && (
 						<MenuItem
 							id="manage-email-reports"
 							icon={ <ManageEmailReportsIcon width="24" /> }

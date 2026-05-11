@@ -433,7 +433,7 @@ describe( 'KeyMetricsSetupApp', () => {
 
 			expect(
 				document.querySelector(
-					'.googlesitekit-subheader .googlesitekit-progress-indicator'
+					'.googlesitekit-key-metrics-initial-setup .googlesitekit-layout > .googlesitekit-progress-indicator'
 				)
 			).toBeInTheDocument();
 		} );

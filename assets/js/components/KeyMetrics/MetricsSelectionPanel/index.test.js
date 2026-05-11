@@ -25,7 +25,7 @@ import {
 	fireEvent,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/test-utils';
+} from 'tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -34,7 +34,8 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	subscribeUntil,
-} from '../../../../../tests/js/utils';
+} from 'tests/js/utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -78,6 +79,8 @@ describe( 'MetricsSelectionPanel', () => {
 		'^/google-site-kit/v1/core/user/data/key-metrics'
 	);
 
+	mockBrowserScrolling();
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 
@@ -105,11 +108,6 @@ describe( 'MetricsSelectionPanel', () => {
 			postFrequency: {},
 			goals: {},
 		} );
-
-		// jsdom does not support scrollIntoView which is used by the last metric item
-		// to prevent it from hiding underneath the Custom Dimensions warning notice.
-		// See: https://github.com/jsdom/jsdom/issues/1695.
-		Element.prototype.scrollIntoView = jest.fn();
 	} );
 
 	describe( 'Header', () => {
@@ -146,22 +144,27 @@ describe( 'MetricsSelectionPanel', () => {
 			} );
 		} );
 
-		it( 'should display a settings link to edit personalized goals', async () => {
-			const { getByText, waitForRegistry } = render(
-				<MetricsSelectionPanel />,
-				{
-					registry,
-				}
-			);
+		it( 'should render correctly', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+			} );
 
 			await waitForRegistry();
 			await act( waitForDefaultTimeouts );
 
-			expect(
-				getByText(
-					/Edit your personalized goals or deactivate this widget in/i
-				)
-			).toBeInTheDocument();
+			expect( document.body ).toMatchSnapshot();
+		} );
+
+		it( 'should render correctly with the `setupFlowRefresh` feature flag enabled', async () => {
+			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
+
+			expect( document.body ).toMatchSnapshot();
 		} );
 
 		it( 'should not display a settings link to edit personalized goals for a view-only user', async () => {
@@ -177,6 +180,23 @@ describe( 'MetricsSelectionPanel', () => {
 
 			expect( container ).not.toHaveTextContent(
 				'Edit your personalized goals or deactivate this widget in'
+			);
+		} );
+
+		it( 'should not display a settings link to edit personalized goals for a view-only user when `setupFlowRefresh` is enabled', async () => {
+			const { container, waitForRegistry } = render(
+				<MetricsSelectionPanel />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+					features: [ 'setupFlowRefresh' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( container ).not.toHaveTextContent(
+				'Edit your personalized goals in'
 			);
 		} );
 	} );

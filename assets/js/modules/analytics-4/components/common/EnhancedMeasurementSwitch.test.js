@@ -19,10 +19,25 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	createTestRegistry,
+	provideSiteInfo,
+	fireEvent,
+} from '../../../../../../tests/js/test-utils';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import EnhancedMeasurementSwitch from './EnhancedMeasurementSwitch';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'EnhancedMeasurementSwitch', () => {
+	beforeEach( () => {
+		mockTrackEvent.mockClear();
+	} );
+
 	it( 'should render correctly in the default state', () => {
 		const { container, getByLabelText, queryByText } = render(
 			<EnhancedMeasurementSwitch />
@@ -110,5 +125,73 @@ describe( 'EnhancedMeasurementSwitch', () => {
 		switchControl.click();
 
 		expect( onClick ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	describe( 'Learn more link tracking', () => {
+		mockLocation();
+
+		let registry;
+
+		beforeEach( () => {
+			registry = createTestRegistry();
+			provideSiteInfo( registry );
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
+		} );
+
+		it( 'should track `click_learn_more_link` when the "Learn more" link is clicked', async () => {
+			const { getByRole, waitForRegistry } = render(
+				<EnhancedMeasurementSwitch />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_MODULE_SETUP,
+				'click_learn_more_link',
+				'enhanced_measurement'
+			);
+		} );
+
+		describe( 'during initial setup flow', () => {
+			beforeEach( () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
+			} );
+
+			it( 'should track `click_learn_more_link` with the `_setup` event category', async () => {
+				const { getByRole, waitForRegistry } = render(
+					<EnhancedMeasurementSwitch />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+					}
+				);
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+				fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'click_learn_more_link',
+					'enhanced_measurement'
+				);
+			} );
+		} );
 	} );
 } );

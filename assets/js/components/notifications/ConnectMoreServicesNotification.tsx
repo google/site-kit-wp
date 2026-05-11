@@ -34,7 +34,6 @@ import BannerNotification from '@/js/googlesitekit/notifications/components/layo
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-// @ts-expect-error - We need to add types for imported SVGs.
 import ConnectMoreServicesSVG from '@/svg/graphics/connect-more-services-graphic.svg?url';
 import useViewContext from '@/js/hooks/useViewContext';
 

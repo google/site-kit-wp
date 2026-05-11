@@ -17,7 +17,12 @@
 /**
  * Internal dependencies
  */
-import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	render,
+	within,
+} from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -26,6 +31,7 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../tests/js/utils';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
@@ -39,6 +45,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import SetupForm from './SetupForm';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 const {
 	accountSummaries,
@@ -84,6 +95,8 @@ describe( 'SetupForm', () => {
 			enabled: false,
 		} );
 		muteFetch( REGEX_REST_CONVERSION_TRACKING_SETTINGS );
+
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'renders the form correctly', async () => {
@@ -566,6 +579,116 @@ describe( 'SetupForm', () => {
 				);
 
 			expect( updatedIsEnhancedMeasurementEnabled ).toBe( true );
+		} );
+	} );
+
+	describe( 'plugin conversion tracking "Learn more" link tracking', () => {
+		mockLocation();
+
+		beforeEach( async () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true';
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+			registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAccountSummaries( accountSummaries );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperty( properties[ 0 ], {
+					propertyID,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetWebDataStreamsBatch( webDataStreamsBatch, {
+					propertyIDs: [ propertyID ],
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetEnhancedMeasurementSettings(
+					{
+						...defaultEnhancedMeasurementSettings,
+						streamEnabled: false,
+					},
+					{
+						propertyID,
+						webDataStreamID,
+					}
+				);
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.selectAccount( accountID );
+		} );
+
+		it( 'should track `click_learn_more_link` when the "Learn more" link is clicked', async () => {
+			const { container, waitForRegistry } = render( <SetupForm />, {
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+			const notice = container.querySelector(
+				'.googlesitekit-plugin-conversion-tracking-notice'
+			);
+
+			expect( notice ).toBeInTheDocument();
+
+			fireEvent.click(
+				within( notice ).getByRole( 'link', { name: /Learn more/i } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_MODULE_SETUP,
+				'click_learn_more_link',
+				'plugin_conversion_tracking'
+			);
+		} );
+
+		describe( 'during initial setup flow', () => {
+			beforeEach( () => {
+				global.location.href =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
+			} );
+
+			it( 'should track `click_learn_more_link` with the `_setup` event category', async () => {
+				const { container, waitForRegistry } = render( <SetupForm />, {
+					registry,
+					features: [ 'setupFlowRefresh' ],
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				} );
+
+				await waitForRegistry();
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
+
+				const notice = container.querySelector(
+					'.googlesitekit-plugin-conversion-tracking-notice'
+				);
+
+				expect( notice ).toBeInTheDocument();
+
+				fireEvent.click(
+					within( notice ).getByRole( 'link', {
+						name: /Learn more/i,
+					} )
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					`${ VIEW_CONTEXT_MODULE_SETUP }_setup`,
+					'click_learn_more_link',
+					'plugin_conversion_tracking'
+				);
+			} );
 		} );
 	} );
 } );

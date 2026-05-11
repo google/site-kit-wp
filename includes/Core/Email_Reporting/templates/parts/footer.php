@@ -35,7 +35,7 @@
 					$unsubscribe_link = '';
 					if ( ! empty( $footer['unsubscribe_url'] ) ) {
 						$unsubscribe_link = sprintf(
-							'<a class="link" href="%s" style="color:#108080; text-decoration:none;">%s</a>',
+							'<a class="link" href="%s" style="text-decoration:none;">%s</a>',
 							esc_url( $footer['unsubscribe_url'] ),
 							esc_html__( 'here', 'google-site-kit' )
 						);
@@ -47,38 +47,42 @@
 			<?php endif; ?>
 			<?php
 			// Footer links are hardcoded to ensure consistent order across all email types.
-			$footer_links = array(
-				array(
-					'label' => __( 'Manage subscription', 'google-site-kit' ),
-					'url'   => $footer['unsubscribe_url'] ?? '',
-				),
-				array(
-					'label' => __( 'Privacy Policy', 'google-site-kit' ),
-					'url'   => 'https://policies.google.com/privacy',
-				),
-				array(
-					'label' => __( 'Help center', 'google-site-kit' ),
-					'url'   => add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
-				),
+			$footer_links = array();
+			if ( ! empty( $footer['unsubscribe_url'] ) ) {
+				$footer_links[] = array(
+					'label' => __( 'Manage Subscription', 'google-site-kit' ),
+					'url'   => $footer['unsubscribe_url'],
+				);
+			}
+			$footer_links[] = array(
+				'label' => __( 'Privacy Policy', 'google-site-kit' ),
+				'url'   => 'https://policies.google.com/privacy',
 			);
+			$footer_links[] = array(
+				'label' => __( 'Help Center', 'google-site-kit' ),
+				'url'   => add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ),
+			);
+
+			$footer_links_count = count( $footer_links );
+			$cell_width         = round( 100 / $footer_links_count, 2 ) . '%';
+			$alignments         = 3 === $footer_links_count
+				? array( 'left', 'center', 'right' )
+				: array_fill( 0, $footer_links_count, 'center' );
 			?>
-			<?php if ( ! empty( $footer['unsubscribe_url'] ) ) : ?>
-				<table role="presentation" width="100%" style="font-size:12px; line-height:18px;">
-					<tr>
-						<?php
-						$alignments = array( 'left', 'center', 'right' );
-						foreach ( $footer_links as $index => $footer_link ) :
-							$align = isset( $alignments[ $index ] ) ? $alignments[ $index ] : 'center';
-							?>
-							<td width="33.33%" style="text-align:<?php echo esc_attr( $align ); ?>;">
-								<a class="text-secondary" href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
-									<?php echo esc_html( $footer_link['label'] ); ?>
-								</a>
-							</td>
-						<?php endforeach; ?>
-					</tr>
-				</table>
-			<?php endif; ?>
+			<table role="presentation" width="100%" style="font-size:12px; line-height:18px;">
+				<tr>
+					<?php
+					foreach ( $footer_links as $index => $footer_link ) :
+						$align = $alignments[ $index ] ?? 'center';
+						?>
+						<td width="<?php echo esc_attr( $cell_width ); ?>" style="text-align:<?php echo esc_attr( $align ); ?>;">
+							<a class="text-secondary" href="<?php echo esc_url( $footer_link['url'] ); ?>" style="color:#6C726E; text-decoration:none; font-size:12px; line-height:16px; font-weight:500;" target="_blank" rel="noopener">
+								<?php echo esc_html( $footer_link['label'] ); ?>
+							</a>
+						</td>
+					<?php endforeach; ?>
+				</tr>
+			</table>
 		</td>
 	</tr>
 </table>
