@@ -19,10 +19,14 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC } from 'react';
+
+/**
+ * Internal dependencies
+ */
 import Typography from '@/js/components/Typography';
 
-function WidgetHeaderTitle( { title } ) {
+const WidgetHeaderTitle: FC = ( { children } ) => {
 	return (
 		<Typography
 			className="googlesitekit-widget__header-title"
@@ -30,13 +34,9 @@ function WidgetHeaderTitle( { title } ) {
 			type="title"
 			size="small"
 		>
-			{ title }
+			{ children }
 		</Typography>
 	);
-}
-
-WidgetHeaderTitle.propTypes = {
-	title: PropTypes.string.isRequired,
 };
 
 export default WidgetHeaderTitle;
