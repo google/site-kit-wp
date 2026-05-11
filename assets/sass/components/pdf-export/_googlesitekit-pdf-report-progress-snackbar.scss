@@ -25,6 +25,10 @@
 		@media (min-width: $bp-tablet) {
 			padding-top: 41px;
 		}
+
+		.mdc-button--tertiary:not(:disabled) {
+			color: $c-surfaces-inverse-on-surface;
+		}
 	}
 
 	.googlesitekit-pdf-report-progress-snackbar__progress {
