@@ -127,7 +127,8 @@ export default function AccountCreate( { className } ) {
 	const { setValues, createSnapshot } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setPermissionScopeError, saveInitialSetupSettings } =
+		useDispatch( CORE_USER );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
 
@@ -260,10 +261,14 @@ export default function AccountCreate( { className } ) {
 	);
 
 	// Navigate the user directly to the dashboard without setting up Analytics.
-	const handleContinueWithoutAnalytics = useCallback( () => {
+	// `isAnalyticsSetupComplete` is persisted to `true` so the dashboard's
+	// initial-setup-flow redirect (in `Screens.php`) doesn't bounce the user
+	// back to the Analytics setup screen.
+	const handleContinueWithoutAnalytics = useCallback( async () => {
 		setIsNavigating( true );
+		await saveInitialSetupSettings( { isAnalyticsSetupComplete: true } );
 		navigateTo( dashboardURL );
-	}, [ navigateTo, dashboardURL ] );
+	}, [ navigateTo, dashboardURL, saveInitialSetupSettings ] );
 
 	if (
 		isDoingCreateAccount ||
