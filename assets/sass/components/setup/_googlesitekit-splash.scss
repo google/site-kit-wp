@@ -118,6 +118,7 @@
 			svg {
 				margin: 0 4%;
 				position: relative;
+				top: 40px;
 				z-index: 11;
 
 				@media (max-width: $bp-desktop) {
