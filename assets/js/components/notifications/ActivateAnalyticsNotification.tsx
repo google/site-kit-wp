@@ -56,7 +56,7 @@ const ActivateAnalyticsNotification: FC<
 
 	const tooltipSettings = {
 		tooltipSlug: id,
-		title: __(
+		content: __(
 			'You can always set up Analytics from Settings later',
 			'google-site-kit'
 		),

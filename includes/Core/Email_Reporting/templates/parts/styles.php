@@ -76,6 +76,10 @@
 			overflow: hidden;
 		}
 
+		.link {
+			color: #108080;
+		}
+
 		/* Dark mode styles for email clients that support prefers-color-scheme */
 		@media (prefers-color-scheme: dark) {
 			body,
@@ -117,7 +121,7 @@
 			}
 
 			.link {
-				color: #93C9A8 !important;
+				color: #4BBBBB !important;
 			}
 
 			.button {
@@ -185,7 +189,7 @@
 		}
 
 		[data-ogsc] .link {
-			color: #93C9A8 !important;
+			color: #4BBBBB !important;
 		}
 
 		[data-ogsc] .button {
