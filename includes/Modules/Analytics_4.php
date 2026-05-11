@@ -1143,7 +1143,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			exit;
 		}
 
-		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) );
+		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) ?? '' );
 
 		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
