@@ -61,6 +61,13 @@ class Worker_TaskTest extends TestCase {
 	private $email_sender;
 
 	/**
+	 * Headers returned by the mocked Email::build_headers().
+	 *
+	 * @var array
+	 */
+	private $mock_headers = array( 'From: Site Kit <wordpress@example.org>' );
+
+	/**
 	 * @var Email_Template_Renderer|\PHPUnit_Framework_MockObject_MockObject
 	 */
 	private $template_renderer;
@@ -110,7 +117,7 @@ class Worker_TaskTest extends TestCase {
 		$this->data_requests      = $this->createMock( Email_Reporting_Data_Requests::class );
 		$this->template_formatter = $this->createMock( Email_Template_Formatter::class );
 		$this->email_sender       = $this->createMock( Email::class );
-		$this->email_sender->method( 'build_headers' )->willReturn( array() );
+		$this->email_sender->method( 'build_headers' )->willReturn( $this->mock_headers );
 		$this->template_renderer         = $this->createMock( Email_Template_Renderer::class );
 		$this->template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
@@ -474,7 +481,7 @@ class Worker_TaskTest extends TestCase {
 				'report@example.com',
 				'Subject',
 				$this->stringContains( 'Email' ),
-				$this->isType( 'array' ),
+				$this->mock_headers,
 				'Plain text email content'
 			)
 			->willReturn( true );
@@ -790,7 +797,7 @@ class Worker_TaskTest extends TestCase {
 				$this->callback( fn( $to ) => in_array( $to, array( 'one@example.com', 'two@example.com' ), true ) ),
 				'Subject',
 				$this->stringContains( 'Email' ),
-				$this->isType( 'array' ),
+				$this->mock_headers,
 				'Plain text email content'
 			)
 			->willReturn( true );
