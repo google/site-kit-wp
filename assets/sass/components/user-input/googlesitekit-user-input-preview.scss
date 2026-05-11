@@ -202,7 +202,6 @@
 		.googlesitekit-user-input__preview-group--individual-cta {
 
 			&:not(.googlesitekit-user-input__preview-group--editing) {
-				padding-top: 10px;
 				pointer-events: none;
 
 				&::after {
@@ -247,6 +246,19 @@
 							height: calc(100% + var(--mdc-layout-grid-margin-#{$size}, #{$padding}));
 						}
 					}
+				}
+			}
+		}
+	}
+
+	.googlesitekit-settings-user-input--setupFlowRefresh {
+
+		.googlesitekit-user-input__preview--editing {
+
+			.googlesitekit-user-input__preview-group--individual-cta {
+
+				&:not(.googlesitekit-user-input__preview-group--editing) {
+					padding-top: 10px;
 				}
 			}
 		}

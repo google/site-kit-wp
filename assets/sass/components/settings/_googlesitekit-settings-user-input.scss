@@ -21,7 +21,7 @@
 	.googlesitekit-settings-user-input {
 		.googlesitekit-settings-user-input__heading-container {
 			border-bottom: 1px solid $c-utility-divider;
-			margin: 0 0 12px;
+			margin: 12px 0;
 			padding-bottom: 12px;
 		}
 
@@ -47,5 +47,12 @@
 
 	.googlesitekit-user-input__notification-text-loading {
 		margin: 14px 0;
+	}
+
+	.googlesitekit-settings-user-input--setupFlowRefresh {
+
+		.googlesitekit-settings-user-input__heading-container {
+			margin: 0 0 12px;
+		}
 	}
 }

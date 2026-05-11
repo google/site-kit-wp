@@ -97,7 +97,13 @@ export default function SettingsCardKeyMetrics() {
 			header
 			rounded
 		>
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+			<div
+				className={ `googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input${
+					setupFlowRefreshEnabled
+						? ' googlesitekit-settings-user-input--setupFlowRefresh'
+						: ''
+				}` }
+			>
 				{ shouldShowLoading && (
 					<PreviewBlock
 						width="100%"
