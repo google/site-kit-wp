@@ -187,22 +187,22 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send_preserves_multipart_alternative_when_text_content_provided() {
-		$captured_content_type = null;
-		$captured_alt_body     = null;
-		$captured_message_type = null;
+		$captured_initial_content_type = null;
+		$captured_alt_body             = null;
+		$captured_final_content_type   = null;
 
 		add_action(
 			'phpmailer_init',
-			function ( $phpmailer ) use ( &$captured_content_type, &$captured_alt_body, &$captured_message_type ) {
-				$captured_content_type = $phpmailer->ContentType;
+			function ( $phpmailer ) use ( &$captured_initial_content_type, &$captured_alt_body, &$captured_final_content_type ) {
+				$captured_initial_content_type = $phpmailer->ContentType;
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
 				$captured_alt_body = $phpmailer->AltBody;
 
-				// Trigger setMessageType after Site Kit's AltBody hook (priority 10)
-				// to verify PHPMailer still picks multipart/alternative now that
-				// we inject a default Content-Type: text/html header.
-				$phpmailer->setMessageType();
-				$captured_message_type = $phpmailer->message_type;
+				// Run preSend after Site Kit's AltBody hook (priority 10) to trigger
+				// PHPMailer's body construction, which upgrades ContentType to
+				// multipart/alternative when AltBody is set.
+				$phpmailer->preSend();
+				$captured_final_content_type = $phpmailer->ContentType;
 
 				// Prevent actual send by clearing recipients.
 				$phpmailer->clearAllRecipients();
@@ -220,9 +220,9 @@ class EmailTest extends TestCase {
 			'Plain text content'
 		);
 
-		$this->assertEquals( 'text/html', $captured_content_type, 'PHPMailer ContentType should be text/html from the default Site Kit header before AltBody upgrade.' );
+		$this->assertEquals( 'text/html', $captured_initial_content_type, 'PHPMailer ContentType should be text/html from the default Site Kit header before AltBody upgrade.' );
 		$this->assertEquals( 'Plain text content', $captured_alt_body, 'AltBody should be set so PHPMailer can produce a multipart/alternative message.' );
-		$this->assertEquals( 'alt', $captured_message_type, 'PHPMailer message_type should be "alt" (multipart/alternative) when AltBody is set alongside the default text/html Content-Type.' );
+		$this->assertStringStartsWith( 'multipart/alternative', $captured_final_content_type, 'PHPMailer should upgrade ContentType to multipart/alternative when AltBody is set alongside the default text/html Content-Type.' );
 	}
 
 	/**
