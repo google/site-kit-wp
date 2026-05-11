@@ -44,7 +44,8 @@
 		"playwright:generate-backup": "npm run -w tests/playwright generate-backup",
 		"postinstall": "node -e \"process.env.SKIP_PATCH_PACKAGE || require('child_process').execSync('patch-package', {stdio:'inherit'})\"",
 		"preinstall": "./bin/check-node-version.js",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"typecheck-staged": "tsc-files assets/js/types/svg.d.ts assets/js/types/equivalent-key-map.d.ts"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
@@ -63,11 +64,11 @@
 		],
 		"*.ts": [
 			"eslint --config .eslintrc.staged.json",
-			"tsc-files"
+			"npm run typecheck-staged"
 		],
 		"*.tsx": [
 			"eslint --config .eslintrc.staged.json",
-			"tsc-files"
+			"npm run typecheck-staged"
 		],
 		"assets/sass/**/*.scss": [
 			"stylelint"
@@ -111,6 +112,7 @@
 		"archiver": "^5.0.2",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^9.2.1",
+		"esbuild-register": "^3.6.0",
 		"eslint": "^7.32.0",
 		"eslint-import-resolver-alias": "^1.1.2",
 		"eslint-import-resolver-typescript": "^2.7.1",

@@ -297,14 +297,14 @@ class Plain_Text_Formatter {
 	/**
 	 * Appends the footer utility links to the lines buffer.
 	 *
-	 * Privacy Policy and Help center always render. Unsubscribe and
-	 * Manage subscription are only added when the unsubscribe URL is
+	 * Privacy Policy and Help Center always render. Unsubscribe and
+	 * Manage Subscription are only added when the unsubscribe URL is
 	 * available, matching the HTML footer template.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array  $lines           Lines buffer to append to.
-	 * @param string $unsubscribe_url Unsubscribe URL used for the unsubscribe and manage subscription links.
+	 * @param string $unsubscribe_url Unsubscribe URL used for the Unsubscribe and Manage Subscription links.
 	 * @return array Updated lines buffer.
 	 */
 	protected static function append_footer_links( array $lines, string $unsubscribe_url ): array {
@@ -313,11 +313,11 @@ class Plain_Text_Formatter {
 		if ( ! empty( $unsubscribe_url ) ) {
 			$lines[] = self::format_link( __( 'Unsubscribe', 'google-site-kit' ), $unsubscribe_url );
 			$lines[] = '';
-			$lines[] = self::format_link( __( 'Manage subscription', 'google-site-kit' ), $unsubscribe_url );
+			$lines[] = self::format_link( __( 'Manage Subscription', 'google-site-kit' ), $unsubscribe_url );
 		}
 
 		$lines[] = self::format_link( __( 'Privacy Policy', 'google-site-kit' ), 'https://policies.google.com/privacy' );
-		$lines[] = self::format_link( __( 'Help center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
+		$lines[] = self::format_link( __( 'Help Center', 'google-site-kit' ), add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ) );
 
 		return $lines;
 	}

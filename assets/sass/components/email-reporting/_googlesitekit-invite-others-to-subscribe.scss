@@ -111,6 +111,7 @@
 		color: $c-surfaces-on-surface;
 		font-size: $fs-body-md;
 		font-weight: 500;
+		word-break: break-word;
 	}
 
 	.googlesitekit-invite-user-row__role {
@@ -123,6 +124,7 @@
 	.googlesitekit-invite-user-row__email {
 		color: $c-surfaces-on-surface;
 		font-size: $fs-body-sm;
+		word-break: break-word;
 	}
 
 	.googlesitekit-invite-user-row__action {

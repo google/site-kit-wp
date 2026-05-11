@@ -190,8 +190,7 @@ class Content_Map {
 				__( 'We were unable to generate your report due to a server error. To fix this, contact your host. Report delivery will automatically resume once the issue is resolved.', 'google-site-kit' ),
 			),
 			// Opening/closing tag placeholders keep inline styles and HTML
-			// out of translation strings. Inline color styles are required
-			// because many email clients strip or ignore CSS classes.
+			// out of translation strings.
 			'error-email-permissions-search-console' => array(
 				/* translators: 1: help link URL, 2: help link style CSS */
 				__( 'We were unable to generate your reports due to insufficient permissions in Search Console. To fix this, contact your administrator or <a class="link" href="%1$s" style="%2$s">get help</a>.', 'google-site-kit' ),
@@ -229,7 +228,7 @@ class Content_Map {
 	 * @return array Ordered sprintf arguments for the body paragraphs.
 	 */
 	public static function get_body_args( $content_key, Golinks $golinks ) {
-		$link_style        = 'color:#108080;text-decoration:underline;';
+		$link_style        = 'text-decoration:underline;';
 		$support_base      = 'https://sitekit.withgoogle.com/support/';
 		$email_support_url = add_query_arg( 'doc', 'email-reporting-module-issues', $support_base );
 

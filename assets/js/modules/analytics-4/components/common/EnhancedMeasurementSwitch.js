@@ -45,6 +45,7 @@ import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
 import Tick from '@/svg/icons/tick.svg';
 import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function EnhancedMeasurementSwitch( {
 	className,
@@ -62,6 +63,9 @@ export default function EnhancedMeasurementSwitch( {
 
 	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
+
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const isInitialSetupFlow = !! showProgress;
 
 	const handleClick = useCallback( () => {
 		setValues( formName, {
@@ -146,6 +150,15 @@ export default function EnhancedMeasurementSwitch( {
 						a: (
 							<SupportLink
 								path="/analytics/answer/9216061"
+								onClick={ () => {
+									trackEvent(
+										isInitialSetupFlow
+											? `${ viewContext }_setup`
+											: viewContext,
+										'click_learn_more_link',
+										'enhanced_measurement'
+									);
+								} }
 								external
 							/>
 						),
