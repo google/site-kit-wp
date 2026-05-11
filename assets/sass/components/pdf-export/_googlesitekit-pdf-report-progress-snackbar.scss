@@ -29,6 +29,12 @@
 		.mdc-button--tertiary:not(:disabled) {
 			color: $c-surfaces-inverse-on-surface;
 		}
+
+		.googlesitekit-notice__content p {
+			font-size: $fs-label-sm;
+			letter-spacing: 0.2px;
+			line-height: $lh-label-sm;
+		}
 	}
 
 	.googlesitekit-pdf-report-progress-snackbar__progress {
