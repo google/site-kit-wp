@@ -257,12 +257,27 @@ export default function TourTooltips( {
 			return;
 		}
 
-		const { top } = element.getBoundingClientRect();
+		const { top, bottom } = element.getBoundingClientRect();
 		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
 
-		window.scrollTo( {
-			top: top - tooltipHeight - 60 + window.scrollY,
-		} );
+		const stepTop = top - tooltipHeight - 60 + window.scrollY;
+
+		if ( stepTop >= 0 ) {
+			window.scrollTo( {
+				top: stepTop,
+			} );
+		} else {
+			// We normally want to scroll to the top of the step's target, with enough space for the tooltip, but in some cases where the target is too close to the start of the page, no space will be left for the tooltip, so we switch to scrolling to the bottom of the target instead.
+			const stepBottom =
+				bottom -
+				window.innerHeight +
+				tooltipHeight +
+				60 +
+				window.scrollY;
+			window.scrollTo( {
+				top: stepBottom,
+			} );
+		}
 	}
 
 	/**
