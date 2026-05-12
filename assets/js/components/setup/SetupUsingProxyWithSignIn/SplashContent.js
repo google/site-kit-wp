@@ -76,8 +76,6 @@ export default function SplashContent( {
 		global.document.body.classList.add( 'googlesitekit-setup-flow' );
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const [ checked, setChecked ] = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
 		ANALYTICS_NOTICE_CHECKBOX
