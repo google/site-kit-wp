@@ -35,7 +35,7 @@ export { registerDefaults as registerWidgets } from './register-defaults';
  *
  * @typedef {Object} WidgetPDFConfig
  * @property {WPComponent} Component React component (from `@react-pdf/renderer`) used to render this widget in the PDF. Receives `{ data, chartImages }` props.
- * @property {Function}    getData   Async function `( { registry, dates, signal } ) => ( { data, chartImages? } )`. Loads all reports the widget needs and optionally rasterises charts to data URIs. `data` is a widget-shaped object the `Component` knows how to render. `chartImages` is an optional `Record<string, string>` of JPEG data URIs keyed by chart name.
+ * @property {Function}    getData   Async function `( { registry, dates, signal } ) => ( { data, chartImages? } )`. Loads all reports the widget needs and optionally rasterizes charts to data URIs. `data` is a widget-shaped object the `Component` knows how to render. `chartImages` is an optional `Record<string, string>` of JPEG data URIs keyed by chart name.
  * @property {string}      [label]   Optional. The widget's sub-section heading within its area, also used as the child checkbox label in the sidesheet. Required when an area contains more than one PDF widget; may be omitted when the widget is the sole PDF widget in its area (the `PDFSubSection` heading is suppressed in that case regardless).
  */
 
