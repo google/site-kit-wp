@@ -17,4 +17,10 @@
 	.mdc-linear-progress--compress {
 		margin: 0;
 	}
+
+	// Animate width on the primary bar so determinate progress fills smoothly.
+	// MDC base transitions transform only.
+	.mdc-linear-progress:not(.mdc-linear-progress--indeterminate) .mdc-linear-progress__primary-bar {
+		transition: width 250ms cubic-bezier(0.4, 0, 0.6, 1);
+	}
 }
