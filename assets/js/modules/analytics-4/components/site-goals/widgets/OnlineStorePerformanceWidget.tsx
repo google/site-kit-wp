@@ -98,13 +98,22 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
+	// Ensure we have a consistent number of entries in the report options
+	// array, so that the useSelect dependencies are consistent.
+	//
+	// If `reportOptions` is used directly as a dependency for the useSelect
+	// calls below, it will cause a console error while loading.
+	const reportOptionArgsForSelect = reportOptions?.length
+		? reportOptions
+		: [ undefined, undefined ];
+
 	const [ primaryEventReport, engagementReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptions
+			reportOptionArgsForSelect
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -114,7 +123,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptions
+		reportOptionArgsForSelect
 	);
 
 	if ( ! primaryEvent ) {
@@ -138,11 +147,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	} = processReports( primaryEventReport, engagementReport );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Online store performance', 'google-site-kit' ) }
-			/>
-
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Online Store Performance',
+				'google-site-kit'
+			) }
+			collapsible
+		>
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && (
