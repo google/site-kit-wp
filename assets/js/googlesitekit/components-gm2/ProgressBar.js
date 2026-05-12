@@ -72,7 +72,18 @@ export default function ProgressBar( {
 				: Math.round( progressBarVerticalSpacing / 2 );
 	}
 
-	const transform = progress ? `scaleX(${ progress })` : undefined;
+	// Use width on the primary bar so the inner bar can be styled freely (e.g., border-radius).
+	// Clamp keeps the percentage valid. CSS rejects negative widths.
+	let primaryBarStyle;
+	if ( ! indeterminate ) {
+		const clamped = Math.max( 0, Math.min( 1, progress || 0 ) );
+		primaryBarStyle = {
+			transform: 'none',
+			width: `${ clamped * 100 }%`,
+		};
+	} else if ( progress ) {
+		primaryBarStyle = { transform: `scaleX(${ progress })` };
+	}
 
 	return (
 		<div
@@ -92,12 +103,7 @@ export default function ProgressBar( {
 			<div className="mdc-linear-progress__buffer" />
 			<div
 				className="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
-				style={ {
-					transform,
-					...( progress && {
-						'--googlesitekit-progress': progress,
-					} ),
-				} }
+				style={ primaryBarStyle }
 			>
 				<span className="mdc-linear-progress__bar-inner" />
 			</div>
