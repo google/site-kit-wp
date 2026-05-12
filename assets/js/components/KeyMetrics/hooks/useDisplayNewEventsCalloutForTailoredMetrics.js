@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -30,12 +28,13 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.144.0
  *
- * @param {boolean} haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
+ * @param {Object}  options                                     Options Object.
+ * @param {boolean} options.haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
  * @return {boolean} Whether the initial new events callout should be displayed.
  */
-export default function useDisplayNewEventsCalloutForTailoredMetrics(
-	haveNewConversionEventsAfterDismiss
-) {
+export default function useDisplayNewEventsCalloutForTailoredMetrics( {
+	haveNewConversionEventsAfterDismiss,
+} ) {
 	return useSelect( ( select ) => {
 		const {
 			isUserInputCompleted: getIsUserInputCompleted,
@@ -50,10 +49,9 @@ export default function useDisplayNewEventsCalloutForTailoredMetrics(
 		const sitePurposeAnsweredBy = userInputSettings?.purpose?.answeredBy;
 		const currentUserID = getID();
 
-		const haveConversionReportingEventsForTailoredMetrics =
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForTailoredMetrics( true );
+		const haveConversionReportingEventsForTailoredMetrics = select(
+			MODULES_ANALYTICS_4
+		).haveConversionEventsForTailoredMetrics( { useNewEvents: true } );
 
 		return (
 			! hasUserPickedMetrics?.length &&

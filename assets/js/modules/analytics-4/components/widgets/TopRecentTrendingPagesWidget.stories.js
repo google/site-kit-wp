@@ -160,11 +160,12 @@ GatheringData.args = {
 			],
 		} );
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
-			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
-				.requiredCustomDimensions[ 0 ],
-			true
-		);
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData( {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES ]
+					.requiredCustomDimensions[ 0 ],
+			gatheringData: true,
+		} );
 	},
 };
 
@@ -296,12 +297,13 @@ export default {
 					.receiveIsGatheringData( false );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						KEY_METRICS_WIDGETS[
-							KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
-						].requiredCustomDimensions[ 0 ],
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension:
+							KEY_METRICS_WIDGETS[
+								KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES
+							].requiredCustomDimensions[ 0 ],
+						gatheringData: false,
+					} );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

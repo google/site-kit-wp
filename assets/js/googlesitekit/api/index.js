@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -289,6 +287,7 @@ export async function set(
 	return response;
 }
 
+/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 /**
  * Enables/disables caching.
  *

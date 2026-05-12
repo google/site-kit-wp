@@ -1,5 +1,3 @@
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -10,10 +8,11 @@ import { wpApiFetch } from './wp-api-fetch';
  *
  * @since 1.0.0
  *
- * @param {boolean} verified Whether or not the site should be considered "verified".
+ * @param {Object}  options          Options object.
+ * @param {boolean} options.verified Whether or not the site should be considered "verified".
  * @return {*} Resolved value from `apiFetch` promise.
  */
-export async function setSiteVerification( verified = true ) {
+export async function setSiteVerification( { verified } = { verified: true } ) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/setup/site-verification',
 		method: 'post',

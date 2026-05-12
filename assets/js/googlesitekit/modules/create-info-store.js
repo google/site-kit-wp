@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -114,13 +112,14 @@ export function createInfoStore(
 		 *
 		 * @since 1.10.0
 		 *
-		 * @param {boolean} reAuth The module activation status. Default is true.
+		 * @param {Object}  options        Options object.
+		 * @param {boolean} options.reAuth The module activation status. Default is true.
 		 * @return {(string|undefined)} The admin reauthentication URL, or
 		 *                              undefined if not loaded yet.
 		 */
 		getAdminReauthURL: createRegistrySelector(
 			( select ) =>
-				( state, reAuth = true ) => {
+				( state, { reAuth } = { reAuth: true } ) => {
 					const needsReauthentication =
 						select( CORE_USER ).needsReauthentication();
 					if ( needsReauthentication === undefined ) {

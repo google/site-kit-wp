@@ -35,6 +35,6 @@ export async function setupSiteKit( {
 		throw new Error( 'Auth type must be either proxy or gcp' );
 	}
 	await activatePlugin( `e2e-tests-${ auth }-auth-plugin` );
-	await setSiteVerification( verified );
+	await setSiteVerification( { verified } );
 	await setSearchConsoleProperty( property );
 }
