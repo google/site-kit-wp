@@ -77,8 +77,8 @@
 	}
 
 	.googlesitekit-banner-modal__text {
-		padding: 0 $grid-gap-phone;
 		margin: 25px 0 0;
+		padding: 0 $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
 			padding: 0 $grid-gap-desktop;
