@@ -177,10 +177,13 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 										<ChevronDown
 											width={ 12 }
 											height={ 12 }
-											className={ classnames( {
-												'googlesitekit-widget__header-icon--collapsed':
-													isCollapsed,
-											} ) }
+											className={ classnames(
+												'googlesitekit-widget__header-icon',
+												{
+													'googlesitekit-widget__header-icon--collapsed':
+														isCollapsed,
+												}
+											) }
 										/>
 									</IconWrapper>
 								) }
