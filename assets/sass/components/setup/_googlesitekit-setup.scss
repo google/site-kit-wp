@@ -263,8 +263,15 @@
 }
 
 body.googlesitekit-setup-flow {
-
-	#wpbody-content {
+	// Remove padding bottom for non-splash pages.
+	&:not(.site-kit_page_googlesitekit-splash) #wpbody-content {
 		padding-bottom: 0;
+	}
+
+	// Remove padding bottom for splash pages on large screens.
+	@media (height > 940px) {
+		&.site-kit_page_googlesitekit-splash #wpbody-content {
+			padding-bottom: 0;
+		}
 	}
 }
