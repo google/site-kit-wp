@@ -76,6 +76,7 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 			dismissButton={ {
 				onClick: onDismiss,
 			} }
+			newBadge
 		/>
 	);
 };

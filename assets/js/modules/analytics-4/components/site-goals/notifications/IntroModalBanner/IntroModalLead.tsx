@@ -76,6 +76,7 @@ const IntroModalLead: FC< IntroModalVariantProps > = ( {
 			dismissButton={ {
 				onClick: onDismiss,
 			} }
+			newBadge
 		/>
 	);
 };
