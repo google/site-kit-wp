@@ -78,14 +78,19 @@
 
 	.googlesitekit-banner-modal__text {
 		padding: 0 $grid-gap-phone;
+		margin: 25px 0 0;
 
 		@media (min-width: $bp-tablet) {
 			padding: 0 $grid-gap-desktop;
 		}
 	}
 
+	.googlesitekit-new-badge {
+		margin-bottom: 8px;
+	}
+
 	.googlesitekit-banner-modal__title {
-		margin: 25px 0 0;
+		margin: 0;
 	}
 
 	.googlesitekit-banner-modal__description {

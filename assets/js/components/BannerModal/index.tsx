@@ -37,10 +37,12 @@ import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
 import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
 import CloseIcon from '@/svg/icons/close.svg';
+import NewBadge from '@/js/components/NewBadge';
 
 export interface BannerModalProps {
 	className?: string;
 	Graphic: FC;
+	newBadge?: boolean;
 	onView: () => void;
 	onClose: () => void;
 	title: ReactNode;
@@ -73,6 +75,7 @@ export interface BannerModalProps {
  * @param props.onClose       Callback invoked when the modal is closed.
  * @param props.title         Modal title text.
  * @param props.description   Modal description content (string or element).
+ * @param props.newBadge      Whether to display a "New" badge in the modal.
  * @param props.ctaButton     Configuration object for the primary CTA button.
  * @param props.dismissButton Configuration object for the dismiss button.
  * @return                    BannerModal component.
@@ -80,6 +83,7 @@ export interface BannerModalProps {
 const BannerModal: FC< BannerModalProps > = ( {
 	className,
 	Graphic,
+	newBadge,
 	onView,
 	onClose,
 	title,
@@ -119,6 +123,8 @@ const BannerModal: FC< BannerModalProps > = ( {
 				</GraphicContainerWithIntersectionObserver>
 
 				<div className="googlesitekit-banner-modal__text">
+					{ newBadge && <NewBadge hasNoSpacing /> }
+
 					<Typography
 						as="h1"
 						className="googlesitekit-banner-modal__title"
