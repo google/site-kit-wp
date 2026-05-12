@@ -72,11 +72,14 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 
 	const defaultDescription = createInterpolateElement(
 		__(
-			'The PDF report has been automatically downloaded to your downloads folder. If download doesn’t start automatically, you can manually <a>download your report</a>.',
+			'The PDF report has been automatically downloaded to your downloads folder. If the download doesn’t start automatically, you can manually <a>download your report</a>.',
 			'google-site-kit'
 		),
 		{
 			a: (
+				// TODO: Replace the `href` value with the actual Blob URL to
+				// download the report when available.
+				// This `href="#" is just a placeholder.
 				// @ts-expect-error - The `Link` component is not typed yet.
 				<Link href="#" />
 			),
