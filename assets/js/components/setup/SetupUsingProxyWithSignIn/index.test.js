@@ -450,7 +450,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+			const learnMoreLink = getByRole( 'link', { name: /Learn more/i } );
+			learnMoreLink.addEventListener( 'click', ( event ) =>
+				event.preventDefault()
+			);
+
+			fireEvent.click( learnMoreLink );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 
