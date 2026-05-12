@@ -72,7 +72,7 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 
 	const defaultDescription = createInterpolateElement(
 		__(
-			'The PDF report has been automatically downloaded to your downloads folder. <a>Click here</a> if the download didn’t start automatically.',
+			'The PDF report has been automatically downloaded to your downloads folder. If download doesn’t start automatically, you can manually <a>download your report</a>.',
 			'google-site-kit'
 		),
 		{

@@ -48,10 +48,9 @@ describe( 'PDFReportSuccessSnackbar', () => {
 		expect(
 			getByText( /automatically downloaded to your downloads folder/i )
 		).toBeInTheDocument();
-		expect( getByRole( 'link', { name: /click here/i } ) ).toHaveAttribute(
-			'href',
-			'#'
-		);
+		expect(
+			getByRole( 'link', { name: /download your report/i } )
+		).toHaveAttribute( 'href', '#' );
 		expect(
 			getByRole( 'button', { name: /dismiss pdf report success/i } )
 		).toBeInTheDocument();
