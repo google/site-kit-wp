@@ -606,6 +606,7 @@ class REST_Email_Reporting_Controller {
 				'copy' => __( 'You received this email because your site admin invited you to use Site Kit email reports feature', 'google-site-kit' ),
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'invitation-email' ),
+			'footer_type'            => 'inline',
 		);
 	}
 

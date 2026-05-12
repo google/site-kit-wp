@@ -24,6 +24,7 @@ $body               = $data['body'];
 $cta                = $data['primary_call_to_action'];
 $footer             = $data['footer'];
 $graphic            = $data['graphic'] ?? array();
+$footer_type        = $data['footer_type'] ?? 'standard';
 $get_asset_url      = $data['get_asset_url'];
 $render_part        = $data['render_part'];
 $render_shared_part = $data['render_shared_part'];
@@ -91,18 +92,30 @@ $render_shared_part = $data['render_shared_part'];
 								)
 							);
 							?>
-							<?php
-							// Shared footer renders the footer copy and utility links
-							// (Manage Subscription if available, Privacy Policy, Help Center).
-							$render_shared_part(
-								'footer',
-								array(
-									'cta'                => array(), // CTA is in content, not footer.
-									'footer'             => $footer,
-									'render_shared_part' => $render_shared_part,
-								)
-							);
-							?>
+							<?php if ( 'inline' === $footer_type ) : ?>
+								<?php /* Inline footer (invitation-email style: just copy text, no unsubscribe/links). */ ?>
+								<table role="presentation" width="100%" style="margin-top: 12px;">
+									<tr>
+										<td style="text-align: left;">
+											<p class="text-secondary" style="font-size: 12px; line-height: 16px; font-weight: 500; color: #6C726E; margin: 0;">
+												<?php echo esc_html( $footer['copy'] ?? '' ); ?>
+											</p>
+										</td>
+									</tr>
+								</table>
+							<?php else : ?>
+								<?php
+								// Standard shared footer with unsubscribe and links.
+								$render_shared_part(
+									'footer',
+									array(
+										'cta'    => array(), // CTA is in content, not footer.
+										'footer' => $footer,
+										'render_shared_part' => $render_shared_part,
+									)
+								);
+								?>
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
