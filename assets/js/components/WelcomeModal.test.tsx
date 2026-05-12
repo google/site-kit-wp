@@ -1141,7 +1141,7 @@ describe( 'WelcomeModal', () => {
 			provideVariantData: provideGatheringDataVariantData,
 		},
 	] )(
-		'should dismiss the initial setup notification timeout when setupFlowRefresh is enabled and the modal renders in the $variant variant',
+		'should dismiss the initial setup notification timeout when the modal renders in the $variant variant',
 		async ( { provideVariantData } ) => {
 			provideVariantData();
 			fetchMock.postOnce( dismissItemEndpoint, {
@@ -1150,7 +1150,6 @@ describe( 'WelcomeModal', () => {
 
 			const { waitForRegistry } = render( <WelcomeModal />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
