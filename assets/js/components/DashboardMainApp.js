@@ -62,10 +62,12 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 	ANCHOR_ID_SITE_GOALS,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -81,6 +83,7 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
 import Notifications from './notifications/Notifications';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
@@ -270,6 +273,30 @@ export default function DashboardMainApp() {
 		);
 	} );
 
+	const hideSetupCTAs = useSelect( ( select ) => {
+		if ( ! setupFlowRefreshEnabled ) {
+			return false;
+		}
+
+		const initialSetupNotificationTimeoutDismissed = select(
+			CORE_USER
+		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
+		const queuedHeaderNotifications = select(
+			CORE_NOTIFICATIONS
+		).getQueuedNotifications(
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			NOTIFICATION_GROUPS.DEFAULT
+		);
+		const firstHeaderNotificationID =
+			queuedHeaderNotifications?.[ 0 ]?.id || null;
+
+		return (
+			initialSetupNotificationTimeoutDismissed ||
+			firstHeaderNotificationID === 'activate-analytics-notification' ||
+			firstHeaderNotificationID === 'connect-more-services-notification'
+		);
+	} );
+
 	useMonitorInternetConnection();
 
 	const isWelcomeTourActive = useSelect( ( select ) => {
@@ -305,12 +332,14 @@ export default function DashboardMainApp() {
 					second renders the Setup CTA Widgets.
 				*/ }
 				<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-				/>
+				{ ! hideSetupCTAs && (
+					<Notifications
+						areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
+						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					/>
+				) }
 
-				{ ! isWelcomeTourActive && (
+				{ ! isWelcomeTourActive && ! hideSetupCTAs && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
