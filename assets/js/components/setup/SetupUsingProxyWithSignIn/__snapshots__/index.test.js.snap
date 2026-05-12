@@ -1398,7 +1398,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                   <span
-                    class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--small"
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
                   >
                     Analytics
                   </span>
@@ -2051,7 +2051,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                   <span
-                    class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--small"
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
                   >
                     Analytics
                   </span>
@@ -2416,7 +2416,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                   <span
-                    class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--small"
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
                   >
                     Analytics
                   </span>
@@ -2781,7 +2781,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                   <span
-                    class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--small"
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
                   >
                     Analytics
                   </span>
