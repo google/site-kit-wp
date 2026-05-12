@@ -83,7 +83,7 @@ export interface BannerModalProps {
 const BannerModal: FC< BannerModalProps > = ( {
 	className,
 	Graphic,
-	newBadge,
+	newBadge = false,
 	onView,
 	onClose,
 	title,
