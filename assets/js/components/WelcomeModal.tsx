@@ -361,6 +361,7 @@ export default function WelcomeModal() {
 
 	return (
 		<BannerModal
+			className="googlesitekit-banner-modal--welcome-modal"
 			Graphic={ Graphic }
 			onView={ handleView }
 			onClose={ handleClose }
