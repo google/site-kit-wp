@@ -40,6 +40,7 @@ import { useDispatch, useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 import AnalyticsSVG from '@/svg/graphics/analytics.svg';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 
 type CheckboxChangeEvent = {
 	target: {
@@ -76,7 +77,11 @@ export default function AnalyticsOptIn() {
 		<div className="googlesitekit-setup__analytics-opt-in-wrapper">
 			<div className="googlesitekit-setup__analytics-opt-in-wrapper-header">
 				<AnalyticsSVG width={ 24 } height={ 27 } />
-				<Typography as="span" size="small" type="label" className="">
+				<Typography
+					size={ SIZE_SMALL }
+					type={ TYPE_BODY }
+					className="googlesitekit-setup__analytics-opt-in-wrapper-header-title"
+				>
 					{ __( 'Analytics', 'google-site-kit' ) }
 				</Typography>
 				<Badge
