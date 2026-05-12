@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC, MouseEvent, ReactNode } from 'react';
 
 /**
@@ -38,6 +39,7 @@ import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export interface BannerModalProps {
+	className?: string;
 	Graphic: FC;
 	onView: () => void;
 	onClose: () => void;
@@ -65,6 +67,7 @@ export interface BannerModalProps {
  * @since n.e.x.t
  *
  * @param props               Component props.
+ * @param props.className     Additional CSS class name(s) to apply to the root Dialog element.
  * @param props.Graphic       SVG graphic component to render in the modal header.
  * @param props.onView        Callback invoked when the modal content scrolls into view, used for tracking purposes.
  * @param props.onClose       Callback invoked when the modal is closed.
@@ -75,6 +78,7 @@ export interface BannerModalProps {
  * @return                    BannerModal component.
  */
 const BannerModal: FC< BannerModalProps > = ( {
+	className,
 	Graphic,
 	onView,
 	onClose,
@@ -85,7 +89,12 @@ const BannerModal: FC< BannerModalProps > = ( {
 } ) => {
 	return (
 		<Dialog
-			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
+			className={ classnames(
+				'googlesitekit-dialog',
+				'googlesitekit-dialog--with-mobile-margins',
+				'googlesitekit-banner-modal',
+				className
+			) }
 			onClose={ onClose }
 			open
 		>
