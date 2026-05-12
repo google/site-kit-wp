@@ -397,32 +397,34 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Success! You are subscribed', $result, 'Plain title should pass through unchanged.' );
 	}
 
-	public function test_format_simple_email_with_missing_data() {
+	public function test_format_simple_email_renders_inline_footer_without_utility_links() {
 		$data = array(
 			'site'                   => array(
 				'domain' => 'example.com',
 			),
-			'title'                  => 'You have been invited to receive performance reports',
+			'title'                  => 'admin@example.com invited you to receive periodic performance reports',
 			'preheader'              => 'This preheader should not appear in plain text output',
 			'body'                   => array(),
 			'learn_more_url'         => '',
 			'primary_call_to_action' => array(),
 			'footer'                 => array(
-				'copy' => '',
+				'copy' => 'You received this email because your site admin invited you to use Site Kit email reports feature',
 			),
+			'footer_type'            => 'inline',
 		);
 
 		$result = Plain_Text_Formatter::format_simple_email( $data );
 
-		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding even with missing data.' );
+		$this->assertStringContainsString( 'Site Kit by Google', $result, 'Simple email should contain Site Kit branding.' );
 		$this->assertStringContainsString( 'example.com', $result, 'Simple email should contain site domain.' );
-		$this->assertStringContainsString( 'You have been invited to receive performance reports', $result, 'Simple email should contain title text.' );
+		$this->assertStringContainsString( 'admin@example.com invited you to receive periodic performance reports', $result, 'Simple email should contain title text.' );
 		$this->assertStringNotContainsString( 'This preheader should not appear in plain text output', $result, 'Simple email should not contain preheader text.' );
 		$this->assertStringNotContainsString( 'Learn more:', $result, 'Simple email should not contain Learn more link when URL is empty.' );
-		$this->assertStringNotContainsString( 'Unsubscribe:', $result, 'Simple email should not contain a standalone Unsubscribe link.' );
-		$this->assertStringNotContainsString( 'Manage Subscription:', $result, 'Simple email should omit Manage Subscription link when unsubscribe URL is missing.' );
-		$this->assertStringContainsString( 'Privacy Policy: https://policies.google.com/privacy', $result, 'Simple email should always contain Privacy Policy link.' );
-		$this->assertStringContainsString( 'Help Center: ' . add_query_arg( 'doc', 'get-support', 'https://sitekit.withgoogle.com/support/' ), $result, 'Simple email should always contain Help Center link.' );
+		$this->assertStringContainsString( 'You received this email because your site admin invited you', $result, 'Inline footer should contain footer copy.' );
+		$this->assertStringNotContainsString( 'Unsubscribe:', $result, 'Inline footer should omit Unsubscribe link.' );
+		$this->assertStringNotContainsString( 'Manage Subscription:', $result, 'Inline footer should omit Manage Subscription link.' );
+		$this->assertStringNotContainsString( 'Privacy Policy:', $result, 'Inline footer should omit Privacy Policy link.' );
+		$this->assertStringNotContainsString( 'Help Center:', $result, 'Inline footer should omit Help Center link.' );
 	}
 
 	public function test_convert_links_to_text__converts_anchor_tags() {
