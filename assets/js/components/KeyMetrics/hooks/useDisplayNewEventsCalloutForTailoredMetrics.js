@@ -28,7 +28,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.144.0
  *
- * @param {Object}  options                                     Options Object.
+ * @param {Object}  options                                     Options object.
  * @param {boolean} options.haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
  * @return {boolean} Whether the initial new events callout should be displayed.
  */
