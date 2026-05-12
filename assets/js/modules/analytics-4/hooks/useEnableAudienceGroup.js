@@ -32,7 +32,6 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import {
@@ -57,12 +56,11 @@ export default function useEnableAudienceGroup( {
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_SEGMENTATION_SETUP_FORM,
 		'autoSubmit'
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const {
 		enableAudienceGroup,
@@ -102,9 +100,7 @@ export default function useEnableAudienceGroup( {
 			}
 		}
 
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-			autoSubmit: false,
-		} );
+		setAutoSubmit( false );
 
 		const { error, failedSiteKitAudienceSlugs } =
 			( await enableAudienceGroup( failedAudiences ) ) || {};
@@ -116,7 +112,7 @@ export default function useEnableAudienceGroup( {
 		fetchSyncAvailableCustomDimensions,
 		hasAnalytics4EditScope,
 		determineNeedForAnalytics4EditScope,
-		setValues,
+		setAutoSubmit,
 		syncAvailableAudiences,
 	] );
 
@@ -127,9 +123,7 @@ export default function useEnableAudienceGroup( {
 			await maybeEnableAudienceGroup();
 
 		if ( needsScope ) {
-			setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-				autoSubmit: true,
-			} );
+			setAutoSubmit( true );
 
 			await onOAuthNavigation?.();
 
@@ -182,7 +176,7 @@ export default function useEnableAudienceGroup( {
 	}, [
 		maybeEnableAudienceGroup,
 		isMounted,
-		setValues,
+		setAutoSubmit,
 		onOAuthNavigation,
 		setPermissionScopeError,
 		redirectURL,

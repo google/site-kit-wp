@@ -31,7 +31,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -66,9 +65,16 @@ export default function EnhancedMeasurementActivationBanner( {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_SETUP,
+		'autoSubmit'
+	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setEnhancedMeasurementEnabled ] = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
+	);
+
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 	const { unpinNotification } = useDispatch( CORE_NOTIFICATIONS );
 
@@ -85,9 +91,7 @@ export default function EnhancedMeasurementActivationBanner( {
 	const handleSubmit = useCallback( async () => {
 		setIsSaving( true );
 
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-		} );
+		setEnhancedMeasurementEnabled( true );
 
 		const { error } = await submitChanges();
 
@@ -102,14 +106,19 @@ export default function EnhancedMeasurementActivationBanner( {
 		await unpinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
 
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ id, setValues, submitChanges, unpinNotification ] );
+	}, [
+		id,
+		setEnhancedMeasurementEnabled,
+		submitChanges,
+		unpinNotification,
+	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
 		async function handleAutoSubmit() {
 			// Auto-submit should only auto-invoke once.
-			setValues( FORM_SETUP, { autoSubmit: false } );
+			setAutoSubmit( false );
 
 			setStep( ACTIVATION_STEP_IN_PROGRESS );
 
@@ -119,7 +128,7 @@ export default function EnhancedMeasurementActivationBanner( {
 		if ( autoSubmit && hasEditScope ) {
 			handleAutoSubmit();
 		}
-	}, [ hasEditScope, setValues, handleSubmit, autoSubmit ] );
+	}, [ hasEditScope, setAutoSubmit, handleSubmit, autoSubmit ] );
 
 	if ( step === ACTIVATION_STEP_SETUP ) {
 		return (

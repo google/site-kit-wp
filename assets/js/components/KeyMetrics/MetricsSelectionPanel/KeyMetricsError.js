@@ -45,7 +45,7 @@ import whenActive from '@/js/util/when-active';
 import useFormValue from '@/js/hooks/useFormValue';
 
 function KeyMetricsError( { savedMetrics } ) {
-	const selectedMetrics = useFormValue(
+	const [ selectedMetrics ] = useFormValue(
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);

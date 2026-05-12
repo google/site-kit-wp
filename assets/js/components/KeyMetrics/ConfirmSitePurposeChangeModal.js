@@ -41,7 +41,6 @@ import {
 } from 'googlesitekit-components';
 import { useSelect, useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
@@ -78,7 +77,7 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
-	const savedPurposeSnapshot = useFormValue(
+	const [ savedPurposeSnapshot, setSavedPurposeSnapshot ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
@@ -101,16 +100,13 @@ function ConfirmSitePurposeChangeModal( {
 		);
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValues: setUIValues } = useDispatch( CORE_UI );
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const onClose = useCallback( async () => {
 		if ( savedPurposeSnapshot?.length ) {
 			await resetUserInputSettings();
-			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
-			} );
+			setSavedPurposeSnapshot( undefined );
 		}
 		setUIValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
@@ -122,7 +118,7 @@ function ConfirmSitePurposeChangeModal( {
 		handleDialog,
 		savedPurposeSnapshot,
 		resetUserInputSettings,
-		setValues,
+		setSavedPurposeSnapshot,
 		setUIValues,
 	] );
 
