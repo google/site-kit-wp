@@ -43,6 +43,7 @@ const IntroModalEcommerce: FC< IntroModalVariantProps > = ( {
 } ) => {
 	return (
 		<BannerModal
+			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalEcommerceGraphic }
 			onView={ onView }
 			onClose={ onDismiss }
