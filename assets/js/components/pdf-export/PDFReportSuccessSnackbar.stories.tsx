@@ -32,7 +32,6 @@ export const Default = Template.bind(
 	{}
 ) as Story< PDFReportSuccessSnackbarProps >;
 Default.args = {
-	onRetryDownload: () => {},
 	onDismiss: () => {},
 	disableAutoDismiss: true,
 };

@@ -68,9 +68,21 @@
 	}
 
 	.googlesitekit-key-metrics-initial-setup {
+		display: flex;
+		min-height: calc(100vh - 195px); // 46px admin bar + 72px header + 77px footer
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-height: calc(100vh - 207px); // 32px admin bar + 88px header + 87px footer
+		}
 
 		.googlesitekit-module-page {
+			display: flex;
+			flex-grow: 1;
 			padding: 0;
+		}
+
+		.googlesitekit-layout {
+			flex-grow: 1;
 		}
 	}
 }

@@ -177,6 +177,13 @@ export default function KeyMetricsSetupApp() {
 		}
 	} );
 
+	// Add the initial setup class to the body when the component mounts.
+	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			global.document.body.classList.add( 'googlesitekit-setup-flow' );
+		}
+	} );
+
 	const saveInitialSetup = useCallback( async () => {
 		const response = await saveInitialSetupSettings( {
 			isAnalyticsSetupComplete: true,
