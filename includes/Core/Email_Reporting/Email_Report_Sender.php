@@ -85,7 +85,7 @@ class Email_Report_Sender {
 			$user->user_email,
 			$template_data['subject'] ?? '',
 			$html_content,
-			array(),
+			$this->email_sender->build_headers(),
 			$text_content
 		);
 

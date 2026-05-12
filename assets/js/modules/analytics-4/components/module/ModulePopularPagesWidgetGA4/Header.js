@@ -32,16 +32,19 @@ export default function Header() {
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	const title = sprintf(
-		/* translators: %s: number of days */
-		_n(
-			'Top content over the last %s day',
-			'Top content over the last %s days',
-			currentDayCount,
-			'google-site-kit'
-		),
-		currentDayCount
-	);
 
-	return <WidgetHeaderTitle title={ title } />;
+	return (
+		<WidgetHeaderTitle>
+			{ sprintf(
+				/* translators: %s: number of days */
+				_n(
+					'Top content over the last %s day',
+					'Top content over the last %s days',
+					currentDayCount,
+					'google-site-kit'
+				),
+				currentDayCount
+			) }
+		</WidgetHeaderTitle>
+	);
 }

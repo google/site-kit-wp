@@ -394,7 +394,6 @@ class Email_Template_Formatter {
 				'unsubscribe_url' => $email_settings_url,
 			),
 			'graphic'                => Content_Map::get_graphic_config( 'subscription-confirmation' ),
-			'footer_type'            => 'standard',
 		);
 	}
 

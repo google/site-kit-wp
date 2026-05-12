@@ -627,6 +627,7 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertNotNull( $captured_atts, 'Invitation should call wp_mail.' );
 		$this->assertEquals( get_userdata( $invitee_id )->user_email, $captured_atts['to'], 'Invitation email should be sent to the invited user.' );
 		$this->assertStringContainsString( 'invited you to receive periodic performance reports', $captured_atts['message'], 'Invitation email body should contain invitation copy.' );
+		$this->assertContains( 'From: Site Kit <' . get_option( 'admin_email' ) . '>', $captured_atts['headers'], 'Invitation email should be sent with the Site Kit "From" header.' );
 	}
 
 	public function test_invite_user__returns_error_for_ineligible_user() {

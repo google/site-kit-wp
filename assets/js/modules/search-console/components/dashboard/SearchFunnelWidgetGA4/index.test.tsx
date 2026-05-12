@@ -64,7 +64,7 @@ import SearchFunnelWidgetGA4 from '.';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
