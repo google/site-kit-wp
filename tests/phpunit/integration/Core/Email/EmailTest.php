@@ -198,20 +198,18 @@ class EmailTest extends TestCase {
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
 				$captured_alt_body = $phpmailer->AltBody;
 
-				// Run preSend after Site Kit's AltBody hook (priority 10) to trigger
-				// PHPMailer's body construction, which upgrades ContentType to
-				// multipart/alternative when AltBody is set.
+				// Trigger body construction so PHPMailer applies its multipart/alternative
+				// upgrade for the attached AltBody.
 				$phpmailer->preSend();
 				$captured_final_content_type = $phpmailer->ContentType;
 
-				// Prevent actual send by clearing recipients.
+				// Block delivery by clearing recipients.
 				$phpmailer->clearAllRecipients();
 			},
 			999 // Run after Site Kit's hook (priority 10).
 		);
 
-		// Don't assert on send()'s return. It'll fail with no recipients,
-		// and we only care about the captured PHPMailer state.
+		// send() fails on the cleared recipients. Only the captured state matters.
 		$this->email->send(
 			'test@example.com',
 			'Test Subject',
@@ -226,9 +224,7 @@ class EmailTest extends TestCase {
 	}
 
 	/**
-	 * Skips the current test when the pre_wp_mail filter isn't available.
-	 *
-	 * The pre_wp_mail filter was introduced in WordPress 5.7.
+	 * Skips the test if the pre_wp_mail filter (WordPress 5.7+) isn't available.
 	 */
 	private function skip_if_pre_wp_mail_unsupported() {
 		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
@@ -239,7 +235,7 @@ class EmailTest extends TestCase {
 	/**
 	 * Captures wp_mail arguments via pre_wp_mail and short-circuits delivery.
 	 *
-	 * @param array|null $captured_atts Reference filled with wp_mail args once send is invoked.
+	 * @param array|null $captured_atts Reference filled with wp_mail args.
 	 *
 	 * @param-out array $captured_atts
 	 */

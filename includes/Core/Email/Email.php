@@ -72,12 +72,12 @@ class Email {
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
-	 * @since n.e.x.t Inject default Content-Type: text/html header when no caller Content-Type is supplied.
+	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
 	 * @param string       $content      Message contents (HTML).
-	 * @param array        $headers      Optional. Additional headers. A default Content-Type: text/html; charset=UTF-8 is added when no caller Content-Type is supplied. Default empty array.
+	 * @param array        $headers      Optional. Additional headers. A default text/html Content-Type is added when none is supplied. Default empty array.
 	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool|WP_Error True if the email was sent successfully, WP_Error on failure.
 	 */
@@ -110,7 +110,7 @@ class Email {
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
-	 * @since n.e.x.t Inject default Content-Type: text/html header when no caller Content-Type is supplied.
+	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -126,9 +126,8 @@ class Email {
 			$headers = array();
 		}
 
-		// Default to HTML for wp_mail replacements that bypass the
-		// phpmailer_init hook below. PHPMailer upgrades this to
-		// multipart/alternative when AltBody is attached.
+		// Default to text/html so wp_mail replacements that don't fire
+		// phpmailer_init still deliver as HTML.
 		if ( ! $this->headers_contain_content_type( $headers ) ) {
 			$headers[] = 'Content-Type: text/html; charset=UTF-8';
 		}
@@ -157,8 +156,7 @@ class Email {
 	/**
 	 * Checks whether the headers array already contains a Content-Type header.
 	 *
-	 * Detection is case-insensitive so any caller-supplied Content-Type is
-	 * respected verbatim and the default text/html value isn't added on top.
+	 * Detection is case-insensitive and skips non-string entries.
 	 *
 	 * @since n.e.x.t
 	 *
