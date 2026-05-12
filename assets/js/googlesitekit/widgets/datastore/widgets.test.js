@@ -253,10 +253,12 @@ describe( 'core/widgets Widgets', () => {
 					registry.select( CORE_WIDGETS ).getWidget( slug ).pdf
 				).toBe( pdf );
 
-				const [ widget ] = registry
+				const widgets = registry
 					.select( CORE_WIDGETS )
 					.getWidgets( 'dashboard-header' );
-				expect( widget.pdf ).toBe( pdf );
+
+				expect( widgets ).toHaveLength( 1 );
+				expect( widgets[ 0 ].pdf ).toBe( pdf );
 			} );
 
 			it( 'should not overwrite an existing widget', () => {
