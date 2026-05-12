@@ -48,6 +48,17 @@ export const initialState = {
 	widgetStates: {},
 };
 
+/**
+ * PDF export configuration for a widget.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} WidgetPDFConfig
+ * @property {WPComponent} Component React component (from `@react-pdf/renderer`) used to render this widget in the PDF. Receives `{ data, chartImages }` props.
+ * @property {Function}    getData   Async function `( { registry, dates, signal } ) => ( { data, chartImages? } )`. Loads all reports the widget needs and optionally rasterises charts to data URIs. `data` is a widget-shaped object the `Component` knows how to render. `chartImages` is an optional `Record<string, string>` of JPEG data URIs keyed by chart name.
+ * @property {string}      [label]   Optional. The widget's sub-section heading within its area, also used as the child checkbox label in the sidesheet. Required when an area contains more than one PDF widget; may be omitted when the widget is the sole PDF widget in its area (the `PDFSubSection` heading is suppressed in that case regardless).
+ */
+
 export const actions = {
 	/**
 	 * Assigns an existing widget (by slug) to a widget area(s).
@@ -75,6 +86,7 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.12.0  Added wrapWidget setting.
 	 * @since 1.138.0 Added hideOnBreakpoints setting.
+	 * @since n.e.x.t Added pdf setting.
 	 *
 	 * @param {string}                slug                         Widget's slug.
 	 * @param {Object}                settings                     Widget's settings.
@@ -86,6 +98,7 @@ export const actions = {
 	 * @param {Function}              [settings.isActive]          Optional. Callback function to determine if the widget is active.
 	 * @param {Function}              [settings.isPreloaded]       Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
 	 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
+	 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget. When present, downstream consumers can include this widget in the PDF export by filtering `getWidgets( areaSlug ).filter( ( w ) => !! w.pdf )`.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(
@@ -99,6 +112,7 @@ export const actions = {
 			isActive,
 			isPreloaded,
 			hideOnBreakpoints,
+			pdf,
 		} = {}
 	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
@@ -123,6 +137,7 @@ export const actions = {
 					isActive,
 					isPreloaded,
 					hideOnBreakpoints,
+					pdf,
 				},
 			},
 			type: REGISTER_WIDGET,
