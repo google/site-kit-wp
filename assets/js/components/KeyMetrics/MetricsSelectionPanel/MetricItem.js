@@ -79,11 +79,11 @@ export default function MetricItem( {
 						( selectedMetric ) => selectedMetric !== slug
 				  );
 
-			setUnstagedSelection( currentlySelectedMetrics );
+			setSelectedMetrics( currentlySelectedMetrics );
 			// Unstaged list creates a copy of KM selected list, but unstaged
 			// is stored temporary to collect the final selection that will
 			// be transfered over to effective selection on tab change and then it is reset.
-			setSelectedMetrics( currentlySelectedMetrics );
+			setUnstagedSelection( currentlySelectedMetrics );
 		},
 		[ slug, selectedMetrics, setSelectedMetrics, setUnstagedSelection ]
 	);
