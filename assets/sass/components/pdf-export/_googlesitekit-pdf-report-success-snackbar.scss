@@ -18,12 +18,18 @@
 
 .googlesitekit-pdf-report-success-snackbar {
 	&.googlesitekit-notice-snackbar {
-		padding-bottom: $grid-gap-phone;
-		padding-top: $grid-gap-phone;
+		padding-bottom: 14px;
+		padding-top: 14px;
 
 		@media (min-width: $bp-tablet) {
-			padding-bottom: 8px;
-			padding-top: 8px;
+			padding-bottom: 9px;
+			padding-top: 9px;
+		}
+	}
+
+	@media (max-width: $bp-tablet) {
+		.googlesitekit-notice__title {
+			display: none;
 		}
 	}
 
