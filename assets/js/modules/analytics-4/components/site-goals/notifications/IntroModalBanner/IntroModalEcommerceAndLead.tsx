@@ -43,6 +43,7 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 } ) => {
 	return (
 		<BannerModal
+			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalGraphic }
 			onView={ onView }
 			onClose={ onDismiss }
@@ -76,6 +77,7 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 			dismissButton={ {
 				onClick: onDismiss,
 			} }
+			newBadge
 		/>
 	);
 };

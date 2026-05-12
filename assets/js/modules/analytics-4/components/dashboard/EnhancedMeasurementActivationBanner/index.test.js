@@ -44,7 +44,7 @@ import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';

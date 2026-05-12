@@ -5,7 +5,7 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal googlesitekit-banner-modal--site-goals-intro"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -34,6 +34,11 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
           <div
             class="googlesitekit-banner-modal__text"
           >
+            <span
+              class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+            >
+              New
+            </span>
             <h1
               class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
@@ -105,7 +110,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal googlesitekit-banner-modal--site-goals-intro"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -134,6 +139,11 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
           <div
             class="googlesitekit-banner-modal__text"
           >
+            <span
+              class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+            >
+              New
+            </span>
             <h1
               class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
@@ -197,7 +207,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
   <div
     aria-describedby="mdc-dialog-content"
     aria-modal="true"
-    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
+    class="mdc-dialog mdc-dialog--opening googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal googlesitekit-banner-modal--site-goals-intro"
     id="mdc-dialog"
     role="alertdialog"
   >
@@ -226,6 +236,11 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
           <div
             class="googlesitekit-banner-modal__text"
           >
+            <span
+              class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+            >
+              New
+            </span>
             <h1
               class="googlesitekit-typography googlesitekit-banner-modal__title googlesitekit-typography--headline googlesitekit-typography--large"
             >
