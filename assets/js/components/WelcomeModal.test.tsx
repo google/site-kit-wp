@@ -1000,7 +1000,6 @@ describe( 'WelcomeModal', () => {
 	] )(
 		'when the $variant variant of the welcome modal is shown',
 		( {
-			variant,
 			expectedLabel,
 			provideData,
 			confirmationButton,
@@ -1008,10 +1007,6 @@ describe( 'WelcomeModal', () => {
 		} ) => {
 			beforeEach( () => {
 				provideData();
-				if ( variant === 'data gathering complete' ) {
-					return;
-				}
-
 				freezeFetch( dismissItemEndpoint, { repeat: 3 } );
 			} );
 
