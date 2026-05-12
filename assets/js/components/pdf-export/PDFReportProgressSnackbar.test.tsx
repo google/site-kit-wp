@@ -77,7 +77,7 @@ describe( 'PDFReportProgressSnackbar', () => {
 		expect( progressbar ).toBeInTheDocument();
 		expect(
 			progressbar.querySelector( '.mdc-linear-progress__primary-bar' )
-		).toHaveStyle( 'transform: scaleX(0.25)' );
+		).toHaveStyle( { width: '25%', transform: 'none' } );
 
 		rerender(
 			<PDFReportProgressSnackbar
@@ -88,7 +88,7 @@ describe( 'PDFReportProgressSnackbar', () => {
 
 		expect(
 			progressbar.querySelector( '.mdc-linear-progress__primary-bar' )
-		).toHaveStyle( 'transform: scaleX(0.75)' );
+		).toHaveStyle( { width: '75%', transform: 'none' } );
 	} );
 
 	it( 'calls onCancel when the Cancel button is clicked', () => {
