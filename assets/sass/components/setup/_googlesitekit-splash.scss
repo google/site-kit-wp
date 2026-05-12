@@ -66,22 +66,22 @@
 
 		.googlesitekit-setup__analytics-opt-in-wrapper {
 			background-color: $c-surfaces-background;
-			border-radius: 12px;
-			margin-top: 24px;
-			padding: 24px;
+			border-radius: $br-sm;
+			margin-top: $grid-gap-desktop;
+			padding: $grid-gap-desktop;
 
 			.googlesitekit-splash__analytics-recommended-badge {
-				background-color: $c-splash-analytics-recommended-badge-bg;
+				background-color: $c-site-kit-sk-50;
 				border-radius: 4px;
 				color: $c-content-primary;
-				padding: 4px 10px;
+				padding: 4px 8px;
 			}
 
 			.googlesitekit-setup__analytics-opt-in-wrapper-header {
 				align-items: center;
 				display: flex;
 				gap: 12px;
-				margin-bottom: 20px;
+				margin-bottom: 18px;
 			}
 
 			.mdc-checkbox {
