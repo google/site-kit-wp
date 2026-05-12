@@ -22,10 +22,6 @@
 		.mdc-dialog__surface {
 			overflow: hidden;
 		}
-
-		.mdc-dialog__container {
-			max-width: 491px;
-		}
 	}
 
 	.googlesitekit-banner-modal__graphic {
@@ -117,6 +113,26 @@
 
 		.googlesitekit-banner-modal__footer.mdc-dialog__actions {
 			margin-top: 16px;
+		}
+	}
+
+	.googlesitekit-banner-modal--welcome-modal {
+		.mdc-dialog__container {
+			max-width: 491px;
+		}
+
+		.googlesitekit-banner-modal__graphic > svg {
+			max-width: 491px;
+		}
+	}
+
+	.googlesitekit-banner-modal--site-goals-intro {
+		.mdc-dialog__container {
+			max-width: 650px;
+		}
+
+		.googlesitekit-banner-modal__graphic > svg {
+			max-width: 650px;
 		}
 	}
 }
