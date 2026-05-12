@@ -172,7 +172,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 								{ !! collapsible && (
 									<IconWrapper
 										marginLeft={ 4 }
-										marginRight={ 8 }
+										marginRight={ 10 }
 									>
 										<ChevronDown
 											width={ 12 }
