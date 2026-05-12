@@ -119,7 +119,7 @@ export function createInfoStore(
 		 */
 		getAdminReauthURL: createRegistrySelector(
 			( select ) =>
-				( state, { reAuth } = { reAuth: true } ) => {
+				( state, { reAuth = true } = {} ) => {
 					const needsReauthentication =
 						select( CORE_USER ).needsReauthentication();
 					if ( needsReauthentication === undefined ) {
