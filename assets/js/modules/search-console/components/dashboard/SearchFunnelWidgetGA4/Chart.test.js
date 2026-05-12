@@ -36,7 +36,7 @@ import Chart from './Chart';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 
 jest.mock(
 	'../../../../../components/GoogleChart',

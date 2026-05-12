@@ -44,7 +44,7 @@ import * as tracking from '@/js/util/tracking';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../../tests/js/viewport-utils';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

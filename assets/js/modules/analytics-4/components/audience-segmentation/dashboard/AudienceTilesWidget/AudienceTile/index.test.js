@@ -62,7 +62,7 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../../../tests/js/viewport-utils';
 import { getPreviousDate } from '@/js/util';
 
 jest.mock( 'react-use', () => ( {
