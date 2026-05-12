@@ -216,6 +216,49 @@ describe( 'core/widgets Widgets', () => {
 				expect( container.firstChild ).toMatchSnapshot();
 			} );
 
+			it( 'should store the pdf field unchanged and expose it via getWidget and getWidgets', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'dashboard-header', {
+						title: 'Dashboard Header',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'boxes',
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+
+				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
+					Component: WidgetComponent,
+					pdf,
+				} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( slug, 'dashboard-header' );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidget( slug ).pdf
+				).toBe( pdf );
+
+				const [ widget ] = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header' );
+				expect( widget.pdf ).toBe( pdf );
+			} );
+
 			it( 'should not overwrite an existing widget', () => {
 				function WidgetOne() {
 					return <div>Hello world!</div>;
