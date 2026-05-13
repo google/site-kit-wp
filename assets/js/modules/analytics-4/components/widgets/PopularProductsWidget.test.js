@@ -96,11 +96,12 @@ describe( 'PopularProductsWidget', () => {
 			.receiveIsGatheringData( false );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsCustomDimensionGatheringData(
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
-					.requiredCustomDimensions[ 0 ],
-				false
-			);
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension:
+					KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_PRODUCTS ]
+						.requiredCustomDimensions[ 0 ],
+				gatheringData: false,
+			} );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {

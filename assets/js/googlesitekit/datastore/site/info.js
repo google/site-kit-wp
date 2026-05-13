@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -92,6 +90,7 @@ export const actions = {
 		};
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets `siteKitAutoUpdatesEnabled` value; if set to `true` this will
 	 * enable auto-updates for Site Kit. Set to `false` to disable this

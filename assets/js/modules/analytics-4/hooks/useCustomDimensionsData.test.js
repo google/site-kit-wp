@@ -69,7 +69,10 @@ describe( 'useCustomDimensionsData', () => {
 			.receiveIsGatheringData( false );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsCustomDimensionGatheringData( customDimension, false );
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension,
+				gatheringData: false,
+			} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 			{
 				createTime: '2014-10-02T15:01:23Z',
