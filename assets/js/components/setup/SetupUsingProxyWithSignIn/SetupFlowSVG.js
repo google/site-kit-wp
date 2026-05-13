@@ -27,12 +27,33 @@ import { __ } from '@wordpress/i18n';
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 
 const LazySVGComponent = lazy( () =>
 	import( '../../../../svg/graphics/splash-screenshot.svg' )
 );
 
+const LazyMobileSVGComponent = lazy( () =>
+	import( '../../../../svg/graphics/splash-screenshot-optimised-0.svg' )
+);
+
 export default function SetupFlowSVG() {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const breakpoint = useBreakpoint();
+
+	const isMobileOrTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
+	const SVGComponent =
+		setupFlowRefreshEnabled && isMobileOrTablet
+			? LazyMobileSVGComponent
+			: LazySVGComponent;
+
 	return (
 		<Suspense fallback={ <PreviewBlock width="100%" height="100%" /> }>
 			<MediaErrorHandler
@@ -41,7 +62,7 @@ export default function SetupFlowSVG() {
 					'google-site-kit'
 				) }
 			>
-				<LazySVGComponent />
+				<SVGComponent />
 			</MediaErrorHandler>
 		</Suspense>
 	);
