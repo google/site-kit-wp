@@ -23,7 +23,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,10 +43,11 @@ import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/compo
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
+	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
 	GoalDriverTiles,
+	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
-	useGoalDriversData,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
@@ -94,11 +95,16 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 	);
 
-	const { drivers, hasExpandableRows } = useGoalDriversData( {
-		goalType: GOAL_TYPES.ECOMMERCE,
-		primaryEvent,
-		selectedDriverIDs: resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
-	} );
+	const drivers = useMemo(
+		() =>
+			resolveGoalDriverIDs(
+				resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
+				GOAL_TYPES.ECOMMERCE
+			).map( ( driverID ) => ( {
+				...GOAL_DRIVER_CATALOG[ driverID ],
+			} ) ),
+		[ resolvedSelections ]
+	);
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -130,13 +136,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	const onlineStorePerformanceReportDependencies = [
-		dates?.startDate,
-		dates?.endDate,
-		dates?.compareStartDate,
-		dates?.compareEndDate,
-		primaryEvent,
-	];
+	// Ensure we have a consistent number of entries in the report options
+	// array, so that the useSelect dependencies are consistent.
+	//
+	// If `reportOptions` is used directly as a dependency for the useSelect
+	// calls below, it will cause a console error while loading.
+	const reportOptionArgsForSelect = reportOptions?.length
+		? reportOptions
+		: [ undefined, undefined ];
 
 	const [ primaryEventReport, engagementReport ] =
 		useInViewSelect(
@@ -144,7 +151,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			onlineStorePerformanceReportDependencies
+			reportOptionArgsForSelect
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -154,7 +161,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		onlineStorePerformanceReportDependencies
+		reportOptionArgsForSelect
 	);
 
 	if ( ! primaryEvent ) {
@@ -178,16 +185,19 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	} = processReports( primaryEventReport, engagementReport );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Online store performance', 'google-site-kit' ) }
-			/>
-
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Online Store Performance',
+				'google-site-kit'
+			) }
+			collapsible
+		>
 			{ loading && (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"
 					width="100%"
-					height="100px"
+					height="130px"
 				/>
 			) }
 
@@ -255,7 +265,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			>
 				<GoalDriverTiles
 					drivers={ drivers }
-					hasExpandableRows={ hasExpandableRows }
+					primaryEvent={ primaryEvent }
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>

@@ -38,6 +38,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { Story } from '@/js/types/Story';
 import GoalDriverTiles from './GoalDriverTiles';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
@@ -137,17 +138,17 @@ const drivers: GoalDriverTilesDriver[] = [
 ];
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDriverTiles',
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles',
 	component: GoalDriverTiles,
 	decorators: [
 		(
-			Story: () => ReactElement,
+			StoryComponent: () => ReactElement,
 			{ args }: { args: GoalDriverTilesStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
 					<div className="googlesitekit-widget__body">
-						<Story />
+						<StoryComponent />
 					</div>
 				</div>
 			);
@@ -206,52 +207,56 @@ function Template( {
 	);
 }
 
-export const Default = Template.bind( {} );
-Default.args = {
+export const Ready = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
+Ready.args = {
 	drivers,
 	hasExpandableRows: true,
 	goalType: 'lead',
 };
-Default.scenario = {};
+Ready.scenario = {};
 
-export const NoShowMore = Template.bind( {} );
+export const NoShowMore = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
 NoShowMore.args = {
 	drivers: drivers.map( ( driver ) => ( {
 		...driver,
 		totalRows: 3,
-		rows: driver.rows.slice( 0, 3 ),
+		rows: ( driver.rows || [] ).slice( 0, 3 ),
 	} ) ),
 	hasExpandableRows: false,
 	goalType: 'lead',
 };
 
-export const Loading = Template.bind( {} );
+export const Loading = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
 Loading.args = {
+	...Ready.args,
 	drivers: drivers.map( ( driver ) => ( {
 		...driver,
 		rows: [],
 		loading: true,
 	} ) ),
 	hasExpandableRows: false,
-	goalType: 'lead',
 };
 
-export const NoData = Template.bind( {} );
+export const NoData = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 NoData.args = {
+	...Ready.args,
 	drivers: drivers.map( ( driver ) => ( {
 		...driver,
 		rows: [],
 		loading: false,
 	} ) ),
 	hasExpandableRows: false,
-	goalType: 'lead',
 };
 
-export const Error = Template.bind( {} );
+export const Error = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 Error.args = {
+	...Ready.args,
 	drivers,
 	hasExpandableRows: false,
-	goalType: 'lead',
 	useRetryableError: true,
 	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
 	setupRegistry: async (

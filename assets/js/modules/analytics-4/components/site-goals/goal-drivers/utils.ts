@@ -16,31 +16,24 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import {
-	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-	CONVERSION_REPORTING_LEAD_EVENTS,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-
 export function normalizePrimaryEvents(
 	primaryEvent?: string | string[]
 ): string[] {
-	if ( Array.isArray( primaryEvent ) ) {
-		return Array.from( new Set( primaryEvent.filter( Boolean ) ) );
-	}
+	const primaryEvents = Array.isArray( primaryEvent )
+		? primaryEvent
+		: [ primaryEvent ];
 
-	if ( primaryEvent ) {
-		return [ primaryEvent ];
-	}
-
-	return [];
+	return Array.from(
+		new Set(
+			primaryEvents.filter( ( event ): event is string =>
+				Boolean( event )
+			)
+		)
+	);
 }
 
 export function getDimensionFiltersForEvents( eventNames: string[] ) {
-	if ( ! eventNames?.length ) {
+	if ( ! eventNames.length ) {
 		return undefined;
 	}
 
@@ -50,38 +43,4 @@ export function getDimensionFiltersForEvents( eventNames: string[] ) {
 			value: eventNames,
 		},
 	};
-}
-
-export function getPrimaryEcommerceEvent(
-	detectedEvents: string[] = []
-): string | undefined {
-	const ecommerceDetectedEvents = detectedEvents.filter( ( event ) =>
-		CONVERSION_REPORTING_ECOMMERCE_EVENTS.includes( event )
-	);
-
-	if ( ecommerceDetectedEvents.includes( ENUM_CONVERSION_EVENTS.PURCHASE ) ) {
-		return ENUM_CONVERSION_EVENTS.PURCHASE;
-	}
-
-	return ecommerceDetectedEvents[ 0 ];
-}
-
-export function getDetectedLeadEvents(
-	detectedEvents: string[] = []
-): string[] {
-	const leadEvents = detectedEvents.filter( ( event ) =>
-		CONVERSION_REPORTING_LEAD_EVENTS.includes( event )
-	);
-
-	// If both events are available, we only need submit_lead_form.
-	if (
-		leadEvents.includes( ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM ) &&
-		leadEvents.includes( ENUM_CONVERSION_EVENTS.CONTACT )
-	) {
-		return leadEvents.filter(
-			( event ) => event !== ENUM_CONVERSION_EVENTS.CONTACT
-		);
-	}
-
-	return leadEvents;
 }

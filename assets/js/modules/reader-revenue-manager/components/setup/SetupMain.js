@@ -31,7 +31,6 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -56,19 +55,16 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			'getPublications'
 		)
 	);
-	const publicationCreateShown = useFormValue(
+	const [ publicationCreateShown, setPublicationCreateShown ] = useFormValue(
 		READER_REVENUE_MANAGER_SETUP_FORM,
 		SHOW_PUBLICATION_CREATE
 	);
-	const shouldResetPublications = useFormValue(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		RESET_PUBLICATIONS
-	);
+	const [ shouldResetPublications, setShouldResetPublications ] =
+		useFormValue( READER_REVENUE_MANAGER_SETUP_FORM, RESET_PUBLICATIONS );
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { resetPublications, submitChanges } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
@@ -92,15 +88,13 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			undefined !== publications &&
 			! publications.length
 		) {
-			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_PUBLICATION_CREATE ]: true,
-			} );
+			setPublicationCreateShown( true );
 		}
 	}, [
 		hasResolvedPublications,
 		publicationCreateShown,
 		publications,
-		setValues,
+		setPublicationCreateShown,
 	] );
 
 	const previousPublicationID = usePrevious( publicationID );
@@ -112,14 +106,12 @@ export default function SetupMain( { finishSetup = () => {} } ) {
 			previousPublicationID !== publicationID &&
 			shouldResetPublications
 		) {
-			setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ RESET_PUBLICATIONS ]: false,
-			} );
+			setShouldResetPublications( false );
 		}
 	}, [
 		previousPublicationID,
 		publicationID,
-		setValues,
+		setShouldResetPublications,
 		shouldResetPublications,
 	] );
 

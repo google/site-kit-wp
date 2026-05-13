@@ -61,7 +61,7 @@ interface TopTrafficChannelsGoalDriverStoryProps
 }
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDrivers/TopTrafficChannels',
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles/TopTrafficChannels',
 	component: TopTrafficChannelsGoalDriver,
 	decorators: [
 		(
@@ -98,9 +98,11 @@ function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
 				return error;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[ errorSelectorArgs ]
+			return (
+				select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+					'getReport',
+					[ errorSelectorArgs ]
+				) || error
 			);
 		},
 		[ error, errorSelectorArgs ]
@@ -109,10 +111,10 @@ function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
 	return <TopTrafficChannelsGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Default = Template.bind(
+export const Ready = Template.bind(
 	{}
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
-Default.args = {
+Ready.args = {
 	goalType: 'lead',
 	title: 'Top traffic channels driving leads',
 	rows: [
@@ -123,13 +125,13 @@ Default.args = {
 	loading: false,
 	limit: 3,
 };
-Default.scenario = {};
+Ready.scenario = {};
 
 export const Loading = Template.bind(
 	{}
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Loading.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: true,
 };
@@ -138,7 +140,7 @@ export const NoData = Template.bind(
 	{}
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 NoData.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: false,
 };
@@ -147,9 +149,10 @@ export const Error = Template.bind(
 	{}
 ) as Story< TopTrafficChannelsGoalDriverStoryProps >;
 Error.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: false,
+	error: RETRYABLE_ERROR,
 	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
 	setupRegistry: async (
 		registry: Parameters< typeof provideModules >[ 0 ]
@@ -165,8 +168,12 @@ Error.args = {
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( RETRYABLE_ERROR, 'getReport', [
+			.setErrorForSelector( RETRYABLE_ERROR, 'getReport', [
 				RETRYABLE_REPORT_OPTIONS,
 			] );
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ RETRYABLE_REPORT_OPTIONS ] );
 	},
 };

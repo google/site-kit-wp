@@ -131,7 +131,6 @@ function getActivateAnalyticsStep() {
  * @param {boolean} params.canAuthenticate                        Whether the user can authenticate.
  * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
  * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
- * @param {number}  params.windowHeight                           The height of the window.
  * @return {Object} The welcome tour configuration object.
  */
 export function getWelcomeTour( {
@@ -139,23 +138,18 @@ export function getWelcomeTour( {
 	canAuthenticate,
 	isAnalyticsConnected,
 	isActivateAnalyticsNotificationPresent,
-	windowHeight,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
 	isAnalyticsConnected: boolean;
 	isActivateAnalyticsNotificationPresent: boolean;
-	windowHeight?: number;
 } ) {
 	if ( ! isAnalyticsConnected ) {
 		const steps = [
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
-					target:
-						typeof windowHeight === 'number' && windowHeight < 930
-							? '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-chart'
-							: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
+					target: '.googlesitekit-widget--searchFunnelGA4 .googlesitekit-widget__body',
 				},
 				title: __(
 					'Track Search traffic trends, identify baselines',
@@ -168,6 +162,7 @@ export function getWelcomeTour( {
 				offset: 0,
 				spotlightPadding: 0,
 				placement: 'top',
+				isResponsive: true,
 			},
 			{
 				target: '.googlesitekit-widget--searchConsolePopularKeywords',
@@ -185,6 +180,7 @@ export function getWelcomeTour( {
 				offset: 0,
 				spotlightPadding: 0,
 				placement: 'top',
+				isResponsive: true,
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate, false ),
 		];
@@ -233,6 +229,7 @@ export function getWelcomeTour( {
 				offset: -3,
 				spotlightPadding: 4,
 				placement: 'top-end',
+				isResponsive: true,
 			},
 			{
 				target: '.googlesitekit-widget--analyticsAllTrafficGA4',
@@ -250,6 +247,7 @@ export function getWelcomeTour( {
 				offset: 35,
 				spotlightPadding: 0,
 				placement: 'top',
+				isResponsive: true,
 			},
 			{
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
@@ -267,6 +265,7 @@ export function getWelcomeTour( {
 				offset: 14,
 				spotlightPadding: 4,
 				placement: 'top',
+				isResponsive: true,
 			},
 			{
 				target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
@@ -284,6 +283,7 @@ export function getWelcomeTour( {
 				offset: 25,
 				spotlightPadding: 0,
 				placement: 'top',
+				isResponsive: true,
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
 		],

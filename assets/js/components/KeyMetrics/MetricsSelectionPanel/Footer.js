@@ -38,7 +38,6 @@ import {
 	useRegistry,
 } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -72,9 +71,13 @@ export default function Footer( {
 	const registry = useRegistry();
 	const viewContext = useViewContext();
 
-	const selectedMetrics = useFormValue(
+	const [ selectedMetrics ] = useFormValue(
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
+	);
+	const [ , setAutoSubmit ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'autoSubmit'
 	);
 	const isSavingSettings = useSelect( ( select ) =>
 		select( CORE_USER ).isSavingKeyMetricsSettings()
@@ -144,7 +147,6 @@ export default function Footer( {
 
 	const { saveKeyMetricsSettings, setPermissionScopeError } =
 		useDispatch( CORE_USER );
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const conversionReportingSpecificKeyMetricsWidgets = useSelect(
@@ -185,9 +187,7 @@ export default function Footer( {
 			}
 
 			if ( isGA4Connected && hasMissingCustomDimensions ) {
-				setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-					autoSubmit: true,
-				} );
+				setAutoSubmit( true );
 
 				if ( ! hasAnalytics4EditScope ) {
 					// Let parent component know that the user is navigating to OAuth URL
@@ -233,7 +233,7 @@ export default function Footer( {
 			hasMissingCustomDimensions,
 			isFullScreen,
 			trackingCategory,
-			setValues,
+			setAutoSubmit,
 			hasAnalytics4EditScope,
 			onNavigationToOAuthURL,
 			closePanel,

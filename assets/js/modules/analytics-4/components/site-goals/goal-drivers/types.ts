@@ -42,6 +42,11 @@ export interface GoalDriverComponentProps {
 	error?: unknown;
 	limit?: number;
 	goalType: GoalType;
+	primaryEvent?: string | string[];
+	onExpandableRowsChange?: (
+		id: GoalDriverID,
+		hasExpandableRows: boolean
+	) => void;
 }
 
 export interface GoalDriverData {
@@ -71,23 +76,13 @@ export interface GoalDriverTilesDriver {
 	id: GoalDriverID;
 	title?: string;
 	Component?: ComponentType< GoalDriverComponentProps >;
-	rows: GoalDriverRow[];
-	totalRows: number;
-	loading: boolean;
+	rows?: GoalDriverRow[];
+	totalRows?: number;
+	loading?: boolean;
 	error?: unknown;
 	order?: number;
 	defaultEnabled?: boolean;
 }
-
-export interface GoalDriverHookArgs {
-	goalType: GoalType;
-	primaryEvent?: string | string[];
-}
-
-export interface UseGoalDriversDataArgs extends GoalDriverHookArgs {
-	selectedDriverIDs?: string[];
-}
-
 export interface GoalDriverOption {
 	id: GoalDriverID;
 	order: number;

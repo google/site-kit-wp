@@ -22,6 +22,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { useMemo } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -43,10 +44,11 @@ import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/compo
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
+	GOAL_DRIVER_CATALOG,
 	GOAL_TYPES,
 	GoalDriverTiles,
+	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
-	useGoalDriversData,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
@@ -82,11 +84,16 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
-	const { drivers, hasExpandableRows } = useGoalDriversData( {
-		goalType: GOAL_TYPES.LEAD,
-		primaryEvent: detectedLeadEvents,
-		selectedDriverIDs: resolvedSelections[ GOAL_TYPES.LEAD ],
-	} );
+	const drivers = useMemo(
+		() =>
+			resolveGoalDriverIDs(
+				resolvedSelections[ GOAL_TYPES.LEAD ],
+				GOAL_TYPES.LEAD
+			).map( ( driverID ) => ( {
+				...GOAL_DRIVER_CATALOG[ driverID ],
+			} ) ),
+		[ resolvedSelections ]
+	);
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -121,14 +128,14 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	const leadGenerationPerformanceReportDependencies = [
-		dates?.startDate,
-		dates?.endDate,
-		dates?.compareStartDate,
-		dates?.compareEndDate,
-		hasLeadEvents,
-		detectedLeadEvents?.join( ',' ),
-	];
+	// Ensure we have a consistent number of entries in the report options
+	// array, so that the useSelect dependencies are consistent.
+	//
+	// If `reportOptions` is used directly as a dependency for the useSelect
+	// calls below, it will cause a console error while loading.
+	const reportOptionArgsForSelect = reportOptions?.length
+		? reportOptions
+		: [ undefined, undefined ];
 
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
@@ -136,7 +143,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			leadGenerationPerformanceReportDependencies
+			reportOptionArgsForSelect
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -146,7 +153,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		leadGenerationPerformanceReportDependencies
+		reportOptionArgsForSelect
 	);
 
 	if ( ! hasLeadEvents ) {
@@ -172,18 +179,15 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	} );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Lead generation performance', 'google-site-kit' ) }
-			/>
-
-			{ loading && (
-				<PreviewBlock
-					className="googlesitekit-site-goals-tiles-group"
-					width="100%"
-					height="100px"
-				/>
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Lead generation performance',
+				'google-site-kit'
 			) }
+			collapsible
+		>
+			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
 				<TilesGroup
@@ -246,7 +250,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			>
 				<GoalDriverTiles
 					drivers={ drivers }
-					hasExpandableRows={ hasExpandableRows }
+					primaryEvent={ detectedLeadEvents }
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>

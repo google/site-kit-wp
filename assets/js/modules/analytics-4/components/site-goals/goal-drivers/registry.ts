@@ -186,11 +186,15 @@ export function getGoalDriverTitle(
 }
 
 export function resolveGoalDriverIDs(
-	selectedDriverIDs?: string[],
+	selectedDriverIDs: string[] | undefined = undefined,
 	goalType: GoalType = GOAL_TYPES.ECOMMERCE
 ): GoalDriverID[] {
-	if ( ! Array.isArray( selectedDriverIDs ) ) {
+	if ( selectedDriverIDs === undefined ) {
 		return getDefaultGoalDriverIDs( goalType );
+	}
+
+	if ( ! selectedDriverIDs.length ) {
+		return [];
 	}
 
 	const availableIDs = getGoalTypeDriverIDs( goalType );
@@ -211,10 +215,6 @@ export function resolveGoalDriverIDs(
 	return validSelectedIDs.slice( 0, SITE_GOALS_MAX_SELECTED_DRIVERS );
 }
 
-export function getDriverIDsByGoalType( goalType: GoalType ): GoalDriverID[] {
-	return getGoalTypeDriverIDs( goalType );
-}
-
 export function resolveGoalDriverSelectionState( selectedDrivers?: {
 	[ key: string ]: string[];
 } ): GoalDriverSelectionState {
@@ -222,11 +222,16 @@ export function resolveGoalDriverSelectionState( selectedDrivers?: {
 	const leadSelection = selectedDrivers?.[ GOAL_TYPES.LEAD ];
 
 	return {
-		[ GOAL_TYPES.ECOMMERCE ]: Array.isArray( ecommerceSelection )
-			? resolveGoalDriverIDs( ecommerceSelection, GOAL_TYPES.ECOMMERCE )
-			: getDefaultGoalDriverIDs( GOAL_TYPES.ECOMMERCE ),
-		[ GOAL_TYPES.LEAD ]: Array.isArray( leadSelection )
-			? resolveGoalDriverIDs( leadSelection, GOAL_TYPES.LEAD )
-			: getDefaultGoalDriverIDs( GOAL_TYPES.LEAD ),
+		[ GOAL_TYPES.ECOMMERCE ]:
+			ecommerceSelection !== undefined
+				? resolveGoalDriverIDs(
+						ecommerceSelection,
+						GOAL_TYPES.ECOMMERCE
+				  )
+				: getDefaultGoalDriverIDs( GOAL_TYPES.ECOMMERCE ),
+		[ GOAL_TYPES.LEAD ]:
+			leadSelection !== undefined
+				? resolveGoalDriverIDs( leadSelection, GOAL_TYPES.LEAD )
+				: getDefaultGoalDriverIDs( GOAL_TYPES.LEAD ),
 	};
 }

@@ -379,6 +379,38 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'renders a collapsible widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', {
+				name: 'Hide section',
+			} )
+		).toBeInTheDocument();
+	} );
+
 	it( 'aggregates event counts across multiple detected lead events', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -551,7 +583,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReport ] );
 
-		const { container } = render(
+		const { container, unmount } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -560,9 +592,141 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
 		expect(
-			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-km-widget-tile__loading'
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
 			)
-		).toHaveLength( 3 );
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders goal drivers loading state while primary section stays visible', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ], {
+			loading: true,
+		} );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, unmount, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders goal drivers error state without replacing the full widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		const goalDriverDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const goalDriverReportOptions = {
+			...goalDriverDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.LEAD }`,
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Data loading failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ goalDriverReportOptions ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ goalDriverReportOptions ] );
+
+		const { container, getByText, waitForRegistry, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).toBeInTheDocument();
+		unmount();
 	} );
 } );

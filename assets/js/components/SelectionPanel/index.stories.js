@@ -25,6 +25,7 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import NewBadge from '@/js/components/NewBadge';
+import P from '@/js/components/Typography/P';
 import SelectionPanel from './SelectionPanel';
 import SelectionPanelFooter from './SelectionPanelFooter';
 import SelectionPanelHeader from './SelectionPanelHeader';
@@ -86,7 +87,7 @@ function Template( {
 	return (
 		<SelectionPanel isOpen>
 			<SelectionPanelHeader title="Select items">
-				<p>Select items from the selection below</p>
+				<P>Select items from the selection below</P>
 			</SelectionPanelHeader>
 			<SelectionPanelItems
 				availableSavedItems={ availableSavedItems }

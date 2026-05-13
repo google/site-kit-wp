@@ -38,6 +38,7 @@ import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 import useViewContext from '@/js/hooks/useViewContext';
 import { isFeatureEnabled } from '@/js/features';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
 
@@ -81,6 +82,17 @@ export const floaterProps = {
 	},
 };
 
+const defaultStepOptions = {
+	disableBeacon: true,
+	isFixed: true,
+	placement: 'auto',
+};
+
+const responsiveStepOptions = {
+	placement: 'top',
+	offset: 0,
+};
+
 // GA Event Tracking actions (do not change!)
 export const GA_ACTIONS = {
 	VIEW: 'feature_tooltip_view',
@@ -104,6 +116,8 @@ export default function TourTooltips( {
 	const registry = useRegistry();
 
 	const viewContext = useViewContext();
+
+	const breakpoint = useBreakpoint();
 
 	const stepIndex = useSelect(
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
@@ -217,6 +231,58 @@ export default function TourTooltips( {
 	}
 
 	/**
+	 * Scrolls the step into view.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} step The step object.
+	 */
+	function scrollStepIntoView( step ) {
+		let element = step.target;
+
+		if ( 'string' === typeof step.target ) {
+			element = global.document.querySelector( step.target );
+		}
+
+		if ( ! ( element instanceof Element ) ) {
+			return;
+		}
+
+		if ( ! step.isResponsive || breakpoint !== BREAKPOINT_SMALL ) {
+			element.scrollIntoView( { block: 'center' } );
+			return;
+		}
+
+		const tooltip = document.querySelector( '.__floater' );
+
+		if ( ! tooltip ) {
+			return;
+		}
+
+		const { top, bottom } = element.getBoundingClientRect();
+		const { height: tooltipHeight } = tooltip.getBoundingClientRect();
+
+		const stepTop = top - tooltipHeight - 60 + window.scrollY;
+
+		if ( stepTop >= 0 ) {
+			window.scrollTo( {
+				top: stepTop,
+			} );
+		} else {
+			// We normally want to scroll to the top of the step's target, with enough space for the tooltip, but in some cases where the target is too close to the start of the page, no space will be left for the tooltip, so we switch to scrolling to the bottom of the target instead.
+			const stepBottom =
+				bottom -
+				window.innerHeight +
+				tooltipHeight +
+				60 +
+				window.scrollY;
+			window.scrollTo( {
+				top: stepBottom,
+			} );
+		}
+	}
+
+	/**
 	 * Handles `react-joyride` state changes using callback function.
 	 *
 	 * @typedef {Object} JoyrideCallbackData
@@ -250,11 +316,7 @@ export default function TourTooltips( {
 
 		// Center the target in the viewport when transitioning to the step.
 		if ( EVENTS.STEP_BEFORE === type ) {
-			let element = step.target;
-			if ( 'string' === typeof step.target ) {
-				element = global.document.querySelector( step.target );
-			}
-			element?.scrollIntoView?.( { block: 'center' } );
+			scrollStepIntoView( step );
 		}
 
 		if ( shouldChangeStep ) {
@@ -271,12 +333,16 @@ export default function TourTooltips( {
 	// Start tour on initial render.
 	useMount( startTour );
 
-	const parsedSteps = steps.map( ( step ) => ( {
-		disableBeacon: true,
-		isFixed: true,
-		placement: 'auto',
-		...step,
-	} ) );
+	const parsedSteps = steps.map( ( step ) =>
+		step.isResponsive && breakpoint === BREAKPOINT_SMALL
+			? {
+					...defaultStepOptions,
+					...step,
+					...responsiveStepOptions,
+					floaterProps: { ...step.floaterProps, target: step.target }, // The floater's target is overridden to match the step's target to make it positioned above its corresponding widget. This makes the floater's position consistent in the screen during the tour.
+			  }
+			: { ...defaultStepOptions, ...step }
+	);
 
 	// Customize floater props based on feature flag.
 	const customFloaterProps = setupFlowRefreshEnabled

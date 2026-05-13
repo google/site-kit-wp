@@ -32,7 +32,7 @@ import {
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import GoalDriverTiles from './GoalDriverTiles';
 import type { GoalDriverComponentProps, GoalDriverTilesDriver } from './types';

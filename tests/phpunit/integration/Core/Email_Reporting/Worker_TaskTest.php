@@ -61,6 +61,13 @@ class Worker_TaskTest extends TestCase {
 	private $email_sender;
 
 	/**
+	 * Headers returned by the mocked Email::build_headers().
+	 *
+	 * @var array
+	 */
+	private $mock_headers = array( 'From: Site Kit <wordpress@example.org>' );
+
+	/**
 	 * @var Email_Template_Renderer|\PHPUnit_Framework_MockObject_MockObject
 	 */
 	private $template_renderer;
@@ -103,13 +110,14 @@ class Worker_TaskTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context                   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->scheduler                 = $this->createMock( Email_Reporting_Scheduler::class );
-		$this->batch_query               = $this->createMock( Email_Log_Batch_Query::class );
-		$this->limiter                   = $this->createMock( Max_Execution_Limiter::class );
-		$this->data_requests             = $this->createMock( Email_Reporting_Data_Requests::class );
-		$this->template_formatter        = $this->createMock( Email_Template_Formatter::class );
-		$this->email_sender              = $this->createMock( Email::class );
+		$this->context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->scheduler          = $this->createMock( Email_Reporting_Scheduler::class );
+		$this->batch_query        = $this->createMock( Email_Log_Batch_Query::class );
+		$this->limiter            = $this->createMock( Max_Execution_Limiter::class );
+		$this->data_requests      = $this->createMock( Email_Reporting_Data_Requests::class );
+		$this->template_formatter = $this->createMock( Email_Template_Formatter::class );
+		$this->email_sender       = $this->createMock( Email::class );
+		$this->email_sender->method( 'build_headers' )->willReturn( $this->mock_headers );
 		$this->template_renderer         = $this->createMock( Email_Template_Renderer::class );
 		$this->template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
 		$this->template_renderer_factory->method( 'create' )->willReturn( $this->template_renderer );
@@ -473,7 +481,7 @@ class Worker_TaskTest extends TestCase {
 				'report@example.com',
 				'Subject',
 				$this->stringContains( 'Email' ),
-				array(),
+				array( 'From: Site Kit <wordpress@example.org>' ),
 				'Plain text email content'
 			)
 			->willReturn( true );
@@ -789,7 +797,7 @@ class Worker_TaskTest extends TestCase {
 				$this->callback( fn( $to ) => in_array( $to, array( 'one@example.com', 'two@example.com' ), true ) ),
 				'Subject',
 				$this->stringContains( 'Email' ),
-				array(),
+				array( 'From: Site Kit <wordpress@example.org>' ),
 				'Plain text email content'
 			)
 			->willReturn( true );

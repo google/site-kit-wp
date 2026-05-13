@@ -76,12 +76,12 @@ export default function AudienceTilePagesMetric( {
 		)
 	);
 
-	const isRetryingCustomDimensionCreate = useFormValue(
+	const [ isRetryingCustomDimensionCreate ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isRetrying'
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);
@@ -90,7 +90,7 @@ export default function AudienceTilePagesMetric( {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
 	);

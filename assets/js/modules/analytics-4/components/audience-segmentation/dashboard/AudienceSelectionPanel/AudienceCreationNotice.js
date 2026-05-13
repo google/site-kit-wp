@@ -36,7 +36,6 @@ import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -105,17 +104,14 @@ export default function AudienceCreationNotice() {
 		notification: 'audience_segmentation',
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { createAudience, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const isCreatingAudienceFromOAuth = useFormValue(
-		AUDIENCE_CREATION_FORM,
-		'autoSubmit'
-	);
+	const [ isCreatingAudienceFromOAuth, setIsCreatingAudienceFromOAuth ] =
+		useFormValue( AUDIENCE_CREATION_FORM, 'autoSubmit' );
 
-	const failedAudienceToCreate = useFormValue(
+	const [ failedAudienceToCreate, setFailedAudienceToCreate ] = useFormValue(
 		AUDIENCE_CREATION_FORM,
 		'audienceToCreate'
 	);
@@ -127,10 +123,8 @@ export default function AudienceCreationNotice() {
 			setIsCreatingAudience( audienceSlug );
 
 			if ( ! hasAnalytics4EditScope ) {
-				setValues( AUDIENCE_CREATION_FORM, {
-					autoSubmit: true,
-					audienceToCreate: audienceSlug,
-				} );
+				setIsCreatingAudienceFromOAuth( true );
+				setFailedAudienceToCreate( audienceSlug );
 
 				// Set permission scope error to trigger OAuth flow.
 				setPermissionScopeError( {
@@ -150,10 +144,8 @@ export default function AudienceCreationNotice() {
 				return;
 			}
 
-			setValues( AUDIENCE_CREATION_FORM, {
-				autoSubmit: false,
-				audienceToCreate: undefined,
-			} );
+			setIsCreatingAudienceFromOAuth( false );
+			setFailedAudienceToCreate( undefined );
 
 			const { error } = await createAudience(
 				SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
@@ -176,8 +168,9 @@ export default function AudienceCreationNotice() {
 		[
 			hasAnalytics4EditScope,
 			createAudience,
+			setIsCreatingAudienceFromOAuth,
+			setFailedAudienceToCreate,
 			syncAvailableAudiences,
-			setValues,
 			setPermissionScopeError,
 			redirectURL,
 			setValue,

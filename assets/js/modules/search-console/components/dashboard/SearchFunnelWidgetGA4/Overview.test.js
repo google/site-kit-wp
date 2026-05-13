@@ -29,7 +29,7 @@ import {
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';

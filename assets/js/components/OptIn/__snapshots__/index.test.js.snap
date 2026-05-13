@@ -12,6 +12,7 @@ exports[`OptIn should render correctly 1`] = `
         class="mdc-checkbox"
       >
         <input
+          aria-checked="false"
           class="mdc-checkbox__native-control"
           id="googlesitekit-opt-in-test"
           name="optInTest"
@@ -67,7 +68,6 @@ exports[`OptIn should render correctly 1`] = `
           </a>
         </span>
       </label>
-      
     </div>
   </div>
 </div>
@@ -119,7 +119,6 @@ exports[`OptIn should show a spinner when tracking is loading 1`] = `
           </a>
         </span>
       </label>
-      
     </div>
   </div>
 </div>

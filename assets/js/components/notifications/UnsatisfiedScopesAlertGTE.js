@@ -39,7 +39,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [ temporaryPersistedPermissionsError ] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);

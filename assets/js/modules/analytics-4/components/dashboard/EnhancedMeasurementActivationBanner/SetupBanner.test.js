@@ -35,7 +35,7 @@ import SetupBanner from './SetupBanner';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-width-utils';
+} from '../../../../../../../tests/js/viewport-utils';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 describe( 'SetupBanner', () => {

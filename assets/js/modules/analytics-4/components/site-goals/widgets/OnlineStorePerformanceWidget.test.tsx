@@ -396,6 +396,39 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'renders a collapsible widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', {
+				name: 'Hide section',
+			} )
+		).toBeInTheDocument();
+	} );
+
 	it( 'falls back to add_to_cart when purchase is not detected', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -548,7 +581,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ engagementReport ] );
 
-		const { container } = render(
+		const { container, unmount } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -557,9 +590,143 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			container.querySelector( '.googlesitekit-preview-block' )
 		).toBeInTheDocument();
 		expect(
-			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-km-widget-tile__loading'
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
 			)
-		).toHaveLength( 3 );
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders goal drivers loading state while primary section stays visible', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
+			loading: true,
+		} );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, unmount, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders goal drivers error state without replacing the full widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+		const goalDriverDates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const goalDriverReportOptions = {
+			...goalDriverDates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Data loading failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ goalDriverReportOptions ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ goalDriverReportOptions ] );
+
+		const { container, getByText, waitForRegistry, unmount } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).toBeInTheDocument();
+		unmount();
 	} );
 } );

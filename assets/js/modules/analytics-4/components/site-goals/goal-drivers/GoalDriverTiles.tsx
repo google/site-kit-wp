@@ -35,66 +35,96 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+} from './constants';
 import type {
+	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
 	GoalType,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+} from './types';
 
 interface GoalDriverTilesProps {
 	drivers?: GoalDriverTilesDriver[];
 	hasExpandableRows?: boolean;
+	primaryEvent?: string | string[];
 	goalType: GoalType;
+}
+
+interface RenderableGoalDriver extends GoalDriverTilesDriver {
+	Component: FC< GoalDriverComponentProps >;
+}
+
+function isRenderableGoalDriver(
+	driver: GoalDriverTilesDriver
+): driver is RenderableGoalDriver {
+	return !! driver.Component;
 }
 
 const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 	drivers = [],
-	hasExpandableRows = false,
+	hasExpandableRows,
+	primaryEvent,
 	goalType,
 } ) => {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const [ isExpanded, setIsExpanded ] = useState( false );
+	const [ expandableDrivers, setExpandableDrivers ] = useState<
+		Record< string, boolean >
+	>( {} );
 
 	const onShowMoreClick = useCallback( () => {
 		setIsExpanded( ( currentState ) => ! currentState );
 	}, [] );
+	const onExpandableRowsChange = useCallback(
+		( driverID: string, canExpand: boolean ) => {
+			setExpandableDrivers( ( currentState ) => {
+				if ( currentState[ driverID ] === canExpand ) {
+					return currentState;
+				}
+
+				return {
+					...currentState,
+					[ driverID ]: canExpand,
+				};
+			} );
+		},
+		[]
+	);
 
 	const limit =
 		isExpanded && ! isMobileBreakpoint
 			? GOAL_DRIVER_ROW_LIMIT_EXPANDED
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
+	const filteredDrivers = drivers.filter( isRenderableGoalDriver );
+	const hasExpandableDrivers =
+		typeof hasExpandableRows === 'boolean'
+			? hasExpandableRows
+			: Object.values( expandableDrivers ).some( Boolean );
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-site-goals-goal-drivers-section__tiles">
-				{ drivers.map( ( driver ) => {
-					const DriverComponent = driver.Component;
-
-					if ( ! DriverComponent ) {
-						return null;
-					}
-
-					return (
+				{ filteredDrivers.map(
+					( { Component: DriverComponent, ...driver } ) => (
 						<div
 							key={ driver.id }
 							className="googlesitekit-site-goals-goal-drivers-section__tile"
 						>
 							<DriverComponent
-								title={ driver.title }
-								rows={ driver.rows }
-								totalRows={ driver.totalRows }
-								loading={ driver.loading }
-								error={ driver.error }
-								limit={ limit }
 								goalType={ goalType }
+								primaryEvent={ primaryEvent }
+								limit={ limit }
+								onExpandableRowsChange={
+									onExpandableRowsChange
+								}
+								{ ...driver }
 							/>
 						</div>
-					);
-				} ) }
+					)
+				) }
 			</div>
 
-			{ hasExpandableRows && ! isMobileBreakpoint && (
+			{ hasExpandableDrivers && ! isMobileBreakpoint && (
 				<Link
 					className="googlesitekit-site-goals-goal-drivers-section__show-more"
 					onClick={ onShowMoreClick }

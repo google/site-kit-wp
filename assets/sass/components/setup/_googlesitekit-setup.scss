@@ -130,10 +130,22 @@
 	}
 
 	.googlesitekit-initial-setup {
+		display: flex;
+		flex-direction: column;
+		min-height: calc(100vh - 118px); // 46px admin bar + 72px header
 		padding: 0;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-height: calc(100vh - 160px); // 32px admin bar + 88px header + 40px WP footer
+		}
+
+		> .googlesitekit-layout {
+			flex-grow: 1;
+		}
 
 		.googlesitekit-setup__wrapper {
 			border-radius: 0;
+			flex-grow: 1;
 		}
 
 		.googlesitekit-setup__reset-notice {
@@ -248,4 +260,18 @@
 
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-setup__step-hint-tooltip {
 	max-width: 220px;
+}
+
+body.googlesitekit-setup-flow {
+	// Remove padding bottom for non-splash pages.
+	&:not(.site-kit_page_googlesitekit-splash) #wpbody-content {
+		padding-bottom: 0;
+	}
+
+	// Remove padding bottom for splash pages on large screens.
+	@media (height > 940px) {
+		&.site-kit_page_googlesitekit-splash #wpbody-content {
+			padding-bottom: 0;
+		}
+	}
 }

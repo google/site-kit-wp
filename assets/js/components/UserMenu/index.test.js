@@ -202,4 +202,66 @@ describe( 'UserMenu', () => {
 			} );
 		} );
 	} );
+
+	describe( 'Manage email reports visibility with `showProgress` and `setupFlowRefresh`', () => {
+		beforeEach( () => {
+			provideUserInfo( registry );
+			provideSiteInfo( registry );
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard';
+		} );
+
+		it( 'should hide Manage email reports when `showProgress` is "true" and `setupFlowRefresh` is enabled', () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
+
+			const { container, queryByText } = render( <UserMenu />, {
+				registry,
+				features: [ 'proactiveUserEngagement', 'setupFlowRefresh' ],
+			} );
+
+			fireEvent.click(
+				container.querySelector(
+					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
+				)
+			);
+
+			expect(
+				queryByText( 'Manage email reports' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should show Manage email reports when `showProgress` is not "true" and both feature flags are enabled', () => {
+			const { container, getByText } = render( <UserMenu />, {
+				registry,
+				features: [ 'proactiveUserEngagement', 'setupFlowRefresh' ],
+			} );
+
+			fireEvent.click(
+				container.querySelector(
+					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
+				)
+			);
+
+			expect( getByText( 'Manage email reports' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should show Manage email reports when `setupFlowRefresh` is disabled even if `showProgress` is "true"', () => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
+
+			const { container, getByText } = render( <UserMenu />, {
+				registry,
+				features: [ 'proactiveUserEngagement' ],
+			} );
+
+			fireEvent.click(
+				container.querySelector(
+					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
+				)
+			);
+
+			expect( getByText( 'Manage email reports' ) ).toBeInTheDocument();
+		} );
+	} );
 } );

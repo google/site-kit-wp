@@ -35,13 +35,6 @@ export {
 export { default as TopTrafficChannelsGoalDriver } from './TopTrafficChannelsGoalDriver';
 export { default as TopPagesGoalDriver } from './TopPagesGoalDriver';
 export { default as VisitorTypeGoalDriver } from './VisitorTypeGoalDriver';
-export {
-	useGoalDriversData,
-	useTopTrafficChannelsGoalDriverData,
-	useTopPagesGoalDriverData,
-	useVisitorTypeGoalDriverData,
-} from './hooks';
-export { getDetectedLeadEvents, getPrimaryEcommerceEvent } from './utils';
 export type {
 	GoalDriverID,
 	GoalDriverRow,

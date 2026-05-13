@@ -60,7 +60,7 @@ interface TopPagesGoalDriverStoryProps extends GoalDriverComponentProps {
 }
 
 export default {
-	title: 'Modules/Analytics4/Site Goals/GoalDrivers/TopPages',
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles/TopPages',
 	component: TopPagesGoalDriver,
 	decorators: [
 		(
@@ -97,9 +97,11 @@ function Template( props: TopPagesGoalDriverStoryProps ) {
 				return error;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-				'getReport',
-				[ errorSelectorArgs ]
+			return (
+				select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+					'getReport',
+					[ errorSelectorArgs ]
+				) || error
 			);
 		},
 		[ error, errorSelectorArgs ]
@@ -108,10 +110,10 @@ function Template( props: TopPagesGoalDriverStoryProps ) {
 	return <TopPagesGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Default = Template.bind(
+export const Ready = Template.bind(
 	{}
 ) as Story< TopPagesGoalDriverStoryProps >;
-Default.args = {
+Ready.args = {
 	goalType: 'lead',
 	title: 'Top pages driving leads',
 	rows: [
@@ -134,13 +136,13 @@ Default.args = {
 	loading: false,
 	limit: 3,
 };
-Default.scenario = {};
+Ready.scenario = {};
 
 export const Loading = Template.bind(
 	{}
 ) as Story< TopPagesGoalDriverStoryProps >;
 Loading.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: true,
 };
@@ -149,7 +151,7 @@ export const NoData = Template.bind(
 	{}
 ) as Story< TopPagesGoalDriverStoryProps >;
 NoData.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: false,
 };
@@ -158,9 +160,10 @@ export const Error = Template.bind(
 	{}
 ) as Story< TopPagesGoalDriverStoryProps >;
 Error.args = {
-	...Default.args,
+	...Ready.args,
 	rows: [],
 	loading: false,
+	error: RETRYABLE_ERROR,
 	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
 	setupRegistry: async (
 		registry: Parameters< typeof provideModules >[ 0 ]
@@ -176,8 +179,12 @@ Error.args = {
 
 		await registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveError( RETRYABLE_ERROR, 'getReport', [
+			.setErrorForSelector( RETRYABLE_ERROR, 'getReport', [
 				RETRYABLE_REPORT_OPTIONS,
 			] );
+
+		await registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ RETRYABLE_REPORT_OPTIONS ] );
 	},
 };
