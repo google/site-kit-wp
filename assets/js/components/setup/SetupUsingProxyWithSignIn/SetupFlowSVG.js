@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
-import { useFeature } from '@/js/hooks/useFeature';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -43,16 +42,14 @@ const LazyMobileSVGComponent = lazy( () =>
 );
 
 export default function SetupFlowSVG() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const breakpoint = useBreakpoint();
 
 	const isMobileOrTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
-	const SVGComponent =
-		setupFlowRefreshEnabled && isMobileOrTablet
-			? LazyMobileSVGComponent
-			: LazySVGComponent;
+	const SVGComponent = isMobileOrTablet
+		? LazyMobileSVGComponent
+		: LazySVGComponent;
 
 	return (
 		<Suspense fallback={ <PreviewBlock width="100%" height="100%" /> }>
