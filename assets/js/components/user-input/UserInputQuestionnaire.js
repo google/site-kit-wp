@@ -43,7 +43,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import ProgressSegments from '@/js/components/ProgressSegments';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -62,13 +61,12 @@ export default function UserInputQuestionnaire() {
 		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ 0 ] );
 	}
 
-	const { setValues } = useDispatch( CORE_FORMS );
-	const questionNumberExists = useFormValue(
+	const [ questionNumberValue, setQuestionNumber ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_NUMBER,
 		'questionNumber'
 	);
 	const questionNumber =
-		questionNumberExists !== undefined ? questionNumberExists : 1;
+		questionNumberValue !== undefined ? questionNumberValue : 1;
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -125,15 +123,13 @@ export default function UserInputQuestionnaire() {
 			USER_INPUT_QUESTIONS_LIST[ activeSlugIndex ]
 		);
 		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ activeSlugIndex + 1 ] );
-		setValues( FORM_USER_INPUT_QUESTION_NUMBER, {
-			questionNumber: questionNumber + 1,
-		} );
+		setQuestionNumber( questionNumber + 1 );
 		scrollToQuestion();
 	}, [
 		activeSlugIndex,
 		gaEventCategory,
 		setActiveSlug,
-		setValues,
+		setQuestionNumber,
 		questionNumber,
 	] );
 
@@ -144,15 +140,13 @@ export default function UserInputQuestionnaire() {
 			USER_INPUT_QUESTIONS_LIST[ activeSlugIndex ]
 		);
 		setActiveSlug( USER_INPUT_QUESTIONS_LIST[ activeSlugIndex - 1 ] );
-		setValues( FORM_USER_INPUT_QUESTION_NUMBER, {
-			questionNumber: questionNumber - 1,
-		} );
+		setQuestionNumber( questionNumber - 1 );
 		scrollToQuestion();
 	}, [
 		activeSlugIndex,
 		gaEventCategory,
 		setActiveSlug,
-		setValues,
+		setQuestionNumber,
 		questionNumber,
 	] );
 

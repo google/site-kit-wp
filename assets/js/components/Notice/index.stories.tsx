@@ -36,9 +36,7 @@ import { NOTICE_TYPES } from './constants';
 
 function Template() {
 	return (
-		/* @ts-expect-error `Grid` component is not typed. */
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
-			{ /* @ts-expect-error `Row` component is not typed. */ }
 			<Row className="googlesitekit-widget-area-widgets">
 				<Cell size={ 12 }>
 					<h3>Info Notice</h3>

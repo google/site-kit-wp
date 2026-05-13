@@ -45,7 +45,6 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '@/js/util/errors';
 import SetupFormFields from './SetupFormFields';
@@ -64,7 +63,10 @@ export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_SETUP,
+		'autoSubmit'
+	);
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).canSubmitChanges()
 	);
@@ -100,12 +102,11 @@ export default function SetupForm( { finishSetup } ) {
 		);
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
 
-	const isEnhancedMeasurementEnabled = useFormValue(
+	const [ isEnhancedMeasurementEnabled ] = useFormValue(
 		ENHANCED_MEASUREMENT_FORM,
 		ENHANCED_MEASUREMENT_ENABLED
 	);
@@ -117,12 +118,12 @@ export default function SetupForm( { finishSetup } ) {
 			event.preventDefault();
 			// Disable autoSubmit unconditionally to prevent
 			// automatic invocation more than once.
-			setValues( FORM_SETUP, { autoSubmit: false } );
+			setAutoSubmit( false );
 
 			const { error } = await submitChanges();
 
 			if ( isPermissionScopeError( error ) ) {
-				setValues( FORM_SETUP, { autoSubmit: true } );
+				setAutoSubmit( true );
 			}
 
 			if ( ! error ) {
@@ -144,7 +145,7 @@ export default function SetupForm( { finishSetup } ) {
 			isEnhancedMeasurementEnabled,
 			setConversionTrackingEnabled,
 			saveConversionTrackingSettings,
-			setValues,
+			setAutoSubmit,
 			submitChanges,
 			viewContext,
 		]

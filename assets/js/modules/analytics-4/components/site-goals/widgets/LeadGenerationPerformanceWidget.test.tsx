@@ -379,6 +379,37 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'renders a collapsible widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', {
+				name: 'Hide section',
+			} )
+		).toBeInTheDocument();
+	} );
+
 	it( 'aggregates event counts across multiple detected lead events', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

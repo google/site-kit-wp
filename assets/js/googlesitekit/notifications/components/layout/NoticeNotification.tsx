@@ -85,9 +85,7 @@ const NoticeNotification: FC< NoticeNotificationProps & NoticeProps > = ( {
 	}
 
 	return (
-		/* @ts-expect-error `<Grid>` component is not yet typed. */
 		<Grid>
-			{ /* @ts-expect-error `<Row>` component is not yet typed. */ }
 			<Row>
 				<Cell size={ 12 } alignMiddle>
 					<Notice

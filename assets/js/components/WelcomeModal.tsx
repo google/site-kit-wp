@@ -22,6 +22,7 @@
 import {
 	createInterpolateElement,
 	useCallback,
+	useEffect,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -40,6 +41,7 @@ import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -49,7 +51,7 @@ import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { trackEvent } from '@/js/util';
+import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
 import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -158,6 +160,17 @@ export default function WelcomeModal() {
 
 	const { dismissItem, triggerOnDemandTour } = useDispatch( CORE_USER );
 	const [ , setNotification ] = useQueryArg( 'notification' );
+
+	useEffect( () => {
+		if (
+			modalVariant === MODAL_VARIANT.GATHERING_DATA ||
+			modalVariant === MODAL_VARIANT.DATA_AVAILABLE
+		) {
+			dismissItem( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG, {
+				expiresInSeconds: WEEK_IN_SECONDS,
+			} );
+		}
+	}, [ modalVariant, dismissItem ] );
 
 	const tooltipSettings = {
 		target: '.googlesitekit-help-menu__button',
@@ -348,6 +361,7 @@ export default function WelcomeModal() {
 
 	return (
 		<BannerModal
+			className="googlesitekit-banner-modal--welcome-modal"
 			Graphic={ Graphic }
 			onView={ handleView }
 			onClose={ handleClose }

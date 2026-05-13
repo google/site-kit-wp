@@ -69,7 +69,7 @@ export default function SetupUsingProxyWithSignIn() {
 	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
-	const connectAnalytics = useFormValue(
+	const [ connectAnalytics ] = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
 		ANALYTICS_NOTICE_CHECKBOX
 	);

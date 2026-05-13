@@ -32,8 +32,7 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	FORM_SETUP,
@@ -55,7 +54,10 @@ export default function WebDataStreamNameInput() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const webDataStreamName = useFormValue( FORM_SETUP, 'webDataStreamName' );
+	const [ webDataStreamName, setWebDataStreamName ] = useFormValue(
+		FORM_SETUP,
+		'webDataStreamName'
+	);
 	const webDataStreamAlreadyExists = useSelect( ( select ) =>
 		isValidPropertyID( propertyID )
 			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
@@ -68,13 +70,11 @@ export default function WebDataStreamNameInput() {
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setValues( FORM_SETUP, { webDataStreamName: currentTarget.value } );
+			setWebDataStreamName( currentTarget.value );
 		},
-		[ setValues ]
+		[ setWebDataStreamName ]
 	);
 
 	// Set the default web data stream name.
@@ -82,9 +82,7 @@ export default function WebDataStreamNameInput() {
 		if ( ! webDataStreamName && isURL( siteURL ) ) {
 			const { hostname } = new URL( siteURL );
 
-			setValues( FORM_SETUP, {
-				webDataStreamName: hostname,
-			} );
+			setWebDataStreamName( hostname );
 		}
 	} );
 

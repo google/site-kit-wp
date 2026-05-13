@@ -184,7 +184,7 @@ export function registerDefaults( widgetsAPI ) {
 	widgetsAPI.registerWidgetArea(
 		AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
 		{
-			title: __( 'Site Goals', 'google-site-kit' ),
+			title: __( 'Site goals', 'google-site-kit' ),
 			subtitle: __(
 				'See how your site is helping you reach your business objectives',
 				'google-site-kit'

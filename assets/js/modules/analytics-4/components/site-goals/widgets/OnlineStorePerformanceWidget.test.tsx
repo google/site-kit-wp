@@ -396,6 +396,38 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'renders a collapsible widget', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByRole, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'button', {
+				name: 'Hide section',
+			} )
+		).toBeInTheDocument();
+	} );
+
 	it( 'falls back to add_to_cart when purchase is not detected', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )

@@ -22,20 +22,12 @@
 		.mdc-dialog__surface {
 			overflow: hidden;
 		}
-
-		.mdc-dialog__container {
-			max-width: 491px;
-		}
 	}
 
 	.googlesitekit-banner-modal__graphic {
 		background-image: linear-gradient(to bottom, $c-site-kit-sk-50, $c-white);
 		max-height: 200px;
 		position: relative;
-
-		> svg {
-			max-width: 491px;
-		}
 	}
 
 	.googlesitekit-banner-modal__close-button {
@@ -85,15 +77,20 @@
 	}
 
 	.googlesitekit-banner-modal__text {
+		margin: 25px 0 0;
 		padding: 0 $grid-gap-phone;
 
 		@media (min-width: $bp-tablet) {
 			padding: 0 $grid-gap-desktop;
 		}
+
+		.googlesitekit-new-badge {
+			margin-bottom: 8px;
+		}
 	}
 
 	.googlesitekit-banner-modal__title {
-		margin: 25px 0 0;
+		margin: 0;
 	}
 
 	.googlesitekit-banner-modal__description {
@@ -121,6 +118,26 @@
 
 		.googlesitekit-banner-modal__footer.mdc-dialog__actions {
 			margin-top: 16px;
+		}
+	}
+
+	.googlesitekit-banner-modal--welcome-modal {
+		.mdc-dialog__container {
+			max-width: 491px;
+		}
+
+		.googlesitekit-banner-modal__graphic > svg {
+			max-width: 491px;
+		}
+	}
+
+	.googlesitekit-banner-modal--site-goals-intro {
+		.mdc-dialog__container {
+			max-width: 650px;
+		}
+
+		.googlesitekit-banner-modal__graphic > svg {
+			max-width: 650px;
 		}
 	}
 }

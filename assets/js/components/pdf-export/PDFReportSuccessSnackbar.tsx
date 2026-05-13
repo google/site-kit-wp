@@ -36,7 +36,6 @@ import Link from '@/js/components/Link';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export interface PDFReportSuccessSnackbarProps {
-	onRetryDownload?: () => void;
 	onDismiss?: (
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) => void;
@@ -49,7 +48,6 @@ export interface PDFReportSuccessSnackbarProps {
 }
 
 const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
-	onRetryDownload = () => {},
 	onDismiss = () => {},
 	onAutoDismiss = () => {},
 	autoDismissMS = 10000,
@@ -74,11 +72,16 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 
 	const defaultDescription = createInterpolateElement(
 		__(
-			'The PDF report has been automatically downloaded to your downloads folder. <a>Click here</a> if the download didn’t start automatically.',
+			'The PDF report has been automatically downloaded to your downloads folder. If the download doesn’t start automatically, you can manually <a>download your report</a>.',
 			'google-site-kit'
 		),
 		{
-			a: <Link onClick={ onRetryDownload } />,
+			a: (
+				// TODO: Replace the `href` value with the actual Blob URL to
+				// download the report when available.
+				// This `href="#" is just a placeholder.
+				<Link href="#" />
+			),
 		}
 	);
 

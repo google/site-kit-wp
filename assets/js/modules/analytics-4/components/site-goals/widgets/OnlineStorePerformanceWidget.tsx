@@ -119,13 +119,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	const onlineStorePerformanceReportDependencies = [
-		dates?.startDate,
-		dates?.endDate,
-		dates?.compareStartDate,
-		dates?.compareEndDate,
-		primaryEvent,
-	];
+	// Ensure we have a consistent number of entries in the report options
+	// array, so that the useSelect dependencies are consistent.
+	//
+	// If `reportOptions` is used directly as a dependency for the useSelect
+	// calls below, it will cause a console error while loading.
+	const reportOptionArgsForSelect = reportOptions?.length
+		? reportOptions
+		: [ undefined, undefined ];
 
 	const [ primaryEventReport, engagementReport ] =
 		useInViewSelect(
@@ -133,7 +134,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			onlineStorePerformanceReportDependencies
+			reportOptionArgsForSelect
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -143,7 +144,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		onlineStorePerformanceReportDependencies
+		reportOptionArgsForSelect
 	);
 
 	if ( ! primaryEvent ) {
@@ -167,11 +168,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	} = processReports( primaryEventReport, engagementReport );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Online store performance', 'google-site-kit' ) }
-			/>
-
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Online Store Performance',
+				'google-site-kit'
+			) }
+			collapsible
+		>
 			{ loading && (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"

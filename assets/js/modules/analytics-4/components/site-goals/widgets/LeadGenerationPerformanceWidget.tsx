@@ -114,14 +114,14 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	const leadGenerationPerformanceReportDependencies = [
-		dates?.startDate,
-		dates?.endDate,
-		dates?.compareStartDate,
-		dates?.compareEndDate,
-		hasLeadEvents,
-		detectedLeadEvents?.join( ',' ),
-	];
+	// Ensure we have a consistent number of entries in the report options
+	// array, so that the useSelect dependencies are consistent.
+	//
+	// If `reportOptions` is used directly as a dependency for the useSelect
+	// calls below, it will cause a console error while loading.
+	const reportOptionArgsForSelect = reportOptions?.length
+		? reportOptions
+		: [ undefined, undefined ];
 
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
@@ -129,7 +129,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			leadGenerationPerformanceReportDependencies
+			reportOptionArgsForSelect
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -139,7 +139,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		leadGenerationPerformanceReportDependencies
+		reportOptionArgsForSelect
 	);
 
 	if ( ! hasLeadEvents ) {
@@ -165,18 +165,15 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	} );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Lead generation performance', 'google-site-kit' ) }
-			/>
-
-			{ loading && (
-				<PreviewBlock
-					className="googlesitekit-site-goals-tiles-group"
-					width="100%"
-					height="130px"
-				/>
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Lead generation performance',
+				'google-site-kit'
 			) }
+			collapsible
+		>
+			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
 				<TilesGroup

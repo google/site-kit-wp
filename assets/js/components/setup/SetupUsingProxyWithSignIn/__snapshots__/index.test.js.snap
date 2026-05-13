@@ -329,7 +329,6 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                             </a>
                           </span>
                         </label>
-                        
                       </div>
                     </div>
                     <div
@@ -658,6 +657,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                             class="mdc-checkbox"
                           >
                             <input
+                              aria-checked="false"
                               class="mdc-checkbox__native-control"
                               id="googlesitekit-analytics-setup-opt-in"
                               name="googlesitekit-analytics-setup-opt-in"
@@ -691,7 +691,6 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                             </strong>
                              Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
                           </label>
-                          
                         </div>
                       </div>
                       <div
@@ -744,7 +743,6 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                             </a>
                           </span>
                         </label>
-                        
                       </div>
                     </div>
                     <div
@@ -1073,6 +1071,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             class="mdc-checkbox"
                           >
                             <input
+                              aria-checked="false"
                               class="mdc-checkbox__native-control"
                               id="googlesitekit-analytics-setup-opt-in"
                               name="googlesitekit-analytics-setup-opt-in"
@@ -1106,7 +1105,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             </strong>
                              Activate Google Analytics to track how much traffic you’re getting and how people navigate your site.
                           </label>
-                          
                         </div>
                       </div>
                       <div
@@ -1159,7 +1157,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                             </a>
                           </span>
                         </label>
-                        
                       </div>
                     </div>
                     <div
@@ -1403,6 +1400,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -1513,7 +1511,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </a>
                     </span>
                   </label>
-                  
                 </div>
               </div>
               <div
@@ -1802,7 +1799,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </a>
                     </span>
                   </label>
-                  
                 </div>
               </div>
               <div
@@ -2057,6 +2053,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2167,7 +2164,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </a>
                     </span>
                   </label>
-                  
                 </div>
               </div>
               <div
@@ -2422,6 +2418,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2532,7 +2529,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </a>
                     </span>
                   </label>
-                  
                 </div>
               </div>
               <div
@@ -2787,6 +2783,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     class="mdc-checkbox"
                   >
                     <input
+                      aria-checked="false"
                       class="mdc-checkbox__native-control"
                       id="googlesitekit-analytics-setup-opt-in"
                       name="googlesitekit-analytics-setup-opt-in"
@@ -2897,7 +2894,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                       </a>
                     </span>
                   </label>
-                  
                 </div>
               </div>
               <div
