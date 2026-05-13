@@ -192,7 +192,7 @@ export default function DashboardMainApp() {
 	} );
 
 	const widgetContextOptions = {
-		modules: viewableModules ? viewableModules : undefined,
+		modules: viewableModules,
 	};
 
 	const isKeyMetricsActive = useSelect( ( select ) =>
@@ -300,10 +300,14 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const isWelcomeTourActive = useSelect( ( select ) => {
+	const showSetupOverlays = useSelect( ( select ) => {
+		if ( hideSetupCTAs ) {
+			return false;
+		}
+
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return [
+		return ! [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
@@ -341,7 +345,7 @@ export default function DashboardMainApp() {
 					/>
 				) }
 
-				{ ! isWelcomeTourActive && ! hideSetupCTAs && (
+				{ showSetupOverlays && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
