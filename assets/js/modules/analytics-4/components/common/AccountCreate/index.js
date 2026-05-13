@@ -102,7 +102,10 @@ export default function AccountCreate( { className } ) {
 	const hasAccountCreateForm = useSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
 	);
-	const autoSubmit = useFormValue( FORM_ACCOUNT_CREATE, 'autoSubmit' );
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_ACCOUNT_CREATE,
+		'autoSubmit'
+	);
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -176,7 +179,7 @@ export default function AccountCreate( { className } ) {
 		// this particular case has some special handling to improve UX.
 		if ( scopes.length > 0 ) {
 			// When state is restored, auto-submit the request again.
-			setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
+			setAutoSubmit( true );
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 				message: __(
@@ -192,7 +195,7 @@ export default function AccountCreate( { className } ) {
 			return;
 		}
 
-		setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
+		setAutoSubmit( false );
 
 		if ( isInitialSetupFlow ) {
 			await trackEvent(
@@ -218,7 +221,7 @@ export default function AccountCreate( { className } ) {
 	}, [
 		hasEditScope,
 		hasGTMScope,
-		setValues,
+		setAutoSubmit,
 		isInitialSetupFlow,
 		createAccount,
 		showProgress,

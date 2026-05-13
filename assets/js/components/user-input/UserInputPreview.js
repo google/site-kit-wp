@@ -60,7 +60,6 @@ import CancelUserInputButton from './CancelUserInputButton';
 import { hasErrorForAnswer } from './util/validation';
 import Portal from '@/js/components/Portal';
 import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import KeyMetricsSettingsSellProductsSubtleNotification from './KeyMetricsSettingsSellProductsSubtleNotification';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -117,7 +116,7 @@ export default function UserInputPreview( props ) {
 
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 
-	const savedPurposeSnapshot = useFormValue(
+	const [ savedPurposeSnapshot, setSavedPurposeSnapshot ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
@@ -150,7 +149,6 @@ export default function UserInputPreview( props ) {
 	);
 
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValues: setUIValues } = useDispatch( CORE_UI );
 
 	async function openModalIfMetricsChanged() {
@@ -165,9 +163,7 @@ export default function UserInputPreview( props ) {
 
 			if ( savedPurposeSnapshot?.length ) {
 				await resetUserInputSettings();
-				setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-					[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
-				} );
+				setSavedPurposeSnapshot( undefined );
 			}
 			setUIValues( {
 				[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
@@ -206,13 +202,14 @@ export default function UserInputPreview( props ) {
 			setUserInputSetting( USER_INPUT_QUESTIONS_PURPOSE, [
 				'sell_products',
 			] );
-			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-				[ USER_INPUT_QUESTIONS_PURPOSE ]: [
-					'sell_products_or_service',
-				],
-			} );
+			setSavedPurposeSnapshot( [ 'sell_products_or_service' ] );
 		}
-	}, [ settings, setUserInputSetting, currentlyEditingSlug, setValues ] );
+	}, [
+		settings,
+		setUserInputSetting,
+		currentlyEditingSlug,
+		setSavedPurposeSnapshot,
+	] );
 
 	return (
 		<div

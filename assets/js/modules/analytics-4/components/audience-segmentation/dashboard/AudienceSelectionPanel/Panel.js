@@ -77,7 +77,7 @@ export default function Panel() {
 			.map( ( { name } ) => name );
 	} );
 
-	const isCreatingAudienceFromOAuth = useFormValue(
+	const [ isCreatingAudienceFromOAuth ] = useFormValue(
 		AUDIENCE_CREATION_FORM,
 		'autoSubmit'
 	);
