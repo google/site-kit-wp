@@ -23,7 +23,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,10 +41,11 @@ import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import {
+	GOAL_DRIVER_CATALOG,
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 	GoalDriverTiles,
-	useGoalDriversData,
+	resolveGoalDriverIDs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
@@ -80,16 +81,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
 	);
-	const {
-		drivers,
-		loading: goalDriversLoading,
-		error: goalDriversError,
-		hasExpandableRows,
-	} = useGoalDriversData( {
-		goalType: GOAL_TYPES.ECOMMERCE,
-		primaryEvent,
-		selectedDriverIDs: DEFAULT_SELECTED_GOAL_DRIVER_IDS,
-	} );
+	const drivers = useMemo(
+		() =>
+			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
+				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
+			),
+		[]
+	);
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -147,20 +145,15 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		],
 		onlineStorePerformanceReportDependencies
 	);
-	const isLoading = loading || goalDriversLoading;
-	const combinedError = error || goalDriversError;
 
 	if ( ! primaryEvent ) {
 		return <WidgetNull />;
 	}
 
-	if ( combinedError ) {
+	if ( error ) {
 		return (
 			<Widget>
-				<WidgetReportError
-					moduleSlug="analytics-4"
-					error={ combinedError }
-				/>
+				<WidgetReportError moduleSlug="analytics-4" error={ error } />
 			</Widget>
 		);
 	}
@@ -179,15 +172,15 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				title={ __( 'Online store performance', 'google-site-kit' ) }
 			/>
 
-			{ isLoading && (
+			{ loading && (
 				<PreviewBlock
 					className="googlesitekit-site-goals-tiles-group"
 					width="100%"
-					height="320px"
+					height="130px"
 				/>
 			) }
 
-			{ ! isLoading && (
+			{ ! loading && (
 				<TilesGroup
 					className="googlesitekit-site-goals-primary-action"
 					title={ __( 'Key action', 'google-site-kit' ) }
@@ -241,21 +234,19 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				</TilesGroup>
 			) }
 
-			{ ! isLoading && (
-				<TilesGroup
-					className="googlesitekit-site-goals-goal-drivers-group"
-					title={ __(
-						'What’s helping you reach your goals?',
-						'google-site-kit'
-					) }
-				>
-					<GoalDriverTiles
-						drivers={ drivers }
-						hasExpandableRows={ hasExpandableRows }
-						goalType={ GOAL_TYPES.ECOMMERCE }
-					/>
-				</TilesGroup>
-			) }
+			<TilesGroup
+				className="googlesitekit-site-goals-goal-drivers-group"
+				title={ __(
+					'What’s helping you reach your goals?',
+					'google-site-kit'
+				) }
+			>
+				<GoalDriverTiles
+					drivers={ drivers }
+					primaryEvent={ primaryEvent }
+					goalType={ GOAL_TYPES.ECOMMERCE }
+				/>
+			</TilesGroup>
 		</Widget>
 	);
 };

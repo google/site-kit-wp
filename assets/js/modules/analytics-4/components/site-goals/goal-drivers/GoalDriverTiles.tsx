@@ -45,6 +45,7 @@ import type {
 interface GoalDriverTilesProps {
 	drivers?: GoalDriverTilesDriver[];
 	hasExpandableRows?: boolean;
+	primaryEvent?: string | string[];
 	goalType: GoalType;
 }
 
@@ -60,45 +61,70 @@ function isRenderableGoalDriver(
 
 const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 	drivers = [],
-	hasExpandableRows = false,
+	hasExpandableRows,
+	primaryEvent,
 	goalType,
 } ) => {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 	const [ isExpanded, setIsExpanded ] = useState( false );
+	const [ expandableDrivers, setExpandableDrivers ] = useState<
+		Record< string, boolean >
+	>( {} );
 
 	const onShowMoreClick = useCallback( () => {
 		setIsExpanded( ( currentState ) => ! currentState );
 	}, [] );
+	const onExpandableRowsChange = useCallback(
+		( driverID: string, canExpand: boolean ) => {
+			setExpandableDrivers( ( currentState ) => {
+				if ( currentState[ driverID ] === canExpand ) {
+					return currentState;
+				}
+
+				return {
+					...currentState,
+					[ driverID ]: canExpand,
+				};
+			} );
+		},
+		[]
+	);
 
 	const limit =
 		isExpanded && ! isMobileBreakpoint
 			? GOAL_DRIVER_ROW_LIMIT_EXPANDED
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
 	const filteredDrivers = drivers.filter( isRenderableGoalDriver );
+	const hasExpandableDrivers =
+		typeof hasExpandableRows === 'boolean'
+			? hasExpandableRows
+			: Object.values( expandableDrivers ).some( Boolean );
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-site-goals-goal-drivers-section__tiles">
-				{ filteredDrivers.map( ( driver ) => {
-					const DriverComponent = driver.Component;
-
-					return (
+				{ filteredDrivers.map(
+					( { Component: DriverComponent, ...driver } ) => (
 						<div
 							key={ driver.id }
 							className="googlesitekit-site-goals-goal-drivers-section__tile"
 						>
 							<DriverComponent
 								goalType={ goalType }
+								primaryEvent={ primaryEvent }
 								limit={ limit }
+								onExpandableRowsChange={
+									onExpandableRowsChange
+								}
 								{ ...driver }
 							/>
 						</div>
-					);
-				} ) }
+					)
+				) }
 			</div>
 
-			{ hasExpandableRows && ! isMobileBreakpoint && (
+			{ hasExpandableDrivers && ! isMobileBreakpoint && (
 				<Link
 					className="googlesitekit-site-goals-goal-drivers-section__show-more"
 					onClick={ onShowMoreClick }

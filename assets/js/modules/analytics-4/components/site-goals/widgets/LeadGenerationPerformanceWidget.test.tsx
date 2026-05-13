@@ -563,11 +563,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			container.querySelector(
 				'.googlesitekit-site-goals-goal-drivers-group'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
 		unmount();
 	} );
 
-	it( 'renders loading state while goal driver reports are being resolved', () => {
+	it( 'renders goal drivers loading state while primary section stays visible', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -588,28 +593,31 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		provideAnalytics4MockReport( registry, leadEventsReport );
 		provideAnalytics4MockReport( registry, engagementReport );
 
-		const { container, unmount } = render(
+		const { container, unmount, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
+		await waitForRegistry();
 
-		expect(
-			container.querySelector( '.googlesitekit-preview-block' )
-		).toBeInTheDocument();
 		expect(
 			container.querySelector(
 				'.googlesitekit-site-goals-primary-action'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
 		expect(
 			container.querySelector(
 				'.googlesitekit-site-goals-goal-drivers-group'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
 		unmount();
 	} );
 
-	it( 'renders WidgetReportError when a goal drivers report has an error', async () => {
+	it( 'renders goal drivers error state without replacing the full widget', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
@@ -670,14 +678,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ goalDriverReportOptions ] );
 
-		const { getByText, waitForRegistry, unmount } = render(
+		const { container, getByText, waitForRegistry, unmount } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
 		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-primary-action'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-goal-drivers-group'
+			)
+		).toBeInTheDocument();
 		unmount();
-		await waitForRegistry();
 	} );
 } );

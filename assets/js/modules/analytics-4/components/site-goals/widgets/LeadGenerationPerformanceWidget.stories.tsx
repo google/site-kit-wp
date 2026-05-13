@@ -116,7 +116,8 @@ function seedGoalDriverReports(
 	{
 		goalType = GOAL_TYPES.LEAD,
 		empty = false,
-	}: { goalType?: string; empty?: boolean } = {}
+		loading = false,
+	}: { goalType?: string; empty?: boolean; loading?: boolean } = {}
 ) {
 	const goalDriverDates = {
 		startDate: dates.startDate,
@@ -182,6 +183,22 @@ function seedGoalDriverReports(
 		keepEmptyRows: false,
 		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
 	};
+
+	if ( loading ) {
+		[
+			topTrafficChannelsOptions,
+			topTrafficTotalOptions,
+			topPagesOptions,
+			pageTitlesOptions,
+			visitorTypeOptions,
+		].forEach( ( options ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] );
+		} );
+
+		return;
+	}
 	const hasMultipleEvents = eventNames.length > 1;
 	const trafficRows = hasMultipleEvents
 		? [
@@ -359,6 +376,11 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
+		seedGoalDriverReports(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			{ loading: true }
+		);
 	},
 };
 

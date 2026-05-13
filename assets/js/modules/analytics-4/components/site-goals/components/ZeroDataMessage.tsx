@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
 import { useSelect, type Select } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-type MetricLabel = 'sales' | 'leads' | 'visitors';
+export type MetricLabel = 'sales' | 'leads' | 'visitors';
 
 interface ZeroDataMessageProps {
-	metricLabel?: string;
+	metricLabel: MetricLabel;
 }
 
 const METRIC_LABELS = {
@@ -71,19 +71,13 @@ const METRIC_LABELS = {
 	},
 };
 
-const ZeroDataMessage: FC< ZeroDataMessageProps > = ( {
-	metricLabel = 'visitors',
-} ) => {
+const ZeroDataMessage: FC< ZeroDataMessageProps > = ( { metricLabel } ) => {
 	const url = useSelect(
 		( select: Select ) => select( CORE_SITE ).getCurrentEntityURL(),
 		[]
 	);
 
-	const resolvedMetricLabel: MetricLabel =
-		metricLabel === 'sales' || metricLabel === 'leads'
-			? metricLabel
-			: 'visitors';
-	const labels = METRIC_LABELS[ resolvedMetricLabel ];
+	const labels = METRIC_LABELS[ metricLabel ];
 
 	return <span>{ url ? labels.page : labels.site }</span>;
 };

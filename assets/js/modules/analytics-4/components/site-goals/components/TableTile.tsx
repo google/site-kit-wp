@@ -25,8 +25,10 @@ import type { FC } from 'react';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
-import Typography from '@/js/components/Typography';
-import ZeroDataMessage from './ZeroDataMessage';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import ReportError from '@/js/components/ReportError';
+import GoalTile from './GoalTile';
+import ZeroDataMessage, { type MetricLabel } from './ZeroDataMessage';
 
 export interface TableTileRow {
 	label: string;
@@ -39,79 +41,83 @@ export interface TableTileProps {
 	title: string;
 	headerLabel?: string;
 	rows?: TableTileRow[];
+	loading?: boolean;
+	error?: unknown;
 	limit?: number;
-	noDataMetricLabel?: string;
+	noDataMetricLabel?: MetricLabel;
 }
 
 const TableTile: FC< TableTileProps > = ( {
 	title,
 	headerLabel,
 	rows = [],
+	loading = false,
+	error,
 	limit,
 	noDataMetricLabel,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
 	return (
-		<div className="googlesitekit-table-tile">
-			<div className="googlesitekit-table-tile__header">
-				<Typography
-					as="h3"
-					type="title"
-					size="small"
-					className="googlesitekit-table-tile__title"
-				>
-					{ title }
-				</Typography>
-				{ !! headerLabel && (
-					<Typography
-						as="span"
-						type="body"
-						size="medium"
-						className="googlesitekit-table-tile__header-label"
-					>
-						{ headerLabel }
-					</Typography>
-				) }
-			</div>
+		<GoalTile
+			baseClassName="googlesitekit-table-tile"
+			title={ title }
+			headerLabel={ headerLabel }
+		>
+			{ loading && (
+				<div className="googlesitekit-table-tile__loading">
+					<PreviewBlock width="100%" height="18px" />
+					<PreviewBlock width="100%" height="18px" />
+					<PreviewBlock width="100%" height="18px" />
+				</div>
+			) }
 
-			<div className="googlesitekit-table-tile__body">
-				{ rows.length === 0 && (
-					<div className="googlesitekit-table-tile__zero-state">
-						<ZeroDataMessage metricLabel={ noDataMetricLabel } />
-					</div>
-				) }
+			{ ! loading && !! error && (
+				<div className="googlesitekit-table-tile__error">
+					<ReportError
+						moduleSlug="analytics-4"
+						error={ error as object | object[] }
+					/>
+				</div>
+			) }
 
-				{ rows.length > 0 && (
-					<div className="googlesitekit-table-tile__rows">
-						{ visibleRows.map( ( row, index ) => (
-							<div
-								key={ `${ row.label }-${ index }` }
-								className="googlesitekit-table-tile__row"
-							>
-								<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--label">
-									{ row.url ? (
-										<Link
-											href={ row.url }
-											title={ row.label }
-											external
-											hideExternalIndicator
-										>
-											{ row.label }
-										</Link>
-									) : (
-										<span>{ row.label }</span>
-									) }
-								</div>
-								<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value">
-									{ row.value }
-								</div>
+			{ ! loading && ! error && rows.length === 0 && (
+				<div className="googlesitekit-table-tile__zero-state">
+					<ZeroDataMessage
+						metricLabel={ noDataMetricLabel || 'visitors' }
+					/>
+				</div>
+			) }
+
+			{ ! loading && ! error && rows.length > 0 && (
+				<div className="googlesitekit-table-tile__rows">
+					{ visibleRows.map( ( row, index ) => (
+						<div
+							key={ `${ row.label }-${ index }` }
+							className="googlesitekit-table-tile__row"
+						>
+							<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--label">
+								{ row.url ? (
+									<Link
+										href={ row.url }
+										title={ row.label }
+										external
+										hideExternalIndicator
+									>
+										{ row.label }
+									</Link>
+								) : (
+									<span>{ row.label }</span>
+								) }
 							</div>
-						) ) }
-					</div>
-				) }
-			</div>
-		</div>
+							<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value">
+								{ row.value }
+							</div>
+						</div>
+					) ) }
+				</div>
+			) }
+		</GoalTile>
 	);
 };
 

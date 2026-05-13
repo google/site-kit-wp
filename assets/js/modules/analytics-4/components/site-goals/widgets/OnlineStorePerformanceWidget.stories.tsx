@@ -116,7 +116,8 @@ function seedGoalDriverReports(
 	{
 		goalType = GOAL_TYPES.ECOMMERCE,
 		empty = false,
-	}: { goalType?: string; empty?: boolean } = {}
+		loading = false,
+	}: { goalType?: string; empty?: boolean; loading?: boolean } = {}
 ) {
 	const goalDriverDates = {
 		startDate: dates.startDate,
@@ -182,6 +183,22 @@ function seedGoalDriverReports(
 		keepEmptyRows: false,
 		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
 	};
+
+	if ( loading ) {
+		[
+			topTrafficChannelsOptions,
+			topTrafficTotalOptions,
+			topPagesOptions,
+			pageTitlesOptions,
+			visitorTypeOptions,
+		].forEach( ( options ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] );
+		} );
+
+		return;
+	}
 	const isAddToCart = eventNames.includes(
 		ENUM_CONVERSION_EVENTS.ADD_TO_CART
 	);
@@ -369,6 +386,9 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ purchaseReportOptions ] );
+		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
+			loading: true,
+		} );
 	},
 };
 

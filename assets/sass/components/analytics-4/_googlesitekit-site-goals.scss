@@ -314,13 +314,12 @@
 			line-height: $lh-body-sm;
 		}
 
-		.googlesitekit-table-tile__error-title {
-			color: $c-surfaces-on-surface-variant;
-			margin: 0;
-		}
+		.googlesitekit-table-tile__error {
+			height: 100%;
 
-		.googlesitekit-table-tile__error-help-link {
-			margin-top: 4px;
+			.googlesitekit-error-retry-text {
+				margin-left: 0;
+			}
 		}
 
 		.googlesitekit-table-tile__cell--label,

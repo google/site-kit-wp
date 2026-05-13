@@ -77,4 +77,20 @@ describe( 'TableTile', () => {
 			)
 		).toBeInTheDocument();
 	} );
+
+	it( 'renders error state with actions', () => {
+		const { getByText } = render(
+			<TableTile
+				title="Top pages driving leads"
+				error={ {
+					code: 400,
+					message: 'Data loading failed',
+					data: { status: 400, reason: 'badRequest' },
+				} }
+			/>
+		);
+
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+		expect( getByText( 'Get help' ) ).toBeInTheDocument();
+	} );
 } );

@@ -50,18 +50,21 @@ const drivers: GoalDriverTilesDriver[] = [
 		Component: MockGoalDriver,
 		rows: [],
 		totalRows: 6,
+		loading: false,
 	},
 	{
 		id: GOAL_DRIVER_IDS.TOP_PAGES,
 		Component: MockGoalDriver,
 		rows: [],
 		totalRows: 4,
+		loading: false,
 	},
 	{
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
 		Component: MockGoalDriver,
 		rows: [],
 		totalRows: 2,
+		loading: false,
 	},
 ];
 
