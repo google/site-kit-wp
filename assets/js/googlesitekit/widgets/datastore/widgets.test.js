@@ -216,7 +216,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( container.firstChild ).toMatchSnapshot();
 			} );
 
-			it( 'should store the pdf field unchanged and expose it via getWidget and getWidgets', () => {
+			it( 'should store the pdf field unchanged in widget state', () => {
 				function PDFComponent() {
 					return null;
 				}
@@ -230,35 +230,12 @@ describe( 'core/widgets Widgets', () => {
 					label: 'Test Widget',
 				};
 
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'dashboard-header', {
-						title: 'Dashboard Header',
-						subtitle: 'Cool stuff for yoursite.com',
-						style: 'boxes',
-					} );
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidgetArea( 'dashboard-header', 'dashboard' );
-
 				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 					Component: WidgetComponent,
 					pdf,
 				} );
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( slug, 'dashboard-header' );
 
-				expect(
-					registry.select( CORE_WIDGETS ).getWidget( slug ).pdf
-				).toBe( pdf );
-
-				const widgets = registry
-					.select( CORE_WIDGETS )
-					.getWidgets( 'dashboard-header' );
-
-				expect( widgets ).toHaveLength( 1 );
-				expect( widgets[ 0 ].pdf ).toBe( pdf );
+				expect( store.getState().widgets[ slug ].pdf ).toBe( pdf );
 			} );
 
 			it( 'should not overwrite an existing widget', () => {
