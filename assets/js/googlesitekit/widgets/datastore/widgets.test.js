@@ -566,6 +566,49 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
 				expect( widgets[ 2 ].slug ).toBe( 'TestWidget2' );
 			} );
+
+			it( 'should return the pdf field on widgets in the area', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'dashboard-header', {
+						title: 'Dashboard Header',
+						style: 'boxes',
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component() {
+							return <div>Hello test.</div>;
+						},
+						pdf,
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget', 'dashboard-header' );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header' );
+
+				expect( widgets ).toHaveLength( 1 );
+				expect( widgets[ 0 ].pdf ).toBe( pdf );
+			} );
 		} );
 
 		describe( 'isWidgetActive', () => {
