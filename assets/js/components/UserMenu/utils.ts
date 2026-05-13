@@ -24,7 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Returns the account label for the user menu.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param {string|undefined} userFullName User's full name.
  * @param {string|undefined} userEmail    User's email address.

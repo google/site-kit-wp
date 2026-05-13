@@ -55,7 +55,7 @@ export const actions = {
 	/**
 	 * Sets an error for a selector.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object}      error        Error object.
 	 * @param {string}      selectorName Selector name.
@@ -80,7 +80,7 @@ export const actions = {
 	/**
 	 * Sets an error for an action.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object}      error      Error object.
 	 * @param {string}      actionName Action name.
@@ -105,7 +105,7 @@ export const actions = {
 	/**
 	 * Clears the error for a given selector name and args.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {string}      selectorName Selector name.
 	 * @param {Array.<any>} [args]       Arguments passed to selector (default `[]`).
@@ -127,7 +127,7 @@ export const actions = {
 	/**
 	 * Clears all selector errors, optionally filtered by selector name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {string} [selectorName] Optional selector name to clear errors for.
 	 * @return {Object} Redux-style action.
@@ -144,7 +144,7 @@ export const actions = {
 	/**
 	 * Clears the error for a given action name and args.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {string}      actionName Action name.
 	 * @param {Array.<any>} [args]     Arguments passed to action (default `[]`).
@@ -166,7 +166,7 @@ export const actions = {
 	/**
 	 * Clears all action errors, optionally filtered by action name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {string} [actionName] Optional action name to clear errors for.
 	 * @return {Object} Redux-style action.
@@ -194,7 +194,7 @@ export function createErrorStore( storeName ) {
 	/**
 	 * Sets an error within a given slice of the error state.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} errorsKey    Key of the slice's errors object on state.
@@ -215,7 +215,7 @@ export function createErrorStore( storeName ) {
 	/**
 	 * Clears the error for a specific (baseName, args) pair within a given slice.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object}      state        Data store's state.
 	 * @param {string}      errorsKey    Key of the slice's errors object on state.
@@ -245,7 +245,7 @@ export function createErrorStore( storeName ) {
 	 * When `baseName` is provided, every error keyed under that baseName
 	 * (regardless of args) is cleared. When omitted, the entire slice is wiped.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object} state        Data store's state.
 	 * @param {string} errorsKey    Key of the slice's errors object on state.
@@ -424,7 +424,7 @@ export function createErrorStore( storeName ) {
 		 * ```
 		 *
 		 * @since 1.84.0
-		 * @since n.e.x.t Renamed from `getMetaDataForError` and limited to the selector error slice.
+		 * @since 1.179.0 Renamed from `getMetaDataForError` and limited to the selector error slice.
 		 *
 		 * @param {Object} state Data store's state.
 		 * @param {Object} error Error object.
