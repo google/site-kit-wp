@@ -432,7 +432,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Total products added to cart' )
 		).toBeInTheDocument();
-		expect( getByText( '"add_to_cart" events' ) ).toBeInTheDocument();
+		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 	} );
 
 	it( 'does not render secondary add_to_cart tile when primary is add_to_cart', async () => {
@@ -466,7 +466,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			1
 		);
 		// Primary add_to_cart tile in primary action should still render.
-		expect( queryByText( '"add_to_cart" events' ) ).toBeInTheDocument();
+		expect( queryByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		// No additional secondary add_to_cart subtitle in visitor engagement section.
 		expect(
 			queryByText( 'How are your visitors engaging?' )

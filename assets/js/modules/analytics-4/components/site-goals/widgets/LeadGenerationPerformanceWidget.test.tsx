@@ -147,7 +147,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toHaveLength( 3 ); // Form completion rate + Total form completions + Engagement rate
 		expect( getByText( 'Form completion rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total form completions' ) ).toBeInTheDocument();
-		expect( getByText( '"generate_lead" events' ) ).toBeInTheDocument();
+		expect( getByText( '“generate_lead” events' ) ).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 	} );
 
