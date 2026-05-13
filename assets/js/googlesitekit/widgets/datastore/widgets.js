@@ -98,7 +98,7 @@ export const actions = {
 	 * @param {Function}              [settings.isActive]          Optional. Callback function to determine if the widget is active.
 	 * @param {Function}              [settings.isPreloaded]       Optional. Callback function to determine if the widget should be preloaded if not active (requires isActive).
 	 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
-	 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget. When present, downstream consumers can include this widget in the PDF export by filtering `getWidgets( areaSlug ).filter( ( w ) => !! w.pdf )`.
+	 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget.
 	 * @return {Object} Redux-style action.
 	 */
 	registerWidget(

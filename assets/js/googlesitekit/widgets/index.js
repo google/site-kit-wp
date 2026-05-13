@@ -102,7 +102,7 @@ export function createWidgets( registry ) {
 		 * @param {boolean}               [settings.wrapWidget]        Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 		 * @param {string|Array.<string>} [settings.modules]           Optional. Widget's associated moduels.
 		 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
-		 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget. When present, downstream consumers can include this widget in the PDF export by filtering `getWidgets( areaSlug ).filter( ( w ) => !! w.pdf )`.
+		 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget.
 		 * @param {(string|Array)}        [widgetAreaSlugs]            Optional. Widget area slug(s).
 		 */
 		registerWidget( slug, settings, widgetAreaSlugs ) {
