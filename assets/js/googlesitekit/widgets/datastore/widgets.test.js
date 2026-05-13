@@ -787,6 +787,35 @@ describe( 'core/widgets Widgets', () => {
 					registry.select( CORE_WIDGETS ).getWidget( 'NotRealWidget' )
 				).toBe( null );
 			} );
+
+			it( 'returns the pdf field on the registered widget', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component() {
+							return <div>Hello test.</div>;
+						},
+						pdf,
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidget( 'TestWidget' )
+						.pdf
+				).toBe( pdf );
+			} );
 		} );
 	} );
 } );
