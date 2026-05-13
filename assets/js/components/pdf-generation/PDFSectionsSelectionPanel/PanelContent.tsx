@@ -51,11 +51,13 @@ interface PanelContentProps {
 }
 
 const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
+	const [ selectedSectionsValue ] = useFormValue(
+		FORM_PDF_DOWNLOAD,
+		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
+	);
 	const selectedSections =
-		( useFormValue(
-			FORM_PDF_DOWNLOAD,
-			FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-		) as string[] | undefined ) ?? DEFAULT_SELECTED_SECTIONS;
+		( selectedSectionsValue as string[] | undefined ) ??
+		DEFAULT_SELECTED_SECTIONS;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
