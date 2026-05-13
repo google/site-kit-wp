@@ -132,6 +132,7 @@
 	.googlesitekit-initial-setup {
 		display: flex;
 		flex-direction: column;
+		margin-bottom: 40px; // Reserved space for the footer.
 		min-height: calc(100vh - 118px); // 46px admin bar + 72px header
 		padding: 0;
 
@@ -263,15 +264,8 @@
 }
 
 body.googlesitekit-setup-flow {
-	// Remove padding bottom for non-splash pages.
-	&:not(.site-kit_page_googlesitekit-splash) #wpbody-content {
-		padding-bottom: 0;
-	}
 
-	// Remove padding bottom for splash pages on large screens.
-	@media (height > 940px) {
-		&.site-kit_page_googlesitekit-splash #wpbody-content {
-			padding-bottom: 0;
-		}
+	#wpbody-content {
+		padding-bottom: 0;
 	}
 }
