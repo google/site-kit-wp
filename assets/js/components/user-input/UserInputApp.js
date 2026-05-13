@@ -41,8 +41,11 @@ import {
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function UserInputApp() {
-	const questionNumber =
-		useFormValue( FORM_USER_INPUT_QUESTION_NUMBER, 'questionNumber' ) || 1;
+	const [ questionNumberValue ] = useFormValue(
+		FORM_USER_INPUT_QUESTION_NUMBER,
+		'questionNumber'
+	);
+	const questionNumber = questionNumberValue || 1;
 
 	const questions = getUserInputQuestions();
 	const questionTitle = questions[ questionNumber - 1 ]?.title || '';

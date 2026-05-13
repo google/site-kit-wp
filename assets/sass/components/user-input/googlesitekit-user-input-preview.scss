@@ -250,4 +250,17 @@
 			}
 		}
 	}
+
+	.googlesitekit-settings-user-input--setupFlowRefresh {
+
+		.googlesitekit-user-input__preview--editing {
+
+			.googlesitekit-user-input__preview-group--individual-cta {
+
+				&:not(.googlesitekit-user-input__preview-group--editing) {
+					padding-top: 10px;
+				}
+			}
+		}
+	}
 }

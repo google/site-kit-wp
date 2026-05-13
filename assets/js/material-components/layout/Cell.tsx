@@ -19,34 +19,54 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { FC } from 'react';
 
-export default function Cell( props ) {
-	const {
-		className,
-		alignTop,
-		alignMiddle,
-		alignBottom,
-		alignRight,
-		alignLeft,
-		smAlignRight,
-		mdAlignRight,
-		lgAlignRight,
-		smSize,
-		smStart,
-		smOrder,
-		mdSize,
-		mdStart,
-		mdOrder,
-		lgSize,
-		lgStart,
-		lgOrder,
-		size,
-		children,
-		...otherProps
-	} = props;
+interface CellProps {
+	smSize?: number;
+	smStart?: number;
+	smOrder?: number;
+	mdSize?: number;
+	mdStart?: number;
+	mdOrder?: number;
+	lgSize?: number;
+	lgStart?: number;
+	lgOrder?: number;
+	size?: number;
+	alignTop?: boolean;
+	alignMiddle?: boolean;
+	alignBottom?: boolean;
+	alignRight?: boolean;
+	alignLeft?: boolean;
+	smAlignRight?: boolean;
+	mdAlignRight?: boolean;
+	lgAlignRight?: boolean;
+	className?: string;
+}
 
+const Cell: FC< CellProps > = ( {
+	className = '',
+	alignTop = false,
+	alignMiddle = false,
+	alignBottom = false,
+	alignRight = false,
+	alignLeft = false,
+	smAlignRight = false,
+	mdAlignRight = false,
+	lgAlignRight = false,
+	smSize = 0,
+	smStart = 0,
+	smOrder = 0,
+	mdSize = 0,
+	mdStart = 0,
+	mdOrder = 0,
+	lgSize = 0,
+	lgStart = 0,
+	lgOrder = 0,
+	size = 0,
+	children,
+	...otherProps
+} ) => {
 	return (
 		<div
 			{ ...otherProps }
@@ -84,41 +104,6 @@ export default function Cell( props ) {
 			{ children }
 		</div>
 	);
-}
-
-Cell.propTypes = {
-	smSize: PropTypes.number,
-	smStart: PropTypes.number,
-	smOrder: PropTypes.number,
-	mdSize: PropTypes.number,
-	mdStart: PropTypes.number,
-	mdOrder: PropTypes.number,
-	lgSize: PropTypes.number,
-	lgStart: PropTypes.number,
-	lgOrder: PropTypes.number,
-	size: PropTypes.number,
-	alignTop: PropTypes.bool,
-	alignMiddle: PropTypes.bool,
-	alignBottom: PropTypes.bool,
-	alignRight: PropTypes.bool,
-	alignLeft: PropTypes.bool,
-	smAlignRight: PropTypes.bool,
-	mdAlignRight: PropTypes.bool,
-	lgAlignRight: PropTypes.bool,
-	className: PropTypes.string,
-	children: PropTypes.node,
 };
 
-Cell.defaultProps = {
-	className: '',
-	size: 0,
-	smSize: 0,
-	smStart: 0,
-	smOrder: 0,
-	mdSize: 0,
-	mdStart: 0,
-	mdOrder: 0,
-	lgSize: 0,
-	lgStart: 0,
-	lgOrder: 0,
-};
+export default Cell;

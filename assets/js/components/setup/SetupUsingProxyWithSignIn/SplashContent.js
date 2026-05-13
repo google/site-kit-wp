@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -50,9 +51,8 @@ import {
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
 import { Cell, Row } from '@/js/material-components';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
-import { useDispatch, useSelect } from '@/js/googlesitekit-data';
+import { useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 
@@ -71,20 +71,21 @@ export default function SplashContent( {
 } ) {
 	const viewContext = useViewContext();
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	// Add the initial setup class to the body when the component mounts.
+	useMount( () => {
+		global.document.body.classList.add( 'googlesitekit-setup-flow' );
+	} );
 
-	const checked = useFormValue(
+	const [ checked, setChecked ] = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
 		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const handleOnChange = useCallback(
 		( event ) => {
-			setValues( ANALYTICS_NOTICE_FORM_NAME, {
-				[ ANALYTICS_NOTICE_CHECKBOX ]: event.target.checked,
-			} );
+			setChecked( event.target.checked );
 		},
-		[ setValues ]
+		[ setChecked ]
 	);
 
 	const cellDetailsProp = analyticsModuleActive

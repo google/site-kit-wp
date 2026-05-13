@@ -49,6 +49,11 @@ import LoadingWrapper from '@/js/components/LoadingWrapper';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import P from '@/js/components/Typography/P';
+import {
+	SIZE_MEDIUM,
+	TYPE_BODY,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
 import AnswerQuestionButton from './AnswerQuestionButton';
 import EditLink from './EditLink';
 import PreviewContent from './PreviewContent';
@@ -96,7 +101,7 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	}, [] );
-	const savedPurposeAnswer = useFormValue(
+	const [ savedPurposeAnswer ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
@@ -206,7 +211,14 @@ export default function UserInputPreviewGroup( {
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<P size="medium">{ title }</P>
+					<P
+						type={
+							setupFlowRefreshEnabled ? TYPE_LABEL : TYPE_BODY
+						}
+						size={ SIZE_MEDIUM }
+					>
+						{ title }
+					</P>
 				</LoadingWrapper>
 				<LoadingWrapper
 					loading={ loading }

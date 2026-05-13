@@ -36,16 +36,35 @@
 			}
 		}
 
-		.googlesitekit-user-input__footer {
+		.googlesitekit-key-metrics-setup__footer {
 			column-gap: 16px;
 			flex-direction: row;
 			justify-content: flex-start;
+			padding-left: 42px;
+
+			@media (min-width: $bp-desktop) {
+				padding-left: 56px;
+			}
 		}
 
-		.googlesitekit-user-input__error {
+		.googlesitekit-key-metrics-setup__content--footer-inline {
+
+			.googlesitekit-key-metrics-setup__footer {
+				border-top: none;
+				bottom: auto;
+				left: auto;
+				margin: 73px 0 0;
+				padding: 0;
+				position: relative;
+				right: auto;
+				z-index: auto;
+			}
+		}
+
+		.googlesitekit-key-metrics-setup__error {
 			padding: 1px 0;
 			z-index: 2;
-			@media (min-width: $width-desktop + px) {
+			@media (min-width: $bp-desktop) {
 				bottom: 86px;
 			}
 		}
@@ -68,9 +87,21 @@
 	}
 
 	.googlesitekit-key-metrics-initial-setup {
+		display: flex;
+		min-height: calc(100vh - 195px); // 46px admin bar + 72px header + 77px footer
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-height: calc(100vh - 207px); // 32px admin bar + 88px header + 87px footer
+		}
 
 		.googlesitekit-module-page {
+			display: flex;
+			flex-grow: 1;
 			padding: 0;
+		}
+
+		.googlesitekit-layout {
+			flex-grow: 1;
 		}
 	}
 }

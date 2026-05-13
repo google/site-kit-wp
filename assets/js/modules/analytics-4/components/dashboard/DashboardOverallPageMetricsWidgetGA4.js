@@ -139,8 +139,8 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 
 	function Header() {
 		return (
-			<WidgetHeaderTitle
-				title={ sprintf(
+			<WidgetHeaderTitle>
+				{ sprintf(
 					/* translators: %s: number of days */
 					_n(
 						'Overall page metrics over the last %s day',
@@ -150,7 +150,7 @@ function DashboardOverallPageMetricsWidgetGA4( { Widget, WidgetReportError } ) {
 					),
 					currentDayCount
 				) }
-			/>
+			</WidgetHeaderTitle>
 		);
 	}
 

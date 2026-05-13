@@ -63,7 +63,7 @@ const EVENT_TOTAL_LABELS = {
 
 function processSecondaryEventsReport(
 	secondaryEventsReport: Report | undefined,
-	secondaryEvents: string[]
+	secondaryEvents: ( keyof typeof EVENT_TOTAL_LABELS )[]
 ) {
 	if ( ! secondaryEventsReport || ! secondaryEvents.length ) {
 		return [];
@@ -100,21 +100,22 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	WidgetNull,
 	WidgetReportError,
 } ) => {
-	const primaryEvent: 'purchase' | 'add_to_cart' | undefined = useSelect(
+	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
 	);
 
-	const secondaryEcommerceEvents: string[] = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
-						primaryEvent
-				  )
-				: [],
-		[ primaryEvent ]
-	);
+	const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
+		useSelect(
+			( select: Select ) =>
+				primaryEvent
+					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+							primaryEvent
+					  )
+					: [],
+			[ primaryEvent ]
+		);
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -168,7 +169,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptions
+			[]
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -178,7 +179,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptions
+		[]
 	);
 
 	if ( ! primaryEvent ) {
@@ -209,11 +210,14 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Online store performance', 'google-site-kit' ) }
-			/>
-
+		<Widget
+			Header={ WidgetHeaderTitle }
+			headerContents={ __(
+				'Online Store Performance',
+				'google-site-kit'
+			) }
+			collapsible
+		>
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
 			{ ! loading && ! error && (

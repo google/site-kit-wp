@@ -150,6 +150,13 @@ export default function ModuleSetup( { moduleSlug } ) {
 		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
 	} );
 
+	// Add the initial setup class to the body when the component mounts.
+	useMount( () => {
+		if ( isInitialSetupFlow ) {
+			global.document.body.classList.add( 'googlesitekit-setup-flow' );
+		}
+	} );
+
 	if ( ! module?.SetupComponent ) {
 		return null;
 	}

@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,13 +31,32 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
  * Returns the value of a form field.
  *
  * @since 1.160.0
+ * @since n.e.x.t Update the hook to return a function to set the value in addition to the value itself.
  *
  * @param {string} formName The name of the form.
  * @param {string} key      The key of the form field.
- * @return {string|number|boolean|Array|Object|undefined} The value of the form field, or the default value if provided.
+ * @return {Array} An array containing the value and a function to update it.
  */
 export default function useFormValue( formName, key ) {
-	return useSelect(
+	const { setValues } = useDispatch( CORE_FORMS );
+
+	/**
+	 * Sets the value of the form field in question.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string|number|boolean|Array|Object|undefined} value The value of the form field.
+	 */
+	const setValue = useCallback(
+		( value ) => {
+			setValues( formName, {
+				[ key ]: value,
+			} );
+		},
+		[ setValues, formName, key ]
+	);
+
+	const value = useSelect(
 		( select ) => {
 			const { getValue } = select( CORE_FORMS );
 
@@ -44,4 +64,6 @@ export default function useFormValue( formName, key ) {
 		},
 		[ formName, key ]
 	);
+
+	return [ value, setValue ];
 }

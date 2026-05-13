@@ -131,3 +131,5 @@ export const allKeyMetricsTileWidgets = [
 export const WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG = 'welcome-modal-with-tour';
 export const WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG =
 	'welcome-modal-gathering-data';
+export const INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG =
+	'initial-setup-notification-timeout';

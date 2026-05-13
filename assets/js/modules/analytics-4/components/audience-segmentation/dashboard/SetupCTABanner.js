@@ -32,7 +32,6 @@ import { Fragment, useCallback, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -68,8 +67,6 @@ function SetupCTABanner( { id, Notification } ) {
 	const { dismissNotification, registerNotification, pinNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const tooltipSettings = {
 		tooltipSlug: id,
 		title: __(
@@ -92,7 +89,7 @@ function SetupCTABanner( { id, Notification } ) {
 		isDismissalFinal,
 	} );
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_SEGMENTATION_SETUP_FORM,
 		'autoSubmit'
 	);
@@ -130,13 +127,11 @@ function SetupCTABanner( { id, Notification } ) {
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 
 	const onCancel = useCallback( () => {
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-			autoSubmit: false,
-		} );
+		setAutoSubmit( false );
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
-	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setAutoSubmit ] );
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()

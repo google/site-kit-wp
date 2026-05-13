@@ -25,6 +25,16 @@
 		@media (min-width: $bp-tablet) {
 			padding-top: 41px;
 		}
+
+		.mdc-button--tertiary:not(:disabled) {
+			color: $c-surfaces-inverse-on-surface;
+		}
+
+		.googlesitekit-notice__content p {
+			font-size: $fs-body-md;
+			letter-spacing: $ls-s;
+			line-height: $lh-body-md;
+		}
 	}
 
 	.googlesitekit-pdf-report-progress-snackbar__progress {
@@ -38,6 +48,10 @@
 
 		@media (min-width: $bp-tablet) {
 			top: 16.5px;
+		}
+
+		.mdc-linear-progress__bar-inner {
+			border-radius: $br-lg;
 		}
 	}
 }

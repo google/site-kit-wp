@@ -57,7 +57,7 @@ export default function AddGroupNotice() {
 	const isLoading = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableAudiences()
 	);
-	const selectedAudiences = useFormValue(
+	const [ selectedAudiences ] = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
 	);

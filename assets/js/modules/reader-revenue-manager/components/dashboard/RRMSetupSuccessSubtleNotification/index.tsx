@@ -32,7 +32,6 @@ import { FC, ElementType } from 'react';
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useRefocus } from '@/js/hooks/useRefocus';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
@@ -102,10 +101,8 @@ const RRMSetupSuccessSubtleNotification: FC<
 		[]
 	);
 
-	const shouldSyncPublicationValue = useFormValue(
-		READER_REVENUE_MANAGER_NOTICES_FORM,
-		SYNC_PUBLICATION
-	);
+	const [ shouldSyncPublicationValue, setShouldSyncPublicationValue ] =
+		useFormValue( READER_REVENUE_MANAGER_NOTICES_FORM, SYNC_PUBLICATION );
 
 	const shouldSyncPublication =
 		shouldSyncPublicationValue &&
@@ -129,7 +126,6 @@ const RRMSetupSuccessSubtleNotification: FC<
 		[]
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 	const { syncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
@@ -145,9 +141,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
 		) {
-			setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
-				[ SYNC_PUBLICATION ]: true,
-			} );
+			setShouldSyncPublicationValue( true );
 		}
 
 		global.open( url, '_blank' );
