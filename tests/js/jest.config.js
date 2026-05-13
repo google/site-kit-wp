@@ -61,6 +61,11 @@ module.exports = {
 			transformIgnorePatterns: [ '<rootDir>/assets/node_modules/' ],
 			// Matches aliases in webpack.config.js.
 			moduleNameMapper: {
+				// Route all `tabbable` imports (including nested copies used by
+				// `@material/react-dialog` → focus-trap) through the JSDOM-safe
+				// manual mock. Otherwise focus-trap can find zero focusable nodes
+				// on Linux CI. See `__mocks__/tabbable.js` and focus-trap docs.
+				'^tabbable$': '<rootDir>/__mocks__/tabbable.js',
 				// New (JSR) modules.
 				'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 				// Necessary mock to prevent test failures caused by SVGR.
