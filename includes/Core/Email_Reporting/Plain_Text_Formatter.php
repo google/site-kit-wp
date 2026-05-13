@@ -305,7 +305,7 @@ class Plain_Text_Formatter {
 	 * Manage Subscription are only added when the unsubscribe URL is
 	 * available, matching the HTML footer template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param array  $lines           Lines buffer to append to.
 	 * @param string $unsubscribe_url Unsubscribe URL used for the Unsubscribe and Manage Subscription links.

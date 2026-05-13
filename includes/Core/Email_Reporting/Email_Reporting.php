@@ -333,7 +333,7 @@ class Email_Reporting implements Provides_Feature_Metrics {
 	 * Gets feature metrics for email reporting.
 	 *
 	 * @since 1.173.0
-	 * @since n.e.x.t Added email_reporting_enabled metric.
+	 * @since 1.179.0 Added email_reporting_enabled metric.
 	 *
 	 * @return array
 	 */

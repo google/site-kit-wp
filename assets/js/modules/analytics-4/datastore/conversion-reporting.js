@@ -370,7 +370,7 @@ export const selectors = {
 	/**
 	 * Returns the primary ecommerce event based on detected events and fallback priority.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @return {('purchase'|'add_to_cart'|undefined)} The primary ecommerce event name, or undefined if none detected or events not yet loaded.
 	 */
@@ -398,7 +398,7 @@ export const selectors = {
 	/**
 	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @return {(Array|undefined)} Array of detected lead event names, or undefined if events not yet loaded.
 	 */
