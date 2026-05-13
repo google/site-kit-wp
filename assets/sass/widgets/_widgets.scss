@@ -151,4 +151,24 @@
 			}
 		}
 	}
+
+	/**
+	 * Widget dismiss transition wrapper.
+	 *
+	 * Drives the fade-out animation applied by the `WidgetDismissTransition`
+	 * React wrapper. The `transition` is declared on the base selector so
+	 * the browser always has a transition rule available; the modifier only
+	 * flips opacity and pointer events. The duration must match the
+	 * `DISMISS_TRANSITION_MS` constant in `WidgetDismissTransition.tsx`
+	 * since the JS timer governs when the widget unmounts.
+	 */
+	.googlesitekit-widget-dismiss-transition {
+		opacity: 1;
+		transition: opacity 1s ease-in-out;
+	}
+
+	.googlesitekit-widget-dismiss-transition--dismissing {
+		opacity: 0;
+		pointer-events: none;
+	}
 }
