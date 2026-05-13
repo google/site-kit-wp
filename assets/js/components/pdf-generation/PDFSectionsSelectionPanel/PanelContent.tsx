@@ -30,8 +30,6 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
@@ -51,7 +49,7 @@ interface PanelContentProps {
 }
 
 const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
-	const [ selectedSectionsValue ] = useFormValue(
+	const [ selectedSectionsValue, setSelectedSections ] = useFormValue(
 		FORM_PDF_DOWNLOAD,
 		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
 	);
@@ -59,19 +57,15 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 		( selectedSectionsValue as string[] | undefined ) ??
 		DEFAULT_SELECTED_SECTIONS;
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const toggleSection = useCallback(
 		( slug: string ) => {
 			const nextSelection = selectedSections.includes( slug )
 				? selectedSections.filter( ( item ) => item !== slug )
 				: [ ...selectedSections, slug ];
 
-			setValues( FORM_PDF_DOWNLOAD, {
-				[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: nextSelection,
-			} );
+			setSelectedSections( nextSelection );
 		},
-		[ selectedSections, setValues ]
+		[ selectedSections, setSelectedSections ]
 	);
 
 	const hasSelection = selectedSections.length > 0;

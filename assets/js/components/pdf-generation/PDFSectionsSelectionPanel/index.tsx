@@ -31,7 +31,6 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
@@ -39,6 +38,7 @@ import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import InViewProvider from '@/js/components/InViewProvider';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
@@ -51,7 +51,10 @@ const PDFSectionsSelectionPanel: FC = () => {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setSelectedSections ] = useFormValue(
+		FORM_PDF_DOWNLOAD,
+		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
+	);
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
@@ -60,12 +63,10 @@ const PDFSectionsSelectionPanel: FC = () => {
 	}, [ isOpen, setValue ] );
 
 	const onSideSheetOpen = useCallback( () => {
-		setValues( FORM_PDF_DOWNLOAD, {
-			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: DEFAULT_SELECTED_SECTIONS,
-		} );
+		setSelectedSections( DEFAULT_SELECTED_SECTIONS );
 		// Reset any stale "generating" state left over from a previous session.
 		setValue( PDF_GENERATING_KEY, false );
-	}, [ setValues, setValue ] );
+	}, [ setSelectedSections, setValue ] );
 
 	return (
 		<InViewProvider

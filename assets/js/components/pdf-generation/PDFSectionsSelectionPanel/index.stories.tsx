@@ -33,6 +33,7 @@ import { useDispatch } from 'googlesitekit-data';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_PDF_DOWNLOAD,
 	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
@@ -50,17 +51,18 @@ function DefaultTemplate() {
 }
 
 function EmptyTemplate() {
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setSelectedSections ] = useFormValue(
+		FORM_PDF_DOWNLOAD,
+		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
+	);
 
 	// The panel's `onSideSheetOpen` resets the form to default selection on
 	// every mount. Re-applying the empty selection from this Template's
 	// `useEffect` runs after the panel's reset (effects fire bottom-up),
 	// so the story renders with no sections selected.
 	useEffect( () => {
-		setValues( FORM_PDF_DOWNLOAD, {
-			[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]: [],
-		} );
-	}, [ setValues ] );
+		setSelectedSections( [] );
+	}, [ setSelectedSections ] );
 
 	return <PDFSectionsSelectionPanel />;
 }
