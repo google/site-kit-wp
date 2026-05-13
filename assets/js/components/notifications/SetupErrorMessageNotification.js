@@ -52,7 +52,7 @@ export default function SetupErrorMessageNotification( { Notification } ) {
 	const setupErrorMessage = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorMessage()
 	);
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [ temporaryPersistedPermissionsError ] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);

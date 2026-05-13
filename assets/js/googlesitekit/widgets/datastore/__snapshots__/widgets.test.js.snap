@@ -15,6 +15,7 @@ exports[`core/widgets Widgets selectors getWidget returns a widget if one exists
   "isActive": undefined,
   "isPreloaded": undefined,
   "modules": [],
+  "pdf": undefined,
   "priority": 10,
   "slug": "TestWidget",
   "width": "quarter",

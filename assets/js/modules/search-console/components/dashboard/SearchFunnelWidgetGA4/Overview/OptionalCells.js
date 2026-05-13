@@ -59,8 +59,9 @@ export default function OptionalCells( {
 	const analyticsModuleActiveAndConnected =
 		ga4ModuleActive && ga4ModuleConnected;
 
-	const { quarterCellProps, halfCellProps } =
-		getCellProps( showKeyEventsCTA );
+	const { quarterCellProps, halfCellProps } = getCellProps( {
+		showKeyEventsCTA,
+	} );
 
 	return (
 		<Fragment>

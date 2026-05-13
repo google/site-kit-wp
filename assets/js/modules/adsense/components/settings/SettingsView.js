@@ -105,7 +105,11 @@ export default function SettingsView() {
 		}
 	);
 
-	const snippetLabel = getSnippetLabel( useSnippet, existingTag, clientID );
+	const snippetLabel = getSnippetLabel( {
+		useSnippet,
+		existingTag,
+		clientID,
+	} );
 
 	const autoAdsDisabledMessage = getAutoAdsDisabledMessage( autoAdsDisabled );
 

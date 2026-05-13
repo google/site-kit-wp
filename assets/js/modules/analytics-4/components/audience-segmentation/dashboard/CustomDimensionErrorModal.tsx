@@ -60,13 +60,7 @@ const CustomDimensionErrorModal: FC = () => {
 		[]
 	);
 
-	const autoSubmit:
-		| string
-		| number
-		| boolean
-		| unknown[]
-		| object
-		| undefined = useFormValue(
+	const [ autoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -591,6 +589,7 @@ const baseActions = {
 		} );
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
@@ -605,6 +604,7 @@ const baseActions = {
 		);
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets if GA4 has mismatched Google Tag ID.
 	 *
@@ -620,6 +620,7 @@ const baseActions = {
 		};
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets whether the Web Data Stream is unavailable.
 	 *

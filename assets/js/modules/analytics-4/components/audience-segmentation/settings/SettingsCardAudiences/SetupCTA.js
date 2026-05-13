@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
 import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -76,14 +75,13 @@ export default function SetupCTA() {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_SEGMENTATION_SETUP_FORM,
 		'autoSubmit'
 	);
 
 	const hasOAuthError = autoSubmit && setupErrorCode === 'access_denied';
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 
@@ -95,9 +93,8 @@ export default function SetupCTA() {
 	}
 
 	function onCancel() {
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-			autoSubmit: false,
-		} );
+		setAutoSubmit( false );
+
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );

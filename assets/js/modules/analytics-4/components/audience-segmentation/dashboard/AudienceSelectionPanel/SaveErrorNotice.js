@@ -40,12 +40,12 @@ import { isEqual } from 'lodash';
 import { safelySort } from '@/js/util';
 
 export default function SaveErrorNotice( { savedItemSlugs } ) {
-	const selectedItems = useFormValue(
+	const [ selectedItems ] = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTED
 	);
 
-	const dismissedItemsError = useFormValue(
+	const [ dismissedItemsError ] = useFormValue(
 		AUDIENCE_SELECTION_FORM,
 		AUDIENCE_SELECTION_DISMISSED_ITEMS_ERROR_SLUG
 	);

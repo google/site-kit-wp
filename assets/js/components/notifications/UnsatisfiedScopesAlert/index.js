@@ -55,7 +55,7 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 			new RegExp( '//oauth2|action=googlesitekit_connect', 'i' )
 		)
 	);
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [ temporaryPersistedPermissionsError ] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);

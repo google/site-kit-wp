@@ -78,7 +78,7 @@ export default function UserMenu() {
 			googlesitekit_context: 'revoked',
 		} )
 	);
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
 	);

@@ -23,7 +23,6 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -48,19 +47,20 @@ export default function useCreateCustomDimensionsEffect() {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'autoSubmit'
 	);
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setIsAutoCreatingCustomDimensions ] = useFormValue(
+		FORM_CUSTOM_DIMENSIONS_CREATE,
+		'isAutoCreatingCustomDimensions'
+	);
 
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
 			await createCustomDimensions();
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				isAutoCreatingCustomDimensions: false,
-			} );
+			setIsAutoCreatingCustomDimensions( false );
 		}
 		if (
 			isKeyMetricsSetupCompleted &&
@@ -68,10 +68,8 @@ export default function useCreateCustomDimensionsEffect() {
 			hasAnalyticsEditScope &&
 			autoSubmit
 		) {
-			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
-				autoSubmit: false,
-				isAutoCreatingCustomDimensions: true,
-			} );
+			setAutoSubmit( false );
+			setIsAutoCreatingCustomDimensions( true );
 			createDimensionsAndUpdateForm();
 		}
 	}, [
@@ -80,7 +78,8 @@ export default function useCreateCustomDimensionsEffect() {
 		hasAnalyticsEditScope,
 		isKeyMetricsSetupCompleted,
 		isGA4Connected,
-		setValues,
+		setAutoSubmit,
+		setIsAutoCreatingCustomDimensions,
 	] );
 
 	return null;
