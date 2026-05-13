@@ -167,7 +167,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
     class="googlesitekit-subheader"
   />
   <div
-    class="googlesitekit-setup googlesitekit-initial-setup"
+    class="googlesitekit-setup googlesitekit-initial-setup googlesitekit-initial-setup--analytics-4"
   >
     <div
       class="googlesitekit-progress-indicator"
