@@ -367,7 +367,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'How are your visitors engaging?' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders add_to_cart secondary tile when primary is purchase', async () => {
@@ -466,6 +468,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// Primary add_to_cart tile in primary action should still render.
 		expect( queryByText( '"add_to_cart" events' ) ).toBeInTheDocument();
 		// No additional secondary add_to_cart subtitle in visitor engagement section.
-		expect( queryByText( 'Visitor engagement' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'How are your visitors engaging?' )
+		).toBeInTheDocument();
 	} );
 } );

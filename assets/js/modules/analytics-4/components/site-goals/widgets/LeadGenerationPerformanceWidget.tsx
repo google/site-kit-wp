@@ -188,7 +188,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 									? sprintf(
 											/* translators: %s: GA4 event name */
 											__(
-												'"%s" events',
+												'“%s” events',
 												'google-site-kit'
 											),
 											detectedLeadEvents[ 0 ]
@@ -212,7 +212,10 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 
 					<TilesGroup
 						className="googlesitekit-site-goals-visitor-engagement"
-						title={ __( 'Visitor engagement', 'google-site-kit' ) }
+						title={ __(
+							'How are your visitors engaging?',
+							'google-site-kit'
+						) }
 					>
 						<Tile
 							title={ __( 'Engagement rate', 'google-site-kit' ) }

@@ -370,7 +370,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
-		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'How are your visitors engaging?' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'does not render secondary ecommerce tiles', async () => {

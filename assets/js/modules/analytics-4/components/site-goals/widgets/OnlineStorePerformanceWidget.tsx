@@ -245,6 +245,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 									a: (
 										// eslint-disable-next-line
 										<a
+											// TODO: Update the link to the relevant support URL once it's created.
 											href="#"
 											target="_blank"
 											rel="noreferrer noopener"
@@ -276,7 +277,10 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 
 					<TilesGroup
 						className="googlesitekit-site-goals-visitor-engagement"
-						title={ __( 'Visitor engagement', 'google-site-kit' ) }
+						title={ __(
+							'How are your visitors engaging?',
+							'google-site-kit'
+						) }
 					>
 						<Tile
 							title={ __( 'Engagement rate', 'google-site-kit' ) }
@@ -301,7 +305,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 									title={ label }
 									subtitle={ sprintf(
 										/* translators: %s: GA4 event name */
-										__( '"%s" events', 'google-site-kit' ),
+										__( '“%s” events', 'google-site-kit' ),
 										eventName
 									) }
 									currentValue={ currentCount }
