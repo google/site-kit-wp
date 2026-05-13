@@ -44,7 +44,6 @@
 				}
 
 				@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
-					// gap: $grid-gap-phone;
 					gap: 40px $grid-gap-desktop;
 					grid-template-columns: repeat(2, 1fr);
 					margin-bottom: 40px;
