@@ -132,11 +132,11 @@
 	.googlesitekit-initial-setup {
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 40px; // Reserved space for the footer.
 		min-height: calc(100vh - 118px); // 46px admin bar + 72px header
 		padding: 0;
 
 		@media (min-width: $bp-wpAdminBarTablet) {
+			margin-bottom: 40px; // Reserved space for the footer.
 			min-height: calc(100vh - 160px); // 32px admin bar + 88px header + 40px WP footer
 		}
 
