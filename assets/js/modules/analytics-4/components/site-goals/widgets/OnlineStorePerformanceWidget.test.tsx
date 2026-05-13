@@ -411,6 +411,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, engagementReport );

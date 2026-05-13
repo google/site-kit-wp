@@ -393,6 +393,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
 		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		provideAnalytics4MockReport( registry, leadEventsReport );
 		provideAnalytics4MockReport( registry, engagementReport );
