@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import type { ChangeEvent } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, useCallback } from '@wordpress/element';
@@ -35,17 +40,12 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
+import type { Select } from '@/js/googlesitekit/data/types';
 import { useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 import AnalyticsSVG from '@/svg/graphics/analytics.svg';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
-
-type CheckboxChangeEvent = {
-	target: {
-		checked: boolean;
-	};
-};
 
 export default function AnalyticsOptIn() {
 	const viewContext = useViewContext();
@@ -56,14 +56,13 @@ export default function AnalyticsOptIn() {
 	);
 
 	const handleOnChange = useCallback(
-		( event: CheckboxChangeEvent ) => {
+		( event: ChangeEvent< HTMLInputElement > ) => {
 			setChecked( event.target.checked );
 		},
 		[ setChecked ]
 	);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const learnMoreLink = useSelect( ( select: any ) => {
+	const learnMoreLink = useSelect( ( select: Select ) => {
 		return select( CORE_SITE ).getDocumentationLinkURL(
 			'setup-update-ga4-account'
 		);
@@ -81,11 +80,8 @@ export default function AnalyticsOptIn() {
 					{ __( 'Analytics', 'google-site-kit' ) }
 				</Typography>
 				<Badge
-					{ ...( {
-						className:
-							'googlesitekit-splash__analytics-recommended-badge',
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					} as any ) }
+					// @ts-expect-error Badge component types do not include className yet.
+					className="googlesitekit-splash__analytics-recommended-badge"
 					label={ __( 'Recommended', 'google-site-kit' ) }
 				/>
 			</div>
@@ -98,13 +94,10 @@ export default function AnalyticsOptIn() {
 						'google-site-kit'
 					),
 					{
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						LearnMoreLink: (
+							// @ts-expect-error Link component types do not include full props yet.
 							<Link
-								{ ...( {
-									href: learnMoreLink,
-									// eslint-disable-next-line @typescript-eslint/no-explicit-any
-								} as any ) }
+								href={ learnMoreLink }
 								onClick={ () => {
 									trackEvent(
 										viewContext,
