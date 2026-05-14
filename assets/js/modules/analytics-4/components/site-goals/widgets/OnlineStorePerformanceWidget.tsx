@@ -50,6 +50,7 @@ import {
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -100,6 +101,15 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	WidgetNull,
 	WidgetReportError,
 } ) => {
+	// TODO: Update the link to the relevant support URL once it's created.
+	const supportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
+
 	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
@@ -253,10 +263,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 								),
 								{
 									a: (
-										// eslint-disable-next-line
+										// Content is added via
+										// createInterpolateElement, so this
+										// can be safely ignored.
+										//
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
 										<a
-											// TODO: Update the link to the relevant support URL once it's created.
-											href="#"
+											href={ supportURL }
 											target="_blank"
 											rel="noreferrer noopener"
 										/>
