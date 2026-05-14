@@ -102,6 +102,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	WidgetReportError,
 } ) => {
 	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
 	const supportURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoogleSupportURL( {
