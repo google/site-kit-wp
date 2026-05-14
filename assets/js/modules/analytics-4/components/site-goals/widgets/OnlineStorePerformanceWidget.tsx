@@ -230,7 +230,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		>
 			{ loading && <PreviewBlock width="100%" height="100px" /> }
 
-			{ ! loading && ! error && (
+			{ ! loading && (
 				<Fragment>
 					<TilesGroup
 						className="googlesitekit-site-goals-primary-action"
