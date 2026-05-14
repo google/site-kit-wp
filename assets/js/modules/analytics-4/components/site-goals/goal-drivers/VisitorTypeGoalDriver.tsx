@@ -58,26 +58,24 @@ interface ReportRow {
 	metricValues?: Array< { value?: string } >;
 }
 
-const VISITOR_TYPE_LABELS: Record< string, string > = {
+const VISITOR_TYPE_LABELS = {
 	new: __( 'New visitors', 'google-site-kit' ),
 	returning: __( 'Returning visitors', 'google-site-kit' ),
 };
 
-const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
-	let title = __( 'Leads by visitor type', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Sales by visitor type', 'google-site-kit' );
-	}
+const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	onExpandableRowsChange,
+} ) => {
+	const title =
+		goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Sales by visitor type', 'google-site-kit' )
+			: __( 'Leads by visitor type', 'google-site-kit' );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -167,12 +165,13 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 	}, 0 );
 	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
 		const visitorType = row.dimensionValues?.[ 0 ]?.value || '';
+		const visitorTypeKey = visitorType as keyof typeof VISITOR_TYPE_LABELS;
 		const eventCount = parseFloat(
 			String( row.metricValues?.[ 0 ]?.value ?? 0 )
 		);
 
 		return {
-			label: VISITOR_TYPE_LABELS[ visitorType ] || visitorType || '-',
+			label: VISITOR_TYPE_LABELS[ visitorTypeKey ] || visitorType || '-',
 			value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
 				style: 'percent',
 				signDisplay: 'never',

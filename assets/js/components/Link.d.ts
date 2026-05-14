@@ -24,6 +24,9 @@ import type {
 } from 'react';
 
 export interface LinkProps {
+	// NOTE: This is a temporary declaration file until Link.js is migrated to
+	// TypeScript. Once migrated, avoid duplicating standard anchor/button attrs
+	// here because React HTML attribute types will cover most of them.
 	'aria-label'?: string;
 	arrow?: boolean;
 	back?: boolean;
@@ -48,7 +51,7 @@ export interface LinkProps {
 }
 
 declare const Link: ForwardRefExoticComponent<
-	LinkProps & RefAttributes< unknown >
+	LinkProps & RefAttributes< HTMLAnchorElement | HTMLButtonElement >
 >;
 
 export default Link;

@@ -28,7 +28,7 @@ import type {
 	GoalDriverID,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
-export const GOAL_DRIVER_CATALOG = {
+export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS ]: {
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 		order: 10,
@@ -47,7 +47,7 @@ export const GOAL_DRIVER_CATALOG = {
 		defaultEnabled: true,
 		Component: VisitorTypeGoalDriver,
 	},
-} as GoalDriverCatalog;
+};
 
 function isGoalDriverID( id: string ): id is GoalDriverID {
 	return GOAL_DRIVER_CATALOG[ id as GoalDriverID ] !== undefined;

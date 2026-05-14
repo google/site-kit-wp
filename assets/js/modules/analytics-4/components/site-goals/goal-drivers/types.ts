@@ -64,6 +64,13 @@ export interface GoalDriverCatalogEntry {
 
 export type GoalDriverCatalog = Record< GoalDriverID, GoalDriverCatalogEntry >;
 
+/**
+ * Driver shape consumed by GoalDriverTiles.
+ *
+ * This can come from registry entries or story/test fixtures, and may also be
+ * partially hydrated while filtering unknown/invalid IDs, so metadata props
+ * remain optional by design.
+ */
 export interface GoalDriverTilesDriver {
 	id: GoalDriverID;
 	Component?: ComponentType< GoalDriverComponentProps >;

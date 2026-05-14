@@ -58,23 +58,19 @@ interface ReportRow {
 	metricValues?: Array< { value?: string } >;
 }
 
-const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = (
-	props
-) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
-	let title = __( 'Top traffic channels driving leads', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top traffic channels driving sales', 'google-site-kit' );
-	}
+const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	onExpandableRowsChange,
+} ) => {
+	const title =
+		goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Top traffic channels driving sales', 'google-site-kit' )
+			: __( 'Top traffic channels driving leads', 'google-site-kit' );
 
 	const dates = useSelect(
 		( select: Select ) =>

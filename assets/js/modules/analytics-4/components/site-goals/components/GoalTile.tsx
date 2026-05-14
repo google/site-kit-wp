@@ -31,11 +31,10 @@ import Typography from '@/js/components/Typography';
 interface GoalTileProps {
 	baseClassName: string;
 	className?: string;
-	title: string;
+	title: ReactNode;
 	headerLabel?: string;
 	infoTooltip?: ReactNode;
 	bodyClassName?: string;
-	children: ReactNode;
 }
 
 const GoalTile: FC< GoalTileProps > = ( {
