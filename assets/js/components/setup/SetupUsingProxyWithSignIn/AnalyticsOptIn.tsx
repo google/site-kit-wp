@@ -35,8 +35,7 @@ import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { useDispatch, useSelect } from '@/js/googlesitekit-data';
+import { useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 import AnalyticsSVG from '@/svg/graphics/analytics.svg';
@@ -50,20 +49,17 @@ type CheckboxChangeEvent = {
 
 export default function AnalyticsOptIn() {
 	const viewContext = useViewContext();
-	const { setValues } = useDispatch( CORE_FORMS );
 
-	const checked = useFormValue(
+	const [ checked, setChecked ] = useFormValue(
 		ANALYTICS_NOTICE_FORM_NAME,
 		ANALYTICS_NOTICE_CHECKBOX
 	);
 
 	const handleOnChange = useCallback(
 		( event: CheckboxChangeEvent ) => {
-			setValues( ANALYTICS_NOTICE_FORM_NAME, {
-				[ ANALYTICS_NOTICE_CHECKBOX ]: event.target.checked,
-			} );
+			setChecked( event.target.checked );
 		},
-		[ setValues ]
+		[ setChecked ]
 	);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
