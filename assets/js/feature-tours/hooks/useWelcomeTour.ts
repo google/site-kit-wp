@@ -32,6 +32,8 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Returns the welcome tour configuration based on the current user context.
@@ -77,10 +79,26 @@ export function useWelcomeTour() {
 		[ viewContext ]
 	);
 
+	const isKeyMetricsSetupCompleted = useSelect(
+		( select: Select ) =>
+			!! select( CORE_SITE ).isKeyMetricsSetupCompleted(),
+		[]
+	);
+
+	const isAudienceSegmentationSetupCompleted = useSelect(
+		( select: Select ) =>
+			!! select(
+				MODULES_ANALYTICS_4
+			).isAudienceSegmentationSetupCompleted(),
+		[]
+	);
+
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
 		isAnalyticsConnected: !! isAnalyticsConnected,
 		isActivateAnalyticsNotificationPresent,
+		isKeyMetricsSetupCompleted,
+		isAudienceSegmentationSetupCompleted,
 	} );
 }
