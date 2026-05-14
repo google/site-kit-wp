@@ -36,7 +36,7 @@ interface EditLinkProps {
 	isEditing: boolean;
 	isDisabled: boolean;
 	onClick: () => void;
-	linkRef: RefObject< { focus?: () => void } >;
+	linkRef: RefObject< HTMLAnchorElement | HTMLButtonElement >;
 }
 
 const EditLink: FC< EditLinkProps > = ( {
@@ -46,7 +46,6 @@ const EditLink: FC< EditLinkProps > = ( {
 	linkRef,
 } ) => {
 	return (
-		// @ts-expect-error - The `Link` component is not typed yet.
 		<Link
 			onClick={ onClick }
 			ref={ linkRef }

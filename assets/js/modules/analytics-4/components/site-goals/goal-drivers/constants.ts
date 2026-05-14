@@ -1,4 +1,6 @@
 /**
+ * Site Goals Goal Drivers constants.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +16,16 @@
  * limitations under the License.
  */
 
-declare module '*.svg' {
-	import type { FunctionComponent, SVGAttributes } from 'react';
-	const content: FunctionComponent< SVGAttributes< SVGElement > >;
-	export default content;
-}
+export const GOAL_DRIVER_ROW_LIMIT_COLLAPSED = 3;
+export const GOAL_DRIVER_ROW_LIMIT_EXPANDED = 6;
 
-declare module '*.svg?url' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
-}
+export const GOAL_TYPES = {
+	LEAD: 'lead',
+	ECOMMERCE: 'ecommerce',
+} as const;
+
+export const GOAL_DRIVER_IDS = {
+	TOP_TRAFFIC_CHANNELS: 'topTrafficChannels',
+	TOP_PAGES: 'topPages',
+	VISITOR_TYPE: 'visitorType',
+} as const;

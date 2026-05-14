@@ -1,4 +1,6 @@
 /**
+ * Site Goals Goal Drivers utility functions.
+ *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +16,31 @@
  * limitations under the License.
  */
 
-declare module '*.svg' {
-	import type { FunctionComponent, SVGAttributes } from 'react';
-	const content: FunctionComponent< SVGAttributes< SVGElement > >;
-	export default content;
+export function normalizePrimaryEvents(
+	primaryEvent?: string | string[]
+): string[] {
+	const primaryEvents = Array.isArray( primaryEvent )
+		? primaryEvent
+		: [ primaryEvent ];
+
+	return Array.from(
+		new Set(
+			primaryEvents.filter( ( event ): event is string =>
+				Boolean( event )
+			)
+		)
+	);
 }
 
-declare module '*.svg?url' {
-	const content: React.FunctionComponent< React.SVGAttributes< SVGElement > >;
-	export default content;
+export function getDimensionFiltersForEvents( eventNames: string[] ) {
+	if ( ! eventNames.length ) {
+		return undefined;
+	}
+
+	return {
+		eventName: {
+			filterType: 'inListFilter',
+			value: eventNames,
+		},
+	};
 }
