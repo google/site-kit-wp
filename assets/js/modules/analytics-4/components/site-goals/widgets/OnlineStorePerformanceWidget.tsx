@@ -169,7 +169,12 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			[]
+			// Passing reportOptions directly as an array causes errors because
+			// the array size changes—which is not allowed.
+			//
+			// So we wrap it in an object to ensure the array size remains
+			// consistent between renders.
+			[ { reportOptions } ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -179,7 +184,12 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		[]
+		// Passing reportOptions directly as an array causes errors because
+		// the array size changes—which is not allowed.
+		//
+		// So we wrap it in an object to ensure the array size remains
+		// consistent between renders.
+		[ { reportOptions } ]
 	);
 
 	if ( ! primaryEvent ) {

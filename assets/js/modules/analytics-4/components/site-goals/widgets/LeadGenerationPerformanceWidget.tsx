@@ -93,22 +93,18 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	// Ensure we have a consistent number of entries in the report options
-	// array, so that the useSelect dependencies are consistent.
-	//
-	// If `reportOptions` is used directly as a dependency for the useSelect
-	// calls below, it will cause a console error while loading.
-	const reportOptionArgsForSelect = reportOptions?.length
-		? reportOptions
-		: [ undefined, undefined ];
-
 	const [ leadEventsReport, engagementReport ] =
 		useInViewSelect(
 			( select: Select ) =>
 				reportOptions.map( ( options ) =>
 					select( MODULES_ANALYTICS_4 ).getReport( options )
 				),
-			reportOptionArgsForSelect
+			// Passing reportOptions directly as an array causes errors because
+			// the array size changes—which is not allowed.
+			//
+			// So we wrap it in an object to ensure the array size remains
+			// consistent between renders.
+			[ { reportOptions } ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
@@ -118,7 +114,12 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 				...reportOptions
 			),
 		],
-		reportOptionArgsForSelect
+		// Passing reportOptions directly as an array causes errors because
+		// the array size changes—which is not allowed.
+		//
+		// So we wrap it in an object to ensure the array size remains
+		// consistent between renders.
+		[ { reportOptions } ]
 	);
 
 	if ( ! hasLeadEvents ) {
