@@ -75,7 +75,7 @@ jobs:
           gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_MCP_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Create patch
         run: |
           git add .
