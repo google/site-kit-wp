@@ -50,6 +50,7 @@
 
 		.googlesitekit-opt-in {
 			margin-bottom: 42px;
+			padding: 0 24px;
 
 			label {
 				color: $c-surfaces-on-background-variant;
@@ -100,7 +101,7 @@
 			}
 
 			.mdc-checkbox__description {
-				color: $c-surfaces-on-background-variant;
+				color: $c-neutral-n-900;
 				font-size: $fs-label-md;
 			}
 		}

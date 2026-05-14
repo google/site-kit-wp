@@ -44,7 +44,7 @@ import type { Select } from '@/js/googlesitekit/data/types';
 import { useSelect } from '@/js/googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
-import AnalyticsSVG from '@/svg/graphics/analytics.svg';
+import AnalyticsSVG from '@/svg/graphics/splash-analytics.svg';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 
 export default function AnalyticsOptIn() {
