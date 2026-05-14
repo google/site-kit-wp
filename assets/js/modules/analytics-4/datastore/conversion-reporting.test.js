@@ -261,10 +261,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
-					.haveConversionEventsForTailoredMetrics(
-						'publish_blog',
-						true
-					);
+					.haveConversionEventsForTailoredMetrics( {
+						useNewEvents: true,
+					} );
 
 				expect( haveConversionEventsForTailoredMetrics ).toEqual(
 					true
@@ -294,10 +293,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
-					.haveConversionEventsForTailoredMetrics(
-						'publish_blog',
-						true
-					);
+					.haveConversionEventsForTailoredMetrics( {
+						useNewEvents: true,
+					} );
 
 				expect( haveConversionEventsForTailoredMetrics ).toEqual(
 					false

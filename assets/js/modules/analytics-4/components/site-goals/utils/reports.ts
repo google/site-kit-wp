@@ -22,7 +22,7 @@ import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 /**
  * Creates a find callback for locating rows by date range slug at a specific dimension index.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param {string} dateRangeSlug  Date range slug to match, e.g. "date_range_0".
  * @param {number} dimensionIndex Index of the dimension value to compare against.
@@ -37,7 +37,7 @@ function makeFind( dateRangeSlug: string, dimensionIndex: number ) {
  * Returns current and previous primary event counts by summing across all matching rows.
  * Used when multiple event names each contribute to the total (e.g. lead generation events).
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param {Report} eventsReport Report whose rows contain one entry per eventName + dateRange combination.
  * @return {{current: number, previous: number}} Summed counts for each date range.
@@ -68,7 +68,7 @@ function getAggregatedPrimaryCounts( eventsReport: Report ) {
  * Returns current and previous primary event counts by reading a single matching row.
  * Used when the report is already filtered to one event name (e.g. a single ecommerce event).
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param {Report} eventsReport Report whose rows contain one entry per dateRange.
  * @return {{current: number, previous: number}} Counts for each date range.
@@ -96,7 +96,7 @@ function getSinglePrimaryCounts( eventsReport: Report ) {
 /**
  * Processes events and engagement reports into a set of derived metrics.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param {Report}  eventsReport        Report containing event rows (rows keyed by eventName + dateRange).
  * @param {Report}  engagementReport    Report containing engagement totals (engagementRate + sessions).

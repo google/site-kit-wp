@@ -178,10 +178,10 @@ const baseActions = {
 				if ( ! error ) {
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveIsCustomDimensionGatheringData(
-							dimension,
-							true
-						);
+						.receiveIsCustomDimensionGatheringData( {
+							customDimension: dimension,
+							gatheringData: true,
+						} );
 				}
 			}
 		}
