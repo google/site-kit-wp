@@ -275,24 +275,40 @@ export default function AccountCreate( { className } ) {
 				) }
 			</P>
 
-			<div className="googlesitekit-setup-module__inputs">
-				<Cell size={ 6 }>
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+				<Cell
+					size={ 6 }
+					className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account"
+				>
 					<AccountField />
 				</Cell>
-				<Cell size={ 6 }>
+				<Cell
+					size={ 6 }
+					className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property"
+				>
 					<PropertyField />
 				</Cell>
-				<Cell size={ 6 }>
+				<Cell
+					size={ 6 }
+					className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream"
+				>
 					<WebDataStreamField />
 				</Cell>
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs">
-				<Cell size={ 6 }>
+			{ /* <div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--analytics-location"> */ }
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+				<Cell
+					size={ 6 }
+					className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--country"
+				>
 					<CountrySelect />
 				</Cell>
 
-				<Cell size={ 6 }>
+				<Cell
+					size={ 6 }
+					className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--timezone"
+				>
 					<TimezoneSelect />
 				</Cell>
 			</div>

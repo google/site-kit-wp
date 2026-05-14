@@ -217,9 +217,15 @@ export default function ModuleSetup( { moduleSlug } ) {
 				<HelpMenu />
 			</Header>
 			<div
-				className={ classnames( 'googlesitekit-setup', {
-					'googlesitekit-initial-setup': isInitialSetupFlow,
-				} ) }
+				className={ classnames(
+					'googlesitekit-setup',
+					...( isInitialSetupFlow
+						? [
+								'googlesitekit-initial-setup',
+								`googlesitekit-initial-setup--${ moduleSlug }`,
+						  ]
+						: [] )
+				) }
 			>
 				{ isInitialSetupFlow ? (
 					setupMainContent
