@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -62,6 +60,7 @@ const baseInitialState = {
 const SET_TRACKING_ENABLED_SAVING_ACTION = 'SET_TRACKING_ENABLED_SAVING_ACTION';
 
 const baseActions = {
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets user tracking settings.
 	 *

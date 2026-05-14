@@ -41,7 +41,6 @@ import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import Typography from '@/js/components/Typography';
 import { Cell, Row } from '@/js/material-components';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -56,15 +55,9 @@ export default function SplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
-	// Query arg derived state (declared before callbacks that depend on it).
-	const [ showProgress ] = useQueryArg( 'showProgress' );
-	const isInitialSetupFlow = !! showProgress;
-
 	// Add the initial setup class to the body when the component mounts.
 	useMount( () => {
-		if ( isInitialSetupFlow ) {
-			global.document.body.classList.add( 'googlesitekit-setup-flow' );
-		}
+		global.document.body.classList.add( 'googlesitekit-setup-flow' );
 	} );
 
 	const cellDetailsProp = analyticsModuleActive

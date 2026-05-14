@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, Fragment } from '@wordpress/element';
@@ -97,7 +102,15 @@ export default function SettingsCardKeyMetrics() {
 			header
 			rounded
 		>
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+			<div
+				className={ classnames(
+					'googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input',
+					{
+						'googlesitekit-settings-user-input--setupFlowRefresh':
+							setupFlowRefreshEnabled,
+					}
+				) }
+			>
 				{ shouldShowLoading && (
 					<PreviewBlock
 						width="100%"

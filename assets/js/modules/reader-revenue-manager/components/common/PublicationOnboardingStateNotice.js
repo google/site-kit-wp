@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -67,16 +66,13 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	const shouldSyncPublicationValue = useFormValue(
-		READER_REVENUE_MANAGER_NOTICES_FORM,
-		SYNC_PUBLICATION
-	);
+	const [ shouldSyncPublicationValue, setShouldSyncPublicationValue ] =
+		useFormValue( READER_REVENUE_MANAGER_NOTICES_FORM, SYNC_PUBLICATION );
 
 	const shouldSyncPublication =
 		shouldSyncPublicationValue &&
 		actionableOnboardingStates.includes( onboardingState );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { syncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
@@ -87,16 +83,14 @@ export default function PublicationOnboardingStateNotice() {
 
 	const onCTAClick = useCallback( () => {
 		// Set publication data to be reset when user re-focuses window.
-		setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
-			[ SYNC_PUBLICATION ]: true,
-		} );
+		setShouldSyncPublicationValue( true );
 
 		trackEvent(
 			`${ viewContext }_rrm-onboarding-state-notification`,
 			'confirm_notification',
 			onboardingState
 		);
-	}, [ onboardingState, setValues, viewContext ] );
+	}, [ onboardingState, setShouldSyncPublicationValue, viewContext ] );
 
 	const syncPublication = useCallback( () => {
 		if ( ! shouldSyncPublication ) {

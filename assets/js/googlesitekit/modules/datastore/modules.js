@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -242,10 +240,10 @@ const baseActions = {
 	 *                  consent screen.
 	 */
 	*activateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation(
+		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
-			true
-		);
+			active: true,
+		} );
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
@@ -272,10 +270,10 @@ const baseActions = {
 	 * @return {Object}      Object with `{response, error}`.
 	 */
 	*deactivateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation(
+		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
-			false
-		);
+			active: false,
+		} );
 
 		return { response, error };
 	},
@@ -289,16 +287,17 @@ const baseActions = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {string}  slug   Slug of the module to activate/deactivate.
-	 * @param {boolean} active `true` to activate; `false` to deactivate.
+	 * @param {Object}  options        Options object.
+	 * @param {string}  options.slug   Slug of the module to activate/deactivate.
+	 * @param {boolean} options.active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with `{response, error}`.
 	 */
 	setModuleActivation: createValidatedAction(
-		( slug, active ) => {
+		( { slug, active } ) => {
 			invariant( slug, 'slug is required.' );
 			invariant( active !== undefined, 'active is required.' );
 		},
-		function* ( slug, active ) {
+		function* ( { slug, active } ) {
 			const { response, error } =
 				yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
 					slug,

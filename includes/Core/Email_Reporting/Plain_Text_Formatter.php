@@ -90,6 +90,7 @@ class Plain_Text_Formatter {
 		$footer_copy     = $data['footer']['copy'] ?? '';
 		$body            = $data['body'] ?? array();
 		$unsubscribe_url = $data['footer']['unsubscribe_url'] ?? '';
+		$footer_type     = $data['footer_type'] ?? 'standard';
 
 		$lines = array(
 			__( 'Site Kit by Google', 'google-site-kit' ),
@@ -135,7 +136,10 @@ class Plain_Text_Formatter {
 			$lines[] = $footer_copy;
 		}
 
-		$lines = self::append_footer_links( $lines, $unsubscribe_url );
+		// Mirror the HTML `footer_type` branch: `inline` skips utility links.
+		if ( 'inline' !== $footer_type ) {
+			$lines = self::append_footer_links( $lines, $unsubscribe_url );
+		}
 
 		return implode( "\n", $lines );
 	}
@@ -301,7 +305,7 @@ class Plain_Text_Formatter {
 	 * Manage Subscription are only added when the unsubscribe URL is
 	 * available, matching the HTML footer template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param array  $lines           Lines buffer to append to.
 	 * @param string $unsubscribe_url Unsubscribe URL used for the Unsubscribe and Manage Subscription links.

@@ -45,7 +45,7 @@ import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelN
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 function CustomDimensionsNotice() {
-	const selectedMetrics = useFormValue(
+	const [ selectedMetrics ] = useFormValue(
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);

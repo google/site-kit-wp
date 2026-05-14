@@ -104,7 +104,7 @@
 	{
 		"slug": "reader-revenue-manager",
 		"name": "Reader Revenue Manager",
-		"description": "Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities",
+		"description": "Add simple CTAs to your pages that ask readers to sign up for your newsletter, complete a survey, make a contribution, or subscribe",
 		"homepage": "https://readerrevenue.withgoogle.com/",
 		"internal": false,
 		"order": 10,

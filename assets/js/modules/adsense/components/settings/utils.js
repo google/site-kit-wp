@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * WordPress dependencies
  */
@@ -140,12 +138,13 @@ export function getSiteStatusLabel( siteStatus ) {
  *
  * @since 1.93.0
  *
- * @param {boolean} useSnippet  The adsense site snippet flag.
- * @param {string}  existingTag The adsense existing tag.
- * @param {string}  clientID    The client ID.
+ * @param {Object}  options             Options object.
+ * @param {boolean} options.useSnippet  The adsense site snippet flag.
+ * @param {string}  options.existingTag The adsense existing tag.
+ * @param {string}  options.clientID    The client ID.
  * @return {string} The site snippet label.
  */
-export function getSnippetLabel( useSnippet, existingTag, clientID ) {
+export function getSnippetLabel( { useSnippet, existingTag, clientID } ) {
 	let snippetLabel = __(
 		'The AdSense code has not been placed on your site',
 		'google-site-kit'

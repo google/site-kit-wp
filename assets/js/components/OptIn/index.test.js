@@ -57,7 +57,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should render correctly', () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		const { container, getByRole } = render( <OptIn { ...optInProps } />, {
 			viewContext: 'test-view-context',
@@ -88,7 +88,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should enable tracking when the user opts in', async () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,
@@ -116,7 +116,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should disable tracking when the user opts out', async () => {
-		provideTracking( registry, true );
+		provideTracking( { registry, enabled: true } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,
@@ -144,7 +144,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should show an error message when the tracking setting update fails', async () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 500,
@@ -176,7 +176,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should track an event when the user opts in', async () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,
@@ -206,7 +206,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should track an event with a custom category', async () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,
@@ -239,7 +239,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should track an event with a custom action', async () => {
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,
 			body: { enabled: true },
@@ -269,7 +269,7 @@ describe( 'OptIn', () => {
 	} );
 
 	it( 'should not track an event when the user opts out', async () => {
-		provideTracking( registry, true );
+		provideTracking( { registry, enabled: true } );
 
 		fetchMock.post( coreUserTrackingSettingsEndpointRegExp, {
 			status: 200,

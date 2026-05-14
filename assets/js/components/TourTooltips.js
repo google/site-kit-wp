@@ -233,7 +233,7 @@ export default function TourTooltips( {
 	/**
 	 * Scrolls the step into view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object} step The step object.
 	 */

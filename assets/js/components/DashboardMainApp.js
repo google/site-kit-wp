@@ -30,7 +30,7 @@ import { useMount } from 'react-use';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
@@ -52,6 +52,8 @@ import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
+import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
+import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
 import WelcomeModal from './WelcomeModal';
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -72,7 +74,6 @@ import {
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import OfflineNotification from './notifications/OfflineNotification';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import CoreDashboardEffects from './CoreDashboardEffects';
@@ -104,12 +105,13 @@ export default function DashboardMainApp() {
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const grantedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getGrantedScopes()
 	);
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [
+		temporaryPersistedPermissionsError,
+		setTemporaryPersistedPermissionsError,
+	] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);
@@ -173,13 +175,11 @@ export default function DashboardMainApp() {
 			temporaryPersistedPermissionsError !== undefined &&
 			hasReceivedGrantedScopes
 		) {
-			setValues( FORM_TEMPORARY_PERSIST_PERMISSION_ERROR, {
-				permissionsError: {},
-			} );
+			setTemporaryPersistedPermissionsError( {} );
 		}
 	}, [
 		hasReceivedGrantedScopes,
-		setValues,
+		setTemporaryPersistedPermissionsError,
 		temporaryPersistedPermissionsError,
 	] );
 
@@ -192,7 +192,7 @@ export default function DashboardMainApp() {
 	} );
 
 	const widgetContextOptions = {
-		modules: viewableModules ? viewableModules : undefined,
+		modules: viewableModules,
 	};
 
 	const isKeyMetricsActive = useSelect( ( select ) =>
@@ -262,6 +262,7 @@ export default function DashboardMainApp() {
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 	const showWelcomeModal = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -299,10 +300,14 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const isWelcomeTourActive = useSelect( ( select ) => {
+	const showSetupOverlays = useSelect( ( select ) => {
+		if ( hideSetupCTAs ) {
+			return false;
+		}
+
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return [
+		return ! [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
@@ -320,6 +325,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu showFeatureTour />
 			</Header>
@@ -339,7 +345,7 @@ export default function DashboardMainApp() {
 					/>
 				) }
 
-				{ ! isWelcomeTourActive && ! hideSetupCTAs && (
+				{ showSetupOverlays && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
@@ -408,6 +414,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
 
 			{ emailReportingEnabled && (
 				<Fragment>
