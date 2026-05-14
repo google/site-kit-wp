@@ -337,5 +337,50 @@ describe( 'modules/analytics-4 audience settings', () => {
 				).getAudienceSettings();
 			} );
 		} );
+
+		describe( 'isAudienceSegmentationSetupCompleted', () => {
+			it( 'should return true if audience segmentation has been set up', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						audienceSegmentationSetupCompletedBy: 1,
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationSetupCompleted()
+				).toEqual( true );
+			} );
+
+			it( 'should return undefined if audienceSegmentationSetupCompletedBy is not loaded yet', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceSegmentationSetupCompleted()
+				).toEqual( undefined );
+			} );
+
+			it.each( [ false, 0, '' ] )(
+				'should return false if audienceSegmentationSetupCompletedBy is falsy (`%s`)',
+				( audienceSegmentationSetupCompletedBy ) => {
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.receiveGetAudienceSettings( {
+							audienceSegmentationSetupCompletedBy,
+						} );
+
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isAudienceSegmentationSetupCompleted()
+					).toEqual( false );
+				}
+			);
+		} );
 	} );
 } );
