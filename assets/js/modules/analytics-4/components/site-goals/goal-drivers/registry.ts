@@ -20,10 +20,18 @@
  * Internal dependencies
  */
 import TopTrafficChannelsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsRateGoalDriver';
 import TopPagesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopPagesGoalDriver';
 import VisitorTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/VisitorTypeGoalDriver';
-import { GOAL_DRIVER_IDS } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import type {
+import CitiesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CitiesGoalDriver';
+import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CountriesGoalDriver';
+import TopAuthorsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopAuthorsGoalDriver';
+import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
+import {
+	GOAL_DRIVER_IDS,
+	MAX_VISIBLE_GOAL_DRIVERS,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
 	GoalDriverCatalog,
 	GoalDriverID,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
@@ -35,17 +43,47 @@ export const GOAL_DRIVER_CATALOG = {
 		defaultEnabled: true,
 		Component: TopTrafficChannelsGoalDriver,
 	},
+	[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE ]: {
+		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+		order: 10,
+		defaultEnabled: true,
+		Component: TopTrafficChannelsRateGoalDriver,
+	},
 	[ GOAL_DRIVER_IDS.TOP_PAGES ]: {
 		id: GOAL_DRIVER_IDS.TOP_PAGES,
-		order: 20,
-		defaultEnabled: true,
+		order: 10,
+		defaultEnabled: false,
 		Component: TopPagesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
-		order: 30,
+		order: 10,
 		defaultEnabled: true,
 		Component: VisitorTypeGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.CITIES ]: {
+		id: GOAL_DRIVER_IDS.CITIES,
+		order: 10,
+		defaultEnabled: false,
+		Component: CitiesGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.COUNTRIES ]: {
+		id: GOAL_DRIVER_IDS.COUNTRIES,
+		order: 10,
+		defaultEnabled: false,
+		Component: CountriesGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.TOP_AUTHORS ]: {
+		id: GOAL_DRIVER_IDS.TOP_AUTHORS,
+		order: 10,
+		defaultEnabled: false,
+		Component: TopAuthorsGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.DEVICE_TYPE ]: {
+		id: GOAL_DRIVER_IDS.DEVICE_TYPE,
+		order: 10,
+		defaultEnabled: false,
+		Component: DeviceTypeGoalDriver,
 	},
 } as GoalDriverCatalog;
 
@@ -67,14 +105,14 @@ export function resolveGoalDriverIDs(
 	selectedDriverIDs: string[] = []
 ): GoalDriverID[] {
 	if ( ! selectedDriverIDs.length ) {
-		return getDefaultGoalDriverIDs();
+		return getDefaultGoalDriverIDs().slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
 	}
 
 	const validSelectedIDs = selectedDriverIDs.filter( isGoalDriverID );
 
 	if ( ! validSelectedIDs.length ) {
-		return getDefaultGoalDriverIDs();
+		return getDefaultGoalDriverIDs().slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
 	}
 
-	return validSelectedIDs;
+	return validSelectedIDs.slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
 }
