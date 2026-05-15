@@ -91,4 +91,29 @@ class Sign_In_With_Google_BlockTest extends TestCase {
 		$this->assertStringNotContainsString( 'data-googlesitekit-siwg-theme', $output, 'Default selection should not add theme data attribute.' );
 		$this->assertStringContainsString( 'class="googlesitekit-sign-in-with-google__frontend-output-button"', $output, 'Default output should include the base class only.' );
 	}
+
+	public function test_render_callback_returns_empty_for_logged_in_user_outside_preview() {
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		$output = $this->block->render_callback();
+
+		$this->assertSame( '', $output, 'Logged-in users should not see the button outside of preview.' );
+	}
+
+	public function test_render_callback_renders_for_logged_in_user_when_previewing() {
+		global $wp_query;
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		$previous_preview     = $wp_query->is_preview;
+		$wp_query->is_preview = true;
+
+		$output = $this->block->render_callback();
+
+		$wp_query->is_preview = $previous_preview;
+
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Logged-in admins previewing a post should see the SiwG placeholder.' );
+	}
 }
