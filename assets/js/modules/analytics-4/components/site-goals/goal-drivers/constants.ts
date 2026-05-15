@@ -18,6 +18,7 @@
 
 export const GOAL_DRIVER_ROW_LIMIT_COLLAPSED = 3;
 export const GOAL_DRIVER_ROW_LIMIT_EXPANDED = 6;
+export const MAX_VISIBLE_GOAL_DRIVERS = 6;
 
 export const GOAL_TYPES = {
 	LEAD: 'lead',
@@ -26,6 +27,11 @@ export const GOAL_TYPES = {
 
 export const GOAL_DRIVER_IDS = {
 	TOP_TRAFFIC_CHANNELS: 'topTrafficChannels',
+	TOP_TRAFFIC_CHANNELS_RATE: 'topTrafficChannelsRate',
 	TOP_PAGES: 'topPages',
 	VISITOR_TYPE: 'visitorType',
+	CITIES: 'cities',
+	COUNTRIES: 'countries',
+	TOP_AUTHORS: 'topAuthors',
+	DEVICE_TYPE: 'deviceType',
 } as const;
