@@ -29,9 +29,11 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -69,6 +71,10 @@ function buildPrimaryEventReportOptions( primaryEvent: string ) {
 	};
 }
 
+function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
+	return empty ? [] : rows;
+}
+
 const engagementReportOptions = {
 	...dates,
 	metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
@@ -82,6 +88,23 @@ const purchaseReportOptions = buildPrimaryEventReportOptions(
 const addToCartReportOptions = buildPrimaryEventReportOptions(
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART
 );
+
+const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
+];
+
+const FIVE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...THREE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.CITIES,
+];
+
+const SIX_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...FIVE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.COUNTRIES,
+];
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsOnlineStorePerformance'
@@ -149,6 +172,17 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
 	};
 
+	const topTrafficRateOptions = {
+		...goalDriverDates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+	};
+
 	const topPagesOptions = {
 		...goalDriverDates,
 		dimensions: [ 'pagePath', 'eventName' ],
@@ -184,13 +218,62 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
 	};
 
+	const citiesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'city' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			city: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+	};
+
+	const countriesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'country' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			country: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+	};
+
+	const deviceTypeOptions = {
+		...goalDriverDates,
+		dimensions: [ 'deviceCategory' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+	};
+
 	if ( loading ) {
 		[
 			topTrafficChannelsOptions,
 			topTrafficTotalOptions,
+			topTrafficRateOptions,
 			topPagesOptions,
 			pageTitlesOptions,
 			visitorTypeOptions,
+			citiesOptions,
+			countriesOptions,
+			deviceTypeOptions,
 		].forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -290,6 +373,29 @@ function seedGoalDriverReports(
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
+			rows: maybeEmptyRows( empty, [
+				{
+					dimensionValues: [ { value: 'Direct' } ],
+					metricValues: [ { value: '75' }, { value: '1000' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Organic search' } ],
+					metricValues: [ { value: '47' }, { value: '1000' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Organic social' } ],
+					metricValues: [ { value: '12' }, { value: '1000' } ],
+				},
+			] ),
+		},
+		{ options: topTrafficRateOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
 			rows: empty
 				? []
 				: pagePaths.map( ( pagePath, index ) => ( {
@@ -337,16 +443,95 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ visitorTypeOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'London' } ],
+							metricValues: [ { value: '35' } ],
+						},
+						{
+							dimensionValues: [ { value: 'New York' } ],
+							metricValues: [ { value: '27' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Paris' } ],
+							metricValues: [ { value: '18' } ],
+						},
+				  ],
+		},
+		{ options: citiesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ citiesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'United States' } ],
+							metricValues: [ { value: '43' } ],
+						},
+						{
+							dimensionValues: [ { value: 'United Kingdom' } ],
+							metricValues: [ { value: '24' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Germany' } ],
+							metricValues: [ { value: '12' } ],
+						},
+				  ],
+		},
+		{ options: countriesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ countriesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'mobile' } ],
+							metricValues: [ { value: '565' } ],
+						},
+						{
+							dimensionValues: [ { value: 'tablet' } ],
+							metricValues: [ { value: '413' } ],
+						},
+						{
+							dimensionValues: [ { value: 'desktop' } ],
+							metricValues: [ { value: '22' } ],
+						},
+				  ],
+		},
+		{ options: deviceTypeOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ deviceTypeOptions ] );
 }
 
 function Template( {
 	setupRegistry,
+	selectedGoalDriverIDs,
 }: {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	selectedGoalDriverIDs?: GoalDriverID[];
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WidgetWithComponentProps />
+			<WidgetWithComponentProps
+				selectedGoalDriverIDs={ selectedGoalDriverIDs }
+			/>
 		</WithRegistrySetup>
 	);
 }
@@ -354,6 +539,7 @@ function Template( {
 export const Ready = Template.bind( {} ) as Story;
 Ready.storyName = 'Ready (Purchase)';
 Ready.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, purchaseReportOptions );
@@ -365,6 +551,7 @@ Ready.args = {
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
 ReadyAddToCart.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		registry
@@ -376,6 +563,28 @@ ReadyAddToCart.args = {
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 		] );
 	},
+};
+
+export const ReadyPurchaseFiveDrivers = Template.bind( {} ) as Story;
+ReadyPurchaseFiveDrivers.storyName = 'Ready (Purchase, 5 Goal Drivers)';
+ReadyPurchaseFiveDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: FIVE_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadyPurchaseSixDrivers = Template.bind( {} ) as Story;
+ReadyPurchaseSixDrivers.storyName = 'Ready (Purchase, 6 Goal Drivers)';
+ReadyPurchaseSixDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadyPurchaseSixDriversShowMore = Template.bind( {} ) as Story;
+ReadyPurchaseSixDriversShowMore.storyName =
+	'Ready (Purchase, 6 Goal Drivers, Show More)';
+ReadyPurchaseSixDriversShowMore.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
 };
 
 export const Loading = Template.bind( {} ) as Story;
