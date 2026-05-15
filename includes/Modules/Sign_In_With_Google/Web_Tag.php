@@ -254,6 +254,7 @@ class Web_Tag extends Module_Web_Tag {
 		?>
 		<style>
 		.googlesitekit-sign-in-with-google__frontend-output-button{max-width:320px}
+		.interim-login #login>.googlesitekit-sign-in-with-google__frontend-output-button{margin-bottom:16px}
 		</style>
 		<?php
 		BC_Functions::wp_print_script_tag( array( 'src' => 'https://accounts.google.com/gsi/client' ) );

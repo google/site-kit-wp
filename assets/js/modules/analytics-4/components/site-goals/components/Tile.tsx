@@ -31,8 +31,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useSelect, type Select } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import ChangeBadge from '@/js/components/ChangeBadge';
-import InfoTooltip from '@/js/components/InfoTooltip';
 import { numFmt } from '@/js/util';
+import GoalTile from './GoalTile';
 
 export interface TileProps {
 	className?: string;
@@ -65,55 +65,41 @@ export const Tile: FC< TileProps > = ( {
 	);
 
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-site-goals-tile',
-				className,
-				{
-					'googlesitekit-site-goals-tile--primary': primary,
-					'googlesitekit-site-goals-tile--primary__positive':
-						primary && currentValue > previousValue,
-					'googlesitekit-site-goals-tile--primary__negative':
-						primary && currentValue < previousValue,
-				}
-			) }
+		<GoalTile
+			baseClassName="googlesitekit-site-goals-tile"
+			className={ classnames( className, {
+				'googlesitekit-site-goals-tile--primary': primary,
+				'googlesitekit-site-goals-tile--primary__positive':
+					primary && currentValue > previousValue,
+				'googlesitekit-site-goals-tile--primary__negative':
+					primary && currentValue < previousValue,
+			} ) }
+			title={ title }
+			infoTooltip={ infoTooltip }
 		>
-			<div className="googlesitekit-site-goals-tile__inner">
-				<div className="googlesitekit-site-goals-tile__header">
-					<h3 className="googlesitekit-site-goals-tile__title">
-						{ title }
-					</h3>
-					<InfoTooltip title={ infoTooltip } />
+			<div className="googlesitekit-site-goals-tile__metric-container">
+				<div className="googlesitekit-site-goals-tile__metric">
+					{ numFmt( currentValue, format ) }
 				</div>
-				<div className="googlesitekit-site-goals-tile__body">
-					<div className="googlesitekit-site-goals-tile__metric-container">
-						<div className="googlesitekit-site-goals-tile__metric">
-							{ numFmt( currentValue, format ) }
-						</div>
-						<p className="googlesitekit-site-goals-tile__subtext">
-							{ subtitle }
-						</p>
-					</div>
-					<div className="googlesitekit-site-goals-tile__change-container">
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-						/>
-						{ comparisonDays && previousValue !== 0 && (
-							<p className="googlesitekit-site-goals-tile__comparison-label">
-								{ sprintf(
-									/* translators: %d: number of days in the comparison period */
-									__(
-										'Vs. prev. %d days',
-										'google-site-kit'
-									),
-									comparisonDays
-								) }
-							</p>
-						) }
-					</div>
-				</div>
+				<p className="googlesitekit-site-goals-tile__subtext">
+					{ subtitle }
+				</p>
 			</div>
-		</div>
+			<div className="googlesitekit-site-goals-tile__change-container">
+				<ChangeBadge
+					previousValue={ previousValue }
+					currentValue={ currentValue }
+				/>
+				{ comparisonDays && previousValue !== 0 && (
+					<p className="googlesitekit-site-goals-tile__comparison-label">
+						{ sprintf(
+							/* translators: %d: number of days in the comparison period */
+							__( 'Vs. prev. %d days', 'google-site-kit' ),
+							comparisonDays
+						) }
+					</p>
+				) }
+			</div>
+		</GoalTile>
 	);
 };
