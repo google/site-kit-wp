@@ -1,5 +1,3 @@
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -20,10 +18,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/con
  *
  * @since 1.106.0
  *
- * @param {Object}  registry        Data registry object.
- * @param {boolean} isGatheringData The desired gathering data state.
+ * @param {Object}  options                 Options object.
+ * @param {Object}  options.registry        Data registry object.
+ * @param {boolean} options.isGatheringData The desired gathering data state.
  */
-function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
+function provideAnalytics4GatheringDataState( { registry, isGatheringData } ) {
 	invariant(
 		isGatheringData !== true,
 		"Analytics 4 gathering data's `true` state relies on the current authentication and selected property state so is unreliable to set from a helper, and therefore unsupported."
@@ -45,10 +44,14 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
  *
  * @since 1.106.0
  *
- * @param {Object}  registry        Data registry object.
- * @param {boolean} isGatheringData The desired gathering data state.
+ * @param {Object}  options                 Options object.
+ * @param {Object}  options.registry        Data registry object.
+ * @param {boolean} options.isGatheringData The desired gathering data state.
  */
-function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
+function provideSearchConsoleGatheringDataState( {
+	registry,
+	isGatheringData,
+} ) {
 	const options = registry
 		.select( MODULES_SEARCH_CONSOLE )
 		.getSampleReportArgs();
@@ -94,7 +97,7 @@ export function provideGatheringDataState( registry, moduleStates ) {
 				throw new Error( `Unhandled module: ${ moduleSlug }` );
 			}
 
-			provideGatheringData( registry, isGatheringData );
+			provideGatheringData( { registry, isGatheringData } );
 		}
 	);
 }

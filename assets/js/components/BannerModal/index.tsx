@@ -66,7 +66,7 @@ export interface BannerModalProps {
  *
  * Mainly used for new feature or setup complete announcements, but can be used for other purposes as well.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param props               Component props.
  * @param props.className     Additional CSS class name(s) to apply to the root Dialog element.

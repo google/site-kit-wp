@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -398,11 +396,18 @@ export function provideCurrentSurvey(
  *
  * @since 1.98.0
  *
- * @param {Object}  registry Registry object to dispatch to.
- * @param {boolean} enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
+ * @param {Object}         options          Options object.
+ * @param {WPDataRegistry} options.registry Registry object to dispatch to.
+ * @param {boolean}        options.enabled  Optional. Whether tracking consent has been granted. Defaults to `true`.
  * @return {void}
  */
-export function provideTracking( registry: WPDataRegistry, enabled = true ) {
+export function provideTracking( {
+	registry,
+	enabled = true,
+}: {
+	registry: WPDataRegistry;
+	enabled?: boolean;
+} ) {
 	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
 }
 

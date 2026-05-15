@@ -80,7 +80,6 @@ const PDFReportSuccessSnackbar: FC< PDFReportSuccessSnackbarProps > = ( {
 				// TODO: Replace the `href` value with the actual Blob URL to
 				// download the report when available.
 				// This `href="#" is just a placeholder.
-				// @ts-expect-error - The `Link` component is not typed yet.
 				<Link href="#" />
 			),
 		}

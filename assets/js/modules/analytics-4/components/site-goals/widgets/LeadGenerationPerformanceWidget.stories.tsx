@@ -24,6 +24,10 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
@@ -106,6 +110,219 @@ function commonSetup( registry: WPDataRegistry ) {
 	provideKeyMetrics( registry );
 }
 
+function seedGoalDriverReports(
+	registry: WPDataRegistry,
+	eventNames: string[],
+	{
+		goalType = GOAL_TYPES.LEAD,
+		empty = false,
+		loading = false,
+	}: { goalType?: string; empty?: boolean; loading?: boolean } = {}
+) {
+	const goalDriverDates = {
+		startDate: dates.startDate,
+		endDate: dates.endDate,
+	};
+
+	const dimensionFilters = {
+		eventName: {
+			filterType: 'inListFilter',
+			value: eventNames,
+		},
+	};
+
+	const topTrafficChannelsOptions = {
+		...goalDriverDates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
+	};
+
+	const topTrafficTotalOptions = {
+		...goalDriverDates,
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+	};
+
+	const topPagesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'pagePath', 'eventName' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
+	};
+
+	const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
+	const pageTitlesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'pagePath', 'pageTitle' ],
+		dimensionFilters: {
+			pagePath: [ ...pagePaths ].sort(),
+		},
+		metrics: [ { name: 'screenPageViews' } ],
+		orderby: [ { metric: { metricName: 'screenPageViews' }, desc: true } ],
+		limit: 15,
+		reportID: 'analytics-4_get-page-titles_store:selector_options',
+	};
+
+	const visitorTypeOptions = {
+		...goalDriverDates,
+		dimensions: [ 'newVsReturning' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+	};
+
+	if ( loading ) {
+		[
+			topTrafficChannelsOptions,
+			topTrafficTotalOptions,
+			topPagesOptions,
+			pageTitlesOptions,
+			visitorTypeOptions,
+		].forEach( ( options ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] );
+		} );
+
+		return;
+	}
+	const hasMultipleEvents = eventNames.length > 1;
+	const trafficRows = hasMultipleEvents
+		? [
+				{
+					dimensionValues: [ { value: 'Organic Search' } ],
+					metricValues: [ { value: '34' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Direct' } ],
+					metricValues: [ { value: '27' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Referral' } ],
+					metricValues: [ { value: '18' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Paid Search' } ],
+					metricValues: [ { value: '12' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Organic Social' } ],
+					metricValues: [ { value: '9' } ],
+				},
+		  ]
+		: [
+				{
+					dimensionValues: [ { value: 'Organic Search' } ],
+					metricValues: [ { value: '54' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Direct' } ],
+					metricValues: [ { value: '23' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Organic Social' } ],
+					metricValues: [ { value: '16' } ],
+				},
+		  ];
+	const totalEventCount = hasMultipleEvents ? '100' : '93';
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty ? [] : trafficRows,
+		},
+		{ options: topTrafficChannelsOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficChannelsOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [ { metricValues: [ { value: totalEventCount } ] } ],
+		},
+		{ options: topTrafficTotalOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficTotalOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: pagePaths.map( ( pagePath, index ) => ( {
+						dimensionValues: [
+							{ value: pagePath },
+							{
+								value:
+									eventNames[ 0 ] ||
+									ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+							},
+						],
+						metricValues: [ { value: String( 30 - index * 5 ) } ],
+				  } ) ),
+		},
+		{ options: topPagesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topPagesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: pagePaths.map( ( pagePath, index ) => ( {
+						dimensionValues: [
+							{ value: pagePath },
+							{ value: `Test page ${ index + 1 }` },
+						],
+						metricValues: [ { value: String( 100 - index * 10 ) } ],
+				  } ) ),
+		},
+		{ options: pageTitlesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ pageTitlesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'new' } ],
+							metricValues: [ { value: '58' } ],
+						},
+						{
+							dimensionValues: [ { value: 'returning' } ],
+							metricValues: [ { value: '42' } ],
+						},
+				  ],
+		},
+		{ options: visitorTypeOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ visitorTypeOptions ] );
+}
+
 function Template( {
 	setupRegistry,
 }: {
@@ -125,6 +342,9 @@ Ready.args = {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
+		seedGoalDriverReports( registry, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 	},
 };
 
@@ -141,6 +361,10 @@ ReadyMultipleEvents.args = {
 			] );
 		provideAnalytics4MockReport( registry, multipleEventsReportOptions );
 		provideAnalytics4MockReport( registry, engagementReportOptions );
+		seedGoalDriverReports( registry, [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 	},
 };
 
@@ -152,6 +376,11 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
+		seedGoalDriverReports(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			{ loading: true }
+		);
 	},
 };
 
@@ -180,6 +409,11 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+		seedGoalDriverReports(
+			registry,
+			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+			{ empty: true }
+		);
 	},
 };
 

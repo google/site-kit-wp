@@ -136,6 +136,7 @@
 		padding: 0;
 
 		@media (min-width: $bp-wpAdminBarTablet) {
+			margin-bottom: 40px; // Reserved space for the footer.
 			min-height: calc(100vh - 160px); // 32px admin bar + 88px header + 40px WP footer
 		}
 
@@ -263,15 +264,12 @@
 }
 
 body.googlesitekit-setup-flow {
-	// Remove padding bottom for non-splash pages.
-	&:not(.site-kit_page_googlesitekit-splash) #wpbody-content {
+
+	#wpbody-content {
 		padding-bottom: 0;
 	}
 
-	// Remove padding bottom for splash pages on large screens.
-	@media (height > 940px) {
-		&.site-kit_page_googlesitekit-splash #wpbody-content {
-			padding-bottom: 0;
-		}
+	.googlesitekit-page {
+		background-color: $c-surfaces-background;
 	}
 }
