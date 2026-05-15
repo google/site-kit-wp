@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -35,7 +35,7 @@ import {
 } from '../../../../../../../tests/js/viewport-utils';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import GoalDriverTiles from './GoalDriverTiles';
-import type { GoalDriverComponentProps, GoalDriverTilesDriver } from './types';
+import { GoalDriverComponentProps, GoalDriverTilesDriver } from './types';
 
 const MockGoalDriver: FC< GoalDriverComponentProps > = ( {
 	limit,
@@ -66,7 +66,40 @@ const drivers: GoalDriverTilesDriver[] = [
 		totalRows: 2,
 		loading: false,
 	},
+	{
+		id: GOAL_DRIVER_IDS.CITIES,
+		Component: MockGoalDriver,
+		rows: [],
+		totalRows: 6,
+		loading: false,
+	},
+	{
+		id: GOAL_DRIVER_IDS.COUNTRIES,
+		Component: MockGoalDriver,
+		rows: [],
+		totalRows: 5,
+		loading: false,
+	},
+	{
+		id: GOAL_DRIVER_IDS.TOP_AUTHORS,
+		Component: MockGoalDriver,
+		rows: [],
+		totalRows: 4,
+		loading: false,
+	},
 ];
+
+function getActiveTiles( container: Element ) {
+	return container.querySelectorAll(
+		'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
+	);
+}
+
+function getEmptyTiles( container: Element ) {
+	return container.querySelectorAll(
+		'.googlesitekit-site-goals-goal-drivers-section__tile--empty'
+	);
+}
 
 describe( 'GoalDriverTiles', () => {
 	let originalViewportWidth: number;
@@ -83,18 +116,14 @@ describe( 'GoalDriverTiles', () => {
 	it( 'renders one row with three tiles and defaults to 3 rows', () => {
 		const { container, getAllByText } = render(
 			<GoalDriverTiles
-				drivers={ drivers }
+				drivers={ drivers.slice( 0, 3 ) }
 				goalType={ GOAL_TYPES.LEAD }
 				hasExpandableRows
 			/>
 		);
 
-		expect(
-			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-section__tile'
-			)
-		).toHaveLength( 3 );
-
+		expect( getActiveTiles( container ) ).toHaveLength( 3 );
+		expect( getEmptyTiles( container ) ).toHaveLength( 0 );
 		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 3 );
 	} );
 
@@ -111,7 +140,7 @@ describe( 'GoalDriverTiles', () => {
 			fireEvent.click( getByRole( 'button', { name: /show more/i } ) );
 		} );
 
-		expect( getAllByText( 'rows-limit-6-goal-lead' ) ).toHaveLength( 3 );
+		expect( getAllByText( 'rows-limit-6-goal-lead' ) ).toHaveLength( 6 );
 		expect(
 			getByRole( 'button', { name: /show less/i } )
 		).toBeInTheDocument();
@@ -119,7 +148,7 @@ describe( 'GoalDriverTiles', () => {
 		act( () => {
 			fireEvent.click( getByRole( 'button', { name: /show less/i } ) );
 		} );
-		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 3 );
+		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 6 );
 	} );
 
 	it( 'does not render Show more when no expandable rows exist', () => {
@@ -145,7 +174,7 @@ describe( 'GoalDriverTiles', () => {
 			/>
 		);
 
-		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 3 );
+		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 6 );
 	} );
 
 	it( 'hides Show more on mobile and keeps tiles at 3 rows', () => {
@@ -162,6 +191,58 @@ describe( 'GoalDriverTiles', () => {
 		expect(
 			queryByRole( 'button', { name: /show more/i } )
 		).not.toBeInTheDocument();
-		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 3 );
+		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 6 );
+	} );
+
+	it( 'renders two empty slots for four drivers', () => {
+		const { container } = render(
+			<GoalDriverTiles
+				drivers={ drivers.slice( 0, 4 ) }
+				goalType={ GOAL_TYPES.LEAD }
+				hasExpandableRows
+			/>
+		);
+
+		expect( getActiveTiles( container ) ).toHaveLength( 4 );
+		expect( getEmptyTiles( container ) ).toHaveLength( 2 );
+
+		const tileElements = Array.from(
+			container.querySelectorAll(
+				'.googlesitekit-site-goals-goal-drivers-section__tile'
+			)
+		);
+		const firstEmptyTileIndex = tileElements.findIndex( ( tile ) =>
+			tile.classList.contains(
+				'googlesitekit-site-goals-goal-drivers-section__tile--empty'
+			)
+		);
+
+		expect( firstEmptyTileIndex ).toBe( 4 );
+	} );
+
+	it( 'renders one empty slot for five drivers', () => {
+		const { container } = render(
+			<GoalDriverTiles
+				drivers={ drivers.slice( 0, 5 ) }
+				goalType={ GOAL_TYPES.LEAD }
+				hasExpandableRows
+			/>
+		);
+
+		expect( getActiveTiles( container ) ).toHaveLength( 5 );
+		expect( getEmptyTiles( container ) ).toHaveLength( 1 );
+	} );
+
+	it( 'renders no empty slots for six drivers', () => {
+		const { container } = render(
+			<GoalDriverTiles
+				drivers={ drivers }
+				goalType={ GOAL_TYPES.LEAD }
+				hasExpandableRows
+			/>
+		);
+
+		expect( getActiveTiles( container ) ).toHaveLength( 6 );
+		expect( getEmptyTiles( container ) ).toHaveLength( 0 );
 	} );
 } );
