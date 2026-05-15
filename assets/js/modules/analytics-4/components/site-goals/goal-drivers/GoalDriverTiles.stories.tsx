@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useSelect, Select } from 'googlesitekit-data';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
 	provideModuleRegistrations,
@@ -41,9 +41,14 @@ import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/compo
 import { Story } from '@/js/types/Story';
 import GoalDriverTiles from './GoalDriverTiles';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
-import type { GoalDriverTilesDriver, GoalType } from './types';
+import CitiesGoalDriver from './CitiesGoalDriver';
+import CountriesGoalDriver from './CountriesGoalDriver';
+import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
+import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
+import { GoalDriverTilesDriver, GoalType } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -85,6 +90,17 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Paid search', value: '5.2%' },
 		],
 		totalRows: 6,
+		loading: false,
+	},
+	{
+		id: 'topTrafficChannelsRate',
+		Component: TopTrafficChannelsRateGoalDriver,
+		rows: [
+			{ label: 'Direct', value: '7.5%' },
+			{ label: 'Organic search', value: '4.7%' },
+			{ label: 'Organic social', value: '1.2%' },
+		],
+		totalRows: 3,
 		loading: false,
 	},
 	{
@@ -133,6 +149,50 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'New visitors', value: '39.5%' },
 		],
 		totalRows: 2,
+		loading: false,
+	},
+	{
+		id: 'cities',
+		Component: CitiesGoalDriver,
+		rows: [
+			{ label: 'London', value: '30.5%' },
+			{ label: 'New York', value: '24.7%' },
+			{ label: 'Berlin', value: '16.2%' },
+		],
+		totalRows: 3,
+		loading: false,
+	},
+	{
+		id: 'countries',
+		Component: CountriesGoalDriver,
+		rows: [
+			{ label: 'Germany', value: '30.5%' },
+			{ label: 'France', value: '24.7%' },
+			{ label: 'Poland', value: '16.2%' },
+		],
+		totalRows: 3,
+		loading: false,
+	},
+	{
+		id: 'topAuthors',
+		Component: TopAuthorsGoalDriver,
+		rows: [
+			{ label: 'Admin User', value: '380' },
+			{ label: 'Editor Team', value: '221' },
+			{ label: 'Guest Author', value: '171' },
+		],
+		totalRows: 3,
+		loading: false,
+	},
+	{
+		id: 'deviceType',
+		Component: DeviceTypeGoalDriver,
+		rows: [
+			{ label: 'Mobile', value: '56.5%' },
+			{ label: 'Tablet', value: '41.3%' },
+			{ label: 'Desktop', value: '2.2%' },
+		],
+		totalRows: 3,
 		loading: false,
 	},
 ];
@@ -209,17 +269,41 @@ function Template( {
 
 export const Ready = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 Ready.args = {
-	drivers,
+	drivers: drivers.slice( 0, 3 ),
 	hasExpandableRows: true,
 	goalType: 'lead',
 };
 Ready.scenario = {};
 
+export const ReadyFourDrivers = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
+ReadyFourDrivers.args = {
+	...Ready.args,
+	drivers: drivers.slice( 0, 4 ),
+};
+
+export const ReadyFiveDrivers = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
+ReadyFiveDrivers.args = {
+	...Ready.args,
+	drivers: drivers.slice( 0, 5 ),
+};
+
+export const ReadySixDrivers = Template.bind(
+	{}
+) as Story< GoalDriverTilesStoryProps >;
+ReadySixDrivers.args = {
+	...Ready.args,
+	drivers: drivers.slice( 0, 6 ),
+};
+
 export const NoShowMore = Template.bind(
 	{}
 ) as Story< GoalDriverTilesStoryProps >;
 NoShowMore.args = {
-	drivers: drivers.map( ( driver ) => ( {
+	drivers: drivers.slice( 0, 3 ).map( ( driver ) => ( {
 		...driver,
 		totalRows: 3,
 		rows: ( driver.rows || [] ).slice( 0, 3 ),
@@ -233,7 +317,7 @@ export const Loading = Template.bind(
 ) as Story< GoalDriverTilesStoryProps >;
 Loading.args = {
 	...Ready.args,
-	drivers: drivers.map( ( driver ) => ( {
+	drivers: drivers.slice( 0, 6 ).map( ( driver ) => ( {
 		...driver,
 		rows: [],
 		loading: true,
@@ -244,7 +328,7 @@ Loading.args = {
 export const NoData = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 NoData.args = {
 	...Ready.args,
-	drivers: drivers.map( ( driver ) => ( {
+	drivers: drivers.slice( 0, 6 ).map( ( driver ) => ( {
 		...driver,
 		rows: [],
 		loading: false,
@@ -255,7 +339,7 @@ NoData.args = {
 export const Error = Template.bind( {} ) as Story< GoalDriverTilesStoryProps >;
 Error.args = {
 	...Ready.args,
-	drivers,
+	drivers: drivers.slice( 0, 6 ),
 	hasExpandableRows: false,
 	useRetryableError: true,
 	errorSelectorArgs: RETRYABLE_REPORT_OPTIONS,
