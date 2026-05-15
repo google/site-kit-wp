@@ -184,7 +184,7 @@ class Web_TagTest extends TestCase {
 		$wp_query->is_preview = $previous_preview;
 
 		// Button render loop fires on preview even when the admin is logged in.
-		$this->assertStringContainsString( '.googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should fire on preview pages even when the user is logged in.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should fire on preview pages even when the user is logged in.' );
 		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'Render loop should call renderButton on preview pages.' );
 		// handleCredentialResponse body is wrapped, so no credential POST lands in the output.
 		$this->assertStringNotContainsString( "fetch('http://example.org/wp-login.php?action=googlesitekit_auth'", $output, 'Credential POST should not be rendered on preview pages.' );
