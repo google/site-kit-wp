@@ -147,11 +147,12 @@ GatheringData.args = {
 			],
 		} );
 
-		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
-			KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-				.requiredCustomDimensions[ 0 ],
-			true
-		);
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData( {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+					.requiredCustomDimensions[ 0 ],
+			gatheringData: true,
+		} );
 	},
 };
 
@@ -329,11 +330,12 @@ export default {
 					.receiveIsGatheringData( false );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
-							.requiredCustomDimensions[ 0 ],
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension:
+							KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_CATEGORIES ]
+								.requiredCustomDimensions[ 0 ],
+						gatheringData: false,
+					} );
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
 				provideKeyMetrics( registry );

@@ -26,7 +26,10 @@ import classnames from 'classnames';
  */
 import MetricTileWrapper from './MetricTileWrapper';
 
-type MetricTileRow = object;
+type MetricTileRow = Record< string, unknown >;
+type MetricTileError =
+	| Record< string, unknown >
+	| Array< Record< string, unknown > >;
 
 interface ColumnComponentProps {
 	row: MetricTileRow;
@@ -46,7 +49,7 @@ interface MetricTileTableProps {
 	ZeroState?: ElementType;
 	Widget: ElementType;
 	loading?: boolean;
-	error?: unknown;
+	error?: MetricTileError;
 	title?: string;
 	headerLabel?: string;
 	infoTooltip?: ReactNode;

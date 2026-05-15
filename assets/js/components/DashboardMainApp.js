@@ -53,6 +53,8 @@ import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
+import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
+import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
 import WelcomeModal from './WelcomeModal';
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -220,7 +222,7 @@ export default function DashboardMainApp() {
 	} );
 
 	const widgetContextOptions = {
-		modules: viewableModules ? viewableModules : undefined,
+		modules: viewableModules,
 	};
 
 	const isKeyMetricsActive = useSelect( ( select ) =>
@@ -290,6 +292,7 @@ export default function DashboardMainApp() {
 
 	const emailReportingEnabled = useFeature( 'proactiveUserEngagement' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 	const showWelcomeModal = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -327,10 +330,14 @@ export default function DashboardMainApp() {
 
 	useMonitorInternetConnection();
 
-	const isWelcomeTourActive = useSelect( ( select ) => {
+	const showSetupOverlays = useSelect( ( select ) => {
+		if ( hideSetupCTAs ) {
+			return false;
+		}
+
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return [
+		return ! [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
@@ -355,6 +362,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu showFeatureTour />
 			</Header>
@@ -374,7 +382,7 @@ export default function DashboardMainApp() {
 					/>
 				) }
 
-				{ ! isWelcomeTourActive && ! hideSetupCTAs && (
+				{ showSetupOverlays && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
 						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
@@ -443,6 +451,8 @@ export default function DashboardMainApp() {
 			{ showSurveyPortal && <CurrentSurveyPortal /> }
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
+
+			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
 
 			{ emailReportingEnabled && (
 				<Fragment>

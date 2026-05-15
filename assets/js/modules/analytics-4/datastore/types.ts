@@ -17,7 +17,7 @@
 /**
  * Analytics 4 report options.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type ReportOptions = {
 	startDate: string;
@@ -47,7 +47,7 @@ export type ReportOptions = {
 /**
  * A dimension or metric value in a report row.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type DimensionOrMetricValue = {
 	value: string;
@@ -56,7 +56,7 @@ export type DimensionOrMetricValue = {
 /**
  * A single row in an Analytics 4 report.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type ReportRow = {
 	dimensionValues?: DimensionOrMetricValue[];
@@ -66,7 +66,7 @@ export type ReportRow = {
 /**
  * Header information for dimensions in a report.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type DimensionHeader = {
 	name: string;
@@ -75,7 +75,7 @@ export type DimensionHeader = {
 /**
  * Header information for metrics in a report.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type MetricHeader = {
 	name: string;
@@ -85,7 +85,7 @@ export type MetricHeader = {
 /**
  * A complete Analytics 4 report response.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export type Report = {
 	rowCount?: number;

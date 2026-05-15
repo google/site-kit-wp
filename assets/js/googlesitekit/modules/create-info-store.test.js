@@ -153,7 +153,7 @@ describe( 'createInfoStore store', () => {
 
 				const adminReauthURL = registry
 					.select( STORE_NAME )
-					.getAdminReauthURL( false );
+					.getAdminReauthURL( { reAuth: false } );
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual(
@@ -209,7 +209,7 @@ describe( 'createInfoStore store', () => {
 
 				const adminReauthURL = registry
 					.select( STORE_NAME )
-					.getAdminReauthURL( false );
+					.getAdminReauthURL( { reAuth: false } );
 
 				const url = new URL( adminReauthURL );
 				expect( url.origin + url.pathname ).toEqual(

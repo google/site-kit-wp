@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -60,6 +58,7 @@ const {
 	trackEventOnce,
 } = createTracking( initialConfig );
 
+/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 /**
  * Changes the active state of tracking.
  *

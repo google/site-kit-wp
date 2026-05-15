@@ -75,10 +75,10 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 
 			// If the custom dimension was created successfully, mark it as gathering
 			// data immediately so that it doesn't cause unnecessary report requests.
-			receiveIsCustomDimensionGatheringData(
-				'googlesitekit_post_type',
-				true
-			);
+			receiveIsCustomDimensionGatheringData( {
+				customDimension: 'googlesitekit_post_type',
+				gatheringData: true,
+			} );
 
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
 			await fetchSyncAvailableCustomDimensions();

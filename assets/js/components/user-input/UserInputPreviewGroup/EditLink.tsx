@@ -36,7 +36,7 @@ interface EditLinkProps {
 	isEditing: boolean;
 	isDisabled: boolean;
 	onClick: () => void;
-	linkRef: RefObject< { focus?: () => void } >;
+	linkRef: RefObject< HTMLAnchorElement | HTMLButtonElement >;
 }
 
 const EditLink: FC< EditLinkProps > = ( {

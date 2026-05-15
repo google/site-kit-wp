@@ -172,15 +172,18 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 								{ !! collapsible && (
 									<IconWrapper
 										marginLeft={ 4 }
-										marginRight={ 8 }
+										marginRight={ 10 }
 									>
 										<ChevronDown
 											width={ 12 }
 											height={ 12 }
-											className={ classnames( {
-												'googlesitekit-widget__header-icon--collapsed':
-													isCollapsed,
-											} ) }
+											className={ classnames(
+												'googlesitekit-widget__header-icon',
+												{
+													'googlesitekit-widget__header-icon--collapsed':
+														isCollapsed,
+												}
+											) }
 										/>
 									</IconWrapper>
 								) }

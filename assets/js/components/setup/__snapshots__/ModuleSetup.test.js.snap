@@ -167,7 +167,7 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
     class="googlesitekit-subheader"
   />
   <div
-    class="googlesitekit-setup googlesitekit-initial-setup"
+    class="googlesitekit-setup googlesitekit-initial-setup googlesitekit-initial-setup--analytics-4"
   >
     <div
       class="googlesitekit-progress-indicator"
@@ -225,9 +225,11 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                     Please select the account information below. You can change this later in your settings.
                   </p>
                   <div
-                    class="googlesitekit-setup-module__inputs"
+                    class="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout"
                   >
-                    <div>
+                    <div
+                      class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account"
+                    >
                       <div
                         class="mdc-select googlesitekit-analytics__select-account mdc-select--outlined"
                       >
@@ -269,7 +271,9 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                         </div>
                       </div>
                     </div>
-                    <div>
+                    <div
+                      class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property"
+                    >
                       <div
                         class="mdc-select googlesitekit-analytics-4__select-property googlesitekit-analytics-4__select-property--loaded mdc-select--outlined"
                       >
@@ -325,7 +329,9 @@ exports[`ModuleSetup Analytics 4 initial setup flow should match the snapshot 1`
                         </span>
                       </div>
                     </div>
-                    <div>
+                    <div
+                      class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream"
+                    >
                       <div
                         class="mdc-select googlesitekit-analytics-4__select-webdatastream mdc-select--outlined"
                       >
@@ -689,9 +695,11 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                           Please select the account information below. You can change this later in your settings.
                         </p>
                         <div
-                          class="googlesitekit-setup-module__inputs"
+                          class="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout"
                         >
-                          <div>
+                          <div
+                            class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account"
+                          >
                             <div
                               class="mdc-select googlesitekit-analytics__select-account mdc-select--outlined"
                             >
@@ -732,7 +740,9 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                               </div>
                             </div>
                           </div>
-                          <div>
+                          <div
+                            class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property"
+                          >
                             <div
                               class="mdc-select googlesitekit-analytics-4__select-property googlesitekit-analytics-4__select-property--loaded mdc-select--outlined"
                             >
@@ -773,7 +783,9 @@ exports[`ModuleSetup Analytics 4 not initial setup flow should match the snapsho
                               </div>
                             </div>
                           </div>
-                          <div>
+                          <div
+                            class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream"
+                          >
                             <div
                               class="mdc-select googlesitekit-analytics-4__select-webdatastream mdc-select--outlined"
                             >
