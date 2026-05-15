@@ -119,7 +119,7 @@ class Email {
 	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool Whether the email was sent successfully.
 	 */
-	protected function send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content = '' ) {
+	protected function send_email_and_catch_errors( $to, $subject, $content, $headers = array(), $text_content = '' ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
 
 		if ( ! is_array( $headers ) ) {
