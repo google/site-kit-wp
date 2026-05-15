@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useSelect, Select } from 'googlesitekit-data';
 import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -48,7 +48,7 @@ import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import type {
+import {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
@@ -63,21 +63,19 @@ const VISITOR_TYPE_LABELS: Record< string, string > = {
 	returning: __( 'Returning visitors', 'google-site-kit' ),
 };
 
-const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
-	let title = __( 'Leads by visitor type', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Sales by visitor type', 'google-site-kit' );
-	}
+const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	onExpandableRowsChange,
+} ) => {
+	const title =
+		goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Sales by visitor type', 'google-site-kit' )
+			: __( 'Leads by visitor type', 'google-site-kit' );
 
 	const dates = useSelect(
 		( select: Select ) =>
