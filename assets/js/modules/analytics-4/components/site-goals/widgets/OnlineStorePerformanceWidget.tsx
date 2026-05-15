@@ -44,6 +44,7 @@ import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
 	GOAL_DRIVER_CATALOG,
+	GoalDriverSelectionState,
 	GOAL_TYPES,
 	GoalDriverTiles,
 	resolveGoalDriverIDs,
@@ -89,7 +90,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				SITE_GOALS_EFFECTIVE_DRIVERS
 			),
 		[]
-	) as { [ key: string ]: string[] } | undefined;
+	) as GoalDriverSelectionState | undefined;
 
 	const resolvedSelections = resolveGoalDriverSelectionState(
 		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS

@@ -35,6 +35,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	GOAL_TYPES,
 	getGoalDriverOptions,
+	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_SELECTED_DRIVERS,
@@ -58,10 +59,17 @@ const PanelContent: FC< PanelContentProps > = ( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
 } ) => {
-	const selectedDrivers = useFormValue(
+	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
-	) as GoalDriverSelectionState;
+	);
+	const resolvedSelectedDrivers = useMemo(
+		() =>
+			resolveGoalDriverSelectionState(
+				selectedDrivers as GoalDriverSelectionState | undefined
+			),
+		[ selectedDrivers ]
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -79,7 +87,8 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 	const onToggleDriver = useCallback(
 		( goalType: GoalType, driverID: GoalDriverID, isChecked: boolean ) => {
-			const currentDriverIDs = selectedDrivers?.[ goalType ] || [];
+			const currentDriverIDs =
+				resolvedSelectedDrivers?.[ goalType ] || [];
 
 			let nextDriverIDs = currentDriverIDs;
 
@@ -95,12 +104,12 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 			setValues( SITE_GOALS_SELECTION_FORM, {
 				[ SITE_GOALS_SELECTED_DRIVERS ]: {
-					...selectedDrivers,
+					...resolvedSelectedDrivers,
 					[ goalType ]: nextDriverIDs,
 				},
 			} );
 		},
-		[ selectedDrivers, setValues ]
+		[ resolvedSelectedDrivers, setValues ]
 	);
 
 	return (
@@ -114,7 +123,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 					) }
 					options={ ecommerceOptions }
 					selectedIDs={
-						selectedDrivers?.[ GOAL_TYPES.ECOMMERCE ] || []
+						resolvedSelectedDrivers?.[ GOAL_TYPES.ECOMMERCE ] || []
 					}
 					isExpanded={ isEcommerceExpanded }
 					onToggleExpand={ () =>
@@ -140,7 +149,9 @@ const PanelContent: FC< PanelContentProps > = ( {
 						'google-site-kit'
 					) }
 					options={ leadOptions }
-					selectedIDs={ selectedDrivers?.[ GOAL_TYPES.LEAD ] || [] }
+					selectedIDs={
+						resolvedSelectedDrivers?.[ GOAL_TYPES.LEAD ] || []
+					}
 					isExpanded={ isLeadExpanded }
 					onToggleExpand={ () =>
 						setIsLeadExpanded(

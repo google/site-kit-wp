@@ -65,19 +65,27 @@ function flattenSelections( selections?: GoalDriverSelectionState ): string[] {
 const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const selectedDrivers = useFormValue(
+	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
-	) as GoalDriverSelectionState;
-
-	const selectedDriverSlugs = useMemo(
-		() => flattenSelections( selectedDrivers ),
+	);
+	const resolvedSelectedDrivers = useMemo(
+		() =>
+			resolveGoalDriverSelectionState(
+				selectedDrivers as GoalDriverSelectionState | undefined
+			),
 		[ selectedDrivers ]
 	);
 
+	const selectedDriverSlugs = useMemo(
+		() => flattenSelections( resolvedSelectedDrivers ),
+		[ resolvedSelectedDrivers ]
+	);
+
 	const saveSettings = useCallback( () => {
-		const sanitizedSelectionState =
-			resolveGoalDriverSelectionState( selectedDrivers );
+		const sanitizedSelectionState = resolveGoalDriverSelectionState(
+			resolvedSelectedDrivers
+		);
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
@@ -85,7 +93,7 @@ const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 		} );
 
 		return Promise.resolve( {} );
-	}, [ selectedDrivers, setValues ] );
+	}, [ resolvedSelectedDrivers, setValues ] );
 
 	return (
 		<SelectionPanelFooter

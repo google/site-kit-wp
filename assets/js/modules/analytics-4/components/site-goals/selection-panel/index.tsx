@@ -33,7 +33,10 @@ import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { resolveGoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
+	GoalDriverSelectionState,
+	resolveGoalDriverSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
@@ -67,17 +70,18 @@ const SiteGoalsSelectionPanel: FC = () => {
 		[]
 	);
 
-	const effectiveDrivers = useFormValue(
+	const [ effectiveDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_EFFECTIVE_DRIVERS
-	) as { [ key: string ]: string[] } | undefined;
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const onSideSheetOpen = useCallback( () => {
 		const normalizedEffectiveDrivers = resolveGoalDriverSelectionState(
-			effectiveDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
+			( effectiveDrivers as GoalDriverSelectionState | undefined ) ||
+				SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 		);
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
