@@ -71,7 +71,7 @@ export default function AnalyticsOptIn() {
 	return (
 		<div className="googlesitekit-setup__analytics-opt-in-wrapper">
 			<div className="googlesitekit-setup__analytics-opt-in-wrapper-header">
-				<AnalyticsSVG width={ 24 } height={ 27 } />
+				<AnalyticsSVG width={ 32 } height={ 32 } />
 				<Typography
 					size={ SIZE_SMALL }
 					type={ TYPE_BODY }
@@ -95,7 +95,6 @@ export default function AnalyticsOptIn() {
 					),
 					{
 						LearnMoreLink: (
-							// @ts-expect-error Link component types do not include full props yet.
 							<Link
 								href={ learnMoreLink }
 								onClick={ () => {
