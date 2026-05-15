@@ -259,7 +259,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 
 	return (
 		<TableTile
-			title={ props.title || title }
+			title={ title }
 			headerLabel={ headerLabel }
 			rows={ rowsWithURLs }
 			loading={ loading }

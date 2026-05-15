@@ -194,7 +194,7 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 
 	return (
 		<TableTile
-			title={ props.title || title }
+			title={ title }
 			rows={ rows }
 			loading={ loading }
 			error={ error }
