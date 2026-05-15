@@ -41,7 +41,7 @@ import type {
 /**
  * Checks whether a comment text matches one of the dependency group headings.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param text Normalized comment text.
  * @return True if `text` is a valid dependency group heading.
@@ -59,7 +59,7 @@ export function isValidGroupComment( text: string ): boolean {
 /**
  * Returns ESLint's leading comments for a node.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param sourceCode Source code facade from ESLint.
  * @param node       AST node.
@@ -75,7 +75,7 @@ export function leadingComments(
 /**
  * Returns the textual name of an `ImportSpecifier`'s imported binding.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param specifier Import specifier.
  * @return Imported name.
@@ -89,7 +89,7 @@ export function importedName( specifier: ESTree.ImportSpecifier ): string {
 /**
  * Gets the import group for a given import source.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param source Import source.
  * @return Import group.
@@ -116,7 +116,7 @@ export function getImportGroup( source: string ): DependencyGroup {
 /**
  * Gets the expected comment block for a group.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param group Import group.
  * @return Comment block text.
@@ -134,7 +134,7 @@ export function getExpectedCommentBlock( group: DependencyGroup ): string {
  * block is found, falls back to the closest non-group block comment so that
  * "wrong comment" errors can still be reported.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param sourceCode Source code facade from ESLint.
  * @param node       AST node.
@@ -179,7 +179,7 @@ export function getPrecedingCommentBlock(
 /**
  * Normalizes a comment block text.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param text Comment text.
  * @return Normalized text.
@@ -195,7 +195,7 @@ export function normalizeCommentText( text: string ): string {
 /**
  * Checks if an import is a side-effect import.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param node Import/require node.
  * @return True if side-effect import.
@@ -210,7 +210,7 @@ export function isSideEffectImport( node: ImportNode ): boolean {
 /**
  * Normalizes an import source for sorting.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param source Import source.
  * @return Normalized source.
@@ -237,7 +237,7 @@ export function normalizeImportSource( source: string ): string {
 /**
  * Compares two import nodes for sorting.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param nodeA       First node.
  * @param nodeB       Second node.
@@ -279,7 +279,7 @@ export function compareImports(
 /**
  * Gets the import source from a node.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param node Import/require node.
  * @return Import source.
@@ -308,7 +308,7 @@ export function getImportSource( node: ImportNode ): string {
 /**
  * Checks if a node is an import or require statement.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param node AST node.
  * @return True if import/require.
@@ -331,7 +331,7 @@ export function isImportOrRequire( node: AnyNode ): node is ImportNode {
 /**
  * Groups consecutive imports together.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param nodes All nodes.
  * @return Groups of import nodes.
@@ -359,7 +359,7 @@ export function groupImports( nodes: AnyNode[] ): ImportNode[][] {
 /**
  * Groups imports by their dependency type.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param importNodes Import nodes.
  * @return Grouped imports.
@@ -385,7 +385,7 @@ export function groupImportsByType(
 /**
  * Checks if imports need reorganization.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param importNodes Import nodes.
  * @return True if reorganization is needed.
@@ -440,7 +440,7 @@ export function needsImportReorganization(
 /**
  * Gets any non-dependency comments that precede an import.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param sourceCode Source code facade from ESLint.
  * @param node       Import node.
@@ -514,7 +514,7 @@ export function getNonDependencyComments(
 /**
  * Determines the start position for import replacement including orphaned comments.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param sourceCode  Source code facade from ESLint.
  * @param importNodes Import nodes.

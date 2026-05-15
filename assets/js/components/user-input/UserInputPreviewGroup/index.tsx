@@ -59,9 +59,7 @@ import EditLink from './EditLink';
 import PreviewContent from './PreviewContent';
 
 type UserInputQuestionSlug = keyof typeof USER_INPUT_MAX_ANSWERS;
-type FocusableElement = {
-	focus?: () => void;
-};
+type EditLinkElement = HTMLAnchorElement | HTMLButtonElement;
 
 interface UserInputPreviewGroupProps {
 	slug: UserInputQuestionSlug;
@@ -107,7 +105,7 @@ export default function UserInputPreviewGroup( {
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
 
-	const editButtonRef = useRef< FocusableElement | null >( null );
+	const editButtonRef = useRef< EditLinkElement >( null );
 
 	useEffect( () => {
 		// If user purpose is opened currently saved value was snapshot

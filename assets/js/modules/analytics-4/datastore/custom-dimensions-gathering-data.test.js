@@ -77,9 +77,9 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveIsCustomDimensionGatheringData(
-							customDimension
-						)
+						.receiveIsCustomDimensionGatheringData( {
+							customDimension,
+						} )
 				).toThrow( 'gatheringData must be a boolean' );
 			} );
 
@@ -92,10 +92,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
+					.receiveIsCustomDimensionGatheringData( {
 						customDimension,
-						true
-					);
+						gatheringData: true,
+					} );
 
 				expect(
 					store.getState().customDimensionsGatheringData[
@@ -113,10 +113,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
+					.receiveIsCustomDimensionGatheringData( {
 						customDimension,
-						false
-					);
+						gatheringData: false,
+					} );
 
 				expect(
 					store.getState().customDimensionsGatheringData[
@@ -441,10 +441,10 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			it( 'should return the value of gathering data if it is set and do nothing else', async () => {
 				await registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
+					.receiveIsCustomDimensionGatheringData( {
 						customDimension,
-						true
-					);
+						gatheringData: true,
+					} );
 
 				expect(
 					registry
@@ -537,16 +537,16 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			it( 'should return FALSE if none of the given custom dimensions are gathering data', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_author',
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_author',
+						gatheringData: false,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_date',
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_date',
+						gatheringData: false,
+					} );
 
 				expect(
 					registry
@@ -561,16 +561,16 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 			it( 'should return TRUE if at least one of the given custom dimensions is gathering data', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_author',
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_author',
+						gatheringData: false,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_date',
-						true
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_date',
+						gatheringData: true,
+					} );
 
 				expect(
 					registry
@@ -586,16 +586,16 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				// Include both a `true` and `false` gathering data state to show that `undefined` takes precedence over both.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_author',
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_author',
+						gatheringData: false,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						'googlesitekit_post_date',
-						true
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension: 'googlesitekit_post_date',
+						gatheringData: true,
+					} );
 
 				expect(
 					registry

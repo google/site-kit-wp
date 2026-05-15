@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -133,6 +131,7 @@ const baseActions = {
 		return results;
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets the Google tag gateway enabled status.
 	 *

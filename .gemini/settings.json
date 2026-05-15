@@ -16,7 +16,7 @@
 			"trust": false,
 			"httpUrl": "https://api.githubcopilot.com/mcp/?toolsets=issues",
 			"headers": {
-				"Authorization": "Bearer ${GITHUB_TOKEN}"
+				"Authorization": "Bearer ${GITHUB_MCP_PAT}"
 			},
 			"includeTools": [ "issue_read", "list_issues", "search_issues" ]
 		}

@@ -100,25 +100,25 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
 	// and have not been already included, which is determined by includeConversionEvents user input setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
-		useDisplayNewEventsCalloutForTailoredMetrics(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutForTailoredMetrics( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	// If users have set up key metrics manually and ACR events are detected,
 	// we display the same callout banner, with a different call to action
 	// "Select metrics" which opens the metric selection panel.
 	const shouldShowCalloutForUserPickedMetrics =
-		useDisplayNewEventsCalloutForUserPickedMetrics(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutForUserPickedMetrics( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	// If new events have been detected after initial set of events, we display
 	// the same callout banner, with a different call to action "View metrics"
 	// which opens the metric selection panel.
 	const shouldShowCalloutForNewEvents =
-		useDisplayNewEventsCalloutAfterInitialDetection(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutAfterInitialDetection( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	const shouldShowCalloutForLostEvents =
 		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;

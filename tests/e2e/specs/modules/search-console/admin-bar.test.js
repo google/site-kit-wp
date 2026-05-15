@@ -22,12 +22,18 @@ async function exitFullscreenEditor() {
 		Array.from( document.body.classList )
 	);
 	if ( bodyClasses.includes( 'is-fullscreen-mode' ) ) {
-		await setEditPostFeature( 'fullscreenMode', false );
+		await setEditPostFeature( {
+			feature: 'fullscreenMode',
+			setActivation: false,
+		} );
 	}
 }
 
 async function dismissEditorWelcome() {
-	await setEditPostFeature( 'welcomeGuide', false );
+	await setEditPostFeature( {
+		feature: 'welcomeGuide',
+		setActivation: false,
+	} );
 }
 
 describe( 'Site Kit admin bar component display', () => {

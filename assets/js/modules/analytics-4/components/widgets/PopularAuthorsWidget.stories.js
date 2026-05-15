@@ -111,11 +111,12 @@ export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( { dispatch } ) => {
-		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData(
-			KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-				.requiredCustomDimensions[ 0 ],
-			true
-		);
+		dispatch( MODULES_ANALYTICS_4 ).receiveIsCustomDimensionGatheringData( {
+			customDimension:
+				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+					.requiredCustomDimensions[ 0 ],
+			gatheringData: true,
+		} );
 	},
 };
 // Since the "Gathering Data" state is the same for all KMW tiles that require
@@ -222,11 +223,12 @@ export default {
 					.receiveIsGatheringData( false );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveIsCustomDimensionGatheringData(
-						KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-							.requiredCustomDimensions[ 0 ],
-						false
-					);
+					.receiveIsCustomDimensionGatheringData( {
+						customDimension:
+							KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+								.requiredCustomDimensions[ 0 ],
+						gatheringData: false,
+					} );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

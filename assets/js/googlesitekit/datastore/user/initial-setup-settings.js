@@ -113,7 +113,7 @@ const baseActions = {
 		}
 	),
 
-	/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets whether Analytics setup is complete.
 	 *

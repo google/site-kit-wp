@@ -166,7 +166,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertEquals( 'reader-revenue-manager', $this->reader_revenue_manager->slug, 'Reader Revenue Manager module slug should be correct.' );
 		$this->assertEquals( 'Reader Revenue Manager', $this->reader_revenue_manager->name, 'Reader Revenue Manager module name should be correct.' );
 		$this->assertEquals( 'https://publishercenter.google.com', $this->reader_revenue_manager->homepage, 'Reader Revenue Manager module homepage should be correct.' );
-		$this->assertEquals( 'Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities', $this->reader_revenue_manager->description, 'Reader Revenue Manager module description should be correct.' );
+		$this->assertEquals( 'Add simple CTAs to your pages that ask readers to sign up for your newsletter, complete a survey, make a contribution, or subscribe', $this->reader_revenue_manager->description, 'Reader Revenue Manager module description should be correct.' );
 		$this->assertEquals( 10, $this->reader_revenue_manager->order, 'Reader Revenue Manager module order should be correct.' ); // Since order is not set, it uses the default value.
 	}
 

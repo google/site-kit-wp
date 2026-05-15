@@ -28,7 +28,7 @@ class Frequency_Planner {
 	/**
 	 * Trigger hour for email reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 * @var int
 	 */
 	const TRIGGER_HOUR = 9;

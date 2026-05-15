@@ -56,22 +56,11 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send() {
-		// The pre_wp_mail filter was introduced in WordPress 5.7.
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
+		$this->skip_if_pre_wp_mail_unsupported();
 
 		// Use pre_wp_mail to simulate successful email sending and capture attributes.
 		$captured_atts = null;
-		add_filter(
-			'pre_wp_mail',
-			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
-				$captured_atts = $atts;
-				return true;
-			},
-			10,
-			2
-		);
+		$this->capture_wp_mail_atts( $captured_atts );
 
 		$to      = 'test@example.com';
 		$subject = 'Test Subject';
@@ -88,10 +77,7 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send_failure() {
-		// The pre_wp_mail filter was introduced in WordPress 5.7.
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
+		$this->skip_if_pre_wp_mail_unsupported();
 
 		// Force wp_mail failure using pre_wp_mail filter.
 		$captured_atts = null;
@@ -124,6 +110,161 @@ class EmailTest extends TestCase {
 		$this->assertEquals( $to, $captured_atts['to'], 'To address should match.' );
 		$this->assertEquals( $subject, $captured_atts['subject'], 'Subject should match.' );
 		$this->assertEquals( $content, $captured_atts['message'], 'Content should match.' );
+	}
+
+	public function test_send_adds_default_content_type_header_when_none_supplied() {
+		$this->skip_if_pre_wp_mail_unsupported();
+
+		$captured_atts = null;
+		$this->capture_wp_mail_atts( $captured_atts );
+
+		$this->email->send( 'test@example.com', 'Test Subject', '<p>HTML Content</p>' );
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertIsArray( $captured_atts['headers'], 'Headers should be passed as an array.' );
+		$this->assertContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default text/html Content-Type header should be present when no caller Content-Type is supplied.'
+		);
+		$this->assertSingleContentTypeHeader( $captured_atts['headers'] );
+	}
+
+	public function test_send_preserves_caller_supplied_content_type_header() {
+		$this->skip_if_pre_wp_mail_unsupported();
+
+		$captured_atts = null;
+		$this->capture_wp_mail_atts( $captured_atts );
+
+		$caller_content_type = 'Content-Type: text/plain; charset=ISO-8859-1';
+		$this->email->send(
+			'test@example.com',
+			'Test Subject',
+			'Plain content',
+			array( $caller_content_type )
+		);
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertContains(
+			$caller_content_type,
+			$captured_atts['headers'],
+			'Caller-supplied Content-Type should be preserved verbatim.'
+		);
+		$this->assertNotContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default Content-Type should not be added when a caller Content-Type is already present.'
+		);
+		$this->assertSingleContentTypeHeader( $captured_atts['headers'] );
+	}
+
+	public function test_send_preserves_caller_supplied_content_type_header_case_insensitive() {
+		$this->skip_if_pre_wp_mail_unsupported();
+
+		$captured_atts = null;
+		$this->capture_wp_mail_atts( $captured_atts );
+
+		$caller_content_type = 'content-type: text/plain; charset=UTF-8';
+		$this->email->send(
+			'test@example.com',
+			'Test Subject',
+			'Plain content',
+			array( $caller_content_type )
+		);
+
+		$this->assertNotNull( $captured_atts, 'Attributes should be captured.' );
+		$this->assertContains(
+			$caller_content_type,
+			$captured_atts['headers'],
+			'Lowercase caller Content-Type should be preserved verbatim.'
+		);
+		$this->assertNotContains(
+			'Content-Type: text/html; charset=UTF-8',
+			$captured_atts['headers'],
+			'Default Content-Type should not be added when a Content-Type header is present in any case.'
+		);
+		$this->assertSingleContentTypeHeader( $captured_atts['headers'] );
+	}
+
+	public function test_send_preserves_multipart_alternative_when_text_content_provided() {
+		$captured_initial_content_type = null;
+		$captured_alt_body             = null;
+		$captured_final_content_type   = null;
+
+		add_action(
+			'phpmailer_init',
+			function ( $phpmailer ) use ( &$captured_initial_content_type, &$captured_alt_body, &$captured_final_content_type ) {
+				$captured_initial_content_type = $phpmailer->ContentType;
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer property.
+				$captured_alt_body = $phpmailer->AltBody;
+
+				// Trigger body construction so PHPMailer applies its multipart/alternative
+				// upgrade for the attached AltBody.
+				$phpmailer->preSend();
+				$captured_final_content_type = $phpmailer->ContentType;
+
+				// Block delivery by clearing recipients.
+				$phpmailer->clearAllRecipients();
+			},
+			999 // Run after Site Kit's hook (priority 10).
+		);
+
+		// send() fails on the cleared recipients. Only the captured state matters.
+		$this->email->send(
+			'test@example.com',
+			'Test Subject',
+			'<html><body>HTML Content</body></html>',
+			array(),
+			'Plain text content'
+		);
+
+		$this->assertEquals( 'text/html', $captured_initial_content_type, 'PHPMailer ContentType should be text/html from the default Site Kit header before AltBody upgrade.' );
+		$this->assertEquals( 'Plain text content', $captured_alt_body, 'AltBody should be set so PHPMailer can produce a multipart/alternative message.' );
+		$this->assertStringStartsWith( 'multipart/alternative', $captured_final_content_type, 'PHPMailer should upgrade ContentType to multipart/alternative when AltBody is set alongside the default text/html Content-Type.' );
+	}
+
+	/**
+	 * Skips the test if the pre_wp_mail filter (WordPress 5.7+) isn't available.
+	 */
+	private function skip_if_pre_wp_mail_unsupported() {
+		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
+			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
+		}
+	}
+
+	/**
+	 * Captures wp_mail arguments via pre_wp_mail and short-circuits delivery.
+	 *
+	 * @param array|null $captured_atts Reference filled with wp_mail args.
+	 *
+	 * @param-out array $captured_atts
+	 */
+	private function capture_wp_mail_atts( &$captured_atts ) {
+		add_filter(
+			'pre_wp_mail',
+			function ( $short_circuit, $atts ) use ( &$captured_atts ) {
+				$captured_atts = $atts;
+				return true;
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Asserts that exactly one Content-Type header is present in the headers array.
+	 *
+	 * @param array $headers Headers array captured from wp_mail.
+	 */
+	private function assertSingleContentTypeHeader( array $headers ) {
+		$content_type_headers = array_filter(
+			$headers,
+			static function ( $header ) {
+				return is_string( $header ) && 0 === stripos( ltrim( $header ), 'Content-Type:' );
+			}
+		);
+
+		$this->assertCount( 1, $content_type_headers, 'Exactly one Content-Type header should be present.' );
 	}
 
 	public function test_get_last_error() {
@@ -159,10 +300,7 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send_does_not_set_alt_body_when_text_content_empty() {
-		// The pre_wp_mail filter was introduced in WordPress 5.7.
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
+		$this->skip_if_pre_wp_mail_unsupported();
 
 		$alt_body_was_set = false;
 
@@ -198,10 +336,7 @@ class EmailTest extends TestCase {
 	}
 
 	public function test_send_removes_phpmailer_init_hook_after_send() {
-		// The pre_wp_mail filter was introduced in WordPress 5.7.
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
+		$this->skip_if_pre_wp_mail_unsupported();
 
 		// Use pre_wp_mail to simulate successful email sending.
 		add_filter(

@@ -151,7 +151,7 @@ describe( 'GoalDriverTiles', () => {
 		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 6 );
 	} );
 
-	it( 'does not render Show more when no expandable rows exist', () => {
+	it( 'does not render "Show more" when no expandable rows exist', () => {
 		const { queryByRole } = render(
 			<GoalDriverTiles
 				drivers={ drivers }
@@ -177,7 +177,7 @@ describe( 'GoalDriverTiles', () => {
 		expect( getAllByText( 'rows-limit-3-goal-lead' ) ).toHaveLength( 6 );
 	} );
 
-	it( 'hides Show more on mobile and keeps tiles at 3 rows', () => {
+	it( 'hides "Show more" on mobile and keeps tiles at 3 rows', () => {
 		setViewportWidth( 600 );
 
 		const { queryByRole, getAllByText } = render(

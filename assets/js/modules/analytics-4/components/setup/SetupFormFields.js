@@ -96,13 +96,13 @@ export default function SetupFormFields() {
 				</p>
 			) }
 
-			<div className="googlesitekit-setup-module__inputs">
-				<div>
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account">
 					<AccountSelect
 						onChange={ resetEnhancedMeasurementSetting }
 					/>
 				</div>
-				<div>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property">
 					<PropertySelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
@@ -110,7 +110,7 @@ export default function SetupFormFields() {
 					{ setupFlowRefreshEnabled &&
 						isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
-				<div>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
@@ -121,7 +121,7 @@ export default function SetupFormFields() {
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout googlesitekit-setup-module__inputs--multiline">
 					<WebDataStreamNameInput />
 				</div>
 			) }

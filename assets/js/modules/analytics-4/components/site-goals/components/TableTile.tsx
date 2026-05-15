@@ -47,6 +47,10 @@ export interface TableTileProps {
 	noDataMetricLabel?: MetricLabel;
 }
 
+type ReportErrorShape =
+	| Record< string, unknown >
+	| Array< Record< string, unknown > >;
+
 const TableTile: FC< TableTileProps > = ( {
 	title,
 	headerLabel,
@@ -76,7 +80,7 @@ const TableTile: FC< TableTileProps > = ( {
 				<div className="googlesitekit-table-tile__error">
 					<ReportError
 						moduleSlug="analytics-4"
-						error={ error as object | object[] }
+						error={ error as ReportErrorShape }
 					/>
 				</div>
 			) }
