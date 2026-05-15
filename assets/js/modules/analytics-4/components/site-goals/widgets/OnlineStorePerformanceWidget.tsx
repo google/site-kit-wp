@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,7 +35,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
@@ -47,6 +47,7 @@ import {
 	GoalDriverTiles,
 	resolveGoalDriverIDs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	NUMBER_FORMAT,
@@ -57,9 +58,15 @@ import { processReports } from '@/js/modules/analytics-4/components/site-goals/u
 // TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
 const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 	GOAL_DRIVER_IDS.VISITOR_TYPE,
 ];
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface OnlineStorePerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -71,11 +78,26 @@ const EVENT_TOTAL_LABELS = {
 	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
 };
 
-const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
+const OnlineStorePerformanceWidget: FC<
+	OnlineStorePerformanceWidgetProps
+> = ( {
 	Widget,
 	WidgetNull,
 	WidgetReportError,
+	selectedGoalDriverIDs = DEFAULT_SELECTED_GOAL_DRIVER_IDS,
 } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
 	const primaryEvent: 'purchase' | 'add_to_cart' | undefined = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
@@ -83,10 +105,10 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 	const drivers = useMemo(
 		() =>
-			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
+			resolveGoalDriverIDs( selectedGoalDriverIDs ).map(
 				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
 			),
-		[]
+		[ selectedGoalDriverIDs ]
 	);
 
 	const dates = useSelect(
@@ -148,14 +170,17 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	if ( ! primaryEvent ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -168,7 +193,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	} = processReports( primaryEventReport, engagementReport );
 
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Online Store Performance',
@@ -251,7 +276,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 
