@@ -191,4 +191,34 @@ class Web_TagTest extends TestCase {
 		// One Tap prompt is suppressed on preview pages.
 		$this->assertStringNotContainsString( 'google.accounts.id.prompt()', $output, 'One Tap should not be invoked on preview pages.' );
 	}
+
+	public function test_render_on_wp_footer_during_preview_for_logged_out_visitor_skips_one_tap() {
+		global $wp_query;
+
+		remove_all_actions( 'wp_footer' );
+
+		// A logged-out visitor would otherwise see One Tap when oneTapEnabled is true.
+		// The `! is_preview()` clause on $should_show_one_tap_prompt is what suppresses it here.
+		wp_set_current_user( 0 );
+
+		$this->web_tag->set_settings(
+			array(
+				'clientID'      => 'test-client-id.app.googleusercontent.com',
+				'text'          => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+				'theme'         => Settings::THEME_LIGHT['value'],
+				'shape'         => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled' => true,
+			)
+		);
+		$this->web_tag->register();
+
+		$previous_preview     = $wp_query->is_preview;
+		$wp_query->is_preview = true;
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$wp_query->is_preview = $previous_preview;
+
+		$this->assertStringNotContainsString( 'google.accounts.id.prompt()', $output, 'One Tap should not be invoked on preview pages, even when the visitor is logged out.' );
+	}
 }
