@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useSelect, Select } from 'googlesitekit-data';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
 	provideModuleRegistrations,
@@ -34,7 +34,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
-import type { GoalDriverComponentProps } from './types';
+import { GoalDriverComponentProps } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -89,9 +89,11 @@ export default {
 	],
 };
 
-function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
+function Template( {
+	errorSelectorArgs,
+	error,
+	...args
+}: TopTrafficChannelsGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {
