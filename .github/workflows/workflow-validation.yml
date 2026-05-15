@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - id: github-yaml-files
-        run: echo "files=$(find .github/ \( -name '*.yml' -o -name '*.yaml' \) | xargs)" >> "$GITHUB_OUTPUT"
+        run: echo "files=$(find .github/ \( -name '*.yml' -o -name '*.yaml' \) -print0 | xargs -0)" >> "$GITHUB_OUTPUT"
       - uses: sethvargo/ratchet@c7c58082b6096c976e42dfcc1ddab83f97d61c28 # ratchet:sethvargo/ratchet@main
         with:
           files: ${{ steps.github-yaml-files.outputs.files }}
