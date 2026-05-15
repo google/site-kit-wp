@@ -106,8 +106,11 @@
 
 		.googlesitekit-setup__splash-graphic-background {
 			position: absolute;
-			right: 0;
 			z-index: 10;
+
+			@media (min-width: $bp-xlarge) {
+				right: 0;
+			}
 		}
 
 		.googlesitekit-setup__splash-graphic-screenshot {
@@ -130,27 +133,12 @@
 			position: relative;
 
 			@media (max-width: $bp-desktop) {
-				align-items: content;
-				display: flex;
 				margin-bottom: $grid-gap-desktop;
-				overflow: hidden;
 			}
 		}
 
 		.googlesitekit-setup__screenshot {
 			position: relative;
-
-			@media (max-width: $bp-desktop) {
-				align-items: content;
-				display: flex;
-				overflow: hidden;
-			}
-
-			@media (max-width: $bp-tablet) {
-				.googlesitekit-setup__splash-graphic-screenshot {
-					max-height: none;
-				}
-			}
 
 			@media(max-width: $bp-mobileOnly) {
 				overflow: visible;

@@ -38,7 +38,7 @@ const LazySVGComponent = lazy( () =>
 );
 
 const LazyMobileSVGComponent = lazy( () =>
-	import( '../../../../svg/graphics/splash-screenshot-optimised-0.svg' )
+	import( '../../../../svg/graphics/splash-screenshot-mobile.svg' )
 );
 
 export default function SetupFlowSVG() {
