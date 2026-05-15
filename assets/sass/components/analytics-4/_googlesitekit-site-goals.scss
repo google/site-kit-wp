@@ -16,7 +16,8 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group {
+	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group,
+	.googlesitekit-preview-block + .googlesitekit-site-goals-tiles-group {
 		margin-top: 34px;
 	}
 
