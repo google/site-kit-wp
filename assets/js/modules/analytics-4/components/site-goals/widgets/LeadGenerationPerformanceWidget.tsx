@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -36,7 +36,7 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
@@ -48,6 +48,7 @@ import {
 	GoalDriverTiles,
 	resolveGoalDriverIDs,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
@@ -57,15 +58,36 @@ import { processReports } from '@/js/modules/analytics-4/components/site-goals/u
 // TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
 const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 	GOAL_DRIVER_IDS.VISITOR_TYPE,
 ];
 
-const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
+
+const LeadGenerationPerformanceWidget: FC<
+	LeadGenerationPerformanceWidgetProps
+> = ( {
 	Widget,
 	WidgetNull,
 	WidgetReportError,
+	selectedGoalDriverIDs = DEFAULT_SELECTED_GOAL_DRIVER_IDS,
 } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
@@ -75,10 +97,10 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	const hasLeadEvents = !! detectedLeadEvents?.length;
 	const drivers = useMemo(
 		() =>
-			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
+			resolveGoalDriverIDs( selectedGoalDriverIDs ).map(
 				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
 			),
-		[]
+		[ selectedGoalDriverIDs ]
 	);
 
 	const dates = useSelect(
@@ -143,14 +165,17 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	if ( ! hasLeadEvents ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -165,7 +190,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	} );
 
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Lead generation performance',
@@ -239,7 +264,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 
