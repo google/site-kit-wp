@@ -26,7 +26,6 @@ import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 import CitiesGoalDriver from './CitiesGoalDriver';
 import CountriesGoalDriver from './CountriesGoalDriver';
-import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
 
 const rows = [ { label: 'Direct', value: '60%' } ];
@@ -127,20 +126,6 @@ describe( 'Goal driver titles', () => {
 
 		expect( getByText( 'Sales by countries' ) ).toBeInTheDocument();
 		expect( queryByText( 'Leads by countries' ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'renders Top authors title based on goal type', () => {
-		const { getByText, queryByText, rerender } = render(
-			<TopAuthorsGoalDriver goalType="lead" rows={ rows } />
-		);
-		expect( getByText( 'Top authors driving leads' ) ).toBeInTheDocument();
-
-		rerender( <TopAuthorsGoalDriver goalType="ecommerce" rows={ rows } /> );
-
-		expect( getByText( 'Top authors driving sales' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Top authors driving leads' )
-		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders Device type title based on goal type', () => {

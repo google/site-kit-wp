@@ -88,13 +88,13 @@ const multipleEventsReportOptions = buildLeadEventsReportOptions( [
 const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
-	GOAL_DRIVER_IDS.VISITOR_TYPE,
+	GOAL_DRIVER_IDS.CITIES,
 ];
 
 const FIVE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
 	...THREE_VISIBLE_GOAL_DRIVERS,
 	GOAL_DRIVER_IDS.TOP_PAGES,
-	GOAL_DRIVER_IDS.CITIES,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
 ];
 
 const SIX_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
@@ -248,23 +248,6 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_countries_${ goalType }`,
 	};
 
-	const topAuthorsOptions = {
-		...goalDriverDates,
-		dimensions: [ 'customEvent:googlesitekit_post_author' ],
-		dimensionFilters: {
-			...dimensionFilters,
-			'customEvent:googlesitekit_post_author': {
-				filterType: 'emptyFilter',
-				notExpression: true,
-			},
-		},
-		metrics: [ { name: 'eventCount' } ],
-		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-authors_${ goalType }`,
-	};
-
 	const deviceTypeOptions = {
 		...goalDriverDates,
 		dimensions: [ 'deviceCategory' ],
@@ -286,7 +269,6 @@ function seedGoalDriverReports(
 			visitorTypeOptions,
 			citiesOptions,
 			countriesOptions,
-			topAuthorsOptions,
 			deviceTypeOptions,
 		].forEach( ( options ) => {
 			registry
@@ -502,31 +484,6 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ countriesOptions ] );
-
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			rows: empty
-				? []
-				: [
-						{
-							dimensionValues: [ { value: 'Admin User' } ],
-							metricValues: [ { value: '42' } ],
-						},
-						{
-							dimensionValues: [ { value: 'Editor Team' } ],
-							metricValues: [ { value: '23' } ],
-						},
-						{
-							dimensionValues: [ { value: 'Guest Author' } ],
-							metricValues: [ { value: '14' } ],
-						},
-				  ],
-		},
-		{ options: topAuthorsOptions }
-	);
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getReport', [ topAuthorsOptions ] );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{

@@ -31,7 +31,6 @@ export { default as TopPagesGoalDriver } from './TopPagesGoalDriver';
 export { default as VisitorTypeGoalDriver } from './VisitorTypeGoalDriver';
 export { default as CitiesGoalDriver } from './CitiesGoalDriver';
 export { default as CountriesGoalDriver } from './CountriesGoalDriver';
-export { default as TopAuthorsGoalDriver } from './TopAuthorsGoalDriver';
 export { default as DeviceTypeGoalDriver } from './DeviceTypeGoalDriver';
 export type {
 	GoalDriverID,

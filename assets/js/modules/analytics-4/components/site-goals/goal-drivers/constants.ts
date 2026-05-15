@@ -32,6 +32,5 @@ export const GOAL_DRIVER_IDS = {
 	VISITOR_TYPE: 'visitorType',
 	CITIES: 'cities',
 	COUNTRIES: 'countries',
-	TOP_AUTHORS: 'topAuthors',
 	DEVICE_TYPE: 'deviceType',
 } as const;

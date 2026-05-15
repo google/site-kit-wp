@@ -25,7 +25,6 @@ import TopPagesGoalDriver from '@/js/modules/analytics-4/components/site-goals/g
 import VisitorTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/VisitorTypeGoalDriver';
 import CitiesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CitiesGoalDriver';
 import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CountriesGoalDriver';
-import TopAuthorsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopAuthorsGoalDriver';
 import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
 import {
 	GOAL_DRIVER_IDS,
@@ -58,13 +57,13 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
 		order: 10,
-		defaultEnabled: true,
+		defaultEnabled: false,
 		Component: VisitorTypeGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.CITIES ]: {
 		id: GOAL_DRIVER_IDS.CITIES,
 		order: 10,
-		defaultEnabled: false,
+		defaultEnabled: true,
 		Component: CitiesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.COUNTRIES ]: {
@@ -72,12 +71,6 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		order: 10,
 		defaultEnabled: false,
 		Component: CountriesGoalDriver,
-	},
-	[ GOAL_DRIVER_IDS.TOP_AUTHORS ]: {
-		id: GOAL_DRIVER_IDS.TOP_AUTHORS,
-		order: 10,
-		defaultEnabled: false,
-		Component: TopAuthorsGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.DEVICE_TYPE ]: {
 		id: GOAL_DRIVER_IDS.DEVICE_TYPE,

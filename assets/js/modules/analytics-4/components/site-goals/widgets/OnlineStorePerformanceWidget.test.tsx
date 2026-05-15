@@ -583,16 +583,13 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by sales rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by device type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
-		).toHaveLength( 6 );
+		).toHaveLength( 3 );
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -662,8 +659,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -705,8 +704,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {

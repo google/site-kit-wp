@@ -59,7 +59,7 @@ import { processReports } from '@/js/modules/analytics-4/components/site-goals/u
 const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
-	GOAL_DRIVER_IDS.VISITOR_TYPE,
+	GOAL_DRIVER_IDS.CITIES,
 ];
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;

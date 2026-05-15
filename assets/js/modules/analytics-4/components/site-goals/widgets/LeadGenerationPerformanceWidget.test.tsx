@@ -226,28 +226,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.LEAD }`,
 		};
 
-		const topAuthorsOptions = {
-			...dates,
-			dimensions: [ 'customEvent:googlesitekit_post_author' ],
-			dimensionFilters: {
-				...dimensionFilters,
-				'customEvent:googlesitekit_post_author': {
-					filterType: 'emptyFilter',
-					notExpression: true,
-				},
-			},
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-authors_${ GOAL_TYPES.LEAD }`,
-		};
-
 		if ( loading ) {
 			[
 				topTrafficChannelsOptions,
@@ -258,7 +236,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				visitorTypeOptions,
 				citiesOptions,
 				countriesOptions,
-				topAuthorsOptions,
 			].forEach( ( options ) => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -461,31 +438,6 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ countriesOptions ] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: empty
-					? []
-					: [
-							{
-								dimensionValues: [ { value: 'Admin User' } ],
-								metricValues: [ { value: '46' } ],
-							},
-							{
-								dimensionValues: [ { value: 'Editor Team' } ],
-								metricValues: [ { value: '22' } ],
-							},
-							{
-								dimensionValues: [ { value: 'Guest Author' } ],
-								metricValues: [ { value: '14' } ],
-							},
-					  ],
-			},
-			{ options: topAuthorsOptions }
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ topAuthorsOptions ] );
 	}
 
 	beforeEach( () => {
@@ -572,16 +524,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by leads rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving leads' ) ).toBeInTheDocument();
-		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 		expect( getByText( 'Leads by cities' ) ).toBeInTheDocument();
-		expect( getByText( 'Leads by countries' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
-		).toHaveLength( 6 );
+		).toHaveLength( 3 );
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -717,6 +666,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			getByText( 'Top traffic channels by total leads' )
 		).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by leads rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Leads by cities' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {

@@ -46,7 +46,6 @@ import TopPagesGoalDriver from './TopPagesGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 import CitiesGoalDriver from './CitiesGoalDriver';
 import CountriesGoalDriver from './CountriesGoalDriver';
-import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
 import { GoalDriverTilesDriver, GoalType } from './types';
 
@@ -89,7 +88,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Email', value: '8.7%' },
 			{ label: 'Paid search', value: '5.2%' },
 		],
-		totalRows: 6,
 		loading: false,
 	},
 	{
@@ -100,7 +98,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Organic search', value: '4.7%' },
 			{ label: 'Organic social', value: '1.2%' },
 		],
-		totalRows: 3,
 		loading: false,
 	},
 	{
@@ -138,7 +135,6 @@ const drivers: GoalDriverTilesDriver[] = [
 				url: 'https://analytics.google.com/',
 			},
 		],
-		totalRows: 6,
 		loading: false,
 	},
 	{
@@ -148,7 +144,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Returning visitors', value: '60.5%' },
 			{ label: 'New visitors', value: '39.5%' },
 		],
-		totalRows: 2,
 		loading: false,
 	},
 	{
@@ -159,7 +154,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'New York', value: '24.7%' },
 			{ label: 'Berlin', value: '16.2%' },
 		],
-		totalRows: 3,
 		loading: false,
 	},
 	{
@@ -170,18 +164,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'France', value: '24.7%' },
 			{ label: 'Poland', value: '16.2%' },
 		],
-		totalRows: 3,
-		loading: false,
-	},
-	{
-		id: 'topAuthors',
-		Component: TopAuthorsGoalDriver,
-		rows: [
-			{ label: 'Admin User', value: '380' },
-			{ label: 'Editor Team', value: '221' },
-			{ label: 'Guest Author', value: '171' },
-		],
-		totalRows: 3,
 		loading: false,
 	},
 	{
@@ -192,7 +174,6 @@ const drivers: GoalDriverTilesDriver[] = [
 			{ label: 'Tablet', value: '41.3%' },
 			{ label: 'Desktop', value: '2.2%' },
 		],
-		totalRows: 3,
 		loading: false,
 	},
 ];
@@ -305,7 +286,6 @@ export const NoShowMore = Template.bind(
 NoShowMore.args = {
 	drivers: drivers.slice( 0, 3 ).map( ( driver ) => ( {
 		...driver,
-		totalRows: 3,
 		rows: ( driver.rows || [] ).slice( 0, 3 ),
 	} ) ),
 	hasExpandableRows: false,
