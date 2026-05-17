@@ -753,14 +753,25 @@ final class Authentication implements Provides_Feature_Metrics {
 			wp_die( esc_html__( 'You don’t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+
 		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 		if ( $redirect_url ) {
 			$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
+			$site_host    = wp_parse_url( home_url(), PHP_URL_HOST );
+			$redir_host   = wp_parse_url( $redirect_url, PHP_URL_HOST );
+			if ( $redir_host && $redir_host !== $site_host ) {
+				$redirect_url = ''; // Reject any external redirect URL
+			}
 		}
 
 		$error_redirect_url = $input->filter( INPUT_GET, 'errorRedirect', FILTER_DEFAULT );
 		if ( $error_redirect_url ) {
 			$error_redirect_url = esc_url_raw( wp_unslash( $error_redirect_url ) );
+			$site_host          = wp_parse_url( home_url(), PHP_URL_HOST );
+			$redir_host         = wp_parse_url( $error_redirect_url, PHP_URL_HOST );
+			if ( $redir_host && $redir_host !== $site_host ) {
+				$error_redirect_url = ''; // Reject any external redirect URL
+			}
 		}
 
 		// User is trying to authenticate, but access token hasn't been set.
