@@ -112,7 +112,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 
 			expect(
 				getByText(
-					'Creating a new Analytics account failed because the Analytics account limit has been reached. Try again or'
+					'Creating a new Analytics account failed because the Analytics account limit has been reached. You can manage the number of Analytics accounts associated with your Google account and then try again, or'
 				)
 			).toBeInTheDocument();
 

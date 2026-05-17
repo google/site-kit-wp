@@ -39,7 +39,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Button, ProgressBar } from 'googlesitekit-components';
+import { ProgressBar } from 'googlesitekit-components';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
 	FORM_ACCOUNT_CREATE,
@@ -62,6 +62,8 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import CountrySelect from './CountrySelect';
 import WebDataStreamField from './WebDataStreamField';
+import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+import Actions from './Actions';
 import { EnhancedMeasurementSwitch } from '@/js/modules/analytics-4/components/common';
 import useViewContext from '@/js/hooks/useViewContext';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
@@ -120,12 +122,16 @@ export default function AccountCreate( { className } ) {
 			'plugin-conversion-tracking'
 		);
 	} );
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
 
 	const viewContext = useViewContext();
-	const { setValues } = useDispatch( CORE_FORMS );
+	const { setValues, createSnapshot } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS_4 );
-	const { setPermissionScopeError } = useDispatch( CORE_USER );
+	const { setPermissionScopeError, saveInitialSetupSettings } =
+		useDispatch( CORE_USER );
 	const { setConversionTrackingEnabled, saveConversionTrackingSettings } =
 		useDispatch( CORE_SITE );
 
@@ -136,10 +142,14 @@ export default function AccountCreate( { className } ) {
 		if ( accountTicketTermsOfServiceURL ) {
 			( async () => {
 				await invalidateCache( 'modules', MODULE_SLUG_ANALYTICS_4 );
+				// Snapshot the `CORE_FORMS` store so the account creation
+				// form values are restored if the user returns with an
+				// error from the Terms of Service screen.
+				await createSnapshot();
 				navigateTo( accountTicketTermsOfServiceURL );
 			} )();
 		}
-	}, [ accountTicketTermsOfServiceURL, navigateTo ] );
+	}, [ accountTicketTermsOfServiceURL, navigateTo, createSnapshot ] );
 
 	// Set form defaults on initial render.
 	useEffect( () => {
@@ -159,6 +169,13 @@ export default function AccountCreate( { className } ) {
 
 	const showProgress = getQueryArg( location.href, 'showProgress' );
 	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+
+	const accountCreationErrorCode = getQueryArg(
+		location.href,
+		'accountCreationErrorCode'
+	);
+	const hasAccountCreationError =
+		setupFlowRefreshEnabled && !! accountCreationErrorCode;
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -246,6 +263,16 @@ export default function AccountCreate( { className } ) {
 		[ rollbackSettings ]
 	);
 
+	// Navigate the user directly to the dashboard without setting up Analytics.
+	// `isAnalyticsSetupComplete` is persisted to `true` so the dashboard's
+	// initial-setup-flow redirect (in `Screens.php`) doesn't bounce the user
+	// back to the Analytics setup screen.
+	const handleContinueWithoutAnalytics = useCallback( async () => {
+		setIsNavigating( true );
+		await saveInitialSetupSettings( { isAnalyticsSetupComplete: true } );
+		navigateTo( dashboardURL );
+	}, [ navigateTo, dashboardURL, saveInitialSetupSettings ] );
+
 	if (
 		isDoingCreateAccount ||
 		isNavigating ||
@@ -261,6 +288,13 @@ export default function AccountCreate( { className } ) {
 				moduleSlug="analytics-4"
 				storeName={ MODULES_ANALYTICS_4 }
 			/>
+
+			{ hasAccountCreationError && (
+				<AnalyticsAccountCreationErrorNotice
+					errorCode={ accountCreationErrorCode }
+					onRetry={ handleSubmit }
+				/>
+			) }
 
 			{ ! isInitialSetupFlow && (
 				<Typography as="h3" type="title" size="large">
@@ -366,24 +400,15 @@ export default function AccountCreate( { className } ) {
 				) }
 			</P>
 
-			<div className="googlesitekit-setup-module__action">
-				<Button
-					disabled={ ! canSubmitAccountCreate }
-					onClick={ handleSubmit }
-				>
-					{ __( 'Create Account', 'google-site-kit' ) }
-				</Button>
-
-				{ accounts && !! accounts.length && (
-					<Button
-						className="googlesitekit-setup-module__sub-action"
-						onClick={ handleBack }
-						tertiary
-					>
-						{ __( 'Back', 'google-site-kit' ) }
-					</Button>
-				) }
-			</div>
+			<Actions
+				canSubmitAccountCreate={ canSubmitAccountCreate }
+				onCreateAccount={ handleSubmit }
+				accounts={ accounts }
+				onBack={ handleBack }
+				hasAccountCreationError={ hasAccountCreationError }
+				isInitialSetupFlow={ isInitialSetupFlow }
+				onContinueWithoutAnalytics={ handleContinueWithoutAnalytics }
+			/>
 		</div>
 	);
 }
