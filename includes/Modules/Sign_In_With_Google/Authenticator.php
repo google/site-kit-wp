@@ -256,7 +256,8 @@ class Authenticator implements Authenticator_Interface {
 				'last_name'    => $payload['family_name'],
 				'role'         => $default_role,
 				'meta_input'   => array(
-					$this->user_options->get_meta_key( Hashed_User_ID::OPTION ) => $g_user_hid,
+					$this->user_options->get_meta_key( Hashed_User_ID::OPTION )               => $g_user_hid,
+					$this->user_options->get_meta_key( 'googlesitekitpersistent_created_by' ) => 'sign-in-with-google',
 				),
 			)
 		);
