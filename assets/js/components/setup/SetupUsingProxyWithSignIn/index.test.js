@@ -451,6 +451,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			const learnMoreLink = getByRole( 'link', { name: /Learn more/i } );
+			// Add click handler to prevent navigation.
 			learnMoreLink.addEventListener( 'click', ( event ) =>
 				event.preventDefault()
 			);
