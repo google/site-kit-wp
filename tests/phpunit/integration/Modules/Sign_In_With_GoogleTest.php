@@ -59,6 +59,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$_SERVER = self::$server_data;
 	}
 
+	private function enable_https_login_env() {
+		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		update_option( 'home', 'https://example.com/' );
+		update_option( 'siteurl', 'https://example.com/' );
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var. Captured after option updates so it matches wp_login_url() at register_tag() time.
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug, 'Module slug should match constant.' );
 		$this->assertEquals( 'Sign in with Google', $this->module->name, 'Module name should match.' );
@@ -103,11 +110,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = apply_filters( 'login_form_top', '' );
 		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should not render when site is not HTTPS.' );
 
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
+		$this->enable_https_login_env();
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
@@ -124,6 +127,35 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// Render the button.
 		$output = apply_filters( 'login_form_top', '' );
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render when HTTPS and clientID set.' );
+	}
+
+	public function test_register_tag_skips_on_email_verification_interstitial() {
+		$this->enable_https_login_env();
+
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		// Without the `confirm_admin_email` action, `register_tag` places Sign in with Google into `login_footer`.
+		remove_all_actions( 'login_footer' );
+		$this->module->register_tag();
+		$output = $this->capture_action( 'login_footer' );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker on the standard login page.' );
+
+		// When on the email verification interstitial, `register_tag` will return before instantiating `Web_Tag`, so no Sign in with Google tag should appear.
+		remove_all_actions( 'login_footer' );
+		$_GET['action'] = 'confirm_admin_email';
+		$this->module->register_tag();
+		$output = $this->capture_action( 'login_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should not include SIWG marker on the email verification interstitial.' );
+
+		unset( $_GET['action'] );
 	}
 
 	public function test_render_button_in_wp_comments() {
@@ -148,11 +180,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = apply_filters( 'comment_form_after_fields', '' );
 		$this->assertNull( $output, 'Button should not render when site does not have open user registration.' );
 
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
+		$this->enable_https_login_env();
 
 		// Does not render if Show next to comments is not enabled.
 		$this->module->get_settings()->set(
