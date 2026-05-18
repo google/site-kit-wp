@@ -221,6 +221,11 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
+					styles: {
+						arrow: {
+							margin: 8,
+						},
+					},
 				},
 			] );
 		} );
@@ -256,6 +261,11 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
+					styles: {
+						arrow: {
+							margin: 8,
+						},
+					},
 				},
 			] );
 		} );
@@ -342,6 +352,11 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
+					styles: {
+						arrow: {
+							margin: 8,
+						},
+					},
 				},
 			] );
 		} );
@@ -377,6 +392,11 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
+					styles: {
+						arrow: {
+							margin: 8,
+						},
+					},
 				},
 			] );
 		} );
@@ -460,6 +480,11 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
+					styles: {
+						arrow: {
+							margin: 8,
+						},
+					},
 				},
 			] );
 		} );
