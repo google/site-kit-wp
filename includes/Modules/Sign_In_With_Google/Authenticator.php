@@ -251,7 +251,7 @@ class Authenticator implements Authenticator_Interface {
 		// Get the default role for new users.
 		$default_role = $this->get_default_role();
 
-		// Create a new user.
+		// Create a new user. User meta is persisted after insert because wp_insert_user's meta_input was added in WordPress 5.9.
 		$user_id = wp_insert_user(
 			array(
 				'user_pass'    => wp_generate_password( 64 ),
@@ -261,16 +261,17 @@ class Authenticator implements Authenticator_Interface {
 				'first_name'   => $payload['given_name'],
 				'last_name'    => $payload['family_name'],
 				'role'         => $default_role,
-				'meta_input'   => array(
-					$this->user_options->get_meta_key( Hashed_User_ID::OPTION )    => $g_user_hid,
-					$this->user_options->get_meta_key( self::CREATED_BY_META_KEY ) => Sign_In_With_Google::MODULE_SLUG,
-				),
 			)
 		);
 
 		if ( is_wp_error( $user_id ) ) {
 			return new WP_Error( self::ERROR_SIGNIN_FAILED );
 		}
+
+		$user_options = clone $this->user_options;
+		$user_options->switch_user( $user_id );
+		$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+		$user_options->set( self::CREATED_BY_META_KEY, Sign_In_With_Google::MODULE_SLUG );
 
 		// Add the user to the current site if it is a multisite.
 		if ( is_multisite() ) {
