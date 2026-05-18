@@ -49,8 +49,10 @@ const AnalyticsAccountCreationErrorNotice: FC<
 > = ( { errorCode, onRetry } ) => {
 	const viewContext = useViewContext();
 	const [ showProgress ] = useQueryArg( 'showProgress' );
-	const eventCategory =
-		showProgress !== undefined ? `${ viewContext }_setup` : viewContext;
+	const isInitialSetupFlow = !! showProgress;
+	const eventCategory = isInitialSetupFlow
+		? `${ viewContext }_setup`
+		: viewContext;
 
 	useEffect( () => {
 		trackEvent(

@@ -31,13 +31,11 @@ import {
 	render,
 } from 'tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { trackEvent } from '@/js/util';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+import * as tracking from '@/js/util/tracking';
 
-jest.mock( '@/js/util', () => ( {
-	...jest.requireActual( '@/js/util' ),
-	trackEvent: jest.fn(),
-} ) );
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	let registry: WPDataRegistry;
@@ -45,7 +43,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
-		( trackEvent as jest.Mock ).mockClear();
+		mockTrackEvent.mockClear();
 		global.history.replaceState(
 			null,
 			'',
@@ -216,7 +214,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 				{ registry, viewContext: 'test-context' }
 			);
 
-			expect( trackEvent ).toHaveBeenCalledWith(
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'test-context_setup',
 				'analytics_account_creation_error',
 				'backend_error'
@@ -238,7 +236,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 				{ registry, viewContext: 'test-context' }
 			);
 
-			expect( trackEvent ).toHaveBeenCalledWith(
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'test-context',
 				'analytics_account_creation_error',
 				'backend_error'

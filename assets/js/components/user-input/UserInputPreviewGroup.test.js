@@ -28,18 +28,16 @@ import {
 } from './util/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { trackEvent } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 
-jest.mock( '@/js/util', () => ( {
-	...jest.requireActual( '@/js/util' ),
-	trackEvent: jest.fn(),
-} ) );
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'UserInputPreviewGroup', () => {
 	let registry;
 
 	beforeEach( () => {
-		trackEvent.mockClear();
+		mockTrackEvent.mockClear();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_UI ).setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
@@ -127,7 +125,7 @@ describe( 'UserInputPreviewGroup', () => {
 
 		fireEvent.click( getByRole( 'button', { name: /answer question/i } ) );
 
-		expect( trackEvent ).toHaveBeenCalledWith(
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
 			'test-context_kmw',
 			'select_answer',
 			USER_INPUT_QUESTIONS_PURPOSE
