@@ -698,6 +698,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @since 1.159.0
 	 */
 	public function register_tag() {
+		// Skip on the WordPress email verification interstitial (wp-login.php?action=confirm_admin_email).
+		if ( 'confirm_admin_email' === $this->context->input()->filter( INPUT_GET, 'action' ) ) {
+			return;
+		}
+
 		$settings  = $this->get_settings()->get();
 		$client_id = $settings['clientID'];
 
