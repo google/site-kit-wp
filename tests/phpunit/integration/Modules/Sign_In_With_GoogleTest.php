@@ -126,6 +126,38 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertStringContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should render when HTTPS and clientID set.' );
 	}
 
+	public function test_register_tag_skips_on_email_verification_interstitial() {
+		$_SERVER['HTTPS']       = 'on';
+		$_SERVER['SCRIPT_NAME'] = wp_login_url();
+		update_option( 'home', 'https://example.com/' );
+		update_option( 'siteurl', 'https://example.com/' );
+
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->set(
+			array(
+				'clientID' => '1234567890.googleusercontent.com',
+				'text'     => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+				'theme'    => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+				'shape'    => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			)
+		);
+
+		// Control: without the confirm_admin_email action, register_tag wires the SIWG marker into login_footer.
+		remove_all_actions( 'login_footer' );
+		$this->module->register_tag();
+		$output = $this->capture_action( 'login_footer' );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker on the standard login page.' );
+
+		// Guard: on the email verification interstitial, register_tag returns before instantiating Web_Tag.
+		remove_all_actions( 'login_footer' );
+		$_GET['action'] = 'confirm_admin_email';
+		$this->module->register_tag();
+		$output = $this->capture_action( 'login_footer' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should not include SIWG marker on the email verification interstitial.' );
+
+		unset( $_GET['action'] );
+	}
+
 	public function test_render_button_in_wp_comments() {
 		update_option( 'home', 'http://example.com/' );
 		update_option( 'siteurl', 'http://example.com/' );
