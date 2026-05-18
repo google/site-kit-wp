@@ -31,7 +31,13 @@ import {
 	render,
 } from 'tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { trackEvent } from '@/js/util';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+
+jest.mock( '@/js/util', () => ( {
+	...jest.requireActual( '@/js/util' ),
+	trackEvent: jest.fn(),
+} ) );
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	let registry: WPDataRegistry;
@@ -39,6 +45,12 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		( trackEvent as jest.Mock ).mockClear();
+		global.history.replaceState(
+			null,
+			'',
+			'/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
 	} );
 
 	describe( 'user_cancel', () => {
@@ -185,6 +197,52 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
 
 			expect( onRetry ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'tracking', () => {
+		it( 'tracks analytics_account_creation_error in initial setup flow when showProgress is present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( trackEvent ).toHaveBeenCalledWith(
+				'test-context_setup',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
+		} );
+
+		it( 'tracks analytics_account_creation_error in module setup flow when showProgress is not present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( trackEvent ).toHaveBeenCalledWith(
+				'test-context',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
 		} );
 	} );
 } );

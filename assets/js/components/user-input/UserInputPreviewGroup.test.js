@@ -28,11 +28,18 @@ import {
 } from './util/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { trackEvent } from '@/js/util';
+
+jest.mock( '@/js/util', () => ( {
+	...jest.requireActual( '@/js/util' ),
+	trackEvent: jest.fn(),
+} ) );
 
 describe( 'UserInputPreviewGroup', () => {
 	let registry;
 
 	beforeEach( () => {
+		trackEvent.mockClear();
 		registry = createTestRegistry();
 		registry.dispatch( CORE_UI ).setValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
@@ -106,5 +113,24 @@ describe( 'UserInputPreviewGroup', () => {
 		expect(
 			getByRole( 'radio', { name: /option 2/i } )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should track a select_answer event when the "Answer question" button is clicked', () => {
+		const { getByRole } = render(
+			<UserInputPreviewGroup { ...baseProps } />,
+			{
+				registry,
+				features: [ 'setupFlowRefresh' ],
+				viewContext: 'test-context',
+			}
+		);
+
+		fireEvent.click( getByRole( 'button', { name: /answer question/i } ) );
+
+		expect( trackEvent ).toHaveBeenCalledWith(
+			'test-context_kmw',
+			'select_answer',
+			USER_INPUT_QUESTIONS_PURPOSE
+		);
 	} );
 } );

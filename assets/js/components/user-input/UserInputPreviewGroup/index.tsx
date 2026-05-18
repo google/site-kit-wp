@@ -178,6 +178,11 @@ export default function UserInputPreviewGroup( {
 		toggleEditMode,
 	] );
 
+	const handleOnAnswerQuestionClick = useCallback( () => {
+		trackEvent( gaEventCategory, 'select_answer', slug );
+		handleOnEditClick();
+	}, [ gaEventCategory, handleOnEditClick, slug ] );
+
 	const errorMessage = getErrorMessageForAnswer(
 		values,
 		USER_INPUT_MAX_ANSWERS[ slug ]
@@ -250,7 +255,7 @@ export default function UserInputPreviewGroup( {
 			{ shouldUseAnswerQuestionCTA && ! isEditing && (
 				<AnswerQuestionButton
 					isDisabled={ isEditControlDisabled }
-					onClick={ handleOnEditClick }
+					onClick={ handleOnAnswerQuestionClick }
 				/>
 			) }
 
