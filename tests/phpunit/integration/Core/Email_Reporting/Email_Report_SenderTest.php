@@ -24,16 +24,19 @@ class Email_Report_SenderTest extends TestCase {
 
 	private $email_report_sender;
 	private $email_template_renderer_factory;
-	private $email;
 	private $user;
 
 	public function set_up() {
 		parent::set_up();
 
+		reset_phpmailer_instance();
+
 		$this->user                            = self::factory()->user->create_and_get();
 		$this->email_template_renderer_factory = $this->createMock( Email_Template_Renderer_Factory::class );
-		$this->email                           = $this->createMock( Email::class );
-		$this->email_report_sender             = new Email_Report_Sender( $this->email_template_renderer_factory, $this->email );
+		$this->email_report_sender             = new Email_Report_Sender(
+			$this->email_template_renderer_factory,
+			new Email()
+		);
 	}
 
 	public function test_send__success() {
