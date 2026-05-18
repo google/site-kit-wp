@@ -59,6 +59,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$_SERVER = self::$server_data;
 	}
 
+	private function enable_https_login_env() {
+		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
+		update_option( 'home', 'https://example.com/' );
+		update_option( 'siteurl', 'https://example.com/' );
+	}
+
 	public function test_magic_methods() {
 		$this->assertEquals( Sign_In_With_Google::MODULE_SLUG, $this->module->slug, 'Module slug should match constant.' );
 		$this->assertEquals( 'Sign in with Google', $this->module->name, 'Module name should match.' );
@@ -103,11 +110,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = apply_filters( 'login_form_top', '' );
 		$this->assertStringNotContainsString( '<div class="googlesitekit-sign-in-with-google__frontend-output-button"></div>', $output, 'Button should not render when site is not HTTPS.' );
 
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
+		$this->enable_https_login_env();
 
 		// Does not render if clientID is not set.
 		$this->module->get_settings()->set( array( 'clientID' => '' ) );
@@ -127,10 +130,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_register_tag_skips_on_email_verification_interstitial() {
-		$_SERVER['HTTPS']       = 'on';
-		$_SERVER['SCRIPT_NAME'] = wp_login_url();
-		update_option( 'home', 'https://example.com/' );
-		update_option( 'siteurl', 'https://example.com/' );
+		$this->enable_https_login_env();
 
 		$this->module->get_settings()->register();
 		$this->module->get_settings()->set(
@@ -180,11 +180,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = apply_filters( 'comment_form_after_fields', '' );
 		$this->assertNull( $output, 'Button should not render when site does not have open user registration.' );
 
-		// Update site URL to https.
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
-		update_option( 'siteurl', 'https://example.com/' );
-		update_option( 'home', 'https://example.com/' );
+		$this->enable_https_login_env();
 
 		// Does not render if Show next to comments is not enabled.
 		$this->module->get_settings()->set(
