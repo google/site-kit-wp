@@ -73,6 +73,11 @@ function getDashboardSharingStep(
 			offset: 0,
 			spotlightPadding: 0,
 			placement: 'bottom',
+			styles: {
+				arrow: {
+					margin: 8,
+				},
+			},
 		};
 	}
 
