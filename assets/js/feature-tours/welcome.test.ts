@@ -209,6 +209,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -221,11 +226,6 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
-					styles: {
-						arrow: {
-							margin: 8,
-						},
-					},
 				},
 			] );
 		} );
@@ -249,6 +249,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -261,11 +266,6 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
-					styles: {
-						arrow: {
-							margin: 8,
-						},
-					},
 				},
 			] );
 		} );
@@ -340,6 +340,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -352,11 +357,6 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
-					styles: {
-						arrow: {
-							margin: 8,
-						},
-					},
 				},
 			] );
 		} );
@@ -380,6 +380,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -392,11 +397,6 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
-					styles: {
-						arrow: {
-							margin: 8,
-						},
-					},
 				},
 			] );
 		} );
@@ -468,6 +468,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -480,11 +485,6 @@ describe( 'getWelcomeTour', () => {
 					offset: 0,
 					spotlightPadding: 0,
 					placement: 'bottom',
-					styles: {
-						arrow: {
-							margin: 8,
-						},
-					},
 				},
 			] );
 		} );
