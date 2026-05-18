@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
@@ -160,8 +161,8 @@ class AuthenticatorTest extends TestCase {
 
 		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
 		$this->assertEquals(
-			'sign-in-with-google',
-			get_user_meta( $user->ID, $user_options->get_meta_key( 'googlesitekitpersistent_created_by' ), true ),
+			Sign_In_With_Google::MODULE_SLUG,
+			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
 			'Newly created user should be marked as created via Sign in with Google.'
 		);
 	}
@@ -186,6 +187,13 @@ class AuthenticatorTest extends TestCase {
 
 		$blog_id = get_current_blog_id();
 		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ), 'New user should be member of current blog.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			Sign_In_With_Google::MODULE_SLUG,
+			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
+			'Newly created user on multisite should be marked as created via Sign in with Google.'
+		);
 	}
 
 	/**

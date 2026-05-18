@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Input;
+use Google\Site_Kit\Modules\Sign_In_With_Google;
 use WP_Error;
 use WP_User;
 
@@ -34,6 +35,11 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	const ERROR_INVALID_REQUEST = 'googlesitekit_auth_invalid_request';
 	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
+
+	/**
+	 * User meta key marking users created via Sign in with Google.
+	 */
+	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
 
 	/**
 	 * User options instance.
@@ -256,8 +262,8 @@ class Authenticator implements Authenticator_Interface {
 				'last_name'    => $payload['family_name'],
 				'role'         => $default_role,
 				'meta_input'   => array(
-					$this->user_options->get_meta_key( Hashed_User_ID::OPTION )               => $g_user_hid,
-					$this->user_options->get_meta_key( 'googlesitekitpersistent_created_by' ) => 'sign-in-with-google',
+					$this->user_options->get_meta_key( Hashed_User_ID::OPTION )    => $g_user_hid,
+					$this->user_options->get_meta_key( self::CREATED_BY_META_KEY ) => Sign_In_With_Google::MODULE_SLUG,
 				),
 			)
 		);
