@@ -157,6 +157,13 @@ class AuthenticatorTest extends TestCase {
 		$this->assertEquals( self::$new_user_payload['family_name'], $user->last_name, 'New user last name should match payload.' );
 
 		$this->assertTrue( in_array( 'editor', $user->roles, true ), 'New user role should be editor.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			'sign-in-with-google',
+			get_user_meta( $user->ID, $user_options->get_meta_key( 'googlesitekitpersistent_created_by' ), true ),
+			'Newly created user should be marked as created via Sign in with Google.'
+		);
 	}
 
 	/**
