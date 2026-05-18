@@ -60,10 +60,10 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	private function enable_https_login_env() {
-		$_SERVER['HTTPS']       = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
-		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var.
+		$_SERVER['HTTPS'] = 'on'; // Required because WordPress's site_url function check is_ssl which uses this var.
 		update_option( 'home', 'https://example.com/' );
 		update_option( 'siteurl', 'https://example.com/' );
+		$_SERVER['SCRIPT_NAME'] = wp_login_url(); // Required because is_login() uses this var. Captured after option updates so it matches wp_login_url() at register_tag() time.
 	}
 
 	public function test_magic_methods() {
