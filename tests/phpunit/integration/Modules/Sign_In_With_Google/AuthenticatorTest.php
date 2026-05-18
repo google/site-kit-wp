@@ -165,6 +165,11 @@ class AuthenticatorTest extends TestCase {
 			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
 			'Newly created user should be marked as created via Sign in with Google.'
 		);
+		$this->assertEquals(
+			md5( self::$new_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Newly created user should have the hashed Google user ID persisted.'
+		);
 	}
 
 	/**
@@ -193,6 +198,11 @@ class AuthenticatorTest extends TestCase {
 			Sign_In_With_Google::MODULE_SLUG,
 			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
 			'Newly created user on multisite should be marked as created via Sign in with Google.'
+		);
+		$this->assertEquals(
+			md5( self::$new_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Newly created user on multisite should have the hashed Google user ID persisted.'
 		);
 	}
 
