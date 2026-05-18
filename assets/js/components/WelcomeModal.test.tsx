@@ -66,6 +66,8 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
+	isAudienceSegmentationSetupCompleted: false,
+	isKeyMetricsSetupCompleted: false,
 } );
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );

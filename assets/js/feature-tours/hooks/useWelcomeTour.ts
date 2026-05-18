@@ -81,12 +81,14 @@ export function useWelcomeTour() {
 
 	const isKeyMetricsSetupCompleted = useSelect(
 		( select: Select ) =>
+			isAnalyticsConnected &&
 			!! select( CORE_SITE ).isKeyMetricsSetupCompleted(),
 		[]
 	);
 
 	const isAudienceSegmentationSetupCompleted = useSelect(
 		( select: Select ) =>
+			isAnalyticsConnected &&
 			!! select(
 				MODULES_ANALYTICS_4
 			).isAudienceSegmentationSetupCompleted(),
