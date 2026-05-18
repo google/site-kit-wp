@@ -700,7 +700,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 */
 	public function register_tag() {
 		// Skip on the WordPress email verification interstitial (wp-login.php?action=confirm_admin_email).
-		if ( 'confirm_admin_email' === $this->context->input()->filter( INPUT_GET, 'action' ) ) {
+		$is_wp_login = false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		if ( $is_wp_login && 'confirm_admin_email' === $this->context->input()->filter( INPUT_GET, 'action' ) ) {
 			return;
 		}
 
@@ -720,7 +721,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		$tag->set_settings( $this->get_settings()->get() );
-		$tag->set_is_wp_login( false !== stripos( wp_login_url(), $_SERVER['SCRIPT_NAME'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$tag->set_is_wp_login( $is_wp_login );
 		$tag->set_redirect_to( $this->context->input()->filter( INPUT_GET, 'redirect_to' ) );
 		$tag->register();
 	}
