@@ -142,13 +142,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 			)
 		);
 
-		// Control: without the confirm_admin_email action, register_tag wires the SIWG marker into login_footer.
+		// Without the `confirm_admin_email` action, `register_tag` places Sign in with Google into `login_footer`.
 		remove_all_actions( 'login_footer' );
 		$this->module->register_tag();
 		$output = $this->capture_action( 'login_footer' );
 		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker on the standard login page.' );
 
-		// Guard: on the email verification interstitial, register_tag returns before instantiating Web_Tag.
+		// When on the email verification interstitial, `register_tag` will return before instantiating `Web_Tag`, so no Sign in with Google tag should appear.
 		remove_all_actions( 'login_footer' );
 		$_GET['action'] = 'confirm_admin_email';
 		$this->module->register_tag();
