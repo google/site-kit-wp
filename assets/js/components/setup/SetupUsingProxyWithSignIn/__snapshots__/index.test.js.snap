@@ -1373,16 +1373,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -1542,6 +1532,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -1738,16 +1738,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -1830,6 +1820,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2026,16 +2026,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2195,6 +2185,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2391,16 +2391,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2560,6 +2550,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2756,16 +2756,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2925,6 +2915,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>

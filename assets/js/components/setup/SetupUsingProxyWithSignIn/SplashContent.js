@@ -68,22 +68,6 @@ export default function SplashContent( {
 		<Fragment>
 			<ResetNotice />
 			<Row className="googlesitekit-setup__content">
-				<Cell
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 6 }
-					className="googlesitekit-setup__icon"
-				>
-					<SplashBackground
-						className="googlesitekit-setup__splash-graphic-background"
-						width="508"
-						height="466"
-					/>
-					<div className="googlesitekit-setup__splash-graphic-screenshot">
-						<SplashScreenshotSVG />
-					</div>
-				</Cell>
-
 				<Cell { ...cellDetailsProp }>
 					<Typography
 						as="h1"
@@ -152,6 +136,22 @@ export default function SplashContent( {
 					) }
 
 					<CompatibilityChecks>{ children }</CompatibilityChecks>
+				</Cell>
+
+				<Cell
+					smSize={ 4 }
+					mdSize={ 8 }
+					lgSize={ 6 }
+					className="googlesitekit-setup__screenshot"
+				>
+					<SplashBackground
+						className="googlesitekit-setup__splash-graphic-background"
+						width="508"
+						height="466"
+					/>
+					<div className="googlesitekit-setup__splash-graphic-screenshot">
+						<SplashScreenshotSVG />
+					</div>
 				</Cell>
 			</Row>
 		</Fragment>
