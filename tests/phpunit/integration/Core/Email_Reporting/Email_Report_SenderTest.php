@@ -45,7 +45,6 @@ class Email_Report_SenderTest extends TestCase {
 		$renderer->method( 'render_text' )->willReturn( 'Report Content' );
 
 		$this->email_template_renderer_factory->method( 'create' )->willReturn( $renderer );
-		$this->email->method( 'send' )->willReturn( true );
 
 		$result = $this->email_report_sender->send(
 			$this->user,
@@ -54,6 +53,13 @@ class Email_Report_SenderTest extends TestCase {
 		);
 
 		$this->assertTrue( $result, 'Email report should be sent successfully.' );
+
+		$mailer = tests_retrieve_phpmailer_instance();
+		$this->assertCount( 1, $mailer->mock_sent, 'Exactly one email should have been queued by wp_mail.' );
+
+		$sent = $mailer->get_sent();
+		$this->assertSame( $this->user->user_email, $sent->to[0][0], 'Email should be addressed to the report recipient.' );
+		$this->assertSame( 'Test Report', $sent->subject, 'Email subject should match the template subject.' );
 	}
 
 	public function test_send__failed() {
