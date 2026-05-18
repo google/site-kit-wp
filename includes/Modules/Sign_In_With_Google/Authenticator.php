@@ -253,7 +253,8 @@ class Authenticator implements Authenticator_Interface {
 		// Get the default role for new users.
 		$default_role = $this->get_default_role();
 
-		// Create a new user. User meta is persisted after insert because wp_insert_user's meta_input was added in WordPress 5.9.
+		// Create a new user.
+		// User meta is persisted after wp_insert_user because its meta_input parameter requires WordPress 5.9 and the plugin floor is 5.2.
 		$user_id = wp_insert_user(
 			array(
 				'user_pass'    => wp_generate_password( 64 ),
