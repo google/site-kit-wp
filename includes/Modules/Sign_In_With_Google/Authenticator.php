@@ -38,6 +38,8 @@ class Authenticator implements Authenticator_Interface {
 
 	/**
 	 * User meta key marking users created via Sign in with Google.
+	 *
+	 * @note This option is prefixed differently so that it will persist across disconnect/reset.
 	 */
 	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
 
