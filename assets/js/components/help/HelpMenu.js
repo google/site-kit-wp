@@ -70,30 +70,26 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
 	);
 
-	const analyticsConnected = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
-	);
-
-	const analyticsGatheringData = useSelect(
+	const showFeatureTourMenuItem = useSelect(
 		( select ) => {
-			if ( ! analyticsConnected ) {
+			if ( ! showFeatureTour || ! setupFlowRefreshEnabled ) {
 				return false;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).isGatheringData();
+			const analyticsConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
+
+			if ( analyticsConnected ) {
+				return (
+					select( MODULES_ANALYTICS_4 ).isGatheringData() === false
+				);
+			}
+
+			return select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false;
 		},
-		[ analyticsConnected ]
+		[ showFeatureTour, setupFlowRefreshEnabled ]
 	);
-
-	const searchConsoleGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-
-	const showFeatureTourMenuItem =
-		showFeatureTour &&
-		( analyticsConnected
-			? analyticsGatheringData === false
-			: searchConsoleGatheringData === false );
 
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
