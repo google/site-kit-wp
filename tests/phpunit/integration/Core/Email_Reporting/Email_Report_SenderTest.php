@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Email_Report_Sender;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Renderer;
 use Google\Site_Kit\Core\Email_Reporting\Email_Template_Renderer_Factory;
+use Google\Site_Kit\Tests\Pre_WP_Mail_Skip_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 
@@ -21,6 +22,8 @@ use WP_Error;
  * @group Email_Reporting
  */
 class Email_Report_SenderTest extends TestCase {
+
+	use Pre_WP_Mail_Skip_Trait;
 
 	private $email_report_sender;
 	private $email_template_renderer_factory;
@@ -95,15 +98,6 @@ class Email_Report_SenderTest extends TestCase {
 			$this->assertCount( 0, tests_retrieve_phpmailer_instance()->mock_sent, 'No email should have been delivered on the failure path.' );
 		} finally {
 			remove_filter( 'pre_wp_mail', $short_circuit_callback );
-		}
-	}
-
-	/**
-	 * Skips the test if the pre_wp_mail filter (WordPress 5.7+) isn't available.
-	 */
-	private function skip_if_pre_wp_mail_unsupported() {
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
 		}
 	}
 }
