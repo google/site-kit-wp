@@ -1384,6 +1384,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
+                <div
                   class="mdc-form-field"
                 >
                   <div
@@ -1429,30 +1444,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2037,6 +2037,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
+                <div
                   class="mdc-form-field"
                 >
                   <div
@@ -2082,30 +2097,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2402,6 +2402,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
+                <div
                   class="mdc-form-field"
                 >
                   <div
@@ -2447,30 +2462,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2767,6 +2767,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
                 <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
+                <div
                   class="mdc-form-field"
                 >
                   <div
@@ -2812,30 +2827,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
