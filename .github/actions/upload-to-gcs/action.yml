@@ -25,12 +25,12 @@ runs:
       shell: bash
       run: echo "public-url=https://storage.googleapis.com/site-kit-github-artifacts/${{ inputs.destination }}" >> "$GITHUB_OUTPUT"
 
-    - uses: google-github-actions/auth@v3
+    - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # ratchet:google-github-actions/auth@v3
       with:
         credentials_json: ${{ inputs.credentials-json }}
 
     - name: Upload files
-      uses: google-github-actions/upload-cloud-storage@v3
+      uses: google-github-actions/upload-cloud-storage@6397bd7208e18d13ba2619ee21b9873edc94427a # ratchet:google-github-actions/upload-cloud-storage@v3
       with:
         path: ${{ inputs.path }}
         destination: site-kit-github-artifacts/${{ inputs.destination }}

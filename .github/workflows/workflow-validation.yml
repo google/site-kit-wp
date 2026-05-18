@@ -3,7 +3,7 @@ name: Workflow Validation
 on:
   pull_request:
     paths:
-      - '.github/**.yml'
+      - '.github/**.ya?ml'
 
 concurrency:
   group: workflow-validation-${{ github.ref }}
@@ -15,8 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - uses: actions/checkout@v6
-      - uses: reviewdog/action-actionlint@v1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - id: github-yaml-files
+        run: echo "files=$(find .github/ \( -name '*.yml' -o -name '*.yaml' \) -print0 | xargs -0)" >> "$GITHUB_OUTPUT"
+      - uses: sethvargo/ratchet@c7c58082b6096c976e42dfcc1ddab83f97d61c28 # ratchet:sethvargo/ratchet@main
+        with:
+          files: ${{ steps.github-yaml-files.outputs.files }}
+      - uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # ratchet:reviewdog/action-actionlint@v1
         env:
           REVIEWDOG_GITHUB_API_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
