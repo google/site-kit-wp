@@ -1,0 +1,114 @@
+Package                                   Current   Latest    Major    Listed in                                    
+@shopify/jest-dom-mocks                   4.2.0     5.2.0     4 -> 5   package.json                                 
+@testing-library/jest-dom                 5.17.0    6.9.1     5 -> 6   package.json                                 
+@testing-library/react                    10.4.9    16.3.2    10 -> 16  package.json, assets/package.json            
+@testing-library/react-hooks              4.0.1     8.0.1     4 -> 8   package.json                                 
+@types/faker                              5.5.9     6.6.8     5 -> 6   package.json                                 
+@types/node                               22.19.19  25.9.0    22 -> 25  package.json, tests/playwright/package.json  
+@typescript-eslint/eslint-plugin          6.21.0    8.59.4    6 -> 8   package.json                                 
+@typescript-eslint/parser                 6.21.0    8.59.4    6 -> 8   package.json                                 
+@wordpress/browserslist-config            5.41.0    6.46.0    5 -> 6   package.json, assets/package.json            
+@wordpress/compose                        4.2.0     7.46.0    4 -> 7   package.json                                 
+@wordpress/compose                        5.20.0    7.46.0    5 -> 7   package.json                                 
+@wordpress/data                           7.6.0     10.46.0   7 -> 10  package.json                                 
+@wordpress/dom-ready                      2.13.2    4.46.0    2 -> 4   package.json                                 
+@wordpress/element                        3.2.0     6.46.0    3 -> 6   package.json                                 
+@wordpress/element                        4.20.0    6.46.0    4 -> 6   package.json                                 
+@wordpress/eslint-plugin                  7.4.0     25.2.0    7 -> 25  package.json                                 
+@wordpress/i18n                           3.20.0    6.19.0    3 -> 6   package.json                                 
+@wordpress/i18n                           4.58.0    6.19.0    4 -> 6   package.json                                 
+@wordpress/icons                          3.0.0     13.1.0    3 -> 13  package.json                                 
+@wordpress/keycodes                       2.19.3    4.46.0    2 -> 4   package.json                                 
+@wordpress/keycodes                       3.58.0    4.46.0    3 -> 4   package.json                                 
+@wordpress/prettier-config                0.4.0     4.46.0    0 -> 4   package.json                                 
+@wordpress/prettier-config                2.25.13   4.46.0    2 -> 4   package.json                                 
+@wordpress/url                            2.22.2    4.46.0    2 -> 4   package.json                                 
+@wordpress/url                            3.59.0    4.46.0    3 -> 4   package.json                                 
+archiver                                  5.3.2     8.0.0     5 -> 8   package.json                                 
+babel-loader                              9.2.1     10.1.1    9 -> 10  package.json                                 
+eslint                                    7.32.0    10.4.0    7 -> 10  package.json                                 
+eslint-import-resolver-typescript         2.7.1     4.4.4     2 -> 4   package.json                                 
+eslint-plugin-jest                        22.21.0   29.15.2   22 -> 29  package.json                                 
+eslint-plugin-jest                        23.20.0   29.15.2   23 -> 29  package.json                                 
+eslint-plugin-jsdoc                       30.7.13   62.9.0    30 -> 62  package.json                                 
+eslint-plugin-jsdoc                       41.1.2    62.9.0    41 -> 62  package.json                                 
+eslint-plugin-lodash                      7.4.0     8.0.0     7 -> 8   package.json                                 
+eslint-plugin-react-hooks                 4.6.2     7.1.1     4 -> 7   package.json                                 
+eslint-plugin-unicorn                     40.1.0    64.0.0    40 -> 64  package.json                                 
+eslint-scope                              4.0.3     9.1.2     4 -> 9   package.json                                 
+eslint-scope                              5.1.1     9.1.2     5 -> 9   package.json                                 
+fetch-mock                                9.11.0    12.6.0    9 -> 12  package.json                                 
+fs-extra                                  10.1.0    11.3.5    10 -> 11  package.json                                 
+fs-extra                                  9.1.0     11.3.5    9 -> 11  package.json                                 
+husky                                     3.1.0     9.1.7     3 -> 9   package.json                                 
+lint-staged                               10.5.4    17.0.5    10 -> 17  package.json                                 
+prettier                                  2.6.2     3.8.3     2 -> 3   package.json                                 
+react                                     17.0.2    19.2.6    17 -> 19  package.json                                 
+react                                     18.3.1    19.2.6    18 -> 19  package.json                                 
+react-dom                                 17.0.2    19.2.6    17 -> 19  package.json                                 
+react-test-renderer                       17.0.2    19.2.6    17 -> 19  package.json                                 
+semver-regex                              3.1.4     4.0.5     3 -> 4   package.json                                 
+stylelint                                 16.26.1   17.11.1   16 -> 17  package.json                                 
+stylelint-config-standard-scss            12.0.0    17.0.0    12 -> 17  package.json                                 
+stylelint-order                           6.0.4     8.1.1     6 -> 8   package.json                                 
+stylelint-scss                            6.14.0    7.1.1     6 -> 7   package.json                                 
+typescript                                5.9.3     6.0.3     5 -> 6   package.json                                 
+webpack-cli                               6.0.1     7.0.2     6 -> 7   package.json, assets/package.json            
+@material/button                          1.1.1     14.0.0    1 -> 14  assets/package.json                          
+@material/button                          2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/checkbox                        2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/dialog                          2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/form-field                      0.41.0    14.0.0    0 -> 14  assets/package.json                          
+@material/form-field                      2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/layout-grid                     0.41.0    14.0.0    0 -> 14  assets/package.json                          
+@material/linear-progress                 1.1.0     14.0.0    1 -> 14  assets/package.json                          
+@material/list                            1.1.1     14.0.0    1 -> 14  assets/package.json                          
+@material/list                            2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/menu                            1.1.1     14.0.0    1 -> 14  assets/package.json                          
+@material/menu                            2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/radio                           1.1.0     14.0.0    1 -> 14  assets/package.json                          
+@material/radio                           2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/ripple                          0.41.0    14.0.0    0 -> 14  assets/package.json                          
+@material/ripple                          1.1.0     14.0.0    1 -> 14  assets/package.json                          
+@material/ripple                          2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@material/switch                          2.3.0     14.0.0    2 -> 14  assets/package.json                          
+@storybook/addon-queryparams              6.2.9     10.0.0    6 -> 10  assets/package.json                          
+clipboard-copy                            3.2.0     4.0.1     3 -> 4   assets/package.json                          
+compare-versions                          3.6.0     6.1.1     3 -> 6   assets/package.json                          
+copy-webpack-plugin                       13.0.1    14.0.0    13 -> 14  assets/package.json                          
+cssnano                                   6.1.2     8.0.1     6 -> 8   assets/package.json                          
+dompurify                                 2.5.9     3.4.5     2 -> 3   assets/package.json                          
+eslint-webpack-plugin                     3.2.0     6.0.0     3 -> 6   assets/package.json                          
+faker                                     5.5.3     6.6.6     5 -> 6   assets/package.json                          
+focus-trap-react                          10.3.1    12.0.2    10 -> 12  assets/package.json                          
+immer                                     9.0.21    11.1.8    9 -> 11  assets/package.json                          
+memize                                    1.1.0     2.1.1     1 -> 2   assets/package.json                          
+postcss-preset-env                        9.6.0     11.3.0    9 -> 11  assets/package.json                          
+punycode                                  1.3.2     2.3.1     1 -> 2   assets/package.json                          
+query-string                              7.1.3     9.3.1     7 -> 9   assets/package.json                          
+react-google-charts                       3.0.15    5.2.1     3 -> 5   assets/package.json                          
+react-joyride                             2.9.3     3.1.0     2 -> 3   assets/package.json                          
+react-router-dom                          5.3.4     7.15.1    5 -> 7   assets/package.json                          
+react-use                                 15.3.8    17.6.0    15 -> 17  assets/package.json                          
+rimraf                                    3.0.2     6.1.3     3 -> 6   assets/package.json                          
+rxjs                                      6.6.7     7.8.2     6 -> 7   assets/package.json                          
+webpack-manifest-plugin                   5.0.1     6.0.1     5 -> 6   assets/package.json                          
+@storybook/addon-webpack5-compiler-babel  3.0.6     4.0.1     3 -> 4   storybook/package.json                       
+glob                                      7.2.3     13.0.6    7 -> 13  tests/backstop/package.json                  
+glob                                      9.3.5     13.0.6    9 -> 13  tests/backstop/package.json                  
+node-fetch                                2.6.1     3.3.2     2 -> 3   tests/backstop/package.json                  
+node-fetch                                2.7.0     3.3.2     2 -> 3   tests/backstop/package.json                  
+@wordpress/e2e-test-utils                 4.16.1    11.34.0   4 -> 11  tests/e2e/package.json                       
+babel-jest                                29.7.0    30.4.1    29 -> 30  tests/e2e/package.json, tests/js/package.json
+cross-env                                 7.0.3     10.1.0    7 -> 10  tests/e2e/package.json, tests/js/package.json
+dockerode                                 4.0.12    5.0.0     4 -> 5   tests/e2e/package.json                       
+expect-puppeteer                          4.4.0     11.0.0    4 -> 11  tests/e2e/package.json                       
+expect-puppeteer                          6.1.1     11.0.0    6 -> 11  tests/e2e/package.json                       
+jest                                      29.7.0    30.4.2    29 -> 30  tests/e2e/package.json, tests/js/package.json
+jest-puppeteer                            6.2.0     11.0.0    6 -> 11  tests/e2e/package.json                       
+jsdom                                     16.7.0    29.1.1    16 -> 29  tests/e2e/package.json, tests/js/package.json
+jsdom                                     20.0.3    29.1.1    20 -> 29  tests/e2e/package.json, tests/js/package.json
+puppeteer                                 10.4.0    25.0.4    10 -> 25  tests/e2e/package.json                       
+jest-environment-jsdom                    29.7.0    30.4.1    29 -> 30  tests/js/package.json                        
+
+111 package(s) with a newer major version.
