@@ -151,7 +151,9 @@ export default function UserDimensionsPieChart( props ) {
 
 	useEvent( 'click', handleTooltipClick, containerRef.current );
 	useEvent( 'click', handleExitClick, global );
-	useKey( 'Escape', handleEscapeKey );
+	useKey( 'Escape', handleEscapeKey, { event: 'keyup' }, [
+		handleEscapeKey,
+	] );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
