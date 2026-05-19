@@ -27,7 +27,7 @@
 		"expect-puppeteer": "^4.4.0",
 		"jest": "^29.7.0",
 		"jest-puppeteer": "^6.0.1",
-		"jsdom": "^29.1.1",
+		"jsdom": "^22.1.0",
 		"lodash": "^4.17.21",
 		"puppeteer": "^10.4.0"
 	}
