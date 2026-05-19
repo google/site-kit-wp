@@ -34,6 +34,25 @@ import {
 } from '@/js/googlesitekit/widgets/default-areas';
 import { WELCOME_TOUR } from './constants';
 
+interface WelcomeTourStep {
+	slug?: string;
+	target: string;
+	floaterProps: {
+		target: string;
+		styles?: {
+			arrow: {
+				margin: number;
+			};
+		};
+	};
+	title: string;
+	content: string;
+	offset: number;
+	spotlightPadding: number;
+	placement: string;
+	isResponsive?: boolean;
+}
+
 /**
  * Gets the dashboard sharing step configuration based on user context.
  *
@@ -156,7 +175,7 @@ export function getWelcomeTour( {
 	isActivateAnalyticsNotificationPresent: boolean;
 } ) {
 	if ( ! isAnalyticsConnected ) {
-		const steps = [
+		const steps: WelcomeTourStep[] = [
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {

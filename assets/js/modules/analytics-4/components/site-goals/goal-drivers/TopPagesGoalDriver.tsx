@@ -69,7 +69,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 		primaryEvent,
 		onExpandableRowsChange,
 	} = props;
-	let title = __( 'Top pages driving leads', 'google-site-kit' );
+	let title: string = __( 'Top pages driving leads', 'google-site-kit' );
 
 	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
 		title = __( 'Top pages driving sales', 'google-site-kit' );
