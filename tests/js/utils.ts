@@ -33,6 +33,7 @@ import { NotificationSettings } from '@/js/googlesitekit/notifications/datastore
 import * as coreForms from '@/js/googlesitekit/datastore/forms';
 import * as coreLocation from '@/js/googlesitekit/datastore/location';
 import * as coreModules from '@/js/googlesitekit/modules';
+import * as corePdf from '@/js/googlesitekit/datastore/pdf';
 import * as coreSite from '@/js/googlesitekit/datastore/site';
 import * as coreUi from '@/js/googlesitekit/datastore/ui';
 import * as coreUser from '@/js/googlesitekit/datastore/user';
@@ -66,6 +67,7 @@ const allCoreStores = [
 	coreForms,
 	coreLocation,
 	coreModules,
+	corePdf,
 	coreSite,
 	coreUser,
 	coreUi,
