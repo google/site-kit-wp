@@ -89,8 +89,13 @@
 		}
 	}
 
+	.googlesitekit-widget__header-icon {
+		transition: rotate 100ms ease-in-out;
+	}
+
 	.googlesitekit-widget__header-icon--collapsed {
-		rotate: 180deg;
+		/** `-90deg` is used so the animation of the icon works correctly. 270deg is the more "obvious" way to write this but will result in the icon rotating in the wrong direction */
+		rotate: -90deg;
 	}
 
 	/**

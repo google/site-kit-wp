@@ -43,6 +43,7 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 } ) => {
 	return (
 		<BannerModal
+			className="googlesitekit-banner-modal--site-goals-intro"
 			Graphic={ SiteGoalsIntroModalGraphic }
 			onView={ onView }
 			onClose={ onDismiss }
@@ -56,7 +57,6 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 					b: <strong />,
 					a: (
 						<Link
-							// @ts-expect-error `Link` component is not currently typed.
 							href="#site-goals" // TODO: Update with actual link to site goals documentation.
 							aria-label={ __(
 								'Learn more about site goals',
@@ -76,6 +76,7 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 			dismissButton={ {
 				onClick: onDismiss,
 			} }
+			newBadge
 		/>
 	);
 };

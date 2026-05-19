@@ -22,6 +22,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
+import { useMemo } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -41,10 +42,24 @@ import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import {
+	GOAL_DRIVER_CATALOG,
+	GOAL_DRIVER_IDS,
+	GOAL_TYPES,
+	GoalDriverTiles,
+	resolveGoalDriverIDs,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+
+// TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
+const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
+];
 
 const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	Widget,
@@ -58,6 +73,13 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
+	const drivers = useMemo(
+		() =>
+			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
+				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
+			),
+		[]
+	);
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -151,7 +173,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			) }
 			collapsible
 		>
-			{ loading && <PreviewBlock width="100%" height="100px" /> }
+			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
 				<TilesGroup
@@ -203,6 +225,20 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					/>
 				</TilesGroup>
 			) }
+
+			<TilesGroup
+				className="googlesitekit-site-goals-goal-drivers-group"
+				title={ __(
+					'What’s helping you reach your goals?',
+					'google-site-kit'
+				) }
+			>
+				<GoalDriverTiles
+					drivers={ drivers }
+					primaryEvent={ detectedLeadEvents }
+					goalType={ GOAL_TYPES.LEAD }
+				/>
+			</TilesGroup>
 		</Widget>
 	);
 };

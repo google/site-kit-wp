@@ -26,19 +26,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import { useDispatch } from 'googlesitekit-data';
 import {
 	allCountries,
 	countriesByCode,
 } from '@/js/modules/analytics-4/utils/countries-timezones';
 import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 
 export default function CountrySelect() {
-	const value = useFormValue( FORM_ACCOUNT_CREATE, 'countryCode' );
+	const [ value, setValue ] = useFormValue(
+		FORM_ACCOUNT_CREATE,
+		'countryCode'
+	);
+	const [ , setTimezone ] = useFormValue( FORM_ACCOUNT_CREATE, 'timezone' );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const onEnhancedChange = useCallback(
 		( index, item ) => {
 			const newCountryCode = item.dataset.value;
@@ -46,15 +47,15 @@ export default function CountrySelect() {
 				newCountryCode !== value &&
 				countriesByCode[ newCountryCode ]
 			) {
-				setValues( FORM_ACCOUNT_CREATE, {
-					countryCode: newCountryCode,
-					timezone:
-						// eslint-disable-next-line sitekit/acronym-case
-						countriesByCode[ newCountryCode ].defaultTimeZoneId,
-				} );
+				setValue( newCountryCode );
+
+				setTimezone(
+					// eslint-disable-next-line sitekit/acronym-case
+					countriesByCode[ newCountryCode ].defaultTimeZoneId
+				);
 			}
 		},
-		[ setValues, value ]
+		[ setValue, setTimezone, value ]
 	);
 
 	return (

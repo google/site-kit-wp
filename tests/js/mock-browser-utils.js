@@ -134,7 +134,7 @@ export function mockElementOffsets() {
 /**
  * Mocks the `scrollIntoView` method that is missing from the jsdom environment. Sets up in beforeAll and tears down in afterAll.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  */
 export function mockBrowserScrolling() {
 	let oldScrollIntoView;

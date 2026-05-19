@@ -117,6 +117,8 @@ export default function TourTooltips( {
 
 	const viewContext = useViewContext();
 
+	const breakpoint = useBreakpoint();
+
 	const stepIndex = useSelect(
 		( select ) => select( CORE_UI ).getValue( stepKey ) || 0
 	);
@@ -231,7 +233,7 @@ export default function TourTooltips( {
 	/**
 	 * Scrolls the step into view.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object} step The step object.
 	 */
@@ -246,7 +248,7 @@ export default function TourTooltips( {
 			return;
 		}
 
-		if ( ! step.isResponsive ) {
+		if ( ! step.isResponsive || breakpoint !== BREAKPOINT_SMALL ) {
 			element.scrollIntoView( { block: 'center' } );
 			return;
 		}
@@ -330,8 +332,6 @@ export default function TourTooltips( {
 
 	// Start tour on initial render.
 	useMount( startTour );
-
-	const breakpoint = useBreakpoint();
 
 	const parsedSteps = steps.map( ( step ) =>
 		step.isResponsive && breakpoint === BREAKPOINT_SMALL

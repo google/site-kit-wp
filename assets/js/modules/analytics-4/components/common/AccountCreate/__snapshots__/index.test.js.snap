@@ -45,10 +45,10 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       We’ve pre-filled the required information for your new account. Confirm or edit any details:
     </p>
     <div
-      class="googlesitekit-setup-module__inputs"
+      class="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout"
     >
       <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+        class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
           class="mdc-text-field mdc-text-field mdc-text-field--outlined"
@@ -83,7 +83,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         </div>
       </div>
       <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+        class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
           class="mdc-text-field mdc-text-field mdc-text-field--outlined"
@@ -118,7 +118,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         </div>
       </div>
       <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+        class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
           class="mdc-text-field mdc-text-field mdc-text-field--outlined"
@@ -154,10 +154,10 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
       </div>
     </div>
     <div
-      class="googlesitekit-setup-module__inputs"
+      class="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout"
     >
       <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+        class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--country mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
           class="mdc-select googlesitekit-analytics__select-country mdc-select--outlined"
@@ -201,7 +201,7 @@ exports[`AccountCreate renders correctly when data has loaded 1`] = `
         </div>
       </div>
       <div
-        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
+        class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--timezone mdc-layout-grid__cell mdc-layout-grid__cell--span-6"
       >
         <div
           class="mdc-select googlesitekit-analytics__select-timezone mdc-select--outlined"

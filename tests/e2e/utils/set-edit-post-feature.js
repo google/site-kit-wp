@@ -1,5 +1,3 @@
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -10,11 +8,12 @@ import { evalWithWPData } from './eval-with-wp-data';
  *
  * @since 1.7.0
  *
- * @param {string}  feature       Feature ID/name.
- * @param {boolean} setActivation Activation to set.
+ * @param {Object}  options               Options object.
+ * @param {string}  options.feature       Feature ID/name.
+ * @param {boolean} options.setActivation Activation to set.
  * @return {Promise} Promise from `evalWithWPData()` call.
  */
-export async function setEditPostFeature( feature, setActivation ) {
+export async function setEditPostFeature( { feature, setActivation } ) {
 	return await evalWithWPData(
 		( featureName, activation ) => {
 			const isActive = wp.data

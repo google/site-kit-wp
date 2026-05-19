@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { createTestRegistry, renderHook } from '../../../tests/js/test-utils';
+import {
+	actHook,
+	createTestRegistry,
+	renderHook,
+} from '../../../tests/js/test-utils';
 import useFormValue from './useFormValue';
 
 describe( 'useFormValue', () => {
@@ -43,7 +47,7 @@ describe( 'useFormValue', () => {
 			registry,
 		} );
 
-		expect( result.current ).toBe( value );
+		expect( result.current[ 0 ] ).toBe( value );
 	} );
 
 	it( 'should return undefined if the key does not exist in the form', () => {
@@ -56,7 +60,7 @@ describe( 'useFormValue', () => {
 			registry,
 		} );
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
 
 	it( 'should return undefined if the form does not exist', () => {
@@ -66,7 +70,7 @@ describe( 'useFormValue', () => {
 			registry,
 		} );
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
 
 	it( 'should return undefined if the form is not provided', () => {
@@ -75,7 +79,7 @@ describe( 'useFormValue', () => {
 			registry,
 		} );
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
 
 	it( 'should return undefined if the key is not provided', () => {
@@ -87,12 +91,31 @@ describe( 'useFormValue', () => {
 			}
 		);
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current[ 0 ] ).toBeUndefined();
 	} );
 
 	it( 'should return undefined if both formName and key are not provided', () => {
 		const { result } = renderHook( () => useFormValue(), { registry } );
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current[ 0 ] ).toBeUndefined();
+	} );
+
+	it( 'should return a function to set the value', () => {
+		const { result } = renderHook(
+			() => useFormValue( 'testFormName', 'testkey' ),
+			{
+				registry,
+			}
+		);
+
+		expect( result.current[ 0 ] ).toBeUndefined();
+
+		const setValue = result.current[ 1 ];
+
+		actHook( () => {
+			setValue( 'testValue' );
+		} );
+
+		expect( result.current[ 0 ] ).toBe( 'testValue' );
 	} );
 } );

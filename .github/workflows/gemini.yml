@@ -18,7 +18,7 @@ jobs:
       issues: read
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:5.7 # ratchet:exclude
         env:
           MYSQL_ROOT_PASSWORD: wordpress
         ports:
@@ -33,16 +33,16 @@ jobs:
       WP_VERSION: latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
           php-version: "8.4"
           extensions: mysqli, uopz
@@ -52,7 +52,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
       - name: Cache Composer dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -68,20 +68,20 @@ jobs:
         run: tests/phpunit/bin/install-wp-tests.sh "${MYSQL_DATABASE}" "${MYSQL_USER}" "${MYSQL_PASSWORD}" "${DB_HOST}":"${DB_PORT}" "${WP_VERSION}"
       - name: Install Gemini CLI
         run: |
-          npm install -g @google/gemini-cli@0.35.3
+          npm install -g @google/gemini-cli@0.42.0
           gemini --version
       - name: Run /implement command
         run: |
           gemini --approval-mode=yolo --model=gemini-3-pro-preview "/implement ${{ inputs.issue_number }}"
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_MCP_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Create patch
         run: |
           git add .
           git diff --staged --binary > implementation.patch
       - name: Upload patch
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
           name: implementation-patch
           path: implementation.patch
@@ -96,16 +96,16 @@ jobs:
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - name: Download patch
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: implementation-patch
       - name: Apply patch
         run: git apply implementation.patch
       - name: Create Pull Request
         id: create-pr
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # ratchet:peter-evans/create-pull-request@v8
         with:
           commit-message: "Implement issue #${{ inputs.issue_number }}"
           branch: gemini/issue-${{ inputs.issue_number }}

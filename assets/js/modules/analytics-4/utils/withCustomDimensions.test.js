@@ -66,7 +66,10 @@ describe( 'withCustomDimensions', () => {
 			.receiveIsGatheringData( false );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsCustomDimensionGatheringData( customDimension, false );
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension,
+				gatheringData: false,
+			} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
 			{
 				createTime: '2014-10-02T15:01:23Z',
@@ -214,7 +217,10 @@ describe( 'withCustomDimensions', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsCustomDimensionGatheringData( customDimension, true );
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension,
+				gatheringData: true,
+			} );
 
 		const WidgetWithComponentProps = withWidgetComponentProps(
 			'widget-slug'

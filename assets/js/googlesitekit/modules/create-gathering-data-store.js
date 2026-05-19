@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -92,6 +90,7 @@ export function createGatheringDataStore(
 	};
 
 	const actions = {
+		/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 		/**
 		 * Receives gathering data state.
 		 *
@@ -115,6 +114,7 @@ export function createGatheringDataStore(
 			};
 		},
 
+		/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 		/**
 		 * Receives data available on load state.
 		 *

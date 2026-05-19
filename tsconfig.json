@@ -35,6 +35,10 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "typeRoots": [
+      "./assets/js/types",
+      "./node_modules/@types"
+    ],
     "strictNullChecks": true,
     "target": "es5"
   },

@@ -30,8 +30,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -63,36 +62,30 @@ export default function MetricItem( {
 		}, [] );
 	} );
 
-	const selectedMetrics = useFormValue(
+	const [ selectedMetrics, setSelectedMetrics ] = useFormValue(
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);
-
-	const { getValue } = useSelect( ( select ) => select( CORE_FORMS ) );
-
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setUnstagedSelection ] = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		UNSTAGED_SELECTION
+	);
 
 	const onCheckboxChange = useCallback(
 		( event ) => {
-			const metrics = getValue(
-				KEY_METRICS_SELECTION_FORM,
-				KEY_METRICS_SELECTED
-			);
 			const currentlySelectedMetrics = event.target.checked
-				? metrics.concat( [ slug ] )
-				: metrics.filter(
+				? selectedMetrics.concat( [ slug ] )
+				: selectedMetrics.filter(
 						( selectedMetric ) => selectedMetric !== slug
 				  );
 
-			setValues( KEY_METRICS_SELECTION_FORM, {
-				[ KEY_METRICS_SELECTED ]: currentlySelectedMetrics,
-				// Unstaged list creates a copy of KM selected list, but unstaged
-				// is stored temporary to collect the final selection that will
-				// be transfered over to effective selection on tab change and then it is reset.
-				[ UNSTAGED_SELECTION ]: currentlySelectedMetrics,
-			} );
+			setSelectedMetrics( currentlySelectedMetrics );
+			// Unstaged list creates a copy of KM selected list, but unstaged
+			// is stored temporary to collect the final selection that will
+			// be transfered over to effective selection on tab change and then it is reset.
+			setUnstagedSelection( currentlySelectedMetrics );
 		},
-		[ getValue, setValues, slug ]
+		[ slug, selectedMetrics, setSelectedMetrics, setUnstagedSelection ]
 	);
 
 	const isMetricSelected = selectedMetrics?.includes( slug );

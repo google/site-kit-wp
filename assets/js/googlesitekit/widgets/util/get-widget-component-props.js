@@ -39,7 +39,7 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Widget props type.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @typedef {Object} WidgetComponentProps
  * @property {string} widgetSlug The widget's slug.

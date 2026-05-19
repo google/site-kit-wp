@@ -92,8 +92,9 @@ class Sign_In_With_Google_Block {
 	 */
 	public function render_callback( $attributes = array() ) {
 		// If the user is already signed in, do not render a Sign in
-		// with Google button.
-		if ( is_user_logged_in() ) {
+		// with Google button. The post/page preview surface is exempt so
+		// authors can see how the button will appear to logged-out readers.
+		if ( is_user_logged_in() && ! is_preview() ) {
 			return '';
 		}
 

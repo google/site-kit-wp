@@ -85,7 +85,7 @@ export default function useCustomDimensionsData( {
 			)
 	);
 
-	const isAutoCreatingCustomDimensions = useFormValue(
+	const [ isAutoCreatingCustomDimensions ] = useFormValue(
 		FORM_CUSTOM_DIMENSIONS_CREATE,
 		'isAutoCreatingCustomDimensions'
 	);

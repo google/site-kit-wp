@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC, MouseEvent, ReactNode } from 'react';
 
 /**
@@ -36,9 +37,12 @@ import P from '@/js/components/Typography/P';
 import Typography from '@/js/components/Typography';
 import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
 import CloseIcon from '@/svg/icons/close.svg';
+import NewBadge from '@/js/components/NewBadge';
 
 export interface BannerModalProps {
+	className?: string;
 	Graphic: FC;
+	newBadge?: boolean;
 	onView: () => void;
 	onClose: () => void;
 	title: ReactNode;
@@ -62,20 +66,24 @@ export interface BannerModalProps {
  *
  * Mainly used for new feature or setup complete announcements, but can be used for other purposes as well.
  *
- * @since n.e.x.t
+ * @since 1.179.0
  *
  * @param props               Component props.
+ * @param props.className     Additional CSS class name(s) to apply to the root Dialog element.
  * @param props.Graphic       SVG graphic component to render in the modal header.
  * @param props.onView        Callback invoked when the modal content scrolls into view, used for tracking purposes.
  * @param props.onClose       Callback invoked when the modal is closed.
  * @param props.title         Modal title text.
  * @param props.description   Modal description content (string or element).
+ * @param props.newBadge      Whether to display a "New" badge in the modal.
  * @param props.ctaButton     Configuration object for the primary CTA button.
  * @param props.dismissButton Configuration object for the dismiss button.
  * @return                    BannerModal component.
  */
 const BannerModal: FC< BannerModalProps > = ( {
+	className,
 	Graphic,
+	newBadge = false,
 	onView,
 	onClose,
 	title,
@@ -85,7 +93,12 @@ const BannerModal: FC< BannerModalProps > = ( {
 } ) => {
 	return (
 		<Dialog
-			className="googlesitekit-dialog googlesitekit-dialog--with-mobile-margins googlesitekit-banner-modal"
+			className={ classnames(
+				'googlesitekit-dialog',
+				'googlesitekit-dialog--with-mobile-margins',
+				'googlesitekit-banner-modal',
+				className
+			) }
 			onClose={ onClose }
 			open
 		>
@@ -110,6 +123,8 @@ const BannerModal: FC< BannerModalProps > = ( {
 				</GraphicContainerWithIntersectionObserver>
 
 				<div className="googlesitekit-banner-modal__text">
+					{ newBadge && <NewBadge hasNoSpacing /> }
+
 					<Typography
 						as="h1"
 						className="googlesitekit-banner-modal__title"
