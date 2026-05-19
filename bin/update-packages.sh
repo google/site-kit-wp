@@ -70,7 +70,7 @@ install_package '@wordpress/keycodes@^4.46.0'
 # @wordpress/url: 3 → 4
 # Only addQueryArgs, getQueryArg, getQueryArgs, removeQueryArgs, hasQueryArg,
 # isURL, normalizePath are used; all stable in v4.
-install_package '@wordpress/url@^4.46.0'
+# install_package '@wordpress/url@^4.46.0'
 
 # archiver: 5 → 8
 # bin/release only calls archiver('zip', opts) / .pipe() / .directory() / .finalize().
