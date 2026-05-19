@@ -33,7 +33,10 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  */
 import TourTooltip from './TourTooltip';
 import Portal from './Portal';
-import { joyrideStyles, floaterProps } from './TourTooltips';
+import {
+	joyrideStyles,
+	floaterProps as defaultFloaterProps,
+} from './TourTooltips';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -180,7 +183,7 @@ export default function JoyrideTooltip( props ) {
 				callback={ callback }
 				disableOverlay={ disableOverlay }
 				spotlightPadding={ 0 }
-				floaterProps={ floaterProps }
+				floaterProps={ defaultFloaterProps }
 				locale={ joyrideLocale }
 				steps={ steps }
 				styles={ {
@@ -216,4 +219,5 @@ JoyrideTooltip.propTypes = {
 	slug: PropTypes.string,
 	placement: PropTypes.string,
 	onView: PropTypes.func,
+	floaterProps: PropTypes.object,
 };

@@ -50,6 +50,7 @@ export function AdminScreenTooltip() {
 		content,
 		dismissLabel,
 		gaTrackingEventLabel,
+		floaterProps,
 	} = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
@@ -115,6 +116,7 @@ export function AdminScreenTooltip() {
 			dismissLabel={ dismissLabel }
 			onView={ handleViewTooltip }
 			onDismiss={ handleDismissTooltip }
+			{ ...( floaterProps && { floaterProps } ) }
 		/>
 	);
 }

@@ -419,6 +419,13 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
 			} );
 
 			await waitFor( () => {
@@ -897,6 +904,13 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
 			} );
 
 			await waitFor( () => {
