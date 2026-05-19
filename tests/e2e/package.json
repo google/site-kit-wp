@@ -30,5 +30,8 @@
 		"jsdom": "^22.1.0",
 		"lodash": "^4.17.21",
 		"puppeteer": "^10.4.0"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.14"
 	}
 }

@@ -11,6 +11,7 @@
 	"devDependencies": {
 		"@babel/preset-env": "^7.27.2",
 		"@jackfranklin/test-data-bot": "^2.0.0",
+		"@types/jest": "^29.5.14",
 		"@wordpress/babel-preset-default": "^8.23.0",
 		"babel-jest": "^29.7.0",
 		"cross-env": "^10.1.0",
