@@ -51,8 +51,6 @@ import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { DISMISS_TRANSITION_MS } from '@/js/googlesitekit/widgets/components/WidgetDismissTransition';
 
-const DISMISSING_CLASS = 'googlesitekit-widget-dismiss-transition--dismissing';
-
 describe( 'AdSenseConnectCTAWidget', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
@@ -141,7 +139,9 @@ describe( 'AdSenseConnectCTAWidget', () => {
 			} );
 
 			expect(
-				container.querySelector( `.${ DISMISSING_CLASS }` )
+				container.querySelector(
+					'.googlesitekit-widget-dismiss-transition--dismissing'
+				)
 			).not.toBeNull();
 		} );
 

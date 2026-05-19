@@ -24,8 +24,6 @@ import WidgetDismissTransition, {
 	DISMISS_TRANSITION_MS,
 } from './WidgetDismissTransition';
 
-const DISMISSING_CLASS = 'googlesitekit-widget-dismiss-transition--dismissing';
-
 describe( 'WidgetDismissTransition', () => {
 	beforeEach( () => {
 		jest.useFakeTimers();
@@ -47,7 +45,9 @@ describe( 'WidgetDismissTransition', () => {
 
 		// Wrapper renders, children render, but no dismissing class.
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).toBeNull();
 	} );
 
@@ -59,7 +59,9 @@ describe( 'WidgetDismissTransition', () => {
 		);
 
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).toBeNull();
 	} );
 
@@ -76,7 +78,9 @@ describe( 'WidgetDismissTransition', () => {
 		);
 
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).toBeNull();
 		expect( container.textContent ).toContain( 'child' );
 
@@ -92,7 +96,9 @@ describe( 'WidgetDismissTransition', () => {
 		);
 
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).not.toBeNull();
 		expect( onDismissComplete ).not.toHaveBeenCalled();
 
@@ -109,7 +115,9 @@ describe( 'WidgetDismissTransition', () => {
 
 		// Still in dismissing phase until timer fires.
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).not.toBeNull();
 		expect( onDismissComplete ).not.toHaveBeenCalled();
 
@@ -136,7 +144,9 @@ describe( 'WidgetDismissTransition', () => {
 		);
 
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).not.toBeNull();
 
 		// Request resolves with failure (isDismissed remains false).
@@ -156,7 +166,9 @@ describe( 'WidgetDismissTransition', () => {
 
 		expect( onDismissComplete ).not.toHaveBeenCalled();
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).toBeNull();
 		expect( container.textContent ).toContain( 'child' );
 	} );
@@ -226,7 +238,9 @@ describe( 'WidgetDismissTransition', () => {
 
 		// Phase remains dismissing; onDismissComplete has not fired.
 		expect(
-			container.querySelector( `.${ DISMISSING_CLASS }` )
+			container.querySelector(
+				'.googlesitekit-widget-dismiss-transition--dismissing'
+			)
 		).not.toBeNull();
 		expect( onDismissComplete ).not.toHaveBeenCalled();
 
