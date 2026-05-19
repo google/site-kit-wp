@@ -113,6 +113,9 @@ HeaderWithHelpMenuSFR.args = {
 HeaderWithHelpMenuSFR.parameters = {
 	features: [ 'setupFlowRefresh' ],
 };
+HeaderWithHelpMenuSFR.scenario = {
+	clickSelector: '.googlesitekit-help-menu__button',
+};
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
 HeaderWithHelpMenuDateRangeSelector.storyName =
