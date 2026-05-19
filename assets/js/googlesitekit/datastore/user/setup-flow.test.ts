@@ -1,5 +1,5 @@
 /**
- * `core/user` data store, welcome modal tests.
+ * `core/user` data store, setup flow tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,14 +24,23 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideModules,
+	provideUserAuthentication,
+} from 'tests/js/utils';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
 	CORE_USER,
+	PERMISSION_READ_SHARED_MODULE_DATA,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
-describe( 'core/user welcome modal', () => {
+describe( 'core/user setup flow', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
@@ -91,6 +100,137 @@ describe( 'core/user welcome modal', () => {
 						.select( CORE_USER )
 						.isDataGatheringCompleteModalActive()
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'hasAccessToFeatureTour', () => {
+			it( 'should return undefined when modules are not yet loaded', () => {
+				freezeFetch(
+					new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+				);
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBeUndefined();
+			} );
+
+			it( 'should return true for an authenticated user when both Analytics and Search Console are available', () => {
+				provideUserAuthentication( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBe( true );
+			} );
+
+			it( 'should return true for an authenticated user when only Search Console is available', () => {
+				provideUserAuthentication( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: false,
+						connected: false,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBe( true );
+			} );
+
+			it( 'should return false for a view-only user with no access to either Analytics or Search Console', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBe( false );
+			} );
+
+			it( 'should return true for a view-only user with access to only the Search Console module', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ getMetaCapabilityPropertyName(
+						PERMISSION_READ_SHARED_MODULE_DATA,
+						MODULE_SLUG_SEARCH_CONSOLE
+					) ]: true,
+				} );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBe( true );
+			} );
+
+			it( 'should return true for a view-only user with access to only the Analytics module', () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					[ getMetaCapabilityPropertyName(
+						PERMISSION_READ_SHARED_MODULE_DATA,
+						MODULE_SLUG_ANALYTICS_4
+					) ]: true,
+				} );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+
+				expect(
+					registry.select( CORE_USER ).hasAccessToFeatureTour()
+				).toBe( true );
 			} );
 		} );
 	} );
