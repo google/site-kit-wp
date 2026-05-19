@@ -136,11 +136,11 @@ final class Email_Reporting_Pointer {
 					}
 
 					// Do not show if this pointer was already dismissed via core 'dismiss-wp-pointer'.
-					$dismissed_wp_pointers = explode(
-						',',
-						(string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true )
-					);
-
+					$user_id               = get_current_user_id();
+					$dismissed_wp_pointers = get_user_meta( $user_id, 'dismissed_wp_pointers', true );
+					if ( ! is_array( $dismissed_wp_pointers ) ) {
+						$dismissed_wp_pointers = explode( ',', (string) $dismissed_wp_pointers );
+					}
 					if ( in_array( self::SLUG, $dismissed_wp_pointers, true ) ) {
 						return false;
 					}
