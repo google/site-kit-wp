@@ -7,7 +7,7 @@ const path = require( 'path' );
 const PROJECT_ROOT = path.join( __dirname, '..' );
 const DEFAULT_INPUT = path.join( PROJECT_ROOT, 'npm-outdated.out' );
 
-const PACKAGE_JSON_PATHS = [
+const PACKAGE_JSON_FILES = [
 	'package.json',
 	'assets/package.json',
 	'storybook/package.json',
@@ -15,7 +15,7 @@ const PACKAGE_JSON_PATHS = [
 	'tests/e2e/package.json',
 	'tests/js/package.json',
 	'tests/playwright/package.json',
-].map( ( relativePath ) => path.join( PROJECT_ROOT, relativePath ) );
+];
 
 const DEPENDENCY_FIELDS = [
 	'dependencies',
@@ -86,10 +86,12 @@ function parseOutdatedFile( filePath ) {
 	return [ ...seen.values() ];
 }
 
-function loadExplicitDependencies( packageJsonPaths ) {
-	const dependencies = new Set();
+function loadExplicitDependencies( packageJsonFiles ) {
+	const dependencies = new Map();
 
-	for ( const packageJsonPath of packageJsonPaths ) {
+	for ( const relativePath of packageJsonFiles ) {
+		const packageJsonPath = path.join( PROJECT_ROOT, relativePath );
+
 		if ( ! fs.existsSync( packageJsonPath ) ) {
 			console.error( `File not found: ${ packageJsonPath }` );
 			process.exit( 1 );
@@ -104,7 +106,14 @@ function loadExplicitDependencies( packageJsonPaths ) {
 			}
 
 			for ( const dependency of Object.keys( fieldDependencies ) ) {
-				dependencies.add( dependency );
+				if ( ! dependencies.has( dependency ) ) {
+					dependencies.set( dependency, [] );
+				}
+
+				const packageJsonPaths = dependencies.get( dependency );
+				if ( ! packageJsonPaths.includes( relativePath ) ) {
+					packageJsonPaths.push( relativePath );
+				}
 			}
 		}
 	}
@@ -115,6 +124,10 @@ function loadExplicitDependencies( packageJsonPaths ) {
 function filterExplicitDependencies( entries, explicitDependencies ) {
 	return entries
 		.filter( ( entry ) => explicitDependencies.has( entry.package ) )
+		.map( ( entry ) => ( {
+			...entry,
+			listedIn: explicitDependencies.get( entry.package ),
+		} ) )
 		.sort( ( a, b ) => {
 			const byPackage = a.package.localeCompare( b.package );
 			if ( byPackage !== 0 ) {
@@ -140,14 +153,20 @@ function printEntries( entries ) {
 		'Latest'.length,
 		...entries.flatMap( ( entry ) => [ entry.current.length, entry.latest.length ] )
 	);
+	const listedInWidth = Math.max(
+		'Listed in'.length,
+		...entries.map( ( entry ) => entry.listedIn.join( ', ' ).length )
+	);
 
 	console.log(
-		`${ 'Package'.padEnd( packageWidth ) }  ${ 'Current'.padEnd( versionWidth ) }  ${ 'Latest'.padEnd( versionWidth ) }  Major`
+		`${ 'Package'.padEnd( packageWidth ) }  ${ 'Current'.padEnd( versionWidth ) }  ${ 'Latest'.padEnd( versionWidth ) }  ${ 'Major'.padEnd( 7 ) }  ${ 'Listed in'.padEnd( listedInWidth ) }`
 	);
 
 	for ( const entry of entries ) {
+		const listedIn = entry.listedIn.join( ', ' );
+
 		console.log(
-			`${ entry.package.padEnd( packageWidth ) }  ${ entry.current.padEnd( versionWidth ) }  ${ entry.latest.padEnd( versionWidth ) }  ${ entry.currentMajor } -> ${ entry.latestMajor }`
+			`${ entry.package.padEnd( packageWidth ) }  ${ entry.current.padEnd( versionWidth ) }  ${ entry.latest.padEnd( versionWidth ) }  ${ `${ entry.currentMajor } -> ${ entry.latestMajor }`.padEnd( 7 ) }  ${ listedIn.padEnd( listedInWidth ) }`
 		);
 	}
 
@@ -162,7 +181,7 @@ function main() {
 		process.exit( 1 );
 	}
 
-	const explicitDependencies = loadExplicitDependencies( PACKAGE_JSON_PATHS );
+	const explicitDependencies = loadExplicitDependencies( PACKAGE_JSON_FILES );
 	const entries = filterExplicitDependencies(
 		parseOutdatedFile( inputPath ),
 		explicitDependencies
