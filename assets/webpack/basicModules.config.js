@@ -29,15 +29,15 @@ const {
 	manifestArgs,
 	externals,
 	resolve,
-	rules,
+	createRules,
 } = require( '../../webpack/common' );
 
 module.exports = ( mode ) => ( {
 	name: 'Basic Modules',
 	entry: {
-		'googlesitekit-i18n': './js/googlesitekit-i18n.js',
+		'googlesitekit-i18n': './js/googlesitekit-i18n.ts',
 		// Analytics advanced tracking script to be injected in the frontend.
-		'analytics-advanced-tracking': './js/analytics-advanced-tracking.js',
+		'analytics-advanced-tracking': './js/analytics-advanced-tracking.ts',
 	},
 	externals,
 	output: {
@@ -47,7 +47,7 @@ module.exports = ( mode ) => ( {
 		publicPath: '',
 	},
 	module: {
-		rules,
+		rules: createRules( mode ),
 	},
 	plugins: [
 		new WebpackManifestPlugin( {
