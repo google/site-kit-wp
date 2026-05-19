@@ -27,6 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import {
 	createTestRegistry,
 	provideModules,
+	provideUserAuthentication,
 	provideUserCapabilities,
 	renderHook,
 } from '../../../../tests/js/test-utils';
@@ -34,11 +35,16 @@ import { useWelcomeTour } from './useWelcomeTour';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { PERMISSION_AUTHENTICATE } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 
 describe( 'useWelcomeTour', () => {
@@ -81,6 +87,7 @@ describe( 'useWelcomeTour', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 
+		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
@@ -93,7 +100,7 @@ describe( 'useWelcomeTour', () => {
 		setupQueuedNotifications( [] );
 	} );
 
-	it( 'should return the Analytics-connected tour when Analytics is connected', async () => {
+	it( 'should return the Analytics-connected tour when Analytics is connected and viewable', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -125,6 +132,73 @@ describe( 'useWelcomeTour', () => {
 			isViewOnly: false,
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
+			isActivateAnalyticsNotificationPresent: false,
+		} );
+	} );
+
+	it( 'should return the Search Console only tour when Analytics is connected but not viewable by a view-only user', async () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: false,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_SEARCH_CONSOLE
+			) ]: true,
+		} );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: true,
+			canAuthenticate: false,
+			isAnalyticsConnected: false,
+			isActivateAnalyticsNotificationPresent: false,
+		} );
+	} );
+
+	it( 'should return the Analytics-connected tour for a view-only user with access to the Analytics module', async () => {
+		provideUserAuthentication( registry, { authenticated: false } );
+		provideUserCapabilities( registry, {
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
+		} );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+				shareable: true,
+			},
+		] );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: true,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 		} );
 	} );
