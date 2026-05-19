@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -62,7 +62,6 @@ export interface WidgetDismissTransitionProps {
 	 * the modifier class managed by the wrapper.
 	 */
 	className?: string;
-	children: ReactNode;
 }
 
 const WidgetDismissTransition: FC< WidgetDismissTransitionProps > = ( {
