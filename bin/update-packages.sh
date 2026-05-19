@@ -92,19 +92,19 @@ install_package 'lint-staged@^17.0.5' --save-dev
 # stylelint: 16 → 17
 # Requires Node 18+ (Node 24 ✓). Config file format is unchanged.
 # Note: run `npm run lint:css` after updating to catch any new rule violations.
-install_package 'stylelint@^17.11.1' --save-dev
+# install_package 'stylelint@^17.11.1' --save-dev
 
-# stylelint-config-standard-scss: 12 → 17
-# Requires stylelint v17 (updated above). ✓
-install_package 'stylelint-config-standard-scss@^17.0.0' --save-dev
+# # stylelint-config-standard-scss: 12 → 17
+# # Requires stylelint v17 (updated above). ✓
+# install_package 'stylelint-config-standard-scss@^17.0.0' --save-dev
 
-# stylelint-order: 6 → 8
-# Requires stylelint v16+ (project has v17 after the update above). ✓
-install_package 'stylelint-order@^8.1.1' --save-dev
+# # stylelint-order: 6 → 8
+# # Requires stylelint v16+ (project has v17 after the update above). ✓
+# install_package 'stylelint-order@^8.1.1' --save-dev
 
-# stylelint-scss: 6 → 7
-# Requires stylelint v16+ (project has v17 after the update above). ✓
-install_package 'stylelint-scss@^7.1.1' --save-dev
+# # stylelint-scss: 6 → 7
+# # Requires stylelint v16+ (project has v17 after the update above). ✓
+# install_package 'stylelint-scss@^7.1.1' --save-dev
 
 # webpack-cli: 6 → 7
 # No programmatic usage — CLI only via npm scripts. Works with webpack v5.
@@ -408,3 +408,4 @@ echo "      npm run lint:css    (stylelint 17 may flag new rule violations)"
 echo "      npm run lint:js"
 echo "      npm run test:js"
 echo "      npm run build"
+w
