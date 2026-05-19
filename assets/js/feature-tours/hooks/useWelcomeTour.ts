@@ -50,9 +50,14 @@ export function useWelcomeTour() {
 		[]
 	);
 
-	const isAnalyticsConnected = useSelect(
+	const isAnalyticsViewable = useSelect(
 		( select: Select ) =>
-			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			) &&
+			select( CORE_USER ).hasAccessToShareableModule(
+				MODULE_SLUG_ANALYTICS_4
+			),
 		[]
 	);
 
@@ -80,7 +85,7 @@ export function useWelcomeTour() {
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
-		isAnalyticsConnected: !! isAnalyticsConnected,
+		isAnalyticsConnected: !! isAnalyticsViewable,
 		isActivateAnalyticsNotificationPresent,
 	} );
 }
