@@ -54,7 +54,9 @@ export function useWelcomeTour() {
 
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
-			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			!! select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			),
 		[]
 	);
 
@@ -83,7 +85,7 @@ export function useWelcomeTour() {
 		( select: Select ) =>
 			isAnalyticsConnected &&
 			!! select( CORE_SITE ).isKeyMetricsSetupCompleted(),
-		[]
+		[ isAnalyticsConnected ]
 	);
 
 	const isAudienceSegmentationSetupCompleted = useSelect(
@@ -92,13 +94,13 @@ export function useWelcomeTour() {
 			!! select(
 				MODULES_ANALYTICS_4
 			).isAudienceSegmentationSetupCompleted(),
-		[]
+		[ isAnalyticsConnected ]
 	);
 
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
-		isAnalyticsConnected: !! isAnalyticsConnected,
+		isAnalyticsConnected,
 		isActivateAnalyticsNotificationPresent,
 		isKeyMetricsSetupCompleted,
 		isAudienceSegmentationSetupCompleted,
