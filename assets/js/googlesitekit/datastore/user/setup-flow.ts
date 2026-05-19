@@ -1,5 +1,5 @@
 /**
- * `core/user` data store: welcome modal.
+ * `core/user` data store: setup flow.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,6 +25,8 @@ import {
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 export const selectors = {
 	/**
@@ -42,6 +44,26 @@ export const selectors = {
 				) &&
 				! select( CORE_USER ).isItemDismissed(
 					WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG
+				)
+			);
+		}
+	),
+
+	/**
+	 * Determines whether the current user has access to the feature tour.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} Whether the user has access to the feature tour, or `undefined` if module access has not yet been resolved.
+	 */
+	hasAccessToFeatureTour: createRegistrySelector(
+		( select: Select ) => () => {
+			return (
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_ANALYTICS_4
+				) ||
+				select( CORE_USER ).hasAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
 				)
 			);
 		}
