@@ -42,7 +42,7 @@ describe( 'core/site golinks', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getGoLinkURL', () => {
-			it( 'returns the expected URL shape for the `dashboard` key with no extra args', () => {
+			it( 'should return the expected URL shape for the `dashboard` key with no extra args', () => {
 				const url = registry
 					.select( CORE_SITE )
 					.getGoLinkURL( 'dashboard' );
@@ -52,7 +52,7 @@ describe( 'core/site golinks', () => {
 				);
 			} );
 
-			it( 'appends a `permaLink` arg with URL-encoded value for entity-dashboard links', () => {
+			it( 'should append a `permaLink` arg with URL-encoded value for entity-dashboard links', () => {
 				const url = registry
 					.select( CORE_SITE )
 					.getGoLinkURL( 'dashboard', {
@@ -64,7 +64,7 @@ describe( 'core/site golinks', () => {
 				);
 			} );
 
-			it( 'appends arbitrary extra query args alongside `action` and `to`', () => {
+			it( 'should append arbitrary extra query args alongside `action` and `to`', () => {
 				const url = registry
 					.select( CORE_SITE )
 					.getGoLinkURL( 'dashboard', {
@@ -77,7 +77,7 @@ describe( 'core/site golinks', () => {
 				);
 			} );
 
-			it( 'still produces a URL for keys not registered server-side', () => {
+			it( 'should still produce a URL for keys not registered server-side', () => {
 				const url = registry
 					.select( CORE_SITE )
 					.getGoLinkURL( 'no-such-handler' );
@@ -87,7 +87,7 @@ describe( 'core/site golinks', () => {
 				);
 			} );
 
-			it( 'normalizes an admin URL without a trailing slash', () => {
+			it( 'should normalize an admin URL without a trailing slash', () => {
 				registry = createTestRegistry();
 				provideSiteInfo( registry, {
 					adminURL: 'http://example.com/wp-admin',
@@ -102,7 +102,7 @@ describe( 'core/site golinks', () => {
 				);
 			} );
 
-			it( 'returns undefined when site info has not loaded', () => {
+			it( 'should return undefined when site info has not loaded', () => {
 				registry = createTestRegistry();
 
 				expect(
