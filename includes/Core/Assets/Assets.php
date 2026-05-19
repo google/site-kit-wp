@@ -331,6 +331,10 @@ final class Assets {
 			'googlesitekit-notifications',
 		);
 
+		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
+			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
+		}
+
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
 			array_push( $dependencies, 'googlesitekit-components' );
 		}
@@ -569,6 +573,15 @@ final class Assets {
 				'googlesitekit-datastore-ui',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-ui.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-pdf',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-pdf.js',
 					'dependencies' => array(
 						'googlesitekit-data',
 					),
