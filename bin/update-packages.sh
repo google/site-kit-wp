@@ -334,10 +334,10 @@ section "tests/e2e/package.json"
 # CLI tool only; no API surface consumed programmatically.
 install_workspace tests/e2e 'cross-env@^10.1.0'
 
-# jsdom: 16 → 29
-# tests/e2e uses jest-puppeteer (not jsdom) as its test environment; jsdom is only a
-# utility dep here. jsdom 29 requires Node 16+ (Node 24 ✓).
-install_workspace tests/e2e 'jsdom@^29.1.1'
+# jsdom: 16 → 29 (BLOCKED for tests/e2e: v23+ depends on undici, which expects Node web
+#   platform globals at module load time; Jest 29's VM sandbox does not provide them)
+#   Pinned to ^22.1.0 in tests/e2e (last major before undici). tests/js keeps its own jsdom dep.
+install_workspace tests/e2e 'jsdom@^22.1.0'
 
 # --------------------------------------------------------------------------
 # BLOCKED — tests/e2e/package.json
