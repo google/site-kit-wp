@@ -121,6 +121,16 @@ function loadExplicitDependencies( packageJsonFiles ) {
 	return dependencies;
 }
 
+function getPrimaryPackageJsonIndex( listedIn ) {
+	for ( let index = 0; index < PACKAGE_JSON_FILES.length; index++ ) {
+		if ( listedIn.includes( PACKAGE_JSON_FILES[ index ] ) ) {
+			return index;
+		}
+	}
+
+	return PACKAGE_JSON_FILES.length;
+}
+
 function filterExplicitDependencies( entries, explicitDependencies ) {
 	return entries
 		.filter( ( entry ) => explicitDependencies.has( entry.package ) )
@@ -129,6 +139,13 @@ function filterExplicitDependencies( entries, explicitDependencies ) {
 			listedIn: explicitDependencies.get( entry.package ),
 		} ) )
 		.sort( ( a, b ) => {
+			const byPackageJson =
+				getPrimaryPackageJsonIndex( a.listedIn ) -
+				getPrimaryPackageJsonIndex( b.listedIn );
+			if ( byPackageJson !== 0 ) {
+				return byPackageJson;
+			}
+
 			const byPackage = a.package.localeCompare( b.package );
 			if ( byPackage !== 0 ) {
 				return byPackage;
