@@ -73,7 +73,6 @@ describe( 'AdSenseConnectCTAWidget', () => {
 		return render(
 			<div>
 				<div id="adminmenu">
-					{ /* eslint-disable-next-line jsx-a11y/anchor-has-content */ }
 					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
 						Settings
 					</a>
