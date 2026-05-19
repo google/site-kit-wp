@@ -22,11 +22,12 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
+import { useEvent, useKey } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
+import { Fragment, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -63,6 +64,58 @@ import useViewContext from '@/js/hooks/useViewContext';
 import usePieChartSlices from './hooks/usePieChartSlices';
 import { getTooltipHelp } from './utils';
 
+function useChartEventHandlers( {
+	containerRef,
+	isTooltipOpen,
+	setIsTooltipOpen,
+	setValues,
+	viewContext,
+} ) {
+	function onTooltipClick( event ) {
+		const { target } = event || {};
+		if (
+			! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' )
+		) {
+			return;
+		}
+
+		const label = target.dataset.rowLabel;
+		if ( label === '(other)' || label === '(not set)' ) {
+			trackEvent(
+				`${ viewContext }_all-traffic-widget`,
+				'help_click',
+				label
+			);
+		}
+	}
+
+	function onExitClick( event ) {
+		if (
+			isTooltipOpen &&
+			! event?.target?.closest(
+				'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
+			)
+		) {
+			setIsTooltipOpen( false );
+		}
+	}
+
+	function onEscape( event = {} ) {
+		if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
+			setIsTooltipOpen( false );
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		}
+	}
+
+	useEvent( 'click', onTooltipClick, containerRef.current );
+	useEvent( 'click', onExitClick, global );
+	useKey( 'Escape', onEscape );
+}
+
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
 		props;
@@ -97,78 +150,14 @@ export default function UserDimensionsPieChart( props ) {
 	const chartWrapperRef = useRef();
 	const containerRef = useRef();
 
-	useEffect( () => {
-		function onTooltipClick( event ) {
-			const { target } = event || {};
-			if (
-				! target?.classList?.contains(
-					'googlesitekit-cta-link__tooltip'
-				)
-			) {
-				return;
-			}
-
-			const label = target.dataset.rowLabel;
-			if ( label === '(other)' || label === '(not set)' ) {
-				trackEvent(
-					`${ viewContext }_all-traffic-widget`,
-					'help_click',
-					label
-				);
-			}
-		}
-
-		const currentContainerRef = containerRef.current;
-
-		// When the user hits the 'escape' key and the tooltip is open, close the tooltip and reset UI vars.
-		function onEscape( event = {} ) {
-			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
-				setIsTooltipOpen( false );
-				setValues( {
-					[ UI_DIMENSION_VALUE ]: '',
-					[ UI_DIMENSION_COLOR ]: '',
-					[ UI_ACTIVE_ROW_INDEX ]: null,
-				} );
-			}
-		}
-
-		// When the use clicks on anything except the legend while the tooltip is open, close the tooltip.
-		function onExitClick( event ) {
-			if (
-				isTooltipOpen &&
-				! event?.target?.closest(
-					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
-				)
-			) {
-				setIsTooltipOpen( false );
-			}
-		}
-
-		if ( currentContainerRef ) {
-			currentContainerRef.addEventListener( 'click', onTooltipClick );
-
-			global.addEventListener( 'click', onExitClick );
-			global.addEventListener( 'keyup', onEscape );
-		}
-
-		return () => {
-			if ( currentContainerRef ) {
-				currentContainerRef.removeEventListener(
-					'click',
-					onTooltipClick
-				);
-				global.removeEventListener( 'click', onExitClick );
-				global.removeEventListener( 'keyup', onEscape );
-			}
-		};
-	}, [
-		setValues,
-		activeRowIndex,
-		dimensionValue,
-		dimensionColor,
-		viewContext,
+	// Set up event handlers for chart interactions
+	useChartEventHandlers( {
+		containerRef,
 		isTooltipOpen,
-	] );
+		setIsTooltipOpen,
+		setValues,
+		viewContext,
+	} );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
