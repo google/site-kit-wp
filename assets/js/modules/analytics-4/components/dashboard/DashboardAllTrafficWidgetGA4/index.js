@@ -43,6 +43,7 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
+import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 import useAllTrafficWidgetReport from '@/js/modules/analytics-4/hooks/useAllTrafficWidgetReport';
 import useViewOnly from '@/js/hooks/useViewOnly';
 
@@ -108,30 +109,18 @@ function DashboardAllTrafficWidgetGA4( props ) {
 		reportID: 'analytics-4_dashboard-all-traffic-widget-ga4_widget_pieArgs',
 	};
 
-	const graphArgs = {
-		dimensions: [ 'date' ],
-		orderby: [
-			{
-				dimension: {
-					dimensionName: 'date',
-				},
-			},
-		],
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs',
-	};
+	const dimensionFilters =
+		dimensionName && dimensionValue
+			? { [ dimensionName ]: dimensionValue }
+			: undefined;
 
-	const totalsArgs = {
+	const graphArgs = getGraphReportOptions( { dimensionFilters } );
+
+	const totalsArgs = getTotalsReportOptions( {
 		compareStartDate,
 		compareEndDate,
-		reportID:
-			'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs',
-	};
-
-	if ( dimensionName && dimensionValue ) {
-		graphArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
-	}
+		dimensionFilters,
+	} );
 
 	const {
 		loaded: pieChartLoaded,

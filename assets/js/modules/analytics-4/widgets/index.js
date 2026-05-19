@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -94,6 +99,8 @@ import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
+import DashboardAllTrafficWidgetGA4PDF from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF';
+import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import {
 	AudienceTilesWidget,
@@ -117,6 +124,11 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: DashboardAllTrafficWidgetGA4PDF,
+				getData: getAllTrafficPDFData,
+				label: __( 'All Visitors', 'google-site-kit' ),
+			},
 		},
 		[
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
