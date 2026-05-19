@@ -27,7 +27,7 @@ import { useEvent, useKey } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useRef, useState } from '@wordpress/element';
+import { Fragment, useCallback, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -98,8 +98,7 @@ export default function UserDimensionsPieChart( props ) {
 	const chartWrapperRef = useRef();
 	const containerRef = useRef();
 
-	useEvent(
-		'click',
+	const handleTooltipClick = useCallback(
 		( event ) => {
 			const { target } = event || {};
 			if (
@@ -119,10 +118,10 @@ export default function UserDimensionsPieChart( props ) {
 				);
 			}
 		},
-		containerRef.current
+		[ viewContext ]
 	);
-	useEvent(
-		'click',
+
+	const handleExitClick = useCallback(
 		( event ) => {
 			if (
 				isTooltipOpen &&
@@ -133,18 +132,26 @@ export default function UserDimensionsPieChart( props ) {
 				setIsTooltipOpen( false );
 			}
 		},
-		global
+		[ isTooltipOpen ]
 	);
-	useKey( 'Escape', ( event ) => {
-		if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
-			setIsTooltipOpen( false );
-			setValues( {
-				[ UI_DIMENSION_VALUE ]: '',
-				[ UI_DIMENSION_COLOR ]: '',
-				[ UI_ACTIVE_ROW_INDEX ]: null,
-			} );
-		}
-	} );
+
+	const handleEscapeKey = useCallback(
+		( event ) => {
+			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
+				setIsTooltipOpen( false );
+				setValues( {
+					[ UI_DIMENSION_VALUE ]: '',
+					[ UI_DIMENSION_COLOR ]: '',
+					[ UI_ACTIVE_ROW_INDEX ]: null,
+				} );
+			}
+		},
+		[ isTooltipOpen, setValues ]
+	);
+
+	useEvent( 'click', handleTooltipClick, containerRef.current );
+	useEvent( 'click', handleExitClick, global );
+	useKey( 'Escape', handleEscapeKey );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
