@@ -116,7 +116,7 @@ export function AdminScreenTooltip() {
 			dismissLabel={ dismissLabel }
 			onView={ handleViewTooltip }
 			onDismiss={ handleDismissTooltip }
-			{ ...( floaterProps && { floaterProps } ) }
+			floaterProps={ floaterProps }
 		/>
 	);
 }
