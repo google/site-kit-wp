@@ -73,8 +73,8 @@ install_package '@wordpress/keycodes@^4.46.0'
 # install_package '@wordpress/url@^4.46.0'
 
 # archiver: 5 → 8
-# bin/release only calls archiver('zip', opts) / .pipe() / .directory() / .finalize().
-# Core API is unchanged across all majors.
+# v8 is ESM-only and replaces the archiver('zip', opts) factory with ZipArchive class.
+# bin/release uses dynamic import + new ZipArchive() to stay compatible.
 install_package 'archiver@^8.0.0' --save-dev
 
 # babel-loader: 9 → 10
