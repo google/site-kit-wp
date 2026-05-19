@@ -59,6 +59,7 @@ export default function JoyrideTooltip( props ) {
 		onView = () => {},
 		onTourStart = () => {},
 		onTourEnd = () => {},
+		floaterProps = {},
 	} = props;
 
 	function checkIfTargetExists() {
@@ -142,6 +143,7 @@ export default function JoyrideTooltip( props ) {
 			placement,
 			cta,
 			className,
+			floaterProps,
 		},
 	];
 
