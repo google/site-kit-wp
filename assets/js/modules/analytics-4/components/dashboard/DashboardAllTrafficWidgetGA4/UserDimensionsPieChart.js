@@ -64,58 +64,6 @@ import useViewContext from '@/js/hooks/useViewContext';
 import usePieChartSlices from './hooks/usePieChartSlices';
 import { getTooltipHelp } from './utils';
 
-function useChartEventHandlers( {
-	containerRef,
-	isTooltipOpen,
-	setIsTooltipOpen,
-	setValues,
-	viewContext,
-} ) {
-	function onTooltipClick( event ) {
-		const { target } = event || {};
-		if (
-			! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' )
-		) {
-			return;
-		}
-
-		const label = target.dataset.rowLabel;
-		if ( label === '(other)' || label === '(not set)' ) {
-			trackEvent(
-				`${ viewContext }_all-traffic-widget`,
-				'help_click',
-				label
-			);
-		}
-	}
-
-	function onExitClick( event ) {
-		if (
-			isTooltipOpen &&
-			! event?.target?.closest(
-				'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
-			)
-		) {
-			setIsTooltipOpen( false );
-		}
-	}
-
-	function onEscape( event = {} ) {
-		if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
-			setIsTooltipOpen( false );
-			setValues( {
-				[ UI_DIMENSION_VALUE ]: '',
-				[ UI_DIMENSION_COLOR ]: '',
-				[ UI_ACTIVE_ROW_INDEX ]: null,
-			} );
-		}
-	}
-
-	useEvent( 'click', onTooltipClick, containerRef.current );
-	useEvent( 'click', onExitClick, global );
-	useKey( 'Escape', onEscape );
-}
-
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, gatheringData, loaded, report } =
 		props;
@@ -150,13 +98,52 @@ export default function UserDimensionsPieChart( props ) {
 	const chartWrapperRef = useRef();
 	const containerRef = useRef();
 
-	// Set up event handlers for chart interactions
-	useChartEventHandlers( {
-		containerRef,
-		isTooltipOpen,
-		setIsTooltipOpen,
-		setValues,
-		viewContext,
+	useEvent(
+		'click',
+		( event ) => {
+			const { target } = event || {};
+			if (
+				! target?.classList?.contains(
+					'googlesitekit-cta-link__tooltip'
+				)
+			) {
+				return;
+			}
+
+			const label = target.dataset.rowLabel;
+			if ( label === '(other)' || label === '(not set)' ) {
+				trackEvent(
+					`${ viewContext }_all-traffic-widget`,
+					'help_click',
+					label
+				);
+			}
+		},
+		containerRef.current
+	);
+	useEvent(
+		'click',
+		( event ) => {
+			if (
+				isTooltipOpen &&
+				! event?.target?.closest(
+					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
+				)
+			) {
+				setIsTooltipOpen( false );
+			}
+		},
+		global
+	);
+	useKey( 'Escape', ( event ) => {
+		if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
+			setIsTooltipOpen( false );
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		}
 	} );
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
