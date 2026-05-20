@@ -833,9 +833,9 @@ const jest = require( 'jest' );
 `,
 		},
 
-		// Legacy group comment with a trailing dot, sitting above a
-		// duplicate canonical block: the orphan-removal pass clears the
-		// canonical that was emitted by an earlier buggy autofix run.
+		// Trailing-dot legacy block normalizes to the canonical heading.
+		// When both sit above an import, the legacy one becomes an
+		// orphan and is cleared, leaving the canonical in place.
 		{
 			code: `
 /**
