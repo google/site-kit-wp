@@ -28,7 +28,12 @@ import {
 	fireEvent,
 	waitFor,
 } from '../../../../tests/js/test-utils';
+import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
@@ -47,6 +52,19 @@ const mockWelcomeTour = getWelcomeTour( {
 	isActivateAnalyticsNotificationPresent: false,
 } );
 
+function provideFeatureTourMenuItemData(
+	registry: ReturnType< typeof createTestRegistry >
+) {
+	provideGatheringDataState( registry, {
+		[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+	} );
+
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.receiveIsDataAvailableOnLoad( true );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveIsGatheringData( false );
+}
+
 describe( 'HelpMenu', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
 
@@ -56,6 +74,7 @@ describe( 'HelpMenu', () => {
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideUserCapabilities( registry );
+		provideFeatureTourMenuItemData( registry );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -80,6 +99,75 @@ describe( 'HelpMenu', () => {
 
 		it( 'should not render "Start a feature tour" when `showFeatureTour` is false', () => {
 			const { queryByText } = render( <HelpMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect(
+				queryByText( 'Start a feature tour' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should not render "Start a feature tour" when Analytics is connected and gathering data', () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+
+			const { queryByText } = render( <HelpMenu showFeatureTour />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect(
+				queryByText( 'Start a feature tour' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render "Start a feature tour" when Analytics is connected and not gathering data', () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_ANALYTICS_4 ]: false,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsDataAvailableOnLoad( true );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			const { getByText } = render( <HelpMenu showFeatureTour />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'setupFlowRefresh' ],
+			} );
+
+			expect( getByText( 'Start a feature tour' ) ).toBeInTheDocument();
+		} );
+
+		it( 'should not render "Start a feature tour" when Analytics is not connected and Search Console is gathering data', () => {
+			provideGatheringDataState( registry, {
+				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+			} );
+			registry
+				.dispatch( MODULES_SEARCH_CONSOLE )
+				.receiveIsGatheringData( true );
+
+			const { queryByText } = render( <HelpMenu showFeatureTour />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 				features: [ 'setupFlowRefresh' ],

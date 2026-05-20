@@ -209,6 +209,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -244,6 +249,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -330,6 +340,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -365,6 +380,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -448,6 +468,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',

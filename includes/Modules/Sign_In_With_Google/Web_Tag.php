@@ -131,7 +131,8 @@ class Web_Tag extends Module_Web_Tag {
 		// Show the One Tap prompt if:
 		// 1. One Tap is enabled in settings.
 		// 2. The user is not logged in.
-		$should_show_one_tap_prompt = ! empty( $this->settings['oneTapEnabled'] ) && ! is_user_logged_in();
+		// 3. The current request is not a post/page preview.
+		$should_show_one_tap_prompt = ! empty( $this->settings['oneTapEnabled'] ) && ! is_user_logged_in() && ! is_preview();
 
 		// Set the cookie time to live to 5 minutes. If the redirect_to is
 		// empty, set the cookie to expire immediately.
@@ -146,6 +147,7 @@ class Web_Tag extends Module_Web_Tag {
 		?>
 ( () => {
 	async function handleCredentialResponse( response ) {
+		<?php if ( ! is_preview() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		<?php if ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
@@ -177,6 +179,7 @@ class Web_Tag extends Module_Web_Tag {
 		} catch( error ) {
 			console.error( error );
 		}
+		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 	}
 
 	if (typeof google !== 'undefined') {
@@ -194,7 +197,7 @@ class Web_Tag extends Module_Web_Tag {
 		document.getElementById( 'login' ).insertBefore( buttonDivToAddToLoginForm, document.getElementById( 'loginform' ) );
 	<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 
-	<?php if ( ! is_user_logged_in() || $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
+	<?php if ( ! is_user_logged_in() || $this->is_wp_login || is_preview() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 			<?php
 			/**
 			 * Render SiwG buttons for all `<div>` elements with the "magic

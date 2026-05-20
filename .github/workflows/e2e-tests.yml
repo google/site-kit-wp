@@ -95,10 +95,10 @@ jobs:
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -110,7 +110,7 @@ jobs:
         run: npm run build:test
 
       # E2E tests use a dedicated container, this is just for Composer.
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
           php-version: '8.4'
         env:
@@ -120,7 +120,7 @@ jobs:
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -136,7 +136,7 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         if: failure()
         with:
           name: e2e-debugging-run[${{ github.run_attempt }}]-wp[${{ matrix.wp_version }}]-amp[${{ matrix.amp_version }}]
