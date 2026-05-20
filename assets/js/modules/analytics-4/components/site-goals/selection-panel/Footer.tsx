@@ -22,11 +22,6 @@
 import type { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useCallback, useMemo } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
@@ -69,20 +64,11 @@ const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);
-	const resolvedSelectedDrivers = useMemo(
-		() =>
-			resolveGoalDriverSelectionState(
-				selectedDrivers as GoalDriverSelectionState | undefined
-			),
-		[ selectedDrivers ]
+	const resolvedSelectedDrivers = resolveGoalDriverSelectionState(
+		selectedDrivers as GoalDriverSelectionState | undefined
 	);
-
-	const selectedDriverSlugs = useMemo(
-		() => flattenSelections( resolvedSelectedDrivers ),
-		[ resolvedSelectedDrivers ]
-	);
-
-	const saveSettings = useCallback( () => {
+	const selectedDriverSlugs = flattenSelections( resolvedSelectedDrivers );
+	function saveSettings() {
 		const sanitizedSelectionState = resolveGoalDriverSelectionState(
 			resolvedSelectedDrivers
 		);
@@ -93,7 +79,7 @@ const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 		} );
 
 		return Promise.resolve( {} );
-	}, [ resolvedSelectedDrivers, setValues ] );
+	}
 
 	return (
 		<SelectionPanelFooter

@@ -24,7 +24,7 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useMemo, useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -63,54 +63,44 @@ const PanelContent: FC< PanelContentProps > = ( {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);
-	const resolvedSelectedDrivers = useMemo(
-		() =>
-			resolveGoalDriverSelectionState(
-				selectedDrivers as GoalDriverSelectionState | undefined
-			),
-		[ selectedDrivers ]
+	const resolvedSelectedDrivers = resolveGoalDriverSelectionState(
+		selectedDrivers as GoalDriverSelectionState | undefined
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
-	const ecommerceOptions = useMemo(
-		() => getGoalDriverOptions( GOAL_TYPES.ECOMMERCE ),
-		[]
-	);
-	const leadOptions = useMemo(
-		() => getGoalDriverOptions( GOAL_TYPES.LEAD ),
-		[]
-	);
+	const ecommerceOptions = getGoalDriverOptions( GOAL_TYPES.ECOMMERCE );
+	const leadOptions = getGoalDriverOptions( GOAL_TYPES.LEAD );
 
 	const [ isEcommerceExpanded, setIsEcommerceExpanded ] = useState( true );
 	const [ isLeadExpanded, setIsLeadExpanded ] = useState( true );
 
-	const onToggleDriver = useCallback(
-		( goalType: GoalType, driverID: GoalDriverID, isChecked: boolean ) => {
-			const currentDriverIDs =
-				resolvedSelectedDrivers?.[ goalType ] || [];
+	function onToggleDriver(
+		goalType: GoalType,
+		driverID: GoalDriverID,
+		isChecked: boolean
+	) {
+		const currentDriverIDs = resolvedSelectedDrivers?.[ goalType ] || [];
 
-			let nextDriverIDs = currentDriverIDs;
+		let nextDriverIDs = currentDriverIDs;
 
-			if ( isChecked ) {
-				if ( ! currentDriverIDs.includes( driverID ) ) {
-					nextDriverIDs = currentDriverIDs.concat( driverID );
-				}
-			} else {
-				nextDriverIDs = currentDriverIDs.filter(
-					( currentDriverID ) => currentDriverID !== driverID
-				);
+		if ( isChecked ) {
+			if ( ! currentDriverIDs.includes( driverID ) ) {
+				nextDriverIDs = currentDriverIDs.concat( driverID );
 			}
+		} else {
+			nextDriverIDs = currentDriverIDs.filter(
+				( currentDriverID ) => currentDriverID !== driverID
+			);
+		}
 
-			setValues( SITE_GOALS_SELECTION_FORM, {
-				[ SITE_GOALS_SELECTED_DRIVERS ]: {
-					...resolvedSelectedDrivers,
-					[ goalType ]: nextDriverIDs,
-				},
-			} );
-		},
-		[ resolvedSelectedDrivers, setValues ]
-	);
+		setValues( SITE_GOALS_SELECTION_FORM, {
+			[ SITE_GOALS_SELECTED_DRIVERS ]: {
+				...resolvedSelectedDrivers,
+				[ goalType ]: nextDriverIDs,
+			},
+		} );
+	}
 
 	return (
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">

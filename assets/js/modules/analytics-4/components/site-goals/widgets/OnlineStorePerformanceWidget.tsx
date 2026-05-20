@@ -23,7 +23,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { createInterpolateElement, useMemo } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -96,16 +96,12 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 	);
 
-	const drivers = useMemo(
-		() =>
-			resolveGoalDriverIDs(
-				resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
-				GOAL_TYPES.ECOMMERCE
-			).map( ( driverID ) => ( {
-				...GOAL_DRIVER_CATALOG[ driverID ],
-			} ) ),
-		[ resolvedSelections ]
-	);
+	const drivers = resolveGoalDriverIDs(
+		resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
+		GOAL_TYPES.ECOMMERCE
+	).map( ( driverID ) => ( {
+		...GOAL_DRIVER_CATALOG[ driverID ],
+	} ) );
 
 	const dates = useSelect(
 		( select: Select ) =>

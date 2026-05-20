@@ -25,7 +25,6 @@ import type { ChangeEvent, FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -58,10 +57,7 @@ const GoalTypeList: FC< GoalTypeListProps > = ( {
 	onToggleExpand,
 	onToggleDriver,
 } ) => {
-	const selectedSet = useMemo(
-		() => new Set( selectedIDs ),
-		[ selectedIDs ]
-	);
+	const selectedSet = new Set( selectedIDs );
 
 	return (
 		<section className="googlesitekit-site-goals-selection-panel__section">

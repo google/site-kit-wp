@@ -22,7 +22,6 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -85,16 +84,12 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
-	const drivers = useMemo(
-		() =>
-			resolveGoalDriverIDs(
-				resolvedSelections[ GOAL_TYPES.LEAD ],
-				GOAL_TYPES.LEAD
-			).map( ( driverID ) => ( {
-				...GOAL_DRIVER_CATALOG[ driverID ],
-			} ) ),
-		[ resolvedSelections ]
-	);
+	const drivers = resolveGoalDriverIDs(
+		resolvedSelections[ GOAL_TYPES.LEAD ],
+		GOAL_TYPES.LEAD
+	).map( ( driverID ) => ( {
+		...GOAL_DRIVER_CATALOG[ driverID ],
+	} ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
