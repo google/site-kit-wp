@@ -50,7 +50,11 @@
 
 		.googlesitekit-site-goals-change-drivers-cta.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
 			color: $c-content-secondary;
-			padding: 0;
+			padding: 0 4px 0 2px;
+
+			.googlesitekit-icon-wrapper {
+				margin-right: 0 !important; // To override the inline set margin.
+			}
 		}
 	}
 
@@ -295,6 +299,10 @@
 			&:focus-visible {
 				background-color: transparent;
 			}
+		}
+
+		.googlesitekit-site-goals-tiles-group__footer-cta {
+			margin-top: 10px;
 		}
 	}
 

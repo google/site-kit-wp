@@ -19,6 +19,7 @@
  */
 import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export interface TilesGroupProps {
 	title: string;
@@ -32,6 +33,9 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 	headerCTA,
 	children,
 } ) => {
+	const breakpoint = useBreakpoint();
+	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
+
 	return (
 		<div
 			className={ classnames(
@@ -43,7 +47,7 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 				<p className="googlesitekit-site-goals-tiles-group__title">
 					{ title }
 				</p>
-				{ headerCTA && (
+				{ ! isMobileBreakpoint && headerCTA && (
 					<div className="googlesitekit-site-goals-tiles-group__cta">
 						{ headerCTA }
 					</div>
@@ -52,6 +56,11 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 			<div className="googlesitekit-site-goals-tiles-group__tiles">
 				{ children }
 			</div>
+			{ isMobileBreakpoint && headerCTA && (
+				<div className="googlesitekit-site-goals-tiles-group__footer-cta">
+					{ headerCTA }
+				</div>
+			) }
 		</div>
 	);
 };
