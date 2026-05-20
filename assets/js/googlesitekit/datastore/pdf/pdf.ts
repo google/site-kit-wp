@@ -298,7 +298,7 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Gets the current PDF export selection.
+	 * Gets the `slugs` used to generate content for the PDF export.
 	 *
 	 * @since n.e.x.t
 	 *
