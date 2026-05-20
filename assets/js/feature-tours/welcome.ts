@@ -26,6 +26,12 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import {
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
 import { WELCOME_TOUR } from './constants';
 
 /**
@@ -50,6 +56,11 @@ function getDashboardSharingStep(
 			target: '.googlesitekit-header',
 			floaterProps: {
 				target: '.googlesitekit-view-only-menu',
+				styles: {
+					arrow: {
+						margin: 8,
+					},
+				},
 			},
 			title: __(
 				'Get instant access to insights, no setup',
@@ -199,6 +210,13 @@ export function getWelcomeTour( {
 			],
 			gaEventCategory: ( viewContext: string ) =>
 				`${ viewContext }_dashboard-tour-sc`,
+			// Preload the widget areas that contain the targets referenced
+			// in the tour steps so they are visible immediately when the
+			// step is triggered, instead of waiting to be scrolled into view.
+			preloadWidgetAreas: [
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+			],
 			steps,
 		};
 	}
@@ -212,6 +230,15 @@ export function getWelcomeTour( {
 		],
 		gaEventCategory: ( viewContext: string ) =>
 			`${ viewContext }_dashboard-tour-ga4`,
+		// Preload the widget areas that contain the targets referenced
+		// in the tour steps so they are visible immediately when the
+		// step is triggered, instead of waiting to be scrolled into view.
+		preloadWidgetAreas: [
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+		],
 		steps: [
 			{
 				target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',

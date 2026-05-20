@@ -283,7 +283,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether any of the provided reports are currently loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object}   state         Data store's state.
 	 * @param {Object[]} reportOptions Report options to check the loading state for. Each entry should be an object of options that would be passed to `getReport` selector.
@@ -304,7 +304,7 @@ const baseSelectors = {
 	/**
 	 * Returns the first error found among the provided report options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.179.0
 	 *
 	 * @param {Object}   state         Data store's state.
 	 * @param {Object[]} reportOptions Report options to check for errors. Each entry should be an object of options that would be passed to `getReport` selector.

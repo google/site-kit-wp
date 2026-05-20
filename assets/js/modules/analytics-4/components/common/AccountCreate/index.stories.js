@@ -101,6 +101,78 @@ InitialSetupFlow.args = {
 };
 InitialSetupFlow.scenario = {};
 
+export const InitialSetupFlowWithUserCancelError = Template.bind( {} );
+InitialSetupFlowWithUserCancelError.storyName =
+	'Initial setup flow with terms of service not accepted error';
+InitialSetupFlowWithUserCancelError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'user_cancel',
+	},
+};
+InitialSetupFlowWithUserCancelError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithUserCancelError.scenario = {};
+
+export const InitialSetupFlowWithMaxAccountsReachedError = Template.bind( {} );
+InitialSetupFlowWithMaxAccountsReachedError.storyName =
+	'Initial setup flow with account limit reached error';
+InitialSetupFlowWithMaxAccountsReachedError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'max_accounts_reached',
+	},
+};
+InitialSetupFlowWithMaxAccountsReachedError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithMaxAccountsReachedError.scenario = {};
+
+export const InitialSetupFlowWithGenericError = Template.bind( {} );
+InitialSetupFlowWithGenericError.storyName =
+	'Initial setup flow with generic error';
+InitialSetupFlowWithGenericError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'backend_error',
+	},
+};
+InitialSetupFlowWithGenericError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithGenericError.scenario = {};
+
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',
 	decorators: [

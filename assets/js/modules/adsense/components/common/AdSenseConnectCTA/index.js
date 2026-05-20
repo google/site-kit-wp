@@ -52,7 +52,10 @@ import SupportLink from '@/js/components/SupportLink';
 import P from '@/js/components/Typography/P';
 import useViewContext from '@/js/hooks/useViewContext';
 
-export default function AdSenseConnectCTA( { onDismissModule } ) {
+export default function AdSenseConnectCTA( {
+	onDismissModule,
+	isDismissing = false,
+} ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
@@ -152,7 +155,9 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								<SpinnerButton
 									onClick={ handleConnect }
 									isSaving={ isConnectingAdSense }
-									disabled={ isConnectingAdSense }
+									disabled={
+										isConnectingAdSense || isDismissing
+									}
 								>
 									{ __( 'Connect now', 'google-site-kit' ) }
 								</SpinnerButton>
@@ -162,6 +167,7 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								<SpinnerButton
 									onClick={ handleCompleteSetup }
 									isSaving={ isConnectingAdSense }
+									disabled={ isDismissing }
 								>
 									{ __(
 										'Complete setup',
@@ -170,7 +176,11 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 								</SpinnerButton>
 							) }
 
-							<Button onClick={ handleDismissModule } tertiary>
+							<Button
+								onClick={ handleDismissModule }
+								disabled={ isDismissing }
+								tertiary
+							>
 								{ __( 'Maybe later', 'google-site-kit' ) }
 							</Button>
 						</div>
@@ -205,4 +215,5 @@ export default function AdSenseConnectCTA( { onDismissModule } ) {
 
 AdSenseConnectCTA.propTypes = {
 	onDismissModule: PropTypes.func.isRequired,
+	isDismissing: PropTypes.bool,
 };

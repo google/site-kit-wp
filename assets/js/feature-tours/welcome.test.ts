@@ -136,6 +136,22 @@ const SEARCH_CONSOLE_ONLY_TOUR_COMMON_STEPS = [
 
 describe( 'getWelcomeTour', () => {
 	describe( 'Analytics connected tour variant', () => {
+		it( 'should include the widget areas containing the tour targets in the `preloadWidgetAreas` property', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
+			} );
+
+			expect( tour.preloadWidgetAreas ).toEqual( [
+				'mainDashboardKeyMetricsPrimary',
+				'mainDashboardTrafficPrimary',
+				'mainDashboardTrafficAudienceSegmentation',
+				'mainDashboardContentPrimary',
+			] );
+		} );
+
 		it( 'should return the Analytics-connected tour variant for an authenticated user', () => {
 			const tour = getWelcomeTour( {
 				isViewOnly: false,
@@ -193,6 +209,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -228,6 +249,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -246,6 +272,20 @@ describe( 'getWelcomeTour', () => {
 	} );
 
 	describe( 'Search Console only tour variant', () => {
+		it( 'should include the widget areas containing the tour targets in the `preloadWidgetAreas` property', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: false,
+				isActivateAnalyticsNotificationPresent: false,
+			} );
+
+			expect( tour.preloadWidgetAreas ).toEqual( [
+				'mainDashboardTrafficPrimary',
+				'mainDashboardContentPrimary',
+			] );
+		} );
+
 		it( 'should return the SC-only tour variant for an authenticated user', () => {
 			const tour = getWelcomeTour( {
 				isViewOnly: false,
@@ -300,6 +340,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -335,6 +380,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',
@@ -418,6 +468,11 @@ describe( 'getWelcomeTour', () => {
 					target: '.googlesitekit-header',
 					floaterProps: {
 						target: '.googlesitekit-view-only-menu',
+						styles: {
+							arrow: {
+								margin: 8,
+							},
+						},
 					},
 					title: __(
 						'Get instant access to insights, no setup',

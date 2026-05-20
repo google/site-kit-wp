@@ -123,7 +123,7 @@ export default function DataBlocks( {
 		oneThirdCellProps,
 		threeQuartersCellProps,
 		fullCellProps,
-	} = getCellProps( showKeyEventsCTA );
+	} = getCellProps( { showKeyEventsCTA } );
 
 	// Collection of all the data blocks to be displayed.
 	const dataBlocks = [

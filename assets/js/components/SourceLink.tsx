@@ -82,7 +82,6 @@ function SourceLink( {
 					a: (
 						<Link
 							key="link"
-							// @ts-expect-error - The `Link` component is not currently typed.
 							href={ href }
 							external={ external }
 							onClick={ handleClick }

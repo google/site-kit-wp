@@ -120,7 +120,10 @@ export default {
 			function commonSetup( registry ) {
 				mockSurveyEventResponse();
 				provideCurrentSurvey( registry, parameters.survey );
-				provideTracking( registry, parameters.trackingEnabled );
+				provideTracking( {
+					registry,
+					enabled: parameters.trackingEnabled,
+				} );
 			}
 			return (
 				<WithRegistrySetup func={ commonSetup }>

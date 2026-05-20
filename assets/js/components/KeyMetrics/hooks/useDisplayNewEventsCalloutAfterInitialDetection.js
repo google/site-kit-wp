@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -30,12 +28,13 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.144.0
  *
- * @param {boolean} haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
+ * @param {Object}  options                                     Options object.
+ * @param {boolean} options.haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
  * @return {boolean} Whether the new events callout should be displayed.
  */
-export default function useDisplayNewEventsCalloutAfterInitialDetection(
-	haveNewConversionEventsAfterDismiss
-) {
+export default function useDisplayNewEventsCalloutAfterInitialDetection( {
+	haveNewConversionEventsAfterDismiss,
+} ) {
 	return useSelect( ( select ) => {
 		const isKeyMetricsSetupCompleted =
 			select( CORE_SITE ).isKeyMetricsSetupCompleted();

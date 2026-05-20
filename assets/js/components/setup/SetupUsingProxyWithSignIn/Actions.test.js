@@ -62,7 +62,7 @@ describe( 'Actions', () => {
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
 		provideUserCapabilities( registry );
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 	} );
 
 	afterEach( () => {
@@ -136,7 +136,7 @@ describe( 'Actions', () => {
 
 		provideModules( registry );
 		provideSiteConnection( registry );
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post(
 			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' ),
@@ -171,7 +171,7 @@ describe( 'Actions', () => {
 
 		provideModules( registry );
 		provideSiteConnection( registry );
-		provideTracking( registry, false );
+		provideTracking( { registry, enabled: false } );
 
 		fetchMock.post(
 			new RegExp( '^/google-site-kit/v1/core/user/data/tracking' ),
