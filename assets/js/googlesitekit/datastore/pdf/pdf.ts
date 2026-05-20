@@ -100,7 +100,6 @@ export const actions = {
 	 * Sets the current PDF export selection.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object}   selection              The selection object.
 	 * @param {string[]} selection.contextSlugs Selected dashboard context slugs.
@@ -133,7 +132,6 @@ export const actions = {
 	 * Sets the current PDF export status.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {string} status One of 'idle', 'progress', 'success', 'error'.
 	 * @return {Object} Redux-style action.
@@ -161,7 +159,6 @@ export const actions = {
 	 * Sets the current PDF export progress.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {number} progress Progress value between 0 and 100, inclusive.
 	 * @return {Object} Redux-style action.
@@ -185,7 +182,6 @@ export const actions = {
 	 * Sets the generated PDF blob URL and filename.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @param {Object} blob          The blob descriptor.
 	 * @param {string} blob.url      The blob URL.
@@ -218,7 +214,6 @@ export const actions = {
 	 * between exports.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -233,7 +228,6 @@ export const actions = {
 	 * Requests cancellation of the in-flight PDF export.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -248,7 +242,6 @@ export const actions = {
 	 * Clears a previously-set cancel request.
 	 *
 	 * @since n.e.x.t
-	 * @private
 	 *
 	 * @return {Object} Redux-style action.
 	 */
