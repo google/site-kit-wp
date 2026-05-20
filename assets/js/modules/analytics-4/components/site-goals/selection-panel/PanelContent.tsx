@@ -35,7 +35,6 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	GOAL_TYPES,
 	getGoalDriverOptions,
-	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_SELECTED_DRIVERS,
@@ -55,6 +54,22 @@ interface PanelContentProps {
 	hasLeadGoalDrivers: boolean;
 }
 
+function getSelectedDriverIDs(
+	selectedDrivers: GoalDriverSelectionState | undefined,
+	goalType: GoalType
+): GoalDriverID[] {
+	const selectedDriverIDs = selectedDrivers?.[ goalType ];
+
+	if ( ! Array.isArray( selectedDriverIDs ) ) {
+		return [];
+	}
+
+	return selectedDriverIDs.filter(
+		( selectedDriverID ): selectedDriverID is GoalDriverID =>
+			typeof selectedDriverID === 'string'
+	);
+}
+
 const PanelContent: FC< PanelContentProps > = ( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
@@ -63,9 +78,9 @@ const PanelContent: FC< PanelContentProps > = ( {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);
-	const resolvedSelectedDrivers = resolveGoalDriverSelectionState(
-		selectedDrivers as GoalDriverSelectionState | undefined
-	);
+	const selectedDriverState = selectedDrivers as
+		| GoalDriverSelectionState
+		| undefined;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -80,7 +95,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 		driverID: GoalDriverID,
 		isChecked: boolean
 	) {
-		const currentDriverIDs = resolvedSelectedDrivers?.[ goalType ] || [];
+		const currentDriverIDs = getSelectedDriverIDs(
+			selectedDriverState,
+			goalType
+		);
 
 		let nextDriverIDs = currentDriverIDs;
 
@@ -96,7 +114,14 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: {
-				...resolvedSelectedDrivers,
+				[ GOAL_TYPES.ECOMMERCE ]: getSelectedDriverIDs(
+					selectedDriverState,
+					GOAL_TYPES.ECOMMERCE
+				),
+				[ GOAL_TYPES.LEAD ]: getSelectedDriverIDs(
+					selectedDriverState,
+					GOAL_TYPES.LEAD
+				),
 				[ goalType ]: nextDriverIDs,
 			},
 		} );
@@ -112,9 +137,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 						'google-site-kit'
 					) }
 					options={ ecommerceOptions }
-					selectedIDs={
-						resolvedSelectedDrivers?.[ GOAL_TYPES.ECOMMERCE ] || []
-					}
+					selectedIDs={ getSelectedDriverIDs(
+						selectedDriverState,
+						GOAL_TYPES.ECOMMERCE
+					) }
 					isExpanded={ isEcommerceExpanded }
 					onToggleExpand={ () =>
 						setIsEcommerceExpanded(
@@ -139,9 +165,10 @@ const PanelContent: FC< PanelContentProps > = ( {
 						'google-site-kit'
 					) }
 					options={ leadOptions }
-					selectedIDs={
-						resolvedSelectedDrivers?.[ GOAL_TYPES.LEAD ] || []
-					}
+					selectedIDs={ getSelectedDriverIDs(
+						selectedDriverState,
+						GOAL_TYPES.LEAD
+					) }
 					isExpanded={ isLeadExpanded }
 					onToggleExpand={ () =>
 						setIsLeadExpanded(

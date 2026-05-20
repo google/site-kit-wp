@@ -59,6 +59,7 @@ interface ReportRow {
 }
 
 const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,9 +69,10 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	onExpandableRowsChange,
 } ) => {
 	const title =
-		goalType === GOAL_TYPES.ECOMMERCE
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'Sales by countries', 'google-site-kit' )
-			: __( 'Leads by countries', 'google-site-kit' );
+			: __( 'Leads by countries', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>

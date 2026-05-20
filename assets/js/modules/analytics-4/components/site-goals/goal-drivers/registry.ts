@@ -56,21 +56,21 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __(
-					'Top traffic channels driving sales',
+					'Top traffic channels by total sales',
 					'google-site-kit'
 				),
 				description: __(
-					'Find out where your online store sales come from.',
+					'Where do most of your buyers come from?',
 					'google-site-kit'
 				),
 			},
 			[ GOAL_TYPES.LEAD ]: {
 				title: __(
-					'Top traffic channels driving leads',
+					'Top traffic channels by total form completions',
 					'google-site-kit'
 				),
 				description: __(
-					'How did visitors who reached out find your site?',
+					'Where do most of your leads come from?',
 					'google-site-kit'
 				),
 			},
@@ -81,7 +81,28 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 		order: 10,
 		defaultEnabled: true,
-		copyByGoalType: {},
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __(
+					'Top traffic channels by sales rate',
+					'google-site-kit'
+				),
+				description: __(
+					'Which channels have the highest percentage of buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __(
+					'Top traffic channels by form completion rate',
+					'google-site-kit'
+				),
+				description: __(
+					'Which channels are most efficient at capturing leads?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: TopTrafficChannelsRateGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.TOP_PAGES ]: {
@@ -92,7 +113,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Top pages driving sales', 'google-site-kit' ),
 				description: __(
-					'Identify the pages generating the most sales events.',
+					'Which pages bring in the most sales?',
 					'google-site-kit'
 				),
 			},
@@ -114,7 +135,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by visitor type', 'google-site-kit' ),
 				description: __(
-					'Compare sales from new and returning visitors.',
+					'Which types of visitors are most likely to buy?',
 					'google-site-kit'
 				),
 			},
@@ -132,21 +153,66 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		id: GOAL_DRIVER_IDS.CITIES,
 		order: 10,
 		defaultEnabled: true,
-		copyByGoalType: {},
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by cities', 'google-site-kit' ),
+				description: __(
+					'Which cities bring in the most buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by cities', 'google-site-kit' ),
+				description: __(
+					'Which cities are people reaching out from?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: CitiesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.COUNTRIES ]: {
 		id: GOAL_DRIVER_IDS.COUNTRIES,
 		order: 10,
 		defaultEnabled: false,
-		copyByGoalType: {},
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by countries', 'google-site-kit' ),
+				description: __(
+					'Which countries bring in the most buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by countries', 'google-site-kit' ),
+				description: __(
+					'Which countries are people reaching out from?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: CountriesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.DEVICE_TYPE ]: {
 		id: GOAL_DRIVER_IDS.DEVICE_TYPE,
 		order: 10,
 		defaultEnabled: false,
-		copyByGoalType: {},
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by device type', 'google-site-kit' ),
+				description: __(
+					'Are people buying more on mobile or desktop?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by device type', 'google-site-kit' ),
+				description: __(
+					'What devices do people use when they take action?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: DeviceTypeGoalDriver,
 	},
 };

@@ -64,6 +64,7 @@ const VISITOR_TYPE_LABELS = {
 };
 
 const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
 	goalType,
 	limit,
 	rows: providedRows,
@@ -73,9 +74,10 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	onExpandableRowsChange,
 } ) => {
 	const title =
-		goalType === GOAL_TYPES.ECOMMERCE
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'Sales by visitor type', 'google-site-kit' )
-			: __( 'Leads by visitor type', 'google-site-kit' );
+			: __( 'Leads by visitor type', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
