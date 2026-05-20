@@ -31,11 +31,15 @@
 			}
 		}
 
+		@media (max-width: $bp-desktop) {
+			padding: 0;
+		}
+
 		& > .mdc-layout-grid {
 			padding-bottom: 0;
 
-			@media (min-width: $bp-tablet) {
-				padding-right: 0;
+			@media (max-width: $bp-desktop) {
+				padding: 0;
 			}
 		}
 
@@ -53,6 +57,10 @@
 
 		.googlesitekit-opt-in {
 			margin-bottom: 42px;
+
+			@media (max-width: $bp-desktop) {
+				margin-bottom: 36px;
+			}
 
 			label {
 				color: $c-surfaces-on-background-variant;
@@ -73,17 +81,23 @@
 			margin-top: $grid-gap-desktop;
 			padding: $grid-gap-desktop;
 
+			@media (max-width: $bp-desktop) {
+				margin-top: 0;
+				padding: $grid-gap-phone;
+			}
+
 			.googlesitekit-splash__analytics-recommended-badge {
 				background-color: $c-site-kit-sk-50;
 				border-radius: 4px;
 				color: $c-content-primary;
+				margin-left: 7px;
 				padding: 4px 8px;
 			}
 
 			.googlesitekit-setup__analytics-opt-in-wrapper-header {
 				align-items: center;
 				display: flex;
-				gap: 12px;
+				gap: 9px;
 				margin-bottom: 18px;
 			}
 
@@ -108,7 +122,12 @@
 			}
 
 			& + .googlesitekit-opt-in {
-				padding: 0 $grid-gap-desktop;
+				margin-top: $grid-gap-desktop;
+				padding: 0 $grid-gap-phone;
+
+				@media (min-width: $bp-desktop) {
+					padding: 0 $grid-gap-desktop;
+				}
 			}
 		}
 
@@ -163,7 +182,12 @@
 		.googlesitekit-setup__content {
 			@media (max-width: $bp-desktop) {
 				max-width: none;
-				padding: 1rem 1.5rem 0;
+				padding: 0.625rem 1.5rem 0;
+			}
+
+			@media (max-width: $bp-tablet) {
+				padding-left: 1rem;
+				padding-right: 1rem;
 			}
 
 			@media (min-width: $bp-nonTablet) {
