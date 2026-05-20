@@ -43,11 +43,11 @@ export interface PDFSelection {
 }
 
 export interface PDFBlob {
-	url: string;
-	filename: string;
+	url: string | null;
+	filename: string | null;
 }
 
-export interface State {
+export interface PDFState {
 	selection: PDFSelection;
 	status: PDFStatus;
 	progress: number;
@@ -83,7 +83,7 @@ function isStringArray( value: unknown ): value is string[] {
 	);
 }
 
-export const initialState: State = {
+export const initialState: PDFState = {
 	selection: {
 		contextSlugs: [],
 		widgetSlugs: [],
@@ -255,7 +255,7 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = createReducer( ( state: State, action: Action ) => {
+export const reducer = createReducer( ( state: PDFState, action: Action ) => {
 	switch ( action.type ) {
 		case SET_SELECTION:
 			state.selection = action.payload.selection;
@@ -302,10 +302,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {PDFSelection} Current selection: `{ contextSlugs, widgetSlugs }`.
 	 */
-	getSelection( state: State ): PDFSelection {
+	getSelection( state: PDFState ): PDFSelection {
 		return state.selection;
 	},
 
@@ -314,10 +314,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {string[]} Selected context slugs.
 	 */
-	getSelectedContextSlugs( state: State ): string[] {
+	getSelectedContextSlugs( state: PDFState ): string[] {
 		return state.selection.contextSlugs;
 	},
 
@@ -326,10 +326,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {string[]} Selected widget slugs.
 	 */
-	getSelectedWidgetSlugs( state: State ): string[] {
+	getSelectedWidgetSlugs( state: PDFState ): string[] {
 		return state.selection.widgetSlugs;
 	},
 
@@ -338,10 +338,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {PDFStatus} One of 'idle', 'progress', 'success', 'error'.
 	 */
-	getStatus( state: State ): PDFStatus {
+	getStatus( state: PDFState ): PDFStatus {
 		return state.status;
 	},
 
@@ -350,10 +350,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {number} Progress value between 0 and 100, inclusive.
 	 */
-	getProgress( state: State ): number {
+	getProgress( state: PDFState ): number {
 		return state.progress;
 	},
 
@@ -362,10 +362,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
-	 * @return {Object} Blob descriptor: `{ url, filename }`.
+	 * @param {PDFState} state Data store's state.
+	 * @return {PDFBlob} Blob descriptor: `{ url, filename }`.
 	 */
-	getBlob( state: State ): { url: string | null; filename: string | null } {
+	getBlob( state: PDFState ): PDFBlob {
 		return {
 			url: state.blobURL,
 			filename: state.blobFilename,
@@ -377,10 +377,10 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {State} state Data store's state.
+	 * @param {PDFState} state Data store's state.
 	 * @return {boolean} `true` if cancellation has been requested.
 	 */
-	isCancelRequested( state: State ): boolean {
+	isCancelRequested( state: PDFState ): boolean {
 		return state.cancelRequested;
 	},
 };
