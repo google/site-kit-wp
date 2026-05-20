@@ -32,6 +32,8 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Returns the welcome tour configuration based on the current user context.
@@ -52,7 +54,9 @@ export function useWelcomeTour() {
 
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
-			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			!! select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			),
 		[]
 	);
 
@@ -77,10 +81,30 @@ export function useWelcomeTour() {
 		[ viewContext ]
 	);
 
+	const isKeyMetricsWidgetPresent = useSelect(
+		( select: Select ) =>
+			isAnalyticsConnected &&
+			!! select( CORE_SITE ).isKeyMetricsSetupCompleted() &&
+			! select( CORE_USER ).isKeyMetricsWidgetHidden(),
+		[ isAnalyticsConnected ]
+	);
+
+	const isAudienceSegmentationWidgetPresent = useSelect(
+		( select: Select ) =>
+			isAnalyticsConnected &&
+			!! select(
+				MODULES_ANALYTICS_4
+			).isAudienceSegmentationSetupCompleted() &&
+			! select( CORE_USER ).isAudienceSegmentationWidgetHidden(),
+		[ isAnalyticsConnected ]
+	);
+
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
-		isAnalyticsConnected: !! isAnalyticsConnected,
+		isAnalyticsConnected,
 		isActivateAnalyticsNotificationPresent,
+		isKeyMetricsWidgetPresent,
+		isAudienceSegmentationWidgetPresent,
 	} );
 }

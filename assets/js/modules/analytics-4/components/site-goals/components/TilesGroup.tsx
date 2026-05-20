@@ -17,17 +17,19 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
 
 export interface TilesGroupProps {
 	title: string;
 	className?: string;
+	headerCTA?: ReactNode;
 }
 
 export const TilesGroup: FC< TilesGroupProps > = ( {
 	title,
 	className,
+	headerCTA,
 	children,
 } ) => {
 	return (
@@ -37,9 +39,16 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 				className
 			) }
 		>
-			<p className="googlesitekit-site-goals-tiles-group__title">
-				{ title }
-			</p>
+			<div className="googlesitekit-site-goals-tiles-group__header">
+				<p className="googlesitekit-site-goals-tiles-group__title">
+					{ title }
+				</p>
+				{ headerCTA && (
+					<div className="googlesitekit-site-goals-tiles-group__cta">
+						{ headerCTA }
+					</div>
+				) }
+			</div>
 			<div className="googlesitekit-site-goals-tiles-group__tiles">
 				{ children }
 			</div>

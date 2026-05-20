@@ -29,6 +29,7 @@ import consentMode from './consent-mode';
 import conversionTracking from './conversion-tracking';
 import emailReporting from './email-reporting';
 import errors from './errors';
+import golinks from './golinks';
 import googleTagGateway from './google-tag-gateway';
 import html from './html';
 import info from './info';
@@ -46,6 +47,7 @@ const store = combineStores(
 	conversionTracking,
 	emailReporting,
 	errors,
+	golinks,
 	googleTagGateway,
 	html,
 	info,

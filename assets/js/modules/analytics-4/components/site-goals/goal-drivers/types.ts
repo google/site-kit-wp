@@ -25,6 +25,7 @@ import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 export type GoalDriverID =
 	typeof GOAL_DRIVER_IDS[ keyof typeof GOAL_DRIVER_IDS ];
 export type GoalType = typeof GOAL_TYPES[ keyof typeof GOAL_TYPES ];
+export type GoalDriverSelectionState = Record< GoalType, GoalDriverID[] >;
 
 export interface GoalDriverRow {
 	label: string;
@@ -34,6 +35,7 @@ export interface GoalDriverRow {
 }
 
 export interface GoalDriverComponentProps {
+	title?: string;
 	rows?: GoalDriverRow[];
 	totalRows?: number;
 	loading?: boolean;
@@ -55,10 +57,16 @@ export interface GoalDriverData {
 	error?: unknown;
 }
 
+export interface GoalDriverContent {
+	title: string;
+	description: string;
+}
+
 export interface GoalDriverCatalogEntry {
 	id: GoalDriverID;
 	order: number;
 	defaultEnabled: boolean;
+	copyByGoalType: Partial< Record< GoalType, GoalDriverContent > >;
 	Component: ComponentType< GoalDriverComponentProps >;
 }
 
@@ -73,6 +81,7 @@ export type GoalDriverCatalog = Record< GoalDriverID, GoalDriverCatalogEntry >;
  */
 export interface GoalDriverTilesDriver {
 	id: GoalDriverID;
+	title?: string;
 	Component?: ComponentType< GoalDriverComponentProps >;
 	rows?: GoalDriverRow[];
 	totalRows?: number;
@@ -80,4 +89,10 @@ export interface GoalDriverTilesDriver {
 	error?: unknown;
 	order?: number;
 	defaultEnabled?: boolean;
+}
+export interface GoalDriverOption {
+	id: GoalDriverID;
+	order: number;
+	title: string;
+	description: string;
 }

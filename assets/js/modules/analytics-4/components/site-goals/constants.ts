@@ -1,0 +1,44 @@
+/**
+ * Site Goals selection panel constants.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
+
+export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
+	'googlesitekit-site-goals-selection-panel-opened';
+
+export const SITE_GOALS_SELECTION_FORM = 'site-goals-selection-form';
+export const SITE_GOALS_SELECTED_DRIVERS = 'site-goals-selected-drivers';
+export const SITE_GOALS_EFFECTIVE_DRIVERS = 'site-goals-effective-drivers';
+
+export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
+
+export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
+	[ GOAL_TYPES.ECOMMERCE ]: [
+		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+		GOAL_DRIVER_IDS.TOP_PAGES,
+		GOAL_DRIVER_IDS.VISITOR_TYPE,
+	],
+	[ GOAL_TYPES.LEAD ]: [
+		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+		GOAL_DRIVER_IDS.TOP_PAGES,
+		GOAL_DRIVER_IDS.VISITOR_TYPE,
+	],
+};

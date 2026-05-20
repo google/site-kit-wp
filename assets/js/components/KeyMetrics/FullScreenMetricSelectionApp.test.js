@@ -123,6 +123,10 @@ describe( 'FullScreenMetricSelectionApp', () => {
 			propertyID: 1234567,
 			availableCustomDimensions: [],
 		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 	} );
 
 	it( 'should render the component', async () => {
