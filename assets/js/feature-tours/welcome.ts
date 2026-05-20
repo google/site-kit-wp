@@ -170,8 +170,8 @@ function getTopSearchQueriesStep() {
  * @param {boolean} params.canAuthenticate                        Whether the user can authenticate.
  * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
  * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
- * @param {boolean} params.isKeyMetricsSetupCompleted             Whether key metrics has been set up.
- * @param {boolean} params.isAudienceSegmentationSetupCompleted   Whether audience segmentation has been set up.
+ * @param {boolean} params.isKeyMetricsWidgetPresent              Whether the key metrics widget is present.
+ * @param {boolean} params.isAudienceSegmentationWidgetPresent    Whether audience segmentation widget is present.
  * @return {Object} The welcome tour configuration object.
  */
 export function getWelcomeTour( {
@@ -179,15 +179,15 @@ export function getWelcomeTour( {
 	canAuthenticate,
 	isAnalyticsConnected,
 	isActivateAnalyticsNotificationPresent,
-	isKeyMetricsSetupCompleted,
-	isAudienceSegmentationSetupCompleted,
+	isKeyMetricsWidgetPresent,
+	isAudienceSegmentationWidgetPresent,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
 	isAnalyticsConnected: boolean;
 	isActivateAnalyticsNotificationPresent: boolean;
-	isKeyMetricsSetupCompleted: boolean;
-	isAudienceSegmentationSetupCompleted: boolean;
+	isKeyMetricsWidgetPresent: boolean;
+	isAudienceSegmentationWidgetPresent: boolean;
 } ) {
 	if ( ! isAnalyticsConnected ) {
 		const steps = [
@@ -257,7 +257,7 @@ export function getWelcomeTour( {
 			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 		],
 		steps: [
-			isKeyMetricsSetupCompleted && {
+			isKeyMetricsWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',
 				floaterProps: {
 					target: '.googlesitekit-km-change-metrics-cta',
@@ -293,7 +293,7 @@ export function getWelcomeTour( {
 				placement: 'top',
 				isResponsive: true,
 			},
-			isAudienceSegmentationSetupCompleted && {
+			isAudienceSegmentationWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
 				floaterProps: {
 					target: '.googlesitekit-widget-audience-tiles__body .googlesitekit-widget--analyticsAudienceTiles:last-child .googlesitekit-audience-segmentation-tile__header-title',
@@ -311,8 +311,8 @@ export function getWelcomeTour( {
 				placement: 'top',
 				isResponsive: true,
 			},
-			( ! isKeyMetricsSetupCompleted ||
-				! isAudienceSegmentationSetupCompleted ) &&
+			( ! isKeyMetricsWidgetPresent ||
+				! isAudienceSegmentationWidgetPresent ) &&
 				getTopSearchQueriesStep(),
 			{
 				target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',

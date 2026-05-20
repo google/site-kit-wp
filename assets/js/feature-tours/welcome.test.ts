@@ -224,8 +224,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.preloadWidgetAreas ).toEqual( [
@@ -242,8 +242,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -265,8 +265,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -287,8 +287,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: false,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -309,8 +309,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: true,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: true,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -333,8 +333,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: true,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: true,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -357,8 +357,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: true,
-				isAudienceSegmentationSetupCompleted: true,
+				isKeyMetricsWidgetPresent: true,
+				isAudienceSegmentationWidgetPresent: true,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -383,8 +383,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.preloadWidgetAreas ).toEqual( [
@@ -399,8 +399,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -420,8 +420,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -441,8 +441,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: false,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -462,8 +462,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(
@@ -484,8 +484,8 @@ describe( 'getWelcomeTour', () => {
 				canAuthenticate: true,
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
-				isKeyMetricsSetupCompleted: false,
-				isAudienceSegmentationSetupCompleted: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
 			} );
 
 			expect( tour.gaEventCategory( 'test-context' ) ).toBe(

@@ -81,19 +81,21 @@ export function useWelcomeTour() {
 		[ viewContext ]
 	);
 
-	const isKeyMetricsSetupCompleted = useSelect(
+	const isKeyMetricsWidgetPresent = useSelect(
 		( select: Select ) =>
 			isAnalyticsConnected &&
-			!! select( CORE_SITE ).isKeyMetricsSetupCompleted(),
+			!! select( CORE_SITE ).isKeyMetricsSetupCompleted() &&
+			! select( CORE_USER ).isKeyMetricsWidgetHidden(),
 		[ isAnalyticsConnected ]
 	);
 
-	const isAudienceSegmentationSetupCompleted = useSelect(
+	const isAudienceSegmentationWidgetPresent = useSelect(
 		( select: Select ) =>
 			isAnalyticsConnected &&
 			!! select(
 				MODULES_ANALYTICS_4
-			).isAudienceSegmentationSetupCompleted(),
+			).isAudienceSegmentationSetupCompleted() &&
+			! select( CORE_USER ).isAudienceSegmentationWidgetHidden(),
 		[ isAnalyticsConnected ]
 	);
 
@@ -102,7 +104,7 @@ export function useWelcomeTour() {
 		canAuthenticate,
 		isAnalyticsConnected,
 		isActivateAnalyticsNotificationPresent,
-		isKeyMetricsSetupCompleted,
-		isAudienceSegmentationSetupCompleted,
+		isKeyMetricsWidgetPresent,
+		isAudienceSegmentationWidgetPresent,
 	} );
 }

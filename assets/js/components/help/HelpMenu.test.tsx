@@ -50,8 +50,8 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
-	isAudienceSegmentationSetupCompleted: false,
-	isKeyMetricsSetupCompleted: false,
+	isAudienceSegmentationWidgetPresent: false,
+	isKeyMetricsWidgetPresent: false,
 } );
 
 function provideFeatureTourMenuItemData(
