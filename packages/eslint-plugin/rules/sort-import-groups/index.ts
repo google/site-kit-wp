@@ -462,7 +462,6 @@ const rule: Rule.RuleModule = {
 		}
 
 		function checkOrphanGroupShapedComments( importNodes: ImportNode[] ) {
-			const reported = new Set< LComment >();
 			for ( let index = 0; index < importNodes.length; index++ ) {
 				const currentImport = importNodes[ index ];
 				const prevImport = index > 0 ? importNodes[ index - 1 ] : null;
@@ -478,9 +477,6 @@ const rule: Rule.RuleModule = {
 					) {
 						continue;
 					}
-					if ( reported.has( comment ) ) {
-						continue;
-					}
 					if ( comment.type !== 'Block' ) {
 						continue;
 					}
@@ -490,7 +486,6 @@ const rule: Rule.RuleModule = {
 						continue;
 					}
 
-					reported.add( comment );
 					context.report( {
 						node: currentImport,
 						message: `Dependency-style comment block "${ commentText }" is not a recognized group header and should be removed.`,
