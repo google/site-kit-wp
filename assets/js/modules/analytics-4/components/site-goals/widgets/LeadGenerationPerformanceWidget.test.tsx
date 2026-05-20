@@ -519,12 +519,12 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total leads' )
+			getByText( 'Top traffic channels by total form completions' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by leads rate' )
+			getByText( 'Top traffic channels by form completion rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Leads by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
@@ -664,12 +664,12 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total leads' )
+			getByText( 'Top traffic channels by total form completions' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by leads rate' )
+			getByText( 'Top traffic channels by form completion rate' )
 		).toBeInTheDocument();
-		expect( getByText( 'Leads by cities' ) ).toBeInTheDocument();
+		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {

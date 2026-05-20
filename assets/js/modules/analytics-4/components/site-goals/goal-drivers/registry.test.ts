@@ -125,12 +125,12 @@ describe( 'resolveGoalDriverSelectionState', () => {
 		expect( resolveGoalDriverSelectionState() ).toEqual( {
 			ecommerce: [
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				GOAL_DRIVER_IDS.TOP_PAGES,
-				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.CITIES,
 			],
 			lead: [
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 				GOAL_DRIVER_IDS.VISITOR_TYPE,
 			],
 		} );

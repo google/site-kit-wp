@@ -66,7 +66,7 @@ describe( 'Goal driver titles', () => {
 		);
 
 		expect(
-			getByText( 'Top traffic channels by total leads' )
+			getByText( 'Top traffic channels driving leads' )
 		).toBeInTheDocument();
 
 		rerender(
@@ -77,7 +77,7 @@ describe( 'Goal driver titles', () => {
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
 		expect(
-			queryByText( 'Top traffic channels by total leads' )
+			queryByText( 'Top traffic channels driving leads' )
 		).not.toBeInTheDocument();
 	} );
 
