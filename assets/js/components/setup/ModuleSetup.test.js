@@ -58,6 +58,9 @@ describe( 'ModuleSetup', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );

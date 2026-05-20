@@ -66,6 +66,8 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
+	isAudienceSegmentationWidgetPresent: false,
+	isKeyMetricsWidgetPresent: false,
 } );
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
@@ -419,6 +421,13 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
 			} );
 
 			await waitFor( () => {
@@ -897,6 +906,13 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
 			} );
 
 			await waitFor( () => {

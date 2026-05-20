@@ -340,4 +340,52 @@ describe( 'AdminMenuTooltip', () => {
 			'test-label'
 		);
 	} );
+
+	it( 'should pass floaterProps to the JoyrideTooltip component when provided in the tooltip state', async () => {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug: 'test-tooltip-slug',
+			floaterProps: {
+				styles: {
+					arrow: {
+						margin: 42,
+					},
+				},
+			},
+		} );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			const tooltip = document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			expect( tooltip ).toBeInTheDocument();
+		} );
+
+		const floaterArrowSpan = document.querySelector(
+			'.__floater__arrow > span'
+		);
+		expect( floaterArrowSpan ).toHaveStyle(
+			'margin-top: 42px; margin-bottom: 42px;'
+		);
+	} );
 } );
