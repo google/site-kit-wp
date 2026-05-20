@@ -33,6 +33,7 @@ import {
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
+	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -97,7 +98,8 @@ function hasInvalidSelection(
 		).length;
 
 		return (
-			selectedCount < 1 || selectedCount > SITE_GOALS_MAX_SELECTED_DRIVERS
+			selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ||
+			selectedCount > SITE_GOALS_MAX_SELECTED_DRIVERS
 		);
 	} );
 }
@@ -152,7 +154,9 @@ const Footer: FC< FooterProps > = ( {
 			savedItemSlugs={ [] }
 			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
 			selectedItemSlugs={ selectedDriverSlugs }
-			minSelectedItemCount={ hasSelectionError ? 1 : 0 }
+			minSelectedItemCount={
+				hasSelectionError ? SITE_GOALS_MIN_SELECTED_DRIVERS : 0
+			}
 			maxSelectedItemCount={
 				hasSelectionError ? 0 : SITE_GOALS_MAX_SELECTED_DRIVERS * 2
 			}

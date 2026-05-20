@@ -224,11 +224,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 				}
 			} );
 
-		expect(
-			getByText(
-				'Select at least 1 goal driver for Online store performance (0 selected)'
-			)
-		).toBeInTheDocument();
+		expect( getByText( 'Select at least 1 metric' ) ).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();
@@ -250,11 +246,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 				}
 			} );
 
-		expect(
-			getByText(
-				'Select up to 6 goal drivers for Online store performance (7 selected)'
-			)
-		).toBeInTheDocument();
+		expect( getByText( 'Select up to 6 metrics' ) ).toBeInTheDocument();
 		expect(
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();

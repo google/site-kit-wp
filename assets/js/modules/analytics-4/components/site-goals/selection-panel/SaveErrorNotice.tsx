@@ -27,6 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
+	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -57,12 +58,6 @@ function getSelectedCountForGoalType(
 	).length;
 }
 
-function getGoalTypeLabel( goalType: GoalType ): string {
-	return goalType === GOAL_TYPES.ECOMMERCE
-		? __( 'Online store performance', 'google-site-kit' )
-		: __( 'Lead generation performance', 'google-site-kit' );
-}
-
 export default function SaveErrorNotice( {
 	hasEcommerceGoalDrivers,
 	hasLeadGoalDrivers,
@@ -91,19 +86,17 @@ export default function SaveErrorNotice( {
 			goalType
 		);
 
-		if ( selectedCount < 1 ) {
+		if ( selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ) {
 			return (
 				<SelectionPanelError
 					error={ {
 						message: sprintf(
-							/* translators: 1: minimum number of goal drivers, 2: goal type label, 3: selected goal driver count. */
+							/* translators: %d: minimum number of selected metrics. */
 							__(
-								'Select at least %1$d goal driver for %2$s (%3$d selected)',
+								'Select at least %d metric',
 								'google-site-kit'
 							),
-							1,
-							getGoalTypeLabel( goalType ),
-							selectedCount
+							SITE_GOALS_MIN_SELECTED_DRIVERS
 						),
 					} }
 					skipRetryMessage
@@ -116,14 +109,9 @@ export default function SaveErrorNotice( {
 				<SelectionPanelError
 					error={ {
 						message: sprintf(
-							/* translators: 1: maximum number of goal drivers, 2: goal type label, 3: selected goal driver count. */
-							__(
-								'Select up to %1$d goal drivers for %2$s (%3$d selected)',
-								'google-site-kit'
-							),
-							SITE_GOALS_MAX_SELECTED_DRIVERS,
-							getGoalTypeLabel( goalType ),
-							selectedCount
+							/* translators: %d: maximum number of selected metrics. */
+							__( 'Select up to %d metrics', 'google-site-kit' ),
+							SITE_GOALS_MAX_SELECTED_DRIVERS
 						),
 					} }
 					skipRetryMessage
