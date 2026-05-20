@@ -30,7 +30,6 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-// Specific error to handle here, see below.
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { HOUR_IN_SECONDS, stringifyObject } from '@/js/util';
 import { trackAPIError } from '@/js/util/api';

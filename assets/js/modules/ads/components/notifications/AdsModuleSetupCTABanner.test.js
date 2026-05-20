@@ -17,20 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-
-/**
- * Internal dependencies
- */
-const mockShowTooltip = jest.fn();
-jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
-	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
-} ) );
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -54,6 +40,13 @@ import {
 	render,
 } from '../../../../../../tests/js/test-utils';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
+
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
 
 const NOTIFICATION_ID = 'ads-setup-cta';
 

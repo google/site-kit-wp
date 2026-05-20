@@ -17,16 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-const mockShowTooltip = jest.fn();
-jest.mock( '../../../../../components/AdminScreenTooltip', () => ( {
-	__esModule: true,
-	default: jest.fn(),
-	useShowTooltip: jest.fn( () => mockShowTooltip ),
-} ) );
-
-/**
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
@@ -82,6 +72,13 @@ import {
 import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './SetupCTABanner';
+
+const mockShowTooltip = jest.fn();
+jest.mock( '../../../../../components/AdminScreenTooltip', () => ( {
+	__esModule: true,
+	default: jest.fn(),
+	useShowTooltip: jest.fn( () => mockShowTooltip ),
+} ) );
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

@@ -44,9 +44,6 @@ import {
 } from '../../../../../../tests/js/test-utils';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 
-/**
- * Internal dependencies
- */
 const mockShowTooltip = jest.fn();
 jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	__esModule: true,
