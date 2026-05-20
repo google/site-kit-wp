@@ -78,18 +78,15 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			} ),
 		[]
 	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-	const eventDimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames ),
-		[ eventNames ]
-	);
 	const reportOptions = useMemo( () => {
+		const eventNames = normalizePrimaryEvents( primaryEvent );
+
 		if ( ! dates || ! eventNames.length ) {
 			return undefined;
 		}
+
+		const eventDimensionFilters =
+			getDimensionFiltersForEvents( eventNames );
 
 		return {
 			...dates,
@@ -106,7 +103,7 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			keepEmptyRows: false,
 			reportID: `analytics-4_site-goals_device-type_${ goalType }`,
 		};
-	}, [ dates, eventDimensionFilters, eventNames, goalType ] );
+	}, [ dates, goalType, primaryEvent ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -130,26 +127,12 @@ const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
-			return (
-				hasReportStarted && report === undefined && ! currentReportError
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
 			);
 		},
-		[ report, reportOptions ]
+		[ reportOptions ]
 	);
 	const sourceRows: ReportRow[] = report?.rows || [];
 	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {
