@@ -18,6 +18,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -47,14 +48,16 @@ type PascalCase< S extends string > = S extends `${ infer F }${ infer R }`
  *
  * Both keys are slug-namespaced so that a single datastore can host several
  * selection panels without colliding (e.g. an analytics datastore that owns
- * both an audiences panel and a goals panel).
+ * both an audiences panel and a goals panel). The selection value is generic,
+ * defaulting to `string[]` but supporting any shape the feature needs (for
+ * example `Record< string, string[] >` for grouped selections).
  *
  * @since n.e.x.t
  */
-export type SelectionPanelState< Slug extends string > = {
+export type SelectionPanelState< Slug extends string, T = string[] > = {
 	[ K in `is${ PascalCase< Slug > }PanelOpen` ]: boolean;
 } & {
-	[ K in `${ Slug }SelectedItems` ]: string[];
+	[ K in `${ Slug }Selection` ]: T;
 };
 
 /**
@@ -70,50 +73,65 @@ interface SelectionPanelAction {
 }
 
 /**
- * Slug-namespaced action creators exposed by a selection-panel partial store.
- *
- * For a `Slug` of `'sections'` the resulting keys are:
- * - `openSectionsPanel()` — opens the panel.
- * - `closeSectionsPanel()` — closes the panel.
- * - `setSectionsSelectedItems( items )` — replaces the selection.
- * - `toggleSectionsSelectedItem( item )` — adds the item if absent, removes if present.
- * - `resetSectionsSelectedItems()` — restores `initialSelectedItems`.
+ * Conditionally exposes a `toggle{Slug}SelectionItem` action creator when the
+ * selection state is an array. For non-array selection shapes the toggle
+ * semantics aren't well-defined, so the action is omitted from the type and
+ * consumers should use `set{Slug}Selection` to update the value.
  *
  * @since n.e.x.t
  */
-export type SelectionPanelActions< Slug extends string > = {
+type SelectionPanelToggleAction< Slug extends string, T > = T extends Array<
+	infer Item
+>
+	? {
+			[ K in `toggle${ PascalCase< Slug > }SelectionItem` ]: (
+				item: Item
+			) => SelectionPanelAction;
+	  }
+	: Record< string, never >;
+
+/**
+ * Slug-namespaced action creators exposed by a selection-panel partial store.
+ *
+ * For a `Slug` of `'sections'` and the default `T = string[]` the resulting
+ * keys are:
+ * - `openSectionsPanel()` — opens the panel.
+ * - `closeSectionsPanel()` — closes the panel.
+ * - `setSectionsSelection( value )` — replaces the entire selection.
+ * - `toggleSectionsSelectionItem( item )` — adds the item if absent, removes if present (array `T` only).
+ * - `resetSectionsSelection()` — restores `initialSelection`.
+ *
+ * @since n.e.x.t
+ */
+export type SelectionPanelActions< Slug extends string, T = string[] > = {
 	[ K in `open${ PascalCase< Slug > }Panel` ]: () => SelectionPanelAction;
 } & {
 	[ K in `close${ PascalCase< Slug > }Panel` ]: () => SelectionPanelAction;
 } & {
-	[ K in `set${ PascalCase< Slug > }SelectedItems` ]: (
-		items: string[]
+	[ K in `set${ PascalCase< Slug > }Selection` ]: (
+		value: T
 	) => SelectionPanelAction;
 } & {
-	[ K in `toggle${ PascalCase< Slug > }SelectedItem` ]: (
-		item: string
-	) => SelectionPanelAction;
-} & {
-	[ K in `reset${ PascalCase< Slug > }SelectedItems` ]: () => SelectionPanelAction;
-};
+	[ K in `reset${ PascalCase< Slug > }Selection` ]: () => SelectionPanelAction;
+} & SelectionPanelToggleAction< Slug, T >;
 
 /**
  * Slug-namespaced selectors exposed by a selection-panel partial store.
  *
  * For a `Slug` of `'sections'` the resulting keys are:
  * - `isSectionsPanelOpen( state )` — whether the panel is currently open.
- * - `getSectionsSelectedItems( state )` — the current selection array.
+ * - `getSectionsSelection( state )` — the current selection value.
  *
  * @since n.e.x.t
  */
-export type SelectionPanelSelectors< Slug extends string > = {
+export type SelectionPanelSelectors< Slug extends string, T = string[] > = {
 	[ K in `is${ PascalCase< Slug > }PanelOpen` ]: (
-		state: SelectionPanelState< Slug >
+		state: SelectionPanelState< Slug, T >
 	) => boolean;
 } & {
-	[ K in `get${ PascalCase< Slug > }SelectedItems` ]: (
-		state: SelectionPanelState< Slug >
-	) => string[];
+	[ K in `get${ PascalCase< Slug > }Selection` ]: (
+		state: SelectionPanelState< Slug, T >
+	) => T;
 };
 
 /**
@@ -125,21 +143,21 @@ export type SelectionPanelSelectors< Slug extends string > = {
  *
  * @since n.e.x.t
  */
-export interface SelectionPanelStore< Slug extends string > {
-	initialState: SelectionPanelState< Slug >;
-	actions: SelectionPanelActions< Slug >;
+export interface SelectionPanelStore< Slug extends string, T = string[] > {
+	initialState: SelectionPanelState< Slug, T >;
+	actions: SelectionPanelActions< Slug, T >;
 	controls: Record< string, never >;
 	reducer: (
-		state: SelectionPanelState< Slug > | undefined,
+		state: SelectionPanelState< Slug, T > | undefined,
 		action: SelectionPanelAction
-	) => SelectionPanelState< Slug >;
+	) => SelectionPanelState< Slug, T >;
 	resolvers: Record< string, never >;
-	selectors: SelectionPanelSelectors< Slug >;
+	selectors: SelectionPanelSelectors< Slug, T >;
 }
 
 /**
  * Creates a partial datastore that manages a selection panel's open/closed
- * state and selected items.
+ * state and selection value.
  *
  * The returned object is shaped to compose via `combineStores`. All action
  * creators, selectors, state keys, and reducer action types are namespaced by
@@ -147,54 +165,62 @@ export interface SelectionPanelStore< Slug extends string > {
  * datastore (for example, an analytics module that hosts both an audiences
  * panel and a goals panel) without colliding.
  *
+ * The selection value is generic and defaults to `string[]`. Pass a different
+ * shape (e.g. `Record< string, string[] >` for grouped selections) by inferring
+ * `T` from `initialSelection` or by specifying it explicitly. When `T` is an
+ * array, the factory exposes a `toggle{Slug}SelectionItem` action creator that
+ * adds an item if absent and removes it if present.
+ *
  * @since n.e.x.t
  *
- * @param {Object}   args                      Arguments for the store generation.
- * @param {string}   args.slug                 Camel-case panel slug used to namespace state keys, actions, and selectors (e.g. `'sections'`).
- * @param {string[]} args.initialSelectedItems Initial selection seeded into state on store creation, and the value restored by `reset…SelectedItems`.
+ * @param {Object} args                  Arguments for the store generation.
+ * @param {string} args.slug             Camel-case panel slug used to namespace state keys, actions, and selectors (e.g. `'sections'`).
+ * @param {*}      args.initialSelection Initial selection value seeded into state on store creation, and the value restored by `reset{Slug}Selection`. A deep copy is taken so subsequent mutations of the input do not affect store state.
  * @return {Object} The selection panel partial store.
  */
-export function createSelectionPanelStore< Slug extends string >( {
+export function createSelectionPanelStore<
+	Slug extends string,
+	T = string[]
+>( {
 	slug,
-	initialSelectedItems,
+	initialSelection,
 }: {
 	slug: Slug;
-	initialSelectedItems: string[];
-} ): SelectionPanelStore< Slug > {
+	initialSelection: T;
+} ): SelectionPanelStore< Slug, T > {
 	invariant(
 		typeof slug === 'string' && slug.length > 0,
 		'slug is required.'
 	);
 	invariant(
-		Array.isArray( initialSelectedItems ) &&
-			initialSelectedItems.every( ( item ) => typeof item === 'string' ),
-		'initialSelectedItems must be an array of strings.'
+		initialSelection !== undefined,
+		'initialSelection is required.'
 	);
 
 	const pascalSlug = camelCaseToPascalCase( slug );
 	const constantSlug = camelCaseToConstantCase( slug );
 
 	const isOpenKey = `is${ pascalSlug }PanelOpen`;
-	const selectedItemsKey = `${ slug }SelectedItems`;
+	const selectionKey = `${ slug }Selection`;
 
 	const SET_PANEL_OPEN = `SET_${ constantSlug }_PANEL_OPEN`;
-	const SET_SELECTED_ITEMS = `SET_${ constantSlug }_SELECTED_ITEMS`;
-	const TOGGLE_SELECTED_ITEM = `TOGGLE_${ constantSlug }_SELECTED_ITEM`;
-	const RESET_SELECTED_ITEMS = `RESET_${ constantSlug }_SELECTED_ITEMS`;
+	const SET_SELECTION = `SET_${ constantSlug }_SELECTION`;
+	const TOGGLE_SELECTION_ITEM = `TOGGLE_${ constantSlug }_SELECTION_ITEM`;
+	const RESET_SELECTION = `RESET_${ constantSlug }_SELECTION`;
 
 	const openPanelAction = `open${ pascalSlug }Panel`;
 	const closePanelAction = `close${ pascalSlug }Panel`;
-	const setSelectedItemsAction = `set${ pascalSlug }SelectedItems`;
-	const toggleSelectedItemAction = `toggle${ pascalSlug }SelectedItem`;
-	const resetSelectedItemsAction = `reset${ pascalSlug }SelectedItems`;
+	const setSelectionAction = `set${ pascalSlug }Selection`;
+	const toggleSelectionItemAction = `toggle${ pascalSlug }SelectionItem`;
+	const resetSelectionAction = `reset${ pascalSlug }Selection`;
 
 	const isPanelOpenSelector = isOpenKey;
-	const getSelectedItemsSelector = `get${ pascalSlug }SelectedItems`;
+	const getSelectionSelector = `get${ pascalSlug }Selection`;
 
 	const initialState = {
 		[ isOpenKey ]: false,
-		[ selectedItemsKey ]: [ ...initialSelectedItems ],
-	} as SelectionPanelState< Slug >;
+		[ selectionKey ]: cloneDeep( initialSelection ),
+	} as SelectionPanelState< Slug, T >;
 
 	const actions = {
 		/**
@@ -226,49 +252,41 @@ export function createSelectionPanelStore< Slug extends string >( {
 		},
 
 		/**
-		 * Replaces the entire selection with the given array of item slugs.
+		 * Replaces the entire selection with the given value. The value is
+		 * deep-cloned so that callers can safely mutate the source afterwards
+		 * without affecting store state.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string[]} items Items that should constitute the new selection.
+		 * @param {*} value New selection value.
 		 * @return {Object} Redux-style action.
 		 */
-		[ setSelectedItemsAction ]( items: string[] ) {
-			invariant(
-				Array.isArray( items ) &&
-					items.every( ( item ) => typeof item === 'string' ),
-				'items must be an array of strings.'
-			);
-
+		[ setSelectionAction ]( value: T ) {
 			return {
-				type: SET_SELECTED_ITEMS,
-				payload: { items: [ ...items ] },
+				type: SET_SELECTION,
+				payload: { value: cloneDeep( value ) },
 			};
 		},
 
 		/**
-		 * Toggles a single item in the selection: adds it if absent, removes
-		 * it if present.
+		 * Toggles a single item in an array-shaped selection: adds the item
+		 * if absent, removes it if present. Only meaningful when the
+		 * selection value is an array.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} item The item slug to toggle.
+		 * @param {*} item Item to toggle.
 		 * @return {Object} Redux-style action.
 		 */
-		[ toggleSelectedItemAction ]( item: string ) {
-			invariant(
-				typeof item === 'string' && item.length > 0,
-				'item must be a non-empty string.'
-			);
-
+		[ toggleSelectionItemAction ]( item: unknown ) {
 			return {
-				type: TOGGLE_SELECTED_ITEM,
+				type: TOGGLE_SELECTION_ITEM,
 				payload: { item },
 			};
 		},
 
 		/**
-		 * Restores the selection to the `initialSelectedItems` passed when the
+		 * Restores the selection to the `initialSelection` passed when the
 		 * store was created. Typically dispatched when the panel reopens so
 		 * each session starts from a known baseline.
 		 *
@@ -276,13 +294,13 @@ export function createSelectionPanelStore< Slug extends string >( {
 		 *
 		 * @return {Object} Redux-style action.
 		 */
-		[ resetSelectedItemsAction ]() {
+		[ resetSelectionAction ]() {
 			return {
-				type: RESET_SELECTED_ITEMS,
+				type: RESET_SELECTION,
 				payload: {},
 			};
 		},
-	} as unknown as SelectionPanelActions< Slug >;
+	} as unknown as SelectionPanelActions< Slug, T >;
 
 	const reducer = createReducer(
 		( state: Record< string, unknown >, action: SelectionPanelAction ) => {
@@ -291,31 +309,33 @@ export function createSelectionPanelStore< Slug extends string >( {
 					state[ isOpenKey ] = action.payload.isOpen as boolean;
 					break;
 
-				case SET_SELECTED_ITEMS:
-					state[ selectedItemsKey ] = action.payload
-						.items as string[];
+				case SET_SELECTION:
+					state[ selectionKey ] = action.payload.value;
 					break;
 
-				case TOGGLE_SELECTED_ITEM: {
-					const item = action.payload.item as string;
-					const current =
-						( state[ selectedItemsKey ] as string[] ) || [];
-
-					state[ selectedItemsKey ] = current.includes( item )
-						? current.filter( ( existing ) => existing !== item )
-						: [ ...current, item ];
+				case TOGGLE_SELECTION_ITEM: {
+					const current = state[ selectionKey ];
+					invariant(
+						Array.isArray( current ),
+						`${ toggleSelectionItemAction } requires the selection value to be an array.`
+					);
+					const item = action.payload.item;
+					const list = current as unknown[];
+					state[ selectionKey ] = list.includes( item )
+						? list.filter( ( existing ) => existing !== item )
+						: [ ...list, item ];
 					break;
 				}
 
-				case RESET_SELECTED_ITEMS:
-					state[ selectedItemsKey ] = [ ...initialSelectedItems ];
+				case RESET_SELECTION:
+					state[ selectionKey ] = cloneDeep( initialSelection );
 					break;
 
 				default:
 					break;
 			}
 		}
-	) as SelectionPanelStore< Slug >[ 'reducer' ];
+	) as SelectionPanelStore< Slug, T >[ 'reducer' ];
 
 	const selectors = {
 		/**
@@ -331,17 +351,17 @@ export function createSelectionPanelStore< Slug extends string >( {
 		},
 
 		/**
-		 * Gets the panel's currently selected items.
+		 * Gets the panel's current selection value.
 		 *
 		 * @since n.e.x.t
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {string[]} The current selection.
+		 * @return {*} The current selection.
 		 */
-		[ getSelectedItemsSelector ]( state: Record< string, unknown > ) {
-			return ( state[ selectedItemsKey ] as string[] ) || [];
+		[ getSelectionSelector ]( state: Record< string, unknown > ) {
+			return state[ selectionKey ] as T;
 		},
-	} as unknown as SelectionPanelSelectors< Slug >;
+	} as unknown as SelectionPanelSelectors< Slug, T >;
 
 	return {
 		initialState,

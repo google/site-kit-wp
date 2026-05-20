@@ -47,17 +47,17 @@ interface PanelContentProps {
 const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 	const selectedSections = useSelect(
 		( select: Select ) =>
-			select( CORE_PDF ).getSectionsSelectedItems() as string[],
+			select( CORE_PDF ).getSectionsSelection() as string[],
 		[]
 	);
 
-	const { toggleSectionsSelectedItem } = useDispatch( CORE_PDF );
+	const { toggleSectionsSelectionItem } = useDispatch( CORE_PDF );
 
 	const toggleSection = useCallback(
 		( slug: string ) => {
-			toggleSectionsSelectedItem( slug );
+			toggleSectionsSelectionItem( slug );
 		},
-		[ toggleSectionsSelectedItem ]
+		[ toggleSectionsSelectionItem ]
 	);
 
 	const hasSelection = selectedSections.length > 0;

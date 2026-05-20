@@ -28,13 +28,13 @@ import { createSelectionPanelStore } from './create-selection-panel-store';
 const TEST_STORE = 'test/selection-panel';
 
 describe( 'createSelectionPanelStore', () => {
-	const initialSelectedItems = [ 'one', 'two', 'three' ];
+	const initialSelection = [ 'one', 'two', 'three' ];
 
 	function registerSectionsStore() {
 		const storeDefinition = combineStores(
 			createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems,
+				initialSelection,
 			} )
 		);
 		const registry = createRegistry();
@@ -50,7 +50,7 @@ describe( 'createSelectionPanelStore', () => {
 		it( 'should require a slug', () => {
 			expect( () => {
 				// @ts-expect-error - intentionally invalid input.
-				createSelectionPanelStore( { initialSelectedItems: [] } );
+				createSelectionPanelStore( { initialSelection: [] } );
 			} ).toThrow( 'slug is required.' );
 		} );
 
@@ -58,27 +58,18 @@ describe( 'createSelectionPanelStore', () => {
 			expect( () => {
 				createSelectionPanelStore( {
 					slug: '',
-					initialSelectedItems: [],
+					initialSelection: [],
 				} );
 			} ).toThrow( 'slug is required.' );
 		} );
 
-		it( 'should require initialSelectedItems to be a string array', () => {
+		it( 'should require initialSelection to be defined', () => {
 			expect( () => {
 				createSelectionPanelStore( {
 					slug: 'sections',
-					// @ts-expect-error - intentionally invalid input.
-					initialSelectedItems: 'not-an-array',
+					initialSelection: undefined,
 				} );
-			} ).toThrow( 'initialSelectedItems must be an array of strings.' );
-
-			expect( () => {
-				createSelectionPanelStore( {
-					slug: 'sections',
-					// @ts-expect-error - intentionally invalid input.
-					initialSelectedItems: [ 1, 2, 3 ],
-				} );
-			} ).toThrow( 'initialSelectedItems must be an array of strings.' );
+			} ).toThrow( 'initialSelection is required.' );
 		} );
 	} );
 
@@ -86,16 +77,16 @@ describe( 'createSelectionPanelStore', () => {
 		it( 'should expose slug-namespaced action creators', () => {
 			const store = createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems,
+				initialSelection,
 			} );
 
 			expect( Object.keys( store.actions ).sort() ).toEqual(
 				[
 					'closeSectionsPanel',
 					'openSectionsPanel',
-					'resetSectionsSelectedItems',
-					'setSectionsSelectedItems',
-					'toggleSectionsSelectedItem',
+					'resetSectionsSelection',
+					'setSectionsSelection',
+					'toggleSectionsSelectionItem',
 				].sort()
 			);
 		} );
@@ -103,11 +94,11 @@ describe( 'createSelectionPanelStore', () => {
 		it( 'should expose slug-namespaced selectors', () => {
 			const store = createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems,
+				initialSelection,
 			} );
 
 			expect( Object.keys( store.selectors ).sort() ).toEqual( [
-				'getSectionsSelectedItems',
+				'getSectionsSelection',
 				'isSectionsPanelOpen',
 			] );
 		} );
@@ -115,39 +106,39 @@ describe( 'createSelectionPanelStore', () => {
 		it( 'should seed slug-namespaced state keys', () => {
 			const store = createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems,
+				initialSelection,
 			} );
 
 			expect( store.initialState ).toEqual( {
 				isSectionsPanelOpen: false,
-				sectionsSelectedItems: initialSelectedItems,
+				sectionsSelection: initialSelection,
 			} );
 		} );
 
 		it( 'should derive names correctly from camelCase multi-word slugs', () => {
 			const store = createSelectionPanelStore( {
 				slug: 'goalDrivers',
-				initialSelectedItems: [],
+				initialSelection: [],
 			} );
 
 			expect( Object.keys( store.actions ).sort() ).toEqual(
 				[
 					'closeGoalDriversPanel',
 					'openGoalDriversPanel',
-					'resetGoalDriversSelectedItems',
-					'setGoalDriversSelectedItems',
-					'toggleGoalDriversSelectedItem',
+					'resetGoalDriversSelection',
+					'setGoalDriversSelection',
+					'toggleGoalDriversSelectionItem',
 				].sort()
 			);
 
 			expect( Object.keys( store.selectors ).sort() ).toEqual( [
-				'getGoalDriversSelectedItems',
+				'getGoalDriversSelection',
 				'isGoalDriversPanelOpen',
 			] );
 
 			expect( store.initialState ).toEqual( {
 				isGoalDriversPanelOpen: false,
-				goalDriversSelectedItems: [],
+				goalDriversSelection: [],
 			} );
 		} );
 	} );
@@ -172,93 +163,155 @@ describe( 'createSelectionPanelStore', () => {
 		} );
 	} );
 
-	describe( 'selected items', () => {
+	describe( 'selection (array shape)', () => {
 		it( 'should return the initial selection by default', () => {
 			const { select } = registerSectionsStore();
-			expect( select.getSectionsSelectedItems() ).toEqual(
-				initialSelectedItems
-			);
+			expect( select.getSectionsSelection() ).toEqual( initialSelection );
 		} );
 
-		it( 'should replace the selection via setSectionsSelectedItems()', () => {
+		it( 'should replace the selection via setSectionsSelection()', () => {
 			const { dispatch, select } = registerSectionsStore();
-			dispatch.setSectionsSelectedItems( [ 'alpha', 'beta' ] );
-			expect( select.getSectionsSelectedItems() ).toEqual( [
+			dispatch.setSectionsSelection( [ 'alpha', 'beta' ] );
+			expect( select.getSectionsSelection() ).toEqual( [
 				'alpha',
 				'beta',
 			] );
 		} );
 
-		it( 'should add an absent item via toggleSectionsSelectedItem()', () => {
+		it( 'should add an absent item via toggleSectionsSelectionItem()', () => {
 			const { dispatch, select } = registerSectionsStore();
-			dispatch.setSectionsSelectedItems( [ 'a' ] );
-			dispatch.toggleSectionsSelectedItem( 'b' );
-			expect( select.getSectionsSelectedItems() ).toEqual( [ 'a', 'b' ] );
+			dispatch.setSectionsSelection( [ 'a' ] );
+			dispatch.toggleSectionsSelectionItem( 'b' );
+			expect( select.getSectionsSelection() ).toEqual( [ 'a', 'b' ] );
 		} );
 
-		it( 'should remove a present item via toggleSectionsSelectedItem()', () => {
+		it( 'should remove a present item via toggleSectionsSelectionItem()', () => {
 			const { dispatch, select } = registerSectionsStore();
-			dispatch.setSectionsSelectedItems( [ 'a', 'b', 'c' ] );
-			dispatch.toggleSectionsSelectedItem( 'b' );
-			expect( select.getSectionsSelectedItems() ).toEqual( [ 'a', 'c' ] );
+			dispatch.setSectionsSelection( [ 'a', 'b', 'c' ] );
+			dispatch.toggleSectionsSelectionItem( 'b' );
+			expect( select.getSectionsSelection() ).toEqual( [ 'a', 'c' ] );
 		} );
 
-		it( 'should restore initial selection via resetSectionsSelectedItems()', () => {
+		it( 'should restore initial selection via resetSectionsSelection()', () => {
 			const { dispatch, select } = registerSectionsStore();
-			dispatch.setSectionsSelectedItems( [ 'something-else' ] );
-			expect( select.getSectionsSelectedItems() ).toEqual( [
+			dispatch.setSectionsSelection( [ 'something-else' ] );
+			expect( select.getSectionsSelection() ).toEqual( [
 				'something-else',
 			] );
 
-			dispatch.resetSectionsSelectedItems();
-			expect( select.getSectionsSelectedItems() ).toEqual(
-				initialSelectedItems
-			);
+			dispatch.resetSectionsSelection();
+			expect( select.getSectionsSelection() ).toEqual( initialSelection );
 		} );
 
-		it( 'should reject non-array values to setSectionsSelectedItems()', () => {
-			const { dispatch } = registerSectionsStore();
-			expect( () => {
-				dispatch.setSectionsSelectedItems( 'nope' );
-			} ).toThrow( 'items must be an array of strings.' );
-		} );
-
-		it( 'should reject arrays of non-strings to setSectionsSelectedItems()', () => {
-			const { dispatch } = registerSectionsStore();
-			expect( () => {
-				dispatch.setSectionsSelectedItems( [ 1, 2, 3 ] );
-			} ).toThrow( 'items must be an array of strings.' );
-		} );
-
-		it( 'should reject non-string items to toggleSectionsSelectedItem()', () => {
-			const { dispatch } = registerSectionsStore();
-			expect( () => {
-				dispatch.toggleSectionsSelectedItem( 42 );
-			} ).toThrow( 'item must be a non-empty string.' );
-
-			expect( () => {
-				dispatch.toggleSectionsSelectedItem( '' );
-			} ).toThrow( 'item must be a non-empty string.' );
-		} );
-
-		it( 'should not mutate the original initialSelectedItems array', () => {
+		it( 'should deep-copy the initial selection so source mutations do not leak into state', () => {
 			const original = [ 'a', 'b' ];
 			const store = createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems: original,
+				initialSelection: original,
 			} );
 
 			expect( store.initialState ).toEqual( {
 				isSectionsPanelOpen: false,
-				sectionsSelectedItems: [ 'a', 'b' ],
+				sectionsSelection: [ 'a', 'b' ],
 			} );
 
-			// Mutating the externally-owned source must not bleed into state.
 			original.push( 'c' );
-			expect( store.initialState.sectionsSelectedItems ).toEqual( [
+			expect( store.initialState.sectionsSelection ).toEqual( [
 				'a',
 				'b',
 			] );
+		} );
+
+		it( 'should deep-copy values passed to setSectionsSelection()', () => {
+			const { dispatch, select } = registerSectionsStore();
+			const items = [ 'x', 'y' ];
+			dispatch.setSectionsSelection( items );
+
+			items.push( 'z' );
+			expect( select.getSectionsSelection() ).toEqual( [ 'x', 'y' ] );
+		} );
+	} );
+
+	describe( 'selection (generic shape)', () => {
+		type GoalDrivers = Record< string, string[] >;
+
+		const initialDrivers: GoalDrivers = {
+			ECOMMERCE: [ 'e1' ],
+			LEAD: [ 'l1', 'l2' ],
+		};
+
+		function registerGoalsStore() {
+			const storeDefinition = combineStores(
+				createSelectionPanelStore< 'goalDrivers', GoalDrivers >( {
+					slug: 'goalDrivers',
+					initialSelection: initialDrivers,
+				} )
+			);
+			const registry = createRegistry();
+			registry.registerStore( TEST_STORE, storeDefinition );
+			return {
+				registry,
+				dispatch: registry.dispatch( TEST_STORE ),
+				select: registry.select( TEST_STORE ),
+			};
+		}
+
+		it( 'should support a non-array generic selection value', () => {
+			const { select } = registerGoalsStore();
+			expect( select.getGoalDriversSelection() ).toEqual(
+				initialDrivers
+			);
+		} );
+
+		it( 'should replace a non-array selection via setGoalDriversSelection()', () => {
+			const { dispatch, select } = registerGoalsStore();
+			const next: GoalDrivers = { ECOMMERCE: [ 'e2' ] };
+			dispatch.setGoalDriversSelection( next );
+			expect( select.getGoalDriversSelection() ).toEqual( next );
+		} );
+
+		it( 'should reset a non-array selection back to the initial value', () => {
+			const { dispatch, select } = registerGoalsStore();
+			dispatch.setGoalDriversSelection( { LEAD: [] } );
+			expect( select.getGoalDriversSelection() ).toEqual( {
+				LEAD: [],
+			} );
+
+			dispatch.resetGoalDriversSelection();
+			expect( select.getGoalDriversSelection() ).toEqual(
+				initialDrivers
+			);
+		} );
+
+		it( 'should deep-copy nested selection values', () => {
+			const original: GoalDrivers = {
+				ECOMMERCE: [ 'e1' ],
+				LEAD: [ 'l1' ],
+			};
+			const store = createSelectionPanelStore<
+				'goalDrivers',
+				GoalDrivers
+			>( {
+				slug: 'goalDrivers',
+				initialSelection: original,
+			} );
+
+			// Mutate a nested array in the source.
+			original.ECOMMERCE.push( 'e2' );
+
+			expect( store.initialState.goalDriversSelection ).toEqual( {
+				ECOMMERCE: [ 'e1' ],
+				LEAD: [ 'l1' ],
+			} );
+		} );
+
+		it( 'should throw when toggle action is dispatched against a non-array selection', () => {
+			const { dispatch } = registerGoalsStore();
+			expect( () => {
+				dispatch.toggleGoalDriversSelectionItem( 'anything' );
+			} ).toThrow(
+				/toggleGoalDriversSelectionItem requires the selection value to be an array/
+			);
 		} );
 	} );
 
@@ -266,11 +319,11 @@ describe( 'createSelectionPanelStore', () => {
 		it( 'should not collide when two panels are combined in the same store', () => {
 			const sections = createSelectionPanelStore( {
 				slug: 'sections',
-				initialSelectedItems: [ 'summary' ],
+				initialSelection: [ 'summary' ],
 			} );
 			const audiences = createSelectionPanelStore( {
 				slug: 'audiences',
-				initialSelectedItems: [ 'aud-1' ],
+				initialSelection: [ 'aud-1' ],
 			} );
 
 			const combined = combineStores( sections, audiences );
@@ -287,15 +340,13 @@ describe( 'createSelectionPanelStore', () => {
 			// Opening the sections panel must not affect the audiences panel.
 			expect( select.isAudiencesPanelOpen() ).toBe( false );
 
-			dispatch.toggleAudiencesSelectedItem( 'aud-2' );
-			expect( select.getAudiencesSelectedItems() ).toEqual( [
+			dispatch.toggleAudiencesSelectionItem( 'aud-2' );
+			expect( select.getAudiencesSelection() ).toEqual( [
 				'aud-1',
 				'aud-2',
 			] );
 			// Toggling on audiences must not affect sections.
-			expect( select.getSectionsSelectedItems() ).toEqual( [
-				'summary',
-			] );
+			expect( select.getSectionsSelection() ).toEqual( [ 'summary' ] );
 		} );
 	} );
 } );

@@ -24,12 +24,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
 import { createSelectionPanelStore } from '@/js/googlesitekit/data/create-selection-panel-store';
+import { DEFAULT_SELECTED_SECTIONS } from '@/js/components/pdf-generation/constants';
 import pdf from './pdf';
 import { CORE_PDF } from './constants';
 
 const sectionsPanel = createSelectionPanelStore( {
 	slug: 'sections',
-	initialSelectedItems: [],
+	initialSelection: DEFAULT_SELECTED_SECTIONS,
 } );
 
 interface Store {

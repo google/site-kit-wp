@@ -35,10 +35,7 @@ import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import InViewProvider from '@/js/components/InViewProvider';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
-import {
-	PDF_GENERATING_KEY,
-	DEFAULT_SELECTED_SECTIONS,
-} from '@/js/components/pdf-generation/constants';
+import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 
 const PDFSectionsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
@@ -46,7 +43,7 @@ const PDFSectionsSelectionPanel: FC = () => {
 		[]
 	);
 
-	const { closeSectionsPanel, setSectionsSelectedItems } =
+	const { closeSectionsPanel, resetSectionsSelection } =
 		useDispatch( CORE_PDF );
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -57,12 +54,12 @@ const PDFSectionsSelectionPanel: FC = () => {
 	}, [ isOpen, closeSectionsPanel ] );
 
 	const onSideSheetOpen = useCallback( () => {
-		setSectionsSelectedItems( DEFAULT_SELECTED_SECTIONS );
+		resetSectionsSelection();
 		// Reset any stale "generating" state left over from a previous session.
 		// PDF_GENERATING_KEY is a temporary CORE_UI stub that will be replaced
 		// by the orchestrator in #12537.
 		setValue( PDF_GENERATING_KEY, false );
-	}, [ setSectionsSelectedItems, setValue ] );
+	}, [ resetSectionsSelection, setValue ] );
 
 	return (
 		<InViewProvider

@@ -44,15 +44,15 @@ function DefaultTemplate() {
 }
 
 function EmptyTemplate() {
-	const { setSectionsSelectedItems } = useDispatch( CORE_PDF );
+	const { setSectionsSelection } = useDispatch( CORE_PDF );
 
 	// The panel's `onSideSheetOpen` resets the selection to defaults on every
 	// mount. Re-applying the empty selection from this Template's `useEffect`
 	// runs after the panel's reset (effects fire bottom-up), so the story
 	// renders with no sections selected.
 	useEffect( () => {
-		setSectionsSelectedItems( [] );
-	}, [ setSectionsSelectedItems ] );
+		setSectionsSelection( [] );
+	}, [ setSectionsSelection ] );
 
 	return <PDFSectionsSelectionPanel />;
 }
