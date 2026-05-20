@@ -251,6 +251,8 @@ export default function UserInputPreviewGroup( {
 				<AnswerQuestionButton
 					isDisabled={ isEditControlDisabled }
 					onClick={ handleOnEditClick }
+					slug={ slug }
+					gaEventCategory={ gaEventCategory }
 				/>
 			) }
 

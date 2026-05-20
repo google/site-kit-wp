@@ -56,7 +56,7 @@ import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import { trackEvent } from '@/js/util';
 import { getAccountDefaults as getAccountDefaults } from '@/js/modules/analytics-4/utils/account';
 import { Cell } from '@/js/material-components';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import AnalyticsAccountCreationErrorNotices from './AnalyticsAccountCreationErrorNotices';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
@@ -284,10 +284,7 @@ export default function AccountCreate( { className } ) {
 
 	return (
 		<div className={ className }>
-			<StoreErrorNotices
-				moduleSlug="analytics-4"
-				storeName={ MODULES_ANALYTICS_4 }
-			/>
+			<AnalyticsAccountCreationErrorNotices />
 
 			{ hasAccountCreationError && (
 				<AnalyticsAccountCreationErrorNotice

@@ -48,7 +48,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { isPermissionScopeError } from '@/js/util/errors';
 import SetupFormFields from './SetupFormFields';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import AnalyticsAccountCreationErrorNotices from '../common/AnalyticsAccountCreationErrorNotices';
 
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -164,10 +164,7 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
-			<StoreErrorNotices
-				moduleSlug="analytics-4"
-				storeName={ MODULES_ANALYTICS_4 }
-			/>
+			<AnalyticsAccountCreationErrorNotices />
 			<SetupFormFields />
 
 			<SetupPluginConversionTrackingNotice

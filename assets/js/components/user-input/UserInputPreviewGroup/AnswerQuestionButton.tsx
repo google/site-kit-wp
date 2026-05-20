@@ -30,21 +30,31 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import { trackEvent } from '@/js/util';
 
 interface AnswerQuestionButtonProps {
 	isDisabled: boolean;
 	onClick: () => void;
+	slug: string;
+	gaEventCategory: string;
 }
 
 const AnswerQuestionButton: FC< AnswerQuestionButtonProps > = ( {
 	isDisabled,
 	onClick,
+	slug,
+	gaEventCategory,
 }: AnswerQuestionButtonProps ) => {
+	const handleClick = () => {
+		trackEvent( gaEventCategory, 'answer_question', slug );
+		onClick();
+	};
+
 	return (
 		<div className="googlesitekit-user-input__preview-group-answer-question">
 			{
 				// @ts-expect-error - The `Button` component is not typed yet.
-				<Button onClick={ onClick } disabled={ isDisabled }>
+				<Button onClick={ handleClick } disabled={ isDisabled }>
 					{ __( 'Answer question', 'google-site-kit' ) }
 				</Button>
 			}
