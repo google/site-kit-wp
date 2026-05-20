@@ -115,6 +115,7 @@ export const Ready = Template.bind(
 ) as Story< TopPagesGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'lead',
+	title: 'Top pages driving leads',
 	rows: [
 		{
 			label: 'What do "L" or "N" car stickers mean?',
