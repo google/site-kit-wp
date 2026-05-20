@@ -133,7 +133,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					? select( MODULES_ANALYTICS_4 ).getReport(
 							leadEventsReportOptions
 					  )
-					: [],
+					: null,
 			[ leadEventsReportOptions ]
 		) || [];
 
@@ -144,21 +144,29 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					? select( MODULES_ANALYTICS_4 ).getReport(
 							engagementReportOptions
 					  )
-					: [],
+					: null,
 			[ engagementReportOptions ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
-		( select: Select ) => [
-			select( MODULES_ANALYTICS_4 ).areReportsLoading(
-				leadEventsReportOptions,
-				engagementReportOptions
-			),
-			select( MODULES_ANALYTICS_4 ).getFirstReportError( [
-				leadEventsReportOptions,
-				engagementReportOptions,
-			] ),
-		],
+		( select: Select ) => {
+			const reportsToCheck: ReportOptions[] = [];
+			if ( leadEventsReportOptions ) {
+				reportsToCheck.push( leadEventsReportOptions );
+			}
+			if ( engagementReportOptions ) {
+				reportsToCheck.push( engagementReportOptions );
+			}
+
+			return [
+				select( MODULES_ANALYTICS_4 ).areReportsLoading(
+					...reportsToCheck
+				),
+				select( MODULES_ANALYTICS_4 ).getFirstReportError(
+					...reportsToCheck
+				),
+			];
+		},
 		[ leadEventsReportOptions, engagementReportOptions ]
 	);
 

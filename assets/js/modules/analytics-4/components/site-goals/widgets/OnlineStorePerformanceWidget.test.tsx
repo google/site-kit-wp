@@ -746,6 +746,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, engagementReport );
@@ -784,6 +785,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			dates,
 			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
 		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, engagementReport );
@@ -840,6 +843,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
 
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, engagementReport );

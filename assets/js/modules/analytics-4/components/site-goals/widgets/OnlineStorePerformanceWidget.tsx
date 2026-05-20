@@ -172,70 +172,104 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		[]
 	);
 
-	const reportOptions: ReportOptions[] = [];
-
-	if ( primaryEvent ) {
-		reportOptions.push( {
-			...dates,
-			metrics: [ { name: 'eventCount' } ],
-			dimensions: [ { name: 'eventName' } ],
-			dimensionFilters: {
-				eventName: primaryEvent,
-			},
-			reportID:
-				'analytics-4_online-store-performance-widget_primaryEventReportOptions',
-		} );
-
-		reportOptions.push( {
-			...dates,
-			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-			reportID: 'analytics-4_site-goals_engagementReportOptions',
-		} );
-	}
-
-	if ( secondaryEcommerceEvents?.length ) {
-		reportOptions.push( {
-			...dates,
-			metrics: [ { name: 'eventCount' } ],
-			dimensions: [ { name: 'eventName' } ],
-			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: secondaryEcommerceEvents,
+	const primaryEventReportOptions: ReportOptions | null = primaryEvent
+		? {
+				...dates,
+				metrics: [ { name: 'eventCount' } ],
+				dimensions: [ { name: 'eventName' } ],
+				dimensionFilters: {
+					eventName: primaryEvent,
 				},
-			},
-			reportID:
-				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
-		} );
-	}
+				reportID:
+					'analytics-4_online-store-performance-widget_primaryEventReportOptions',
+		  }
+		: null;
 
-	const [ primaryEventReport, engagementReport, secondaryEventsReport ] =
+	const engagementReportOptions: ReportOptions | null = primaryEvent
+		? {
+				...dates,
+				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+				reportID: 'analytics-4_site-goals_engagementReportOptions',
+		  }
+		: null;
+
+	const secondaryEventsReportOptions: ReportOptions | null =
+		secondaryEcommerceEvents?.length
+			? {
+					...dates,
+					metrics: [ { name: 'eventCount' } ],
+					dimensions: [ { name: 'eventName' } ],
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: secondaryEcommerceEvents,
+						},
+					},
+					reportID:
+						'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+			  }
+			: null;
+
+	const primaryEventReport =
 		useInViewSelect(
 			( select: Select ) =>
-				reportOptions.map( ( options ) =>
-					select( MODULES_ANALYTICS_4 ).getReport( options )
-				),
-			// Passing reportOptions directly as an array causes errors because
-			// the array size changes—which is not allowed.
-			//
-			// So we wrap it in an object to ensure the array size remains
-			// consistent between renders.
-			[ { reportOptions } ]
+				primaryEventReportOptions
+					? select( MODULES_ANALYTICS_4 ).getReport(
+							primaryEventReportOptions
+					  )
+					: null,
+			[ primaryEventReportOptions ]
+		) || [];
+
+	const engagementReport =
+		useInViewSelect(
+			( select: Select ) =>
+				engagementReportOptions
+					? select( MODULES_ANALYTICS_4 ).getReport(
+							engagementReportOptions
+					  )
+					: null,
+			[ engagementReportOptions ]
+		) || [];
+
+	const secondaryEventsReport =
+		useInViewSelect(
+			( select: Select ) =>
+				secondaryEventsReportOptions
+					? select( MODULES_ANALYTICS_4 ).getReport(
+							secondaryEventsReportOptions
+					  )
+					: null,
+			[ secondaryEventsReportOptions ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
-		( select: Select ) => [
-			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
-			select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				...reportOptions
-			),
-		],
-		// Passing reportOptions directly as an array causes errors because
-		// the array size changes—which is not allowed.
-		//
-		// So we wrap it in an object to ensure the array size remains
-		// consistent between renders.
-		[ { reportOptions } ]
+		( select: Select ) => {
+			const reportsToCheck: ReportOptions[] = [];
+			if ( primaryEventReportOptions ) {
+				reportsToCheck.push( primaryEventReportOptions );
+			}
+			if ( engagementReportOptions ) {
+				reportsToCheck.push( engagementReportOptions );
+			}
+			if ( secondaryEventsReportOptions ) {
+				reportsToCheck.push( secondaryEventsReportOptions );
+			}
+
+			return [
+				select( MODULES_ANALYTICS_4 ).areReportsLoading(
+					...reportsToCheck
+				),
+				select( MODULES_ANALYTICS_4 ).getFirstReportError(
+					...reportsToCheck
+				),
+			];
+		},
+		[
+			primaryEventReportOptions,
+			engagementReportOptions,
+			secondaryEventsReportOptions,
+		]
 	);
 
 	if ( ! primaryEvent ) {
