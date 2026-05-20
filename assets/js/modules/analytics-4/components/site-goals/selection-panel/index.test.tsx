@@ -30,6 +30,7 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
+import { mockBrowserScrolling } from '../../../../../../../tests/js/mock-browser-utils';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -46,6 +47,8 @@ import {
 
 describe( 'SiteGoalsSelectionPanel', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
+
+	mockBrowserScrolling();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -203,5 +206,61 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		expect(
 			queryByRole( 'button', { name: 'Lead generation performance' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows min selection notice and disables save when a goal type has no selected drivers', async () => {
+		const { getByRole, getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		document
+			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.forEach( ( checkboxElement ) => {
+				const checkbox = checkboxElement as HTMLInputElement;
+				if ( checkbox.checked ) {
+					fireEvent.click( checkbox );
+				}
+			} );
+
+		expect(
+			getByText(
+				'Select at least 1 goal driver for Online store performance (0 selected)'
+			)
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: /apply changes|save selection/i } )
+		).toBeDisabled();
+	} );
+
+	it( 'shows max selection notice and disables save while allowing selection over six', async () => {
+		const { getByRole, getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		document
+			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.forEach( ( checkboxElement ) => {
+				const checkbox = checkboxElement as HTMLInputElement;
+				if ( ! checkbox.checked ) {
+					fireEvent.click( checkbox );
+				}
+			} );
+
+		expect(
+			getByText(
+				'Select up to 6 goal drivers for Online store performance (7 selected)'
+			)
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: /apply changes|save selection/i } )
+		).toBeDisabled();
+		expect(
+			document.querySelectorAll( 'input[id$="-ecommerce"]:checked' )
+				.length
+		).toBe( 7 );
 	} );
 } );
