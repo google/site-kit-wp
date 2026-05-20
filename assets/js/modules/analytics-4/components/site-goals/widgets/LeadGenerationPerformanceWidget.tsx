@@ -69,10 +69,11 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		[]
 	);
 
-	const reportOptions: ReportOptions[] = [];
+	let leadEventsReportOptions: ReportOptions | null = null;
+	let engagementReportOptions: ReportOptions | null = null;
 
 	if ( hasLeadEvents ) {
-		reportOptions.push( {
+		leadEventsReportOptions = {
 			...dates,
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
@@ -84,42 +85,45 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			},
 			reportID:
 				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
-		} );
+		};
 
-		reportOptions.push( {
+		engagementReportOptions = {
 			...dates,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
-		} );
+		};
 	}
 
-	const [ leadEventsReport, engagementReport ] =
+	const leadEventsReport =
 		useInViewSelect(
 			( select: Select ) =>
-				reportOptions.map( ( options ) =>
-					select( MODULES_ANALYTICS_4 ).getReport( options )
+				select( MODULES_ANALYTICS_4 ).getReport(
+					leadEventsReportOptions
 				),
-			// Passing reportOptions directly as an array causes errors because
-			// the array size changes—which is not allowed.
-			//
-			// So we wrap it in an object to ensure the array size remains
-			// consistent between renders.
-			[ { reportOptions } ]
+			[ leadEventsReportOptions ]
+		) || [];
+
+	const engagementReport =
+		useInViewSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getReport(
+					engagementReportOptions
+				),
+			[ engagementReportOptions ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
 		( select: Select ) => [
-			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
+			select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				leadEventsReportOptions,
+				engagementReportOptions
+			),
 			select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				...reportOptions
+				leadEventsReportOptions,
+				engagementReportOptions
 			),
 		],
-		// Passing reportOptions directly as an array causes errors because
-		// the array size changes—which is not allowed.
-		//
-		// So we wrap it in an object to ensure the array size remains
-		// consistent between renders.
-		[ { reportOptions } ]
+		[ [ leadEventsReportOptions, engagementReportOptions ] ]
 	);
 
 	if ( ! hasLeadEvents ) {
