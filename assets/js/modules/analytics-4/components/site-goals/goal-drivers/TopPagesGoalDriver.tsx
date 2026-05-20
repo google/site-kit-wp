@@ -72,7 +72,6 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'Top pages driving sales', 'google-site-kit' )
 			: __( 'Top pages driving leads', 'google-site-kit' );
-
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
 		( select: Select ) =>

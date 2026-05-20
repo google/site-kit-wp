@@ -44,6 +44,7 @@ import Header from './Header';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
+import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
@@ -93,6 +94,35 @@ import { AdminScreenTooltip } from './AdminScreenTooltip';
 import useFormValue from '@/js/hooks/useFormValue';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import { WELCOME_TOUR } from '@/js/feature-tours/constants';
+
+function getLastWidgetAnchor( {
+	isMonetizationActive,
+	isSpeedActive,
+	isContentActive,
+	isSiteGoalsActive,
+	isTrafficActive,
+	isKeyMetricsActive,
+} ) {
+	if ( isMonetizationActive ) {
+		return ANCHOR_ID_MONETIZATION;
+	}
+	if ( isSpeedActive ) {
+		return ANCHOR_ID_SPEED;
+	}
+	if ( isContentActive ) {
+		return ANCHOR_ID_CONTENT;
+	}
+	if ( isSiteGoalsActive ) {
+		return ANCHOR_ID_SITE_GOALS;
+	}
+	if ( isTrafficActive ) {
+		return ANCHOR_ID_TRAFFIC;
+	}
+	if ( isKeyMetricsActive ) {
+		return ANCHOR_ID_KEY_METRICS;
+	}
+	return null;
+}
 
 export default function DashboardMainApp() {
 	const siteGoalsEnabled = useFeature( 'siteGoals' );
@@ -313,7 +343,14 @@ export default function DashboardMainApp() {
 		].includes( currentTour?.slug );
 	} );
 
-	const lastWidgetAnchor = getLastWidgetAnchor();
+	const lastWidgetAnchor = getLastWidgetAnchor( {
+		isMonetizationActive,
+		isSpeedActive,
+		isContentActive,
+		isSiteGoalsActive,
+		isTrafficActive,
+		isKeyMetricsActive,
+	} );
 
 	return (
 		<Fragment>
@@ -425,34 +462,16 @@ export default function DashboardMainApp() {
 			) }
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
+			{ siteGoalsEnabled && (
+				<Fragment>
+					<SiteGoalsSelectionPanel />
+					<SiteGoalsIntroModalBanner />
+				</Fragment>
+			) }
 
 			{ showWelcomeModal && <WelcomeModal /> }
-
-			{ siteGoalsEnabled && <SiteGoalsIntroModalBanner /> }
 
 			<OfflineNotification />
 		</Fragment>
 	);
-
-	function getLastWidgetAnchor() {
-		if ( isMonetizationActive ) {
-			return ANCHOR_ID_MONETIZATION;
-		}
-		if ( isSpeedActive ) {
-			return ANCHOR_ID_SPEED;
-		}
-		if ( isContentActive ) {
-			return ANCHOR_ID_CONTENT;
-		}
-		if ( isSiteGoalsActive ) {
-			return ANCHOR_ID_SITE_GOALS;
-		}
-		if ( isTrafficActive ) {
-			return ANCHOR_ID_TRAFFIC;
-		}
-		if ( isKeyMetricsActive ) {
-			return ANCHOR_ID_KEY_METRICS;
-		}
-		return null;
-	}
 }

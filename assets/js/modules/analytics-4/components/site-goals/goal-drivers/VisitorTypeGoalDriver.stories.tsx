@@ -117,6 +117,7 @@ export const Ready = Template.bind(
 ) as Story< VisitorTypeGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'lead',
+	title: 'Leads by visitor type',
 	rows: [
 		{ label: 'Returning visitors', value: '60.5%' },
 		{ label: 'New visitors', value: '39.5%' },

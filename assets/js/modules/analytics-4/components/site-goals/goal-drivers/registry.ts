@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import TopTrafficChannelsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsGoalDriver';
@@ -28,11 +33,19 @@ import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/
 import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
 import {
 	GOAL_DRIVER_IDS,
-	MAX_VISIBLE_GOAL_DRIVERS,
+	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_MAX_SELECTED_DRIVERS,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
 	GoalDriverCatalog,
+	GoalDriverContent,
 	GoalDriverID,
+	GoalDriverOption,
+	GoalDriverSelectionState,
+	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
 export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
@@ -40,42 +53,100 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 		order: 10,
 		defaultEnabled: true,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __(
+					'Top traffic channels driving sales',
+					'google-site-kit'
+				),
+				description: __(
+					'Find out where your online store sales come from.',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __(
+					'Top traffic channels driving leads',
+					'google-site-kit'
+				),
+				description: __(
+					'How did visitors who reached out find your site?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: TopTrafficChannelsGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE ]: {
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 		order: 10,
 		defaultEnabled: true,
+		copyByGoalType: {},
 		Component: TopTrafficChannelsRateGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.TOP_PAGES ]: {
 		id: GOAL_DRIVER_IDS.TOP_PAGES,
 		order: 10,
 		defaultEnabled: false,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Top pages driving sales', 'google-site-kit' ),
+				description: __(
+					'Identify the pages generating the most sales events.',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Top pages driving leads', 'google-site-kit' ),
+				description: __(
+					'Which pages get people to take action?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: TopPagesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
 		order: 10,
 		defaultEnabled: false,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by visitor type', 'google-site-kit' ),
+				description: __(
+					'Compare sales from new and returning visitors.',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by visitor type', 'google-site-kit' ),
+				description: __(
+					'Which types of visitors are most likely to reach out?',
+					'google-site-kit'
+				),
+			},
+		},
 		Component: VisitorTypeGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.CITIES ]: {
 		id: GOAL_DRIVER_IDS.CITIES,
 		order: 10,
 		defaultEnabled: true,
+		copyByGoalType: {},
 		Component: CitiesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.COUNTRIES ]: {
 		id: GOAL_DRIVER_IDS.COUNTRIES,
 		order: 10,
 		defaultEnabled: false,
+		copyByGoalType: {},
 		Component: CountriesGoalDriver,
 	},
 	[ GOAL_DRIVER_IDS.DEVICE_TYPE ]: {
 		id: GOAL_DRIVER_IDS.DEVICE_TYPE,
 		order: 10,
 		defaultEnabled: false,
+		copyByGoalType: {},
 		Component: DeviceTypeGoalDriver,
 	},
 };
@@ -84,9 +155,18 @@ function isGoalDriverID( id: string ): id is GoalDriverID {
 	return GOAL_DRIVER_CATALOG[ id as GoalDriverID ] !== undefined;
 }
 
-function getDefaultGoalDriverIDs(): GoalDriverID[] {
+export function getGoalDriverContent(
+	goalType: GoalType,
+	driverID: GoalDriverID
+): GoalDriverContent | undefined {
+	return GOAL_DRIVER_CATALOG[ driverID ].copyByGoalType[ goalType ];
+}
+
+export function getGoalTypeDriverIDs( goalType: GoalType ): GoalDriverID[] {
 	return Object.values( GOAL_DRIVER_CATALOG )
-		.filter( ( goalDriver ) => goalDriver.defaultEnabled )
+		.filter( ( goalDriver ) =>
+			Boolean( goalDriver.copyByGoalType[ goalType ] )
+		)
 		.sort(
 			( currentGoalDriver, nextGoalDriver ) =>
 				currentGoalDriver.order - nextGoalDriver.order
@@ -94,18 +174,111 @@ function getDefaultGoalDriverIDs(): GoalDriverID[] {
 		.map( ( goalDriver ) => goalDriver.id );
 }
 
+function getGoalDriverEntriesForType( goalType: GoalType ) {
+	return Object.values( GOAL_DRIVER_CATALOG )
+		.filter( ( goalDriver ) =>
+			Boolean( goalDriver.copyByGoalType[ goalType ] )
+		)
+		.sort(
+			( currentGoalDriver, nextGoalDriver ) =>
+				currentGoalDriver.order - nextGoalDriver.order
+		);
+}
+
+function getDefaultGoalDriverIDs( goalType: GoalType ): GoalDriverID[] {
+	const defaultDriverIDs = Object.values( GOAL_DRIVER_CATALOG )
+		.filter( ( goalDriver ) => goalDriver.defaultEnabled )
+		.sort(
+			( currentGoalDriver, nextGoalDriver ) =>
+				currentGoalDriver.order - nextGoalDriver.order
+		)
+		.map( ( goalDriver ) => goalDriver.id )
+		.slice( 0, SITE_GOALS_MAX_SELECTED_DRIVERS );
+
+	if ( defaultDriverIDs.length ) {
+		return defaultDriverIDs;
+	}
+
+	return resolveGoalDriverIDs(
+		SITE_GOALS_DEFAULT_SELECTED_DRIVERS[ goalType ],
+		goalType
+	);
+}
+
+export function getGoalDriverOptions( goalType: GoalType ): GoalDriverOption[] {
+	return getGoalDriverEntriesForType( goalType )
+		.map( ( goalDriver ) => {
+			const content = getGoalDriverContent( goalType, goalDriver.id );
+
+			if ( ! content ) {
+				return null;
+			}
+
+			return {
+				id: goalDriver.id,
+				order: goalDriver.order,
+				title: content.title,
+				description: content.description,
+			};
+		} )
+		.filter( ( goalDriverOption ): goalDriverOption is GoalDriverOption =>
+			Boolean( goalDriverOption )
+		);
+}
+
+export function getGoalDriverTitle(
+	goalType: GoalType,
+	driverID: GoalDriverID
+): string | undefined {
+	return getGoalDriverContent( goalType, driverID )?.title;
+}
+
 export function resolveGoalDriverIDs(
-	selectedDriverIDs: string[] = []
+	selectedDriverIDs: string[] | undefined = undefined,
+	goalType: GoalType = GOAL_TYPES.ECOMMERCE
 ): GoalDriverID[] {
+	if ( selectedDriverIDs === undefined ) {
+		return getDefaultGoalDriverIDs( goalType );
+	}
+
 	if ( ! selectedDriverIDs.length ) {
-		return getDefaultGoalDriverIDs().slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
+		return [];
 	}
 
-	const validSelectedIDs = selectedDriverIDs.filter( isGoalDriverID );
+	const validSelectedIDs: GoalDriverID[] = [];
 
-	if ( ! validSelectedIDs.length ) {
-		return getDefaultGoalDriverIDs().slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
-	}
+	selectedDriverIDs.forEach( ( selectedDriverID ) => {
+		if (
+			typeof selectedDriverID === 'string' &&
+			isGoalDriverID( selectedDriverID ) &&
+			! validSelectedIDs.includes( selectedDriverID )
+		) {
+			validSelectedIDs.push( selectedDriverID );
+		}
+	} );
 
-	return validSelectedIDs.slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
+	return validSelectedIDs.slice( 0, SITE_GOALS_MAX_SELECTED_DRIVERS );
+}
+
+export function resolveGoalDriverSelectionState( selectedDrivers?: {
+	[ key: string ]: string[];
+} ): GoalDriverSelectionState {
+	const selectionState =
+		selectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS;
+	const ecommerceSelection = selectionState?.[ GOAL_TYPES.ECOMMERCE ];
+	const leadSelection = selectionState?.[ GOAL_TYPES.LEAD ];
+
+	return {
+		[ GOAL_TYPES.ECOMMERCE ]:
+			ecommerceSelection !== undefined
+				? resolveGoalDriverIDs(
+						ecommerceSelection,
+						GOAL_TYPES.ECOMMERCE
+				  )
+				: resolveGoalDriverIDs( undefined, GOAL_TYPES.ECOMMERCE ),
+		[ GOAL_TYPES.LEAD ]:
+			leadSelection !== undefined
+				? resolveGoalDriverIDs( leadSelection, GOAL_TYPES.LEAD )
+				: resolveGoalDriverIDs( undefined, GOAL_TYPES.LEAD ),
+	};
 }

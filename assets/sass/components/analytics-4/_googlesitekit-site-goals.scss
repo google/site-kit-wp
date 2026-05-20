@@ -23,13 +23,34 @@
 
 	.googlesitekit-site-goals-tiles-group {
 
+		.googlesitekit-site-goals-tiles-group__header {
+			align-items: flex-start;
+			display: flex;
+			gap: 12px;
+			justify-content: space-between;
+			margin-bottom: 12px;
+		}
+
 		.googlesitekit-site-goals-tiles-group__title {
 			color: $c-surfaces-on-surface;
 			font-size: $fs-title-md;
 			font-weight: $fw-medium;
 			letter-spacing: $ls-xxs;
 			line-height: $lh-title-md;
-			margin: 0 0 12px;
+			margin: 0;
+		}
+
+		.googlesitekit-site-goals-tiles-group__cta {
+			flex-shrink: 0;
+		}
+
+		.googlesitekit-site-goals-change-drivers-cta {
+			white-space: nowrap;
+		}
+
+		.googlesitekit-site-goals-change-drivers-cta.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
+			color: $c-content-secondary;
+			padding: 0;
 		}
 	}
 
