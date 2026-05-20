@@ -311,7 +311,7 @@ describe( 'useWelcomeTour', () => {
 		} );
 	} );
 
-	it( "should not include the audience segmentation step if it has been set up but it's widget is hidden", async () => {
+	it( 'should not include the audience segmentation step if it has been set up but its widget is hidden', async () => {
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
