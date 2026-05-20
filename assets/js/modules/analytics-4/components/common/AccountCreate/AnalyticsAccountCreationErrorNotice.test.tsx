@@ -36,6 +36,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+import * as tracking from '@/js/util/tracking';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	let registry: WPDataRegistry;
@@ -43,6 +47,12 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		mockTrackEvent.mockClear();
+		global.history.replaceState(
+			null,
+			'',
+			'/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
 	} );
 
 	describe( 'user_cancel', () => {
@@ -189,6 +199,52 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
 
 			expect( onRetry ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'tracking', () => {
+		it( 'tracks analytics_account_creation_error in initial setup flow when showProgress is present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context_setup',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
+		} );
+
+		it( 'tracks analytics_account_creation_error in module setup flow when showProgress is not present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
 		} );
 	} );
 } );
