@@ -34,9 +34,9 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent } from '@/js/util';
 
 export interface AnalyticsAccountCreationErrorNoticeProps {
