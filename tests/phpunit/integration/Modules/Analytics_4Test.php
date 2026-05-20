@@ -561,6 +561,141 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
+	 */
+	public function test_handle_provisioning_callback__account_ticket_id_mismatch_with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables = $this->set_up_handle_provisioning_callback_test();
+		$method         = $test_variables['method'];
+		$analytics      = $test_variables['analytics'];
+		$dashboard_url  = $test_variables['dashboard_url'];
+
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
+		$expected_args = array(
+			'slug'                     => 'analytics-4',
+			'reAuth'                   => 'true',
+			'accountCreationErrorCode' => 'account_ticket_id_mismatch',
+		);
+		if ( null !== $params['expectedValue'] ) {
+			$expected_args['showProgress'] = $params['expectedValue'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to Analytics setup screen with "account_ticket_id_mismatch" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( $expected_args, $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect to Analytics setup screen with the account creation error code.'
+			);
+		}
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
+	 */
+	public function test_handle_provisioning_callback__user_cancel_with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['error'] = 'user_cancel';
+
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
+		$expected_args = array(
+			'slug'                     => 'analytics-4',
+			'reAuth'                   => 'true',
+			'accountCreationErrorCode' => 'user_cancel',
+		);
+		if ( null !== $params['expectedValue'] ) {
+			$expected_args['showProgress'] = $params['expectedValue'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to Analytics setup screen with "user_cancel" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( $expected_args, $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect to Analytics setup screen with the account creation error code.'
+			);
+			// Ensure transient was deleted by the method despite error.
+			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
+		}
+		unset( $_GET['error'] );
+	}
+
+	/**
+	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
+	 */
+	public function test_handle_provisioning_callback__callback_missing_parameter_with_setup_flow_refresh_feature_flag_enabled( $params ) {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// Missing accountId triggers the `callback_missing_parameter` redirect.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+
+		if ( isset( $params['providedValue'] ) ) {
+			$_GET['show_progress'] = $params['providedValue'];
+		}
+
+		$expected_args = array(
+			'slug'                     => 'analytics-4',
+			'reAuth'                   => 'true',
+			'accountCreationErrorCode' => 'callback_missing_parameter',
+		);
+		if ( null !== $params['expectedValue'] ) {
+			$expected_args['showProgress'] = $params['expectedValue'];
+		}
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to Analytics setup screen with "callback_missing_parameter" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( $expected_args, $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect to Analytics setup screen with the account creation error code.'
+			);
+		}
+	}
+
+	public function data_handle_provisioning_callback_error_redirect_show_progress() {
+		return array(
+			'with show_progress provided'     => array(
+				array(
+					'providedValue' => '1',
+					'expectedValue' => 'true',
+				),
+			),
+			'with show_progress not provided' => array(
+				array(
+					'expectedValue' => null,
+				),
+			),
+		);
+	}
+
 	public function test_provision_property_webdatastream() {
 		$account_id              = '12345678';
 		$property_id             = '1001';

@@ -1373,16 +1373,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -1393,6 +1383,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -1439,30 +1444,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -1542,6 +1532,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -1738,16 +1738,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -1830,6 +1820,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2026,16 +2026,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2046,6 +2036,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2092,30 +2097,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2195,6 +2185,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2391,16 +2391,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2411,6 +2401,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2457,30 +2462,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2560,6 +2550,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>
@@ -2756,16 +2756,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="googlesitekit-setup__icon mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
-            >
-              <svg />
-              <div
-                class="googlesitekit-setup__splash-graphic-screenshot"
-              >
-                <svg />
-              </div>
-            </div>
-            <div
               class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
@@ -2776,6 +2766,21 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
               <div
                 class="googlesitekit-setup__analytics-opt-in-wrapper"
               >
+                <div
+                  class="googlesitekit-setup__analytics-opt-in-wrapper-header"
+                >
+                  <svg />
+                  <span
+                    class="googlesitekit-typography googlesitekit-setup__analytics-opt-in-wrapper-header-title googlesitekit-typography--body googlesitekit-typography--small"
+                  >
+                    Analytics
+                  </span>
+                  <span
+                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                  >
+                    Recommended
+                  </span>
+                </div>
                 <div
                   class="mdc-form-field"
                 >
@@ -2822,30 +2827,15 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
-                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
-                        rel="noopener noreferrer"
-                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
                         >
                           Learn more
                         </span>
-                        <span
-                          class="googlesitekit-icon-wrapper"
-                          style="margin-left: 5px;"
-                        >
-                          <svg />
-                        </span>
                       </a>
-                       
-                      <span
-                        class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
-                      >
-                        Recommended
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -2925,6 +2915,16 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 >
                   <svg />
                 </span>
+              </div>
+            </div>
+            <div
+              class="googlesitekit-setup__screenshot mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
+            >
+              <svg />
+              <div
+                class="googlesitekit-setup__splash-graphic-screenshot"
+              >
+                <svg />
               </div>
             </div>
           </div>

@@ -94,8 +94,8 @@ jobs:
         github.event.pull_request.head.repo.fork
       )
     steps:
-      - uses: actions/checkout@v6
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+      - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
           php-version: '8.4'
         env:
@@ -103,7 +103,7 @@ jobs:
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v5
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -112,7 +112,7 @@ jobs:
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
       - name: Setup Node.js (.nvmrc)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -131,7 +131,7 @@ jobs:
           npm run release-zip
           mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
           name: zip-files
           path: ${{ github.ref }}
@@ -145,9 +145,9 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: zip-files
           path: ${{ github.ref }}
@@ -177,7 +177,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path
         with:
@@ -204,14 +204,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install subversion
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: zip-files
           path: /tmp
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
-      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+      - uses: 10up/action-wordpress-plugin-deploy@abb939a0d0bfd01063e8d1933833209201557381 # ratchet:10up/action-wordpress-plugin-deploy@2.2.2
         with:
           dry-run: true
         env:
@@ -233,14 +233,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install subversion
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: zip-files
           path: /tmp
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
-      - uses: 10up/action-wordpress-plugin-deploy@2.2.2
+      - uses: 10up/action-wordpress-plugin-deploy@abb939a0d0bfd01063e8d1933833209201557381 # ratchet:10up/action-wordpress-plugin-deploy@2.2.2
         env:
           BUILD_DIR: ./google-site-kit
           SLUG: google-site-kit
