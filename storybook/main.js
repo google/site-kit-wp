@@ -105,6 +105,15 @@ module.exports = {
 				'@': path.resolve( rootDir, 'assets' ),
 				...config.resolve.alias,
 				...siteKitPackageAliases,
+				// React 17 ships `jsx-runtime` as a file but does not expose
+				// it via an `exports` field, so ESM packages (e.g.
+				// `@react-pdf/renderer`) that import `react/jsx-runtime` fail
+				// webpack's strict resolution. Pin the extension explicitly
+				// until React 18 is adopted.
+				'react/jsx-runtime$': require.resolve( 'react/jsx-runtime.js' ),
+				'react/jsx-dev-runtime$': require.resolve(
+					'react/jsx-dev-runtime.js'
+				),
 			},
 			modules: [ rootDir, 'node_modules' ],
 		};
