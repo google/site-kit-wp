@@ -1444,8 +1444,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
+                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
@@ -2097,8 +2100,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
+                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
@@ -2462,8 +2468,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
+                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"
@@ -2827,8 +2836,11 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     >
                       To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. 
                       <a
+                        aria-label="Learn more (opens in a new tab)"
                         class="googlesitekit-cta-link"
                         href="https://sitekit.withgoogle.com/support/?doc=setup-update-ga4-account"
+                        rel="noopener noreferrer"
+                        target="_blank"
                       >
                         <span
                           class="googlesitekit-cta-link__contents"

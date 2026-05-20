@@ -104,6 +104,8 @@ export default function AnalyticsOptIn() {
 										'analytics_checkbox'
 									);
 								} }
+								external
+								hideExternalIndicator
 							>
 								{ __( 'Learn more', 'google-site-kit' ) }
 							</Link>
