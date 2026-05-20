@@ -17,7 +17,7 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { fireEvent } from '@testing-library/react';
 

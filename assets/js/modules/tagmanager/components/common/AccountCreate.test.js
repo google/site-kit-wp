@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import AccountCreate from './AccountCreate';
-import {
-	fireEvent,
-	render,
-	waitFor,
-	createTestRegistry,
-	muteFetch,
-} from '../../../../../../tests/js/test-utils';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	render,
+	waitFor,
+} from '../../../../../../tests/js/test-utils';
+import AccountCreate from './AccountCreate';
 
 describe( 'AccountCreate', () => {
 	let registry;

@@ -25,22 +25,22 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Row } from '@/js/material-components';
+import SplashBackground from '@/svg/graphics/splash-graphic.svg';
+import AnalyticsOptIn from './AnalyticsOptIn';
 import ResetNotice from './ResetNotice';
 import SplashScreenshotSVG from './SetupFlowSVG';
-import AnalyticsOptIn from './AnalyticsOptIn';
-import SplashBackground from '@/svg/graphics/splash-graphic.svg';
-import Typography from '@/js/components/Typography';
-import { Cell, Row } from '@/js/material-components';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function SplashContent( {
 	analyticsModuleActive,

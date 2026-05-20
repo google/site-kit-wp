@@ -19,30 +19,30 @@
 /**
  * Internal dependencies
  */
-import {
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
-import {
-	render,
-	createTestRegistry,
-} from '../../../../../../tests/js/test-utils';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
 } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { withActive } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	MODULES_TAGMANAGER,
-	CONTEXT_WEB,
-	CONTAINER_CREATE,
-	FORM_SETUP,
-	CONTEXT_AMP,
-} from '@/js/modules/tagmanager/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import { buildAccountWithContainers } from '@/js/modules/tagmanager/datastore/__factories__';
+import {
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import {
+	createTestRegistry,
+	render,
+} from '../../../../../../tests/js/test-utils';
+import {
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../../../tests/js/utils';
 import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {

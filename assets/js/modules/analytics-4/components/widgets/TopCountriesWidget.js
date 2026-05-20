@@ -24,25 +24,25 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_COUNTRIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { numFmt } from '@/js/util';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_COUNTRIES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
+import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
-import { reportRowsWithSetValues } from '@/js/modules/analytics-4/utils/report-rows-with-set-values';
 
 function TopCountriesWidget( { Widget } ) {
 	const dates = useSelect( ( select ) =>

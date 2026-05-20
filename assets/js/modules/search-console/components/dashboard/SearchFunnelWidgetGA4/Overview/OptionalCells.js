@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Cell } from '@/js/material-components';
+import RecoverableModules from '@/js/components/RecoverableModules';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { Cell } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ActivateAnalyticsCTA } from '@/js/modules/search-console/components/common';
 import CreateKeyEventCTA from '@/js/modules/search-console/components/dashboard/SearchFunnelWidgetGA4/CreateKeyEventCTA';
-import RecoverableModules from '@/js/components/RecoverableModules';
-import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getCellProps } from './utils';
 
 export default function OptionalCells( {

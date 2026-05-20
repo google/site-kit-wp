@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../tests/js/utils';
-import { render, fireEvent } from '../../../../tests/js/test-utils';
-import UserInputPreviewGroup from './UserInputPreviewGroup';
-import {
-	USER_INPUT_QUESTIONS_PURPOSE,
-	USER_INPUT_CURRENTLY_EDITING_KEY,
-} from './util/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { fireEvent, render } from '../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../tests/js/utils';
+import UserInputPreviewGroup from './UserInputPreviewGroup';
+import {
+	USER_INPUT_CURRENTLY_EDITING_KEY,
+	USER_INPUT_QUESTIONS_PURPOSE,
+} from './util/constants';
 
 describe( 'UserInputPreviewGroup', () => {
 	let registry;

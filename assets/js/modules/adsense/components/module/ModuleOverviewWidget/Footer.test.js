@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { render } from '../../../../../../../tests/js/test-utils';
 import Footer from './Footer';
 
 describe( 'Footer', () => {

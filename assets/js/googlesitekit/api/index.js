@@ -30,19 +30,18 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+// Specific error to handle here, see below.
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { HOUR_IN_SECONDS, stringifyObject } from '@/js/util';
+import { trackAPIError } from '@/js/util/api';
+import { isAuthError, isPermissionScopeError } from '@/js/util/errors';
 import {
+	STORAGE_KEY_PREFIX_ROOT,
 	deleteItem,
 	getItem,
 	getKeys,
 	setItem,
-	STORAGE_KEY_PREFIX_ROOT,
 } from './cache';
-import { stringifyObject, HOUR_IN_SECONDS } from '@/js/util';
-import { isAuthError, isPermissionScopeError } from '@/js/util/errors';
-import { trackAPIError } from '@/js/util/api';
-
-// Specific error to handle here, see below.
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;

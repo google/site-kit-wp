@@ -27,35 +27,35 @@ import { isEqual, pick } from 'lodash';
  */
 import { invalidateCache } from 'googlesitekit-api';
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	isValidAccountID,
-	isValidContainerID,
-	isValidInternalContainerID,
-	isValidContainerSelection,
-	isValidContainerName,
-	isUniqueContainerName,
-	getNormalizedContainerName,
-} from '@/js/modules/tagmanager/util';
-import {
-	MODULES_TAGMANAGER,
-	CONTAINER_CREATE,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	FORM_SETUP,
-} from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '@/js/googlesitekit/data/create-settings-store';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { createStrictSelect } from '@/js/googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import {
+	getNormalizedContainerName,
+	isUniqueContainerName,
+	isValidAccountID,
+	isValidContainerID,
+	isValidContainerName,
+	isValidContainerSelection,
+	isValidInternalContainerID,
+} from '@/js/modules/tagmanager/util';
+import {
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =

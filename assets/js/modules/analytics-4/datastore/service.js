@@ -31,14 +31,14 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { createRegistrySelector } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from './constants';
 import { REPORT_ARGS_NAV_KEY } from '@/js/modules/analytics-4/constants';
-import { escapeURI } from '@/js/util/escape-uri';
-import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
 import {
 	generateReportDetailArgs,
 	generateReportFilterArgs,
 } from '@/js/modules/analytics-4/utils/report-args';
+import { generateDateRangeArgs } from '@/js/modules/analytics-4/utils/report-date-range-args';
+import { escapeURI } from '@/js/util/escape-uri';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 export const selectors = {
 	/**

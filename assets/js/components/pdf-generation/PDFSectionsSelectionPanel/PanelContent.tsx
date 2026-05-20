@@ -24,25 +24,25 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SelectionPanelContent } from '@/js/components/SelectionPanel';
-import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
 	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
+import { SelectionPanelContent } from '@/js/components/SelectionPanel';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import useFormValue from '@/js/hooks/useFormValue';
-import Header from './Header';
 import Footer from './Footer';
-import PDFSectionCheckboxes from './PDFSectionCheckboxes';
+import Header from './Header';
 import PDFGeneratingNotice from './PDFGeneratingNotice';
+import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
 interface PanelContentProps {
 	closePanel: () => void;

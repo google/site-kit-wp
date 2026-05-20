@@ -25,13 +25,13 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	muteFetch,
 	subscribeUntil,
 	untilResolved,
 } from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
 

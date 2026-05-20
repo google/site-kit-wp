@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import SupportLink from '@/js/components/SupportLink';
-import { ErrorNotices } from '@/js/modules/adsense/components/common';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import { ErrorNotices } from '@/js/modules/adsense/components/common';
+import { trackEvent } from '@/js/util';
 
 export default function SetupAccountNoClient() {
 	const viewContext = useViewContext();

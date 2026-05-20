@@ -25,11 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import {
-	createRegistrySelector,
 	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_MODULES } from './constants';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_MODULES } from './constants';
 
 const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 const ROLLBACK_MODULE_CHANGES = 'ROLLBACK_MODULE_CHANGES';

@@ -15,7 +15,7 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { WPComponent } from '@wordpress/element';

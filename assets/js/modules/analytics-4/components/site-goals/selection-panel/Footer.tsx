@@ -25,20 +25,20 @@ import type { FC } from 'react';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	GOAL_TYPES,
-	resolveGoalDriverSelectionState,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
+	GOAL_TYPES,
+	resolveGoalDriverSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import type { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
-import useFormValue from '@/js/hooks/useFormValue';
 
 interface FooterProps {
 	isOpen: boolean;

@@ -17,8 +17,8 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 export interface TilesGroupProps {
 	title: string;

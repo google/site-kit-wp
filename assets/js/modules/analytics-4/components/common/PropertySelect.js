@@ -32,7 +32,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -42,7 +43,6 @@ import {
 	isValidPropertySelection,
 } from '@/js/modules/analytics-4/utils/validation';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function PropertySelect( props ) {
 	const {

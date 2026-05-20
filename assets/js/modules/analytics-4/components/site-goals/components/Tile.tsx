@@ -17,8 +17,8 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -28,9 +28,9 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
 import GoalTile from './GoalTile';
 

@@ -28,15 +28,15 @@ import {
 /**
  * Internal dependencies
  */
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
-	wpApiFetch,
-	useRequestInterception,
 	step,
+	useRequestInterception,
+	wpApiFetch,
 } from '../../../utils';
-import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 async function proceedToSetUpAnalytics() {
 	await step(

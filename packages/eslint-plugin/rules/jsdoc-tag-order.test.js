@@ -24,8 +24,8 @@ import { RuleTester } from 'eslint';
 /**
  * Internal dependencies
  */
-import rule from './jsdoc-tag-order';
 import { NEXT_VERSION } from './constants';
+import rule from './jsdoc-tag-order';
 
 const ruleTester = new RuleTester( {
 	parserOptions: {

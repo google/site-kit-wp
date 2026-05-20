@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
 import { Tooltip as MuiTooltip } from '@material-ui/core';
+import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies

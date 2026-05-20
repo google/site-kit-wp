@@ -25,18 +25,18 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
-import { CORE_USER } from './../googlesitekit/datastore/user/constants';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from './../googlesitekit/datastore/ui/constants';
+import { CORE_USER } from './../googlesitekit/datastore/user/constants';
 
 // Create Mock WP Dashboard component to decouple tests to prevent future false negative.
 function MockWPDashboard() {

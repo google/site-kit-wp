@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import PublicationSelect from './PublicationSelect';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
 	fireEvent,
-	render,
 	provideUserAuthentication,
+	render,
 } from '../../../../../../tests/js/test-utils';
+import PublicationSelect from './PublicationSelect';
 
 describe( 'PublicationSelect', () => {
 	let registry;

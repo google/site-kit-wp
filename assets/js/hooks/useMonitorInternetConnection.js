@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useInterval, useEvent } from 'react-use';
+import { useEvent, useInterval } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 /**

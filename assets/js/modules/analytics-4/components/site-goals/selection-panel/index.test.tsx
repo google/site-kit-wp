@@ -19,7 +19,19 @@
 /**
  * Internal dependencies
  */
-import SiteGoalsSelectionPanel from './index';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTION_FORM,
+	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
+	GOAL_DRIVER_IDS,
+	GOAL_TYPES,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	fireEvent,
 	render,
@@ -30,19 +42,7 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	GOAL_DRIVER_IDS,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_SELECTED_DRIVERS,
-	SITE_GOALS_SELECTION_FORM,
-	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
+import SiteGoalsSelectionPanel from './index';
 
 describe( 'SiteGoalsSelectionPanel', () => {
 	let registry: ReturnType< typeof createTestRegistry >;

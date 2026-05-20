@@ -24,29 +24,29 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 /**
  * Internal dependencies
  */
-import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
+import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideSiteInfo,
-	muteFetch,
-	provideGatheringDataState,
-	provideUserAuthentication,
-	waitFor,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
 } from '../../../../tests/js/mock-survey-endpoints';
-import { KEY_METRICS_SETUP_CTA_WIDGET_SLUG } from '@/js/components/KeyMetrics/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideGatheringDataState,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+	waitFor,
+} from '../../../../tests/js/test-utils';
+import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 jest.mock( 'react-use' );
 mockUseIntersection.mockImplementation( () => ( {

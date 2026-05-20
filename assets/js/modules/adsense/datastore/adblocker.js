@@ -25,8 +25,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 
 export const selectors = {

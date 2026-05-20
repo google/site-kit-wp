@@ -27,8 +27,8 @@ import { Fragment } from '@wordpress/element';
 import { render } from '../../../../../../../tests/js/test-utils';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import { getGoalDriverOptions } from './registry';
-import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
+import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 
 const rows = [ { label: 'Direct', value: '60%' } ];

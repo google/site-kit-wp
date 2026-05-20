@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import { isPlainObject } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,20 +30,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { Cell } from '@/js/material-components';
-import { extractSearchConsoleDashboardData } from '@/js/modules/search-console/util';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import DataBlock from '@/js/components/DataBlock';
 import DataBlockGroup from '@/js/components/DataBlockGroup';
 import NewBadge from '@/js/components/NewBadge';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
 } from '@/js/hooks/useDashboardType';
+import { Cell } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { extractSearchConsoleDashboardData } from '@/js/modules/search-console/util';
 import { getCellProps, getDatapointAndChange } from './utils';
 
 export default function DataBlocks( {

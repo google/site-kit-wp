@@ -31,24 +31,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_TYPES,
 	getGoalDriverOptions,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import {
-	SITE_GOALS_SELECTED_DRIVERS,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
-import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
 import type {
 	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { SelectionPanelContent } from '@/js/components/SelectionPanel';
-import useFormValue from '@/js/hooks/useFormValue';
+import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
 
 interface PanelContentProps {
 	hasEcommerceGoalDrivers: boolean;

@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from './constants';
+import { CATEGORY_AVERAGE, CATEGORY_FAST, CATEGORY_SLOW } from './constants';
 
 /**
  * Retrieves the score category slug based on the given score.

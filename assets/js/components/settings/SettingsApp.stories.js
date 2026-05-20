@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import SettingsApp from './SettingsApp';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import SettingsApp from './SettingsApp';
 
 function Template() {
 	return (

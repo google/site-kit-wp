@@ -30,7 +30,19 @@ jest.mock( '../../../../components/AdminScreenTooltip', () => ( {
 	useShowTooltip: jest.fn( () => mockShowTooltip ),
 } ) );
 
+/**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
+import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -41,16 +53,7 @@ import {
 	provideUserCapabilities,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
-import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
 
 const NOTIFICATION_ID = 'ads-setup-cta';
 

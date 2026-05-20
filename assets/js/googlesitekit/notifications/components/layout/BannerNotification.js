@@ -26,15 +26,15 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import Banner from '@/js/components/Banner';
-import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
 import CTAButton from '@/js/components/Banner/CTAButton';
 import DismissButton from '@/js/components/Banner/DismissButton';
+import LearnMoreLink from '@/js/components/Banner/LearnMoreLink';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { Cell, Grid, Row } from '@/js/material-components';
-import WarningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 import ErrorDesktopSVG from '@/svg/graphics/banner-error.svg?url';
+import WarningDesktopSVG from '@/svg/graphics/banner-warning.svg?url';
 
 export const TYPES = {
 	INFO: 'info',

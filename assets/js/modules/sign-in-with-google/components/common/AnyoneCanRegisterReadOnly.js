@@ -17,21 +17,21 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { HelperText } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-import { HelperText } from 'googlesitekit-components';
-import Link from '@/js/components/Link';
 
 export default function AnyoneCanRegisterReadOnly() {
 	const breakpoint = useBreakpoint();

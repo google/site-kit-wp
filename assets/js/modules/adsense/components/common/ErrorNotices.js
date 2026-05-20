@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import PropTypes from 'prop-types';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 
 export default function ErrorNotices( { hasButton = false } ) {
 	return (

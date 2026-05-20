@@ -19,23 +19,23 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
+import { Fragment, forwardRef } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
-import { forwardRef, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Row, Cell } from '@/js/material-components';
-import ContentSVG from './ContentSVG';
-import AdSenseIcon from '@/svg/graphics/adsense.svg';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { Cell, Row } from '@/js/material-components';
+import AdSenseIcon from '@/svg/graphics/adsense.svg';
+import ContentSVG from './ContentSVG';
 
 const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 	const stageContent = [

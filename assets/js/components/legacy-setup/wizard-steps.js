@@ -25,9 +25,9 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import WizardStepAuthentication from './wizard-step-authentication';
-import WizardStepVerification from './wizard-step-verification';
-import WizardStepSearchConsoleProperty from './wizard-step-search-console-property';
 import WizardStepCompleteSetup from './wizard-step-complete-setup';
+import WizardStepSearchConsoleProperty from './wizard-step-search-console-property';
+import WizardStepVerification from './wizard-step-verification';
 
 const STEPS = {
 	authentication: {

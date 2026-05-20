@@ -22,27 +22,27 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import {
-	getWidgetComponentProps,
-	type WidgetComponentProps,
-} from '@/js/googlesitekit/widgets/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	type WidgetComponentProps,
+	getWidgetComponentProps,
+} from '@/js/googlesitekit/widgets/util';
+import {
+	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { render } from '../../../../../../../tests/js/test-utils';
 import {
-	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+	createTestRegistry,
+	provideModules,
+} from '../../../../../../../tests/js/utils';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 describe( 'LeadGenerationPerformanceWidget', () => {

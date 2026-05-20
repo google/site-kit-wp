@@ -25,10 +25,10 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { untrailingslashit } from '@/js/util';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 export const selectors = {
 	/**

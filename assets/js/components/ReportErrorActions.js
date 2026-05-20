@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -34,15 +34,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	isErrorRetryable,
 	isInsufficientPermissionsError,
 } from '@/js/util/errors';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import Link from './Link';
 
 export default function ReportErrorActions( props ) {

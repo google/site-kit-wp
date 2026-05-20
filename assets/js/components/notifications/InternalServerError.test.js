@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import InternalServerError from './InternalServerError';
-import { render, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { createTestRegistry, render } from '../../../../tests/js/test-utils';
+import InternalServerError from './InternalServerError';
 
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();

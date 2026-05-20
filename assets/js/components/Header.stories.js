@@ -24,42 +24,42 @@ import fetchMock from 'fetch-mock';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Header from './Header';
-import DateRangeSelector from './DateRangeSelector';
-import HelpMenu from './help/HelpMenu';
-import HelpMenuLink from './help/HelpMenuLink';
-import Null from './Null';
-import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import {
-	provideUserAuthentication,
-	provideSiteInfo,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteConnection,
-	provideUserCapabilities,
-} from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import {
-	PERMISSION_AUTHENTICATE,
-	PERMISSION_READ_SHARED_MODULE_DATA,
-	CORE_USER,
-	PERMISSION_VIEW_SHARED_DASHBOARD,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { Provider as ViewContextProvider } from './Root/ViewContextContext';
-import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+	PERMISSION_VIEW_SHARED_DASHBOARD,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteConnection,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangeSelector from './DateRangeSelector';
+import Header from './Header';
+import HelpMenu from './help/HelpMenu';
+import HelpMenuLink from './help/HelpMenuLink';
+import Null from './Null';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 
 function Template( args ) {
 	return <Header { ...args } />;

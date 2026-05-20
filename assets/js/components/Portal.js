@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useEffectOnce } from 'react-use';
 import PropTypes from 'prop-types';
+import { useEffectOnce } from 'react-use';
 
 /**
  * WordPress dependencies

@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from './EnhancedConversionsNotification';

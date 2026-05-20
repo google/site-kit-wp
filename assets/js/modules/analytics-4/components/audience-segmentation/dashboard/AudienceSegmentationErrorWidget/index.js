@@ -30,16 +30,16 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import whenActive from '@/js/util/when-active';
 import { useDispatch } from 'googlesitekit-data';
-import { isInsufficientPermissionsError } from '@/js/util/errors';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { AUDIENCE_INFO_NOTICE_HIDE_UI } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNoticeWidget/constants';
-import ErrorWidgetContent from './ErrorWidgetContent';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { AUDIENCE_INFO_NOTICE_HIDE_UI } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/InfoNoticeWidget/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
+import { isInsufficientPermissionsError } from '@/js/util/errors';
+import whenActive from '@/js/util/when-active';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import ErrorWidgetContent from './ErrorWidgetContent';
 
 const ErrorWidgetContentWithIntersectionObserver =
 	withIntersectionObserver( ErrorWidgetContent );

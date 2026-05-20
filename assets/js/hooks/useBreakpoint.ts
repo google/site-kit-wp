@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { useWindowWidth } from './useWindowSize';
 
 /**

@@ -17,37 +17,37 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * External dependencies
  */
 import { isPlainObject } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
 import {
-	normalizeReportOptions,
 	isZeroReport,
+	normalizeReportOptions,
 } from '@/js/modules/analytics-4/utils';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
+import { DAY_IN_SECONDS, dateSub, stringifyObject } from '@/js/util';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

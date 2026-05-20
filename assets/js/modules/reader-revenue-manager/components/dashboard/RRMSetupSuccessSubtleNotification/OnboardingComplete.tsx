@@ -17,26 +17,26 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
-
-/**
  * External dependencies
  */
-import { FC, ElementType, ReactNode } from 'react';
+import { ElementType, FC, ReactNode } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 type NotificationContent = {

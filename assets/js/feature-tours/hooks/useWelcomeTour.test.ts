@@ -24,6 +24,20 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
 	provideModules,
@@ -31,20 +45,6 @@ import {
 	renderHook,
 } from '../../../../tests/js/test-utils';
 import { useWelcomeTour } from './useWelcomeTour';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import {
-	CORE_USER,
-	PERMISSION_AUTHENTICATE,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'useWelcomeTour', () => {
 	let registry: WPDataRegistry;

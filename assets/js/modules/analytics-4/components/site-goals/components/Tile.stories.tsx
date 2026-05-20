@@ -22,10 +22,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { Tile, TileProps } from './Tile';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Tile, TileProps } from './Tile';
 
 function Template( {
 	setupRegistry = () => {},

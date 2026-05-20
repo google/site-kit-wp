@@ -33,17 +33,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { ProgressBar, Switch } from 'googlesitekit-components';
+import SupportLink from '@/js/components/SupportLink';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 } from '@/js/modules/analytics-4/datastore/constants';
-import SupportLink from '@/js/components/SupportLink';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import Tick from '@/svg/icons/tick.svg';
-import useFormValue from '@/js/hooks/useFormValue';
-import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function EnhancedMeasurementSwitch( {
 	className,
