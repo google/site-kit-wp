@@ -238,7 +238,6 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
 		);
 	}, [ onExpandableRowsChange, rows.length ] );
-
 	const noDataMetricLabel =
 		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
 

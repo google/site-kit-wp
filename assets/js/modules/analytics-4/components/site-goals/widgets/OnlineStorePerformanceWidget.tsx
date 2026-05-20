@@ -23,11 +23,7 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import {
-	Fragment,
-	createInterpolateElement,
-	useMemo,
-} from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,19 +34,27 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
-	GOAL_DRIVER_CATALOG,
-	GOAL_DRIVER_IDS,
+	GoalDriverSelectionState,
 	GOAL_TYPES,
 	GoalDriverTiles,
+	resolveGoalDriverSelectionState,
 	resolveGoalDriverIDs,
+	GOAL_DRIVER_CATALOG,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	Report,
 	ReportRow,
@@ -62,13 +66,6 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-
-// TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
-const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
-	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-	GOAL_DRIVER_IDS.TOP_PAGES,
-	GOAL_DRIVER_IDS.VISITOR_TYPE,
-];
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -134,12 +131,18 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
 		[]
 	);
-	const drivers = useMemo(
-		() =>
-			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
-				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
+
+	const effectiveSelectedDrivers = useSelect(
+		( select: Select ) =>
+			select( CORE_FORMS ).getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_EFFECTIVE_DRIVERS
 			),
 		[]
+	) as GoalDriverSelectionState | undefined;
+
+	const resolvedSelections = resolveGoalDriverSelectionState(
+		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 	);
 
 	const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
@@ -152,6 +155,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					: [],
 			[ primaryEvent ]
 		);
+
+	const drivers = resolveGoalDriverIDs(
+		resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
+		GOAL_TYPES.ECOMMERCE
+	).map( ( driverID ) => ( {
+		...GOAL_DRIVER_CATALOG[ driverID ],
+	} ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -379,6 +389,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					'What’s helping you reach your goals?',
 					'google-site-kit'
 				) }
+				headerCTA={ <ChangeGoalDriversLink /> }
 			>
 				<GoalDriverTiles
 					drivers={ drivers }
