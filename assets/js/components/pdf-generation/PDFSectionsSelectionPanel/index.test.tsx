@@ -27,8 +27,8 @@ import {
 	waitFor,
 } from '../../../../../tests/js/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import {
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_GENERATING_KEY,
 	PDF_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
@@ -43,9 +43,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 	function openPanel() {
 		act( () => {
-			registry
-				.dispatch( CORE_UI )
-				.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+			registry.dispatch( CORE_PDF ).openSectionsPanel();
 		} );
 	}
 

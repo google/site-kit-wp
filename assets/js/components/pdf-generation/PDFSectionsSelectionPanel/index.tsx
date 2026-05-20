@@ -31,42 +31,38 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	DEFAULT_SELECTED_SECTIONS,
-	FORM_PDF_DOWNLOAD,
-	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
-} from '@/js/components/pdf-generation/constants';
-import useFormValue from '@/js/hooks/useFormValue';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import InViewProvider from '@/js/components/InViewProvider';
 import SelectionPanel from '@/js/components/SelectionPanel';
 import PanelContent from './PanelContent';
+import {
+	PDF_GENERATING_KEY,
+	DEFAULT_SELECTED_SECTIONS,
+} from '@/js/components/pdf-generation/constants';
 
 const PDFSectionsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
-		( select: Select ) =>
-			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
+		( select: Select ) => select( CORE_PDF ).isSectionsPanelOpen(),
 		[]
 	);
 
+	const { closeSectionsPanel, setSectionsSelectedItems } =
+		useDispatch( CORE_PDF );
 	const { setValue } = useDispatch( CORE_UI );
-	const [ , setSelectedSections ] = useFormValue(
-		FORM_PDF_DOWNLOAD,
-		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-	);
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
-			setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
+			closeSectionsPanel();
 		}
-	}, [ isOpen, setValue ] );
+	}, [ isOpen, closeSectionsPanel ] );
 
 	const onSideSheetOpen = useCallback( () => {
-		setSelectedSections( DEFAULT_SELECTED_SECTIONS );
+		setSectionsSelectedItems( DEFAULT_SELECTED_SECTIONS );
 		// Reset any stale "generating" state left over from a previous session.
+		// PDF_GENERATING_KEY is a temporary CORE_UI stub that will be replaced
+		// by the orchestrator in #12537.
 		setValue( PDF_GENERATING_KEY, false );
-	}, [ setSelectedSections, setValue ] );
+	}, [ setSectionsSelectedItems, setValue ] );
 
 	return (
 		<InViewProvider

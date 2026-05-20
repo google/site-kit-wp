@@ -30,15 +30,11 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import {
-	DEFAULT_SELECTED_SECTIONS,
-	FORM_PDF_DOWNLOAD,
-	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
-} from '@/js/components/pdf-generation/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 import Header from './Header';
 import Footer from './Footer';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
@@ -49,23 +45,19 @@ interface PanelContentProps {
 }
 
 const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
-	const [ selectedSectionsValue, setSelectedSections ] = useFormValue(
-		FORM_PDF_DOWNLOAD,
-		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
+	const selectedSections = useSelect(
+		( select: Select ) =>
+			select( CORE_PDF ).getSectionsSelectedItems() as string[],
+		[]
 	);
-	const selectedSections =
-		( selectedSectionsValue as string[] | undefined ) ??
-		DEFAULT_SELECTED_SECTIONS;
+
+	const { toggleSectionsSelectedItem } = useDispatch( CORE_PDF );
 
 	const toggleSection = useCallback(
 		( slug: string ) => {
-			const nextSelection = selectedSections.includes( slug )
-				? selectedSections.filter( ( item ) => item !== slug )
-				: [ ...selectedSections, slug ];
-
-			setSelectedSections( nextSelection );
+			toggleSectionsSelectedItem( slug );
 		},
-		[ selectedSections, setSelectedSections ]
+		[ toggleSectionsSelectedItem ]
 	);
 
 	const hasSelection = selectedSections.length > 0;
