@@ -64,7 +64,11 @@
 	}
 
 	.googlesitekit-site-goals-selection-panel__content {
-		padding: 32px $grid-gap-desktop $grid-gap-desktop;
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			padding: 32px $grid-gap-desktop $grid-gap-desktop;
+		}
 	}
 
 	.googlesitekit-site-goals-selection-panel__section + .googlesitekit-site-goals-selection-panel__section {
