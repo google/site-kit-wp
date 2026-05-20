@@ -341,7 +341,7 @@ describe( 'AdminMenuTooltip', () => {
 		);
 	} );
 
-	it( 'should render successfully when floaterProps is provided in the tooltip state', async () => {
+	it( 'should pass floaterProps to the JoyrideTooltip component when provided in the tooltip state', async () => {
 		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
 			isTooltipVisible: true,
 			title: 'Test Title',
@@ -380,5 +380,12 @@ describe( 'AdminMenuTooltip', () => {
 			);
 			expect( tooltip ).toBeInTheDocument();
 		} );
+
+		const floaterArrowSpan = document.querySelector(
+			'.__floater__arrow > span'
+		);
+		expect( floaterArrowSpan ).toHaveStyle(
+			'margin-top: 42px; margin-bottom: 42px;'
+		);
 	} );
 } );
