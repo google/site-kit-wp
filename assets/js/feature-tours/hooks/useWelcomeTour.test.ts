@@ -38,8 +38,13 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { PERMISSION_AUTHENTICATE } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 describe( 'useWelcomeTour', () => {
 	let registry: WPDataRegistry;
@@ -91,6 +96,14 @@ describe( 'useWelcomeTour', () => {
 		] );
 
 		setupQueuedNotifications( [] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {} );
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {} );
 	} );
 
 	it( 'should return the Analytics-connected tour when Analytics is connected', async () => {
@@ -112,6 +125,8 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 
@@ -126,6 +141,8 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 
@@ -144,6 +161,8 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: true,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 
@@ -163,6 +182,8 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 
@@ -177,6 +198,8 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: true,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 
@@ -195,6 +218,160 @@ describe( 'useWelcomeTour', () => {
 			canAuthenticate: false,
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
+		} );
+	} );
+
+	it( 'should include the key metrics step if they have been set up', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			keyMetricsSetupCompletedBy: 1,
+		} );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: false,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
+			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: true,
+			isAudienceSegmentationWidgetPresent: false,
+		} );
+	} );
+
+	it( 'should not include the key metrics step if they have been set up but their widget is hidden', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			keyMetricsSetupCompletedBy: 1,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			isWidgetHidden: true,
+		} );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: false,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
+			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
+		} );
+	} );
+
+	it( 'should include the audience segmentation step if it has been set up', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: 1,
+		} );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: false,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
+			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: true,
+		} );
+	} );
+
+	it( 'should not include the audience segmentation step if it has been set up but its widget is hidden', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: 1,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+			isAudienceSegmentationWidgetHidden: true,
+		} );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: false,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
+			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: false,
+			isAudienceSegmentationWidgetPresent: false,
+		} );
+	} );
+
+	it( 'should not include the top search queries step if both key metrics and audience segmentation are set up', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			audienceSegmentationSetupCompletedBy: 1,
+		} );
+
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			keyMetricsSetupCompletedBy: 1,
+		} );
+
+		const { result } = await renderHook( () => useWelcomeTour(), {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expectMatchesWelcomeTour( result.current, {
+			isViewOnly: false,
+			canAuthenticate: true,
+			isAnalyticsConnected: true,
+			isActivateAnalyticsNotificationPresent: false,
+			isKeyMetricsWidgetPresent: true,
+			isAudienceSegmentationWidgetPresent: true,
 		} );
 	} );
 } );
