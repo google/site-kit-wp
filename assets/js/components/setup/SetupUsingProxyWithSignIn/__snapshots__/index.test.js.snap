@@ -1373,7 +1373,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2029,7 +2029,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2397,7 +2397,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
@@ -2765,7 +2765,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
             class="mdc-layout-grid__inner googlesitekit-setup__content"
           >
             <div
-              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-7-tablet mdc-layout-grid__cell--span-4-phone"
+              class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--span-4-phone"
             >
               <h1
                 class="googlesitekit-typography googlesitekit-setup__title googlesitekit-typography--headline googlesitekit-typography--medium"
