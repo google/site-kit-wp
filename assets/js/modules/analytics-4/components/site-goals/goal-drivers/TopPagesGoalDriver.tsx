@@ -69,12 +69,10 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
 		primaryEvent,
 		onExpandableRowsChange,
 	} = props;
-	let title: string = __( 'Top pages driving leads', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top pages driving sales', 'google-site-kit' );
-	}
-
+	const title =
+		goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Top pages driving sales', 'google-site-kit' )
+			: __( 'Top pages driving leads', 'google-site-kit' );
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
 		( select: Select ) =>

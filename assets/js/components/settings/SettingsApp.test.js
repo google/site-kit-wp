@@ -98,6 +98,9 @@ describe( 'SettingsApp', () => {
 					'http://example.com/wp-admin/update.php?action=install-plugin&plugin=some-plugin',
 			},
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 
 		provideSiteInfo( registry, {
 			proxySupportLinkURL: 'https://test.com',

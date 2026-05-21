@@ -24,7 +24,7 @@ import type { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,7 +34,10 @@ import { useSelect, type Select } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { trackEvent } from '@/js/util';
 
 export interface AnalyticsAccountCreationErrorNoticeProps {
 	errorCode: string;
@@ -44,6 +47,21 @@ export interface AnalyticsAccountCreationErrorNoticeProps {
 const AnalyticsAccountCreationErrorNotice: FC<
 	AnalyticsAccountCreationErrorNoticeProps
 > = ( { errorCode, onRetry } ) => {
+	const viewContext = useViewContext();
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const isInitialSetupFlow = !! showProgress;
+	const eventCategory = isInitialSetupFlow
+		? `${ viewContext }_setup`
+		: viewContext;
+
+	useEffect( () => {
+		trackEvent(
+			eventCategory,
+			'analytics_account_creation_error',
+			errorCode
+		);
+	}, [ errorCode, eventCategory ] );
+
 	const analyticsAccountLimitHelpURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoogleSupportURL( {

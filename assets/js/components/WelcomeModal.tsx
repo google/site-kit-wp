@@ -181,6 +181,13 @@ export default function WelcomeModal() {
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
+		floaterProps: {
+			styles: {
+				arrow: {
+					margin: 42,
+				},
+			},
+		},
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );

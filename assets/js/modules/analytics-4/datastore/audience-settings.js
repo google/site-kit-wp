@@ -39,6 +39,7 @@ import {
 	createValidatedAction,
 } from '@/js/googlesitekit/data/utils';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { negateDefined } from '@/js/util/negate';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
@@ -313,6 +314,21 @@ const baseSelectors = {
 			return audienceSettings.audienceSegmentationSetupCompletedBy;
 		}
 	),
+
+	/**
+	 * Checks if audience segmentation has been set up.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if audience segmentation has been setup, otherwise `false`.
+	 */
+	isAudienceSegmentationSetupCompleted: ( state ) =>
+		negateDefined(
+			negateDefined(
+				baseSelectors.getAudienceSegmentationSetupCompletedBy( state )
+			)
+		),
 };
 
 const store = combineStores(

@@ -61,6 +61,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-datastore-location':
 				'./js/googlesitekit-datastore-location.js',
 			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.js',
+			'googlesitekit-datastore-pdf':
+				'./js/googlesitekit-datastore-pdf.ts',
 			'googlesitekit-modules': './js/googlesitekit-modules.js',
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.js',

@@ -22,7 +22,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -35,31 +35,32 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { numFmt } from '@/js/util';
 import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
 	GOAL_DRIVER_CATALOG,
-	GOAL_DRIVER_IDS,
+	GoalDriverSelectionState,
 	GOAL_TYPES,
 	GoalDriverTiles,
 	resolveGoalDriverIDs,
+	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
-
-// TODO: Replace hardcoded selected drivers with datastore-backed selection in #12578.
-const DEFAULT_SELECTED_GOAL_DRIVER_IDS = [
-	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-	GOAL_DRIVER_IDS.TOP_PAGES,
-	GOAL_DRIVER_IDS.VISITOR_TYPE,
-];
 
 const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	Widget,
@@ -71,15 +72,25 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 		[]
 	);
-
-	const hasLeadEvents = !! detectedLeadEvents?.length;
-	const drivers = useMemo(
-		() =>
-			resolveGoalDriverIDs( DEFAULT_SELECTED_GOAL_DRIVER_IDS ).map(
-				( driverID ) => GOAL_DRIVER_CATALOG[ driverID ]
+	const effectiveSelectedDrivers = useSelect(
+		( select: Select ) =>
+			select( CORE_FORMS ).getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_EFFECTIVE_DRIVERS
 			),
 		[]
+	) as GoalDriverSelectionState | undefined;
+	const resolvedSelections = resolveGoalDriverSelectionState(
+		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 	);
+
+	const hasLeadEvents = !! detectedLeadEvents?.length;
+	const drivers = resolveGoalDriverIDs(
+		resolvedSelections[ GOAL_TYPES.LEAD ],
+		GOAL_TYPES.LEAD
+	).map( ( driverID ) => ( {
+		...GOAL_DRIVER_CATALOG[ driverID ],
+	} ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -90,10 +101,11 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		[]
 	);
 
-	const reportOptions: ReportOptions[] = [];
+	let leadEventsReportOptions: ReportOptions | null = null;
+	let engagementReportOptions: ReportOptions | null = null;
 
 	if ( hasLeadEvents ) {
-		reportOptions.push( {
+		leadEventsReportOptions = {
 			...dates,
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
@@ -105,41 +117,57 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			},
 			reportID:
 				'analytics-4_lead-generation-performance-widget_widget_leadEventsReportOptions',
-		} );
+		};
 
-		reportOptions.push( {
+		engagementReportOptions = {
 			...dates,
 			metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
 			reportID: 'analytics-4_site-goals_engagementReportOptions',
-		} );
+		};
 	}
 
-	// Ensure we have a consistent number of entries in the report options
-	// array, so that the useSelect dependencies are consistent.
-	//
-	// If `reportOptions` is used directly as a dependency for the useSelect
-	// calls below, it will cause a console error while loading.
-	const reportOptionArgsForSelect = reportOptions?.length
-		? reportOptions
-		: [ undefined, undefined ];
-
-	const [ leadEventsReport, engagementReport ] =
+	const leadEventsReport =
 		useInViewSelect(
 			( select: Select ) =>
-				reportOptions.map( ( options ) =>
-					select( MODULES_ANALYTICS_4 ).getReport( options )
-				),
-			reportOptionArgsForSelect
+				leadEventsReportOptions
+					? select( MODULES_ANALYTICS_4 ).getReport(
+							leadEventsReportOptions
+					  )
+					: null,
+			[ leadEventsReportOptions ]
+		) || [];
+
+	const engagementReport =
+		useInViewSelect(
+			( select: Select ) =>
+				engagementReportOptions
+					? select( MODULES_ANALYTICS_4 ).getReport(
+							engagementReportOptions
+					  )
+					: null,
+			[ engagementReportOptions ]
 		) || [];
 
 	const [ loading, error ] = useSelect(
-		( select: Select ) => [
-			select( MODULES_ANALYTICS_4 ).areReportsLoading( ...reportOptions ),
-			select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				...reportOptions
-			),
-		],
-		reportOptionArgsForSelect
+		( select: Select ) => {
+			const reportsToCheck: ReportOptions[] = [];
+			if ( leadEventsReportOptions ) {
+				reportsToCheck.push( leadEventsReportOptions );
+			}
+			if ( engagementReportOptions ) {
+				reportsToCheck.push( engagementReportOptions );
+			}
+
+			return [
+				select( MODULES_ANALYTICS_4 ).areReportsLoading(
+					...reportsToCheck
+				),
+				select( MODULES_ANALYTICS_4 ).getFirstReportError(
+					...reportsToCheck
+				),
+			];
+		},
+		[ leadEventsReportOptions, engagementReportOptions ]
 	);
 
 	if ( ! hasLeadEvents ) {
@@ -160,6 +188,8 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		currentSessions,
 		currentRate,
 		previousRate,
+		currentEngagementRate,
+		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
@@ -176,54 +206,79 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
-				<TilesGroup
-					className="googlesitekit-site-goals-primary-action"
-					title={ __( 'Key action', 'google-site-kit' ) }
-				>
-					<Tile
-						title={ __(
-							'Form completion rate',
-							'google-site-kit'
-						) }
-						subtitle={ sprintf(
-							/* translators: %s: formatted number of total sessions */
-							__( '%s total sessions', 'google-site-kit' ),
-							numFmt( currentSessions, NUMBER_FORMAT )
-						) }
-						currentValue={ currentRate }
-						previousValue={ previousRate }
-						format={ PERCENT_FORMAT }
-						primary
-					/>
+				<Fragment>
+					<TilesGroup
+						className="googlesitekit-site-goals-primary-action"
+						title={ __( 'Key action', 'google-site-kit' ) }
+					>
+						<Tile
+							title={ __(
+								'Form completion rate',
+								'google-site-kit'
+							) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentRate }
+							previousValue={ previousRate }
+							format={ PERCENT_FORMAT }
+							primary
+						/>
 
-					<Tile
+						<Tile
+							title={ __(
+								'Total form completions',
+								'google-site-kit'
+							) }
+							subtitle={
+								detectedLeadEvents.length === 1
+									? sprintf(
+											/* translators: %s: GA4 event name */
+											__(
+												'“%s” events',
+												'google-site-kit'
+											),
+											detectedLeadEvents[ 0 ]
+									  )
+									: sprintf(
+											/* translators: %d: number of detected event types */
+											_n(
+												'%d event type',
+												'%d event types',
+												detectedLeadEvents.length,
+												'google-site-kit'
+											),
+											detectedLeadEvents.length
+									  )
+							}
+							currentValue={ currentPrimaryCount }
+							previousValue={ previousPrimaryCount }
+							format={ NUMBER_FORMAT }
+						/>
+					</TilesGroup>
+
+					<TilesGroup
+						className="googlesitekit-site-goals-visitor-engagement"
 						title={ __(
-							'Total form completions',
+							'How are your visitors engaging?',
 							'google-site-kit'
 						) }
-						subtitle={
-							detectedLeadEvents.length === 1
-								? sprintf(
-										/* translators: %s: GA4 event name */
-										__( '"%s" events', 'google-site-kit' ),
-										detectedLeadEvents[ 0 ]
-								  )
-								: sprintf(
-										/* translators: %d: number of detected event types */
-										_n(
-											'%d event type',
-											'%d event types',
-											detectedLeadEvents.length,
-											'google-site-kit'
-										),
-										detectedLeadEvents.length
-								  )
-						}
-						currentValue={ currentPrimaryCount }
-						previousValue={ previousPrimaryCount }
-						format={ NUMBER_FORMAT }
-					/>
-				</TilesGroup>
+					>
+						<Tile
+							title={ __( 'Engagement rate', 'google-site-kit' ) }
+							subtitle={ sprintf(
+								/* translators: %s: formatted number of total sessions */
+								__( '%s total sessions', 'google-site-kit' ),
+								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							currentValue={ currentEngagementRate }
+							previousValue={ previousEngagementRate }
+							format={ PERCENT_FORMAT }
+						/>
+					</TilesGroup>
+				</Fragment>
 			) }
 
 			<TilesGroup
@@ -232,6 +287,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					'What’s helping you reach your goals?',
 					'google-site-kit'
 				) }
+				headerCTA={ <ChangeGoalDriversLink /> }
 			>
 				<GoalDriverTiles
 					drivers={ drivers }
