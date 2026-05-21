@@ -20,6 +20,10 @@
 	color: $c-surfaces-on-background-variant;
 }
 
+.googlesitekit-plugin .googlesitekit-pdf-download-panel .googlesitekit-selection-panel-header {
+	padding-bottom: 0;
+}
+
 .googlesitekit-plugin .googlesitekit-pdf-download-panel .googlesitekit-selection-panel-header p {
 	color: $c-surfaces-on-surface;
 	margin-top: $grid-gap-phone;
