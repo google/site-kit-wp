@@ -29,6 +29,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	DATE_RANGE_OFFSET,
 	ENUM_CONVERSION_EVENTS,
@@ -40,6 +41,10 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import {
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -74,22 +79,18 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
-	function buildSecondaryEventsReportOptions(
+	function buildVisitorEngagementEventReportOptions(
 		dates: Record< string, unknown >,
-		secondaryEvents: string[]
+		eventName: string
 	) {
 		return {
 			...dates,
 			metrics: [ { name: 'eventCount' } ],
 			dimensions: [ { name: 'eventName' } ],
 			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: secondaryEvents,
-				},
+				eventName,
 			},
-			reportID:
-				'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+			reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
 		};
 	}
 
@@ -684,9 +685,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
-		const secondaryEventsReport = buildSecondaryEventsReportOptions(
+		const secondaryEventsReport = buildVisitorEngagementEventReportOptions(
 			dates,
-			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
@@ -981,9 +982,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			ENUM_CONVERSION_EVENTS.PURCHASE
 		);
 		const engagementReport = buildEngagementReportOptions( dates );
-		const secondaryEventsReport = buildSecondaryEventsReportOptions(
+		const secondaryEventsReport = buildVisitorEngagementEventReportOptions(
 			dates,
-			[ ENUM_CONVERSION_EVENTS.ADD_TO_CART ]
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
@@ -1022,10 +1023,153 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect(
-			getByText( 'Total products added to cart' )
-		).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders secondary visitor engagement loading state without replacing primary tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		const visitorEngagementReport =
+			buildVisitorEngagementEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART
+			);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ visitorEngagementReport ] );
+
+		const { container, getByText, unmount, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-site-goals-visitor-engagement .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		unmount();
+	} );
+
+	it( 'renders secondary visitor engagement error state without replacing primary tiles', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		const visitorEngagementReport =
+			buildVisitorEngagementEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART
+			);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 400,
+				message: 'Data loading failed',
+				data: {
+					status: 400,
+					reason: 'badRequest',
+				},
+			},
+			'getReport',
+			[ visitorEngagementReport ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ visitorEngagementReport ] );
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
+		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect( getByText( 'Data loading failed' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render add_to_cart secondary tile when deselected', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
+			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]: {
+				[ GOAL_TYPES.ECOMMERCE ]: [],
+				[ GOAL_TYPES.LEAD ]: [],
+			},
+		} );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
+
+		const primaryEventReport = buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		provideAnalytics4MockReport( registry, primaryEventReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+		expect( queryByText( '“add_to_cart” events' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'does not render secondary add_to_cart tile when primary is add_to_cart', async () => {
