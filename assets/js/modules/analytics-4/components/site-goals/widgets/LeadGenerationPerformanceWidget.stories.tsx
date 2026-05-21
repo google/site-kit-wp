@@ -591,6 +591,9 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
 		seedGoalDriverReports(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

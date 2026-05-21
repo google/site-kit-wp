@@ -71,6 +71,18 @@ function buildPrimaryEventReportOptions( primaryEvent: string ) {
 	};
 }
 
+function buildVisitorEngagementEventReportOptions( eventName: string ) {
+	return {
+		...dates,
+		metrics: [ { name: 'eventCount' } ],
+		dimensions: [ { name: 'eventName' } ],
+		dimensionFilters: {
+			eventName,
+		},
+		reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
+	};
+}
+
 function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
 	return empty ? [] : rows;
 }
@@ -88,6 +100,10 @@ const purchaseReportOptions = buildPrimaryEventReportOptions(
 const addToCartReportOptions = buildPrimaryEventReportOptions(
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART
 );
+const addToCartVisitorEngagementReportOptions =
+	buildVisitorEngagementEventReportOptions(
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART
+	);
 
 const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
@@ -594,7 +610,21 @@ Loading.args = {
 		commonSetup( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ purchaseReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				addToCartVisitorEngagementReportOptions,
+			] );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			loading: true,
 		} );
