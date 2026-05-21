@@ -89,7 +89,7 @@ const EVENT_RATE_LABELS = {
 
 const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
-	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
+	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
 function processSecondaryEventsReport(
