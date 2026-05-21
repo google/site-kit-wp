@@ -395,7 +395,7 @@ const OnlineStorePerformanceWidget: FC<
 							}
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
 							) }
 							infoTooltip={ createInterpolateElement(
@@ -451,7 +451,7 @@ const OnlineStorePerformanceWidget: FC<
 							title={ __( 'Engagement rate', 'google-site-kit' ) }
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
 							) }
 							infoTooltip={ createInterpolateElement(

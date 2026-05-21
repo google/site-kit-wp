@@ -261,7 +261,7 @@ const LeadGenerationPerformanceWidget: FC<
 							) }
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
 							) }
 							infoTooltip={ createInterpolateElement(
@@ -333,7 +333,7 @@ const LeadGenerationPerformanceWidget: FC<
 							title={ __( 'Engagement rate', 'google-site-kit' ) }
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
 							) }
 							infoTooltip={ createInterpolateElement(
