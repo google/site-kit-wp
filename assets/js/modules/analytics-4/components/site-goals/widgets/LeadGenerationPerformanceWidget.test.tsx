@@ -954,5 +954,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByText( 'Total products added to cart' )
 		).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
 	} );
 } );
