@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -41,13 +41,15 @@ import {
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
-import type {
+import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
+import {
 	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import useFormValue from '@/js/hooks/useFormValue';
+import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
 
 interface PanelContentProps {
 	hasEcommerceGoalDrivers: boolean;
@@ -130,16 +132,11 @@ const PanelContent: FC< PanelContentProps > = ( {
 	return (
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">
 			{ hasEcommerceGoalDrivers && (
-				<GoalTypeList
+				<GoalTypeSection
 					listID={ GOAL_TYPES.ECOMMERCE }
 					title={ __(
 						'Online store performance',
 						'google-site-kit'
-					) }
-					options={ ecommerceOptions }
-					selectedIDs={ getSelectedDriverIDs(
-						selectedDriverState,
-						GOAL_TYPES.ECOMMERCE
 					) }
 					isExpanded={ isEcommerceExpanded }
 					onToggleExpand={ () =>
@@ -147,27 +144,35 @@ const PanelContent: FC< PanelContentProps > = ( {
 							( previousState ) => ! previousState
 						)
 					}
-					onToggleDriver={ ( driverID, isChecked ) =>
-						onToggleDriver(
-							GOAL_TYPES.ECOMMERCE,
-							driverID,
-							isChecked
-						)
-					}
-				/>
+				>
+					<VisitorEngagementEventList
+						goalType={ GOAL_TYPES.ECOMMERCE }
+						listID={ GOAL_TYPES.ECOMMERCE }
+					/>
+					<GoalTypeList
+						listID={ GOAL_TYPES.ECOMMERCE }
+						options={ ecommerceOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.ECOMMERCE
+						) }
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.ECOMMERCE,
+								driverID,
+								isChecked
+							)
+						}
+					/>
+				</GoalTypeSection>
 			) }
 
 			{ hasLeadGoalDrivers && (
-				<GoalTypeList
+				<GoalTypeSection
 					listID={ GOAL_TYPES.LEAD }
 					title={ __(
 						'Lead generation performance',
 						'google-site-kit'
-					) }
-					options={ leadOptions }
-					selectedIDs={ getSelectedDriverIDs(
-						selectedDriverState,
-						GOAL_TYPES.LEAD
 					) }
 					isExpanded={ isLeadExpanded }
 					onToggleExpand={ () =>
@@ -175,10 +180,23 @@ const PanelContent: FC< PanelContentProps > = ( {
 							( previousState ) => ! previousState
 						)
 					}
-					onToggleDriver={ ( driverID, isChecked ) =>
-						onToggleDriver( GOAL_TYPES.LEAD, driverID, isChecked )
-					}
-				/>
+				>
+					<GoalTypeList
+						listID={ GOAL_TYPES.LEAD }
+						options={ leadOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.LEAD
+						) }
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.LEAD,
+								driverID,
+								isChecked
+							)
+						}
+					/>
+				</GoalTypeSection>
 			) }
 		</SelectionPanelContent>
 	);
