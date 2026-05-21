@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -36,7 +36,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { numFmt } from '@/js/util';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
@@ -44,12 +44,14 @@ import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import {
 	GoalDriverSelectionState,
+	getGoalDriverTitle,
 	GOAL_TYPES,
 	GoalDriverTiles,
 	resolveGoalDriverSelectionState,
 	resolveGoalDriverIDs,
 	GOAL_DRIVER_CATALOG,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
@@ -66,6 +68,19 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface OnlineStorePerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
+
+interface DateRange {
+	startDate: string;
+	endDate: string;
+	compareStartDate?: string;
+	compareEndDate?: string;
+}
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -111,11 +126,85 @@ function processSecondaryEventsReport(
 	} ) );
 }
 
-const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
-	Widget,
-	WidgetNull,
-	WidgetReportError,
-} ) => {
+function getReportsToCheck(
+	primaryEventReportOptions: ReportOptions | null,
+	engagementReportOptions: ReportOptions | null,
+	secondaryEventsReportOptions: ReportOptions | null
+): ReportOptions[] {
+	return [
+		primaryEventReportOptions,
+		engagementReportOptions,
+		secondaryEventsReportOptions,
+	].filter( ( reportOptions ): reportOptions is ReportOptions =>
+		Boolean( reportOptions )
+	);
+}
+
+function getWidgetReportOptions(
+	dates: DateRange,
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
+	secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[]
+) {
+	const primaryEventReportOptions: ReportOptions | null = primaryEvent
+		? {
+				...dates,
+				metrics: [ { name: 'eventCount' } ],
+				dimensions: [ { name: 'eventName' } ],
+				dimensionFilters: {
+					eventName: primaryEvent,
+				},
+				reportID:
+					'analytics-4_online-store-performance-widget_primaryEventReportOptions',
+		  }
+		: null;
+
+	const engagementReportOptions: ReportOptions | null = primaryEvent
+		? {
+				...dates,
+				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
+				reportID: 'analytics-4_site-goals_engagementReportOptions',
+		  }
+		: null;
+
+	const secondaryEventsReportOptions: ReportOptions | null =
+		secondaryEcommerceEvents?.length
+			? {
+					...dates,
+					metrics: [ { name: 'eventCount' } ],
+					dimensions: [ { name: 'eventName' } ],
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: secondaryEcommerceEvents,
+						},
+					},
+					reportID:
+						'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
+			  }
+			: null;
+
+	return {
+		primaryEventReportOptions,
+		engagementReportOptions,
+		secondaryEventsReportOptions,
+	};
+}
+
+const OnlineStorePerformanceWidget: FC<
+	OnlineStorePerformanceWidgetProps
+> = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
 	const supportURL = useSelect(
@@ -157,10 +246,11 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		);
 
 	const drivers = resolveGoalDriverIDs(
-		resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
+		selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
 		GOAL_TYPES.ECOMMERCE
 	).map( ( driverID ) => ( {
 		...GOAL_DRIVER_CATALOG[ driverID ],
+		title: getGoalDriverTitle( GOAL_TYPES.ECOMMERCE, driverID ),
 	} ) );
 
 	const dates = useSelect(
@@ -170,45 +260,13 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				compare: true,
 			} ),
 		[]
-	);
+	) as DateRange;
 
-	const primaryEventReportOptions: ReportOptions | null = primaryEvent
-		? {
-				...dates,
-				metrics: [ { name: 'eventCount' } ],
-				dimensions: [ { name: 'eventName' } ],
-				dimensionFilters: {
-					eventName: primaryEvent,
-				},
-				reportID:
-					'analytics-4_online-store-performance-widget_primaryEventReportOptions',
-		  }
-		: null;
-
-	const engagementReportOptions: ReportOptions | null = primaryEvent
-		? {
-				...dates,
-				metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
-				reportID: 'analytics-4_site-goals_engagementReportOptions',
-		  }
-		: null;
-
-	const secondaryEventsReportOptions: ReportOptions | null =
-		secondaryEcommerceEvents?.length
-			? {
-					...dates,
-					metrics: [ { name: 'eventCount' } ],
-					dimensions: [ { name: 'eventName' } ],
-					dimensionFilters: {
-						eventName: {
-							filterType: 'inListFilter',
-							value: secondaryEcommerceEvents,
-						},
-					},
-					reportID:
-						'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
-			  }
-			: null;
+	const {
+		primaryEventReportOptions,
+		engagementReportOptions,
+		secondaryEventsReportOptions,
+	} = getWidgetReportOptions( dates, primaryEvent, secondaryEcommerceEvents );
 
 	const primaryEventReport =
 		useInViewSelect(
@@ -245,16 +303,11 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 
 	const [ loading, error ] = useSelect(
 		( select: Select ) => {
-			const reportsToCheck: ReportOptions[] = [];
-			if ( primaryEventReportOptions ) {
-				reportsToCheck.push( primaryEventReportOptions );
-			}
-			if ( engagementReportOptions ) {
-				reportsToCheck.push( engagementReportOptions );
-			}
-			if ( secondaryEventsReportOptions ) {
-				reportsToCheck.push( secondaryEventsReportOptions );
-			}
+			const reportsToCheck = getReportsToCheck(
+				primaryEventReportOptions,
+				engagementReportOptions,
+				secondaryEventsReportOptions
+			);
 
 			return [
 				select( MODULES_ANALYTICS_4 ).areReportsLoading(
@@ -273,14 +326,17 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	if ( ! primaryEvent ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -300,7 +356,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Online Store Performance',
@@ -431,7 +487,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 

@@ -25,14 +25,21 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import TopTrafficChannelsGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopTrafficChannelsRateGoalDriver';
 import TopPagesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/TopPagesGoalDriver';
 import VisitorTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/VisitorTypeGoalDriver';
+import CitiesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CitiesGoalDriver';
+import CountriesGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/CountriesGoalDriver';
+import DeviceTypeGoalDriver from '@/js/modules/analytics-4/components/site-goals/goal-drivers/DeviceTypeGoalDriver';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { SITE_GOALS_MAX_SELECTED_DRIVERS } from '@/js/modules/analytics-4/components/site-goals/constants';
-import type {
+import {
+	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_MAX_SELECTED_DRIVERS,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import {
 	GoalDriverCatalog,
 	GoalDriverContent,
 	GoalDriverID,
@@ -49,36 +56,64 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __(
-					'Top traffic channels driving sales',
+					'Top traffic channels by total sales',
 					'google-site-kit'
 				),
 				description: __(
-					'Find out where your online store sales come from.',
+					'Where do most of your buyers come from?',
 					'google-site-kit'
 				),
 			},
 			[ GOAL_TYPES.LEAD ]: {
 				title: __(
-					'Top traffic channels driving leads',
+					'Top traffic channels by total form completions',
 					'google-site-kit'
 				),
 				description: __(
-					'How did visitors who reached out find your site?',
+					'Where do most of your leads come from?',
 					'google-site-kit'
 				),
 			},
 		},
 		Component: TopTrafficChannelsGoalDriver,
 	},
+	[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE ]: {
+		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+		order: 10,
+		defaultEnabled: true,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __(
+					'Top traffic channels by sales rate',
+					'google-site-kit'
+				),
+				description: __(
+					'Which channels have the highest percentage of buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __(
+					'Top traffic channels by form completion rate',
+					'google-site-kit'
+				),
+				description: __(
+					'Which channels are most efficient at capturing leads?',
+					'google-site-kit'
+				),
+			},
+		},
+		Component: TopTrafficChannelsRateGoalDriver,
+	},
 	[ GOAL_DRIVER_IDS.TOP_PAGES ]: {
 		id: GOAL_DRIVER_IDS.TOP_PAGES,
-		order: 20,
-		defaultEnabled: true,
+		order: 10,
+		defaultEnabled: false,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Top pages driving sales', 'google-site-kit' ),
 				description: __(
-					'Identify the pages generating the most sales events.',
+					'Which pages bring in the most sales?',
 					'google-site-kit'
 				),
 			},
@@ -94,13 +129,13 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	},
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
-		order: 30,
-		defaultEnabled: true,
+		order: 10,
+		defaultEnabled: false,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by visitor type', 'google-site-kit' ),
 				description: __(
-					'Compare sales from new and returning visitors.',
+					'Which types of visitors are most likely to buy?',
 					'google-site-kit'
 				),
 			},
@@ -113,6 +148,72 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 			},
 		},
 		Component: VisitorTypeGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.CITIES ]: {
+		id: GOAL_DRIVER_IDS.CITIES,
+		order: 10,
+		defaultEnabled: true,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by cities', 'google-site-kit' ),
+				description: __(
+					'Which cities bring in the most buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by cities', 'google-site-kit' ),
+				description: __(
+					'Which cities are people reaching out from?',
+					'google-site-kit'
+				),
+			},
+		},
+		Component: CitiesGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.COUNTRIES ]: {
+		id: GOAL_DRIVER_IDS.COUNTRIES,
+		order: 10,
+		defaultEnabled: false,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by countries', 'google-site-kit' ),
+				description: __(
+					'Which countries bring in the most buyers?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by countries', 'google-site-kit' ),
+				description: __(
+					'Which countries are people reaching out from?',
+					'google-site-kit'
+				),
+			},
+		},
+		Component: CountriesGoalDriver,
+	},
+	[ GOAL_DRIVER_IDS.DEVICE_TYPE ]: {
+		id: GOAL_DRIVER_IDS.DEVICE_TYPE,
+		order: 10,
+		defaultEnabled: false,
+		copyByGoalType: {
+			[ GOAL_TYPES.ECOMMERCE ]: {
+				title: __( 'Sales by device type', 'google-site-kit' ),
+				description: __(
+					'Are people buying more on mobile or desktop?',
+					'google-site-kit'
+				),
+			},
+			[ GOAL_TYPES.LEAD ]: {
+				title: __( 'Leads by device type', 'google-site-kit' ),
+				description: __(
+					'What devices do people use when they take action?',
+					'google-site-kit'
+				),
+			},
+		},
+		Component: DeviceTypeGoalDriver,
 	},
 };
 
@@ -151,10 +252,23 @@ function getGoalDriverEntriesForType( goalType: GoalType ) {
 }
 
 function getDefaultGoalDriverIDs( goalType: GoalType ): GoalDriverID[] {
-	return getGoalDriverEntriesForType( goalType )
+	const defaultDriverIDs = Object.values( GOAL_DRIVER_CATALOG )
 		.filter( ( goalDriver ) => goalDriver.defaultEnabled )
+		.sort(
+			( currentGoalDriver, nextGoalDriver ) =>
+				currentGoalDriver.order - nextGoalDriver.order
+		)
 		.map( ( goalDriver ) => goalDriver.id )
 		.slice( 0, SITE_GOALS_MAX_SELECTED_DRIVERS );
+
+	if ( defaultDriverIDs.length ) {
+		return defaultDriverIDs;
+	}
+
+	return resolveGoalDriverIDs(
+		SITE_GOALS_DEFAULT_SELECTED_DRIVERS[ goalType ],
+		goalType
+	);
 }
 
 export function getGoalDriverOptions( goalType: GoalType ): GoalDriverOption[] {
@@ -197,15 +311,12 @@ export function resolveGoalDriverIDs(
 		return [];
 	}
 
-	const availableIDs = getGoalTypeDriverIDs( goalType );
-
 	const validSelectedIDs: GoalDriverID[] = [];
 
 	selectedDriverIDs.forEach( ( selectedDriverID ) => {
 		if (
 			typeof selectedDriverID === 'string' &&
 			isGoalDriverID( selectedDriverID ) &&
-			availableIDs.includes( selectedDriverID ) &&
 			! validSelectedIDs.includes( selectedDriverID )
 		) {
 			validSelectedIDs.push( selectedDriverID );
@@ -218,8 +329,10 @@ export function resolveGoalDriverIDs(
 export function resolveGoalDriverSelectionState( selectedDrivers?: {
 	[ key: string ]: string[];
 } ): GoalDriverSelectionState {
-	const ecommerceSelection = selectedDrivers?.[ GOAL_TYPES.ECOMMERCE ];
-	const leadSelection = selectedDrivers?.[ GOAL_TYPES.LEAD ];
+	const selectionState =
+		selectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS;
+	const ecommerceSelection = selectionState?.[ GOAL_TYPES.ECOMMERCE ];
+	const leadSelection = selectionState?.[ GOAL_TYPES.LEAD ];
 
 	return {
 		[ GOAL_TYPES.ECOMMERCE ]:
@@ -228,10 +341,10 @@ export function resolveGoalDriverSelectionState( selectedDrivers?: {
 						ecommerceSelection,
 						GOAL_TYPES.ECOMMERCE
 				  )
-				: getDefaultGoalDriverIDs( GOAL_TYPES.ECOMMERCE ),
+				: resolveGoalDriverIDs( undefined, GOAL_TYPES.ECOMMERCE ),
 		[ GOAL_TYPES.LEAD ]:
 			leadSelection !== undefined
 				? resolveGoalDriverIDs( leadSelection, GOAL_TYPES.LEAD )
-				: getDefaultGoalDriverIDs( GOAL_TYPES.LEAD ),
+				: resolveGoalDriverIDs( undefined, GOAL_TYPES.LEAD ),
 	};
 }

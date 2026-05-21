@@ -49,7 +49,7 @@ export default function ChangeGoalDriversLink( {
 			onClick={ () =>
 				setValue( SITE_GOALS_SELECTION_PANEL_OPENED_KEY, true )
 			}
-			leadingIcon={ <PencilIcon width={ 18 } height={ 18 } /> }
+			leadingIcon={ <PencilIcon width={ 20 } height={ 20 } /> }
 			secondary
 			linkButton
 		>

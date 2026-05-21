@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 
 export type GoalDriverID =
@@ -37,7 +37,6 @@ export interface GoalDriverRow {
 export interface GoalDriverComponentProps {
 	title?: string;
 	rows?: GoalDriverRow[];
-	totalRows?: number;
 	loading?: boolean;
 	error?: unknown;
 	limit?: number;
@@ -52,7 +51,6 @@ export interface GoalDriverComponentProps {
 export interface GoalDriverData {
 	id: GoalDriverID;
 	rows: GoalDriverRow[];
-	totalRows: number;
 	loading: boolean;
 	error?: unknown;
 }
@@ -84,7 +82,6 @@ export interface GoalDriverTilesDriver {
 	title?: string;
 	Component?: ComponentType< GoalDriverComponentProps >;
 	rows?: GoalDriverRow[];
-	totalRows?: number;
 	loading?: boolean;
 	error?: unknown;
 	order?: number;

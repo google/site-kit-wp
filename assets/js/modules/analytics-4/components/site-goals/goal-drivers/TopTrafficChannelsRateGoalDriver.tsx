@@ -1,5 +1,5 @@
 /**
- * VisitorTypeGoalDriver component.
+ * TopTrafficChannelsRateGoalDriver component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -58,12 +58,7 @@ interface ReportRow {
 	metricValues?: Array< { value?: string } >;
 }
 
-const VISITOR_TYPE_LABELS = {
-	new: __( 'New visitors', 'google-site-kit' ),
-	returning: __( 'Returning visitors', 'google-site-kit' ),
-};
-
-const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title: providedTitle,
 	goalType,
 	limit,
@@ -76,8 +71,8 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	const title =
 		providedTitle ||
 		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by visitor type', 'google-site-kit' )
-			: __( 'Leads by visitor type', 'google-site-kit' ) );
+			? __( 'Top traffic channels by sales rate', 'google-site-kit' )
+			: __( 'Top traffic channels by leads rate', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -86,24 +81,20 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			} ),
 		[]
 	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames ),
-		[ eventNames ]
-	);
 	const reportOptions = useMemo( () => {
+		const eventNames = normalizePrimaryEvents( primaryEvent );
+
 		if ( ! dates || ! eventNames.length ) {
 			return undefined;
 		}
 
+		const dimensionFilters = getDimensionFiltersForEvents( eventNames );
+
 		return {
 			...dates,
-			dimensions: [ 'newVsReturning' ],
+			dimensions: [ 'sessionDefaultChannelGroup' ],
 			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
+			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
 			orderby: [
 				{
 					metric: { metricName: 'eventCount' },
@@ -112,9 +103,10 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
 		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
+	}, [ dates, goalType, primaryEvent ] );
+
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -138,59 +130,46 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
-			return (
-				hasReportStarted && report === undefined && ! currentReportError
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
 			);
 		},
-		[ report, reportOptions ]
+		[ reportOptions ]
 	);
+
 	const sourceRows: ReportRow[] = report?.rows || [];
-	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {
-		return (
-			total + parseFloat( String( row.metricValues?.[ 0 ]?.value ?? 0 ) )
-		);
-	}, 0 );
 	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
-		const visitorType = row.dimensionValues?.[ 0 ]?.value || '';
-		const visitorTypeKey = visitorType as keyof typeof VISITOR_TYPE_LABELS;
+		const channel = row.dimensionValues?.[ 0 ]?.value || '-';
 		const eventCount = parseFloat(
 			String( row.metricValues?.[ 0 ]?.value ?? 0 )
 		);
+		const sessions = parseFloat(
+			String( row.metricValues?.[ 1 ]?.value ?? 0 )
+		);
+		const rate = sessions > 0 ? eventCount / sessions : 0;
 
 		return {
-			label: VISITOR_TYPE_LABELS[ visitorTypeKey ] || visitorType || '-',
-			value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
+			label: channel || __( '(not set)', 'google-site-kit' ),
+			value: numFmt( rate, {
 				style: 'percent',
 				signDisplay: 'never',
 				maximumFractionDigits: 1,
 			} ),
 		};
 	} );
+
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
 	const error = providedError ?? reportError;
 
 	useEffect( () => {
 		onExpandableRowsChange?.(
-			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
 		);
 	}, [ onExpandableRowsChange, rows.length ] );
+
 	const noDataMetricLabel =
 		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
 
@@ -206,4 +185,4 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 };
 
-export default VisitorTypeGoalDriver;
+export default TopTrafficChannelsRateGoalDriver;

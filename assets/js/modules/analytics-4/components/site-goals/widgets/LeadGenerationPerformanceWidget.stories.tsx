@@ -24,9 +24,11 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
@@ -82,6 +84,23 @@ const multipleEventsReportOptions = buildLeadEventsReportOptions( [
 	ENUM_CONVERSION_EVENTS.CONTACT,
 	ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 ] );
+
+const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+	GOAL_DRIVER_IDS.CITIES,
+];
+
+const FIVE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...THREE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.TOP_PAGES,
+	GOAL_DRIVER_IDS.VISITOR_TYPE,
+];
+
+const SIX_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
+	...FIVE_VISIBLE_GOAL_DRIVERS,
+	GOAL_DRIVER_IDS.COUNTRIES,
+];
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'analyticsLeadGenerationPerformance'
@@ -149,6 +168,17 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
 	};
 
+	const topTrafficRateOptions = {
+		...goalDriverDates,
+		dimensions: [ 'sessionDefaultChannelGroup' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+	};
+
 	const topPagesOptions = {
 		...goalDriverDates,
 		dimensions: [ 'pagePath', 'eventName' ],
@@ -184,13 +214,62 @@ function seedGoalDriverReports(
 		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
 	};
 
+	const citiesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'city' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			city: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+	};
+
+	const countriesOptions = {
+		...goalDriverDates,
+		dimensions: [ 'country' ],
+		dimensionFilters: {
+			...dimensionFilters,
+			country: {
+				filterType: 'emptyFilter',
+				notExpression: true,
+			},
+		},
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+	};
+
+	const deviceTypeOptions = {
+		...goalDriverDates,
+		dimensions: [ 'deviceCategory' ],
+		dimensionFilters,
+		metrics: [ { name: 'eventCount' } ],
+		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		keepEmptyRows: false,
+		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+	};
+
 	if ( loading ) {
 		[
 			topTrafficChannelsOptions,
 			topTrafficTotalOptions,
+			topTrafficRateOptions,
 			topPagesOptions,
 			pageTitlesOptions,
 			visitorTypeOptions,
+			citiesOptions,
+			countriesOptions,
+			deviceTypeOptions,
 		].forEach( ( options ) => {
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
@@ -265,6 +344,40 @@ function seedGoalDriverReports(
 		{
 			rows: empty
 				? []
+				: [
+						{
+							dimensionValues: [ { value: 'Direct' } ],
+							metricValues: [
+								{ value: '75' },
+								{ value: '1000' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'Organic search' } ],
+							metricValues: [
+								{ value: '47' },
+								{ value: '1000' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'Organic social' } ],
+							metricValues: [
+								{ value: '12' },
+								{ value: '1000' },
+							],
+						},
+				  ],
+		},
+		{ options: topTrafficRateOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
 				: pagePaths.map( ( pagePath, index ) => ( {
 						dimensionValues: [
 							{ value: pagePath },
@@ -321,16 +434,95 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ visitorTypeOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'London' } ],
+							metricValues: [ { value: '39' } ],
+						},
+						{
+							dimensionValues: [ { value: 'New York' } ],
+							metricValues: [ { value: '26' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Paris' } ],
+							metricValues: [ { value: '13' } ],
+						},
+				  ],
+		},
+		{ options: citiesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ citiesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'United States' } ],
+							metricValues: [ { value: '49' } ],
+						},
+						{
+							dimensionValues: [ { value: 'United Kingdom' } ],
+							metricValues: [ { value: '21' } ],
+						},
+						{
+							dimensionValues: [ { value: 'Germany' } ],
+							metricValues: [ { value: '15' } ],
+						},
+				  ],
+		},
+		{ options: countriesOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ countriesOptions ] );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [
+						{
+							dimensionValues: [ { value: 'mobile' } ],
+							metricValues: [ { value: '565' } ],
+						},
+						{
+							dimensionValues: [ { value: 'tablet' } ],
+							metricValues: [ { value: '413' } ],
+						},
+						{
+							dimensionValues: [ { value: 'desktop' } ],
+							metricValues: [ { value: '22' } ],
+						},
+				  ],
+		},
+		{ options: deviceTypeOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ deviceTypeOptions ] );
 }
 
 function Template( {
 	setupRegistry,
+	selectedGoalDriverIDs,
 }: {
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	selectedGoalDriverIDs?: GoalDriverID[];
 } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WidgetWithComponentProps />
+			<WidgetWithComponentProps
+				selectedGoalDriverIDs={ selectedGoalDriverIDs }
+			/>
 		</WithRegistrySetup>
 	);
 }
@@ -338,6 +530,7 @@ function Template( {
 export const Ready = Template.bind( {} ) as Story;
 Ready.storyName = 'Ready';
 Ready.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		provideAnalytics4MockReport( registry, singleEventReportOptions );
@@ -351,6 +544,7 @@ Ready.args = {
 export const ReadyMultipleEvents = Template.bind( {} ) as Story;
 ReadyMultipleEvents.storyName = 'Ready (Multiple Events)';
 ReadyMultipleEvents.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
 	setupRegistry: ( registry ) => {
 		commonSetup( registry );
 		registry
@@ -366,6 +560,27 @@ ReadyMultipleEvents.args = {
 			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
 		] );
 	},
+};
+
+export const ReadyFiveDrivers = Template.bind( {} ) as Story;
+ReadyFiveDrivers.storyName = 'Ready (5 Goal Drivers)';
+ReadyFiveDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: FIVE_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadySixDrivers = Template.bind( {} ) as Story;
+ReadySixDrivers.storyName = 'Ready (6 Goal Drivers)';
+ReadySixDrivers.args = {
+	setupRegistry: Ready.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
+};
+
+export const ReadySixDriversShowMore = Template.bind( {} ) as Story;
+ReadySixDriversShowMore.storyName = 'Ready (6 Goal Drivers, Show More)';
+ReadySixDriversShowMore.args = {
+	setupRegistry: ReadyMultipleEvents.args.setupRegistry,
+	selectedGoalDriverIDs: SIX_VISIBLE_GOAL_DRIVERS,
 };
 
 export const Loading = Template.bind( {} ) as Story;

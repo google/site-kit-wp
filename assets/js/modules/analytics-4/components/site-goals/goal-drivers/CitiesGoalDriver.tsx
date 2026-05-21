@@ -1,5 +1,5 @@
 /**
- * VisitorTypeGoalDriver component.
+ * CitiesGoalDriver component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -58,12 +58,7 @@ interface ReportRow {
 	metricValues?: Array< { value?: string } >;
 }
 
-const VISITOR_TYPE_LABELS = {
-	new: __( 'New visitors', 'google-site-kit' ),
-	returning: __( 'Returning visitors', 'google-site-kit' ),
-};
-
-const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+const CitiesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title: providedTitle,
 	goalType,
 	limit,
@@ -76,8 +71,8 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	const title =
 		providedTitle ||
 		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Sales by visitor type', 'google-site-kit' )
-			: __( 'Leads by visitor type', 'google-site-kit' ) );
+			? __( 'Sales by cities', 'google-site-kit' )
+			: __( 'Leads by cities', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -86,23 +81,26 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			} ),
 		[]
 	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames ),
-		[ eventNames ]
-	);
 	const reportOptions = useMemo( () => {
+		const eventNames = normalizePrimaryEvents( primaryEvent );
+
 		if ( ! dates || ! eventNames.length ) {
 			return undefined;
 		}
 
+		const eventDimensionFilters =
+			getDimensionFiltersForEvents( eventNames );
+
 		return {
 			...dates,
-			dimensions: [ 'newVsReturning' ],
-			dimensionFilters,
+			dimensions: [ 'city' ],
+			dimensionFilters: {
+				...( eventDimensionFilters || {} ),
+				city: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
 			metrics: [ { name: 'eventCount' } ],
 			orderby: [
 				{
@@ -112,9 +110,9 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+			reportID: `analytics-4_site-goals_cities_${ goalType }`,
 		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
+	}, [ dates, goalType, primaryEvent ] );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -138,26 +136,12 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
-			return (
-				hasReportStarted && report === undefined && ! currentReportError
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
 			);
 		},
-		[ report, reportOptions ]
+		[ reportOptions ]
 	);
 	const sourceRows: ReportRow[] = report?.rows || [];
 	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {
@@ -166,14 +150,13 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 		);
 	}, 0 );
 	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
-		const visitorType = row.dimensionValues?.[ 0 ]?.value || '';
-		const visitorTypeKey = visitorType as keyof typeof VISITOR_TYPE_LABELS;
+		const city = row.dimensionValues?.[ 0 ]?.value || '';
 		const eventCount = parseFloat(
 			String( row.metricValues?.[ 0 ]?.value ?? 0 )
 		);
 
 		return {
-			label: VISITOR_TYPE_LABELS[ visitorTypeKey ] || visitorType || '-',
+			label: city || __( '(not set)', 'google-site-kit' ),
 			value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
 				style: 'percent',
 				signDisplay: 'never',
@@ -187,10 +170,11 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 
 	useEffect( () => {
 		onExpandableRowsChange?.(
-			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.CITIES,
 			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
 		);
 	}, [ onExpandableRowsChange, rows.length ] );
+
 	const noDataMetricLabel =
 		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
 
@@ -206,4 +190,4 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 };
 
-export default VisitorTypeGoalDriver;
+export default CitiesGoalDriver;

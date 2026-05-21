@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -37,7 +37,7 @@ import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { numFmt } from '@/js/util';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
@@ -46,11 +46,13 @@ import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goal
 import {
 	GOAL_DRIVER_CATALOG,
 	GoalDriverSelectionState,
+	getGoalDriverTitle,
 	GOAL_TYPES,
 	GoalDriverTiles,
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
@@ -62,11 +64,27 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 
-const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
-	Widget,
-	WidgetNull,
-	WidgetReportError,
-} ) => {
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
+
+const LeadGenerationPerformanceWidget: FC<
+	LeadGenerationPerformanceWidgetProps
+> = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
@@ -86,10 +104,11 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
 	const drivers = resolveGoalDriverIDs(
-		resolvedSelections[ GOAL_TYPES.LEAD ],
+		selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.LEAD ],
 		GOAL_TYPES.LEAD
 	).map( ( driverID ) => ( {
 		...GOAL_DRIVER_CATALOG[ driverID ],
+		title: getGoalDriverTitle( GOAL_TYPES.LEAD, driverID ),
 	} ) );
 
 	const dates = useSelect(
@@ -171,14 +190,17 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	if ( ! hasLeadEvents ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -195,7 +217,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	} );
 
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Lead generation performance',
@@ -295,7 +317,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 

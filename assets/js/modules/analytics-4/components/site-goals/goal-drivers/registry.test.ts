@@ -30,8 +30,8 @@ describe( 'resolveGoalDriverIDs', () => {
 	it( 'returns defaults sorted by order when no IDs are provided', () => {
 		expect( resolveGoalDriverIDs() ).toEqual( [
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-			GOAL_DRIVER_IDS.TOP_PAGES,
-			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.CITIES,
 		] );
 	} );
 
@@ -39,10 +39,14 @@ describe( 'resolveGoalDriverIDs', () => {
 		expect(
 			resolveGoalDriverIDs( [
 				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.CITIES,
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 			] )
 		).toEqual( [
 			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.CITIES,
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 		] );
 	} );
@@ -52,9 +56,31 @@ describe( 'resolveGoalDriverIDs', () => {
 			resolveGoalDriverIDs( [
 				'unsupportedGoalDriver',
 				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.COUNTRIES,
 				'anotherUnsupportedGoalDriver',
 			] )
-		).toEqual( [ GOAL_DRIVER_IDS.TOP_PAGES ] );
+		).toEqual( [ GOAL_DRIVER_IDS.TOP_PAGES, GOAL_DRIVER_IDS.COUNTRIES ] );
+	} );
+
+	it( 'caps selected IDs to six', () => {
+		expect(
+			resolveGoalDriverIDs( [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.CITIES,
+				GOAL_DRIVER_IDS.COUNTRIES,
+				GOAL_DRIVER_IDS.DEVICE_TYPE,
+			] )
+		).toEqual( [
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.TOP_PAGES,
+			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.CITIES,
+			GOAL_DRIVER_IDS.COUNTRIES,
+		] );
 	} );
 
 	it( 'returns empty array for explicitly empty selection', () => {
@@ -99,12 +125,12 @@ describe( 'resolveGoalDriverSelectionState', () => {
 		expect( resolveGoalDriverSelectionState() ).toEqual( {
 			ecommerce: [
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				GOAL_DRIVER_IDS.TOP_PAGES,
-				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.CITIES,
 			],
 			lead: [
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 				GOAL_DRIVER_IDS.VISITOR_TYPE,
 			],
 		} );

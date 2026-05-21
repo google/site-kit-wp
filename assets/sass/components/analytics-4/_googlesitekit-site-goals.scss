@@ -16,7 +16,8 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group {
+	.googlesitekit-site-goals-tiles-group + .googlesitekit-site-goals-tiles-group,
+	.googlesitekit-preview-block + .googlesitekit-site-goals-tiles-group {
 		margin-top: 34px;
 	}
 
@@ -49,7 +50,11 @@
 
 		.googlesitekit-site-goals-change-drivers-cta.googlesitekit-cta-link.googlesitekit-cta-link--link-button {
 			color: $c-content-secondary;
-			padding: 0;
+			padding: 0 4px 0 2px;
+
+			.googlesitekit-icon-wrapper {
+				margin-right: 0 !important; // To override the inline set margin.
+			}
 		}
 	}
 
@@ -212,17 +217,21 @@
 			display: block;
 		}
 
-		.googlesitekit-site-goals-goal-drivers-section__tiles {
-			display: grid;
-			gap: 8px;
-			grid-template-columns: 1fr;
+			.googlesitekit-site-goals-goal-drivers-section__tiles {
+				display: grid;
+				gap: 8px;
+				grid-template-columns: 1fr;
 
-			@media (min-width: $bp-tablet) {
-				align-items: start;
-				gap: 42px;
-				grid-template-columns: repeat(3, minmax(0, 1fr));
+				@media (min-width: $bp-nonMobile) {
+					align-items: start;
+					gap: 36px 42px;
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+
+				@media (min-width: $bp-desktop) {
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+				}
 			}
-		}
 
 		.googlesitekit-site-goals-goal-drivers-section__tile {
 			min-width: 0;
@@ -254,6 +263,21 @@
 				top: 12px;
 				width: 9px;
 			}
+
+			&.googlesitekit-site-goals-goal-drivers-section__tile--empty {
+				display: none;
+				min-height: 168px;
+				padding: 0;
+
+				@media (min-width: $bp-tablet) {
+					display: block;
+				}
+
+				&::before,
+				&::after {
+					display: none;
+				}
+			}
 		}
 
 		.googlesitekit-site-goals-goal-drivers-section__show-more.googlesitekit-cta-link {
@@ -275,6 +299,10 @@
 			&:focus-visible {
 				background-color: transparent;
 			}
+		}
+
+		.googlesitekit-site-goals-tiles-group__footer-cta {
+			margin-top: 10px;
 		}
 	}
 

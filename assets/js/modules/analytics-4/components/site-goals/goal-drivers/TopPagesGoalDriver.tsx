@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { useSelect, Select } from 'googlesitekit-data';
 import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -49,7 +49,7 @@ import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import type {
+import {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
@@ -59,20 +59,21 @@ interface ReportRow {
 	metricValues?: Array< { value?: string } >;
 }
 
-const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
+const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	onExpandableRowsChange,
+} ) => {
 	const title =
-		goalType === GOAL_TYPES.ECOMMERCE
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'Top pages driving sales', 'google-site-kit' )
-			: __( 'Top pages driving leads', 'google-site-kit' );
+			: __( 'Top pages driving leads', 'google-site-kit' ) );
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
 		( select: Select ) =>

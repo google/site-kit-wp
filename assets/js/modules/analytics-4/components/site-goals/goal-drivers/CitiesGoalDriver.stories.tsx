@@ -1,5 +1,5 @@
 /**
- * TopTrafficChannelsGoalDriver component stories.
+ * CitiesGoalDriver component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -33,27 +33,17 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
-import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
+import CitiesGoalDriver from './CitiesGoalDriver';
 import { GoalDriverComponentProps } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
 	endDate: '2020-09-07',
-	dimensions: [ 'sessionDefaultChannelGroup' ],
+	dimensions: [ 'city' ],
 	metrics: [ { name: 'eventCount' } ],
 };
 
-const RETRYABLE_ERROR = {
-	code: 400,
-	message: 'Data loading failed',
-	data: {
-		status: 400,
-		reason: 'badRequest',
-	},
-};
-
-interface TopTrafficChannelsGoalDriverStoryProps
-	extends GoalDriverComponentProps {
+interface CitiesGoalDriverStoryProps extends GoalDriverComponentProps {
 	setupRegistry?: (
 		registry: Parameters< typeof provideModules >[ 0 ]
 	) => Promise< void > | void;
@@ -61,12 +51,12 @@ interface TopTrafficChannelsGoalDriverStoryProps
 }
 
 export default {
-	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles/TopTrafficChannels',
-	component: TopTrafficChannelsGoalDriver,
+	title: 'Modules/Analytics4/Components/Site Goals/GoalDriverTiles/Cities',
+	component: CitiesGoalDriver,
 	decorators: [
 		(
 			StoryComponent: () => ReactElement,
-			{ args }: { args: TopTrafficChannelsGoalDriverStoryProps }
+			{ args }: { args: CitiesGoalDriverStoryProps }
 		) => {
 			const wrappedStory = (
 				<div className="googlesitekit-widget">
@@ -93,7 +83,7 @@ function Template( {
 	errorSelectorArgs,
 	error,
 	...args
-}: TopTrafficChannelsGoalDriverStoryProps ) {
+}: CitiesGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {
@@ -110,19 +100,25 @@ function Template( {
 		[ error, errorSelectorArgs ]
 	);
 
-	return <TopTrafficChannelsGoalDriver { ...args } error={ storyError } />;
+	return <CitiesGoalDriver { ...args } error={ storyError } />;
 }
 
-export const Ready = Template.bind(
-	{}
-) as Story< TopTrafficChannelsGoalDriverStoryProps >;
+const RETRYABLE_ERROR = {
+	code: 400,
+	message: 'Data loading failed',
+	data: {
+		status: 400,
+		reason: 'badRequest',
+	},
+};
+
+export const Ready = Template.bind( {} ) as Story< CitiesGoalDriverStoryProps >;
 Ready.args = {
-	goalType: 'lead',
-	title: 'Top traffic channels driving leads',
+	goalType: 'ecommerce',
 	rows: [
-		{ label: 'Direct', value: '30.5%' },
-		{ label: 'Organic search', value: '24.7%' },
-		{ label: 'Organic social', value: '16.2%' },
+		{ label: 'London', value: '30.5%' },
+		{ label: 'New York', value: '24.7%' },
+		{ label: 'Berlin', value: '16.2%' },
 	],
 	loading: false,
 	limit: 3,
@@ -131,7 +127,7 @@ Ready.scenario = {};
 
 export const Loading = Template.bind(
 	{}
-) as Story< TopTrafficChannelsGoalDriverStoryProps >;
+) as Story< CitiesGoalDriverStoryProps >;
 Loading.args = {
 	...Ready.args,
 	rows: [],
@@ -140,16 +136,14 @@ Loading.args = {
 
 export const NoData = Template.bind(
 	{}
-) as Story< TopTrafficChannelsGoalDriverStoryProps >;
+) as Story< CitiesGoalDriverStoryProps >;
 NoData.args = {
 	...Ready.args,
 	rows: [],
 	loading: false,
 };
 
-export const Error = Template.bind(
-	{}
-) as Story< TopTrafficChannelsGoalDriverStoryProps >;
+export const Error = Template.bind( {} ) as Story< CitiesGoalDriverStoryProps >;
 Error.args = {
 	...Ready.args,
 	rows: [],

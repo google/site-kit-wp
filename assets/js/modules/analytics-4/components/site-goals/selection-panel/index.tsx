@@ -49,6 +49,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import Header from '@/js/modules/analytics-4/components/site-goals/selection-panel/Header';
 import PanelContent from '@/js/modules/analytics-4/components/site-goals/selection-panel/PanelContent';
 import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
+import SaveErrorNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/SaveErrorNotice';
 
 const SiteGoalsSelectionPanel: FC = () => {
 	const isOpen = useSelect(
@@ -107,7 +108,18 @@ const SiteGoalsSelectionPanel: FC = () => {
 				hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
 				hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
 			/>
-			<Footer isOpen={ !! isOpen } closePanel={ closePanel } />
+			<div className="googlesitekit-site-goals-selection-panel__footer-container">
+				<SaveErrorNotice
+					hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
+					hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
+				/>
+				<Footer
+					isOpen={ !! isOpen }
+					closePanel={ closePanel }
+					hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
+					hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
+				/>
+			</div>
 		</SelectionPanel>
 	);
 };

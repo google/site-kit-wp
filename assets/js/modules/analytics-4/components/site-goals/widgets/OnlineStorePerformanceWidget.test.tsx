@@ -27,10 +27,7 @@ import {
 	createTestRegistry,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import {
-	getWidgetComponentProps,
-	type WidgetComponentProps,
-} from '@/js/googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -44,6 +41,8 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'OnlineStorePerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -135,6 +134,22 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.ECOMMERCE }`,
 		};
 
+		const topTrafficRateOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.ECOMMERCE }`,
+		};
+
 		const topPagesOptions = {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
@@ -183,13 +198,77 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.ECOMMERCE }`,
 		};
 
+		const citiesOptions = {
+			...dates,
+			dimensions: [ 'city' ],
+			dimensionFilters: {
+				...dimensionFilters,
+				city: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.ECOMMERCE }`,
+		};
+
+		const countriesOptions = {
+			...dates,
+			dimensions: [ 'country' ],
+			dimensionFilters: {
+				...dimensionFilters,
+				country: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.ECOMMERCE }`,
+		};
+
+		const deviceTypeOptions = {
+			...dates,
+			dimensions: [ 'deviceCategory' ],
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_device-type_${ GOAL_TYPES.ECOMMERCE }`,
+		};
+
 		if ( loading ) {
 			[
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
+				topTrafficRateOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
+				citiesOptions,
+				countriesOptions,
+				deviceTypeOptions,
 			].forEach( ( options ) => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -237,6 +316,44 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficTotalOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'Direct' } ],
+								metricValues: [
+									{ value: '75' },
+									{ value: '1000' },
+								],
+							},
+							{
+								dimensionValues: [
+									{ value: 'Organic Search' },
+								],
+								metricValues: [
+									{ value: '47' },
+									{ value: '1000' },
+								],
+							},
+							{
+								dimensionValues: [
+									{ value: 'Organic Social' },
+								],
+								metricValues: [
+									{ value: '12' },
+									{ value: '1000' },
+								],
+							},
+					  ],
+			},
+			{ options: topTrafficRateOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -302,6 +419,83 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ visitorTypeOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'London' } ],
+								metricValues: [ { value: '33' } ],
+							},
+							{
+								dimensionValues: [ { value: 'New York' } ],
+								metricValues: [ { value: '28' } ],
+							},
+							{
+								dimensionValues: [ { value: 'Paris' } ],
+								metricValues: [ { value: '21' } ],
+							},
+					  ],
+			},
+			{ options: citiesOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ citiesOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'United States' } ],
+								metricValues: [ { value: '48' } ],
+							},
+							{
+								dimensionValues: [
+									{ value: 'United Kingdom' },
+								],
+								metricValues: [ { value: '24' } ],
+							},
+							{
+								dimensionValues: [ { value: 'Germany' } ],
+								metricValues: [ { value: '13' } ],
+							},
+					  ],
+			},
+			{ options: countriesOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ countriesOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'desktop' } ],
+								metricValues: [ { value: '51' } ],
+							},
+							{
+								dimensionValues: [ { value: 'mobile' } ],
+								metricValues: [ { value: '39' } ],
+							},
+							{
+								dimensionValues: [ { value: 'tablet' } ],
+								metricValues: [ { value: '18' } ],
+							},
+					  ],
+			},
+			{ options: deviceTypeOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ deviceTypeOptions ] );
 	}
 
 	beforeEach( () => {
@@ -363,7 +557,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		provideAnalytics4MockReport( registry, primaryEventReport );
 		provideAnalytics4MockReport( registry, engagementReport );
 
-		const { container, getByText, waitForRegistry } = render(
+		const { container, getAllByText, getByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -385,14 +579,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels driving sales' )
+			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
-		expect( getByText( 'Organic Search' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-section__tile'
+				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
 	} );
@@ -462,10 +658,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels driving sales' )
+			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
 	} );
 
 	it( 'uses purchase as primary event when both purchase and add_to_cart are detected', async () => {
@@ -505,10 +703,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect( getByText( 'Sales Rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total Sales' ) ).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels driving sales' )
+			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving sales' ) ).toBeInTheDocument();
-		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {
