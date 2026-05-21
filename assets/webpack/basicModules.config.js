@@ -29,10 +29,9 @@ const {
 	manifestArgs,
 	externals,
 	resolve,
-	rules,
 } = require( '../../webpack/common' );
 
-module.exports = ( mode ) => ( {
+module.exports = ( mode, rules ) => ( {
 	name: 'Basic Modules',
 	entry: {
 		'googlesitekit-i18n': './js/googlesitekit-i18n.ts',
