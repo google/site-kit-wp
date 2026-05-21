@@ -154,7 +154,7 @@
 						bottom: 0;
 						display: flex;
 						gap: $grid-gap-phone;
-						margin-left: -$grid-gap-phone; // Compensate for the padding of the container.
+						left: 0;
 						padding: 24px $grid-gap-phone;
 						position: fixed;
 						width: 100%;
@@ -163,6 +163,10 @@
 						.googlesitekit-setup-module__sub-action {
 							margin-top: 0;
 						}
+					}
+
+					@media (min-width: $bp-wpAdminBarTablet) and (max-width: $bp-desktop) {
+						left: 36px;
 					}
 				}
 
