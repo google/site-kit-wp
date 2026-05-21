@@ -1,7 +1,7 @@
 /**
- * DashboardDetails component.
+ * Metric selection.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,33 +23,23 @@ import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
-import DashboardEntityApp from './components/DashboardEntityApp';
+import FullScreenMetricSelectionApp from './components/KeyMetrics/FullScreenMetricSelectionApp';
 import Root from './components/Root';
-import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
-} from './googlesitekit/constants';
+import { VIEW_CONTEXT_METRIC_SELECTION } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-entity-dashboard'
+		'js-googlesitekit-metric-selection'
 	);
 
 	if ( renderTarget ) {
-		const { viewOnly } = renderTarget.dataset;
-
 		render(
-			<Root
-				viewContext={
-					viewOnly
-						? VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
-						: VIEW_CONTEXT_ENTITY_DASHBOARD
-				}
-			>
-				<DashboardEntityApp />
+			// @ts-expect-error Root is not properly typed yet.
+			<Root viewContext={ VIEW_CONTEXT_METRIC_SELECTION }>
+				<FullScreenMetricSelectionApp />
 			</Root>,
 			renderTarget
 		);

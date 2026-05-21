@@ -19,7 +19,9 @@
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch__non-shim';
+import apiFetch, {
+	type APIFetchMiddleware,
+} from '@wordpress/api-fetch__non-shim';
 
 /**
  * Internal dependencies
@@ -28,6 +30,14 @@ import createDedupeMiddleware, {
 	logDuplicate,
 } from '@/js/googlesitekit/api/middleware/deduplication';
 import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
+
+declare module '@wordpress/api-fetch' {
+	interface ApiFetch {
+		rootURLMiddleware: APIFetchMiddleware;
+		dedupeMiddleware: APIFetchMiddleware;
+		preloadingMiddleware: APIFetchMiddleware;
+	}
+}
 
 const { nonce, nonceEndpoint, preloadedData, rootURL } =
 	global._googlesitekitAPIFetchData || {};
@@ -38,7 +48,9 @@ apiFetch.rootURLMiddleware = apiFetch.createRootURLMiddleware( rootURL );
 apiFetch.dedupeMiddleware = createDedupeMiddleware( {
 	onDuplicate: logDuplicate,
 } );
-apiFetch.preloadingMiddleware = createPreloadingMiddleware( preloadedData );
+apiFetch.preloadingMiddleware = createPreloadingMiddleware(
+	preloadedData
+) as APIFetchMiddleware; // @TODO Remove this when `createPreloadingMiddleware` is properly typed.
 
 apiFetch.use( apiFetch.nonceMiddleware );
 apiFetch.use( apiFetch.mediaUploadMiddleware );

@@ -1,6 +1,4 @@
 /**
- * Ads module widget registrations.
- *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,5 +14,9 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line no-unused-vars
-export function registerWidgets( widgets ) {}
+export type AdvancedTrackingEvent = {
+	action: string;
+	on: string;
+	selector: string;
+	metadata?: Record< string, unknown >;
+};

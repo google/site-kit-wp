@@ -1,5 +1,5 @@
 /**
- * Dashboard component.
+ * Adminbar component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,48 +17,63 @@
  */
 
 /**
+ * External dependencies
+ */
+import { once } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
 
 /**
- * Internal dependencies
+ * Internal dependencies.
  */
-import DashboardEntryPoint from './components/DashboardEntryPoint';
+import AdminBarApp from './components/adminbar/AdminBarApp';
 import Root from './components/Root';
-import { clearCache } from './googlesitekit/api/cache';
 import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_MODULE_SETUP,
+	VIEW_CONTEXT_ADMIN_BAR,
+	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 } from './googlesitekit/constants';
+import { trackEvent } from './util';
 
-// Initialize the app once the DOM is ready.
-domReady( async () => {
-	if ( global._googlesitekitLegacyData.admin.resetSession ) {
-		await clearCache();
-	}
-
+// Initialize the whole adminbar app.
+const init = once( () => {
 	const renderTarget = document.getElementById(
-		'js-googlesitekit-main-dashboard'
+		'js-googlesitekit-adminbar-modules'
 	);
 
 	if ( renderTarget ) {
-		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
+		const { viewOnly } = renderTarget.dataset;
 
-		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
-		if ( ! setupModuleSlug ) {
-			viewContext = viewOnly
-				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
-				: VIEW_CONTEXT_MAIN_DASHBOARD;
-		}
+		const viewContext = viewOnly
+			? VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY
+			: VIEW_CONTEXT_ADMIN_BAR;
 
 		render(
+			// @ts-expect-error Root is not properly typed yet.
 			<Root viewContext={ viewContext }>
-				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
+				<AdminBarApp />
 			</Root>,
 			renderTarget
 		);
+
+		trackEvent( viewContext, 'view_urlsummary' );
 	}
+} );
+
+domReady( () => {
+	const siteKitMenuItemElement = document.getElementById(
+		'wp-admin-bar-google-site-kit'
+	);
+
+	if ( ! siteKitMenuItemElement ) {
+		return;
+	}
+
+	siteKitMenuItemElement.addEventListener( 'mouseover', init, {
+		once: true,
+	} );
+	siteKitMenuItemElement.addEventListener( 'focusin', init, { once: true } );
 } );

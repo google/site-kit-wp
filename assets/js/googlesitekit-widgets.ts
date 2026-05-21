@@ -28,7 +28,7 @@ import {
 
 registerStore( Data );
 
-const Widgets = createWidgets( Data );
+const Widgets = createWidgets( Data ) as Record< string, unknown >; // @TODO Remove this once assets/js/googlesitekit/widgets/index.js is migrated to TS.
 registerWidgets( Widgets );
 
 if ( typeof global.googlesitekit === 'undefined' ) {
