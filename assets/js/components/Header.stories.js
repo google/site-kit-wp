@@ -103,7 +103,7 @@ HeaderWithHelpMenu.args = {
 
 export const HeaderWithHelpMenuSFR = Template.bind( {} );
 HeaderWithHelpMenuSFR.storyName =
-	'Plugin Header with Help Menu - Setup Flow Refresh';
+	'Plugin Header with Help Menu - SetupFlowRefresh';
 HeaderWithHelpMenuSFR.args = {
 	children: <HelpMenu />,
 	setupRegistry: ( registry ) => {
@@ -112,6 +112,12 @@ HeaderWithHelpMenuSFR.args = {
 };
 HeaderWithHelpMenuSFR.parameters = {
 	features: [ 'setupFlowRefresh' ],
+};
+HeaderWithHelpMenuSFR.scenario = {
+	delay: 3000,
+	clickSelector: '.googlesitekit-help-menu__button',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
 };
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
