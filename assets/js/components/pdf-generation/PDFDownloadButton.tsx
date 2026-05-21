@@ -32,22 +32,24 @@ import { useCallback } from '@wordpress/element';
  */
 import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import DownloadIcon from '@/svg/icons/download.svg';
 
 const PDFDownloadButton: FC = () => {
 	const isOpen = useSelect(
-		( select: Select ) =>
-			select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY ),
+		( select: Select ) => select( CORE_PDF ).isSectionsPanelOpen(),
 		[]
 	);
 
-	const { setValue } = useDispatch( CORE_UI );
+	const { openSectionsPanel, closeSectionsPanel } = useDispatch( CORE_PDF );
 
 	const togglePanel = useCallback( () => {
-		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, ! isOpen );
-	}, [ isOpen, setValue ] );
+		if ( isOpen ) {
+			closeSectionsPanel();
+		} else {
+			openSectionsPanel();
+		}
+	}, [ isOpen, openSectionsPanel, closeSectionsPanel ] );
 
 	return (
 		<Button

@@ -24,8 +24,7 @@ import {
 	fireEvent,
 	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import PDFDownloadButton from './PDFDownloadButton';
 
 describe( 'PDFDownloadButton', () => {
@@ -43,25 +42,25 @@ describe( 'PDFDownloadButton', () => {
 		expect( getByLabelText( 'Download PDF report' ) ).toBeInTheDocument();
 	} );
 
-	it( 'toggles PDF_DOWNLOAD_PANEL_OPENED_KEY on click', () => {
+	it( 'toggles the sections panel open state on click', () => {
 		const { getByLabelText } = render( <PDFDownloadButton />, {
 			registry,
 		} );
 
-		expect(
-			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
-		).toBeUndefined();
+		expect( registry.select( CORE_PDF ).isSectionsPanelOpen() ).toBe(
+			false
+		);
 
 		fireEvent.click( getByLabelText( 'Download PDF report' ) );
 
-		expect(
-			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
-		).toBe( true );
+		expect( registry.select( CORE_PDF ).isSectionsPanelOpen() ).toBe(
+			true
+		);
 
 		fireEvent.click( getByLabelText( 'Download PDF report' ) );
 
-		expect(
-			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
-		).toBe( false );
+		expect( registry.select( CORE_PDF ).isSectionsPanelOpen() ).toBe(
+			false
+		);
 	} );
 } );

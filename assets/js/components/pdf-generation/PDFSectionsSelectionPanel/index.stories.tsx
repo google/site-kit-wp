@@ -32,15 +32,8 @@ import { useEffect } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import useFormValue from '@/js/hooks/useFormValue';
-import {
-	FORM_PDF_DOWNLOAD,
-	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
-	DEFAULT_SELECTED_SECTIONS,
-} from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 import PDFSectionsSelectionPanel from './index';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
@@ -51,18 +44,15 @@ function DefaultTemplate() {
 }
 
 function EmptyTemplate() {
-	const [ , setSelectedSections ] = useFormValue(
-		FORM_PDF_DOWNLOAD,
-		FORM_PDF_DOWNLOAD_SELECTED_SECTIONS
-	);
+	const { setSectionsSelection } = useDispatch( CORE_PDF );
 
-	// The panel's `onSideSheetOpen` resets the form to default selection on
-	// every mount. Re-applying the empty selection from this Template's
-	// `useEffect` runs after the panel's reset (effects fire bottom-up),
-	// so the story renders with no sections selected.
+	// The panel's `onSideSheetOpen` resets the selection to defaults on every
+	// mount. Re-applying the empty selection from this Template's `useEffect`
+	// runs after the panel's reset (effects fire bottom-up), so the story
+	// renders with no sections selected.
 	useEffect( () => {
-		setSelectedSections( [] );
-	}, [ setSelectedSections ] );
+		setSectionsSelection( [] );
+	}, [ setSectionsSelection ] );
 
 	return <PDFSectionsSelectionPanel />;
 }
@@ -99,13 +89,7 @@ export default {
 	decorators: [
 		( Story: ElementType ): ReactNode => {
 			function setupRegistry( registry: Registry ) {
-				registry
-					.dispatch( CORE_UI )
-					.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
-				registry.dispatch( CORE_FORMS ).setValues( FORM_PDF_DOWNLOAD, {
-					[ FORM_PDF_DOWNLOAD_SELECTED_SECTIONS ]:
-						DEFAULT_SELECTED_SECTIONS,
-				} );
+				registry.dispatch( CORE_PDF ).openSectionsPanel();
 			}
 
 			return (

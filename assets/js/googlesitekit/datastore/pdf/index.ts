@@ -23,19 +23,28 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createSelectionPanelStore } from '@/js/googlesitekit/data/create-selection-panel-store';
+import { DEFAULT_SELECTED_SECTIONS } from '@/js/components/pdf-generation/constants';
 import pdf from './pdf';
 import { CORE_PDF } from './constants';
 
+const sectionsPanel = createSelectionPanelStore( {
+	slug: 'sections',
+	initialSelection: DEFAULT_SELECTED_SECTIONS,
+} );
+
 interface Store {
-	initialState: typeof pdf.initialState;
-	actions: typeof pdf.actions & typeof commonStore.actions;
+	initialState: typeof pdf.initialState & typeof sectionsPanel.initialState;
+	actions: typeof pdf.actions &
+		typeof commonStore.actions &
+		typeof sectionsPanel.actions;
 	controls: typeof pdf.controls & typeof commonStore.controls;
 	reducer: typeof pdf.reducer;
 	resolvers: typeof pdf.resolvers;
-	selectors: typeof pdf.selectors;
+	selectors: typeof pdf.selectors & typeof sectionsPanel.selectors;
 }
 
-const store = combineStores( commonStore, pdf ) as Store;
+const store = combineStores( commonStore, pdf, sectionsPanel ) as Store;
 
 export const initialState = store.initialState;
 export const actions = store.actions;
