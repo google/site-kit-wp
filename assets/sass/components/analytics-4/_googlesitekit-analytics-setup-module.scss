@@ -22,6 +22,23 @@
 
 		&.googlesitekit-feature--setupFlowRefresh {
 
+			.googlesitekit-setup__step-hint {
+				margin: 7px 0 0 15px;
+				padding: 0;
+			}
+
+			@media (max-width: $bp-desktop) {
+				.googlesitekit-setup__title {
+					font-size: $fs-headline-sm;
+					line-height: $lh-headline-sm;
+					margin: 10px 0 4px;
+				}
+
+				.googlesitekit-setup__step-hint {
+					margin: 12px 0 0;
+				}
+			}
+
 			.googlesitekit-setup-module__inputs--grid-layout {
 				align-items: start;
 
@@ -77,11 +94,6 @@
 						grid-column: 2;
 						grid-row: 1;
 					}
-				}
-
-				.googlesitekit-setup__step-hint {
-					margin: 7px 0 0 15px;
-					padding: 0;
 				}
 
 				.mdc-text-field,
