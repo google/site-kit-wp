@@ -71,7 +71,7 @@ export default function SplashContent( {
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
-		: { smSize: 4, mdSize: 7, lgSize: 6 };
+		: { smSize: 4, mdSize: 8, lgSize: 6 };
 
 	return (
 		<Fragment>

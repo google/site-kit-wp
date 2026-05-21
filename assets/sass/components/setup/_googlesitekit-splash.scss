@@ -186,12 +186,12 @@
 		.googlesitekit-setup__content {
 			@media (max-width: $bp-desktop) {
 				max-width: none;
-				padding: 0.625rem 1.5rem 0;
+				padding: 10px $grid-gap-desktop 0;
 			}
 
 			@media (max-width: $bp-tablet) {
-				padding-left: 1rem;
-				padding-right: 1rem;
+				padding-left: $grid-gap-phone;
+				padding-right: $grid-gap-phone;
 			}
 
 			@media (min-width: $bp-nonTablet) {
