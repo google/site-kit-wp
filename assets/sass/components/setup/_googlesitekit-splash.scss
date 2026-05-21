@@ -128,6 +128,10 @@
 				@media (min-width: $bp-desktop) {
 					padding: 0 $grid-gap-desktop;
 				}
+
+				.googlesitekit-cta-link {
+					font-weight: 500;
+				}
 			}
 		}
 
