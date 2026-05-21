@@ -40,13 +40,17 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 
 describe( 'SiteGoalsSelectionPanel', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
+	const ecommerceGoalDriverCheckboxSelector =
+		'input[id^="site-goals-selection-"]:not([id^="site-goals-selection-visitor-engagement-"])[id$="-ecommerce"]';
 
 	mockBrowserScrolling();
 
@@ -153,6 +157,48 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		);
 	} );
 
+	it( 'renders visitor engagement items for ecommerce', async () => {
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( getByText( 'Visitor engagement' ) ).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
+		expect(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			)
+		).toBeChecked();
+	} );
+
+	it( 'updates staged visitor engagement selection for ecommerce', async () => {
+		render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			) as Element
+		);
+
+		const selectedVisitorEngagement = registry
+			.select( CORE_FORMS )
+			.getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
+			);
+
+		expect(
+			selectedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ]
+		).not.toContain( 'add_to_cart' );
+		expect( selectedVisitorEngagement[ GOAL_TYPES.LEAD ] ).toEqual( [] );
+	} );
+
 	it( 'applies staged selection to effective selection on save', async () => {
 		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -186,6 +232,39 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		} );
 	} );
 
+	it( 'applies staged visitor engagement selection to effective selection on save', async () => {
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-visitor-engagement-add_to_cart-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: /apply changes|save selection/i,
+			} )
+		);
+
+		await waitFor( () => {
+			const effectiveVisitorEngagement = registry
+				.select( CORE_FORMS )
+				.getValue(
+					SITE_GOALS_SELECTION_FORM,
+					SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
+				);
+
+			expect(
+				effectiveVisitorEngagement[ GOAL_TYPES.ECOMMERCE ]
+			).not.toContain( 'add_to_cart' );
+		} );
+	} );
+
 	it( 'does not render ineligible goal-type lists', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -216,7 +295,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		await waitForDefaultTimeouts();
 
 		document
-			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
 			.forEach( ( checkboxElement ) => {
 				const checkbox = checkboxElement as HTMLInputElement;
 				if ( checkbox.checked ) {
@@ -238,7 +317,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		await waitForDefaultTimeouts();
 
 		document
-			.querySelectorAll( 'input[id$="-ecommerce"]' )
+			.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
 			.forEach( ( checkboxElement ) => {
 				const checkbox = checkboxElement as HTMLInputElement;
 				if ( ! checkbox.checked ) {
@@ -251,8 +330,9 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			getByRole( 'button', { name: /apply changes|save selection/i } )
 		).toBeDisabled();
 		expect(
-			document.querySelectorAll( 'input[id$="-ecommerce"]:checked' )
-				.length
+			document.querySelectorAll(
+				`${ ecommerceGoalDriverCheckboxSelector }:checked`
+			).length
 		).toBe( 7 );
 	} );
 } );
