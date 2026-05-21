@@ -22,7 +22,6 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -63,6 +62,7 @@ import {
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -210,8 +210,6 @@ const LeadGenerationPerformanceWidget: FC<
 		currentSessions,
 		currentRate,
 		previousRate,
-		currentEngagementRate,
-		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
@@ -228,80 +226,65 @@ const LeadGenerationPerformanceWidget: FC<
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-primary-action"
-						title={ __( 'Key action', 'google-site-kit' ) }
-					>
-						<Tile
-							title={ __(
-								'Form completion rate',
-								'google-site-kit'
-							) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentRate }
-							previousValue={ previousRate }
-							format={ PERCENT_FORMAT }
-							primary
-						/>
-
-						<Tile
-							title={ __(
-								'Total form completions',
-								'google-site-kit'
-							) }
-							subtitle={
-								detectedLeadEvents.length === 1
-									? sprintf(
-											/* translators: %s: GA4 event name */
-											__(
-												'“%s” events',
-												'google-site-kit'
-											),
-											detectedLeadEvents[ 0 ]
-									  )
-									: sprintf(
-											/* translators: %d: number of detected event types */
-											_n(
-												'%d event type',
-												'%d event types',
-												detectedLeadEvents.length,
-												'google-site-kit'
-											),
-											detectedLeadEvents.length
-									  )
-							}
-							currentValue={ currentPrimaryCount }
-							previousValue={ previousPrimaryCount }
-							format={ NUMBER_FORMAT }
-						/>
-					</TilesGroup>
-
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
 						title={ __(
-							'How are your visitors engaging?',
+							'Form completion rate',
 							'google-site-kit'
 						) }
-					>
-						<Tile
-							title={ __( 'Engagement rate', 'google-site-kit' ) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentEngagementRate }
-							previousValue={ previousEngagementRate }
-							format={ PERCENT_FORMAT }
-						/>
-					</TilesGroup>
-				</Fragment>
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( '%s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
+
+					<Tile
+						title={ __(
+							'Total form completions',
+							'google-site-kit'
+						) }
+						subtitle={
+							detectedLeadEvents.length === 1
+								? sprintf(
+										/* translators: %s: GA4 event name */
+										__( '“%s” events', 'google-site-kit' ),
+										detectedLeadEvents[ 0 ]
+								  )
+								: sprintf(
+										/* translators: %d: number of detected event types */
+										_n(
+											'%d event type',
+											'%d event types',
+											detectedLeadEvents.length,
+											'google-site-kit'
+										),
+										detectedLeadEvents.length
+								  )
+						}
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
+
+			<TilesGroup
+				className="googlesitekit-site-goals-visitor-engagement"
+				title={ __(
+					'How are your visitors engaging?',
+					'google-site-kit'
+				) }
+			>
+				<VisitorEngagementTiles dates={ dates } />
+			</TilesGroup>
 
 			<TilesGroup
 				className="googlesitekit-site-goals-goal-drivers-group"
