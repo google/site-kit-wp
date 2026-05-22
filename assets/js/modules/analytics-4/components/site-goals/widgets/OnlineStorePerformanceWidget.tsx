@@ -89,7 +89,7 @@ const EVENT_RATE_LABELS = {
 
 const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
-	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
+	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
 function processSecondaryEventsReport(
@@ -207,7 +207,17 @@ const OnlineStorePerformanceWidget: FC<
 
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
-	const supportURL = useSelect(
+	const keyActionSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
+
+	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
+	const engagementSupportURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoogleSupportURL( {
 				path: '/TODO-SUPPORT-PATH',
@@ -385,7 +395,7 @@ const OnlineStorePerformanceWidget: FC<
 							}
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
 							) }
 							infoTooltip={ createInterpolateElement(
@@ -401,7 +411,7 @@ const OnlineStorePerformanceWidget: FC<
 										//
 										// eslint-disable-next-line jsx-a11y/anchor-has-content
 										<a
-											href={ supportURL }
+											href={ keyActionSupportURL }
 											target="_blank"
 											rel="noreferrer noopener"
 										/>
@@ -441,8 +451,28 @@ const OnlineStorePerformanceWidget: FC<
 							title={ __( 'Engagement rate', 'google-site-kit' ) }
 							subtitle={ sprintf(
 								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
+								__( 'of %s total sessions', 'google-site-kit' ),
 								numFmt( currentSessions, NUMBER_FORMAT )
+							) }
+							infoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action. <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via
+										// createInterpolateElement, so this
+										// can be safely ignored.
+										//
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ engagementSupportURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
 							) }
 							currentValue={ currentEngagementRate }
 							previousValue={ previousEngagementRate }
