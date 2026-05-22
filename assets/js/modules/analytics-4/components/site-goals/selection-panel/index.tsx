@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,7 +29,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
+import { useDispatch, useSelect, Select } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -37,10 +37,14 @@ import {
 	GoalDriverSelectionState,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -75,6 +79,10 @@ const SiteGoalsSelectionPanel: FC = () => {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_EFFECTIVE_DRIVERS
 	);
+	const [ effectiveVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -84,11 +92,18 @@ const SiteGoalsSelectionPanel: FC = () => {
 			( effectiveDrivers as GoalDriverSelectionState | undefined ) ||
 				SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 		);
+		const normalizedEffectiveVisitorEngagement =
+			resolveVisitorEngagementSelectionState(
+				effectiveVisitorEngagement ||
+					SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT
+			);
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: normalizedEffectiveDrivers,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				normalizedEffectiveVisitorEngagement,
 		} );
-	}, [ effectiveDrivers, setValues ] );
+	}, [ effectiveDrivers, effectiveVisitorEngagement, setValues ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {

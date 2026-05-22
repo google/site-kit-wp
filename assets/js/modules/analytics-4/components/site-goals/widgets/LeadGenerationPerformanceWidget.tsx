@@ -22,7 +22,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -63,6 +63,7 @@ import {
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
@@ -89,16 +90,6 @@ const LeadGenerationPerformanceWidget: FC<
 	// TODO: Update the link to the relevant support URL once it's created.
 	// See: https://github.com/google/site-kit-wp/issues/12727
 	const keyActionSupportURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
-		[]
-	);
-
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const engagementSupportURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoogleSupportURL( {
 				path: '/TODO-SUPPORT-PATH',
@@ -231,8 +222,6 @@ const LeadGenerationPerformanceWidget: FC<
 		currentSessions,
 		currentRate,
 		previousRate,
-		currentEngagementRate,
-		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
@@ -249,120 +238,85 @@ const LeadGenerationPerformanceWidget: FC<
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-primary-action"
-						title={ __( 'Key action', 'google-site-kit' ) }
-					>
-						<Tile
-							title={ __(
-								'Form completion rate',
-								'google-site-kit'
-							) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( 'of %s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							infoTooltip={ createInterpolateElement(
-								__(
-									'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
-									'google-site-kit'
-								),
-								{
-									a: (
-										// Content is added via
-										// createInterpolateElement, so this
-										// can be safely ignored.
-										//
-										// eslint-disable-next-line jsx-a11y/anchor-has-content
-										<a
-											href={ keyActionSupportURL }
-											target="_blank"
-											rel="noreferrer noopener"
-										/>
-									),
-								}
-							) }
-							currentValue={ currentRate }
-							previousValue={ previousRate }
-							format={ PERCENT_FORMAT }
-							primary
-						/>
-
-						<Tile
-							title={ __(
-								'Total form completions',
-								'google-site-kit'
-							) }
-							subtitle={
-								detectedLeadEvents.length === 1
-									? sprintf(
-											/* translators: %s: GA4 event name */
-											__(
-												'“%s” events',
-												'google-site-kit'
-											),
-											detectedLeadEvents[ 0 ]
-									  )
-									: sprintf(
-											/* translators: %d: number of detected event types */
-											_n(
-												'%d event type',
-												'%d event types',
-												detectedLeadEvents.length,
-												'google-site-kit'
-											),
-											detectedLeadEvents.length
-									  )
-							}
-							currentValue={ currentPrimaryCount }
-							previousValue={ previousPrimaryCount }
-							format={ NUMBER_FORMAT }
-						/>
-					</TilesGroup>
-
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
 						title={ __(
-							'How are your visitors engaging?',
+							'Form completion rate',
 							'google-site-kit'
 						) }
-					>
-						<Tile
-							title={ __( 'Engagement rate', 'google-site-kit' ) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( 'of %s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							infoTooltip={ createInterpolateElement(
-								__(
-									'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action. <a>Learn more</a>',
-									'google-site-kit'
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( 'of %s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						infoTooltip={ createInterpolateElement(
+							__(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									// Content is added via
+									// createInterpolateElement, so this
+									// can be safely ignored.
+									//
+									// eslint-disable-next-line jsx-a11y/anchor-has-content
+									<a
+										href={ keyActionSupportURL }
+										target="_blank"
+										rel="noreferrer noopener"
+									/>
 								),
-								{
-									a: (
-										// Content is added via
-										// createInterpolateElement, so this
-										// can be safely ignored.
-										//
-										// eslint-disable-next-line jsx-a11y/anchor-has-content
-										<a
-											href={ engagementSupportURL }
-											target="_blank"
-											rel="noreferrer noopener"
-										/>
-									),
-								}
-							) }
-							currentValue={ currentEngagementRate }
-							previousValue={ previousEngagementRate }
-							format={ PERCENT_FORMAT }
-						/>
-					</TilesGroup>
-				</Fragment>
+							}
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
+
+					<Tile
+						title={ __(
+							'Total form completions',
+							'google-site-kit'
+						) }
+						subtitle={
+							detectedLeadEvents.length === 1
+								? sprintf(
+										/* translators: %s: GA4 event name */
+										__( '“%s” events', 'google-site-kit' ),
+										detectedLeadEvents[ 0 ]
+								  )
+								: sprintf(
+										/* translators: %d: number of detected event types */
+										_n(
+											'%d event type',
+											'%d event types',
+											detectedLeadEvents.length,
+											'google-site-kit'
+										),
+										detectedLeadEvents.length
+								  )
+						}
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
+
+			<TilesGroup
+				className="googlesitekit-site-goals-visitor-engagement"
+				title={ __(
+					'How are your visitors engaging?',
+					'google-site-kit'
+				) }
+			>
+				<VisitorEngagementTiles dates={ dates } />
+			</TilesGroup>
 
 			<TilesGroup
 				className="googlesitekit-site-goals-goal-drivers-group"

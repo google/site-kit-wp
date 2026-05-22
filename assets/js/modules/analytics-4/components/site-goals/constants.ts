@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 
 export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-site-goals-selection-panel-opened';
@@ -27,6 +28,10 @@ export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
 export const SITE_GOALS_SELECTION_FORM = 'site-goals-selection-form';
 export const SITE_GOALS_SELECTED_DRIVERS = 'site-goals-selected-drivers';
 export const SITE_GOALS_EFFECTIVE_DRIVERS = 'site-goals-effective-drivers';
+export const SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT =
+	'site-goals-selected-visitor-engagement';
+export const SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT =
+	'site-goals-effective-visitor-engagement';
 
 export const SITE_GOALS_MIN_SELECTED_DRIVERS = 1;
 export const SITE_GOALS_MAX_SELECTED_DRIVERS = 6;
@@ -42,4 +47,9 @@ export const SITE_GOALS_DEFAULT_SELECTED_DRIVERS = {
 		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 		GOAL_DRIVER_IDS.VISITOR_TYPE,
 	],
+};
+
+export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
+	[ GOAL_TYPES.ECOMMERCE ]: [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ],
+	[ GOAL_TYPES.LEAD ]: [],
 };

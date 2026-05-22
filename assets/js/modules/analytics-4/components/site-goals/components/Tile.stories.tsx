@@ -40,6 +40,7 @@ function Template( {
 					backgroundColor: 'white',
 					padding: '20px',
 					display: 'inline-block',
+					minWidth: '330px',
 				} }
 			>
 				<Tile { ...props } />

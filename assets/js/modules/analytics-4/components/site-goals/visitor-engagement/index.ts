@@ -1,5 +1,5 @@
 /**
- * Site Goals Selection Panel Header component.
+ * Site Goals Visitor Engagement exports.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,32 +16,12 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import { FC } from 'react';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
- * Internal dependencies
- */
-import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
-
-interface SiteGoalsSelectionPanelHeaderProps {
-	closePanel: () => void;
-}
-
-const Header: FC< SiteGoalsSelectionPanelHeaderProps > = ( { closePanel } ) => {
-	return (
-		<SelectionPanelHeader
-			title={ __( 'Select metrics', 'google-site-kit' ) }
-			onCloseClick={ closePanel }
-		/>
-	);
-};
-
-export default Header;
+export {
+	getVisitorEngagementEventOptions,
+	getVisitorEngagementEventTileLabel,
+	resolveVisitorEngagementEventIDs,
+	resolveVisitorEngagementSelectionState,
+	VISITOR_ENGAGEMENT_EVENT_CATALOG,
+	VISITOR_ENGAGEMENT_EVENT_IDS,
+} from './registry';
+export { default as VisitorEngagementTiles } from './VisitorEngagementTiles';

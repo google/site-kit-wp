@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -30,16 +30,19 @@ import {
 	GOAL_TYPES,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import useFormValue from '@/js/hooks/useFormValue';
-import type {
+import {
 	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
@@ -119,6 +122,10 @@ const Footer: FC< FooterProps > = ( {
 	const selectedDriverState = selectedDrivers as
 		| GoalDriverSelectionState
 		| undefined;
+	const [ selectedVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
+	);
 	const selectedDriverSlugs = flattenSelections(
 		selectedDriverState || {
 			[ GOAL_TYPES.ECOMMERCE ]: [],
@@ -137,10 +144,16 @@ const Footer: FC< FooterProps > = ( {
 	function saveSettings() {
 		const sanitizedSelectionState =
 			resolveGoalDriverSelectionState( selectedDriverState );
+		const sanitizedVisitorEngagementSelectionState =
+			resolveVisitorEngagementSelectionState( selectedVisitorEngagement );
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
 			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: sanitizedSelectionState,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
+			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
 		} );
 
 		return Promise.resolve( {} );

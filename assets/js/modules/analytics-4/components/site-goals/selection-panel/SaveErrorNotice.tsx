@@ -33,7 +33,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
 import useFormValue from '@/js/hooks/useFormValue';
-import type {
+import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
