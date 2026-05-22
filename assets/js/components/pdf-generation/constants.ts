@@ -23,13 +23,10 @@ import { __ } from '@wordpress/i18n';
 
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
 
-/**
- * TODO:
- * Temporary state flag used to render the "Your report is being generated…"
- * notice when the user clicks "Download report". To be replaced by the PDF
- * generation orchestrator in #12537.
- */
-export const PDF_GENERATING_KEY = 'pdfDownloadGenerating';
+// Flag flipped to `true` once the user starts an export. Mounts
+// `PDFExportOrchestrator` at the dashboard root and lives in `core/ui`
+// so the side sheet can close without unmounting the orchestrator.
+export const PDF_EXPORTING_KEY = 'pdfExporting';
 
 export const FORM_PDF_DOWNLOAD = 'pdfDownloadForm';
 export const FORM_PDF_DOWNLOAD_SELECTED_SECTIONS = 'selectedSections';
