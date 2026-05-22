@@ -59,6 +59,7 @@ function setupDefaultRegistry( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [
 			ENUM_CONVERSION_EVENTS.PURCHASE,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			ENUM_CONVERSION_EVENTS.CONTACT,
 		] );
 
