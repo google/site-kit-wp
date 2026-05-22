@@ -24,14 +24,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { useSelect } from 'googlesitekit-data';
 import {
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
@@ -56,9 +55,7 @@ import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionP
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
 import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
-import PDFExportOrchestrator from './pdf-export/PDFExportOrchestrator';
-import PDFReportSnackbarHost from './pdf-export/PDFReportSnackbarHost';
-import { PDF_EXPORTING_KEY } from './pdf-generation/constants';
+import PDFExportRoot from './pdf-export/PDFExportRoot';
 import WelcomeModal from './WelcomeModal';
 import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -298,15 +295,6 @@ export default function DashboardMainApp() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
-	const isExportingPDF = useSelect( ( select ) =>
-		pdfGenerationEnabled
-			? select( CORE_UI ).getValue( PDF_EXPORTING_KEY )
-			: false
-	);
-	const { setValue } = useDispatch( CORE_UI );
-	const stopPDFExport = useCallback( () => {
-		setValue( PDF_EXPORTING_KEY, false );
-	}, [ setValue ] );
 	const showWelcomeModal = useSelect( ( select ) => {
 		if ( ! setupFlowRefreshEnabled ) {
 			return false;
@@ -469,10 +457,7 @@ export default function DashboardMainApp() {
 			{ pdfGenerationEnabled && (
 				<Fragment>
 					<PDFSectionsSelectionPanel />
-					<PDFReportSnackbarHost />
-					{ isExportingPDF && (
-						<PDFExportOrchestrator onComplete={ stopPDFExport } />
-					) }
+					<PDFExportRoot />
 				</Fragment>
 			) }
 

@@ -24,16 +24,17 @@
 // transforms keep the import surface identical to the real package.
 const React = require( 'react' );
 
-const passthrough = ( name ) => {
-	const Component = ( props ) =>
-		React.createElement(
+function passthrough( name ) {
+	function Component( props ) {
+		return React.createElement(
 			name.toLowerCase(),
 			{ 'data-react-pdf': name, ...props },
 			props && props.children
 		);
+	}
 	Component.displayName = name;
 	return Component;
-};
+}
 
 const Document = passthrough( 'Document' );
 const Page = passthrough( 'Page' );
@@ -56,21 +57,24 @@ const Font = {
 };
 
 const pdf = jest.fn( () => ( {
-	toBlob: jest.fn( async () =>
-		new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
+	toBlob: jest.fn( () =>
+		Promise.resolve(
+			new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
+		)
 	),
-	toBuffer: jest.fn( async () => Buffer.from( 'mock-pdf' ) ),
-	toString: jest.fn( async () => 'mock-pdf' ),
+	toBuffer: jest.fn( () => Promise.resolve( Buffer.from( 'mock-pdf' ) ) ),
+	toString: jest.fn( () => Promise.resolve( 'mock-pdf' ) ),
 	updateContainer: jest.fn(),
 	on: jest.fn(),
 } ) );
 
 const PDFViewer = passthrough( 'PDFViewer' );
 const PDFDownloadLink = passthrough( 'PDFDownloadLink' );
-const BlobProvider = ( { children } ) =>
-	typeof children === 'function'
+function BlobProvider( { children } ) {
+	return typeof children === 'function'
 		? children( { blob: null, url: null, loading: false, error: null } )
 		: null;
+}
 
 module.exports = {
 	Document,

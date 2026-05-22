@@ -20,17 +20,12 @@
  * External dependencies
  */
 import { pdf } from '@react-pdf/renderer';
-import type { FC, Reducer } from 'react';
+import type { FC } from 'react';
 
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	useEffect,
-	useReducer,
-	useRef,
-} from '@wordpress/element';
+import { useCallback, useEffect, useReducer, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -77,7 +72,7 @@ type Action = { type: 'TRANSITION'; nextStage: Stage };
 
 const initialState: State = { stage: STAGE_IDLE };
 
-const reducer: Reducer< State, Action > = ( state, action ) => {
+function reducer( state: State, action: Action ): State {
 	if ( action.type === 'TRANSITION' ) {
 		const allowed = VALID_TRANSITIONS[ state.stage ];
 		if ( ! allowed.includes( action.nextStage ) ) {
@@ -87,12 +82,10 @@ const reducer: Reducer< State, Action > = ( state, action ) => {
 	}
 
 	return state;
-};
+}
 
 function isAbortError( error: unknown ): boolean {
-	return (
-		error instanceof DOMException && error.name === 'AbortError'
-	);
+	return error instanceof DOMException && error.name === 'AbortError';
 }
 
 function nextFrame( signal: AbortSignal ): Promise< void > {
@@ -102,12 +95,12 @@ function nextFrame( signal: AbortSignal ): Promise< void > {
 			return;
 		}
 
-		const onAbort = () => {
-			window.cancelAnimationFrame( frameId );
+		function onAbort() {
+			global.cancelAnimationFrame( frameID );
 			reject( new DOMException( 'Aborted', 'AbortError' ) );
-		};
+		}
 
-		const frameId = window.requestAnimationFrame( () => {
+		const frameID = global.requestAnimationFrame( () => {
 			signal.removeEventListener( 'abort', onAbort );
 			resolve();
 		} );
@@ -136,13 +129,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 } ) => {
 	const [ , dispatch ] = useReducer( reducer, initialState );
 
-	const {
-		setStatus,
-		setProgress,
-		setBlob,
-		clearExport,
-		clearCancelRequest,
-	} = useDispatch( CORE_PDF );
+	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
+		useDispatch( CORE_PDF );
 
 	const cancelRequested = useSelect(
 		( select: Select ) => select( CORE_PDF ).isCancelRequested(),
@@ -207,19 +195,19 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		abortControllerRef.current = controller;
 		const { signal } = controller;
 
-		const beforeUnloadHandler = ( event: BeforeUnloadEvent ) => {
+		function beforeUnloadHandler( event: BeforeUnloadEvent ) {
 			event.preventDefault();
 			// Most browsers ignore the string, but assigning it keeps the legacy contract.
 			event.returnValue = '';
-		};
-		window.addEventListener( 'beforeunload', beforeUnloadHandler );
+		}
+		global.addEventListener( 'beforeunload', beforeUnloadHandler );
 
 		const referenceName =
 			typeof siteName === 'string' && siteName.length > 0
 				? siteName
 				: referenceSiteURL || '';
 
-		const run = async () => {
+		async function run() {
 			try {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_LOADING } );
 				setStatus( 'progress' );
@@ -237,6 +225,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
+				// The PDF footer records the actual generation time, which is
+				// distinct from the dashboard's analytics reference date.
+				// eslint-disable-next-line sitekit/no-direct-date
 				const generatedAt = new Date().toLocaleString();
 				const filename = getPDFFilename(
 					referenceName,
@@ -300,15 +291,15 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				setStatus( 'error' );
 				onCompleteRef.current();
 			}
-		};
+		}
 
 		run();
 
 		return () => {
-			window.removeEventListener( 'beforeunload', beforeUnloadHandler );
+			global.removeEventListener( 'beforeunload', beforeUnloadHandler );
 			clearStageTimeout();
 			if ( completeTimeoutRef.current !== null ) {
-				window.clearTimeout( completeTimeoutRef.current );
+				global.clearTimeout( completeTimeoutRef.current );
 				completeTimeoutRef.current = null;
 			}
 			controller.abort();

@@ -46,7 +46,12 @@ function slugify( value: unknown ): string {
  * @param {Date} [now] Optional date instance, defaults to `new Date()`.
  * @return {string} The formatted date.
  */
-function getISODate( now: Date = new Date() ): string {
+function getISODate(
+	// The filename's date stamp is the actual generation moment, not the
+	// dashboard's analytics reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
+	now: Date = new Date()
+): string {
 	const year = now.getFullYear();
 	const month = String( now.getMonth() + 1 ).padStart( 2, '0' );
 	const day = String( now.getDate() ).padStart( 2, '0' );
@@ -64,14 +69,17 @@ function getISODate( now: Date = new Date() ): string {
  *
  * @since n.e.x.t
  *
- * @param {string}  siteName    Site name or URL.
- * @param {string} [dateRange]  Optional date range slug, e.g. `last-28-days`.
- * @param {Date}   [now]        Optional date instance, defaults to `new Date()`.
+ * @param {string} siteName    Site name or URL.
+ * @param {string} [dateRange] Optional date range slug, e.g. `last-28-days`.
+ * @param {Date}   [now]       Optional date instance, defaults to `new Date()`.
  * @return {string} The composed filename.
  */
 export function getPDFFilename(
 	siteName: string,
 	dateRange?: string,
+	// The filename's date stamp is the actual generation moment, not the
+	// dashboard's analytics reference date.
+	// eslint-disable-next-line sitekit/no-direct-date
 	now: Date = new Date()
 ): string {
 	const siteSlug = slugify( siteName ) || 'report';

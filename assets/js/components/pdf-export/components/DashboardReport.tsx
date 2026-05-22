@@ -87,10 +87,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 	const footerLine = userName
 		? sprintf(
 				/* translators: 1: Date and time string. 2: User name. */
-				__(
-					'Generated %1$s by %2$s',
-					'google-site-kit'
-				),
+				__( 'Generated %1$s by %2$s', 'google-site-kit' ),
 				generatedAt,
 				userName
 		  )
@@ -105,7 +102,11 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 			title={ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }
 			author="Site Kit by Google"
 		>
-			<Page size={ [ 612, pageHeight ] } style={ styles.page } wrap={ false }>
+			<Page
+				size={ [ 612, pageHeight ] }
+				style={ styles.page }
+				wrap={ false }
+			>
 				<View style={ styles.header }>
 					<Text style={ styles.headerSiteName }>{ siteName }</Text>
 					{ dateRange ? (
@@ -116,10 +117,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 				</View>
 				<View style={ styles.body }>
 					<Text style={ styles.bodyHeading }>
-						{ __(
-							'Site Kit Dashboard Report',
-							'google-site-kit'
-						) }
+						{ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }
 					</Text>
 					<Text style={ styles.bodyText }>
 						{ __(
