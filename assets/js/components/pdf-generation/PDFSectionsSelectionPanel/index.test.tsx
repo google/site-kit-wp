@@ -29,7 +29,7 @@ import {
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
+	PDF_EXPORTING_KEY,
 	PDF_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
 import PDFSectionsSelectionPanel from './index';
@@ -102,8 +102,8 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'shows the generating notice and disables the button after clicking Download report', async () => {
-		const { getByRole, findByText, getByText } = render(
+	it( 'closes the panel and flips the exporting flag after clicking Download report', async () => {
+		const { getByRole, findByText } = render(
 			<PDFSectionsSelectionPanel />,
 			{ registry }
 		);
@@ -116,37 +116,12 @@ describe( 'PDFSectionsSelectionPanel', () => {
 
 		await waitFor( () => {
 			expect(
-				getByText( 'Your report is being generated' )
-			).toBeInTheDocument();
+				registry.select( CORE_UI ).getValue( PDF_EXPORTING_KEY )
+			).toBe( true );
 		} );
 
 		expect(
-			registry.select( CORE_UI ).getValue( PDF_GENERATING_KEY )
-		).toBe( true );
-
-		expect(
-			getByRole( 'button', { name: 'Download report' } )
-		).toBeDisabled();
-	} );
-
-	it( 'resets PDF_GENERATING_KEY to false on open', async () => {
-		registry.dispatch( CORE_UI ).setValue( PDF_GENERATING_KEY, true );
-
-		const { getByRole, findByText } = render(
-			<PDFSectionsSelectionPanel />,
-			{ registry }
-		);
-
-		openPanel();
-
-		await findByText( 'Download your Site Kit report' );
-
-		expect(
-			registry.select( CORE_UI ).getValue( PDF_GENERATING_KEY )
+			registry.select( CORE_UI ).getValue( PDF_DOWNLOAD_PANEL_OPENED_KEY )
 		).toBe( false );
-
-		expect(
-			getByRole( 'button', { name: 'Download report' } )
-		).not.toBeDisabled();
 	} );
 } );

@@ -36,7 +36,6 @@ import {
 	FORM_PDF_DOWNLOAD,
 	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import InViewProvider from '@/js/components/InViewProvider';
@@ -64,9 +63,7 @@ const PDFSectionsSelectionPanel: FC = () => {
 
 	const onSideSheetOpen = useCallback( () => {
 		setSelectedSections( DEFAULT_SELECTED_SECTIONS );
-		// Reset any stale "generating" state left over from a previous session.
-		setValue( PDF_GENERATING_KEY, false );
-	}, [ setSelectedSections, setValue ] );
+	}, [ setSelectedSections ] );
 
 	return (
 		<InViewProvider
