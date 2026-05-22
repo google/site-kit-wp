@@ -654,9 +654,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Add to Cart Rate' ) ).toBeInTheDocument();
-		expect(
-			getByText( 'Total products added to cart' )
-		).toBeInTheDocument();
+		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by total sales' )
@@ -1198,11 +1196,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		// "Total products added to cart" appears exactly once — in the primary action section only.
+		// "Products added to cart" appears exactly once — in the primary action section only.
 		// No secondary ecommerce tile should appear in the visitor engagement section.
-		expect( getAllByText( 'Total products added to cart' ) ).toHaveLength(
-			1
-		);
+		expect( getAllByText( 'Products added to cart' ) ).toHaveLength( 1 );
 		// Primary add_to_cart tile in primary action should still render.
 		expect( queryByText( '“add_to_cart” events' ) ).toBeInTheDocument();
 		// No additional secondary add_to_cart subtitle in visitor engagement section.

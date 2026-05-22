@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { createInterpolateElement, useMemo } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -33,6 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useInViewSelect, useSelect, Select } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { numFmt } from '@/js/util';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
@@ -53,6 +54,16 @@ interface EngagementRateTileProps {
 }
 
 const EngagementRateTile: FC< EngagementRateTileProps > = ( { dates } ) => {
+	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
+	const engagementSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
+
 	const reportOptions: ReportOptions = useMemo(
 		() => ( {
 			compareEndDate: dates.compareEndDate,
@@ -102,8 +113,27 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( { dates } ) => {
 			title={ __( 'Engagement rate', 'google-site-kit' ) }
 			subtitle={ sprintf(
 				/* translators: %s: formatted number of total sessions */
-				__( '%s total sessions', 'google-site-kit' ),
+				__( 'of %s total sessions', 'google-site-kit' ),
 				numFmt( currentSessions, NUMBER_FORMAT )
+			) }
+			infoTooltip={ createInterpolateElement(
+				__(
+					'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action. <a>Learn more</a>',
+					'google-site-kit'
+				),
+				{
+					a: (
+						// Content is added via createInterpolateElement, so this
+						// can be safely ignored.
+						//
+						// eslint-disable-next-line jsx-a11y/anchor-has-content
+						<a
+							href={ engagementSupportURL }
+							target="_blank"
+							rel="noreferrer noopener"
+						/>
+					),
+				}
 			) }
 			currentValue={ currentEngagementRate }
 			previousValue={ previousEngagementRate }

@@ -952,7 +952,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// No secondary ecommerce tiles should appear in lead generation widget.
 		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
 		expect(
-			queryByText( 'Total products added to cart' )
+			queryByText( 'Products added to cart' )
 		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'Products added to cart' )

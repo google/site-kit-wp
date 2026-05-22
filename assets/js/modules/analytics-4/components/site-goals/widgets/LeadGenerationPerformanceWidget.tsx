@@ -22,6 +22,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -63,6 +64,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -84,6 +86,16 @@ const LeadGenerationPerformanceWidget: FC<
 		moduleSlug: string;
 		error: unknown;
 	} >;
+
+	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
+	const keyActionSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
 
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
@@ -237,8 +249,28 @@ const LeadGenerationPerformanceWidget: FC<
 						) }
 						subtitle={ sprintf(
 							/* translators: %s: formatted number of total sessions */
-							__( '%s total sessions', 'google-site-kit' ),
+							__( 'of %s total sessions', 'google-site-kit' ),
 							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						infoTooltip={ createInterpolateElement(
+							__(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									// Content is added via
+									// createInterpolateElement, so this
+									// can be safely ignored.
+									//
+									// eslint-disable-next-line jsx-a11y/anchor-has-content
+									<a
+										href={ keyActionSupportURL }
+										target="_blank"
+										rel="noreferrer noopener"
+									/>
+								),
+							}
 						) }
 						currentValue={ currentRate }
 						previousValue={ previousRate }

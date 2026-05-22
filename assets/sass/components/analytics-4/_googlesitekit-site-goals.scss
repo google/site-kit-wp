@@ -120,27 +120,27 @@
 				top: 50%;
 				transform: translateY(-50%);
 				width: 9px;
-				}
 			}
+		}
 
-			.googlesitekit-site-goals-tile__title.googlesitekit-typography {
-				font-weight: $fw-normal;
-				letter-spacing: $ls-s;
-				line-height: 20px;
-				margin: 0 8px 0 0;
-			}
+		.googlesitekit-site-goals-tile__title.googlesitekit-typography {
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0 8px 0 0;
+		}
 
-			.googlesitekit-site-goals-tile__header-label.googlesitekit-typography {
-				color: $c-surfaces-on-background-variant;
-				letter-spacing: $ls-s;
-				line-height: 20px;
-				margin: 0;
-			}
+		.googlesitekit-site-goals-tile__header-label.googlesitekit-typography {
+			color: $c-surfaces-on-background-variant;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+			margin: 0;
+		}
 
-			.googlesitekit-site-goals-tile__body {
-				display: flex;
-				flex: 1;
-			}
+		.googlesitekit-site-goals-tile__body {
+			display: flex;
+			flex: 1;
+		}
 
 		.googlesitekit-site-goals-tile__metric-container {
 			flex: 1;
@@ -228,26 +228,25 @@
 	}
 
 	.googlesitekit-site-goals-goal-drivers-group {
-
 		.googlesitekit-site-goals-tiles-group__tiles {
 			display: block;
 		}
 
-			.googlesitekit-site-goals-goal-drivers-section__tiles {
-				display: grid;
-				gap: 8px;
-				grid-template-columns: 1fr;
+		.googlesitekit-site-goals-goal-drivers-section__tiles {
+			display: grid;
+			gap: 8px;
+			grid-template-columns: 1fr;
 
-				@media (min-width: $bp-nonMobile) {
-					align-items: start;
-					gap: 36px 42px;
-					grid-template-columns: repeat(2, minmax(0, 1fr));
-				}
-
-				@media (min-width: $bp-desktop) {
-					grid-template-columns: repeat(3, minmax(0, 1fr));
-				}
+			@media (min-width: $bp-nonMobile) {
+				align-items: start;
+				gap: 36px 42px;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
 			}
+
+			@media (min-width: $bp-desktop) {
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
 
 		.googlesitekit-site-goals-goal-drivers-section__tile {
 			min-width: 0;
