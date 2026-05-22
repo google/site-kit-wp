@@ -33,7 +33,10 @@ import {
 import { mockBrowserScrolling } from '../../../../../../../tests/js/mock-browser-utils';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
@@ -61,7 +64,11 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'purchase', 'contact' ] );
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
 
 		registry
 			.dispatch( CORE_UI )
@@ -173,6 +180,46 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		).toBeChecked();
 	} );
 
+	it( 'does not render visitor engagement items when ecommerce secondary events are not detected', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'does not render visitor engagement items when add_to_cart is the primary ecommerce event', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				ENUM_CONVERSION_EVENTS.CONTACT,
+			] );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( queryByText( 'Visitor engagement' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'updates staged visitor engagement selection for ecommerce', async () => {
 		render( <SiteGoalsSelectionPanel />, {
 			registry,
@@ -268,7 +315,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 	it( 'does not render ineligible goal-type lists', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ 'purchase' ] );
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
 		const { getByRole, queryByRole } = render(
 			<SiteGoalsSelectionPanel />,
