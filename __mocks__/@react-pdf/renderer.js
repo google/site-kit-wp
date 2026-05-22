@@ -20,7 +20,7 @@
 // other native modules, both of which fail to resolve in jsdom. Jest's manual
 // mock convention auto-loads this file for any `@react-pdf/renderer` import.
 // The mock is written in CommonJS to match the rest of the repo's `__mocks__/`
-// layout (see `__mocks__/tabbable.js`); the matching `@wordpress/jest-preset`
+// layout (see `__mocks__/tabbable.js`). The matching `@wordpress/jest-preset`
 // transforms keep the import surface identical to the real package.
 const React = require( 'react' );
 

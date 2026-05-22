@@ -313,7 +313,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			}
 			controller.abort();
 		};
-		// Run once on mount. Inputs are sampled at mount time; the AC does
+		// Run once on mount. Inputs are sampled at mount time. The AC does
 		// not require re-running when site or user info changes mid-export.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
