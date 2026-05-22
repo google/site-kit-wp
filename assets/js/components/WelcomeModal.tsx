@@ -188,6 +188,7 @@ export default function WelcomeModal() {
 				},
 			},
 		},
+		isCenteredOnMobile: false,
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );

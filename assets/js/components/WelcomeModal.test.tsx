@@ -428,6 +428,7 @@ describe( 'WelcomeModal', () => {
 						},
 					},
 				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
@@ -913,6 +914,7 @@ describe( 'WelcomeModal', () => {
 						},
 					},
 				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
