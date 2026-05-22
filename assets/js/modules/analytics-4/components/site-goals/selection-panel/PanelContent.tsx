@@ -30,8 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect, Select } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	GOAL_TYPES,
 	getGoalDriverOptions,
@@ -92,6 +93,26 @@ const PanelContent: FC< PanelContentProps > = ( {
 	const [ isEcommerceExpanded, setIsEcommerceExpanded ] = useState( true );
 	const [ isLeadExpanded, setIsLeadExpanded ] = useState( true );
 
+	const primaryEcommerceEvent = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+		[]
+	);
+	const secondaryEcommerceEvents = useSelect(
+		( select: Select ) => {
+			if ( ! primaryEcommerceEvent ) {
+				return [];
+			}
+
+			const events = select(
+				MODULES_ANALYTICS_4
+			).getSecondaryEcommerceEvents( primaryEcommerceEvent );
+
+			return Array.isArray( events ) ? events : [];
+		},
+		[ primaryEcommerceEvent ]
+	);
+
 	function onToggleDriver(
 		goalType: GoalType,
 		driverID: GoalDriverID,
@@ -146,6 +167,7 @@ const PanelContent: FC< PanelContentProps > = ( {
 					}
 				>
 					<VisitorEngagementEventList
+						eventIDs={ secondaryEcommerceEvents }
 						goalType={ GOAL_TYPES.ECOMMERCE }
 						listID={ GOAL_TYPES.ECOMMERCE }
 					/>
