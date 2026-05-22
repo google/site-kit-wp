@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
-// The real package ships ESM that pulls in canvas / native modules, both of
-// which fail to resolve in jsdom. The mock keeps the public surface that PDF
-// callers depend on so tests run without the renderer.
+// The real `@react-pdf/renderer` package ships ESM that pulls in canvas and
+// other native modules, both of which fail to resolve in jsdom. Jest's manual
+// mock convention auto-loads this file for any `@react-pdf/renderer` import.
+// The mock is written in CommonJS to match the rest of the repo's `__mocks__/`
+// layout (see `__mocks__/tabbable.js`); the matching `@wordpress/jest-preset`
+// transforms keep the import surface identical to the real package.
 const React = require( 'react' );
 
 const passthrough = ( name ) => {

@@ -31,7 +31,6 @@ import {
 	useReducer,
 	useRef,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -72,26 +71,19 @@ const LOADING_MOCK_PROGRESS = 35;
 
 interface State {
 	stage: Stage;
-	errorMessage: string | null;
 }
 
-type Action =
-	| { type: 'TRANSITION'; nextStage: Stage }
-	| { type: 'SET_ERROR'; message: string };
+type Action = { type: 'TRANSITION'; nextStage: Stage };
 
-const initialState: State = { stage: STAGE_IDLE, errorMessage: null };
+const initialState: State = { stage: STAGE_IDLE };
 
 const reducer: Reducer< State, Action > = ( state, action ) => {
-	if ( action.type === 'SET_ERROR' ) {
-		return { ...state, errorMessage: action.message };
-	}
-
 	if ( action.type === 'TRANSITION' ) {
 		const allowed = VALID_TRANSITIONS[ state.stage ];
 		if ( ! allowed.includes( action.nextStage ) ) {
 			return state;
 		}
-		return { ...state, stage: action.nextStage };
+		return { stage: action.nextStage };
 	}
 
 	return state;
@@ -304,17 +296,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					return;
 				}
 
-				const message =
-					timeoutAbortRef.current
-						? __( 'PDF generation timed out.', 'google-site-kit' )
-						: error instanceof Error
-						? error.message
-						: __(
-								'Unknown PDF generation error.',
-								'google-site-kit'
-						  );
-
-				dispatch( { type: 'SET_ERROR', message } );
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_ERROR } );
 				setStatus( 'error' );
 				onCompleteRef.current();
