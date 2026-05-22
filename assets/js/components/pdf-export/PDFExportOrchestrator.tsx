@@ -155,8 +155,12 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	);
 
 	const abortControllerRef = useRef< AbortController | null >( null );
-	const stageTimeoutRef = useRef< number | null >( null );
-	const completeTimeoutRef = useRef< number | null >( null );
+	const stageTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
+		null
+	);
+	const completeTimeoutRef = useRef<
+		ReturnType< typeof setTimeout > | null
+	>( null );
 	const timeoutAbortRef = useRef( false );
 	const onCompleteRef = useRef( onComplete );
 
@@ -166,7 +170,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 	const clearStageTimeout = useCallback( () => {
 		if ( stageTimeoutRef.current !== null ) {
-			window.clearTimeout( stageTimeoutRef.current );
+			clearTimeout( stageTimeoutRef.current );
 			stageTimeoutRef.current = null;
 		}
 	}, [] );
@@ -174,7 +178,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const armStageTimeout = useCallback(
 		( durationMS: number ) => {
 			clearStageTimeout();
-			stageTimeoutRef.current = window.setTimeout( () => {
+			stageTimeoutRef.current = setTimeout( () => {
 				stageTimeoutRef.current = null;
 				timeoutAbortRef.current = true;
 				abortControllerRef.current?.abort();
@@ -259,7 +263,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				setBlob( { url: blobURL, filename } );
 
 				triggerDownload( blobURL, filename );
-				window.setTimeout( () => {
+				setTimeout( () => {
 					URL.revokeObjectURL( blobURL );
 				}, BLOB_REVOKE_DELAY_MS );
 
@@ -267,7 +271,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				dispatch( { type: 'TRANSITION', nextStage: STAGE_COMPLETE } );
 				setStatus( 'success' );
 
-				completeTimeoutRef.current = window.setTimeout( () => {
+				completeTimeoutRef.current = setTimeout( () => {
 					completeTimeoutRef.current = null;
 					onCompleteRef.current();
 				}, COMPLETE_UNMOUNT_DELAY_MS );
@@ -299,7 +303,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			global.removeEventListener( 'beforeunload', beforeUnloadHandler );
 			clearStageTimeout();
 			if ( completeTimeoutRef.current !== null ) {
-				global.clearTimeout( completeTimeoutRef.current );
+				clearTimeout( completeTimeoutRef.current );
 				completeTimeoutRef.current = null;
 			}
 			controller.abort();
