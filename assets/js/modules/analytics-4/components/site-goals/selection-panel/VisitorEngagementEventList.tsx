@@ -47,9 +47,11 @@ import useFormValue from '@/js/hooks/useFormValue';
 interface VisitorEngagementEventListProps {
 	goalType: GoalType;
 	listID: string;
+	eventIDs?: string[];
 }
 
 const VisitorEngagementEventList: FC< VisitorEngagementEventListProps > = ( {
+	eventIDs = [],
 	goalType,
 	listID,
 } ) => {
@@ -59,7 +61,10 @@ const VisitorEngagementEventList: FC< VisitorEngagementEventListProps > = ( {
 			SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
 		);
 
-	const options = getVisitorEngagementEventOptions( goalType );
+	const eventIDSet = new Set( eventIDs );
+	const options = getVisitorEngagementEventOptions( goalType ).filter(
+		( option ) => eventIDSet.has( option.id )
+	);
 
 	if ( ! options.length ) {
 		return null;
