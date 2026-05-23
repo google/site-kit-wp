@@ -25,6 +25,8 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFormValue from '@/js/hooks/useFormValue';
+import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -33,7 +35,6 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import {
 	isValidAccountID,
 	isValidPropertyID,
@@ -41,7 +42,6 @@ import {
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '@/js/modules/analytics-4/utils/validation';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupEnhancedMeasurementSwitch() {
 	const accountID = useSelect( ( select ) =>

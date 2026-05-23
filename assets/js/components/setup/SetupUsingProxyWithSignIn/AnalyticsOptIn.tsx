@@ -30,22 +30,22 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
 import Badge from '@/js/components/Badge';
 import Link from '@/js/components/Link';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
-import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
-import type { Select } from '@/js/googlesitekit/data/types';
+import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { useSelect } from '@/js/googlesitekit-data';
+import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
+import type { Select } from '@/js/googlesitekit/data/types';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import AnalyticsSVG from '@/svg/graphics/splash-analytics.svg';
-import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 
 export default function AnalyticsOptIn() {
 	const viewContext = useViewContext();

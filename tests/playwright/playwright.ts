@@ -17,9 +17,9 @@
 /**
  * External dependencies
  */
-import * as path from 'path';
 import { test as base } from '@playwright/test';
 import { createConnection } from 'mysql2/promise';
+import * as path from 'path';
 
 /**
  * Internal dependencies

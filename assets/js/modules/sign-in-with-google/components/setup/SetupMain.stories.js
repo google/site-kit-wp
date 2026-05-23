@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import {
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import ModuleSetup from '@/js/components/setup/ModuleSetup';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
 function Template( { setupRegistry = () => {} } ) {
 	return (

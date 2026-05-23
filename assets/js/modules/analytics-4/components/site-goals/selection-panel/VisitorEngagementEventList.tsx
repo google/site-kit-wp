@@ -31,18 +31,18 @@ import { __ } from '@wordpress/i18n';
  */
 import { SelectionPanelItem } from '@/js/components/SelectionPanel';
 import Typography from '@/js/components/Typography';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	getVisitorEngagementEventOptions,
 	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { VisitorEngagementEventID } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 interface VisitorEngagementEventListProps {
 	goalType: GoalType;

@@ -16,14 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
 import {
-	sprintf,
-	setLocaleData,
 	__,
-	_x,
 	_n,
 	_nx,
+	_x,
 	isRTL,
+	setLocaleData,
+	sprintf,
 } from '@wordpress/i18n__non-shim';
 
 global.googlesitekit = global.googlesitekit || {};

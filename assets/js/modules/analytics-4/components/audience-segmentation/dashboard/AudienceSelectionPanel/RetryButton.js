@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export default function RetryButton( { handleRetry } ) {
 	const viewContext = useViewContext();

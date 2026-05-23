@@ -24,9 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 
 export const VISITOR_ENGAGEMENT_EVENT_IDS = {
 	ADD_TO_CART: ENUM_CONVERSION_EVENTS.ADD_TO_CART,

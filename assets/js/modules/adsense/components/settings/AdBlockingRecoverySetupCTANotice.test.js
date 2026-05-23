@@ -19,6 +19,19 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_PENDING,
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_ADDED,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
 	mockSurveyEndpoints,
@@ -33,19 +46,6 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import * as tracking from '@/js/util/tracking';
-import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import {
-	ACCOUNT_STATUS_PENDING,
-	ACCOUNT_STATUS_READY,
-	SITE_STATUS_ADDED,
-	SITE_STATUS_READY,
-} from '@/js/modules/adsense/util';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

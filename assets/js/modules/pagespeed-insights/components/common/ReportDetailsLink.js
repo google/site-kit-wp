@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { sprintf, __, _x } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/datastore/constants';
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) =>

@@ -26,22 +26,22 @@ import { useInterval } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import TourTooltip from './TourTooltip';
-import Portal from './Portal';
-import {
-	joyrideStyles,
-	floaterProps as defaultFloaterProps,
-} from './TourTooltips';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
+import Portal from './Portal';
+import TourTooltip from './TourTooltip';
+import {
+	floaterProps as defaultFloaterProps,
+	joyrideStyles,
+} from './TourTooltips';
 
 export default function JoyrideTooltip( props ) {
 	const {

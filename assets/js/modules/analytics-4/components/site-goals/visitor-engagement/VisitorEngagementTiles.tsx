@@ -30,8 +30,8 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import EngagementRateTile from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/EngagementRateTile';
-import VisitorEngagementEventTile from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/VisitorEngagementEventTile';
 import { VisitorEngagementEventID } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
+import VisitorEngagementEventTile from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/VisitorEngagementEventTile';
 
 interface DateRange {
 	startDate: string;

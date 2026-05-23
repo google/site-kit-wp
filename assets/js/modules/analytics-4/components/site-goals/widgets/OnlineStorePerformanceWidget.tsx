@@ -22,36 +22,22 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect, Select } from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { numFmt } from '@/js/util';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
-import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
-import {
-	GoalDriverSelectionState,
-	getGoalDriverTitle,
-	GOAL_TYPES,
-	GoalDriverTiles,
-	resolveGoalDriverSelectionState,
-	resolveGoalDriverIDs,
-	GOAL_DRIVER_CATALOG,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
@@ -59,17 +45,31 @@ import {
 	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import {
+	GOAL_DRIVER_CATALOG,
+	GOAL_TYPES,
+	GoalDriverSelectionState,
+	GoalDriverTiles,
+	getGoalDriverTitle,
+	resolveGoalDriverIDs,
+	resolveGoalDriverSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
-	resolveVisitorEngagementSelectionState,
 	VisitorEngagementTiles,
+	resolveVisitorEngagementSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { numFmt } from '@/js/util';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 

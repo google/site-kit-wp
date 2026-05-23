@@ -21,8 +21,8 @@
  */
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	resolveVisitorEngagementEventIDs,
 	VISITOR_ENGAGEMENT_EVENT_IDS,
+	resolveVisitorEngagementEventIDs,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
 describe( 'Visitor Engagement registry', () => {

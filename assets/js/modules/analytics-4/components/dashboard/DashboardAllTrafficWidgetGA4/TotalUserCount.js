@@ -19,35 +19,35 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { Icon, chevronRight } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
+import { Icon, chevronRight } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { numFmt, calculateChange, getAvailableDateRanges } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ChangeArrow from '@/js/components/ChangeArrow';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '@/js/components/GatheringDataNotice';
+import Link from '@/js/components/Link';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
+import Typography from '@/js/components/Typography';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import Link from '@/js/components/Link';
-import GatheringDataNotice, {
-	NOTICE_STYLE,
-} from '@/js/components/GatheringDataNotice';
-import Typography from '@/js/components/Typography';
+import { calculateChange, getAvailableDateRanges, numFmt } from '@/js/util';
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue, gatheringData } = props;

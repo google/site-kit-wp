@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
+import { GOAL_DRIVER_IDS, GOAL_TYPES } from './goal-drivers/constants';
 
 export const SITE_GOALS_SELECTION_PANEL_OPENED_KEY =
 	'googlesitekit-site-goals-selection-panel-opened';

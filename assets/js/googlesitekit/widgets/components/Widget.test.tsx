@@ -20,12 +20,12 @@
  * External dependencies
  */
 import { fireEvent } from '@testing-library/react';
+import { render } from 'tests/js/test-utils';
 
 /**
  * Internal dependencies
  */
 import Widget from '@/js/googlesitekit/widgets/components/Widget';
-import { render } from 'tests/js/test-utils';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 
 describe( 'Widget', () => {

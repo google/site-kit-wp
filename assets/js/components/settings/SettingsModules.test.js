@@ -24,16 +24,16 @@ import { createHashHistory } from 'history';
 /**
  * Internal dependencies
  */
-import SettingsModules from './SettingsModules';
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	muteFetch,
-} from '../../../../tests/js/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModules,
+	render,
+} from '../../../../tests/js/test-utils';
+import SettingsModules from './SettingsModules';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`

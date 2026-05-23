@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_TAGMANAGER } from './constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { MODULES_TAGMANAGER } from './constants';
 import {
+	rollbackChanges,
 	submitChanges,
 	validateCanSubmitChanges,
-	rollbackChanges,
 	validateHaveSettingsChanged,
 } from './settings';
 

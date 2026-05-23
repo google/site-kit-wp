@@ -24,19 +24,19 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { provideModules } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { WEEK_IN_SECONDS } from '@/js/util';
-import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
 } from '@/js/googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import { provideModules } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	GTG_SETUP_CTA_BANNER_NOTIFICATION

@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;

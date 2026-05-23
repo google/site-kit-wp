@@ -24,7 +24,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { createRegistrySelector, Select } from 'googlesitekit-data';
+import { Select, createRegistrySelector } from 'googlesitekit-data';
 import { CORE_SITE } from './constants';
 
 export const selectors = {

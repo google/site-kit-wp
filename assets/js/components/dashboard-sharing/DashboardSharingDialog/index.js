@@ -19,44 +19,44 @@
 /**
  * External dependencies
  */
-import { useEvent, useKey, useWindowScroll } from 'react-use';
 import classnames from 'classnames';
+import { useEvent, useKey, useWindowScroll } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
-	useEffect,
 	useCallback,
-	useState,
+	useEffect,
 	useRef,
+	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { Icon, arrowLeft } from '@wordpress/icons';
 import { ESCAPE } from '@wordpress/keycodes';
-import { arrowLeft, Icon } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import DashboardSharingSettings from '@/js/components/dashboard-sharing/DashboardSharingSettings';
 import {
 	EDITING_USER_ROLE_SELECT_SLUG_KEY,
 	RESET_SETTINGS_DIALOG,
 	SETTINGS_DIALOG,
 } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
-import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import Link from '@/js/components/Link';
 import Portal from '@/js/components/Portal';
+import Typography from '@/js/components/Typography';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
 import ShareIcon from '@/svg/icons/share.svg';
-import Link from '@/js/components/Link';
-import DashboardSharingSettings from '@/js/components/dashboard-sharing/DashboardSharingSettings';
 import Footer from './Footer';
-import Typography from '@/js/components/Typography';
 
 export default function DashboardSharingDialog() {
 	const [ shouldFocusResetButton, setShouldFocusResetButton ] =

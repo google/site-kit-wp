@@ -24,20 +24,20 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import MailIcon from '@/svg/icons/manage-email-reports.svg';
-import TickIcon from '@/svg/icons/tick.svg';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
+import MailIcon from '@/svg/icons/manage-email-reports.svg';
+import TickIcon from '@/svg/icons/tick.svg';
 
 export default function InviteUserRow( {
 	user,

@@ -20,6 +20,10 @@
  * External dependencies
  */
 import { ComponentType } from 'react';
+
+/**
+ * Internal dependencies
+ */
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 
 export type GoalDriverID =

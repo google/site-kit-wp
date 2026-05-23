@@ -29,8 +29,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Cell, Grid, Row } from '@/js/material-components';
 import SourceLink from '@/js/components/SourceLink';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 class LayoutFooter extends Component {
 	render() {

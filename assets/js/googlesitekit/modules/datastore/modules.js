@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import memize from 'memize';
 import invariant from 'invariant';
-import { defaults, merge, isPlainObject } from 'lodash';
+import { defaults, isPlainObject, merge } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -29,30 +29,30 @@ import { defaults, merge, isPlainObject } from 'lodash';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { listFormat } from '@/js/util';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { listFormat } from '@/js/util';
-import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
-import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';

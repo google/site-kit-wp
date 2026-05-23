@@ -25,8 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
 import { getLocale, isNumeric } from '@/js/util';
+import { CORE_SITE } from './constants';
 
 export const selectors = {
 	/**

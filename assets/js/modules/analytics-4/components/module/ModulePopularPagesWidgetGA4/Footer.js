@@ -25,13 +25,13 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import SourceLink from '@/js/components/SourceLink';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import SourceLink from '@/js/components/SourceLink';
-import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function Footer() {
 	const viewOnlyDashboard = useViewOnly();

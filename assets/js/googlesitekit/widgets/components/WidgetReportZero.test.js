@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
+import ReportZero from '@/js/components/ReportZero';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	render,
 	createTestRegistry,
 	provideModules,
+	render,
 } from '../../../../../tests/js/test-utils';
 import WidgetReportZero from './WidgetReportZero';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import ReportZero from '@/js/components/ReportZero';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'WidgetReportZero', () => {
 	let registry;

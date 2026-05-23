@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../tests/js/utils';
 import {
 	AMP_MODE_SECONDARY,
 	CORE_SITE,
 } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_TAGMANAGER,
-	CONTEXT_WEB,
-} from '@/js/modules/tagmanager/datastore/constants';
 import * as factories from '@/js/modules/tagmanager/datastore/__factories__';
+import {
+	CONTEXT_WEB,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { actHook as act, renderHook } from '../../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {

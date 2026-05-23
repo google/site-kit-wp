@@ -30,16 +30,16 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect, Select } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { NUMBER_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
-	getVisitorEngagementEventTileLabel,
 	VisitorEngagementEventID,
+	getVisitorEngagementEventTileLabel,
 } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
 interface VisitorEngagementEventTileProps {
 	dates: {

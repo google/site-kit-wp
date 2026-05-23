@@ -33,8 +33,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 import IconWrapper from '@/js/components/IconWrapper';
+import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 
 export interface WidgetProps {
 	className?: string;

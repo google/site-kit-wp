@@ -20,10 +20,8 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-
-/**
- * Internal dependencies
- */
+import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -36,27 +34,33 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from 'tests/js/utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 	PERMISSION_AUTHENTICATE,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import WelcomeModal from './WelcomeModal';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import WelcomeModal from './WelcomeModal';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

@@ -36,20 +36,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { SpinnerButton, Button } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { Button, SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { useFeature } from '@/js/hooks/useFeature';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
-import Link from '@/js/components/Link';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 
 export default function ActivateAnalyticsCTA( {

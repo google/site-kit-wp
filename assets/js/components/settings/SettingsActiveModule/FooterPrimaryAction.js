@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import Link from '@/js/components/Link';
-import PencilIcon from '@/svg/icons/pencil.svg';
 import { useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import PencilIcon from '@/svg/icons/pencil.svg';
 
 export default function FooterPrimaryAction( {
 	slug,

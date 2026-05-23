@@ -19,27 +19,27 @@
 /**
  * External dependencies
  */
-import { useClickAway } from 'react-use';
 import classnames from 'classnames';
+import { useClickAway } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useRef, useState } from '@wordpress/element';
-import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { Menu, Button } from 'googlesitekit-components';
-import DateRangeIcon from '@/svg/icons/date-range.svg';
+import { Button, Menu } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import { getAvailableDateRanges, trackEvent } from '@/js/util';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import { getAvailableDateRanges, trackEvent } from '@/js/util';
+import DateRangeIcon from '@/svg/icons/date-range.svg';
 
 export default function DateRangeSelector() {
 	const ranges = getAvailableDateRanges();

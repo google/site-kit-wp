@@ -30,14 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -45,13 +40,18 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
+	GoalDriverComponentProps,
+	GoalDriverRow,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
 	getDimensionFiltersForEvents,
 	normalizePrimaryEvents,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
 import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;

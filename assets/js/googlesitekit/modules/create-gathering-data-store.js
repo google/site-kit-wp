@@ -26,8 +26,8 @@ import invariant from 'invariant';
  */
 import { set } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistryControl,
 } from 'googlesitekit-data';

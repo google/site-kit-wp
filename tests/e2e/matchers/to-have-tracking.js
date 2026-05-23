@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { getDefaultOptions } from 'expect-puppeteer';
-import { Page, ElementHandle } from 'puppeteer';
+import { ElementHandle, Page } from 'puppeteer';
 
 /**
  * Asserts that the given instance has tracking loaded or not.

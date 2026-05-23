@@ -31,13 +31,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
-	MODULES_ANALYTICS_4,
 	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 
 export default function AccountSelect( { hasModuleAccess, onChange } ) {
 	const viewContext = useViewContext();

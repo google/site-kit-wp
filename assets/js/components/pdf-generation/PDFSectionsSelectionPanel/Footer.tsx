@@ -24,16 +24,16 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 interface FooterProps {
 	closePanel: () => void;

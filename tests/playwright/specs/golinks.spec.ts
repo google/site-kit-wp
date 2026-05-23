@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { test, expect } from '../playwright';
+import { expect, test } from '../playwright';
 import { asUser, withFeatureFlags, withPlugins } from '../wordpress';
 
 const user = asUser( 'admin' );

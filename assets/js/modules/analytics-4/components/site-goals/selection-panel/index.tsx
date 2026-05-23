@@ -29,15 +29,11 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	GoalDriverSelectionState,
-	resolveGoalDriverSelectionState,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
@@ -48,12 +44,16 @@ import {
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
-import SelectionPanel from '@/js/components/SelectionPanel';
-import useFormValue from '@/js/hooks/useFormValue';
+import {
+	GoalDriverSelectionState,
+	resolveGoalDriverSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
 import Header from '@/js/modules/analytics-4/components/site-goals/selection-panel/Header';
 import PanelContent from '@/js/modules/analytics-4/components/site-goals/selection-panel/PanelContent';
-import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
 import SaveErrorNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/SaveErrorNotice';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const SiteGoalsSelectionPanel: FC = () => {
 	const isOpen = useSelect(

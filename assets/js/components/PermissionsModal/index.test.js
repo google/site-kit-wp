@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import PermissionsModal from './';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
-	render,
 	createTestRegistry,
 	provideUserAuthentication,
+	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import PermissionsModal from './';
 
 describe( 'PermissionsModal', () => {
 	let registry;

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { renderHook, actHook } from '../../../tests/js/test-utils';
+import { actHook, renderHook } from '../../../tests/js/test-utils';
 import useQueryArg from './useQueryArg';
 
 describe( 'useQueryArg', () => {

@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import PublicationApprovedOverlayNotification, {
-	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
-} from './PublicationApprovedOverlayNotification';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import PublicationApprovedOverlayNotification, {
+	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
+} from './PublicationApprovedOverlayNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION

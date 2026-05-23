@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { reportRowsWithSetValues } from './report-rows-with-set-values';
 
 describe( 'reportRowsWithSetValues', () => {

@@ -7,10 +7,10 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-	useRequestInterception,
 	deactivateUtilityPlugins,
+	setSearchConsoleProperty,
+	setSiteVerification,
+	useRequestInterception,
 } from '../../../utils';
 
 describe( 'Site Kit dashboard post search', () => {

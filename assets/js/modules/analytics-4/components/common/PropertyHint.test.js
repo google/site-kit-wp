@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
 import {
-	render,
 	createTestRegistry,
-	provideSiteInfo,
 	fireEvent,
+	provideSiteInfo,
+	render,
 	waitFor,
 	within,
 } from '../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import PropertyHint from './PropertyHint';
-import * as tracking from '@/js/util/tracking';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

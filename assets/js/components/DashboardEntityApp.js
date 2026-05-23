@@ -24,25 +24,13 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import Header from './Header';
-import P from './Typography/P';
-import {
-	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
-	CONTEXT_ENTITY_DASHBOARD_CONTENT,
-	CONTEXT_ENTITY_DASHBOARD_SPEED,
-	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
-} from '@/js/googlesitekit/widgets/default-contexts';
-import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
-import EntitySearchInput from './EntitySearchInput';
-import DateRangeSelector from './DateRangeSelector';
-import HelpMenu from './help/HelpMenu';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -51,20 +39,32 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import Link from './Link';
-import VisuallyHidden from './VisuallyHidden';
-import { Cell, Grid, Row } from '@/js/material-components';
-import PageHeader from './PageHeader';
-import Layout from './layout/Layout';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import OfflineNotification from './notifications/OfflineNotification';
-import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
-import CoreDashboardEffects from './CoreDashboardEffects';
-import ModuleDashboardEffects from './ModuleDashboardEffects';
-import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import {
+	CONTEXT_ENTITY_DASHBOARD_CONTENT,
+	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_ENTITY_DASHBOARD_SPEED,
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 import { useFeature } from '@/js/hooks/useFeature';
+import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { Cell, Grid, Row } from '@/js/material-components';
+import CoreDashboardEffects from './CoreDashboardEffects';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
+import DateRangeSelector from './DateRangeSelector';
+import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import EntitySearchInput from './EntitySearchInput';
+import Header from './Header';
+import HelpMenu from './help/HelpMenu';
+import Layout from './layout/Layout';
+import Link from './Link';
+import ModuleDashboardEffects from './ModuleDashboardEffects';
+import OfflineNotification from './notifications/OfflineNotification';
+import PageHeader from './PageHeader';
+import P from './Typography/P';
+import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
