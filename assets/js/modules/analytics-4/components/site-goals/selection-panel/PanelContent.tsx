@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -41,18 +41,36 @@ import {
 import {
 	GOAL_TYPES,
 	getGoalDriverOptions,
-	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import type {
+import {
 	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import GoalTypeList from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeList';
+import GoalTypeSection from '@/js/modules/analytics-4/components/site-goals/selection-panel/GoalTypeSection';
+import VisitorEngagementEventList from '@/js/modules/analytics-4/components/site-goals/selection-panel/VisitorEngagementEventList';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface PanelContentProps {
 	hasEcommerceGoalDrivers: boolean;
 	hasLeadGoalDrivers: boolean;
+}
+
+function getSelectedDriverIDs(
+	selectedDrivers: GoalDriverSelectionState | undefined,
+	goalType: GoalType
+): GoalDriverID[] {
+	const selectedDriverIDs = selectedDrivers?.[ goalType ];
+
+	if ( ! Array.isArray( selectedDriverIDs ) ) {
+		return [];
+	}
+
+	return selectedDriverIDs.filter(
+		( selectedDriverID ): selectedDriverID is GoalDriverID =>
+			typeof selectedDriverID === 'string'
+	);
 }
 
 const PanelContent: FC< PanelContentProps > = ( {
@@ -63,9 +81,9 @@ const PanelContent: FC< PanelContentProps > = ( {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);
-	const resolvedSelectedDrivers = resolveGoalDriverSelectionState(
-		selectedDrivers as GoalDriverSelectionState | undefined
-	);
+	const selectedDriverState = selectedDrivers as
+		| GoalDriverSelectionState
+		| undefined;
 
 	const { setValues } = useDispatch( CORE_FORMS );
 
@@ -75,12 +93,35 @@ const PanelContent: FC< PanelContentProps > = ( {
 	const [ isEcommerceExpanded, setIsEcommerceExpanded ] = useState( true );
 	const [ isLeadExpanded, setIsLeadExpanded ] = useState( true );
 
+	const primaryEcommerceEvent = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+		[]
+	);
+	const secondaryEcommerceEvents = useSelect(
+		( select: Select ) => {
+			if ( ! primaryEcommerceEvent ) {
+				return [];
+			}
+
+			const events = select(
+				MODULES_ANALYTICS_4
+			).getSecondaryEcommerceEvents( primaryEcommerceEvent );
+
+			return Array.isArray( events ) ? events : [];
+		},
+		[ primaryEcommerceEvent ]
+	);
+
 	function onToggleDriver(
 		goalType: GoalType,
 		driverID: GoalDriverID,
 		isChecked: boolean
 	) {
-		const currentDriverIDs = resolvedSelectedDrivers?.[ goalType ] || [];
+		const currentDriverIDs = getSelectedDriverIDs(
+			selectedDriverState,
+			goalType
+		);
 
 		let nextDriverIDs = currentDriverIDs;
 
@@ -96,7 +137,14 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: {
-				...resolvedSelectedDrivers,
+				[ GOAL_TYPES.ECOMMERCE ]: getSelectedDriverIDs(
+					selectedDriverState,
+					GOAL_TYPES.ECOMMERCE
+				),
+				[ GOAL_TYPES.LEAD ]: getSelectedDriverIDs(
+					selectedDriverState,
+					GOAL_TYPES.LEAD
+				),
 				[ goalType ]: nextDriverIDs,
 			},
 		} );
@@ -105,53 +153,72 @@ const PanelContent: FC< PanelContentProps > = ( {
 	return (
 		<SelectionPanelContent className="googlesitekit-site-goals-selection-panel__content">
 			{ hasEcommerceGoalDrivers && (
-				<GoalTypeList
+				<GoalTypeSection
 					listID={ GOAL_TYPES.ECOMMERCE }
 					title={ __(
 						'Online store performance',
 						'google-site-kit'
 					) }
-					options={ ecommerceOptions }
-					selectedIDs={
-						resolvedSelectedDrivers?.[ GOAL_TYPES.ECOMMERCE ] || []
-					}
 					isExpanded={ isEcommerceExpanded }
 					onToggleExpand={ () =>
 						setIsEcommerceExpanded(
 							( previousState ) => ! previousState
 						)
 					}
-					onToggleDriver={ ( driverID, isChecked ) =>
-						onToggleDriver(
-							GOAL_TYPES.ECOMMERCE,
-							driverID,
-							isChecked
-						)
-					}
-				/>
+				>
+					<VisitorEngagementEventList
+						eventIDs={ secondaryEcommerceEvents }
+						goalType={ GOAL_TYPES.ECOMMERCE }
+						listID={ GOAL_TYPES.ECOMMERCE }
+					/>
+					<GoalTypeList
+						listID={ GOAL_TYPES.ECOMMERCE }
+						options={ ecommerceOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.ECOMMERCE
+						) }
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.ECOMMERCE,
+								driverID,
+								isChecked
+							)
+						}
+					/>
+				</GoalTypeSection>
 			) }
 
 			{ hasLeadGoalDrivers && (
-				<GoalTypeList
+				<GoalTypeSection
 					listID={ GOAL_TYPES.LEAD }
 					title={ __(
 						'Lead generation performance',
 						'google-site-kit'
 					) }
-					options={ leadOptions }
-					selectedIDs={
-						resolvedSelectedDrivers?.[ GOAL_TYPES.LEAD ] || []
-					}
 					isExpanded={ isLeadExpanded }
 					onToggleExpand={ () =>
 						setIsLeadExpanded(
 							( previousState ) => ! previousState
 						)
 					}
-					onToggleDriver={ ( driverID, isChecked ) =>
-						onToggleDriver( GOAL_TYPES.LEAD, driverID, isChecked )
-					}
-				/>
+				>
+					<GoalTypeList
+						listID={ GOAL_TYPES.LEAD }
+						options={ leadOptions }
+						selectedIDs={ getSelectedDriverIDs(
+							selectedDriverState,
+							GOAL_TYPES.LEAD
+						) }
+						onToggleDriver={ ( driverID, isChecked ) =>
+							onToggleDriver(
+								GOAL_TYPES.LEAD,
+								driverID,
+								isChecked
+							)
+						}
+					/>
+				</GoalTypeSection>
 			) }
 		</SelectionPanelContent>
 	);

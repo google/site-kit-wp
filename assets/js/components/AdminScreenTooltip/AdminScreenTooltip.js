@@ -51,6 +51,7 @@ export function AdminScreenTooltip() {
 		dismissLabel,
 		gaTrackingEventLabel,
 		floaterProps,
+		isCenteredOnMobile = true,
 	} = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
@@ -86,6 +87,8 @@ export function AdminScreenTooltip() {
 	const isMobileTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
+	const shouldCenter = isCenteredOnMobile && isMobileTablet;
+
 	const desktopTarget =
 		target ?? '#adminmenu [href*="page=googlesitekit-settings"]';
 
@@ -102,14 +105,14 @@ export function AdminScreenTooltip() {
 
 	return (
 		<JoyrideTooltip
-			target={ isMobileTablet ? 'body' : desktopTarget }
-			placement={ isMobileTablet ? 'center' : desktopPlacement }
+			target={ shouldCenter ? 'body' : desktopTarget }
+			placement={ shouldCenter ? 'center' : desktopPlacement }
 			className={
-				isMobileTablet
+				shouldCenter
 					? 'googlesitekit-tour-tooltip__modal_step'
 					: desktopClassName()
 			}
-			disableOverlay={ ! isMobileTablet }
+			disableOverlay={ ! shouldCenter }
 			slug="admin-screen-tooltip"
 			title={ title }
 			content={ content }

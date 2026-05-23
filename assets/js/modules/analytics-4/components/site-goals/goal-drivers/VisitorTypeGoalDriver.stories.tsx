@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
@@ -33,7 +33,7 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import type { GoalDriverComponentProps } from './types';
+import { GoalDriverComponentProps } from './types';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 
 const RETRYABLE_REPORT_OPTIONS = {
@@ -88,9 +88,11 @@ export default {
 	],
 };
 
-function Template( props: VisitorTypeGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
+function Template( {
+	errorSelectorArgs,
+	error,
+	...args
+}: VisitorTypeGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {

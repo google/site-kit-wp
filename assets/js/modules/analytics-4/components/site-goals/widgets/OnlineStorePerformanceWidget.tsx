@@ -17,12 +17,12 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -34,13 +34,15 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
@@ -48,24 +50,39 @@ import {
 	GOAL_TYPES,
 	GoalDriverSelectionState,
 	GoalDriverTiles,
+	getGoalDriverTitle,
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
+	VisitorEngagementTiles,
+	resolveVisitorEngagementSelectionState,
+} from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
+import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	Report,
-	ReportOptions,
-	ReportRow,
-} from '@/js/modules/analytics-4/datastore/types';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface OnlineStorePerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
+
+interface DateRange {
+	startDate: string;
+	endDate: string;
+	compareStartDate?: string;
+	compareEndDate?: string;
+}
 
 const EVENT_RATE_LABELS = {
 	purchase: __( 'Sales Rate', 'google-site-kit' ),
@@ -74,104 +91,13 @@ const EVENT_RATE_LABELS = {
 
 const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total Sales', 'google-site-kit' ),
-	add_to_cart: __( 'Total products added to cart', 'google-site-kit' ),
+	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
-function processSecondaryEventsReport(
-	secondaryEventsReport: Report | undefined,
-	secondaryEvents: ( keyof typeof EVENT_TOTAL_LABELS )[]
+function getWidgetReportOptions(
+	dates: DateRange,
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined
 ) {
-	if ( ! secondaryEventsReport || ! secondaryEvents.length ) {
-		return [];
-	}
-
-	const { rows = [] } = secondaryEventsReport;
-
-	return secondaryEvents.map( ( eventName ) => ( {
-		eventName,
-		label: EVENT_TOTAL_LABELS[ eventName ] || eventName,
-		currentCount:
-			parseInt(
-				( rows as ReportRow[] ).find(
-					( row ) =>
-						row?.dimensionValues?.[ 0 ]?.value === eventName &&
-						row?.dimensionValues?.[ 1 ]?.value === 'date_range_0'
-				)?.metricValues?.[ 0 ]?.value ?? '',
-				10
-			) || 0,
-		previousCount:
-			parseInt(
-				( rows as ReportRow[] ).find(
-					( row ) =>
-						row?.dimensionValues?.[ 0 ]?.value === eventName &&
-						row?.dimensionValues?.[ 1 ]?.value === 'date_range_1'
-				)?.metricValues?.[ 0 ]?.value ?? '',
-				10
-			) || 0,
-	} ) );
-}
-
-const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
-	Widget,
-	WidgetNull,
-	WidgetReportError,
-} ) => {
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const supportURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
-		[]
-	);
-
-	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-		[]
-	);
-
-	const effectiveSelectedDrivers = useSelect(
-		( select: Select ) =>
-			select( CORE_FORMS ).getValue(
-				SITE_GOALS_SELECTION_FORM,
-				SITE_GOALS_EFFECTIVE_DRIVERS
-			),
-		[]
-	) as GoalDriverSelectionState | undefined;
-
-	const resolvedSelections = resolveGoalDriverSelectionState(
-		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
-	);
-
-	const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
-		useSelect(
-			( select: Select ) =>
-				primaryEvent
-					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
-							primaryEvent
-					  )
-					: [],
-			[ primaryEvent ]
-		);
-
-	const drivers = resolveGoalDriverIDs(
-		resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
-		GOAL_TYPES.ECOMMERCE
-	).map( ( driverID ) => ( {
-		...GOAL_DRIVER_CATALOG[ driverID ],
-	} ) );
-
-	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-				compare: true,
-			} ),
-		[]
-	);
-
 	const primaryEventReportOptions: ReportOptions | null = primaryEvent
 		? {
 				...dates,
@@ -193,22 +119,116 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		  }
 		: null;
 
-	const secondaryEventsReportOptions: ReportOptions | null =
-		secondaryEcommerceEvents?.length
-			? {
-					...dates,
-					metrics: [ { name: 'eventCount' } ],
-					dimensions: [ { name: 'eventName' } ],
-					dimensionFilters: {
-						eventName: {
-							filterType: 'inListFilter',
-							value: secondaryEcommerceEvents,
-						},
-					},
-					reportID:
-						'analytics-4_online-store-performance-widget_secondaryEventsReportOptions',
-			  }
-			: null;
+	return {
+		primaryEventReportOptions,
+		engagementReportOptions,
+	};
+}
+
+function getReportsToCheck(
+	primaryEventReportOptions: ReportOptions | null,
+	engagementReportOptions: ReportOptions | null
+): ReportOptions[] {
+	return [ primaryEventReportOptions, engagementReportOptions ].filter(
+		( reportOptions ): reportOptions is ReportOptions =>
+			Boolean( reportOptions )
+	);
+}
+
+const OnlineStorePerformanceWidget: FC<
+	OnlineStorePerformanceWidgetProps
+> = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
+	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
+	const keyActionSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
+
+	const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+		[]
+	);
+
+	const effectiveSelectedDrivers = useSelect(
+		( select: Select ) =>
+			select( CORE_FORMS ).getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_EFFECTIVE_DRIVERS
+			),
+		[]
+	) as GoalDriverSelectionState | undefined;
+	const resolvedSelections = resolveGoalDriverSelectionState(
+		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
+	);
+
+	const effectiveVisitorEngagement = useSelect(
+		( select: Select ) =>
+			select( CORE_FORMS ).getValue(
+				SITE_GOALS_SELECTION_FORM,
+				SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
+			),
+		[]
+	);
+	const resolvedVisitorEngagement = resolveVisitorEngagementSelectionState(
+		effectiveVisitorEngagement ||
+			SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT
+	);
+	const selectedVisitorEngagementEvents =
+		resolvedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ];
+
+	const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
+		useSelect(
+			( select: Select ) =>
+				primaryEvent
+					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+							primaryEvent
+					  )
+					: [],
+			[ primaryEvent ]
+		);
+	const enabledSecondaryEvents = selectedVisitorEngagementEvents.filter(
+		( eventName ) =>
+			secondaryEcommerceEvents.includes(
+				eventName as keyof typeof EVENT_TOTAL_LABELS
+			)
+	);
+
+	const drivers = resolveGoalDriverIDs(
+		selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.ECOMMERCE ],
+		GOAL_TYPES.ECOMMERCE
+	).map( ( driverID ) => ( {
+		...GOAL_DRIVER_CATALOG[ driverID ],
+		title: getGoalDriverTitle( GOAL_TYPES.ECOMMERCE, driverID ),
+	} ) );
+
+	const dates = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} ),
+		[]
+	) as DateRange;
+
+	const { primaryEventReportOptions, engagementReportOptions } =
+		getWidgetReportOptions( dates, primaryEvent );
 
 	const primaryEventReport =
 		useInViewSelect(
@@ -232,29 +252,12 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			[ engagementReportOptions ]
 		) || [];
 
-	const secondaryEventsReport =
-		useInViewSelect(
-			( select: Select ) =>
-				secondaryEventsReportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							secondaryEventsReportOptions
-					  )
-					: null,
-			[ secondaryEventsReportOptions ]
-		) || [];
-
 	const [ loading, error ] = useSelect(
 		( select: Select ) => {
-			const reportsToCheck: ReportOptions[] = [];
-			if ( primaryEventReportOptions ) {
-				reportsToCheck.push( primaryEventReportOptions );
-			}
-			if ( engagementReportOptions ) {
-				reportsToCheck.push( engagementReportOptions );
-			}
-			if ( secondaryEventsReportOptions ) {
-				reportsToCheck.push( secondaryEventsReportOptions );
-			}
+			const reportsToCheck = getReportsToCheck(
+				primaryEventReportOptions,
+				engagementReportOptions
+			);
 
 			return [
 				select( MODULES_ANALYTICS_4 ).areReportsLoading(
@@ -265,22 +268,21 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 				),
 			];
 		},
-		[
-			primaryEventReportOptions,
-			engagementReportOptions,
-			secondaryEventsReportOptions,
-		]
+		[ primaryEventReportOptions, engagementReportOptions ]
 	);
 
 	if ( ! primaryEvent ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -290,17 +292,10 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 		currentSessions,
 		currentRate,
 		previousRate,
-		currentEngagementRate,
-		previousEngagementRate,
 	} = processReports( primaryEventReport, engagementReport );
 
-	const secondaryEventTiles = processSecondaryEventsReport(
-		secondaryEventsReport,
-		secondaryEcommerceEvents || []
-	);
-
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Online Store Performance',
@@ -317,105 +312,75 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 			) }
 
 			{ ! loading && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-primary-action"
-						title={ __( 'Key action', 'google-site-kit' ) }
-					>
-						<Tile
-							title={
-								EVENT_RATE_LABELS[ primaryEvent ] ||
-								__( 'Unknown Event', 'google-site-kit' )
-							}
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							infoTooltip={ createInterpolateElement(
-								__(
-									'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
-									'google-site-kit'
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
+						title={
+							EVENT_RATE_LABELS[ primaryEvent ] ||
+							__( 'Unknown Event', 'google-site-kit' )
+						}
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( 'of %s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						infoTooltip={ createInterpolateElement(
+							__(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									// Content is added via
+									// createInterpolateElement, so this
+									// can be safely ignored.
+									//
+									// eslint-disable-next-line jsx-a11y/anchor-has-content
+									<a
+										href={ keyActionSupportURL }
+										target="_blank"
+										rel="noreferrer noopener"
+									/>
 								),
-								{
-									a: (
-										// Content is added via
-										// createInterpolateElement, so this
-										// can be safely ignored.
-										//
-										// eslint-disable-next-line jsx-a11y/anchor-has-content
-										<a
-											href={ supportURL }
-											target="_blank"
-											rel="noreferrer noopener"
-										/>
-									),
-								}
-							) }
-							currentValue={ currentRate }
-							previousValue={ previousRate }
-							format={ PERCENT_FORMAT }
-							primary
-						/>
-
-						<Tile
-							title={
-								EVENT_TOTAL_LABELS[ primaryEvent ] ||
-								__( 'Unknown Event', 'google-site-kit' )
 							}
-							subtitle={ sprintf(
-								/* translators: %s: GA4 event name */
-								__( '“%s” events', 'google-site-kit' ),
-								primaryEvent
-							) }
-							currentValue={ currentPrimaryCount }
-							previousValue={ previousPrimaryCount }
-							format={ NUMBER_FORMAT }
-						/>
-					</TilesGroup>
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
 
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
-						title={ __(
-							'How are your visitors engaging?',
-							'google-site-kit'
+					<Tile
+						title={
+							EVENT_TOTAL_LABELS[ primaryEvent ] ||
+							__( 'Unknown Event', 'google-site-kit' )
+						}
+						subtitle={ sprintf(
+							/* translators: %s: GA4 event name */
+							__( '“%s” events', 'google-site-kit' ),
+							primaryEvent
 						) }
-					>
-						<Tile
-							title={ __( 'Engagement rate', 'google-site-kit' ) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentEngagementRate }
-							previousValue={ previousEngagementRate }
-							format={ PERCENT_FORMAT }
-						/>
-						{ secondaryEventTiles.map(
-							( {
-								eventName,
-								label,
-								currentCount,
-								previousCount,
-							} ) => (
-								<Tile
-									key={ eventName }
-									title={ label }
-									subtitle={ sprintf(
-										/* translators: %s: GA4 event name */
-										__( '“%s” events', 'google-site-kit' ),
-										eventName
-									) }
-									currentValue={ currentCount }
-									previousValue={ previousCount }
-									format={ NUMBER_FORMAT }
-								/>
-							)
-						) }
-					</TilesGroup>
-				</Fragment>
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
+
+			<TilesGroup
+				className="googlesitekit-site-goals-visitor-engagement"
+				title={ __(
+					'How are your visitors engaging?',
+					'google-site-kit'
+				) }
+			>
+				<VisitorEngagementTiles
+					dates={ dates }
+					events={ enabledSecondaryEvents }
+				/>
+			</TilesGroup>
 
 			<TilesGroup
 				className="googlesitekit-site-goals-goal-drivers-group"
@@ -431,7 +396,7 @@ const OnlineStorePerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.ECOMMERCE }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 

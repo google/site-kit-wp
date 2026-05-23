@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -39,7 +39,7 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import type {
+import {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
@@ -64,6 +64,7 @@ const VISITOR_TYPE_LABELS = {
 };
 
 const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
 	goalType,
 	limit,
 	rows: providedRows,
@@ -73,9 +74,10 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	onExpandableRowsChange,
 } ) => {
 	const title =
-		goalType === GOAL_TYPES.ECOMMERCE
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
 			? __( 'Sales by visitor type', 'google-site-kit' )
-			: __( 'Leads by visitor type', 'google-site-kit' );
+			: __( 'Leads by visitor type', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>

@@ -25,10 +25,14 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { render } from '../../../../../../../tests/js/test-utils';
+import CitiesGoalDriver from './CitiesGoalDriver';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
+import CountriesGoalDriver from './CountriesGoalDriver';
+import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
 import { getGoalDriverOptions } from './registry';
 import TopPagesGoalDriver from './TopPagesGoalDriver';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 
 const rows = [ { label: 'Direct', value: '60%' } ];
@@ -53,7 +57,7 @@ describe( 'Goal driver titles', () => {
 	} );
 
 	it( 'renders passed title for top traffic channels', () => {
-		const { getByText } = render(
+		const { getByText, queryByText, rerender } = render(
 			<TopTrafficChannelsGoalDriver
 				goalType={ GOAL_TYPES.LEAD }
 				rows={ rows }
@@ -64,6 +68,40 @@ describe( 'Goal driver titles', () => {
 		expect(
 			getByText( 'Top traffic channels driving leads' )
 		).toBeInTheDocument();
+
+		rerender(
+			<TopTrafficChannelsGoalDriver goalType="ecommerce" rows={ rows } />
+		);
+
+		expect(
+			getByText( 'Top traffic channels by total sales' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Top traffic channels driving leads' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders Top traffic channels rate title based on goal type', () => {
+		const { getByText, queryByText, rerender } = render(
+			<TopTrafficChannelsRateGoalDriver goalType="lead" rows={ rows } />
+		);
+		expect(
+			getByText( 'Top traffic channels by leads rate' )
+		).toBeInTheDocument();
+
+		rerender(
+			<TopTrafficChannelsRateGoalDriver
+				goalType="ecommerce"
+				rows={ rows }
+			/>
+		);
+
+		expect(
+			getByText( 'Top traffic channels by sales rate' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Top traffic channels by leads rate' )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'renders passed title for top pages and visitor type', () => {
@@ -84,6 +122,42 @@ describe( 'Goal driver titles', () => {
 
 		expect( getByText( 'Top pages driving leads' ) ).toBeInTheDocument();
 		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
+	} );
+
+	it( 'renders Cities title based on goal type', () => {
+		const { getByText, queryByText, rerender } = render(
+			<CitiesGoalDriver goalType="lead" rows={ rows } />
+		);
+		expect( getByText( 'Leads by cities' ) ).toBeInTheDocument();
+
+		rerender( <CitiesGoalDriver goalType="ecommerce" rows={ rows } /> );
+
+		expect( getByText( 'Sales by cities' ) ).toBeInTheDocument();
+		expect( queryByText( 'Leads by cities' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders Countries title based on goal type', () => {
+		const { getByText, queryByText, rerender } = render(
+			<CountriesGoalDriver goalType="lead" rows={ rows } />
+		);
+		expect( getByText( 'Leads by countries' ) ).toBeInTheDocument();
+
+		rerender( <CountriesGoalDriver goalType="ecommerce" rows={ rows } /> );
+
+		expect( getByText( 'Sales by countries' ) ).toBeInTheDocument();
+		expect( queryByText( 'Leads by countries' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders Device type title based on goal type', () => {
+		const { getByText, queryByText, rerender } = render(
+			<DeviceTypeGoalDriver goalType="lead" rows={ rows } />
+		);
+		expect( getByText( 'Leads by device type' ) ).toBeInTheDocument();
+
+		rerender( <DeviceTypeGoalDriver goalType="ecommerce" rows={ rows } /> );
+
+		expect( getByText( 'Sales by device type' ) ).toBeInTheDocument();
+		expect( queryByText( 'Leads by device type' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'renders zero-data message when no rows are available', () => {

@@ -23,10 +23,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	type WidgetComponentProps,
-	getWidgetComponentProps,
-} from '@/js/googlesitekit/widgets/util';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
@@ -38,12 +35,14 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { render } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
-} from '../../../../../../../tests/js/utils';
+	render,
+} from '../../../../../../../tests/js/test-utils';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -119,6 +118,22 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.LEAD }`,
 		};
 
+		const topTrafficRateOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensionFilters,
+			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.LEAD }`,
+		};
+
 		const topPagesOptions = {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
@@ -167,13 +182,60 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.LEAD }`,
 		};
 
+		const citiesOptions = {
+			...dates,
+			dimensions: [ 'city' ],
+			dimensionFilters: {
+				...dimensionFilters,
+				city: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.LEAD }`,
+		};
+
+		const countriesOptions = {
+			...dates,
+			dimensions: [ 'country' ],
+			dimensionFilters: {
+				...dimensionFilters,
+				country: {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.LEAD }`,
+		};
+
 		if ( loading ) {
 			[
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
+				topTrafficRateOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
+				citiesOptions,
+				countriesOptions,
 			].forEach( ( options ) => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -221,6 +283,44 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficTotalOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'Direct' } ],
+								metricValues: [
+									{ value: '75' },
+									{ value: '1000' },
+								],
+							},
+							{
+								dimensionValues: [
+									{ value: 'Organic Search' },
+								],
+								metricValues: [
+									{ value: '47' },
+									{ value: '1000' },
+								],
+							},
+							{
+								dimensionValues: [
+									{ value: 'Organic Social' },
+								],
+								metricValues: [
+									{ value: '12' },
+									{ value: '1000' },
+								],
+							},
+					  ],
+			},
+			{ options: topTrafficRateOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -286,6 +386,58 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ visitorTypeOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'London' } ],
+								metricValues: [ { value: '37' } ],
+							},
+							{
+								dimensionValues: [ { value: 'New York' } ],
+								metricValues: [ { value: '31' } ],
+							},
+							{
+								dimensionValues: [ { value: 'Paris' } ],
+								metricValues: [ { value: '19' } ],
+							},
+					  ],
+			},
+			{ options: citiesOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ citiesOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [
+							{
+								dimensionValues: [ { value: 'United States' } ],
+								metricValues: [ { value: '53' } ],
+							},
+							{
+								dimensionValues: [
+									{ value: 'United Kingdom' },
+								],
+								metricValues: [ { value: '29' } ],
+							},
+							{
+								dimensionValues: [ { value: 'Germany' } ],
+								metricValues: [ { value: '16' } ],
+							},
+					  ],
+			},
+			{ options: countriesOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ countriesOptions ] );
 	}
 
 	beforeEach( () => {
@@ -346,7 +498,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		provideAnalytics4MockReport( registry, leadEventsReport );
 		provideAnalytics4MockReport( registry, engagementReport );
 
-		const { container, getByText, waitForRegistry } = render(
+		const { container, getAllByText, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -368,14 +520,16 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels driving leads' )
+			getByText( 'Top traffic channels by total form completions' )
 		).toBeInTheDocument();
-		expect( getByText( 'Top pages driving leads' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by form completion rate' )
+		).toBeInTheDocument();
 		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
-		expect( getByText( 'Organic Search' ) ).toBeInTheDocument();
+		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
 		expect(
 			container.querySelectorAll(
-				'.googlesitekit-site-goals-goal-drivers-section__tile'
+				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
 	} );
@@ -511,8 +665,12 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels driving leads' )
+			getByText( 'Top traffic channels by total form completions' )
 		).toBeInTheDocument();
+		expect(
+			getByText( 'Top traffic channels by form completion rate' )
+		).toBeInTheDocument();
+		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 	} );
 
 	it( 'computes zero rate when sessions count is zero', async () => {
@@ -794,7 +952,10 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// No secondary ecommerce tiles should appear in lead generation widget.
 		expect( queryByText( 'Total Sales' ) ).not.toBeInTheDocument();
 		expect(
-			queryByText( 'Total products added to cart' )
+			queryByText( 'Products added to cart' )
+		).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Products added to cart' )
 		).not.toBeInTheDocument();
 	} );
 } );

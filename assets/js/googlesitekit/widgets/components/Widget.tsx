@@ -90,12 +90,12 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 				isCollapsedProp !== undefined
 			) {
 				// This console warning is meant to help developers understand
-				// that the `defaultCollapsed` prop should not be combibed with
+				// that the `defaultCollapsed` prop should not be combined with
 				// the `isCollapsed` prop, so this console statement should be
 				// allowed.
 				// eslint-disable-next-line no-console
 				console.warn(
-					`Error in \`Widget\` compoenent:The \`defaultCollapsed\` prop should not be used together with the \`isCollapsed\` prop. Providing the \`isCollapsed\` prop means the \`Widget\` component for slug "${ widgetSlug }" is controlled by its parent component, and the \`defaultCollapsed\` prop will be ignored.`
+					`Error in \`Widget\` component: The \`defaultCollapsed\` prop should not be used together with the \`isCollapsed\` prop. Providing the \`isCollapsed\` prop means the \`Widget\` component for slug "${ widgetSlug }" is controlled by its parent component, and the \`defaultCollapsed\` prop will be ignored.`
 				);
 			}
 		} );

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
@@ -30,52 +30,130 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
+	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_TYPES,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
-import type { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	GoalDriverID,
+	GoalDriverSelectionState,
+	GoalType,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
 interface FooterProps {
 	isOpen: boolean;
 	closePanel: () => void;
+	hasEcommerceGoalDrivers: boolean;
+	hasLeadGoalDrivers: boolean;
 }
 
-function flattenSelections( selections?: GoalDriverSelectionState ): string[] {
-	if ( ! selections ) {
+function getSelectedDriverIDsForGoalType(
+	selectedDrivers: GoalDriverSelectionState | undefined,
+	goalType: GoalType
+): GoalDriverID[] {
+	const selectedDriverIDs = selectedDrivers?.[ goalType ];
+
+	if ( ! Array.isArray( selectedDriverIDs ) ) {
 		return [];
 	}
 
+	return selectedDriverIDs.filter(
+		( selectedDriverID ): selectedDriverID is GoalDriverID =>
+			typeof selectedDriverID === 'string'
+	);
+}
+
+function flattenSelections( selections: GoalDriverSelectionState ): string[] {
 	return [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ].flatMap( ( goalType ) =>
-		( selections[ goalType ] || [] ).map(
+		getSelectedDriverIDsForGoalType( selections, goalType ).map(
 			( goalDriverID ) => `${ goalType }:${ goalDriverID }`
 		)
 	);
 }
 
-const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
+function hasInvalidSelection(
+	selectedDrivers: GoalDriverSelectionState,
+	hasEcommerceGoalDrivers: boolean,
+	hasLeadGoalDrivers: boolean
+): boolean {
+	const goalTypesToValidate: GoalType[] = [];
+
+	if ( hasEcommerceGoalDrivers ) {
+		goalTypesToValidate.push( GOAL_TYPES.ECOMMERCE );
+	}
+
+	if ( hasLeadGoalDrivers ) {
+		goalTypesToValidate.push( GOAL_TYPES.LEAD );
+	}
+
+	return goalTypesToValidate.some( ( goalType ) => {
+		const selectedCount = getSelectedDriverIDsForGoalType(
+			selectedDrivers,
+			goalType
+		).length;
+
+		return (
+			selectedCount < SITE_GOALS_MIN_SELECTED_DRIVERS ||
+			selectedCount > SITE_GOALS_MAX_SELECTED_DRIVERS
+		);
+	} );
+}
+
+const Footer: FC< FooterProps > = ( {
+	isOpen,
+	closePanel,
+	hasEcommerceGoalDrivers,
+	hasLeadGoalDrivers,
+} ) => {
 	const { setValues } = useDispatch( CORE_FORMS );
 
 	const [ selectedDrivers ] = useFormValue(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);
-	const resolvedSelectedDrivers = resolveGoalDriverSelectionState(
-		selectedDrivers as GoalDriverSelectionState | undefined
+	const selectedDriverState = selectedDrivers as
+		| GoalDriverSelectionState
+		| undefined;
+	const [ selectedVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
 	);
-	const selectedDriverSlugs = flattenSelections( resolvedSelectedDrivers );
+	const selectedDriverSlugs = flattenSelections(
+		selectedDriverState || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		}
+	);
+	const hasSelectionError = hasInvalidSelection(
+		selectedDriverState || {
+			[ GOAL_TYPES.ECOMMERCE ]: [],
+			[ GOAL_TYPES.LEAD ]: [],
+		},
+		hasEcommerceGoalDrivers,
+		hasLeadGoalDrivers
+	);
+
 	function saveSettings() {
-		const sanitizedSelectionState = resolveGoalDriverSelectionState(
-			resolvedSelectedDrivers
-		);
+		const sanitizedSelectionState =
+			resolveGoalDriverSelectionState( selectedDriverState );
+		const sanitizedVisitorEngagementSelectionState =
+			resolveVisitorEngagementSelectionState( selectedVisitorEngagement );
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
 			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: sanitizedSelectionState,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
+			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
 		} );
 
 		return Promise.resolve( {} );
@@ -89,8 +167,12 @@ const Footer: FC< FooterProps > = ( { isOpen, closePanel } ) => {
 			savedItemSlugs={ [] }
 			// @ts-expect-error - `SelectionPanelFooter` prop typing is currently incomplete.
 			selectedItemSlugs={ selectedDriverSlugs }
-			minSelectedItemCount={ 0 }
-			maxSelectedItemCount={ SITE_GOALS_MAX_SELECTED_DRIVERS * 2 }
+			minSelectedItemCount={
+				hasSelectionError ? SITE_GOALS_MIN_SELECTED_DRIVERS : 0
+			}
+			maxSelectedItemCount={
+				hasSelectionError ? 0 : SITE_GOALS_MAX_SELECTED_DRIVERS * 2
+			}
 		/>
 	);
 };

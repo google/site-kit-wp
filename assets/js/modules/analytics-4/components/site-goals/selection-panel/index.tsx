@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -36,8 +36,11 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
+	SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
 	SITE_GOALS_SELECTION_FORM,
 	SITE_GOALS_SELECTION_PANEL_OPENED_KEY,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -48,6 +51,8 @@ import {
 import Footer from '@/js/modules/analytics-4/components/site-goals/selection-panel/Footer';
 import Header from '@/js/modules/analytics-4/components/site-goals/selection-panel/Header';
 import PanelContent from '@/js/modules/analytics-4/components/site-goals/selection-panel/PanelContent';
+import SaveErrorNotice from '@/js/modules/analytics-4/components/site-goals/selection-panel/SaveErrorNotice';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const SiteGoalsSelectionPanel: FC = () => {
@@ -74,6 +79,10 @@ const SiteGoalsSelectionPanel: FC = () => {
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_EFFECTIVE_DRIVERS
 	);
+	const [ effectiveVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
@@ -83,11 +92,18 @@ const SiteGoalsSelectionPanel: FC = () => {
 			( effectiveDrivers as GoalDriverSelectionState | undefined ) ||
 				SITE_GOALS_DEFAULT_SELECTED_DRIVERS
 		);
+		const normalizedEffectiveVisitorEngagement =
+			resolveVisitorEngagementSelectionState(
+				effectiveVisitorEngagement ||
+					SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT
+			);
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: normalizedEffectiveDrivers,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				normalizedEffectiveVisitorEngagement,
 		} );
-	}, [ effectiveDrivers, setValues ] );
+	}, [ effectiveDrivers, effectiveVisitorEngagement, setValues ] );
 
 	const closePanel = useCallback( () => {
 		if ( isOpen ) {
@@ -107,7 +123,18 @@ const SiteGoalsSelectionPanel: FC = () => {
 				hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
 				hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
 			/>
-			<Footer isOpen={ !! isOpen } closePanel={ closePanel } />
+			<div className="googlesitekit-site-goals-selection-panel__footer-container">
+				<SaveErrorNotice
+					hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
+					hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
+				/>
+				<Footer
+					isOpen={ !! isOpen }
+					closePanel={ closePanel }
+					hasEcommerceGoalDrivers={ !! hasEcommerceGoalDrivers }
+					hasLeadGoalDrivers={ !! hasLeadGoalDrivers }
+				/>
+			</div>
 		</SelectionPanel>
 	);
 };

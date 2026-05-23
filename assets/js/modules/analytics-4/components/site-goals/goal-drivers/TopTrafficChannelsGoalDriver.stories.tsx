@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
@@ -34,7 +34,7 @@ import {
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
-import type { GoalDriverComponentProps } from './types';
+import { GoalDriverComponentProps } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -89,9 +89,11 @@ export default {
 	],
 };
 
-function Template( props: TopTrafficChannelsGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
+function Template( {
+	errorSelectorArgs,
+	error,
+	...args
+}: TopTrafficChannelsGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {

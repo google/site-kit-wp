@@ -38,6 +38,7 @@ import {
 } from '@/js/components/pdf-generation/constants';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
+import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
 import Footer from './Footer';
 import Header from './Header';
@@ -84,10 +85,15 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
 					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
 					type={ NOTICE_TYPES.ERROR }
-					description={ __(
-						'Select at least 1 topic',
-						'google-site-kit'
-					) }
+					description={
+						/* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */
+						<Typography type="label" size="small" as="span">
+							{ __(
+								'Select at least 1 topic',
+								'google-site-kit'
+							) }
+						</Typography>
+					}
 				/>
 			) }
 			<PDFGeneratingNotice />

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -35,8 +35,9 @@ import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	MAX_VISIBLE_GOAL_DRIVERS,
 } from './constants';
-import type {
+import {
 	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
 	GoalType,
@@ -95,7 +96,13 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 		isExpanded && ! isMobileBreakpoint
 			? GOAL_DRIVER_ROW_LIMIT_EXPANDED
 			: GOAL_DRIVER_ROW_LIMIT_COLLAPSED;
-	const filteredDrivers = drivers.filter( isRenderableGoalDriver );
+	const filteredDrivers = drivers
+		.filter( isRenderableGoalDriver )
+		.slice( 0, MAX_VISIBLE_GOAL_DRIVERS );
+	const emptySlots =
+		filteredDrivers.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
+			? Math.max( 0, MAX_VISIBLE_GOAL_DRIVERS - filteredDrivers.length )
+			: 0;
 	const hasExpandableDrivers =
 		typeof hasExpandableRows === 'boolean'
 			? hasExpandableRows
@@ -122,6 +129,14 @@ const GoalDriverTiles: FC< GoalDriverTilesProps > = ( {
 						</div>
 					)
 				) }
+
+				{ Array.from( { length: emptySlots } ).map( ( _, index ) => (
+					<div
+						key={ `empty-slot-${ index }` }
+						className="googlesitekit-site-goals-goal-drivers-section__tile googlesitekit-site-goals-goal-drivers-section__tile--empty"
+						aria-hidden="true"
+					/>
+				) ) }
 			</div>
 
 			{ hasExpandableDrivers && ! isMobileBreakpoint && (

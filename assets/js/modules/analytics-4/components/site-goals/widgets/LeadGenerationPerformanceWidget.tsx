@@ -17,12 +17,12 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,9 +31,10 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
@@ -47,14 +48,17 @@ import {
 	GOAL_TYPES,
 	GoalDriverSelectionState,
 	GoalDriverTiles,
+	getGoalDriverTitle,
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
+import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
@@ -62,11 +66,37 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 
-const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
-	Widget,
-	WidgetNull,
-	WidgetReportError,
-} ) => {
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
+	selectedGoalDriverIDs?: GoalDriverID[];
+}
+
+const LeadGenerationPerformanceWidget: FC<
+	LeadGenerationPerformanceWidgetProps
+> = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
+	const WidgetComponent = Widget as FC< {
+		Header?: unknown;
+		headerContents?: ReactNode;
+		collapsible?: boolean;
+		children?: ReactNode;
+	} >;
+	const WidgetNullComponent = WidgetNull as FC;
+	const WidgetReportErrorComponent = WidgetReportError as FC< {
+		moduleSlug: string;
+		error: unknown;
+	} >;
+
+	// TODO: Update the link to the relevant support URL once it's created.
+	// See: https://github.com/google/site-kit-wp/issues/12727
+	const keyActionSupportURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getGoogleSupportURL( {
+				path: '/TODO-SUPPORT-PATH',
+			} ),
+		[]
+	);
+
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
@@ -86,10 +116,11 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 
 	const hasLeadEvents = !! detectedLeadEvents?.length;
 	const drivers = resolveGoalDriverIDs(
-		resolvedSelections[ GOAL_TYPES.LEAD ],
+		selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.LEAD ],
 		GOAL_TYPES.LEAD
 	).map( ( driverID ) => ( {
 		...GOAL_DRIVER_CATALOG[ driverID ],
+		title: getGoalDriverTitle( GOAL_TYPES.LEAD, driverID ),
 	} ) );
 
 	const dates = useSelect(
@@ -171,14 +202,17 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 	);
 
 	if ( ! hasLeadEvents ) {
-		return <WidgetNull />;
+		return <WidgetNullComponent />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			<WidgetComponent>
+				<WidgetReportErrorComponent
+					moduleSlug="analytics-4"
+					error={ error }
+				/>
+			</WidgetComponent>
 		);
 	}
 
@@ -188,14 +222,12 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 		currentSessions,
 		currentRate,
 		previousRate,
-		currentEngagementRate,
-		previousEngagementRate,
 	} = processReports( leadEventsReport, engagementReport, {
 		aggregate: true,
 	} );
 
 	return (
-		<Widget
+		<WidgetComponent
 			Header={ WidgetHeaderTitle }
 			headerContents={ __(
 				'Lead generation performance',
@@ -206,80 +238,85 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 			{ loading && <PreviewBlock width="100%" height="130px" /> }
 
 			{ ! loading && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-primary-action"
-						title={ __( 'Key action', 'google-site-kit' ) }
-					>
-						<Tile
-							title={ __(
-								'Form completion rate',
-								'google-site-kit'
-							) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentRate }
-							previousValue={ previousRate }
-							format={ PERCENT_FORMAT }
-							primary
-						/>
-
-						<Tile
-							title={ __(
-								'Total form completions',
-								'google-site-kit'
-							) }
-							subtitle={
-								detectedLeadEvents.length === 1
-									? sprintf(
-											/* translators: %s: GA4 event name */
-											__(
-												'“%s” events',
-												'google-site-kit'
-											),
-											detectedLeadEvents[ 0 ]
-									  )
-									: sprintf(
-											/* translators: %d: number of detected event types */
-											_n(
-												'%d event type',
-												'%d event types',
-												detectedLeadEvents.length,
-												'google-site-kit'
-											),
-											detectedLeadEvents.length
-									  )
-							}
-							currentValue={ currentPrimaryCount }
-							previousValue={ previousPrimaryCount }
-							format={ NUMBER_FORMAT }
-						/>
-					</TilesGroup>
-
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
+				<TilesGroup
+					className="googlesitekit-site-goals-primary-action"
+					title={ __( 'Key action', 'google-site-kit' ) }
+				>
+					<Tile
 						title={ __(
-							'How are your visitors engaging?',
+							'Form completion rate',
 							'google-site-kit'
 						) }
-					>
-						<Tile
-							title={ __( 'Engagement rate', 'google-site-kit' ) }
-							subtitle={ sprintf(
-								/* translators: %s: formatted number of total sessions */
-								__( '%s total sessions', 'google-site-kit' ),
-								numFmt( currentSessions, NUMBER_FORMAT )
-							) }
-							currentValue={ currentEngagementRate }
-							previousValue={ previousEngagementRate }
-							format={ PERCENT_FORMAT }
-						/>
-					</TilesGroup>
-				</Fragment>
+						subtitle={ sprintf(
+							/* translators: %s: formatted number of total sessions */
+							__( 'of %s total sessions', 'google-site-kit' ),
+							numFmt( currentSessions, NUMBER_FORMAT )
+						) }
+						infoTooltip={ createInterpolateElement(
+							__(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+								'google-site-kit'
+							),
+							{
+								a: (
+									// Content is added via
+									// createInterpolateElement, so this
+									// can be safely ignored.
+									//
+									// eslint-disable-next-line jsx-a11y/anchor-has-content
+									<a
+										href={ keyActionSupportURL }
+										target="_blank"
+										rel="noreferrer noopener"
+									/>
+								),
+							}
+						) }
+						currentValue={ currentRate }
+						previousValue={ previousRate }
+						format={ PERCENT_FORMAT }
+						primary
+					/>
+
+					<Tile
+						title={ __(
+							'Total form completions',
+							'google-site-kit'
+						) }
+						subtitle={
+							detectedLeadEvents.length === 1
+								? sprintf(
+										/* translators: %s: GA4 event name */
+										__( '“%s” events', 'google-site-kit' ),
+										detectedLeadEvents[ 0 ]
+								  )
+								: sprintf(
+										/* translators: %d: number of detected event types */
+										_n(
+											'%d event type',
+											'%d event types',
+											detectedLeadEvents.length,
+											'google-site-kit'
+										),
+										detectedLeadEvents.length
+								  )
+						}
+						currentValue={ currentPrimaryCount }
+						previousValue={ previousPrimaryCount }
+						format={ NUMBER_FORMAT }
+					/>
+				</TilesGroup>
 			) }
+
+			<TilesGroup
+				className="googlesitekit-site-goals-visitor-engagement"
+				title={ __(
+					'How are your visitors engaging?',
+					'google-site-kit'
+				) }
+			>
+				<VisitorEngagementTiles dates={ dates } />
+			</TilesGroup>
 
 			<TilesGroup
 				className="googlesitekit-site-goals-goal-drivers-group"
@@ -295,7 +332,7 @@ const LeadGenerationPerformanceWidget: FC< WidgetComponentProps > = ( {
 					goalType={ GOAL_TYPES.LEAD }
 				/>
 			</TilesGroup>
-		</Widget>
+		</WidgetComponent>
 	);
 };
 
