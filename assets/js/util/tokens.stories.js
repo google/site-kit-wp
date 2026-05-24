@@ -17,10 +17,14 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { Cell, Grid, Row } from '@/js/material-components';
-import { Fragment } from '@wordpress/element';
 
 function TokenRow( { children } ) {
 	return <div className="googlesitekit-color-token-row">{ children }</div>;

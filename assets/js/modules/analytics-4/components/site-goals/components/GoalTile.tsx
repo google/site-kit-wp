@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import type { FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies

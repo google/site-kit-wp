@@ -29,9 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const [ , setNotification ] = useQueryArg( 'notification' );

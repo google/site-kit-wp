@@ -23,32 +23,32 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { Story } from '@/js/types/Story';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { Story } from '@/js/types/Story';
 
 // Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
 const dates = {
@@ -71,6 +71,18 @@ function buildPrimaryEventReportOptions( primaryEvent: string ) {
 	};
 }
 
+function buildVisitorEngagementEventReportOptions( eventName: string ) {
+	return {
+		...dates,
+		metrics: [ { name: 'eventCount' } ],
+		dimensions: [ { name: 'eventName' } ],
+		dimensionFilters: {
+			eventName,
+		},
+		reportID: `analytics-4_site-goals_visitor-engagement_${ eventName }`,
+	};
+}
+
 function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
 	return empty ? [] : rows;
 }
@@ -88,6 +100,10 @@ const purchaseReportOptions = buildPrimaryEventReportOptions(
 const addToCartReportOptions = buildPrimaryEventReportOptions(
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART
 );
+const addToCartVisitorEngagementReportOptions =
+	buildVisitorEngagementEventReportOptions(
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART
+	);
 
 const THREE_VISIBLE_GOAL_DRIVERS: GoalDriverID[] = [
 	GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
@@ -594,7 +610,21 @@ Loading.args = {
 		commonSetup( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [
+				ENUM_CONVERSION_EVENTS.PURCHASE,
+				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ purchaseReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				addToCartVisitorEngagementReportOptions,
+			] );
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			loading: true,
 		} );

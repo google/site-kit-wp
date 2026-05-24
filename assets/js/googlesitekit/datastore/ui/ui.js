@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject, isBoolean } from 'lodash';
+import { isBoolean, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies

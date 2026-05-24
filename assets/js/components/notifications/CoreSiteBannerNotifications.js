@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import useViewContext from '@/js/hooks/useViewContext';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;

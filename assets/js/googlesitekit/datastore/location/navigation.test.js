@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_LOCATION } from './constants';
 
 describe( 'core/location', () => {

@@ -29,25 +29,25 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Select, useSelect } from 'googlesitekit-data';
+import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
-import { Story } from '@/js/types/Story';
-import GoalDriverTiles from './GoalDriverTiles';
-import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
-import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
-import TopPagesGoalDriver from './TopPagesGoalDriver';
-import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import CitiesGoalDriver from './CitiesGoalDriver';
 import CountriesGoalDriver from './CountriesGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
+import GoalDriverTiles from './GoalDriverTiles';
+import TopPagesGoalDriver from './TopPagesGoalDriver';
+import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
 import { GoalDriverTilesDriver, GoalType } from './types';
+import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',

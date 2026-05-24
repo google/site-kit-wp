@@ -19,93 +19,93 @@
 /**
  * Internal dependencies
  */
-import {
-	EngagedTrafficSourceWidget,
-	LeastEngagingPagesWidget,
-	MostEngagingPagesWidget,
-	NewVisitorsWidget,
-	PopularContentWidget,
-	PopularProductsWidget,
-	ReturningVisitorsWidget,
-	TopCitiesWidget,
-	TopCitiesDrivingLeadsWidget,
-	TopCitiesDrivingAddToCartWidget,
-	TopCitiesDrivingPurchasesWidget,
-	TopDeviceDrivingPurchasesWidget,
-	TopCountriesWidget,
-	TopTrafficSourceWidget,
-	TopTrafficSourceDrivingAddToCartWidget,
-	TopTrafficSourceDrivingLeadsWidget,
-	TopTrafficSourceDrivingPurchasesWidget,
-	TopConvertingTrafficSourceWidget,
-	PagesPerVisitWidget,
-	VisitLengthWidget,
-	TopReturningVisitorPages,
-	VisitsPerVisitorWidget,
-	TopRecentTrendingPagesWidget,
-	TopCategoriesWidget,
-	PopularAuthorsWidget,
-	TopPagesDrivingLeadsWidget,
-} from '@/js/modules/analytics-4/components/widgets';
-import {
-	LeadGenerationPerformanceWidget,
-	OnlineStorePerformanceWidget,
-} from '@/js/modules/analytics-4/components/site-goals/widgets';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
-	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
-	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
-} from '@/js/googlesitekit/widgets/default-areas';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_PAGES_PER_VISIT,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
+	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_CONVERTING_TRAFFIC_SOURCE,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_COUNTRIES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
-	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
+import {
+	AudienceTilesWidget,
+	ConnectAnalyticsCTAWidget,
+	InfoNoticeWidget,
+	PrimaryUserSetupWidget,
+	SecondaryUserSetupWidget,
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import {
-	AudienceTilesWidget,
-	ConnectAnalyticsCTAWidget,
-	InfoNoticeWidget,
-	SecondaryUserSetupWidget,
-	PrimaryUserSetupWidget,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+	LeadGenerationPerformanceWidget,
+	OnlineStorePerformanceWidget,
+} from '@/js/modules/analytics-4/components/site-goals/widgets';
+import {
+	EngagedTrafficSourceWidget,
+	LeastEngagingPagesWidget,
+	MostEngagingPagesWidget,
+	NewVisitorsWidget,
+	PagesPerVisitWidget,
+	PopularAuthorsWidget,
+	PopularContentWidget,
+	PopularProductsWidget,
+	ReturningVisitorsWidget,
+	TopCategoriesWidget,
+	TopCitiesDrivingAddToCartWidget,
+	TopCitiesDrivingLeadsWidget,
+	TopCitiesDrivingPurchasesWidget,
+	TopCitiesWidget,
+	TopConvertingTrafficSourceWidget,
+	TopCountriesWidget,
+	TopDeviceDrivingPurchasesWidget,
+	TopPagesDrivingLeadsWidget,
+	TopRecentTrendingPagesWidget,
+	TopReturningVisitorPages,
+	TopTrafficSourceDrivingAddToCartWidget,
+	TopTrafficSourceDrivingLeadsWidget,
+	TopTrafficSourceDrivingPurchasesWidget,
+	TopTrafficSourceWidget,
+	VisitLengthWidget,
+	VisitsPerVisitorWidget,
+} from '@/js/modules/analytics-4/components/widgets';
 import ConversionReportingNotificationCTAWidget from '@/js/modules/analytics-4/components/widgets/ConversionReportingNotificationCTAWidget';
-import { isFeatureEnabled } from '@/js/features';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.

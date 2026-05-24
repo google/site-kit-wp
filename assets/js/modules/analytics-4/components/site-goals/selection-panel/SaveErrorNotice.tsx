@@ -24,16 +24,16 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	SITE_GOALS_MAX_SELECTED_DRIVERS,
 	SITE_GOALS_MIN_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTED_DRIVERS,
 	SITE_GOALS_SELECTION_FORM,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
-import SelectionPanelError from '@/js/components/SelectionPanel/SelectionPanelError';
-import useFormValue from '@/js/hooks/useFormValue';
-import type {
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import {
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';

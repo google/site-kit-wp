@@ -19,6 +19,10 @@
 /**
  * Internal dependencies
  */
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { useSelect } from '@/js/googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	AnyoneCanRegisterReadOnly,
 	ButtonShapeSelect,
@@ -31,10 +35,6 @@ import {
 	ShowNextToCommentsToggle,
 } from '@/js/modules/sign-in-with-google/components/common';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import { Cell, Grid, Row } from '@/js/material-components';
-import { useSelect } from '@/js/googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function SettingsForm() {
 	const anyoneCanRegister = useSelect( ( select ) =>

@@ -19,15 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import Link from '@/js/components/Link';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 

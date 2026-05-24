@@ -13,10 +13,10 @@ import {
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setSearchConsoleProperty,
-	useRequestInterception,
 	setAuthToken,
+	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../../utils';
 
 function handleRequest( request ) {

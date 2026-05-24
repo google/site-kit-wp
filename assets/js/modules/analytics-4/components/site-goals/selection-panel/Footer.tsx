@@ -19,31 +19,34 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	SITE_GOALS_EFFECTIVE_DRIVERS,
+	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
+	SITE_GOALS_MAX_SELECTED_DRIVERS,
+	SITE_GOALS_MIN_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_DRIVERS,
+	SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT,
+	SITE_GOALS_SELECTION_FORM,
+} from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_TYPES,
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import {
-	SITE_GOALS_EFFECTIVE_DRIVERS,
-	SITE_GOALS_MAX_SELECTED_DRIVERS,
-	SITE_GOALS_MIN_SELECTED_DRIVERS,
-	SITE_GOALS_SELECTED_DRIVERS,
-	SITE_GOALS_SELECTION_FORM,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
-import { SelectionPanelFooter } from '@/js/components/SelectionPanel';
-import useFormValue from '@/js/hooks/useFormValue';
-import type {
 	GoalDriverID,
 	GoalDriverSelectionState,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { resolveVisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 
 interface FooterProps {
 	isOpen: boolean;
@@ -119,6 +122,10 @@ const Footer: FC< FooterProps > = ( {
 	const selectedDriverState = selectedDrivers as
 		| GoalDriverSelectionState
 		| undefined;
+	const [ selectedVisitorEngagement ] = useFormValue(
+		SITE_GOALS_SELECTION_FORM,
+		SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT
+	);
 	const selectedDriverSlugs = flattenSelections(
 		selectedDriverState || {
 			[ GOAL_TYPES.ECOMMERCE ]: [],
@@ -137,10 +144,16 @@ const Footer: FC< FooterProps > = ( {
 	function saveSettings() {
 		const sanitizedSelectionState =
 			resolveGoalDriverSelectionState( selectedDriverState );
+		const sanitizedVisitorEngagementSelectionState =
+			resolveVisitorEngagementSelectionState( selectedVisitorEngagement );
 
 		setValues( SITE_GOALS_SELECTION_FORM, {
 			[ SITE_GOALS_SELECTED_DRIVERS ]: sanitizedSelectionState,
 			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: sanitizedSelectionState,
+			[ SITE_GOALS_SELECTED_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
+			[ SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT ]:
+				sanitizedVisitorEngagementSelectionState,
 		} );
 
 		return Promise.resolve( {} );

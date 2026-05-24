@@ -20,26 +20,26 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject, isEqual, pick } from 'lodash';
+import { isEqual, isPlainObject, pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
-import { get, set, invalidateCache } from 'googlesitekit-api';
+import { get, invalidateCache, set } from 'googlesitekit-api';
 import {
-	commonActions,
-	createRegistrySelector,
-	commonStore,
 	combineStores,
+	commonActions,
+	commonStore,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createStrictSelect, createValidationSelector } from './utils';
-import {
-	camelCaseToPascalCase,
-	camelCaseToConstantCase,
-} from './transform-case';
-import { createFetchStore } from './create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from './create-fetch-store';
+import {
+	camelCaseToConstantCase,
+	camelCaseToPascalCase,
+} from './transform-case';
+import { createStrictSelect, createValidationSelector } from './utils';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
 
 registerReaderRevenueManagerPlugin();

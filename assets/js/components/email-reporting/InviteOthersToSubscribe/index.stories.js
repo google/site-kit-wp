@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	provideUserCapabilities,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import InviteOthersToSubscribe from '.';
 
 const mockEligibleSubscribers = [

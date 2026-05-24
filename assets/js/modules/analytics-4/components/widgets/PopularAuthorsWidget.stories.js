@@ -19,23 +19,23 @@
 /**
  * Internal dependencies
  */
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { provideModules } from '../../../../../../tests/js/utils';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import {
 	getAnalytics4MockResponse,
 	provideAnalytics4MockReport,
 } from '@/js/modules/analytics-4/utils/data-mock';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PopularAuthorsWidget from './PopularAuthorsWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { getWidgetLayout } from './get-widget-layout';
-import ReportZero from '@/js/components/ReportZero';
-import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
 import Null from '@/js/components/Null';
 import RecoverableModules from '@/js/components/RecoverableModules';
+import ReportZero from '@/js/components/ReportZero';
+import { WIDGET_WIDTHS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { getWidgetLayout } from './get-widget-layout';
 
 describe( 'getWidgetLayout', () => {
 	const quarter = { width: WIDGET_WIDTHS.QUARTER };

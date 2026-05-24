@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import { SettingsEdit, SettingsView } from './components/settings';
 import SearchConsoleIcon from '@/svg/graphics/search-console.svg';
-import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
+import { SettingsEdit, SettingsView } from './components/settings';
 import { MODULE_SLUG_SEARCH_CONSOLE } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerWidgets } from './widgets';

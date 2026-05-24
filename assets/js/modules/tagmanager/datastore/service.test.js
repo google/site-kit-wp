@@ -20,10 +20,10 @@
  *
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { MODULES_TAGMANAGER } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { MODULES_TAGMANAGER } from './constants';
 
 describe( 'module/tagmanager service store', () => {
 	const userData = {

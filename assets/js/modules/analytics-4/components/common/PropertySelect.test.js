@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
-import PropertySelect from './PropertySelect';
-import {
-	MODULES_ANALYTICS_4,
-	ACCOUNT_CREATE,
-} from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
-	fireEvent,
+	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
 	act,
-	render,
-	provideUserAuthentication,
 	createTestRegistry,
+	fireEvent,
+	provideUserAuthentication,
+	render,
 } from '../../../../../../tests/js/test-utils';
+import PropertySelect from './PropertySelect';
 
 const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;
 const properties =

@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import {
-	MODULES_ADSENSE,
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-} from '@/js/modules/adsense/datastore/constants';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'adsense-abr-success-notification'

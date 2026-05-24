@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,8 +30,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import LayoutHeader from './LayoutHeader';
 import LayoutFooter from './LayoutFooter';
+import LayoutHeader from './LayoutHeader';
 
 class Layout extends Component {
 	render() {

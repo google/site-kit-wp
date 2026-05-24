@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import Checkbox from './Checkbox';
 import { render } from '../../../../tests/js/test-utils';
+import Checkbox from './Checkbox';
 
 describe( 'Checkbox', () => {
 	const defaultProps = {

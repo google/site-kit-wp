@@ -23,16 +23,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import Icon from '@/svg/graphics/sign-in-with-google.svg';
+import SettingsEdit from './components/settings/SettingsEdit';
+import SettingsView from './components/settings/SettingsView';
+import SetupMain from './components/setup/SetupMain';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
 	MODULES_SIGN_IN_WITH_GOOGLE,
 } from './datastore/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './constants';
-import Icon from '@/svg/graphics/sign-in-with-google.svg';
-import SetupMain from './components/setup/SetupMain';
-import SettingsEdit from './components/settings/SettingsEdit';
-import SettingsView from './components/settings/SettingsView';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 export { registerStore } from './datastore';
 export { registerNotifications } from './notifications';

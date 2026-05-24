@@ -30,15 +30,15 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
 import ActivateAnalyticsNotice from '@/js/components/setup/ActivateAnalyticsNotice';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
-import Link from '@/js/components/Link';
-import P from '@/js/components/Typography/P';
-import WelcomeSVG from '@/svg/graphics/welcome.svg';
-import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
 import Typography from '@/js/components/Typography';
-import { Cell, Row } from '@/js/material-components';
+import P from '@/js/components/Typography/P';
 import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Row } from '@/js/material-components';
+import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
+import WelcomeSVG from '@/svg/graphics/welcome.svg';
 
 export default function LegacySplashContent( {
 	analyticsModuleActive,

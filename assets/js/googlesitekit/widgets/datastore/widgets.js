@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
+import { original } from 'immer';
 import invariant from 'invariant';
 import { intersection } from 'lodash';
-import { original } from 'immer';
 
 /**
  * Internal dependencies
  */
-import { createRegistrySelector, createReducer } from 'googlesitekit-data';
+import { createReducer, createRegistrySelector } from 'googlesitekit-data';
 import {
 	isInactiveWidgetState,
 	normalizeWidgetModules,

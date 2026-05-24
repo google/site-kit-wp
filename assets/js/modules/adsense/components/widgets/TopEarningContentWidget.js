@@ -29,29 +29,29 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
 import Link from '@/js/components/Link';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { numFmt } from '@/js/util';
-import whenActive from '@/js/util/when-active';
-import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
+import {
+	CORE_USER,
+	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+} from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AdSenseLinkCTA } from '@/js/modules/adsense/components/common';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import ConnectGA4CTATileWidget from '@/js/modules/analytics-4/components/widgets/ConnectGA4CTATileWidget';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
 import ConnectAdSenseCTATileWidget from './ConnectAdSenseCTATileWidget';
 
 function TopEarningContentWidget( { Widget } ) {

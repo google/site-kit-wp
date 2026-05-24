@@ -22,21 +22,21 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useBlockProps, InspectorControls } from '@wordpress-core/block-editor';
+import { InspectorControls, useBlockProps } from '@wordpress-core/block-editor';
 import { Notice } from '@wordpress-core/components';
-import { Fragment, useEffect, useState } from '@wordpress-core/element';
 import { useSelect } from '@wordpress-core/data';
+import { Fragment, useEffect, useState } from '@wordpress-core/element';
 
 /**
  * Internal dependencies
  */
-import { select, resolveSelect } from 'googlesitekit-data';
-import EditorButton from './EditorButton';
-import { CORE_EDITOR } from './constants';
+import { resolveSelect, select } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { getNoticeAndDisabled } from './button-edit-utils';
+import { CORE_EDITOR } from './constants';
+import EditorButton from './EditorButton';
 
 /**
  * Reader Revenue Manager Button Edit component.

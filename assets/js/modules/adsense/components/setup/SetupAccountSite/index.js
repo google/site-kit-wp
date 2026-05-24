@@ -31,25 +31,25 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import {
-	MODULES_ADSENSE,
-	API_STATE_READY,
 	API_STATE_GETTING_READY,
 	API_STATE_NEEDS_ATTENTION,
+	API_STATE_READY,
 	API_STATE_REQUIRES_REVIEW,
+	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import {
-	SITE_STATUS_READY,
 	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_NEEDS_ATTENTION,
-	SITE_STATUS_REQUIRES_REVIEW,
+	SITE_STATUS_READY,
 	SITE_STATUS_READY_NO_AUTO_ADS,
+	SITE_STATUS_REQUIRES_REVIEW,
 } from '@/js/modules/adsense/util/status';
-import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
-import RequiresReview from './RequiresReview';
+import NeedsAttention from './NeedsAttention';
 import Ready from './Ready';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import RequiresReview from './RequiresReview';
 
 export default function SetupAccountSite( { site, finishSetup } ) {
 	const { autoAdsEnabled, state } = site;

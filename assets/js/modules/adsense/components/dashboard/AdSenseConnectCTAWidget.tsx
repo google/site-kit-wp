@@ -30,21 +30,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import { ANCHOR_ID_SPEED } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import WidgetDismissTransition from '@/js/googlesitekit/widgets/components/WidgetDismissTransition';
+import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import AdSenseConnectCTA from '@/js/modules/adsense/components/common/AdSenseConnectCTA';
 import {
 	ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY,
 	ADSENSE_CTA_WIDGET_TOOLTIP_STATE_KEY,
 	MODULE_SLUG_ADSENSE,
 } from '@/js/modules/adsense/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import WidgetDismissTransition from '@/js/googlesitekit/widgets/components/WidgetDismissTransition';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
-import { ANCHOR_ID_SPEED } from '@/js/googlesitekit/constants';
-import type { WidgetComponentProps } from '@/js/googlesitekit/widgets/util/get-widget-component-props';
 
 const AdSenseConnectCTAWidget: FC< WidgetComponentProps > = ( {
 	Widget,

@@ -19,6 +19,14 @@
 /**
  * Internal dependencies
  */
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	EDIT_SCOPE,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { renderHook } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -26,15 +34,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	EDIT_SCOPE,
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import useCustomDimensionsData from './useCustomDimensionsData';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 
 describe( 'useCustomDimensionsData', () => {
 	let registry;

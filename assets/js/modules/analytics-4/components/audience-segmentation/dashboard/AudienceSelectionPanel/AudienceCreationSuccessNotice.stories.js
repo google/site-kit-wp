@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
 import AudienceCreationSuccessNotice from './AudienceCreationSuccessNotice';
 import { AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG } from './constants';
 

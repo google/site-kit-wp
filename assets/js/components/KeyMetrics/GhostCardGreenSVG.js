@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { lazy, Suspense } from '@wordpress/element';
+import { Suspense, lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import PreviewBlock from '@/js/components/PreviewBlock';
 import MediaErrorHandler from '@/js/components/MediaErrorHandler';
+import PreviewBlock from '@/js/components/PreviewBlock';
 const LazyGhostCardGreenSVG = lazy( () =>
 	import( '../../../svg/graphics/ghost-card-green.svg' )
 );

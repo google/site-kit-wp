@@ -25,15 +25,15 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { render } from '../../../../../../../tests/js/test-utils';
-import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
-import { getGoalDriverOptions } from './registry';
-import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
-import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
-import TopPagesGoalDriver from './TopPagesGoalDriver';
-import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 import CitiesGoalDriver from './CitiesGoalDriver';
+import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import CountriesGoalDriver from './CountriesGoalDriver';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
+import { getGoalDriverOptions } from './registry';
+import TopPagesGoalDriver from './TopPagesGoalDriver';
+import TopTrafficChannelsGoalDriver from './TopTrafficChannelsGoalDriver';
+import TopTrafficChannelsRateGoalDriver from './TopTrafficChannelsRateGoalDriver';
+import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
 
 const rows = [ { label: 'Direct', value: '60%' } ];
 

@@ -17,29 +17,29 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
 import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserInfo,
-	provideUserAuthentication,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { SITE_KIT_SETUP_SUCCESS_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
+	render,
+} from '../../../../tests/js/test-utils';
 import SiteKitSetupSuccessNotification from './SiteKitSetupSuccessNotification';
 
 describe( 'SiteKitSetupSuccessNotification', () => {

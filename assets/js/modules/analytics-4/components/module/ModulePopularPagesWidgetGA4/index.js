@@ -20,8 +20,8 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,28 +31,28 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { numFmt } from '@/js/util';
-import whenActive from '@/js/util/when-active';
-import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
-import ReportTable from '@/js/components/ReportTable';
 import PreviewTable from '@/js/components/PreviewTable';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import Header from './Header';
-import Footer from './Footer';
+import ReportTable from '@/js/components/ReportTable';
+import TableOverflowContainer from '@/js/components/TableOverflowContainer';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 import useViewOnly from '@/js/hooks/useViewOnly';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import Footer from './Footer';
+import Header from './Header';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;

@@ -1,5 +1,5 @@
 /**
- * Site Goals Selection Panel GoalTypeList component.
+ * Site Goals Selection Panel Goal Type List component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import type { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,100 +31,51 @@ import { __ } from '@wordpress/i18n';
  */
 import { SelectionPanelItem } from '@/js/components/SelectionPanel';
 import Typography from '@/js/components/Typography';
-import type {
+import {
 	GoalDriverID,
 	GoalDriverOption,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import ChevronDownIcon from '@/svg/icons/chevron-down.svg';
 
 interface GoalTypeListProps {
 	listID: string;
-	title: string;
 	options: GoalDriverOption[];
 	selectedIDs: GoalDriverID[];
-	isExpanded: boolean;
-	onToggleExpand: () => void;
 	onToggleDriver: ( driverID: GoalDriverID, isChecked: boolean ) => void;
 }
 
 const GoalTypeList: FC< GoalTypeListProps > = ( {
 	listID,
-	title,
 	options,
 	selectedIDs,
-	isExpanded,
-	onToggleExpand,
 	onToggleDriver,
 } ) => {
 	const selectedSet = new Set( selectedIDs );
 
 	return (
-		<section className="googlesitekit-site-goals-selection-panel__section">
-			<button
-				type="button"
-				className="googlesitekit-site-goals-selection-panel__section-toggle"
-				onClick={ onToggleExpand }
-				aria-expanded={ isExpanded }
-				aria-controls={ `site-goals-selection-section-${ listID }` }
+		<div className="googlesitekit-site-goals-selection-panel__subsection">
+			<Typography
+				as="p"
+				type="body"
+				size="small"
+				className="googlesitekit-site-goals-selection-panel__items-title"
 			>
-				<span className="googlesitekit-site-goals-selection-panel__section-toggle-content">
-					<ChevronDownIcon
-						width={ 20 }
-						height={ 20 }
-						className={ classnames(
-							'googlesitekit-site-goals-selection-panel__section-toggle-icon',
-							{
-								'googlesitekit-site-goals-selection-panel__section-toggle-icon--expanded':
-									isExpanded,
-							}
-						) }
-					/>
-					<Typography
-						as="span"
-						type="title"
-						size="large"
-						className="googlesitekit-site-goals-selection-panel__section-title"
-					>
-						{ title }
-					</Typography>
-				</span>
-			</button>
+				{ __( 'Goal drivers', 'google-site-kit' ) }
+			</Typography>
 
-			{ isExpanded && (
-				<div
-					id={ `site-goals-selection-section-${ listID }` }
-					className="googlesitekit-site-goals-selection-panel__items"
-				>
-					<Typography
-						as="p"
-						type="body"
-						size="small"
-						className="googlesitekit-site-goals-selection-panel__items-title"
-					>
-						{ __( 'Goal drivers', 'google-site-kit' ) }
-					</Typography>
-
-					{ options.map( ( option ) => (
-						<SelectionPanelItem
-							key={ option.id }
-							id={ `site-goals-selection-${ option.id }-${ listID }` }
-							slug={ option.id }
-							title={ option.title }
-							description={ option.description }
-							isItemSelected={ selectedSet.has( option.id ) }
-							onCheckboxChange={ (
-								event: ChangeEvent< HTMLInputElement >
-							) =>
-								onToggleDriver(
-									option.id,
-									event.target.checked
-								)
-							}
-						/>
-					) ) }
-				</div>
-			) }
-		</section>
+			{ options.map( ( option ) => (
+				<SelectionPanelItem
+					key={ option.id }
+					id={ `site-goals-selection-${ option.id }-${ listID }` }
+					slug={ option.id }
+					title={ option.title }
+					description={ option.description }
+					isItemSelected={ selectedSet.has( option.id ) }
+					onCheckboxChange={ (
+						event: ChangeEvent< HTMLInputElement >
+					) => onToggleDriver( option.id, event.target.checked ) }
+				/>
+			) ) }
+		</div>
 	);
 };
 

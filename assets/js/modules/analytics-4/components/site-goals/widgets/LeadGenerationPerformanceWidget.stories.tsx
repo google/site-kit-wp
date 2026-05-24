@@ -15,36 +15,40 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
+	getAnalytics4MockResponse,
+	provideAnalytics4MockReport,
+} from '@/js/modules/analytics-4/utils/data-mock';
+import { Story } from '@/js/types/Story';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-} from '@/js/modules/analytics-4/utils/data-mock';
-import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { Story } from '@/js/types/Story';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 
 // Reference date: 2020-09-07, offsetDays: 0, 28-day range with comparison.
 const dates = {
@@ -591,6 +595,9 @@ Loading.args = {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [ singleEventReportOptions ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [ engagementReportOptions ] );
 		seedGoalDriverReports(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ElementType } from 'react';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -29,13 +29,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
-import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import ConnectMoreServicesSVG from '@/svg/graphics/connect-more-services-graphic.svg?url';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import useViewContext from '@/js/hooks/useViewContext';
+import ConnectMoreServicesSVG from '@/svg/graphics/connect-more-services-graphic.svg?url';
 
 interface ConnectMoreServicesNotificationProps {
 	id: string;

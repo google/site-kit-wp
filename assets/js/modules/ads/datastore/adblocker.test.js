@@ -17,19 +17,23 @@
  */
 
 /**
+ * External dependencies
+ */
+import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
+
+/**
  * Internal dependencies
  */
-import { MODULES_ADS } from './constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideModules,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { MODULES_ADS } from './constants';
 
-import { detectAnyAdblocker as mockDetectAnyAdblocker } from 'just-detect-adblock';
 jest.mock( 'just-detect-adblock' );
 
 describe( 'modules/ads adblocker', () => {

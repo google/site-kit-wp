@@ -25,25 +25,25 @@ import { useMount, useUpdateEffect } from 'react-use';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import VisuallyHidden from './VisuallyHidden';
-import MagnifyingGlass from '@/svg/icons/magnifying-glass.svg';
-import CloseDark from '@/svg/icons/close-dark.svg';
-import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import CloseDark from '@/svg/icons/close-dark.svg';
+import MagnifyingGlass from '@/svg/icons/magnifying-glass.svg';
+import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
+import VisuallyHidden from './VisuallyHidden';
 
 function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );

@@ -24,15 +24,15 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import PreviewBlocks from '@/js/components/PreviewBlocks';
 import { useSelect } from '@/js/googlesitekit-data';
+import SpinnerButton from '@/js/googlesitekit/components-gm2/SpinnerButton';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 const ACTION_TYPE = {

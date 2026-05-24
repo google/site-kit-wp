@@ -19,10 +19,10 @@
 /**
  * Internal dependencies
  */
-import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideUserAuthentication } from '../../../../tests/js/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { provideUserAuthentication } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import AuthenticatedPermissionsModal from './AuthenticatedPermissionsModal';
 
 function Template() {
 	return <AuthenticatedPermissionsModal />;

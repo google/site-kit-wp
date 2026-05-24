@@ -20,19 +20,19 @@
  * Internal dependencies
  */
 import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
 	act,
 	createTestRegistry,
 	provideModules,
 	render,
 } from '../../../../../../../tests/js/test-utils';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
 import Footer from './Footer';
-import * as analytics4fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'Footer', () => {
 	let registry;

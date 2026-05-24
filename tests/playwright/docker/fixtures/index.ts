@@ -17,12 +17,12 @@
 /**
  * External dependencies
  */
-import { createServer, IncomingMessage, ServerResponse } from 'node:http';
-import { createServer as createTLSServer } from 'node:https';
 import { execSync } from 'node:child_process';
 import { mkdtempSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { IncomingMessage, ServerResponse, createServer } from 'node:http';
+import { createServer as createTLSServer } from 'node:https';
 import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 type FixtureData = Record<
 	string,

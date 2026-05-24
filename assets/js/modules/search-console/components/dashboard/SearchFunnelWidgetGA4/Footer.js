@@ -24,28 +24,28 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { isURL } from '@wordpress/url';
 import { _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import {
-	MODULES_SEARCH_CONSOLE,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useSelect } from 'googlesitekit-data';
+import SourceLink from '@/js/components/SourceLink';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { generateDateRangeArgs } from '@/js/modules/search-console/util';
-import { getURLPath, untrailingslashit } from '@/js/util';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import SourceLink from '@/js/components/SourceLink';
-import { useSelect } from 'googlesitekit-data';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '@/js/modules/search-console/datastore/constants';
+import { generateDateRangeArgs } from '@/js/modules/search-console/util';
+import { getURLPath, untrailingslashit } from '@/js/util';
 
 function SourceLinkAnalytics4() {
 	const viewOnlyDashboard = useViewOnly();

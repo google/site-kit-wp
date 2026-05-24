@@ -16,21 +16,24 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import {
-	render,
 	createTestRegistry,
-	provideUserCapabilities,
-	provideUserAuthentication,
-	provideUserInfo,
-	provideModules,
 	fireEvent,
+	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideUserInfo,
+	render,
 } from '../../../../../tests/js/test-utils';
 import Header from './Header';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
-import * as tracking from '@/js/util/tracking';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

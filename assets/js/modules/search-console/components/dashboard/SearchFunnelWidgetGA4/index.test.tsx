@@ -31,26 +31,33 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserCapabilities,
-	provideUserInfo,
-	provideUserAuthentication,
-	provideSiteInfo,
-	muteFetch,
-	fireEvent,
-	waitFor,
-	provideModuleRegistrations,
-} from '../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
-import * as tracking from '@/js/util/tracking';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideUserInfo,
+	render,
+	waitFor,
+} from '../../../../../../../tests/js/test-utils';
+import {
+	getViewportWidth,
+	setViewportWidth,
+} from '../../../../../../../tests/js/viewport-utils';
+import SearchFunnelWidgetGA4 from '.';
 
 jest.mock( 'react-use', () => ( {
 	...( jest.requireActual( 'react-use' ) as Record< string, unknown > ),
@@ -59,14 +66,6 @@ jest.mock( 'react-use', () => ( {
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
-
-import SearchFunnelWidgetGA4 from '.';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 
 describe( 'SearchFunnelWidgetGA4', () => {
 	mockLocation();

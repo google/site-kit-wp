@@ -17,12 +17,7 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
- * Internal dependencies
+ * External dependencies
  */
 import {
 	createTestRegistry,
@@ -30,9 +25,18 @@ import {
 	provideSiteInfo,
 	render,
 } from 'tests/js/test-utils';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 import * as tracking from '@/js/util/tracking';
+import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

@@ -24,15 +24,15 @@ import { ReactElement } from 'react';
 /**
  * Internal dependencies
  */
-import { useSelect, Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Select, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import DeviceTypeGoalDriver from './DeviceTypeGoalDriver';
 import { GoalDriverComponentProps } from './types';
 

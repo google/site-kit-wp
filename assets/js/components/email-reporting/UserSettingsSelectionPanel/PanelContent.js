@@ -24,28 +24,28 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import Header from './Header';
-import SelectionPanelFooter from './SelectionPanelFooter';
-import P from '@/js/components/Typography/P';
-import Typography from '@/js/components/Typography';
 import FrequencySelector from '@/js/components/email-reporting/FrequencySelector';
-import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
-import Notices from './Notices';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import InviteOthersToSubscribe from '@/js/components/email-reporting/InviteOthersToSubscribe';
+import SubscribeActions from '@/js/components/email-reporting/UserSettingsSelectionPanel/SubscribeActions';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import PreviewBlock from '@/js/components/PreviewBlock';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import Header from './Header';
+import Notices from './Notices';
+import SelectionPanelFooter from './SelectionPanelFooter';
 
 export default function PanelContent( {
 	notice,

@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { render } from '../../../../../tests/js/test-utils';
-import { CORE_WIDGETS } from './constants';
 import Null from '@/js/components/Null';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { render } from '../../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widgets', () => {
 	let registry;

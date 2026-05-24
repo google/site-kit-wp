@@ -24,11 +24,11 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideModules } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import ModuleSetupSuccessNotification from './ModuleSetupSuccessNotification';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'setup-success-notification-site-kit'

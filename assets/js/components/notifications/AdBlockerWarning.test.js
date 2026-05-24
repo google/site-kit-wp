@@ -19,16 +19,16 @@
 /**
  * Internal dependencies
  */
-import AdBlockerWarning from './AdBlockerWarning';
-import { render } from '../../../../tests/js/test-utils';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { render } from '../../../../tests/js/test-utils';
 import {
-	provideModules,
-	provideModuleRegistrations,
 	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
 } from '../../../../tests/js/utils';
+import AdBlockerWarning from './AdBlockerWarning';
 
 describe( 'AdBlockerWarning', () => {
 	let registry;

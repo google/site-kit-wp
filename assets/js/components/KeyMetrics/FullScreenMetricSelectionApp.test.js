@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import FullScreenMetricSelectionApp from './FullScreenMetricSelectionApp';
+import { VIEW_CONTEXT_METRIC_SELECTION } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	CORE_USER,
@@ -27,18 +27,18 @@ import {
 	KM_ANALYTICS_POPULAR_AUTHORS,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
-	KM_ANALYTICS_VISIT_LENGTH,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
+	KM_ANALYTICS_VISIT_LENGTH,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-import { VIEW_CONTEXT_METRIC_SELECTION } from '@/js/googlesitekit/constants';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -51,9 +51,9 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import FullScreenMetricSelectionApp from './FullScreenMetricSelectionApp';
+import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from './test-utils';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'FullScreenMetricSelectionApp', () => {
 	mockLocation();

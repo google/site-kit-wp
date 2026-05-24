@@ -1,8 +1,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 function ChangeArrow( { direction, invertColor, width, height } ) {
 	return (

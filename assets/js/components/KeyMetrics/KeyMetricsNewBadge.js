@@ -17,15 +17,15 @@
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Badge from '@/js/components/Badge';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function KeyMetricsNewBadge() {
 	// This is necessary to conditionally render the badge

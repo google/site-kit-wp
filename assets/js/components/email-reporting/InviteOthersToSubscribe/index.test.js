@@ -19,6 +19,9 @@
 /**
  * Internal dependencies
  */
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	act,
 	createTestRegistry,
@@ -28,9 +31,6 @@ import {
 	render,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { PERMISSION_MANAGE_OPTIONS } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
 import InviteOthersToSubscribe from '.';
 
 describe( 'InviteOthersToSubscribe', () => {

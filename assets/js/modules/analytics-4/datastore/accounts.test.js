@@ -22,7 +22,6 @@
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
@@ -32,6 +31,7 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 accounts', () => {
 	let registry;
