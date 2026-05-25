@@ -25,14 +25,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import whenActive from '@/js/util/when-active';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import NoAudienceBanner from './NoAudienceBanner';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
+import NoAudienceBanner from './NoAudienceBanner';
 
 const NoAudienceBannerWithIntersectionObserver =
 	withIntersectionObserver( NoAudienceBanner );

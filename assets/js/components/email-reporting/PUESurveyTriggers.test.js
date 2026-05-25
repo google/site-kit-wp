@@ -19,36 +19,32 @@
 /**
  * External dependencies
  */
-import fetchMock from 'fetch-mock';
-
-/**
- * WordPress dependencies
- */
 import { waitFor } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * Internal dependencies
  */
-import PUESurveyTriggers from './PUESurveyTriggers';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import {
-	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
-} from './SetUpEmailReportingOverlayNotification';
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 } from '../../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import PUESurveyTriggers from './PUESurveyTriggers';
 import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
+	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION_SETUP_CTA,
+} from './SetUpEmailReportingOverlayNotification';
 
 describe( 'PUESurveyTriggers', () => {
 	const notification =

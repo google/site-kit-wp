@@ -20,13 +20,13 @@
  * External dependencies
  */
 import { fireEvent, getByText, waitFor } from '@testing-library/dom';
+import copyToClipboard from 'clipboard-copy';
 
 /**
  * Internal dependencies
  */
 import { render } from '../../../../tests/js/test-utils';
 import ReportErrorButton from './';
-import copyToClipboard from 'clipboard-copy';
 
 jest.mock( 'clipboard-copy', () => jest.fn() );
 

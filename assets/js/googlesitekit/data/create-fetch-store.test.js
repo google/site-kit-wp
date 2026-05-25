@@ -33,8 +33,8 @@ import { createRegistry } from '@wordpress/data';
 import { get, setUsingCache } from 'googlesitekit-api';
 import { combineStores } from 'googlesitekit-data';
 import { subscribeUntil } from '../../../../tests/js/utils';
-import { createFetchStore } from './create-fetch-store';
 import { createErrorStore } from './create-error-store';
+import { createFetchStore } from './create-fetch-store';
 
 const TEST_STORE = 'test/some-data';
 const STORE_PARAMS = {

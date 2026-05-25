@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Option, Select } from 'googlesitekit-components';
-import { timeZonesByCountryCode } from '@/js/modules/analytics-4/utils/countries-timezones';
-import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { timeZonesByCountryCode } from '@/js/modules/analytics-4/utils/countries-timezones';
 
 export default function TimezoneSelect() {
 	const [ countryCode ] = useFormValue( FORM_ACCOUNT_CREATE, 'countryCode' );

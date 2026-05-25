@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { mockLocation } from 'tests/js/mock-browser-utils';
+
+/**
+ * Internal dependencies
+ */
 import { isInitialWelcomeModalActive } from './welcome-modal';
 
 describe( 'welcomeModal', () => {

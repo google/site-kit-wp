@@ -30,24 +30,24 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import AudienceTileNoData from './AudienceTileNoData';
-import Link from '@/js/components/Link';
-import PartialDataNotice from './PartialDataNotice';
 import { numFmt, trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import useViewContext from '@/js/hooks/useViewContext';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import AudienceTileNoData from './AudienceTileNoData';
 import CreateCustomDimensionCTA from './CreateCustomDimensionCTA';
+import PartialDataNotice from './PartialDataNotice';
 
 const CreateCustomDimensionCTAWithIntersectionObserver =
 	withIntersectionObserver( CreateCustomDimensionCTA );

@@ -19,8 +19,13 @@
 /**
  * Internal dependencies
  */
-import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
+import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -30,12 +35,7 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import * as tracking from '@/js/util/tracking';
 import Actions from './Actions';
-import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from '@/js/components/setup/constants';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

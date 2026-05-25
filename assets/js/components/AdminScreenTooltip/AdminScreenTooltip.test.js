@@ -19,6 +19,9 @@
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -26,10 +29,7 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
-import * as tracking from '@/js/util/tracking';
-import useViewContext from '@/js/hooks/useViewContext';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -338,6 +338,54 @@ describe( 'AdminMenuTooltip', () => {
 			`test-context_${ tooltipSlug }`,
 			'tooltip_dismiss',
 			'test-label'
+		);
+	} );
+
+	it( 'should pass floaterProps to the JoyrideTooltip component when provided in the tooltip state', async () => {
+		await registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			title: 'Test Title',
+			content: 'Test Content',
+			dismissLabel: 'Got it',
+			tooltipSlug: 'test-tooltip-slug',
+			floaterProps: {
+				styles: {
+					arrow: {
+						margin: 42,
+					},
+				},
+			},
+		} );
+
+		render(
+			<div className="googlesitekit-plugin">
+				<div id="adminmenu">
+					<a href="http://test.test/wp-admin/admin.php?page=googlesitekit-settings">
+						Settings
+					</a>
+				</div>
+				<AdminScreenTooltip />
+			</div>,
+			{ registry }
+		);
+
+		// Wait for Joyride tooltip's useInterval to render.
+		act( () => {
+			jest.advanceTimersByTime( 1000 );
+		} );
+
+		await waitFor( () => {
+			const tooltip = document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			expect( tooltip ).toBeInTheDocument();
+		} );
+
+		const floaterArrowSpan = document.querySelector(
+			'.__floater__arrow > span'
+		);
+		expect( floaterArrowSpan ).toHaveStyle(
+			'margin-top: 42px; margin-bottom: 42px;'
 		);
 	} );
 } );

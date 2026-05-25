@@ -25,17 +25,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, ProgressBar } from 'googlesitekit-components';
-import { trackEvent } from '@/js/util';
-import {
-	MODULES_ANALYTICS_4,
-	ACCOUNT_CREATE,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import P from '@/js/components/Typography/P';
-import CreatePropertyInfoNotice from './CreatePropertyInfoNotice';
 import useViewContext from '@/js/hooks/useViewContext';
+import {
+	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import CreatePropertyInfoNotice from './CreatePropertyInfoNotice';
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) =>

@@ -28,8 +28,8 @@ import { render } from '@wordpress/element';
  * Internal dependencies
  */
 import { ActivationApp } from './components/activation/activation-app';
-import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 import Root from './components/Root';
+import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 
 domReady( () => {
 	const renderTarget = document.getElementById(

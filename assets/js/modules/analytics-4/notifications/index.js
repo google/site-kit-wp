@@ -19,43 +19,11 @@
 /**
  * Internal dependencies
  */
-import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { EnhancedMeasurementActivationBanner } from '@/js/modules/analytics-4/components/dashboard';
-import IntroductoryOverlayNotification, {
-	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/IntroductoryOverlayNotification';
+import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
-import SetupCTABanner, {
-	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
-} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/SetupCTABanner';
-import {
-	WebDataStreamNotAvailableNotification,
-	GoogleTagIDMismatchNotification,
-} from '@/js/modules/analytics-4/components/notifications';
-import {
-	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
-	MODULE_SLUG_ANALYTICS_4,
-} from '@/js/modules/analytics-4/constants';
-import EnhancedConversionsNotification, {
-	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
-} from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
-import {
-	asyncRequire,
-	asyncRequireAll,
-	asyncRequireAny,
-} from '@/js/util/async';
-import { isFeatureEnabled } from '@/js/features';
-import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	requireAudienceSegmentationWidgetHidden,
 	requireCanViewSharedModule,
@@ -66,6 +34,33 @@ import {
 	requireModuleOwnership,
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import IntroductoryOverlayNotification, {
+	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/IntroductoryOverlayNotification';
+import SetupCTABanner, {
+	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
+} from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/SetupCTABanner';
+import { EnhancedMeasurementActivationBanner } from '@/js/modules/analytics-4/components/dashboard';
+import {
+	GoogleTagIDMismatchNotification,
+	WebDataStreamNotAvailableNotification,
+} from '@/js/modules/analytics-4/components/notifications';
+import EnhancedConversionsNotification, {
+	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
+} from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+import {
+	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
+	MODULE_SLUG_ANALYTICS_4,
+} from '@/js/modules/analytics-4/constants';
 import {
 	requireAudienceSegmentationSetupCompleted,
 	requireAudienceSegmentationSetupCompletedByUser,
@@ -74,8 +69,13 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
-import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	asyncRequire,
+	asyncRequireAll,
+	asyncRequireAny,
+} from '@/js/util/async';
+import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 export const ANALYTICS_4_NOTIFICATIONS = {
 	[ AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION ]: {

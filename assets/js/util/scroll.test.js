@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
+import { BREAKPOINT_SMALL, BREAKPOINT_TABLET } from '@/js/hooks/useBreakpoint';
 import { mockElementOffsets } from '../../../tests/js/mock-browser-utils';
-import { BREAKPOINT_TABLET, BREAKPOINT_SMALL } from '@/js/hooks/useBreakpoint';
 import {
-	getStickyHeaderHeightWithoutNav,
 	getStickyHeaderHeight,
+	getStickyHeaderHeightWithoutNav,
 } from './scroll';
 
 describe( 'scrolling utility functions', () => {

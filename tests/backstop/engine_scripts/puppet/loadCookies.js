@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 const fs = require( 'fs' );
 
 module.exports = async ( page, scenario ) => {

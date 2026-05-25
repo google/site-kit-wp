@@ -24,22 +24,22 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
-import { useFeature } from '@/js/hooks/useFeature';
 import { ProgressBar } from 'googlesitekit-components';
-import {
-	ACCOUNT_CREATE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
-import SettingsForm from './SettingsForm';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
 } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	ACCOUNT_CREATE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagEffect';
+import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );

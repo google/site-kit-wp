@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserAuthentication,
-	fireEvent,
-	provideSiteInfo,
-	provideModuleRegistrations,
-	act,
-} from '../../../../../tests/js/test-utils';
 import { deleteItem, setItem } from '@/js/googlesitekit/api/cache';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import UnsatisfiedScopesAlert from '.';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	render,
+} from '../../../../../tests/js/test-utils';
+import UnsatisfiedScopesAlert from '.';
 
 const NotificationWithComponentProps = withNotificationComponentProps(
 	'authentication-error'

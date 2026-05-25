@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import MetricTileError from '@/js/components/KeyMetrics/MetricTileError';
-import { trackEvent, trackEventOnce } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent, trackEventOnce } from '@/js/util';
 
 export default function CustomDimensionsMissingError( props ) {
 	const { onRetry, infoTooltip, headerText } = props;

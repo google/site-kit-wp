@@ -24,8 +24,8 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -34,18 +34,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Checkbox, SpinnerButton } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP,
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export default function PlaceTagsStep( { setActiveStep } ) {
 	const viewContext = useViewContext();

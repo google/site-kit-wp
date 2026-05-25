@@ -19,46 +19,46 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
-	useCallback,
-	useMemo,
 	Fragment,
-	useState,
+	useCallback,
 	useEffect,
+	useMemo,
+	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import {
 	Button,
+	CircularProgress,
 	Dialog,
 	DialogContent,
 	DialogFooter,
 	DialogTitle,
-	CircularProgress,
 } from 'googlesitekit-components';
-import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
-import ExternalIcon from '@/svg/icons/external.svg';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { trackEvent } from '@/js/util';
-import P from '@/js/components/Typography/P';
+import WooLogoIcon from '@/svg/graphics/woo-logo.svg';
+import ExternalIcon from '@/svg/icons/external.svg';
 
 export default function WooCommerceRedirectModal( {
 	dialogActive,

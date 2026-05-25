@@ -29,8 +29,8 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
 import ReportZero from '@/js/components/ReportZero';
+import useWidgetStateEffect from '@/js/googlesitekit/widgets/hooks/useWidgetStateEffect';
 
 // The supported props must match `ReportZero` (except `widgetSlug`).
 export default function WidgetReportZero( {

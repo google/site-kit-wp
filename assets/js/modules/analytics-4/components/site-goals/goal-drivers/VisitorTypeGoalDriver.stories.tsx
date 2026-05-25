@@ -19,22 +19,22 @@
 /**
  * External dependencies
  */
-import type { ReactElement } from 'react';
+import { ReactElement } from 'react';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Select, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { GoalDriverComponentProps } from './types';
 import VisitorTypeGoalDriver from './VisitorTypeGoalDriver';
-import type { GoalDriverComponentProps } from './types';
 
 const RETRYABLE_REPORT_OPTIONS = {
 	startDate: '2020-08-11',
@@ -88,9 +88,11 @@ export default {
 	],
 };
 
-function Template( props: VisitorTypeGoalDriverStoryProps ) {
-	const { errorSelectorArgs, error, ...args } = props;
-
+function Template( {
+	errorSelectorArgs,
+	error,
+	...args
+}: VisitorTypeGoalDriverStoryProps ) {
 	const storyError = useSelect(
 		( select: Select ) => {
 			if ( ! errorSelectorArgs ) {
@@ -115,6 +117,7 @@ export const Ready = Template.bind(
 ) as Story< VisitorTypeGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'lead',
+	title: 'Leads by visitor type',
 	rows: [
 		{ label: 'Returning visitors', value: '60.5%' },
 		{ label: 'New visitors', value: '39.5%' },

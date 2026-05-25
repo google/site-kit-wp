@@ -29,11 +29,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Select, useSelect } from 'googlesitekit-data';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { PDF_GENERATING_KEY } from '@/js/components/pdf-generation/constants';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 const PDFGeneratingNotice: FC = () => {
 	const isGenerating = useSelect(

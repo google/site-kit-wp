@@ -17,34 +17,30 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import {
-	MODULES_TAGMANAGER,
-	ACCOUNT_CREATE,
-	CONTAINER_CREATE,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	FORM_SETUP,
-} from './constants';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
-import {
-	CORE_SITE,
-	AMP_MODE_SECONDARY,
-	AMP_MODE_PRIMARY,
-} from '@/js/googlesitekit/datastore/site/constants';
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import defaultModules from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import * as fixtures from './__fixtures__';
 import {
-	accountBuilder,
-	containerBuilder,
-	buildAccountWithContainers,
-} from './__factories__';
+	AMP_MODE_PRIMARY,
+	AMP_MODE_SECONDARY,
+	CORE_SITE,
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import defaultModules from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { getNormalizedContainerName } from '@/js/modules/tagmanager/util';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -53,21 +49,29 @@ import {
 	provideUserAuthentication,
 	subscribeUntil,
 } from '../../../../../tests/js/utils';
-import { getItem, setItem } from '@/js/googlesitekit/api/cache';
-import { createCacheKey } from '@/js/googlesitekit/api';
-import fetchMock from 'fetch-mock';
+import {
+	accountBuilder,
+	buildAccountWithContainers,
+	containerBuilder,
+} from './__factories__';
 import { createBuildAndReceivers } from './__factories__/utils';
-import { getNormalizedContainerName } from '@/js/modules/tagmanager/util';
+import * as fixtures from './__fixtures__';
+import {
+	ACCOUNT_CREATE,
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from './constants';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_AMP_CONTAINER_SELECTION,
 	INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID,
+	INVARIANT_INVALID_CONTAINER_NAME,
 	INVARIANT_INVALID_CONTAINER_SELECTION,
 	INVARIANT_INVALID_INTERNAL_CONTAINER_ID,
-	INVARIANT_INVALID_CONTAINER_NAME,
 } from './settings';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { GTG_SETUP_CTA_BANNER_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;

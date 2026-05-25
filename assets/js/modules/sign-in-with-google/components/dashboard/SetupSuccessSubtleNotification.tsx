@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
@@ -24,13 +29,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import { useSelect } from 'googlesitekit-data';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import { ElementType, FC } from 'react';
 
 export interface SetupSuccessSubtleNotificationProps {
 	/**

@@ -21,19 +21,19 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4, DATE_RANGE_OFFSET } from './constants';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { DAY_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
-	untilResolved,
-	freezeFetch,
-	subscribeUntil,
-	muteFetch,
 	createWaitForRegistry,
+	freezeFetch,
+	muteFetch,
 	provideSiteInfo,
+	subscribeUntil,
+	untilResolved,
 } from '../../../../../tests/js/utils';
-import { DAY_IN_SECONDS } from '@/js/util';
-import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import * as fixtures from './__fixtures__';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;

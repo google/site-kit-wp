@@ -24,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,10 +37,10 @@ import {
 	Select,
 	TextField,
 } from 'googlesitekit-components';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { trackEvent } from '@/js/util';
 
 class SearchConsole extends Component {
 	constructor( props ) {

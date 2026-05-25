@@ -25,25 +25,25 @@ import { useIntersection as mockUseIntersection } from 'react-use';
  * Internal dependencies
  */
 import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserCapabilities,
-	muteFetch,
-	provideUserAuthentication,
-	fireEvent,
-} from '../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
-import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
 	VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
-import AdminBarWidgets from './AdminBarWidgets';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+} from '../../../../tests/js/test-utils';
+import AdminBarWidgets from './AdminBarWidgets';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

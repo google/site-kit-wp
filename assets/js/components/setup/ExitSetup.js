@@ -31,8 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from '@/js/googlesitekit-components';
 import { useDispatch, useSelect } from '@/js/googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { trackEvent, untrailingslashit } from '@/js/util';
 
 export default function ExitSetup( { gaTrackingEventArgs } ) {

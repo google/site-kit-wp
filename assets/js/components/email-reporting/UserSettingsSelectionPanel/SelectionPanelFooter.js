@@ -29,9 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import P from '@/js/components/Typography/P';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function SelectionPanelFooter( { notice, onNoticeDismiss } ) {
 	return (

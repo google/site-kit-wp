@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { renderHook } from '../../../../../tests/js/test-utils';
-import useFilteredKeyMetrics from './useFilteredKeyMetrics';
 import {
 	KEY_METRICS_GROUP_CURRENT,
 	KEY_METRICS_GROUP_SUGGESTED,
 	KEY_METRICS_GROUP_VISITORS,
 } from '@/js/components/KeyMetrics/constants';
+import { renderHook } from '../../../../../tests/js/test-utils';
+import useFilteredKeyMetrics from './useFilteredKeyMetrics';
 
 describe( 'useFilteredKeyMetrics', () => {
 	const allMetricItems = {

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Input;
+use Google\Site_Kit\Modules\Sign_In_With_Google;
 use WP_Error;
 use WP_User;
 
@@ -34,6 +35,13 @@ class Authenticator implements Authenticator_Interface {
 	 */
 	const ERROR_INVALID_REQUEST = 'googlesitekit_auth_invalid_request';
 	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
+
+	/**
+	 * User meta key marking users created via Sign in with Google.
+	 *
+	 * @note This option is prefixed differently so that it will persist across disconnect/reset.
+	 */
+	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
 
 	/**
 	 * User options instance.
@@ -246,6 +254,7 @@ class Authenticator implements Authenticator_Interface {
 		$default_role = $this->get_default_role();
 
 		// Create a new user.
+		// User meta is persisted after wp_insert_user because its meta_input parameter requires WordPress 5.9 and the plugin floor is 5.2.
 		$user_id = wp_insert_user(
 			array(
 				'user_pass'    => wp_generate_password( 64 ),
@@ -255,15 +264,17 @@ class Authenticator implements Authenticator_Interface {
 				'first_name'   => $payload['given_name'],
 				'last_name'    => $payload['family_name'],
 				'role'         => $default_role,
-				'meta_input'   => array(
-					$this->user_options->get_meta_key( Hashed_User_ID::OPTION ) => $g_user_hid,
-				),
 			)
 		);
 
 		if ( is_wp_error( $user_id ) ) {
 			return new WP_Error( self::ERROR_SIGNIN_FAILED );
 		}
+
+		$user_options = clone $this->user_options;
+		$user_options->switch_user( $user_id );
+		$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+		$user_options->set( self::CREATED_BY_META_KEY, Sign_In_With_Google::MODULE_SLUG );
 
 		// Add the user to the current site if it is a multisite.
 		if ( is_multisite() ) {

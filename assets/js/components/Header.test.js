@@ -16,19 +16,22 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
-	render,
 	act,
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	provideUserInfo,
+	render,
 	waitForDefaultTimeouts,
 } from '../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import Header from './Header';
 import Null from './Null';
 

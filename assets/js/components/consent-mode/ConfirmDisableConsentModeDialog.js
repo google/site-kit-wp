@@ -29,13 +29,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { listFormat, trackEvent } from '@/js/util';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import RefocusableModalDialog from '@/js/components/RefocusableModalDialog';
-import useViewContext from '@/js/hooks/useViewContext';
+import { listFormat, trackEvent } from '@/js/util';
 
 export default function ConfirmDisableConsentModeDialog( {
 	onConfirm,

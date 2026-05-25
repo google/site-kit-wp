@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createRegistrySelector, Select } from 'googlesitekit-data';
+import { Select, createRegistrySelector } from 'googlesitekit-data';
 import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,

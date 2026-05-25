@@ -31,8 +31,8 @@ import { useContext } from '@wordpress/element';
  * Internal dependencies
  */
 import { Chip } from 'googlesitekit-components';
-import ChipMultiSelectContext from './ChipMultiSelectContext';
 import { ChipCheckmark } from './ChipCheckmark';
+import ChipMultiSelectContext from './ChipMultiSelectContext';
 export default function ChipMultiSelectItem( {
 	children,
 	id,

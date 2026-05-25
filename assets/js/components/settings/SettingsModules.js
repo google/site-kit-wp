@@ -26,8 +26,8 @@ import { Redirect, Route, Switch } from 'react-router-dom';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import SettingsAdmin from './SettingsAdmin';
 import SettingsActiveModules from './SettingsActiveModules';
+import SettingsAdmin from './SettingsAdmin';
 import SettingsInactiveModules from './SettingsInactiveModules';
 
 function SettingsModules() {

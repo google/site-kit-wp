@@ -20,18 +20,18 @@
  * Internal dependencies
  */
 import {
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+	PDF_GENERATING_KEY,
+	PDF_SECTIONS,
+} from '@/js/components/pdf-generation/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
 	act,
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
-	PDF_SECTIONS,
-} from '@/js/components/pdf-generation/constants';
 import PDFSectionsSelectionPanel from './index';
 
 describe( 'PDFSectionsSelectionPanel', () => {

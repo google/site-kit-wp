@@ -17,14 +17,14 @@
 /**
  * Internal dependencies
  */
-import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 
 function Template() {
 	return <SettingsCardKeyMetrics />;

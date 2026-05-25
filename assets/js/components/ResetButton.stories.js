@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import ResetButton from './ResetButton';
 import { provideSiteInfo } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import ResetButton from './ResetButton';
 
 function Template() {
 	return <ResetButton>Reset Site Kit Button</ResetButton>;

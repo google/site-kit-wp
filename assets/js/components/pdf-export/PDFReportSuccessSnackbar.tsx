@@ -30,9 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import Link from '@/js/components/Link';
 import CloseIcon from '@/svg/icons/close.svg';
 
 export interface PDFReportSuccessSnackbarProps {

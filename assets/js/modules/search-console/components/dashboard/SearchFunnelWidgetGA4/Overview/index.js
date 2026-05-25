@@ -30,19 +30,19 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { Grid, Row } from '@/js/material-components';
-import { trackEvent } from '@/js/util';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '@/js/hooks/useDashboardType';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import useViewContext from '@/js/hooks/useViewContext';
-import OptionalCells from './OptionalCells';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
 import DataBlocks from './DataBlocks';
+import OptionalCells from './OptionalCells';
 
 export default function Overview( props ) {
 	const {

@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
+import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 } from '../../../../../tests/js/test-utils';
-import { PDF_SECTIONS } from '@/js/components/pdf-generation/constants';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
 describe( 'PDFSectionCheckboxes', () => {

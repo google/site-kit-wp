@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -28,7 +28,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CONTEXT_AMP, CONTEXT_WEB, MODULES_TAGMANAGER } from './constants';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;

@@ -17,20 +17,34 @@
  */
 
 export { default as GoalDriverTiles } from './GoalDriverTiles';
-export { GOAL_DRIVER_CATALOG, resolveGoalDriverIDs } from './registry';
+export {
+	GOAL_DRIVER_CATALOG,
+	getGoalDriverContent,
+	getGoalDriverOptions,
+	getGoalDriverTitle,
+	getGoalTypeDriverIDs,
+	resolveGoalDriverIDs,
+	resolveGoalDriverSelectionState,
+} from './registry';
 export {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	MAX_VISIBLE_GOAL_DRIVERS,
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from './constants';
 export { default as TopTrafficChannelsGoalDriver } from './TopTrafficChannelsGoalDriver';
+export { default as TopTrafficChannelsRateGoalDriver } from './TopTrafficChannelsRateGoalDriver';
 export { default as TopPagesGoalDriver } from './TopPagesGoalDriver';
 export { default as VisitorTypeGoalDriver } from './VisitorTypeGoalDriver';
+export { default as CitiesGoalDriver } from './CitiesGoalDriver';
+export { default as CountriesGoalDriver } from './CountriesGoalDriver';
+export { default as DeviceTypeGoalDriver } from './DeviceTypeGoalDriver';
 export type {
 	GoalDriverID,
 	GoalDriverRow,
 	GoalDriverData,
 	GoalDriverComponentProps,
 	GoalDriverTilesDriver,
+	GoalDriverSelectionState,
 } from './types';

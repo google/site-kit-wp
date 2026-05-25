@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
@@ -157,6 +158,18 @@ class AuthenticatorTest extends TestCase {
 		$this->assertEquals( self::$new_user_payload['family_name'], $user->last_name, 'New user last name should match payload.' );
 
 		$this->assertTrue( in_array( 'editor', $user->roles, true ), 'New user role should be editor.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			Sign_In_With_Google::MODULE_SLUG,
+			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
+			'Newly created user should be marked as created via Sign in with Google.'
+		);
+		$this->assertEquals(
+			md5( self::$new_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Newly created user should have the hashed Google user ID persisted.'
+		);
 	}
 
 	/**
@@ -179,6 +192,18 @@ class AuthenticatorTest extends TestCase {
 
 		$blog_id = get_current_blog_id();
 		$this->assertTrue( is_user_member_of_blog( $user->ID, $blog_id ), 'New user should be member of current blog.' );
+
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user->ID );
+		$this->assertEquals(
+			Sign_In_With_Google::MODULE_SLUG,
+			get_user_meta( $user->ID, $user_options->get_meta_key( Authenticator::CREATED_BY_META_KEY ), true ),
+			'Newly created user on multisite should be marked as created via Sign in with Google.'
+		);
+		$this->assertEquals(
+			md5( self::$new_user_payload['sub'] ),
+			$user_options->get( Hashed_User_ID::OPTION ),
+			'Newly created user on multisite should have the hashed Google user ID persisted.'
+		);
 	}
 
 	/**

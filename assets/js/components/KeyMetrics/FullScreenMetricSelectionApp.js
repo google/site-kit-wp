@@ -26,20 +26,20 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Cell, Grid, Row } from '@/js/material-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
-import Layout from '@/js/components/layout/Layout';
-import PageHeader from '@/js/components/PageHeader';
-import PanelContent from '@/js/components/KeyMetrics/MetricsSelectionPanel/PanelContent';
 import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 } from '@/js/components/KeyMetrics/constants';
+import PanelContent from '@/js/components/KeyMetrics/MetricsSelectionPanel/PanelContent';
+import Layout from '@/js/components/layout/Layout';
+import PageHeader from '@/js/components/PageHeader';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function FullScreenMetricSelectionApp() {
 	const { setValues } = useDispatch( CORE_FORMS );

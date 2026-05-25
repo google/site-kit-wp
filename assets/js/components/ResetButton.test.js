@@ -24,17 +24,17 @@ import { ESCAPE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
-	render,
+	act,
 	createTestRegistry,
 	fireEvent,
-	act,
 	provideSiteInfo,
+	render,
 	waitFor,
 } from '../../../tests/js/test-utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import ResetButton from './ResetButton';
 import { subscribeUntil } from '../../../tests/js/utils';
+import ResetButton from './ResetButton';
 
 describe( 'ResetButton', () => {
 	let registry;

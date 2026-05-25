@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -43,7 +43,7 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../tests/js/test-utils';
-import * as tracking from '@/js/util/tracking';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import SyncErrorNotice from './SyncErrorNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

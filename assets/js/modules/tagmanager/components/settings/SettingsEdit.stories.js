@@ -24,15 +24,21 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
-import SettingsEdit from './SettingsEdit';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	AMP_MODE_PRIMARY,
+	AMP_MODE_SECONDARY,
+	CORE_SITE,
+} from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
 	CONTAINER_CREATE,
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
@@ -40,13 +46,7 @@ import {
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	AMP_MODE_PRIMARY,
-	AMP_MODE_SECONDARY,
-	CORE_SITE,
-} from '@/js/googlesitekit/datastore/site/constants';
+import SettingsEdit from './SettingsEdit';
 
 const defaultSettings = {
 	accountID: '',

@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
+import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { registerStore as registerAnalytics4Store } from '@/js/modules/analytics-4/datastore';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
-	renderHook,
 	provideModules,
 	provideUserAuthentication,
+	renderHook,
 } from '../../../../../tests/js/test-utils';
 import useNewBadgeEvents from './useNewBadgeEvents';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { registerStore as registerAnalytics4Store } from '@/js/modules/analytics-4/datastore';
 
 describe( 'useNewBadgeEvents', () => {
 	let registry;

@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x, __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,8 +33,8 @@ import { _x, __, sprintf } from '@wordpress/i18n';
 import { Option, ProgressBar, Select } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import {
-	MODULES_TAGMANAGER,
 	CONTAINER_CREATE,
+	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
 import { isValidAccountID } from '@/js/modules/tagmanager/util';
 
