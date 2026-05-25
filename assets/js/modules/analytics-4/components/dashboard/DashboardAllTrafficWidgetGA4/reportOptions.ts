@@ -16,38 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import type { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+
 export const TOTALS_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_totalsArgs';
 export const GRAPH_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_graphArgs';
 
-const TOTAL_USERS_METRIC = [ { name: 'totalUsers' } ];
-
-interface DimensionFilters {
-	[ key: string ]: string;
-}
-
-interface TotalsReportOptionsInput {
-	compareStartDate?: string;
-	compareEndDate?: string;
-	dimensionFilters?: DimensionFilters;
-}
-
-interface GraphReportOptionsInput {
-	dimensionFilters?: DimensionFilters;
-}
-
-interface DateRange {
-	startDate: string;
-	endDate: string;
-	compareStartDate?: string;
-	compareEndDate?: string;
-}
-
-interface ReportArgsExtras {
-	url?: string;
-	dimensionFilters?: DimensionFilters;
-}
+const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
+	{ name: 'totalUsers' },
+];
 
 /**
  * Builds the report-options fragment for the All Visitors totals report.
@@ -69,8 +50,11 @@ export function getTotalsReportOptions( {
 	compareStartDate,
 	compareEndDate,
 	dimensionFilters,
-}: TotalsReportOptionsInput = {} ) {
-	const args: Record< string, unknown > = {
+}: Pick<
+	ReportOptions,
+	'compareStartDate' | 'compareEndDate' | 'dimensionFilters'
+> = {} ): Partial< ReportOptions > {
+	const args: Partial< ReportOptions > = {
 		reportID: TOTALS_REPORT_ID,
 	};
 	if ( compareStartDate ) {
@@ -96,8 +80,8 @@ export function getTotalsReportOptions( {
  */
 export function getGraphReportOptions( {
 	dimensionFilters,
-}: GraphReportOptionsInput = {} ) {
-	const args: Record< string, unknown > = {
+}: Pick< ReportOptions, 'dimensionFilters' > = {} ): Partial< ReportOptions > {
+	const args: Partial< ReportOptions > = {
 		dimensions: [ 'date' ],
 		orderby: [
 			{
@@ -138,8 +122,16 @@ export function getTotalsReportArgs( {
 	compareEndDate,
 	url,
 	dimensionFilters,
-}: DateRange & ReportArgsExtras ) {
-	const args: Record< string, unknown > = {
+}: Pick<
+	ReportOptions,
+	| 'startDate'
+	| 'endDate'
+	| 'compareStartDate'
+	| 'compareEndDate'
+	| 'url'
+	| 'dimensionFilters'
+> ): ReportOptions {
+	const args: ReportOptions = {
 		startDate,
 		endDate,
 		metrics: TOTAL_USERS_METRIC,
@@ -172,8 +164,11 @@ export function getGraphReportArgs( {
 	endDate,
 	url,
 	dimensionFilters,
-}: Pick< DateRange, 'startDate' | 'endDate' > & ReportArgsExtras ) {
-	const args: Record< string, unknown > = {
+}: Pick<
+	ReportOptions,
+	'startDate' | 'endDate' | 'url' | 'dimensionFilters'
+> ): ReportOptions {
+	const args: ReportOptions = {
 		startDate,
 		endDate,
 		metrics: TOTAL_USERS_METRIC,

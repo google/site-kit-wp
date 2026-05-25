@@ -21,8 +21,14 @@
  * `TextEncoder` and other Node streams that JSDOM does not provide. None of
  * that machinery is meaningful in unit tests: we only need the primitives to
  * render as identifiable React host components so we can inspect the tree.
+ *
+ * This file is written in CommonJS to match the rest of `__mocks__/` (Jest
+ * manual mocks in this project use `module.exports`/`require`).
  */
 
+/**
+ * External dependencies
+ */
 const React = require( 'react' );
 
 function makePrimitive( tag ) {

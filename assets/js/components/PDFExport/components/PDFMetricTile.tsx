@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { Path, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import type { FC } from 'react';
 
 const COLORS = {
 	text: '#212121',
@@ -80,20 +81,25 @@ function ChangeArrow( { direction, color }: ChangeArrowProps ) {
 }
 
 export interface PDFMetricTileProps {
+	/** Heading rendered above the metric value, e.g. "All Visitors". */
 	title: string;
+	/** Pre-formatted metric value to display prominently, e.g. "1.2K". */
 	value: string;
+	/** Pre-formatted change badge text, e.g. "12.5%". Hides the badge when omitted. */
 	change?: string;
+	/** Direction the change badge points; controls the arrow and color. */
 	changeDirection?: 'up' | 'down';
+	/** Optional caption rendered below the value, e.g. comparison period text. */
 	subText?: string;
 }
 
-export default function PDFMetricTile( {
+const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	title,
 	value,
 	change,
 	changeDirection,
 	subText,
-}: PDFMetricTileProps ) {
+} ) => {
 	const changeColor =
 		changeDirection === 'up' ? COLORS.success : COLORS.error;
 
@@ -120,4 +126,6 @@ export default function PDFMetricTile( {
 			) }
 		</View>
 	);
-}
+};
+
+export default PDFMetricTile;

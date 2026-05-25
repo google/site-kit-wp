@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import type { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
@@ -27,7 +28,7 @@ import TestRenderer from 'react-test-renderer';
 import PDFMetricTile from './PDFMetricTile';
 
 function findTextStrings( tree: TestRenderer.ReactTestRendererJSON ): string[] {
-	const out: string[] = [];
+	const textOutput: string[] = [];
 
 	function visit(
 		node:
@@ -41,11 +42,11 @@ function findTextStrings( tree: TestRenderer.ReactTestRendererJSON ): string[] {
 			return;
 		}
 		if ( typeof node === 'string' ) {
-			out.push( node );
+			textOutput.push( node );
 			return;
 		}
 		if ( typeof node === 'number' ) {
-			out.push( String( node ) );
+			textOutput.push( String( node ) );
 			return;
 		}
 		const children = node.children;
@@ -55,11 +56,11 @@ function findTextStrings( tree: TestRenderer.ReactTestRendererJSON ): string[] {
 	}
 
 	visit( tree );
-	return out;
+	return textOutput;
 }
 
 function renderTile(
-	props: React.ComponentProps< typeof PDFMetricTile >
+	props: ComponentProps< typeof PDFMetricTile >
 ): TestRenderer.ReactTestRendererJSON {
 	const renderer = TestRenderer.create( <PDFMetricTile { ...props } /> );
 	const tree = renderer.toJSON();
@@ -70,7 +71,7 @@ function renderTile(
 }
 
 describe( 'PDFMetricTile', () => {
-	it( 'renders the title, value and sub-text', () => {
+	it( 'renders the title, value, and sub-text', () => {
 		const tree = renderTile( {
 			title: 'All Visitors',
 			value: '1,234',

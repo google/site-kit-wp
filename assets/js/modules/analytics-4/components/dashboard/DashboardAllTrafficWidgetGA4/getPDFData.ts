@@ -21,28 +21,25 @@
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import type {
+	Report,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
-interface PDFDates {
-	startDate: string;
-	endDate: string;
-	compareStartDate: string;
-	compareEndDate: string;
-}
-
-interface GetPDFDataParams {
+export interface GetPDFDataParams {
 	registry: {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		resolveSelect: ( storeName: string ) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
 		select: ( storeName: string ) => any;
 	};
-	dates: PDFDates;
+	dates: Pick<
+		ReportOptions,
+		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate'
+	>;
 	signal: AbortSignal;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- GA4 reports are returned untyped by the datastore.
-type Report = any;
 
 export interface AllTrafficPDFData {
 	data: {

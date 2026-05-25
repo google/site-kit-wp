@@ -19,19 +19,16 @@
 /**
  * Internal dependencies
  */
-import getPDFData from './getPDFData';
-import { GRAPH_REPORT_ID, TOTALS_REPORT_ID } from './reportOptions';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import getPDFData, { GetPDFDataParams } from './getPDFData';
+import { GRAPH_REPORT_ID, TOTALS_REPORT_ID } from './reportOptions';
+
+type Registry = GetPDFDataParams[ 'registry' ];
 
 interface MockGetReport {
 	( args: Record< string, unknown > ): Promise< Record< string, unknown > >;
 	mock: { calls: Array< [ Record< string, unknown > ] > };
-}
-
-interface MockRegistry {
-	resolveSelect: jest.Mock;
-	select: jest.Mock;
 }
 
 function buildRegistry( {
@@ -42,7 +39,7 @@ function buildRegistry( {
 	totalsReport: Record< string, unknown >;
 	graphReport: Record< string, unknown >;
 	entityURL?: string;
-} ): { registry: MockRegistry; getReport: MockGetReport } {
+} ): { registry: Registry; getReport: MockGetReport } {
 	const getReport = jest.fn( ( args: Record< string, unknown > ) => {
 		if ( args.reportID === TOTALS_REPORT_ID ) {
 			return Promise.resolve( totalsReport );
@@ -75,7 +72,7 @@ function buildRegistry( {
 	};
 }
 
-const DATES = {
+const dates = {
 	startDate: '2025-01-08',
 	endDate: '2025-02-04',
 	compareStartDate: '2024-12-11',
@@ -97,7 +94,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const result = await getPDFData( {
 			registry,
-			dates: DATES,
+			dates,
 			signal,
 		} );
 
@@ -119,24 +116,24 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		);
 
 		// The totals request includes the comparison dates.
-		const totalsCall = getReport.mock.calls.find(
+		const totalsReportRequest = getReport.mock.calls.find(
 			( [ args ] ) => args.reportID === TOTALS_REPORT_ID
 		);
-		expect( totalsCall?.[ 0 ] ).toMatchObject( {
-			startDate: DATES.startDate,
-			endDate: DATES.endDate,
-			compareStartDate: DATES.compareStartDate,
-			compareEndDate: DATES.compareEndDate,
+		expect( totalsReportRequest?.[ 0 ] ).toMatchObject( {
+			startDate: dates.startDate,
+			endDate: dates.endDate,
+			compareStartDate: dates.compareStartDate,
+			compareEndDate: dates.compareEndDate,
 			metrics: [ { name: 'totalUsers' } ],
 		} );
 
 		// The graph request includes the date dimension.
-		const graphCall = getReport.mock.calls.find(
+		const graphReportRequest = getReport.mock.calls.find(
 			( [ args ] ) => args.reportID === GRAPH_REPORT_ID
 		);
-		expect( graphCall?.[ 0 ] ).toMatchObject( {
-			startDate: DATES.startDate,
-			endDate: DATES.endDate,
+		expect( graphReportRequest?.[ 0 ] ).toMatchObject( {
+			startDate: dates.startDate,
+			endDate: dates.endDate,
 			dimensions: [ 'date' ],
 			metrics: [ { name: 'totalUsers' } ],
 		} );
@@ -151,7 +148,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		await getPDFData( {
 			registry,
-			dates: DATES,
+			dates,
 			signal: new AbortController().signal,
 		} );
 
@@ -160,7 +157,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		}
 	} );
 
-	it( 'short-circuits without dispatching when signal is already aborted', async () => {
+	it( 'stops building the report without dispatching a request when signal is already aborted', async () => {
 		const { registry, getReport } = buildRegistry( {
 			totalsReport: {},
 			graphReport: {},
@@ -171,7 +168,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const result = await getPDFData( {
 			registry,
-			dates: DATES,
+			dates,
 			signal: controller.signal,
 		} );
 
@@ -179,7 +176,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( getReport ).not.toHaveBeenCalled();
 	} );
 
-	it( 'short-circuits when signal aborts between the dispatch and the resolve', async () => {
+	it( 'stops building the report when signal aborts after the request is dispatched but is not yet resolved', async () => {
 		const controller = new AbortController();
 		const totalsReport = { totals: [] };
 		const graphReport = { rows: [] };
@@ -198,7 +195,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			} );
 		} );
 
-		const registry: MockRegistry = {
+		const registry: Registry = {
 			resolveSelect: jest.fn( () => ( { getReport } ) ),
 			select: jest.fn( () => ( {
 				getCurrentEntityURL: () => null,
@@ -207,7 +204,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 
 		const result = await getPDFData( {
 			registry,
-			dates: DATES,
+			dates,
 			signal: controller.signal,
 		} );
 

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import type { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
@@ -51,7 +52,7 @@ function buildReports( {
 }
 
 function renderTree(
-	props: React.ComponentProps< typeof DashboardAllTrafficWidgetGA4PDF >
+	props: ComponentProps< typeof DashboardAllTrafficWidgetGA4PDF >
 ) {
 	const renderer = TestRenderer.create(
 		<DashboardAllTrafficWidgetGA4PDF { ...props } />

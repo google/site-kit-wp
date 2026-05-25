@@ -65,8 +65,8 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 
 	const { totalsReport, graphReport } = data;
 	const [ current, previous ] = totalsReport?.totals || [];
-	const currentValue = current?.metricValues?.[ 0 ]?.value;
-	const previousValue = previous?.metricValues?.[ 0 ]?.value;
+	const currentValue = Number( current?.metricValues?.[ 0 ]?.value );
+	const previousValue = Number( previous?.metricValues?.[ 0 ]?.value );
 
 	const change = calculateChange( previousValue, currentValue );
 	const changeData =
@@ -92,7 +92,7 @@ export default function DashboardAllTrafficWidgetGA4PDF( {
 			  )
 			: undefined;
 
-	const formattedValue = numFmt( Number( currentValue ) || 0 );
+	const formattedValue = numFmt( currentValue || 0 );
 
 	return (
 		<View>
