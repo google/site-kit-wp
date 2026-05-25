@@ -22,8 +22,8 @@
  *
  * @since n.e.x.t
  *
- * @param {string} value Input string. Empty and non-string values become an empty slug.
- * @return {string} The sanitized slug.
+ * @param value Input string. Empty and non-string values become an empty slug.
+ * @return The sanitized slug.
  */
 function slugify( value: unknown ): string {
 	if ( typeof value !== 'string' || value.length === 0 ) {
@@ -43,8 +43,8 @@ function slugify( value: unknown ): string {
  *
  * @since n.e.x.t
  *
- * @param {Date} [now] Optional date instance, defaults to `new Date()`.
- * @return {string} The formatted date.
+ * @param [now] Optional date instance, defaults to `new Date()`.
+ * @return The formatted date.
  */
 function getISODate(
 	// The filename's date stamp is the actual generation moment, not the
@@ -69,10 +69,10 @@ function getISODate(
  *
  * @since n.e.x.t
  *
- * @param {string} siteName    Site name or URL.
- * @param {string} [dateRange] Optional date range slug, e.g. `last-28-days`.
- * @param {Date}   [now]       Optional date instance, defaults to `new Date()`.
- * @return {string} The composed filename.
+ * @param siteName    Site name or URL.
+ * @param [dateRange] Optional date range slug, e.g. `last-28-days`.
+ * @param [now]       Optional date instance, defaults to `new Date()`.
+ * @return The composed filename.
  */
 export function getPDFFilename(
 	siteName: string,
@@ -102,8 +102,8 @@ export function getPDFFilename(
  *
  * @since n.e.x.t
  *
- * @param {string} url      Blob URL pointing to the generated file.
- * @param {string} filename Suggested filename for the downloaded file.
+ * @param  url      Blob URL pointing to the generated file.
+ * @param  filename Suggested filename for the downloaded file.
  * @return {void}
  */
 export function triggerDownload( url: string, filename: string ): void {

@@ -41,7 +41,7 @@ import PDFReportSnackbarHost from './PDFReportSnackbarHost';
  *
  * @since n.e.x.t
  *
- * @return {Object} React element containing the snackbar host and orchestrator.
+ * @return React element containing the snackbar host and orchestrator.
  */
 const PDFExportRoot: FC = () => {
 	const isExporting = useSelect(

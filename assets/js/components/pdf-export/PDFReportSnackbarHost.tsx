@@ -35,7 +35,7 @@ import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
  *
  * @since n.e.x.t
  *
- * @return {Object|null} The active snackbar element, or null when idle.
+ * @return The active snackbar element, or null when idle.
  */
 const PDFReportSnackbarHost: FC = () => {
 	const status = useSelect(

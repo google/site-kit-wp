@@ -77,9 +77,9 @@ const initialState: State = { stage: STAGE_IDLE };
  *
  * @since n.e.x.t
  *
- * @param {Object} state  Current reducer state.
- * @param {Object} action Dispatched action with a `nextStage` payload.
- * @return {Object} Next state, unchanged when the transition is invalid.
+ * @param state  Current reducer state.
+ * @param action Dispatched action with a `nextStage` payload.
+ * @return Next state, unchanged when the transition is invalid.
  */
 function reducer( state: State, action: Action ): State {
 	if ( action.type === 'TRANSITION' ) {
@@ -98,8 +98,8 @@ function reducer( state: State, action: Action ): State {
  *
  * @since n.e.x.t
  *
- * @param {*} error The caught value.
- * @return {boolean} `true` when the error is an AbortError.
+ * @param error The caught value.
+ * @return `true` when the error is an AbortError.
  */
 function isAbortError( error: unknown ): boolean {
 	return error instanceof DOMException && error.name === 'AbortError';
@@ -111,8 +111,8 @@ function isAbortError( error: unknown ): boolean {
  *
  * @since n.e.x.t
  *
- * @param {AbortSignal} signal Abort signal to observe.
- * @return {Promise} Resolves on the next frame, rejects on abort.
+ * @param signal Abort signal to observe.
+ * @return Resolves on the next frame, rejects on abort.
  */
 function nextFrame( signal: AbortSignal ): Promise< void > {
 	return new Promise( ( resolve, reject ) => {
@@ -145,9 +145,9 @@ export interface PDFExportOrchestratorProps {
  *
  * @since n.e.x.t
  *
- * @param {Object}   props            Component props.
- * @param {Function} props.onComplete Called when the export finishes or aborts.
- * @return {null} Always null.
+ * @param props            Component props.
+ * @param props.onComplete Called when the export finishes or aborts.
+ * @return Always null.
  */
 const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,

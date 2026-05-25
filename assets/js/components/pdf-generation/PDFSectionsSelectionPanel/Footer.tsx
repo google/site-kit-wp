@@ -24,7 +24,6 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -56,10 +55,10 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const onDownloadClick = useCallback( () => {
+	function handleDownloadClick() {
 		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
 		setValue( PDF_EXPORTING_KEY, true );
-	}, [ setValue ] );
+	}
 
 	const inFlight = !! isExporting || exportStatus === 'progress';
 
@@ -73,7 +72,7 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 					</Button>
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button
-						onClick={ onDownloadClick }
+						onClick={ handleDownloadClick }
 						disabled={ ! hasSelection || inFlight }
 					>
 						{ __( 'Download report', 'google-site-kit' ) }
