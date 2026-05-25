@@ -23,18 +23,6 @@ import {
 	getByText as domGetByText,
 	queryByText as domQueryByText,
 } from '@testing-library/dom';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { act, fireEvent, render, waitFor } from 'tests/js/test-utils';
-import {
-	createTestRegistry,
-	muteFetch,
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteInfo,
-	provideUserAuthentication,
-	provideUserInfo,
-	waitForDefaultTimeouts,
-} from 'tests/js/utils';
 
 /**
  * Internal dependencies
@@ -57,6 +45,18 @@ import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data
 import { WEEK_IN_SECONDS } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import AudienceSelectionPanel from '.';
 import { availableAudiences } from './../../../../datastore/__fixtures__';
 import {

@@ -132,6 +132,7 @@ export function getImportGroup( source: string ): DependencyGroup {
 	if (
 		source.startsWith( 'googlesitekit-' ) ||
 		source.startsWith( '@/' ) ||
+		source.startsWith( '@tests/' ) ||
 		source.startsWith( '../' ) ||
 		source.startsWith( './' ) ||
 		source === '.'
@@ -249,6 +250,9 @@ export function normalizeImportSource( source: string ): string {
 		return '~0~' + source;
 	}
 	if ( source.startsWith( '@/' ) ) {
+		return '~1~' + source;
+	}
+	if ( source.startsWith( '@tests/' ) ) {
 		return '~1~' + source;
 	}
 	if ( source.startsWith( '../' ) ) {

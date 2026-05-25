@@ -20,13 +20,13 @@
  * External dependencies
  */
 import type { ElementType, ReactNode } from 'react';
-import { provideSiteInfo } from 'tests/js/utils';
-import WithRegistrySetup from 'tests/js/WithRegistrySetup';
 
 /**
  * Internal dependencies
  */
 import { type WPDataRegistry } from '@/js/googlesitekit-data';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 
 function Template( args: { errorCode: string; onRetry: () => void } ) {

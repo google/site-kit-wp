@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { createTestRegistry } from 'tests/js/utils';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -29,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { createTestRegistry } from '@tests/js/utils';
 import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,

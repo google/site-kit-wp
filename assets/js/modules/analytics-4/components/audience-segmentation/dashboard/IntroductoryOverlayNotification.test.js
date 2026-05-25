@@ -20,7 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mockLocation } from 'tests/js/mock-browser-utils';
 
 /**
  * Internal dependencies
@@ -36,6 +35,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notifications';
 import * as scrollUtils from '@/js/util/scroll';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,

@@ -118,6 +118,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '@tests/js/utils';
 import Component from '../components/Component';
 import LocalComponent from './LocalComponent';
 `,
@@ -475,6 +476,30 @@ import { useSelect } from 'googlesitekit-data';
  */
 import { useSelect } from 'googlesitekit-data';
 import LocalComponent from './LocalComponent';
+`,
+		},
+
+		// Unsorted internal aliases: `@/` should sort before `@tests/`.
+		{
+			code: `
+/**
+ * Internal dependencies
+ */
+import { createTestRegistry } from '@tests/js/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+`,
+			errors: [
+				{
+					message:
+						"Import from '@/js/googlesitekit/datastore/user/constants' should be sorted alphabetically (before '@tests/js/utils').",
+				},
+			],
+			output: `
+/**
+ * Internal dependencies
+ */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '@tests/js/utils';
 `,
 		},
 
