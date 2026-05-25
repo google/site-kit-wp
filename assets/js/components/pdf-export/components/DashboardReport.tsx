@@ -50,14 +50,12 @@ const styles = StyleSheet.create( {
 	},
 	body: {
 		flexGrow: 1,
-		justifyContent: 'flex-start',
 	},
 	bodyHeading: {
 		fontSize: 16,
 		marginBottom: 8,
 	},
 	bodyText: {
-		fontSize: 12,
 		lineHeight: 1.5,
 	},
 	footer: {
@@ -129,6 +127,7 @@ const DashboardReport: FC< DashboardReportProps > = ( {
 						</Text>
 					) : null }
 				</View>
+				{ /* TODO: Replace placeholder body with real section content in #12631. */ }
 				<View style={ styles.body }>
 					<Text style={ styles.bodyHeading }>
 						{ __( 'Site Kit Dashboard Report', 'google-site-kit' ) }

@@ -62,6 +62,7 @@ const LOADING_TIMEOUT_MS = 45 * 1000;
 const BUILDING_TIMEOUT_MS = 15 * 1000;
 const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
+// TODO: Replace with real data-loading progress in #12631.
 const LOADING_MOCK_PROGRESS = 35;
 
 interface State {
