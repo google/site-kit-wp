@@ -30,7 +30,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import EmailReportingErrorNotices from './EmailReportingErrorNotices';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -30,11 +30,8 @@ import {
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
 function Template() {
 	return (

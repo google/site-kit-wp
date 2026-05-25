@@ -27,12 +27,8 @@ import {
 	STRATEGY_DESKTOP,
 	STRATEGY_MOBILE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import {
-	freezeFetch,
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import DashboardPageSpeedWidget from './DashboardPageSpeedWidget';
 
 const url = fixtures.pagespeedMobile.loadingExperience.id;

@@ -37,7 +37,7 @@ import {
 	provideUserCapabilities,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import HelpMenu from './HelpMenu';
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );

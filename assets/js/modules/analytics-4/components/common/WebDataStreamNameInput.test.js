@@ -27,11 +27,7 @@ import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	act,
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import WebDataStreamNameInput from './WebDataStreamNameInput';
 
 describe( 'WebDataStreamNameInput', () => {

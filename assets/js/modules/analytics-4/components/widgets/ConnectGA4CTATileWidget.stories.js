@@ -32,8 +32,8 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

@@ -39,7 +39,7 @@ import {
 	provideModules,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import InfoNoticeWidget from '.';
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 

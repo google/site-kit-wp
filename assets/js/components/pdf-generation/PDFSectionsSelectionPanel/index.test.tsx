@@ -31,7 +31,7 @@ import {
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PDFSectionsSelectionPanel from './index';
 
 describe( 'PDFSectionsSelectionPanel', () => {

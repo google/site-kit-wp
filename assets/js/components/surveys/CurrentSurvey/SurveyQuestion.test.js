@@ -25,7 +25,7 @@ import {
 	singleQuestionOpenText,
 	singleQuestionSurveySingleSelect,
 } from '@/js/components/surveys/__fixtures__';
-import { render } from '../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import SurveyQuestion from './SurveyQuestion';
 
 describe( 'SurveyQuestion', () => {

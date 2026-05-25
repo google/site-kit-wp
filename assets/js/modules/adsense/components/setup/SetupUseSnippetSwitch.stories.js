@@ -25,8 +25,8 @@ import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
 
 const validSettings = {

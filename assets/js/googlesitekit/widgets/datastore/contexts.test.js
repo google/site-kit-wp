@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Null from '@/js/components/Null';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widget contexts', () => {

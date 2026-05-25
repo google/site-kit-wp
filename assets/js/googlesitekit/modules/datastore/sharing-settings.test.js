@@ -34,7 +34,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_MODULES } from './constants';
 
 describe( 'core/modules sharing-settings', () => {

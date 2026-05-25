@@ -32,7 +32,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import DashboardSharingSettings from '.';
 import { modules, roles, sharingSettings } from './__fixtures__';
 

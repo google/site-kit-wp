@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { createTestRegistry, render } from '../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import InternalServerError from './InternalServerError';
 
 describe( 'InternalServerError', () => {

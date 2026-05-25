@@ -26,16 +26,8 @@ import {
 	STRATEGY_DESKTOP,
 	STRATEGY_MOBILE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-} from '../../../../../../../tests/js/utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import DashboardPageSpeed from '.';
 
 const activeClass = 'mdc-tab--active';

@@ -37,7 +37,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ProductIDSubscriptionsNotification from './ProductIDSubscriptionsNotification';
 
 describe( 'ProductIDSubscriptionsNotification', () => {

@@ -24,8 +24,8 @@ import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import InfoNoticeWidget from '.';
 import { AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 

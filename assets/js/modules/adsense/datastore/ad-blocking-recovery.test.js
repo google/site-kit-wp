@@ -21,11 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
 describe( 'Ad Blocking Recovery Existing Tag store', () => {

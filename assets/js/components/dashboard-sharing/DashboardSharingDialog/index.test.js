@@ -40,7 +40,7 @@ import {
 	provideSiteConnection,
 	provideUserInfo,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import DashboardSharingDialog from '.';
 import {
 	modules,

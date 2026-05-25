@@ -29,7 +29,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -41,7 +41,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.

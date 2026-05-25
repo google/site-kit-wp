@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import settingsData from './../../../../storybook/__fixtures__/_googlesitekitLegacyData';
-import { provideModules, provideSiteInfo } from './../../../../tests/js/utils';
-import WithRegistrySetup from './../../../../tests/js/WithRegistrySetup';
 import { Grid } from './../../../js/material-components';
 import { CORE_SITE } from './../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from './../../googlesitekit/datastore/user/constants';

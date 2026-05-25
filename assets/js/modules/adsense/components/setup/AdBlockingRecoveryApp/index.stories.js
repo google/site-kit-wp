@@ -28,8 +28,8 @@ import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
-import { provideSiteInfo } from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdBlockingRecoveryApp from '.';
 
 function Template() {

@@ -22,8 +22,8 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdBlockerWarningWidget from './AdBlockerWarningWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'adBlockerWarning' )(

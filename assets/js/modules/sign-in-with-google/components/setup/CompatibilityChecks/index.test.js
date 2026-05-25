@@ -20,8 +20,8 @@
  * Internal dependencies
  */
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { render, waitFor } from '../../../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../../../tests/js/utils';
+import { render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import CompatibilityChecks from './index';
 
 describe( 'CompatibilityChecks', () => {

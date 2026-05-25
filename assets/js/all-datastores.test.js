@@ -24,7 +24,7 @@ import { omit } from 'lodash';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 
 const registry = createTestRegistry();
 const firstPartyStores = omit( registry.stores, 'core/data' );

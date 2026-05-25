@@ -24,7 +24,7 @@ import {
 	actHook as act,
 	createTestRegistry,
 	renderHook,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { useInViewSelect } from './useInViewSelect';
 
 describe( 'useInViewSelect', () => {

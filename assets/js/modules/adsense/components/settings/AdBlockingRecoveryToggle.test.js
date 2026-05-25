@@ -36,7 +36,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

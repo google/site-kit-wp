@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { act, render } from '../../../tests/js/test-utils';
+import { act, render } from '@tests/js/test-utils';
 import ToastNotice from './ToastNotice';
 
 describe( 'ToastNotice', () => {

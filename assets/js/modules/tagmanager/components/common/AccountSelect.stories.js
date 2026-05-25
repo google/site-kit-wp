@@ -21,7 +21,7 @@
  */
 import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AccountSelect from './AccountSelect';
 
 function Template( args ) {

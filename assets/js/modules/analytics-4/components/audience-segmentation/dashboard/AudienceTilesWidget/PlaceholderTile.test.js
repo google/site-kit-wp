@@ -25,11 +25,7 @@ import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import PlaceholderTile from './PlaceholderTile';
 
 describe( 'PlaceholderTile', () => {

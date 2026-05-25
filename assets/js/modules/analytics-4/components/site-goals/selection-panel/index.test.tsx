@@ -37,17 +37,13 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { mockBrowserScrolling } from '../../../../../../../tests/js/mock-browser-utils';
-import {
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
+import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
-} from '../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SiteGoalsSelectionPanel from '.';
 
 describe( 'SiteGoalsSelectionPanel', () => {

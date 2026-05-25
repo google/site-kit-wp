@@ -34,8 +34,8 @@ import {
 	provideModules,
 	provideSiteConnection,
 	provideUserInfo,
-} from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { modules, roles, sharingSettings } from './__fixtures__';
 import DashboardSharingSettings from './index';
 

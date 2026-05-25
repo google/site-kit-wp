@@ -44,7 +44,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 
 describe( 'ConnectGA4CTAWidget', () => {

@@ -27,10 +27,7 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util/status';
-import {
-	createTestRegistry,
-	subscribeUntil,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, subscribeUntil } from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 import {
 	INVARIANT_INVALID_ACCOUNT_ID,

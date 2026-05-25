@@ -29,8 +29,8 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/test-utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './SetupCTABanner';

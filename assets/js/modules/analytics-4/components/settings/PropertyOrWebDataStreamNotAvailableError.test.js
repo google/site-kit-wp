@@ -26,7 +26,7 @@ import {
 	freezeFetch,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
 
 const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;

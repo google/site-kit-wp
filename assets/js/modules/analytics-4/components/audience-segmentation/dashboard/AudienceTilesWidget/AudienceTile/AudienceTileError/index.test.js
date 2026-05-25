@@ -29,11 +29,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -41,7 +37,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import AudienceTileError from '.';
 
 jest.mock( 'react-use', () => ( {

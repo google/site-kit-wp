@@ -45,7 +45,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

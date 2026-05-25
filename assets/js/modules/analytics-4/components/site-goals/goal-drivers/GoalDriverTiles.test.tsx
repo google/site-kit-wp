@@ -24,15 +24,8 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import GoalDriverTiles from './GoalDriverTiles';
 import { GoalDriverComponentProps, GoalDriverTilesDriver } from './types';

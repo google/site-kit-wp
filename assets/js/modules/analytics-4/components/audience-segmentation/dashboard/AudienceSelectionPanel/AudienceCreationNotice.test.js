@@ -40,7 +40,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AudienceCreationNotice from './AudienceCreationNotice';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,

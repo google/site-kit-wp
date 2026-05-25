@@ -28,7 +28,7 @@ import {
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'modules/analytics-4 audience settings', () => {

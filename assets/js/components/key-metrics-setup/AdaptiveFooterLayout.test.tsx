@@ -19,11 +19,8 @@
 /**
  * Internal dependencies
  */
-import { act, render, waitFor } from '../../../../tests/js/test-utils';
-import {
-	getViewportHeight,
-	setViewportHeight,
-} from '../../../../tests/js/viewport-utils';
+import { act, render, waitFor } from '@tests/js/test-utils';
+import { getViewportHeight, setViewportHeight } from '@tests/js/viewport-utils';
 import AdaptiveFooterLayout from './AdaptiveFooterLayout';
 
 describe( 'AdaptiveFooterLayout', () => {

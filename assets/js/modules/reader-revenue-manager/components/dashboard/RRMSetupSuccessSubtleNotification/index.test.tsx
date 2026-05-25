@@ -60,7 +60,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from '.';
 
 jest.mock( '../../../../../hooks/useQueryArg' );

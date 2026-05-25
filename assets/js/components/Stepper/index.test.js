@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import Stepper from '.';
 import Step from './Step';
 

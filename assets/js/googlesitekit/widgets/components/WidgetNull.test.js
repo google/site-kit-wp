@@ -26,7 +26,7 @@ import {
 	provideModules,
 	provideUserCapabilities,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WidgetNull from './WidgetNull';
 
 describe( 'WidgetNull', () => {

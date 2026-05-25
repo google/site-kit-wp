@@ -25,7 +25,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user nonces', () => {

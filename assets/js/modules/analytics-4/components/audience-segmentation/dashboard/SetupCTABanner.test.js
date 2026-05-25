@@ -45,19 +45,19 @@ import { ANALYTICS_4_NOTIFICATIONS } from '@/js/modules/analytics-4/notification
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
-import { dismissItemEndpoint } from '../../../../../../../tests/js/mock-dismiss-item-endpoints';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	dismissPromptEndpoint,
 	dismissedPromptsEndpoint,
-} from '../../../../../../../tests/js/mock-dismiss-prompt-endpoints';
-import { mockSurveyEndpoints } from '../../../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-dismiss-prompt-endpoints';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	fireEvent,
 	render,
 	setEnabledFeatures,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -68,7 +68,7 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SetupCTABanner, {
 	AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION,
 } from './SetupCTABanner';

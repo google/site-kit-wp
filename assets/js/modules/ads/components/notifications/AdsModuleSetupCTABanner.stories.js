@@ -22,11 +22,8 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

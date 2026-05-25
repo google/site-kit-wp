@@ -42,7 +42,7 @@ import {
 	render,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './constants';
 import SyncErrorNotice from './SyncErrorNotice';
 

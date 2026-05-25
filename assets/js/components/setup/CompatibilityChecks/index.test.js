@@ -24,15 +24,12 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import {
-	render,
-	waitForElementToBeRemoved,
-} from '../../../../../tests/js/test-utils';
+import { render, waitForElementToBeRemoved } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { AMP_PROJECT_TEST_URL } from './constants';
 import CompatibilityChecks from './index';
 

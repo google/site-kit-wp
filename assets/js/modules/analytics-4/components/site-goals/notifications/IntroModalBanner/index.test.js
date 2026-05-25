@@ -25,10 +25,7 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	createTestRegistry,
-	render,
-} from '../../../../../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import IntroModal from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );

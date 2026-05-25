@@ -31,11 +31,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import RefocusableModalDialog from './RefocusableModalDialog';
 
 describe( 'RefocusableModalDialog', () => {

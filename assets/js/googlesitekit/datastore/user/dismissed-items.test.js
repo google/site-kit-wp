@@ -24,7 +24,7 @@ import {
 	freezeFetch,
 	muteFetch,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user dismissed-items', () => {

@@ -23,8 +23,8 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { SettingsDisconnectNote } from '@/js/modules/ads/components/settings';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideModules } from '../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConfirmDisconnect from './ConfirmDisconnect';
 
 function Template( args ) {

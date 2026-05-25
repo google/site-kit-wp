@@ -24,11 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	muteFetch,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch, untilResolved } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user expirable-items', () => {

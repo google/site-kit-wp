@@ -34,7 +34,7 @@ import {
 	muteFetch,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
 jest.mock( 'react-use', () => ( {
