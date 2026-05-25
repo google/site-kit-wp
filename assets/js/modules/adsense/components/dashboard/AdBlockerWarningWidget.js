@@ -26,9 +26,9 @@ import PropTypes from 'prop-types';
  */
 import { useSelect } from 'googlesitekit-data';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import whenActive from '@/js/util/when-active';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import whenActive from '@/js/util/when-active';
 
 function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
 	const isAdBlockerActive = useSelect( ( select ) =>

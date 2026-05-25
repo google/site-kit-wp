@@ -17,9 +17,13 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import WidgetContextRenderer from './WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	createTestRegistry,
@@ -28,7 +32,7 @@ import {
 	render,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
-import { Fragment } from '@wordpress/element';
+import WidgetContextRenderer from './WidgetContextRenderer';
 
 function WidgetComponent() {
 	return <div>Foo bar!</div>;

@@ -26,7 +26,11 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
@@ -34,12 +38,7 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 
 const SHOW_ERROR_MODAL_KEY = 'audience-tiles-show-error-modal';
 
@@ -63,7 +62,6 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		[ setValue ]
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const hasAnalyticsEditScope = useSelect(
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
@@ -85,12 +83,20 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		widgetArea: AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
 	} );
 
+	const [ , setAutoSubmit ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'autoSubmit'
+	);
+
+	const [ , setIsRetrying ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isRetrying'
+	);
+
 	const onCreateCustomDimension = useCallback(
 		( { isRetrying }: { isRetrying?: boolean } = {} ) => {
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				autoSubmit: true,
-				isRetrying,
-			} );
+			setAutoSubmit( true );
+			setIsRetrying( isRetrying );
 
 			if ( ! hasAnalyticsEditScope ) {
 				setPermissionScopeError( {
@@ -115,15 +121,15 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 			redirectURL,
 			errorRedirectURL,
 			setPermissionScopeError,
-			setValues,
+			setAutoSubmit,
+			setIsRetrying,
 		]
 	);
 
 	const onCancel = useCallback( () => {
-		setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-			autoSubmit: false,
-			isRetrying: false,
-		} );
+		setAutoSubmit( false );
+		setIsRetrying( false );
+
 		setSetupErrorCode( null );
 		clearPermissionScopeError();
 		clearActionError( 'createCustomDimension', [
@@ -137,10 +143,11 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		propertyID,
 		setSetupErrorCode,
 		setShowErrorModal,
-		setValues,
+		setAutoSubmit,
+		setIsRetrying,
 	] );
 
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
 	);

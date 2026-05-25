@@ -17,27 +17,17 @@
 /**
  * External dependencies
  */
-import {
-	test,
-	Response,
-	type Page,
-	type TestInfo,
-	type TestStepInfo,
-} from '@playwright/test';
+import { Page, Response, TestInfo, TestStepInfo, test } from '@playwright/test';
 
 /**
  * Internal dependencies
  */
 import { WordPressArgs } from './args';
-import {
-	WordPressDatabase,
-	getDbName,
-	type PHPErrorLogEntry,
-} from './database';
 import { WordPressCookies } from './cookies';
+import { PHPErrorLogEntry, WordPressDatabase, getDbName } from './database';
 import { errorLogIgnoreList } from './error-log-ignore-list';
-import { WordPressPlugins } from './plugins';
 import { Mailpit } from './mailpit';
+import { WordPressPlugins } from './plugins';
 
 /**
  * Represents a WordPress instance.

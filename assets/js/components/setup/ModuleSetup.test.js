@@ -19,6 +19,15 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../tests/js/mock-browser-utils';
 import {
 	act,
 	fireEvent,
@@ -32,16 +41,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import ModuleSetup from './ModuleSetup';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import * as tracking from '@/js/util/tracking';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -58,6 +58,9 @@ describe( 'ModuleSetup', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );

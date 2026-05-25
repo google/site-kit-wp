@@ -19,19 +19,19 @@
 /**
  * WordPress dependencies
  */
+import { usePrevious } from '@wordpress/compose';
 import {
 	useCallback,
-	useState,
 	useEffect,
 	useMemo,
 	useRef,
+	useState,
 } from '@wordpress/element';
-import { usePrevious } from '@wordpress/compose';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useSelect } from 'googlesitekit-data';
 import {
 	EFFECTIVE_SELECTION,
 	KEY_METRICS_GROUP_CURRENT,
@@ -40,21 +40,20 @@ import {
 	KEY_METRICS_SELECTION_PANEL_OPENED_KEY,
 	UNSTAGED_SELECTION,
 } from '@/js/components/KeyMetrics/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import useCurrentlyActiveEvents from '@/js/components/KeyMetrics/hooks/useCurrentlyActiveEvents';
+import useFilteredKeyMetrics from '@/js/components/KeyMetrics/hooks/useFilteredKeyMetrics';
+import useKeyMetricsGroups from '@/js/components/KeyMetrics/hooks/useKeyMetricsGroups';
+import useNewBadgeEvents from '@/js/components/KeyMetrics/hooks/useNewBadgeEvents';
+import useOverflowingTabs from '@/js/components/KeyMetrics/hooks/useOverflowingTabs';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useFormValue from '@/js/hooks/useFormValue';
-import useCurrentlyActiveEvents from '@/js/components/KeyMetrics/hooks/useCurrentlyActiveEvents';
-import useKeyMetricsGroups from '@/js/components/KeyMetrics/hooks/useKeyMetricsGroups';
-import useFilteredKeyMetrics from '@/js/components/KeyMetrics/hooks/useFilteredKeyMetrics';
-import useOverflowingTabs from '@/js/components/KeyMetrics/hooks/useOverflowingTabs';
-import useNewBadgeEvents from '@/js/components/KeyMetrics/hooks/useNewBadgeEvents';
-import TabItems from './TabItems';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import TabContent from './TabContent';
+import TabItems from './TabItems';
 
 const emptyArray = Object.freeze( [] );
 
@@ -70,16 +69,20 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 	const breakpoint = useBreakpoint();
 	const isMobileBreakpoint = breakpoint === BREAKPOINT_SMALL;
 
-	const selectedMetrics = useFormValue(
+	const [ selectedMetrics ] = useFormValue(
 		KEY_METRICS_SELECTION_FORM,
 		KEY_METRICS_SELECTED
 	);
-	const effectiveSelection =
-		useFormValue( KEY_METRICS_SELECTION_FORM, EFFECTIVE_SELECTION ) ||
-		emptyArray;
-	const unstagedSelection =
-		useFormValue( KEY_METRICS_SELECTION_FORM, UNSTAGED_SELECTION ) ||
-		emptyArray;
+	const [ effectiveSelectionValue, setEffectiveSelection ] = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		EFFECTIVE_SELECTION
+	);
+	const effectiveSelection = effectiveSelectionValue || emptyArray;
+	const [ unstagedSelectionValue, setUnstagedSelection ] = useFormValue(
+		KEY_METRICS_SELECTION_FORM,
+		UNSTAGED_SELECTION
+	);
+	const unstagedSelection = unstagedSelectionValue || emptyArray;
 
 	const isUserInputCompleted = useSelect( ( select ) =>
 		select( CORE_USER ).isUserInputCompleted()
@@ -139,18 +142,18 @@ export default function ChipTabGroup( { allMetricItems, savedItemSlugs } ) {
 			conversionReportingEventWidgets,
 		} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const resetUnstagedSelection = useCallback( () => {
-		setValues( KEY_METRICS_SELECTION_FORM, {
-			[ KEY_METRICS_SELECTED ]: selectedMetrics,
-			[ EFFECTIVE_SELECTION ]: [
-				...effectiveSelection,
-				...unstagedSelection,
-			],
-			[ UNSTAGED_SELECTION ]: [],
-		} );
-	}, [ selectedMetrics, effectiveSelection, unstagedSelection, setValues ] );
+		setEffectiveSelection( [
+			...effectiveSelection,
+			...unstagedSelection,
+		] );
+		setUnstagedSelection( [] );
+	}, [
+		effectiveSelection,
+		unstagedSelection,
+		setEffectiveSelection,
+		setUnstagedSelection,
+	] );
 
 	const onChipChange = useCallback(
 		( slug, index ) => {

@@ -19,49 +19,47 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 import { type ComponentType } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useCallback, useRef } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { trackEvent } from '@/js/util';
-import { getErrorMessageForAnswer } from '@/js/components/user-input/util/validation';
-import useViewContext from '@/js/hooks/useViewContext';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import LoadingWrapper from '@/js/components/LoadingWrapper';
+import {
+	SIZE_MEDIUM,
+	TYPE_BODY,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_MAX_ANSWERS,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
-import LoadingWrapper from '@/js/components/LoadingWrapper';
+import { getErrorMessageForAnswer } from '@/js/components/user-input/util/validation';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
-import {
-	SIZE_MEDIUM,
-	TYPE_BODY,
-	TYPE_LABEL,
-} from '@/js/components/Typography/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 import AnswerQuestionButton from './AnswerQuestionButton';
 import EditLink from './EditLink';
 import PreviewContent from './PreviewContent';
 
 type UserInputQuestionSlug = keyof typeof USER_INPUT_MAX_ANSWERS;
-type FocusableElement = {
-	focus?: () => void;
-};
+type EditLinkElement = HTMLAnchorElement | HTMLButtonElement;
 
 interface UserInputPreviewGroupProps {
 	slug: UserInputQuestionSlug;
@@ -101,13 +99,13 @@ export default function UserInputPreviewGroup( {
 			userInputSettings
 		);
 	}, [] );
-	const savedPurposeAnswer = useFormValue(
+	const [ savedPurposeAnswer ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
 	const previousPurposeAnswer = usePrevious( savedPurposeAnswer );
 
-	const editButtonRef = useRef< FocusableElement | null >( null );
+	const editButtonRef = useRef< EditLinkElement >( null );
 
 	useEffect( () => {
 		// If user purpose is opened currently saved value was snapshot
@@ -179,6 +177,11 @@ export default function UserInputPreviewGroup( {
 		resetUserInputSettings,
 		toggleEditMode,
 	] );
+
+	const handleOnAnswerQuestionClick = useCallback( () => {
+		trackEvent( gaEventCategory, 'select_answer', slug );
+		handleOnEditClick();
+	}, [ gaEventCategory, handleOnEditClick, slug ] );
 
 	const errorMessage = getErrorMessageForAnswer(
 		values,
@@ -252,7 +255,7 @@ export default function UserInputPreviewGroup( {
 			{ shouldUseAnswerQuestionCTA && ! isEditing && (
 				<AnswerQuestionButton
 					isDisabled={ isEditControlDisabled }
-					onClick={ handleOnEditClick }
+					onClick={ handleOnAnswerQuestionClick }
 				/>
 			) }
 

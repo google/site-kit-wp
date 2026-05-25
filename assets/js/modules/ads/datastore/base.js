@@ -20,11 +20,11 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { MODULES_ADS } from './constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS } from './constants';
 import {
-	submitChanges,
 	rollbackChanges,
+	submitChanges,
 	validateCanSubmitChanges,
 	validateHaveSettingsChanged,
 } from './settings';

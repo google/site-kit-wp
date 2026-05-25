@@ -30,10 +30,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import {
+	ACTIVATION_STEP_IN_PROGRESS,
+	ACTIVATION_STEP_SETUP,
+	ACTIVATION_STEP_SUCCESS,
+	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
+} from '@/js/modules/analytics-4/constants';
 import {
 	EDIT_SCOPE,
 	ENHANCED_MEASUREMENT_ENABLED,
@@ -41,18 +49,9 @@ import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	ACTIVATION_STEP_IN_PROGRESS,
-	ACTIVATION_STEP_SETUP,
-	ACTIVATION_STEP_SUCCESS,
-	ENHANCED_MEASUREMENT_ACTIVATION_BANNER_TOOLTIP_STATE_KEY,
-} from '@/js/modules/analytics-4/constants';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip/useShowTooltip';
 import ProcessingBanner from './ProcessingBanner';
 import SetupBanner from './SetupBanner';
 import SuccessBanner from './SuccessBanner';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function EnhancedMeasurementActivationBanner( {
 	id,
@@ -66,9 +65,16 @@ export default function EnhancedMeasurementActivationBanner( {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_SETUP,
+		'autoSubmit'
+	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setEnhancedMeasurementEnabled ] = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_ENABLED
+	);
+
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS_4 );
 	const { unpinNotification } = useDispatch( CORE_NOTIFICATIONS );
 
@@ -85,9 +91,7 @@ export default function EnhancedMeasurementActivationBanner( {
 	const handleSubmit = useCallback( async () => {
 		setIsSaving( true );
 
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-		} );
+		setEnhancedMeasurementEnabled( true );
 
 		const { error } = await submitChanges();
 
@@ -102,14 +106,19 @@ export default function EnhancedMeasurementActivationBanner( {
 		await unpinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
 
 		setStep( ACTIVATION_STEP_SUCCESS );
-	}, [ id, setValues, submitChanges, unpinNotification ] );
+	}, [
+		id,
+		setEnhancedMeasurementEnabled,
+		submitChanges,
+		unpinNotification,
+	] );
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
 	useEffect( () => {
 		async function handleAutoSubmit() {
 			// Auto-submit should only auto-invoke once.
-			setValues( FORM_SETUP, { autoSubmit: false } );
+			setAutoSubmit( false );
 
 			setStep( ACTIVATION_STEP_IN_PROGRESS );
 
@@ -119,7 +128,7 @@ export default function EnhancedMeasurementActivationBanner( {
 		if ( autoSubmit && hasEditScope ) {
 			handleAutoSubmit();
 		}
-	}, [ hasEditScope, setValues, handleSubmit, autoSubmit ] );
+	}, [ hasEditScope, setAutoSubmit, handleSubmit, autoSubmit ] );
 
 	if ( step === ACTIVATION_STEP_SETUP ) {
 		return (

@@ -31,23 +31,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
-import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
-import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import useFormValue from '@/js/hooks/useFormValue';
-import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
+import AudienceTilePagesMetricContent from './AudienceTilePagesMetricContent';
 
 export default function AudienceTilePagesMetric( {
 	audienceSlug,
@@ -76,12 +76,12 @@ export default function AudienceTilePagesMetric( {
 		)
 	);
 
-	const isRetryingCustomDimensionCreate = useFormValue(
+	const [ isRetryingCustomDimensionCreate ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isRetrying'
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);
@@ -90,7 +90,7 @@ export default function AudienceTilePagesMetric( {
 		select( CORE_SITE ).getSetupErrorCode()
 	);
 
-	const isAutoCreatingCustomDimensionsForAudience = useFormValue(
+	const [ isAutoCreatingCustomDimensionsForAudience ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'isAutoCreatingCustomDimensionsForAudience'
 	);

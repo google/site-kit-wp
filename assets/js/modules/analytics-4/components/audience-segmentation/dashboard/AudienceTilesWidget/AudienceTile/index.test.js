@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useIntersection as mockUseIntersection } from 'react-use';
 import { getByText as domGetByText } from '@testing-library/dom';
+import { useIntersection as mockUseIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -30,8 +30,21 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import AudienceTile from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { getPreviousDate } from '@/js/util';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	fireEvent,
@@ -46,24 +59,11 @@ import {
 	waitForDefaultTimeouts,
 	waitForTimeouts,
 } from '../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
-import {
-	MODULES_ANALYTICS_4,
-	DATE_RANGE_OFFSET,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
-import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	getViewportWidth,
 	setViewportWidth,
-} from '../../../../../../../../../tests/js/viewport-width-utils';
-import { getPreviousDate } from '@/js/util';
+} from '../../../../../../../../../tests/js/viewport-utils';
+import AudienceTile from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

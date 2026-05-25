@@ -19,13 +19,6 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	provideUserAuthentication,
-	provideUserCapabilities,
-	render,
-} from '../../../../../../tests/js/test-utils';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import {
@@ -35,6 +28,13 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	createTestRegistry,
+	provideModules,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 describe( 'ConnectGA4CTATileWidget', () => {

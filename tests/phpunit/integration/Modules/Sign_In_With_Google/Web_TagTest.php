@@ -156,4 +156,69 @@ class Web_TagTest extends TestCase {
 		$this->assertTrue( has_action( 'wp_footer' ), 'wp_footer action should be registered.' );
 		$this->assertTrue( has_action( 'login_footer' ), 'login_footer action should be registered.' );
 	}
+
+	public function test_render_on_wp_footer_during_preview_renders_button_and_skips_callbacks() {
+		global $wp_query;
+
+		remove_all_actions( 'wp_footer' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		$this->web_tag->set_settings(
+			array(
+				'clientID'      => 'test-client-id.app.googleusercontent.com',
+				'text'          => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+				'theme'         => Settings::THEME_LIGHT['value'],
+				'shape'         => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled' => true,
+			)
+		);
+		$this->web_tag->register();
+
+		$previous_preview     = $wp_query->is_preview;
+		$wp_query->is_preview = true;
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$wp_query->is_preview = $previous_preview;
+
+		// Button render loop fires on preview even when the admin is logged in.
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should fire on preview pages even when the user is logged in.' );
+		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'Render loop should call renderButton on preview pages.' );
+		// handleCredentialResponse body is wrapped, so no credential POST lands in the output.
+		$this->assertStringNotContainsString( "fetch('http://example.org/wp-login.php?action=googlesitekit_auth'", $output, 'Credential POST should not be rendered on preview pages.' );
+		// One Tap prompt is suppressed on preview pages.
+		$this->assertStringNotContainsString( 'google.accounts.id.prompt()', $output, 'One Tap should not be invoked on preview pages.' );
+	}
+
+	public function test_render_on_wp_footer_during_preview_for_logged_out_visitor_skips_one_tap() {
+		global $wp_query;
+
+		remove_all_actions( 'wp_footer' );
+
+		// A logged-out visitor would otherwise see One Tap when oneTapEnabled is true.
+		// The `! is_preview()` clause on $should_show_one_tap_prompt is what suppresses it here.
+		wp_set_current_user( 0 );
+
+		$this->web_tag->set_settings(
+			array(
+				'clientID'      => 'test-client-id.app.googleusercontent.com',
+				'text'          => Settings::TEXT_SIGN_IN_WITH_GOOGLE['value'],
+				'theme'         => Settings::THEME_LIGHT['value'],
+				'shape'         => Settings::SHAPE_RECTANGULAR['value'],
+				'oneTapEnabled' => true,
+			)
+		);
+		$this->web_tag->register();
+
+		$previous_preview     = $wp_query->is_preview;
+		$wp_query->is_preview = true;
+
+		$output = $this->capture_action( 'wp_footer' );
+
+		$wp_query->is_preview = $previous_preview;
+
+		$this->assertStringNotContainsString( 'google.accounts.id.prompt()', $output, 'One Tap should not be invoked on preview pages, even when the visitor is logged out.' );
+	}
 }

@@ -19,21 +19,21 @@
 /**
  * Internal dependencies
  */
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
-	provideModuleRegistrations,
 } from '../../../tests/js/utils';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/constants';
 import { MODULE_SLUG_ADS } from './ads/constants';
 import { MODULE_SLUG_ADSENSE } from './adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from './analytics-4/constants';
-import { MODULE_SLUG_TAGMANAGER } from './tagmanager/constants';
-import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from './pagespeed-insights/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from './reader-revenue-manager/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from './search-console/constants';
+import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from './sign-in-with-google/constants';
+import { MODULE_SLUG_TAGMANAGER } from './tagmanager/constants';
 
 describe( 'Module Features', () => {
 	let registry;

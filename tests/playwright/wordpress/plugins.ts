@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { test, type TestInfo } from '@playwright/test';
+import { TestInfo, test } from '@playwright/test';
 import { type Connection, type RowDataPacket } from 'mysql2/promise';
 
 /**

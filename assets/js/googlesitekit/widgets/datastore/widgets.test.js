@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { render } from '../../../../../tests/js/test-utils';
-import { CORE_WIDGETS } from './constants';
 import Null from '@/js/components/Null';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { render } from '../../../../../tests/js/test-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widgets', () => {
 	let registry;
@@ -214,6 +214,28 @@ describe( 'core/widgets Widgets', () => {
 				const { Component } = store.getState().widgets[ slug ];
 				const { container } = render( <Component>world</Component> );
 				expect( container.firstChild ).toMatchSnapshot();
+			} );
+
+			it( 'should store the pdf field unchanged in widget state', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
+					Component: WidgetComponent,
+					pdf,
+				} );
+
+				expect( store.getState().widgets[ slug ].pdf ).toBe( pdf );
 			} );
 
 			it( 'should not overwrite an existing widget', () => {
@@ -544,6 +566,49 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets[ 1 ].slug ).toBe( 'TestWidget1' );
 				expect( widgets[ 2 ].slug ).toBe( 'TestWidget2' );
 			} );
+
+			it( 'should return the pdf field on widgets in the area', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'dashboard-header', {
+						title: 'Dashboard Header',
+						style: 'boxes',
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component() {
+							return <div>Hello test.</div>;
+						},
+						pdf,
+					} );
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget', 'dashboard-header' );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header' );
+
+				expect( widgets ).toHaveLength( 1 );
+				expect( widgets[ 0 ].pdf ).toBe( pdf );
+			} );
 		} );
 
 		describe( 'isWidgetActive', () => {
@@ -721,6 +786,35 @@ describe( 'core/widgets Widgets', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getWidget( 'NotRealWidget' )
 				).toBe( null );
+			} );
+
+			it( 'returns the pdf field on the registered widget', () => {
+				function PDFComponent() {
+					return null;
+				}
+				// eslint-disable-next-line require-await
+				async function getData() {
+					return { data: {} };
+				}
+				const pdf = {
+					Component: PDFComponent,
+					getData,
+					label: 'Test Widget',
+				};
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component() {
+							return <div>Hello test.</div>;
+						},
+						pdf,
+					} );
+
+				expect(
+					registry.select( CORE_WIDGETS ).getWidget( 'TestWidget' )
+						.pdf
+				).toBe( pdf );
 			} );
 		} );
 	} );

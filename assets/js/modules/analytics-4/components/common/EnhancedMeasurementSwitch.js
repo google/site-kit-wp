@@ -32,20 +32,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
 import { ProgressBar, Switch } from 'googlesitekit-components';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import SupportLink from '@/js/components/SupportLink';
+import useFormValue from '@/js/hooks/useFormValue';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER,
 } from '@/js/modules/analytics-4/datastore/constants';
-import SupportLink from '@/js/components/SupportLink';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
 import Tick from '@/svg/icons/tick.svg';
-import useFormValue from '@/js/hooks/useFormValue';
-import useQueryArg from '@/js/hooks/useQueryArg';
 
 export default function EnhancedMeasurementSwitch( {
 	className,
@@ -56,21 +54,20 @@ export default function EnhancedMeasurementSwitch( {
 	isEnhancedMeasurementAlreadyEnabled = false,
 	showTick = false,
 } ) {
-	const isEnhancedMeasurementEnabled = useFormValue(
-		formName,
-		ENHANCED_MEASUREMENT_ENABLED
+	const [ isEnhancedMeasurementEnabled, setIsEnhancedMeasurementEnabled ] =
+		useFormValue( formName, ENHANCED_MEASUREMENT_ENABLED );
+	const [ , setShouldDismissActivationBanner ] = useFormValue(
+		ENHANCED_MEASUREMENT_FORM,
+		ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER
 	);
 
 	const viewContext = useViewContext();
-	const { setValues } = useDispatch( CORE_FORMS );
 
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 	const isInitialSetupFlow = !! showProgress;
 
 	const handleClick = useCallback( () => {
-		setValues( formName, {
-			[ ENHANCED_MEASUREMENT_ENABLED ]: ! isEnhancedMeasurementEnabled,
-		} );
+		setIsEnhancedMeasurementEnabled( ! isEnhancedMeasurementEnabled );
 
 		trackEvent(
 			`${ viewContext }_analytics`,
@@ -83,19 +80,16 @@ export default function EnhancedMeasurementSwitch( {
 
 		onClick?.();
 	}, [
-		formName,
 		isEnhancedMeasurementEnabled,
 		onClick,
-		setValues,
+		setIsEnhancedMeasurementEnabled,
 		viewContext,
 	] );
 
 	useMount( () => {
 		// Ensure the Enhanced Measurement activation banner won't be shown if we've updated the setting
 		// via the switch.
-		setValues( ENHANCED_MEASUREMENT_FORM, {
-			[ ENHANCED_MEASUREMENT_SHOULD_DISMISS_ACTIVATION_BANNER ]: true,
-		} );
+		setShouldDismissActivationBanner( true );
 	} );
 
 	return (

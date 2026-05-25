@@ -17,22 +17,25 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
-import InfoTooltip from '@/js/components/InfoTooltip';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import ReportError from '@/js/components/ReportError';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
+import GoalTile from './GoalTile';
 
 export interface TileProps {
 	className?: string;
@@ -41,6 +44,8 @@ export interface TileProps {
 	infoTooltip?: ReactNode;
 	currentValue: number;
 	previousValue: number;
+	loading?: boolean;
+	error?: unknown;
 	format: {
 		style: 'percent' | 'decimal';
 		signDisplay?: 'never' | 'always';
@@ -56,6 +61,8 @@ export const Tile: FC< TileProps > = ( {
 	infoTooltip,
 	currentValue,
 	previousValue,
+	loading = false,
+	error,
 	format,
 	primary,
 } ) => {
@@ -65,27 +72,33 @@ export const Tile: FC< TileProps > = ( {
 	);
 
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-site-goals-tile',
-				className,
-				{
-					'googlesitekit-site-goals-tile--primary': primary,
-					'googlesitekit-site-goals-tile--primary__positive':
-						primary && currentValue > previousValue,
-					'googlesitekit-site-goals-tile--primary__negative':
-						primary && currentValue < previousValue,
-				}
-			) }
+		<GoalTile
+			baseClassName="googlesitekit-site-goals-tile"
+			className={ classnames( className, {
+				'googlesitekit-site-goals-tile--primary': primary,
+				'googlesitekit-site-goals-tile--primary__positive':
+					primary && currentValue > previousValue,
+				'googlesitekit-site-goals-tile--primary__negative':
+					primary && currentValue < previousValue,
+			} ) }
+			title={ title }
+			infoTooltip={ infoTooltip }
 		>
-			<div className="googlesitekit-site-goals-tile__inner">
-				<div className="googlesitekit-site-goals-tile__header">
-					<h3 className="googlesitekit-site-goals-tile__title">
-						{ title }
-					</h3>
-					<InfoTooltip title={ infoTooltip } />
+			{ loading && (
+				<div className="googlesitekit-site-goals-tile__loading">
+					<PreviewBlock width="100%" height="24px" />
+					<PreviewBlock width="100%" height="16px" />
 				</div>
-				<div className="googlesitekit-site-goals-tile__body">
+			) }
+
+			{ ! loading && !! error && (
+				<div className="googlesitekit-site-goals-tile__error">
+					<ReportError moduleSlug="analytics-4" error={ error } />
+				</div>
+			) }
+
+			{ ! loading && ! error && (
+				<Fragment>
 					<div className="googlesitekit-site-goals-tile__metric-container">
 						<div className="googlesitekit-site-goals-tile__metric">
 							{ numFmt( currentValue, format ) }
@@ -112,8 +125,8 @@ export const Tile: FC< TileProps > = ( {
 							</p>
 						) }
 					</div>
-				</div>
-			</div>
-		</div>
+				</Fragment>
+			) }
+		</GoalTile>
 	);
 };

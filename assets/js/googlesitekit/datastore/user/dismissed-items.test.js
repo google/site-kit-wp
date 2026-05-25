@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
 	untilResolved,
 } from '../../../../../tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user dismissed-items', () => {
 	const fetchDismissedItems = new RegExp(

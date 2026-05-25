@@ -19,27 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 
 export default function UnsatisfiedScopesAlertGTE( { id, Notification } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
-	const temporaryPersistedPermissionsError = useFormValue(
+	const [ temporaryPersistedPermissionsError ] = useFormValue(
 		FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 		'permissionsError'
 	);

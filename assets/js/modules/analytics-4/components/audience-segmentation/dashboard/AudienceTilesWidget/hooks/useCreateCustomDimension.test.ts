@@ -29,6 +29,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import {
 	actHook,
 	createTestRegistry,
@@ -38,17 +49,6 @@ import {
 	renderHook,
 } from '../../../../../../../../../tests/js/test-utils';
 import useCreateCustomDimension from './useCreateCustomDimension';
-import {
-	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 describe( 'useCreateCustomDimension', () => {
 	let registry: WPDataRegistry;

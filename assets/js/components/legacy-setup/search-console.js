@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -26,8 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,10 +37,10 @@ import {
 	Select,
 	TextField,
 } from 'googlesitekit-components';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { trackEvent } from '@/js/util';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { trackEvent } from '@/js/util';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -94,9 +92,9 @@ class SearchConsole extends Component {
 
 				// We found exact match, continue the process in the background.
 				if ( properties.length === 1 ) {
-					await this.insertPropertyToSearchConsole(
-						properties[ 0 ].siteURL
-					);
+					await this.insertPropertyToSearchConsole( {
+						siteURL: properties[ 0 ].siteURL,
+					} );
 
 					// We have everything we need here. go to next step.
 					this.props.searchConsoleSetup( properties[ 0 ].siteURL );
@@ -146,10 +144,11 @@ class SearchConsole extends Component {
 	 *
 	 * @since 1.3.0
 	 *
-	 * @param {string}  siteURL The siteURL for the property.
-	 * @param {boolean} isNew   Whether siteURL is for a new property.
+	 * @param {Object}  options         Options object.
+	 * @param {string}  options.siteURL The siteURL for the property.
+	 * @param {boolean} options.isNew   Whether siteURL is for a new property.
 	 */
-	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
+	async insertPropertyToSearchConsole( { siteURL, isNew = false } ) {
 		await set( 'modules', MODULE_SLUG_SEARCH_CONSOLE, 'site', { siteURL } );
 
 		if ( isNew ) {
@@ -171,10 +170,10 @@ class SearchConsole extends Component {
 
 		( async () => {
 			try {
-				await this.insertPropertyToSearchConsole(
-					selectedURL,
-					errorCode === 'no_property_matched'
-				);
+				await this.insertPropertyToSearchConsole( {
+					siteURL: selectedURL,
+					isNew: errorCode === 'no_property_matched',
+				} );
 
 				setErrorMessage( '' );
 				this.props.searchConsoleSetup( selectedURL );

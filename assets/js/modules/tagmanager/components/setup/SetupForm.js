@@ -24,38 +24,37 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button, SpinnerButton } from 'googlesitekit-components';
-import {
-	MODULES_TAGMANAGER,
-	FORM_SETUP,
-	EDIT_SCOPE,
-	SETUP_MODE_WITH_ANALYTICS,
-} from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { isPermissionScopeError } from '@/js/util/errors';
-import { setItem } from '@/js/googlesitekit/api/cache';
+import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
-	AccountSelect,
 	AMPContainerSelect,
+	AccountSelect,
 	ContainerNames,
 	FormInstructions,
-	WebContainerSelect,
 	TagCheckProgress,
+	WebContainerSelect,
 } from '@/js/modules/tagmanager/components/common';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+	SETUP_MODE_WITH_ANALYTICS,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { isPermissionScopeError } from '@/js/util/errors';
 import SetupErrorNotice from './SetupErrorNotice';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) =>
@@ -74,14 +73,23 @@ export default function SetupForm( { finishSetup } ) {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
-	const initialAutoSubmit = useFormValue( FORM_SETUP, 'autoSubmit' );
-	const initialSubmitMode = useFormValue( FORM_SETUP, 'submitMode' );
+	const [ initialAutoSubmit, setAutoSubmit ] = useFormValue(
+		FORM_SETUP,
+		'autoSubmit'
+	);
+	const [ initialSubmitMode, setSubmitMode ] = useFormValue(
+		FORM_SETUP,
+		'submitMode'
+	);
 
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 
-	const submitInProgress = useFormValue( FORM_SETUP, 'submitInProgress' );
+	const [ submitInProgress, setSubmitInProgress ] = useFormValue(
+		FORM_SETUP,
+		'submitInProgress'
+	);
 	const isSaving = useSelect(
 		( select ) =>
 			select( MODULES_TAGMANAGER ).isDoingSubmitChanges() ||
@@ -95,7 +103,6 @@ export default function SetupForm( { finishSetup } ) {
 	const [ isSavingWithAnalytics, setIsSavingWithAnalytics ] =
 		useState( false );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
 	const submitForm = useCallback(
@@ -108,12 +115,13 @@ export default function SetupForm( { finishSetup } ) {
 			}
 			// We'll use form state to persist the chosen submit choice
 			// in order to preserve support for auto-submit.
-			setValues( FORM_SETUP, { submitMode, submitInProgress: true } );
+			setSubmitMode( submitMode );
+			setSubmitInProgress( true );
 
 			try {
 				await throwOnError( () => submitChanges() );
 				// If submitChanges was successful, disable autoSubmit (in case it was restored).
-				setValues( FORM_SETUP, { autoSubmit: false } );
+				setAutoSubmit( false );
 
 				// If submitting with Analytics setup, and Analytics is not active,
 				// activate it, and navigate to its reauth/setup URL to proceed with its setup.
@@ -140,18 +148,20 @@ export default function SetupForm( { finishSetup } ) {
 				}
 			} catch ( err ) {
 				if ( isPermissionScopeError( err ) ) {
-					setValues( FORM_SETUP, { autoSubmit: true } );
+					setAutoSubmit( true );
 				}
 			}
 			// Mark the submit as no longer in progress in all cases.
-			setValues( FORM_SETUP, { submitInProgress: false } );
+			setSubmitInProgress( false );
 		},
 		[
 			finishSetup,
 			analyticsModuleActive,
 			activateModule,
 			submitChanges,
-			setValues,
+			setSubmitInProgress,
+			setAutoSubmit,
+			setSubmitMode,
 		]
 	);
 

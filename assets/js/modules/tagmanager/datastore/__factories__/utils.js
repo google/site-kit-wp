@@ -21,8 +21,8 @@
  */
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import {
-	buildLiveContainerVersionWeb,
 	buildLiveContainerVersionAMP,
+	buildLiveContainerVersionWeb,
 } from './builders';
 
 export function parseLiveContainerVersionIDs(

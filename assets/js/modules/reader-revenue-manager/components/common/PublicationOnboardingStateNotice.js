@@ -25,8 +25,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useRefocus } from '@/js/hooks/useRefocus';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
@@ -34,11 +38,6 @@ import {
 	SYNC_PUBLICATION,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useRefocus } from '@/js/hooks/useRefocus';
-import Notice from '@/js/components/Notice';
-import useFormValue from '@/js/hooks/useFormValue';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const { PENDING_VERIFICATION, ONBOARDING_ACTION_REQUIRED } =
 	PUBLICATION_ONBOARDING_STATES;
@@ -67,16 +66,13 @@ export default function PublicationOnboardingStateNotice() {
 		} )
 	);
 
-	const shouldSyncPublicationValue = useFormValue(
-		READER_REVENUE_MANAGER_NOTICES_FORM,
-		SYNC_PUBLICATION
-	);
+	const [ shouldSyncPublicationValue, setShouldSyncPublicationValue ] =
+		useFormValue( READER_REVENUE_MANAGER_NOTICES_FORM, SYNC_PUBLICATION );
 
 	const shouldSyncPublication =
 		shouldSyncPublicationValue &&
 		actionableOnboardingStates.includes( onboardingState );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { syncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
 	);
@@ -87,16 +83,14 @@ export default function PublicationOnboardingStateNotice() {
 
 	const onCTAClick = useCallback( () => {
 		// Set publication data to be reset when user re-focuses window.
-		setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
-			[ SYNC_PUBLICATION ]: true,
-		} );
+		setShouldSyncPublicationValue( true );
 
 		trackEvent(
 			`${ viewContext }_rrm-onboarding-state-notification`,
 			'confirm_notification',
 			onboardingState
 		);
-	}, [ onboardingState, setValues, viewContext ] );
+	}, [ onboardingState, setShouldSyncPublicationValue, viewContext ] );
 
 	const syncPublication = useCallback( () => {
 		if ( ! shouldSyncPublication ) {

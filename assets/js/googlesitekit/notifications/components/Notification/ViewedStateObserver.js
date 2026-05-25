@@ -30,8 +30,8 @@ import { useEffect, useRef } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import useLatestIntersection from '@/js/hooks/useLatestIntersection';
 import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
+import useLatestIntersection from '@/js/hooks/useLatestIntersection';
 
 export default function ViewedStateObserver( { id, observeRef, threshold } ) {
 	const intersectionEntry = useLatestIntersection( observeRef, {

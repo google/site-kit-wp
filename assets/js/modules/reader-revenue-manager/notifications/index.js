@@ -24,37 +24,22 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
-	MODULES_READER_REVENUE_MANAGER,
-	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
-	PUBLICATION_ONBOARDING_STATES,
-	CONTENT_POLICY_STATES,
-	PENDING_POLICY_VIOLATION_STATES,
-	ACTIVE_POLICY_VIOLATION_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	ReaderRevenueManagerSetupCTABanner,
-	RRMSetupSuccessSubtleNotification,
-	PolicyViolationNotification,
-} from '@/js/modules/reader-revenue-manager/components/dashboard';
-import {
-	NOTIFICATION_GROUPS,
 	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import ProductIDContributionsNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ProductIDContributionsNotification';
+import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import {
-	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
-	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
-	RRM_SETUP_NOTIFICATION_ID,
-	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
-	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
-	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
-	MODULE_SLUG_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/constants';
+	PolicyViolationNotification,
+	RRMSetupSuccessSubtleNotification,
+	ReaderRevenueManagerSetupCTABanner,
+} from '@/js/modules/reader-revenue-manager/components/dashboard';
+import ProductIDContributionsNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ProductIDContributionsNotification';
 import ProductIDSubscriptionsNotification from '@/js/modules/reader-revenue-manager/components/dashboard/ProductIDSubscriptionsNotification';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
@@ -62,9 +47,24 @@ import PublicationApprovedOverlayNotification, {
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
+import {
+	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
+	RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID,
+	RRM_SETUP_NOTIFICATION_ID,
+	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
+} from '@/js/modules/reader-revenue-manager/constants';
+import {
+	ACTIVE_POLICY_VIOLATION_STATES,
+	CONTENT_POLICY_STATES,
+	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
+	MODULES_READER_REVENUE_MANAGER,
+	PENDING_POLICY_VIOLATION_STATES,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { asyncRequireAll } from '@/js/util/async';
-import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
-import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 
 /**
  * Checks if the setup success notification is currently being shown.

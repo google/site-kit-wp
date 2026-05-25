@@ -21,13 +21,13 @@
  */
 import { get } from 'googlesitekit-api';
 import {
+	combineStores,
 	commonActions,
 	createReducer,
 	createRegistrySelector,
-	combineStores,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from './constants';
 
 // Actions
 const RECEIVE_NONCES = 'RECEIVE_NONCES';

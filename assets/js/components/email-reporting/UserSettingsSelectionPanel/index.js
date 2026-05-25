@@ -19,22 +19,22 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import SelectionPanel from '@/js/components/SelectionPanel';
-import PanelContent from './PanelContent';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import PanelContent from './PanelContent';
 
 export default function UserSettingsSelectionPanel() {
 	const viewContext = useViewContext();

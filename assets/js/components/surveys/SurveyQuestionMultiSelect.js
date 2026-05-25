@@ -20,15 +20,15 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import { keyBy } from 'lodash';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
 import { Fragment, useState } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,12 +36,12 @@ import { sprintf, __ } from '@wordpress/i18n';
 import {
 	Button,
 	Checkbox,
-	TextField,
 	HelperText,
+	TextField,
 } from 'googlesitekit-components';
-import SurveyHeader from './SurveyHeader';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { SURVEY_INPUT_MAX_CHARACTER_LIMIT } from './constants';
+import SurveyHeader from './SurveyHeader';
 
 function SurveyQuestionMultiSelect( {
 	question,

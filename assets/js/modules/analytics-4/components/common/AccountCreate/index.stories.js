@@ -19,29 +19,29 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { withQuery } from '@storybook/addon-queryparams';
+import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
-import AccountCreate from '.';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import {
+	ACCOUNT_CREATE,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../../tests/js/utils';
-import {
-	ACCOUNT_CREATE,
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
-import { Cell, Grid, Row } from '@/js/material-components';
+import AccountCreate from '.';
 
 const { accountSummaries } = fixtures;
 
@@ -100,6 +100,78 @@ InitialSetupFlow.args = {
 	},
 };
 InitialSetupFlow.scenario = {};
+
+export const InitialSetupFlowWithUserCancelError = Template.bind( {} );
+InitialSetupFlowWithUserCancelError.storyName =
+	'Initial setup flow with terms of service not accepted error';
+InitialSetupFlowWithUserCancelError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'user_cancel',
+	},
+};
+InitialSetupFlowWithUserCancelError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithUserCancelError.scenario = {};
+
+export const InitialSetupFlowWithMaxAccountsReachedError = Template.bind( {} );
+InitialSetupFlowWithMaxAccountsReachedError.storyName =
+	'Initial setup flow with account limit reached error';
+InitialSetupFlowWithMaxAccountsReachedError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'max_accounts_reached',
+	},
+};
+InitialSetupFlowWithMaxAccountsReachedError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithMaxAccountsReachedError.scenario = {};
+
+export const InitialSetupFlowWithGenericError = Template.bind( {} );
+InitialSetupFlowWithGenericError.storyName =
+	'Initial setup flow with generic error';
+InitialSetupFlowWithGenericError.parameters = {
+	features: [ 'setupFlowRefresh' ],
+	query: {
+		showProgress: 'true',
+		accountCreationErrorCode: 'backend_error',
+	},
+};
+InitialSetupFlowWithGenericError.args = {
+	className: 'googlesitekit-analytics-setup__form',
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: false,
+			},
+		] );
+	},
+};
+InitialSetupFlowWithGenericError.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AccountCreate',

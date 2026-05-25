@@ -24,39 +24,38 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { compose } from '@wordpress/compose';
 import { Fragment, useCallback, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
-import useViewContext from '@/js/hooks/useViewContext';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import { WEEK_IN_SECONDS } from '@/js/util';
-import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
-import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
-import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
-import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
-import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import whenActive from '@/js/util/when-active';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import AudienceErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceErrorModal';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { AUDIENCE_SEGMENTATION_SETUP_FORM } from '@/js/modules/analytics-4/datastore/constants';
+import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
+import { WEEK_IN_SECONDS } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import BannerSVGMobile from '@/svg/graphics/banner-audience-segmentation-setup-cta-mobile.svg?url';
+import BannerSVGDesktop from '@/svg/graphics/banner-audience-segmentation-setup-cta.svg?url';
 import SetupSuccessSubtleNotification, {
 	AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION,
 } from './SetupSuccessSubtleNotification';
-import useFormValue from '@/js/hooks/useFormValue';
-import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 
 export const AUDIENCE_SEGMENTATION_SETUP_CTA_NOTIFICATION =
 	'audience_segmentation_setup_cta-notification';
@@ -67,8 +66,6 @@ function SetupCTABanner( { id, Notification } ) {
 
 	const { dismissNotification, registerNotification, pinNotification } =
 		useDispatch( CORE_NOTIFICATIONS );
-
-	const { setValues } = useDispatch( CORE_FORMS );
 
 	const tooltipSettings = {
 		tooltipSlug: id,
@@ -92,7 +89,7 @@ function SetupCTABanner( { id, Notification } ) {
 		isDismissalFinal,
 	} );
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_SEGMENTATION_SETUP_FORM,
 		'autoSubmit'
 	);
@@ -130,13 +127,11 @@ function SetupCTABanner( { id, Notification } ) {
 	const { setSetupErrorCode } = useDispatch( CORE_SITE );
 
 	const onCancel = useCallback( () => {
-		setValues( AUDIENCE_SEGMENTATION_SETUP_FORM, {
-			autoSubmit: false,
-		} );
+		setAutoSubmit( false );
 		clearPermissionScopeError();
 		setSetupErrorCode( null );
 		setShowErrorModal( false );
-	}, [ clearPermissionScopeError, setSetupErrorCode, setValues ] );
+	}, [ clearPermissionScopeError, setSetupErrorCode, setAutoSubmit ] );
 
 	const setupErrorCode = useSelect( ( select ) =>
 		select( CORE_SITE ).getSetupErrorCode()

@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject, isBoolean } from 'lodash';
+import { isBoolean, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -60,6 +58,7 @@ export const actions = {
 		);
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets `isOnline` state.
 	 *

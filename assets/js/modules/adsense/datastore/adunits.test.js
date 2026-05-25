@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
+import { MODULES_ADSENSE } from './constants';
 
 describe( 'modules/adsense Ad Units', () => {
 	let registry;

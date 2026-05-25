@@ -30,17 +30,17 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import whenActive from '@/js/util/when-active';
-import whenScopesGranted from '@/js/util/whenScopesGranted';
+import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
-import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import whenActive from '@/js/util/when-active';
+import whenScopesGranted from '@/js/util/whenScopesGranted';
 
 function PartnerAdsPAXWidget( { WidgetNull, Widget } ) {
 	const isAdblockerActive = useSelect( ( select ) =>

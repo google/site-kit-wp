@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
 import { usePrevious } from '@wordpress/compose';
+import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -39,24 +39,23 @@ import {
 	DialogTitle,
 	SpinnerButton,
 } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_CURRENTLY_EDITING_KEY,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
-import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
 function ConfirmSitePurposeChangeModal( {
 	dialogActive = false,
@@ -78,7 +77,7 @@ function ConfirmSitePurposeChangeModal( {
 		)
 	);
 
-	const savedPurposeSnapshot = useFormValue(
+	const [ savedPurposeSnapshot, setSavedPurposeSnapshot ] = useFormValue(
 		FORM_USER_INPUT_QUESTION_SNAPSHOT,
 		USER_INPUT_QUESTIONS_PURPOSE
 	);
@@ -101,16 +100,13 @@ function ConfirmSitePurposeChangeModal( {
 		);
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValues: setUIValues } = useDispatch( CORE_UI );
 	const { resetUserInputSettings } = useDispatch( CORE_USER );
 
 	const onClose = useCallback( async () => {
 		if ( savedPurposeSnapshot?.length ) {
 			await resetUserInputSettings();
-			setValues( FORM_USER_INPUT_QUESTION_SNAPSHOT, {
-				[ USER_INPUT_QUESTIONS_PURPOSE ]: undefined,
-			} );
+			setSavedPurposeSnapshot( undefined );
 		}
 		setUIValues( {
 			[ USER_INPUT_CURRENTLY_EDITING_KEY ]: undefined,
@@ -122,7 +118,7 @@ function ConfirmSitePurposeChangeModal( {
 		handleDialog,
 		savedPurposeSnapshot,
 		resetUserInputSettings,
-		setValues,
+		setSavedPurposeSnapshot,
 		setUIValues,
 	] );
 

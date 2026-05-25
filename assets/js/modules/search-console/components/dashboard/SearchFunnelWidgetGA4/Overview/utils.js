@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
@@ -30,10 +28,11 @@ import { calculateChange } from '@/js/util';
  * @since 1.153.0
  * @since 1.155.0 Renamed `showConversionsCTA` prop to `showKeyEventsCTA`.
  *
- * @param {boolean} showKeyEventsCTA Whether to show the Key Events CTA.
+ * @param {Object}  options                  Options object.
+ * @param {boolean} options.showKeyEventsCTA Whether to show the Key Events CTA.
  * @return {Object} Object with the cell props for the DataBlocks.
  */
-export function getCellProps( showKeyEventsCTA ) {
+export function getCellProps( { showKeyEventsCTA } ) {
 	const quarterCellProps = {
 		smSize: 2,
 		mdSize: showKeyEventsCTA ? 4 : 2,

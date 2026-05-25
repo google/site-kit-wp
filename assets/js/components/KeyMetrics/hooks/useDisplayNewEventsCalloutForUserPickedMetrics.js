@@ -16,14 +16,12 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
@@ -31,19 +29,19 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.144.0
  *
- * @param {boolean} haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
+ * @param {Object}  options                                     Options object.
+ * @param {boolean} options.haveNewConversionEventsAfterDismiss If there are new events detected after callout was dismissed.
  * @return {boolean} Whether the initial new events callout should be displayed.
  */
-export default function useDisplayNewEventsCalloutForUserPickedMetrics(
-	haveNewConversionEventsAfterDismiss
-) {
+export default function useDisplayNewEventsCalloutForUserPickedMetrics( {
+	haveNewConversionEventsAfterDismiss,
+} ) {
 	return useSelect( ( select ) => {
 		const hasUserPickedMetrics = select( CORE_USER ).getUserPickedMetrics();
 
-		const hasConversionEventsForUserPickedMetrics =
-			select(
-				MODULES_ANALYTICS_4
-			).haveConversionEventsForUserPickedMetrics( true );
+		const hasConversionEventsForUserPickedMetrics = select(
+			MODULES_ANALYTICS_4
+		).haveConversionEventsForUserPickedMetrics( { useNewEvents: true } );
 
 		const isKeyMetricsSetupCompleted =
 			select( CORE_SITE ).isKeyMetricsSetupCompleted();

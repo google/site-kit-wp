@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
+import { setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	untilResolved,
 	provideSiteInfo,
+	untilResolved,
 } from '../../../../../tests/js/utils';
-import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics tags', () => {
 	let registry;

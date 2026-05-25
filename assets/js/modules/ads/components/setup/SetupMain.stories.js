@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '@/js/material-components';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
 	PLUGINS,
 } from '@/js/modules/ads/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
-import SetupMain from './SetupMain';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { Cell, Grid, Row } from '@/js/material-components';
+import SetupMain from './SetupMain';
 
 function Template() {
 	return (

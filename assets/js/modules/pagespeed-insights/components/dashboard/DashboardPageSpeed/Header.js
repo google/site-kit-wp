@@ -26,17 +26,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import DeviceSizeTabBar from '@/js/components/DeviceSizeTabBar';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	DATA_SRC_RECOMMENDATIONS,
-	UI_STRATEGY,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
+	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 
 const Header = forwardRef(

@@ -15,17 +15,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC, MouseEvent, ReactNode } from 'react';
+
+/**
  * Internal dependencies
  */
-import Notice, { NoticeProps } from '@/js/components/Notice';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { Grid, Cell, Row } from '@/js/material-components';
-import { FC, MouseEvent, ReactNode } from 'react';
-import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
-import { DismissButtonProps } from '@/js/components/Notice/DismissButton';
+import Notice, { NoticeProps } from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { DismissButtonProps } from '@/js/components/Notice/DismissButton';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { Cell, Grid, Row } from '@/js/material-components';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
 interface NoticeNotificationProps {
 	notificationID: string;

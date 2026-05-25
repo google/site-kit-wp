@@ -20,26 +20,26 @@
  * External dependencies
  */
 import { createHashHistory } from 'history';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 /**
  * Internal dependencies
  */
-import SettingsActiveModule from '.';
-import {
-	render,
-	fireEvent,
-	createTestRegistry,
-	provideModules,
-	act,
-	provideUserAuthentication,
-} from '../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	provideModules,
+	provideUserAuthentication,
+	render,
+} from '../../../../../tests/js/test-utils';
+import SettingsActiveModule from '.';
 
 describe( 'SettingsModule', () => {
 	function SettingsModuleWithWrapper( { slug = MODULE_SLUG_ANALYTICS_4 } ) {

@@ -25,7 +25,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { compose, usePrevious } from '@wordpress/compose';
 import {
 	createInterpolateElement,
 	useCallback,
@@ -34,29 +34,29 @@ import {
 	useRef,
 	useState,
 } from '@wordpress/element';
-import { compose, usePrevious } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/KeyMetrics/constants';
-import { conversionReportingDetectedEventsTracking } from '@/js/components/KeyMetrics/utils';
 import ConversionReportingDashboardSubtleNotification from '@/js/components/KeyMetrics/ConversionReportingDashboardSubtleNotification';
-import LostEventsSubtleNotification from '@/js/components/KeyMetrics/LostEventsSubtleNotification';
-import whenActive from '@/js/util/when-active';
-import useViewContext from '@/js/hooks/useViewContext';
+import useDisplayNewEventsCalloutAfterInitialDetection from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutAfterInitialDetection';
 import useDisplayNewEventsCalloutForTailoredMetrics from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutForTailoredMetrics';
 import useDisplayNewEventsCalloutForUserPickedMetrics from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutForUserPickedMetrics';
-import useDisplayNewEventsCalloutAfterInitialDetection from '@/js/components/KeyMetrics/hooks/useDisplayNewEventsCalloutAfterInitialDetection';
-import { trackEvent } from '@/js/util';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import LostEventsSubtleNotification from '@/js/components/KeyMetrics/LostEventsSubtleNotification';
+import { conversionReportingDetectedEventsTracking } from '@/js/components/KeyMetrics/utils';
 import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import whenHasChangedConversionEvents from '@/js/modules/analytics-4/components/util/whenHasChangedConversionEvents';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
+import whenActive from '@/js/util/when-active';
 
 function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	const viewContext = useViewContext();
@@ -100,25 +100,25 @@ function ConversionReportingNotificationCTAWidget( { Widget, WidgetNull } ) {
 	// If new ACR key metrics that can be added are found using haveConversionReportingEventsForTailoredMetrics,
 	// and have not been already included, which is determined by includeConversionEvents user input setting, callout banner should be displayed.
 	const shouldShowInitialCalloutForTailoredMetrics =
-		useDisplayNewEventsCalloutForTailoredMetrics(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutForTailoredMetrics( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	// If users have set up key metrics manually and ACR events are detected,
 	// we display the same callout banner, with a different call to action
 	// "Select metrics" which opens the metric selection panel.
 	const shouldShowCalloutForUserPickedMetrics =
-		useDisplayNewEventsCalloutForUserPickedMetrics(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutForUserPickedMetrics( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	// If new events have been detected after initial set of events, we display
 	// the same callout banner, with a different call to action "View metrics"
 	// which opens the metric selection panel.
 	const shouldShowCalloutForNewEvents =
-		useDisplayNewEventsCalloutAfterInitialDetection(
-			haveNewConversionEventsAfterDismiss
-		);
+		useDisplayNewEventsCalloutAfterInitialDetection( {
+			haveNewConversionEventsAfterDismiss,
+		} );
 
 	const shouldShowCalloutForLostEvents =
 		haveLostConversionEvents && haveLostConversionEventsAfterDismiss;

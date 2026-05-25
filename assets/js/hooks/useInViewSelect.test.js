@@ -19,12 +19,12 @@
 /**
  * Internal dependencies
  */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	actHook as act,
 	createTestRegistry,
 	renderHook,
 } from '../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { useInViewSelect } from './useInViewSelect';
 
 describe( 'useInViewSelect', () => {

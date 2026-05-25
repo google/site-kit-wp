@@ -32,21 +32,20 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { TextField } from 'googlesitekit-components';
+import { useSelect } from 'googlesitekit-data';
+import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_SETUP,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
-import { TextField } from 'googlesitekit-components';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '@/js/modules/analytics-4/utils/validation';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function WebDataStreamNameInput() {
 	const propertyID = useSelect( ( select ) =>
@@ -55,7 +54,10 @@ export default function WebDataStreamNameInput() {
 	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const webDataStreamName = useFormValue( FORM_SETUP, 'webDataStreamName' );
+	const [ webDataStreamName, setWebDataStreamName ] = useFormValue(
+		FORM_SETUP,
+		'webDataStreamName'
+	);
 	const webDataStreamAlreadyExists = useSelect( ( select ) =>
 		isValidPropertyID( propertyID )
 			? select( MODULES_ANALYTICS_4 ).doesWebDataStreamExist(
@@ -68,13 +70,11 @@ export default function WebDataStreamNameInput() {
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setValues( FORM_SETUP, { webDataStreamName: currentTarget.value } );
+			setWebDataStreamName( currentTarget.value );
 		},
-		[ setValues ]
+		[ setWebDataStreamName ]
 	);
 
 	// Set the default web data stream name.
@@ -82,9 +82,7 @@ export default function WebDataStreamNameInput() {
 		if ( ! webDataStreamName && isURL( siteURL ) ) {
 			const { hostname } = new URL( siteURL );
 
-			setValues( FORM_SETUP, {
-				webDataStreamName: hostname,
-			} );
+			setWebDataStreamName( hostname );
 		}
 	} );
 

@@ -19,16 +19,34 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import Typography from '@/js/components/Typography';
+import SpinnerButton, {
+	SPINNER_POSITION,
+} from '@/js/googlesitekit/components-gm2/SpinnerButton';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
+import {
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 import {
 	AUDIENCE_CREATION_EDIT_SCOPE_NOTICE_SLUG,
 	AUDIENCE_CREATION_FORM,
@@ -36,25 +54,6 @@ import {
 	AUDIENCE_CREATION_SUCCESS_NOTICE_SLUG,
 	AUDIENCE_SELECTION_PANEL_OPENED_KEY,
 } from './constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	EDIT_SCOPE,
-	MODULES_ANALYTICS_4,
-	SITE_KIT_AUDIENCE_DEFINITIONS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import Link from '@/js/components/Link';
-import SpinnerButton, {
-	SPINNER_POSITION,
-} from '@/js/googlesitekit/components-gm2/SpinnerButton';
-import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
-import Notice from '@/js/components/Notice';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function AudienceCreationNotice() {
 	const viewContext = useViewContext();
@@ -105,17 +104,14 @@ export default function AudienceCreationNotice() {
 		notification: 'audience_segmentation',
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { createAudience, syncAvailableAudiences } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	const isCreatingAudienceFromOAuth = useFormValue(
-		AUDIENCE_CREATION_FORM,
-		'autoSubmit'
-	);
+	const [ isCreatingAudienceFromOAuth, setIsCreatingAudienceFromOAuth ] =
+		useFormValue( AUDIENCE_CREATION_FORM, 'autoSubmit' );
 
-	const failedAudienceToCreate = useFormValue(
+	const [ failedAudienceToCreate, setFailedAudienceToCreate ] = useFormValue(
 		AUDIENCE_CREATION_FORM,
 		'audienceToCreate'
 	);
@@ -127,10 +123,8 @@ export default function AudienceCreationNotice() {
 			setIsCreatingAudience( audienceSlug );
 
 			if ( ! hasAnalytics4EditScope ) {
-				setValues( AUDIENCE_CREATION_FORM, {
-					autoSubmit: true,
-					audienceToCreate: audienceSlug,
-				} );
+				setIsCreatingAudienceFromOAuth( true );
+				setFailedAudienceToCreate( audienceSlug );
 
 				// Set permission scope error to trigger OAuth flow.
 				setPermissionScopeError( {
@@ -150,10 +144,8 @@ export default function AudienceCreationNotice() {
 				return;
 			}
 
-			setValues( AUDIENCE_CREATION_FORM, {
-				autoSubmit: false,
-				audienceToCreate: undefined,
-			} );
+			setIsCreatingAudienceFromOAuth( false );
+			setFailedAudienceToCreate( undefined );
 
 			const { error } = await createAudience(
 				SITE_KIT_AUDIENCE_DEFINITIONS[ audienceSlug ]
@@ -176,8 +168,9 @@ export default function AudienceCreationNotice() {
 		[
 			hasAnalytics4EditScope,
 			createAudience,
+			setIsCreatingAudienceFromOAuth,
+			setFailedAudienceToCreate,
 			syncAvailableAudiences,
-			setValues,
 			setPermissionScopeError,
 			redirectURL,
 			setValue,

@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	setupAnalytics4ZeroData,
-	setupAnalytics4GatheringData,
-	setupAnalytics4Loading,
-	setupAnalytics4Error,
-	setupAnalytics4MockReports,
-	widgetDecorators,
-	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
-} from './common-GA4-stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
+import {
+	setupAnalytics4Error,
+	setupAnalytics4GatheringData,
+	setupAnalytics4Loading,
+	setupAnalytics4MockReports,
+	setupAnalytics4MockReportsWithNoDataInComparisonDateRange,
+	setupAnalytics4ZeroData,
+	widgetDecorators,
+} from './common-GA4-stories';
 
 const WidgetWithComponentProps =
 	withWidgetComponentProps( 'widget-slug' )( AdminBarSessionsGA4 );

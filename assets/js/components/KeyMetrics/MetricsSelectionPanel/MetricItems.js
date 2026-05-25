@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import KeyMetricsSelectionPanelItems from './SelectionPanelItems';
 

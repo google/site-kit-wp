@@ -19,32 +19,32 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	AccountSelect,
+	PropertyHint,
+	PropertySelect,
+	WebDataStreamHint,
+	WebDataStreamNameInput,
+	WebDataStreamSelect,
+} from '@/js/modules/analytics-4/components/common';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	AccountSelect,
-	PropertyHint,
-	PropertySelect,
-	WebDataStreamHint,
-	WebDataStreamSelect,
-	WebDataStreamNameInput,
-} from '@/js/modules/analytics-4/components/common';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupFormFields() {
 	const accounts =
@@ -96,13 +96,13 @@ export default function SetupFormFields() {
 				</p>
 			) }
 
-			<div className="googlesitekit-setup-module__inputs">
-				<div>
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account">
 					<AccountSelect
 						onChange={ resetEnhancedMeasurementSetting }
 					/>
 				</div>
-				<div>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property">
 					<PropertySelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
@@ -110,7 +110,7 @@ export default function SetupFormFields() {
 					{ setupFlowRefreshEnabled &&
 						isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
-				<div>
+				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
@@ -121,7 +121,7 @@ export default function SetupFormFields() {
 			</div>
 
 			{ webDataStreamID === WEBDATASTREAM_CREATE && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout googlesitekit-setup-module__inputs--multiline">
 					<WebDataStreamNameInput />
 				</div>
 			) }

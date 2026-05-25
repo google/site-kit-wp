@@ -24,26 +24,26 @@ import { withQuery } from '@storybook/addon-queryparams';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	provideSiteConnection,
-	provideUserAuthentication,
-	provideModules,
-	provideUserCapabilities,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import {
+	provideModules,
+	provideSiteConnection,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+} from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
 
 function Template() {
 	return (

@@ -19,25 +19,25 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
-	render,
-	fireEvent,
-	createTestRegistry,
-	waitFor,
-	provideCurrentSurvey,
-} from '../../../../../tests/js/test-utils';
-import CurrentSurvey from '.';
-import {
+	invalidQuestionTypeSurvey,
+	multiQuestionConditionalSurvey,
+	multiQuestionSurvey,
 	singleQuestionMultiSelect,
 	singleQuestionOpenText,
 	singleQuestionSurvey,
 	singleQuestionSurveySingleSelect,
-	multiQuestionSurvey,
-	multiQuestionConditionalSurvey,
-	invalidQuestionTypeSurvey,
 } from '@/js/components/surveys/__fixtures__';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideCurrentSurvey,
+	render,
+	waitFor,
+} from '../../../../../tests/js/test-utils';
+import CurrentSurvey from '.';
 
 // Text input should only allow up to 200 characters of input.
 const STRING_100_CHARACTERS =

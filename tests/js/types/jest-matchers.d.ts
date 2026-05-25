@@ -1,7 +1,7 @@
 /**
- * Viewport width utilities.
+ * Type definitions for Jest matchers.
  *
- * Site Kit by Google, Copyright 2022 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,5 @@
  * limitations under the License.
  */
 
-/**
- * Retrieves the viewport width.
- *
- * @since 1.85.0
- *
- * @return {number} The current viewport width.
- */
-export function getViewportWidth() {
-	return global.innerWidth;
-}
-
-/**
- * Sets the viewport width.
- *
- * @since 1.85.0
- *
- * @param {number} viewportWidth The viewport width to set.
- */
-export function setViewportWidth( viewportWidth ) {
-	Object.defineProperty( global, 'innerWidth', {
-		configurable: true,
-		value: viewportWidth,
-	} );
-}
+/// <reference types="@testing-library/jest-dom" />
+/// <reference types="@wordpress/jest-console" />

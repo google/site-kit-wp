@@ -1,9 +1,9 @@
 /**
  * Internal dependencies
  */
-import createDataLayerPush from './createDataLayerPush';
-import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 import { enabledFeatures } from '@/js/features/index';
+import { DATA_LAYER, SCRIPT_IDENTIFIER } from './constants';
+import createDataLayerPush from './createDataLayerPush';
 
 /**
  * Returns a function which, when invoked injects the gtag script if necessary.

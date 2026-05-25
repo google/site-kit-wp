@@ -21,12 +21,23 @@
  */
 import {
 	CORE_WIDGETS,
-	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
+	WIDGET_WIDTHS,
 } from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerDefaults as registerWidgets } from './register-defaults';
+
+/**
+ * PDF export configuration for a widget.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} WidgetPDFConfig
+ * @property {WPComponent} Component React component (from `@react-pdf/renderer`) used to render this widget in the PDF. Receives `{ data, chartImages }` props.
+ * @property {Function}    getData   Async function `( { registry, dates, signal } ) => ( { data, chartImages? } )`. Loads all reports the widget needs and optionally rasterizes charts to data URIs. `data` is a widget-shaped object the `Component` knows how to render. `chartImages` is an optional `Record<string, string>` of JPEG data URIs keyed by chart name.
+ * @property {string}      [label]   Optional. The widget's sub-section heading within its area, also used as the child checkbox label in the sidesheet. Required when an area contains more than one PDF widget; may be omitted when the widget is the sole PDF widget in its area (the `PDFSubSection` heading is suppressed in that case regardless).
+ */
 
 /**
  * Creates a new instance of Widgets.
@@ -81,6 +92,7 @@ export function createWidgets( registry ) {
 		 * Registers a widget.
 		 *
 		 * @since 1.9.0
+		 * @since n.e.x.t Added pdf setting.
 		 *
 		 * @param {string}                slug                         Widget's slug.
 		 * @param {Object}                settings                     Widget's settings.
@@ -90,6 +102,7 @@ export function createWidgets( registry ) {
 		 * @param {boolean}               [settings.wrapWidget]        Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 		 * @param {string|Array.<string>} [settings.modules]           Optional. Widget's associated moduels.
 		 * @param {Array.<string>}        [settings.hideOnBreakpoints] Optional. Hide widget on selected breakpoints. Array with any of: `BREAKPOINT_SMALL`, `BREAKPOINT_TABLET`, `BREAKPOINT_DESKTOP`, `BREAKPOINT_XLARGE`.
+		 * @param {WidgetPDFConfig}       [settings.pdf]               Optional. PDF export configuration for this widget.
 		 * @param {(string|Array)}        [widgetAreaSlugs]            Optional. Widget area slug(s).
 		 */
 		registerWidget( slug, settings, widgetAreaSlugs ) {

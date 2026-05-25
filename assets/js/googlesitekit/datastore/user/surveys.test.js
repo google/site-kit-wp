@@ -19,20 +19,20 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
-import {
-	createTestRegistry,
-	untilResolved,
-	muteFetch,
-	provideUserAuthentication,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	surveyEventEndpoint,
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
 } from '../../../../../tests/js/mock-survey-endpoints';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideSiteInfo,
+	provideUserAuthentication,
+	untilResolved,
+} from '../../../../../tests/js/utils';
+import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 
 describe( 'core/user surveys', () => {
 	let registry;

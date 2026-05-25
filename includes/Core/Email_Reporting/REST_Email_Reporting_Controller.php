@@ -402,7 +402,7 @@ class REST_Email_Reporting_Controller {
 			$user->user_email,
 			$template_data['subject'],
 			$html_content,
-			array(),
+			$this->email_sender->build_headers(),
 			$text_content
 		);
 

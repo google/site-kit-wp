@@ -27,23 +27,23 @@ import { isPlainObject } from 'lodash';
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { stringifyObject } from '@/js/util';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { isZeroReport } from '@/js/modules/search-console/util';
+import { stringifyObject } from '@/js/util';
 import {
 	isValidDateRange,
 	isValidStringularItems,
 } from '@/js/util/report-validation';
-import { isZeroReport } from '@/js/modules/search-console/util';
-import { createGatheringDataStore } from '@/js/googlesitekit/modules/create-gathering-data-store';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

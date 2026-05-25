@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { createHashHistory } from 'history';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -30,19 +30,19 @@ import { DOWN, ENTER, ESCAPE, UP } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import Header from '.';
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	fireEvent,
-	provideUserInfo,
-	provideModuleRegistrations,
-} from '../../../../../tests/js/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserInfo,
+	render,
+} from '../../../../../tests/js/test-utils';
+import Header from '.';
 
 describe( 'Header', () => {
 	const history = createHashHistory();

@@ -20,10 +20,8 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-
-/**
- * Internal dependencies
- */
+import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
+import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -36,26 +34,33 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 } from 'tests/js/utils';
-import { mockBrowserScrolling } from 'tests/js/mock-browser-utils';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 	PERMISSION_AUTHENTICATE,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import WelcomeModal from './WelcomeModal';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { setItem } from '@/js/googlesitekit/api/cache';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import WelcomeModal from './WelcomeModal';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -65,6 +70,8 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
+	isAudienceSegmentationWidgetPresent: false,
+	isKeyMetricsWidgetPresent: false,
 } );
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
@@ -175,6 +182,11 @@ describe( 'WelcomeModal', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		fetchMock.post( dismissItemEndpoint, {
+			body: { success: true },
+			status: 200,
+		} );
 
 		provideUserCapabilities( registry, {
 			[ PERMISSION_AUTHENTICATE ]: true,
@@ -327,7 +339,7 @@ describe( 'WelcomeModal', () => {
 
 				await waitFor( () => {
 					// Wait for the dismissal to complete.
-					expect( fetchMock ).toHaveFetchedTimes( 2 );
+					expect( fetchMock ).toHaveFetchedTimes( 3 );
 				} );
 
 				expect( container ).toBeEmptyDOMElement();
@@ -347,7 +359,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 2 );
+					expect( fetchMock ).toHaveFetchedTimes( 3 );
 				} );
 
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
@@ -413,10 +425,18 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
-				expect( fetchMock ).toHaveFetchedTimes( 2 );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
 		}
 	);
@@ -448,7 +468,7 @@ describe( 'WelcomeModal', () => {
 		fireEvent.click( closeButton );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 3 );
 		} );
 
 		const tooltipState = registry
@@ -485,7 +505,7 @@ describe( 'WelcomeModal', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Start tour' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 3 );
 		} );
 
 		expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
@@ -626,7 +646,7 @@ describe( 'WelcomeModal', () => {
 
 				await waitFor( () => {
 					// Wait for the dismissal to complete.
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				expect( container ).toBeEmptyDOMElement();
@@ -646,7 +666,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
@@ -673,7 +693,7 @@ describe( 'WelcomeModal', () => {
 				fireEvent.click( closeButton );
 
 				await waitFor( () => {
-					expect( fetchMock ).toHaveFetchedTimes( 1 );
+					expect( fetchMock ).toHaveFetchedTimes( 2 );
 				} );
 
 				const tooltipState = registry
@@ -891,6 +911,14 @@ describe( 'WelcomeModal', () => {
 				content:
 					'You can always take the dashboard tour from the help menu',
 				dismissLabel: 'Got it',
+				floaterProps: {
+					styles: {
+						arrow: {
+							margin: 42,
+						},
+					},
+				},
+				isCenteredOnMobile: false,
 			} );
 
 			await waitFor( () => {
@@ -1001,7 +1029,7 @@ describe( 'WelcomeModal', () => {
 		} ) => {
 			beforeEach( () => {
 				provideData();
-				freezeFetch( dismissItemEndpoint );
+				freezeFetch( dismissItemEndpoint, { repeat: 3 } );
 			} );
 
 			it( 'should track the `setup_flow_v3_complete_site_setup` and `setup_flow_v3_complete_user_setup` events only once', async () => {
@@ -1076,12 +1104,14 @@ describe( 'WelcomeModal', () => {
 					} )
 				);
 
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					'test-context_welcome-modal',
-					'confirm_notice',
-					expectedLabel
-				);
+				await waitFor( () => {
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						'test-context_welcome-modal',
+						'confirm_notice',
+						expectedLabel
+					);
+				} );
 			} );
 
 			it.each( dismissalButtons )(
@@ -1105,14 +1135,70 @@ describe( 'WelcomeModal', () => {
 						} )
 					);
 
-					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-					expect( mockTrackEvent ).toHaveBeenCalledWith(
-						'test-context_welcome-modal',
-						'dismiss_notice',
-						expectedLabel
-					);
+					await waitFor( () => {
+						expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+						expect( mockTrackEvent ).toHaveBeenCalledWith(
+							'test-context_welcome-modal',
+							'dismiss_notice',
+							expectedLabel
+						);
+					} );
 				}
 			);
 		}
 	);
+
+	it.each( [
+		{
+			variant: 'data available',
+			provideVariantData: provideDataAvailableVariantData,
+		},
+		{
+			variant: 'gathering data',
+			provideVariantData: provideGatheringDataVariantData,
+		},
+	] )(
+		'should dismiss the initial setup notification timeout when the modal renders in the $variant variant',
+		async ( { provideVariantData } ) => {
+			provideVariantData();
+			fetchMock.postOnce( dismissItemEndpoint, {
+				body: { success: true },
+			} );
+
+			const { waitForRegistry } = render( <WelcomeModal />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock.called( dismissItemEndpoint ) ).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+						expiration: 604800,
+					},
+				},
+			} );
+		}
+	);
+
+	it( 'should not dismiss the initial setup notification timeout when the modal variant is DATA_GATHERING_COMPLETE', async () => {
+		provideDataGatheringCompleteVariantData();
+
+		const { waitForRegistry } = render( <WelcomeModal />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint, {
+			body: {
+				data: {
+					slug: INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
+				},
+			},
+		} );
+	} );
 } );

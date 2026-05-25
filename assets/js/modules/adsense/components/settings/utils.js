@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * WordPress dependencies
  */
@@ -27,25 +25,25 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	trackingExclusionLabels,
-	AUTO_ADS_LOGGED_IN_USERS,
 	AUTO_ADS_CONTENT_CREATORS,
+	AUTO_ADS_LOGGED_IN_USERS,
+	trackingExclusionLabels,
 } from '@/js/modules/adsense/components/common/AutoAdExclusionSwitches';
 import {
+	ACCOUNT_STATUS_APPROVED,
+	ACCOUNT_STATUS_CLIENT_GETTING_READY,
+	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
 	ACCOUNT_STATUS_DISAPPROVED,
 	ACCOUNT_STATUS_GRAYLISTED,
-	ACCOUNT_STATUS_PENDING,
-	ACCOUNT_STATUS_NO_CLIENT,
-	ACCOUNT_STATUS_APPROVED,
 	ACCOUNT_STATUS_NEEDS_ATTENTION,
-	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
-	ACCOUNT_STATUS_CLIENT_GETTING_READY,
+	ACCOUNT_STATUS_NO_CLIENT,
+	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_READY,
-	SITE_STATUS_NEEDS_ATTENTION,
-	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_GETTING_READY,
+	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_READY,
 	SITE_STATUS_READY_NO_AUTO_ADS,
+	SITE_STATUS_REQUIRES_REVIEW,
 } from '@/js/modules/adsense/util/status';
 
 /**
@@ -140,12 +138,13 @@ export function getSiteStatusLabel( siteStatus ) {
  *
  * @since 1.93.0
  *
- * @param {boolean} useSnippet  The adsense site snippet flag.
- * @param {string}  existingTag The adsense existing tag.
- * @param {string}  clientID    The client ID.
+ * @param {Object}  options             Options object.
+ * @param {boolean} options.useSnippet  The adsense site snippet flag.
+ * @param {string}  options.existingTag The adsense existing tag.
+ * @param {string}  options.clientID    The client ID.
  * @return {string} The site snippet label.
  */
-export function getSnippetLabel( useSnippet, existingTag, clientID ) {
+export function getSnippetLabel( { useSnippet, existingTag, clientID } ) {
 	let snippetLabel = __(
 		'The AdSense code has not been placed on your site',
 		'google-site-kit'

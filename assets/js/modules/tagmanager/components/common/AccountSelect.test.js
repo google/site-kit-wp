@@ -19,18 +19,18 @@
 /**
  * Internal dependencies
  */
-import AccountSelect from './AccountSelect';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_TAGMANAGER,
-	ACCOUNT_CREATE,
-} from '@/js/modules/tagmanager/datastore/constants';
 import * as fixtures from '@/js/modules/tagmanager/datastore/__fixtures__';
 import {
-	freezeFetch,
+	ACCOUNT_CREATE,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import {
 	createTestRegistry,
+	freezeFetch,
 } from '../../../../../../tests/js/utils';
+import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {
 	let registry;

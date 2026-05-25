@@ -30,16 +30,15 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import {
-	MODULES_TAGMANAGER,
-	FORM_SETUP,
-	CONTAINER_CREATE,
-} from '@/js/modules/tagmanager/datastore/constants';
+import { useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import ContainerNameTextField from './ContainerNameTextField';
 import useFormValue from '@/js/hooks/useFormValue';
+import {
+	CONTAINER_CREATE,
+	FORM_SETUP,
+	MODULES_TAGMANAGER,
+} from '@/js/modules/tagmanager/datastore/constants';
+import ContainerNameTextField from './ContainerNameTextField';
 
 export default function AMPContainerNameTextField() {
 	const ampContainerID = useSelect( ( select ) =>
@@ -51,10 +50,8 @@ export default function AMPContainerNameTextField() {
 	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialAMPContainerName = useFormValue(
-		FORM_SETUP,
-		'ampContainerName'
-	);
+	const [ initialAMPContainerName, setInitialAMPContainerName ] =
+		useFormValue( FORM_SETUP, 'ampContainerName' );
 
 	let ampContainerName = siteName;
 	if ( ! ampContainerName && isURL( referenceSiteURL ) ) {
@@ -63,10 +60,9 @@ export default function AMPContainerNameTextField() {
 
 	ampContainerName += ' AMP';
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	useMount( () => {
 		if ( ! initialAMPContainerName ) {
-			setValues( FORM_SETUP, { ampContainerName } );
+			setInitialAMPContainerName( ampContainerName );
 		}
 	} );
 

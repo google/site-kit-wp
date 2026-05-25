@@ -26,17 +26,17 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import SourceLink from '@/js/components/SourceLink';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 	UI_DIMENSION_NAME,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { getURLPath } from '@/js/util';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import SourceLink from '@/js/components/SourceLink';
 
 export default function DataSourceLink() {
 	const viewOnly = useViewOnly();

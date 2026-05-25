@@ -31,12 +31,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import Notice from '@/js/components/Notice';
-import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
 } from '../../../../tests/js/test-utils';
+import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 
 describe( 'PDFReportErrorSnackbar', () => {
 	let registry: WPDataRegistry;

@@ -20,6 +20,15 @@
  * Internal dependencies
  */
 import {
+	CORE_USER,
+	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
@@ -29,20 +38,11 @@ import {
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import {
-	CORE_USER,
-	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
-	KM_ANALYTICS_NEW_VISITORS,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
-	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
-	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS_4,
-	ENUM_CONVERSION_EVENTS,
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 describe( 'modules/analytics-4 conversion-reporting', () => {
 	let registry;
@@ -261,10 +261,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
-					.haveConversionEventsForTailoredMetrics(
-						'publish_blog',
-						true
-					);
+					.haveConversionEventsForTailoredMetrics( {
+						useNewEvents: true,
+					} );
 
 				expect( haveConversionEventsForTailoredMetrics ).toEqual(
 					true
@@ -294,10 +293,9 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 
 				const haveConversionEventsForTailoredMetrics = registry
 					.select( MODULES_ANALYTICS_4 )
-					.haveConversionEventsForTailoredMetrics(
-						'publish_blog',
-						true
-					);
+					.haveConversionEventsForTailoredMetrics( {
+						useNewEvents: true,
+					} );
 
 				expect( haveConversionEventsForTailoredMetrics ).toEqual(
 					false
@@ -641,6 +639,107 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 						.select( MODULES_ANALYTICS_4 )
 						.getPrimaryEcommerceEvent()
 				).toBeUndefined();
+			} );
+		} );
+
+		describe( 'getSecondaryEcommerceEvents', () => {
+			it( 'should return undefined when detected events are not yet loaded', () => {
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toBeUndefined();
+			} );
+
+			it( 'should return ["add_to_cart"] when primary is "purchase" and add_to_cart is detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [ ENUM_CONVERSION_EVENTS.ADD_TO_CART ] );
+			} );
+
+			it( 'should return [] when primary is "purchase" and add_to_cart is not detected', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [] );
+			} );
+
+			it( 'should return [] when primary is "add_to_cart" (no secondary ecommerce events)', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+					] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.ADD_TO_CART
+						)
+				).toEqual( [] );
+			} );
+
+			it( 'should preserve hierarchy order: purchase as primary yields add_to_cart in order', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [
+						ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+						ENUM_CONVERSION_EVENTS.PURCHASE,
+					] );
+
+				// When primaryEvent is purchase, only add_to_cart (which comes after in hierarchy) is secondary.
+				const secondary = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getSecondaryEcommerceEvents(
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					);
+
+				// Should return only add_to_cart in hierarchy order.
+				expect( secondary ).toEqual( [
+					ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+				] );
+			} );
+
+			it( 'should return [] when detected events is an empty array', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSecondaryEcommerceEvents(
+							ENUM_CONVERSION_EVENTS.PURCHASE
+						)
+				).toEqual( [] );
 			} );
 		} );
 

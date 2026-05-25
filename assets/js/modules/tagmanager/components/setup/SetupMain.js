@@ -29,17 +29,17 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import TagManagerIcon from '@/svg/graphics/tagmanager.svg';
-import SetupForm from './SetupForm';
+import { useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import { AccountCreate } from '@/js/modules/tagmanager/components/common';
 import {
-	MODULES_TAGMANAGER,
 	ACCOUNT_CREATE,
+	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
 import useExistingTagEffect from '@/js/modules/tagmanager/hooks/useExistingTagEffect';
-import { AccountCreate } from '@/js/modules/tagmanager/components/common';
-import Typography from '@/js/components/Typography';
+import TagManagerIcon from '@/svg/graphics/tagmanager.svg';
+import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>

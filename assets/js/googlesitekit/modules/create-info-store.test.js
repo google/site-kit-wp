@@ -24,10 +24,10 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../tests/js/utils';
-import { createInfoStore } from './create-info-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry } from '../../../../tests/js/utils';
+import { createInfoStore } from './create-info-store';
 
 const MODULE_SLUG = 'test-slug';
 const TEST_STORE_NAME = `test/${ MODULE_SLUG }`;
@@ -153,7 +153,7 @@ describe( 'createInfoStore store', () => {
 
 				const adminReauthURL = registry
 					.select( STORE_NAME )
-					.getAdminReauthURL( false );
+					.getAdminReauthURL( { reAuth: false } );
 
 				const { origin, pathname } = new URL( adminReauthURL );
 				expect( origin + pathname ).toEqual(
@@ -209,7 +209,7 @@ describe( 'createInfoStore store', () => {
 
 				const adminReauthURL = registry
 					.select( STORE_NAME )
-					.getAdminReauthURL( false );
+					.getAdminReauthURL( { reAuth: false } );
 
 				const url = new URL( adminReauthURL );
 				expect( url.origin + url.pathname ).toEqual(

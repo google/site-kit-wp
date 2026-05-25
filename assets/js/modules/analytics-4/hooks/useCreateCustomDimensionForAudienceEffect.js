@@ -22,18 +22,17 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	EDIT_SCOPE,
-	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-	MODULES_ANALYTICS_4,
-	CUSTOM_DIMENSION_DEFINITIONS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 
 export default function useCreateCustomDimensionForAudienceEffect() {
 	const isGA4Connected = useSelect( ( select ) =>
@@ -48,12 +47,18 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 
-	const autoSubmit = useFormValue(
+	const [ autoSubmit, setAutoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);
-
-	const { setValues } = useDispatch( CORE_FORMS );
+	const [ , setIsAutoCreatingCustomDimensionsForAudience ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isAutoCreatingCustomDimensionsForAudience'
+	);
+	const [ , setIsRetrying ] = useFormValue(
+		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
+		'isRetrying'
+	);
 
 	const {
 		fetchCreateCustomDimension,
@@ -70,24 +75,20 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 
 			// If the custom dimension was created successfully, mark it as gathering
 			// data immediately so that it doesn't cause unnecessary report requests.
-			receiveIsCustomDimensionGatheringData(
-				'googlesitekit_post_type',
-				true
-			);
+			receiveIsCustomDimensionGatheringData( {
+				customDimension: 'googlesitekit_post_type',
+				gatheringData: true,
+			} );
 
 			// Resync available custom dimensions to ensure the newly created custom dimension is available.
 			await fetchSyncAvailableCustomDimensions();
 
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				isAutoCreatingCustomDimensionsForAudience: false,
-				isRetrying: false,
-			} );
+			setIsAutoCreatingCustomDimensionsForAudience( false );
+			setIsRetrying( false );
 		}
 		if ( isGA4Connected && hasAnalyticsEditScope && autoSubmit ) {
-			setValues( AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE, {
-				autoSubmit: false,
-				isAutoCreatingCustomDimensionsForAudience: true,
-			} );
+			setAutoSubmit( false );
+			setIsAutoCreatingCustomDimensionsForAudience( true );
 			createDimensionsAndUpdateForm();
 		}
 	}, [
@@ -98,7 +99,9 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		isGA4Connected,
 		propertyID,
 		receiveIsCustomDimensionGatheringData,
-		setValues,
+		setAutoSubmit,
+		setIsAutoCreatingCustomDimensionsForAudience,
+		setIsRetrying,
 	] );
 
 	return null;

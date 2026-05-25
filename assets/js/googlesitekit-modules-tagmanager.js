@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { registerStore, registerModule } from './modules/tagmanager';
+import { registerModule, registerStore } from './modules/tagmanager';
 
 registerStore( Data );
 registerModule( Modules );

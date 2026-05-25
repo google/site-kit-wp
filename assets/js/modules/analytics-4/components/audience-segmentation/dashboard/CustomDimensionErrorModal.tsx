@@ -30,17 +30,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import AudienceErrorModal from './AudienceErrorModal';
+import type { Select } from '@/js/googlesitekit/data/types';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import useViewContext from '@/js/hooks/useViewContext';
+import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import type { Select } from '@/js/googlesitekit/data/types';
-import useFormValue from '@/js/hooks/useFormValue';
-import useViewContext from '@/js/hooks/useViewContext';
-import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
+import AudienceErrorModal from './AudienceErrorModal';
 
 interface ErrorObject {
 	[ key: string ]: unknown;
@@ -60,13 +60,7 @@ const CustomDimensionErrorModal: FC = () => {
 		[]
 	);
 
-	const autoSubmit:
-		| string
-		| number
-		| boolean
-		| unknown[]
-		| object
-		| undefined = useFormValue(
+	const [ autoSubmit ] = useFormValue(
 		AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 		'autoSubmit'
 	);

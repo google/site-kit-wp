@@ -1,5 +1,3 @@
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -8,22 +6,23 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/utils/data-mock';
-import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
-import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
+import { getAnalytics4MockResponse } from '../../assets/js/modules/analytics-4/utils/data-mock';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../assets/js/modules/search-console/datastore/constants';
+import { getSearchConsoleMockResponse } from '../../assets/js/modules/search-console/util/data-mock';
 
 /**
  * Provides the required data to the given registry to ensure the gathering data state is set for the Analytics 4 module.
  *
  * @since 1.106.0
  *
- * @param {Object}  registry        Data registry object.
- * @param {boolean} isGatheringData The desired gathering data state.
+ * @param {Object}  options                 Options object.
+ * @param {Object}  options.registry        Data registry object.
+ * @param {boolean} options.isGatheringData The desired gathering data state.
  */
-function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
+function provideAnalytics4GatheringDataState( { registry, isGatheringData } ) {
 	invariant(
 		isGatheringData !== true,
 		"Analytics 4 gathering data's `true` state relies on the current authentication and selected property state so is unreliable to set from a helper, and therefore unsupported."
@@ -45,10 +44,14 @@ function provideAnalytics4GatheringDataState( registry, isGatheringData ) {
  *
  * @since 1.106.0
  *
- * @param {Object}  registry        Data registry object.
- * @param {boolean} isGatheringData The desired gathering data state.
+ * @param {Object}  options                 Options object.
+ * @param {Object}  options.registry        Data registry object.
+ * @param {boolean} options.isGatheringData The desired gathering data state.
  */
-function provideSearchConsoleGatheringDataState( registry, isGatheringData ) {
+function provideSearchConsoleGatheringDataState( {
+	registry,
+	isGatheringData,
+} ) {
 	const options = registry
 		.select( MODULES_SEARCH_CONSOLE )
 		.getSampleReportArgs();
@@ -94,7 +97,7 @@ export function provideGatheringDataState( registry, moduleStates ) {
 				throw new Error( `Unhandled module: ${ moduleSlug }` );
 			}
 
-			provideGatheringData( registry, isGatheringData );
+			provideGatheringData( { registry, isGatheringData } );
 		}
 	);
 }

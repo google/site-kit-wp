@@ -20,6 +20,10 @@
  * External dependencies
  */
 import { useWindowScroll } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
 import { useEffect, useState } from '@wordpress/element';
 
 /**

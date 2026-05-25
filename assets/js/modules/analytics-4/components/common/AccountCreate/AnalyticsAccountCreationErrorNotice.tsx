@@ -24,17 +24,20 @@ import type { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
 
 export interface AnalyticsAccountCreationErrorNoticeProps {
 	errorCode: string;
@@ -44,6 +47,21 @@ export interface AnalyticsAccountCreationErrorNoticeProps {
 const AnalyticsAccountCreationErrorNotice: FC<
 	AnalyticsAccountCreationErrorNoticeProps
 > = ( { errorCode, onRetry } ) => {
+	const viewContext = useViewContext();
+	const [ showProgress ] = useQueryArg( 'showProgress' );
+	const isInitialSetupFlow = !! showProgress;
+	const eventCategory = isInitialSetupFlow
+		? `${ viewContext }_setup`
+		: viewContext;
+
+	useEffect( () => {
+		trackEvent(
+			eventCategory,
+			'analytics_account_creation_error',
+			errorCode
+		);
+	}, [ errorCode, eventCategory ] );
+
 	const analyticsAccountLimitHelpURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getGoogleSupportURL( {
@@ -85,17 +103,11 @@ const AnalyticsAccountCreationErrorNotice: FC<
 	} else if ( errorCode === 'max_accounts_reached' ) {
 		description = createInterpolateElement(
 			__(
-				'Creating a new Analytics account failed because the Analytics account limit has been reached. Try again or <a>get help</a>',
+				'Creating a new Analytics account failed because the Analytics account limit has been reached. You can manage the number of Analytics accounts associated with your Google account and then try again, or <a>get help</a>',
 				'google-site-kit'
 			),
 			{
-				a: (
-					<Link
-						// @ts-expect-error - The `Link` component is not currently typed.
-						href={ analyticsAccountLimitHelpURL }
-						external
-					/>
-				),
+				a: <Link href={ analyticsAccountLimitHelpURL } external />,
 			}
 		);
 		ctaButton = {
@@ -109,13 +121,7 @@ const AnalyticsAccountCreationErrorNotice: FC<
 				'google-site-kit'
 			),
 			{
-				a: (
-					<Link
-						// @ts-expect-error - The `Link` component is not currently typed.
-						href={ additionalAnalyticsSupportURL }
-						external
-					/>
-				),
+				a: <Link href={ additionalAnalyticsSupportURL } external />,
 			}
 		);
 		ctaButton = {

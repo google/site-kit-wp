@@ -17,9 +17,13 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
 import { useMemoOne } from 'use-memo-one';
+
+/**
+ * WordPress dependencies
+ */
 import { useInstanceId } from '@wordpress/compose';
 
 /**

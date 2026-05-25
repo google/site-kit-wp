@@ -19,25 +19,25 @@
 /**
  * External dependencies
  */
+import { withQuery } from '@storybook/addon-queryparams';
 import { ElementType, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
-import { withQuery } from '@storybook/addon-queryparams';
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import RRMSetupSuccessSubtleNotification from '.';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-	CONTENT_POLICY_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
 type Registry = any;

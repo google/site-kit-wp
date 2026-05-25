@@ -26,31 +26,34 @@ import { useClickAway } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback } from '@wordpress/element';
-import { ESCAPE, TAB } from '@wordpress/keycodes';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { Button, Menu } from 'googlesitekit-components';
-import { trackEvent } from '@/js/util';
-import HelpMenuLink from './HelpMenuLink';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import useViewContext from '@/js/hooks/useViewContext';
-import FeedbackIcon from '@/svg/icons/feedback.svg';
-import CompassIcon from '@/svg/icons/compass.svg';
-import SupportIcon from '@/svg/icons/support.svg';
-import DocumentationIcon from '@/svg/icons/documentation.svg';
-import HelpIcon from '@/svg/icons/help.svg';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { trackEvent } from '@/js/util';
 import AdsenseHelpIcon from '@/svg/icons/adsense-help.svg';
+import CompassIcon from '@/svg/icons/compass.svg';
+import DocumentationIcon from '@/svg/icons/documentation.svg';
+import FeedbackIcon from '@/svg/icons/feedback.svg';
+import HelpIcon from '@/svg/icons/help.svg';
+import SupportIcon from '@/svg/icons/support.svg';
+import HelpMenuLink from './HelpMenuLink';
 
 export default function HelpMenu( { children, showFeatureTour = false } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -65,6 +68,27 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADSENSE )
+	);
+
+	const showFeatureTourMenuItem = useSelect(
+		( select ) => {
+			if ( ! showFeatureTour || ! setupFlowRefreshEnabled ) {
+				return false;
+			}
+
+			const analyticsConnected = select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			);
+
+			if ( analyticsConnected ) {
+				return (
+					select( MODULES_ANALYTICS_4 ).isGatheringData() === false
+				);
+			}
+
+			return select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false;
+		},
+		[ showFeatureTour, setupFlowRefreshEnabled ]
 	);
 
 	const handleMenu = useCallback( () => {
@@ -136,7 +160,7 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 			icon: <SupportIcon width={ 24 } height={ 24 } />,
 			children: __( 'Get free support', 'google-site-kit' ),
 		},
-		...( showFeatureTour
+		...( showFeatureTourMenuItem
 			? [
 					{
 						gaEventLabel: 'start_tour',

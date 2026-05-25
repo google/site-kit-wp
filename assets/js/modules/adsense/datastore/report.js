@@ -27,23 +27,23 @@ import { isPlainObject } from 'lodash';
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
-import { MODULES_ADSENSE } from './constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { stringifyObject } from '@/js/util';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	validateDimensions,
+	validateMetrics,
+} from '@/js/modules/adsense/util/report-validation';
+import { stringifyObject } from '@/js/util';
 import {
 	isValidDateRange,
 	isValidOrders,
 	isValidStringularItems,
 } from '@/js/util/report-validation';
-import {
-	validateDimensions,
-	validateMetrics,
-} from '@/js/modules/adsense/util/report-validation';
+import { MODULES_ADSENSE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',

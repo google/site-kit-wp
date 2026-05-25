@@ -17,12 +17,7 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
- * Internal dependencies
+ * External dependencies
  */
 import {
 	createTestRegistry,
@@ -30,8 +25,21 @@ import {
 	provideSiteInfo,
 	render,
 } from 'tests/js/test-utils';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as tracking from '@/js/util/tracking';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	let registry: WPDataRegistry;
@@ -39,6 +47,12 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		mockTrackEvent.mockClear();
+		global.history.replaceState(
+			null,
+			'',
+			'/wp-admin/admin.php?page=googlesitekit-dashboard'
+		);
 	} );
 
 	describe( 'user_cancel', () => {
@@ -112,7 +126,7 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 
 			expect(
 				getByText(
-					'Creating a new Analytics account failed because the Analytics account limit has been reached. Try again or'
+					'Creating a new Analytics account failed because the Analytics account limit has been reached. You can manage the number of Analytics accounts associated with your Google account and then try again, or'
 				)
 			).toBeInTheDocument();
 
@@ -185,6 +199,52 @@ describe( 'AnalyticsAccountCreationErrorNotice', () => {
 			fireEvent.click( getByRole( 'button', { name: /^retry$/i } ) );
 
 			expect( onRetry ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'tracking', () => {
+		it( 'tracks analytics_account_creation_error in initial setup flow when showProgress is present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context_setup',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
+		} );
+
+		it( 'tracks analytics_account_creation_error in module setup flow when showProgress is not present', () => {
+			global.history.replaceState(
+				null,
+				'',
+				'/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+
+			render(
+				<AnalyticsAccountCreationErrorNotice
+					errorCode="backend_error"
+					onRetry={ () => {} }
+				/>,
+				{ registry, viewContext: 'test-context' }
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'test-context',
+				'analytics_account_creation_error',
+				'backend_error'
+			);
 		} );
 	} );
 } );

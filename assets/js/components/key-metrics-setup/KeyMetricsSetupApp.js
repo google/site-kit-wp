@@ -19,17 +19,17 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { omit } from 'lodash';
 import { useMount } from 'react-use';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import {
+	Fragment,
 	createInterpolateElement,
 	useCallback,
-	Fragment,
 	useEffect,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -38,38 +38,39 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
 import { SpinnerButton } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Header from '@/js/components/Header';
+import HelpMenu from '@/js/components/help/HelpMenu';
+import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
+import Layout from '@/js/components/layout/Layout';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import ProgressIndicator from '@/js/components/ProgressIndicator';
+import ExitSetup from '@/js/components/setup/ExitSetup';
+import ToastNotice from '@/js/components/ToastNotice';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
+import {
+	USER_INPUT_MAX_ANSWERS,
+	USER_INPUT_QUESTIONS_PURPOSE,
+	getUserInputAnswers,
+	getUserInputAnswersDescription,
+} from '@/js/components/user-input/util/constants';
+import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useForwardableParams from '@/js/hooks/useForwardableParams';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { Grid, Row, Cell } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import ExitSetup from '@/js/components/setup/ExitSetup';
-import Header from '@/js/components/Header';
-import HelpMenu from '@/js/components/help/HelpMenu';
-import Layout from '@/js/components/layout/Layout';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
-import ProgressIndicator from '@/js/components/ProgressIndicator';
-import UserInputSelectOptions from '@/js/components/user-input/UserInputSelectOptions';
-import ToastNotice from '@/js/components/ToastNotice';
-import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
-import {
-	getUserInputAnswers,
-	getUserInputAnswersDescription,
-	USER_INPUT_MAX_ANSWERS,
-	USER_INPUT_QUESTIONS_PURPOSE,
-} from '@/js/components/user-input/util/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import useForwardableParams from '@/js/hooks/useForwardableParams';
-import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -293,6 +294,27 @@ export default function KeyMetricsSetupApp() {
 		( ! saveUserInputError && isSavingInitialSetup ) || // Avoid a situation where both buttons are loading.
 		isSyncing;
 
+	const footer = (
+		<Fragment>
+			<SpinnerButton
+				onClick={ onSaveClick }
+				isSaving={ isCompleteSetupLoading }
+				disabled={ hasErrorForAnswer( values ) || isSyncing }
+			>
+				{ __( 'Complete setup', 'google-site-kit' ) }
+			</SpinnerButton>
+			{ saveUserInputError && (
+				<SpinnerButton
+					onClick={ saveInitialSetup }
+					isSaving={ isSavingInitialSetup }
+					tertiary
+				>
+					{ __( 'Continue without saving', 'google-site-kit' ) }
+				</SpinnerButton>
+			) }
+		</Fragment>
+	);
+
 	const keyMetricsLayout = (
 		<Layout rounded={ ! isInitialSetupFlow }>
 			{ isInitialSetupFlow && (
@@ -301,110 +323,94 @@ export default function KeyMetricsSetupApp() {
 			<Grid>
 				<Row>
 					<Cell size={ 12 }>
-						<Typography
-							as="h1"
-							type="headline"
-							size="medium"
-							className="googlesitekit-key-metrics-setup__title"
+						<AdaptiveFooterLayout
+							className="googlesitekit-key-metrics-setup__content"
+							inlineClassName="googlesitekit-key-metrics-setup__content--footer-inline"
+							footerClassName="googlesitekit-user-input__footer googlesitekit-key-metrics-setup__footer"
+							footer={ footer }
 						>
-							{ __(
-								'Tell us your main goal to get tailored metrics',
-								'google-site-kit'
-							) }
-						</Typography>
-
-						<div className="googlesitekit-key-metrics-setup__heading">
-							<Typography as="h2" type="body" size="large">
+							<Typography
+								as="h1"
+								type="headline"
+								size="medium"
+								className="googlesitekit-key-metrics-setup__title"
+							>
 								{ __(
-									'Which option most closely matches the purpose of your site?',
+									'Tell us your main goal to get tailored metrics',
 									'google-site-kit'
 								) }
 							</Typography>
-							<P
-								className="googlesitekit-key-metrics-setup__description"
-								type="body"
-								size="small"
-							>
-								{ createInterpolateElement(
-									__(
-										'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
-										'google-site-kit'
-									),
-									{
-										br: <br />,
-									}
-								) }
-							</P>
-						</div>
 
-						<UserInputSelectOptions
-							slug={ USER_INPUT_QUESTIONS_PURPOSE }
-							max={
-								USER_INPUT_MAX_ANSWERS[
-									USER_INPUT_QUESTIONS_PURPOSE
-								]
-							}
-							options={ omit(
-								USER_INPUT_ANSWERS_PURPOSE,
-								'other'
-							) }
-							descriptions={
-								USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
-							}
-							gaTrackingEventArgs={ gaTrackingEventArgs }
-						/>
-
-						{ saveInitialSetupError && (
-							<div className="googlesitekit-user-input__error">
-								<Notice
-									description={ __(
-										'Something went wrong, please try again',
-										'google-site-kit'
-									) }
-									type={ NOTICE_TYPES.ERROR }
-								/>
-							</div>
-						) }
-
-						{ ! saveInitialSetupError && !! saveUserInputError && (
-							<div className="googlesitekit-user-input__error">
-								<Notice
-									title={ __(
-										'Saving your answer failed',
-										'google-site-kit'
-									) }
-									description={ __(
-										'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.',
-										'google-site-kit'
-									) }
-									type={ NOTICE_TYPES.ERROR }
-								/>
-							</div>
-						) }
-
-						<div className="googlesitekit-user-input__footer">
-							<SpinnerButton
-								onClick={ onSaveClick }
-								isSaving={ isCompleteSetupLoading }
-								disabled={
-									hasErrorForAnswer( values ) || isSyncing
-								}
-							>
-								{ __( 'Complete setup', 'google-site-kit' ) }
-							</SpinnerButton>
-							{ saveUserInputError && (
-								<SpinnerButton
-									onClick={ saveInitialSetup }
-									isSaving={ isSavingInitialSetup }
-									tertiary
-								>
+							<div className="googlesitekit-key-metrics-setup__heading">
+								<Typography as="h2" type="body" size="large">
 									{ __(
-										'Continue without saving',
+										'Which option most closely matches the purpose of your site?',
 										'google-site-kit'
 									) }
-								</SpinnerButton>
+								</Typography>
+								<P
+									className="googlesitekit-key-metrics-setup__description"
+									type="body"
+									size="small"
+								>
+									{ createInterpolateElement(
+										__(
+											'Even if multiple options apply to your site, select the one that applies the most.<br />You can also answer or edit your response later in Settings.',
+											'google-site-kit'
+										),
+										{
+											br: <br />,
+										}
+									) }
+								</P>
+							</div>
+
+							<UserInputSelectOptions
+								slug={ USER_INPUT_QUESTIONS_PURPOSE }
+								max={
+									USER_INPUT_MAX_ANSWERS[
+										USER_INPUT_QUESTIONS_PURPOSE
+									]
+								}
+								options={ omit(
+									USER_INPUT_ANSWERS_PURPOSE,
+									'other'
+								) }
+								descriptions={
+									USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS
+								}
+								gaTrackingEventArgs={ gaTrackingEventArgs }
+							/>
+
+							{ saveInitialSetupError && (
+								<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+									<Notice
+										description={ __(
+											'Something went wrong, please try again',
+											'google-site-kit'
+										) }
+										type={ NOTICE_TYPES.ERROR }
+									/>
+								</div>
 							) }
-						</div>
+
+							{ ! saveInitialSetupError &&
+								!! saveUserInputError && (
+									<div className="googlesitekit-user-input__error googlesitekit-key-metrics-setup__error">
+										<Notice
+											title={ __(
+												'Saving your answer failed',
+												'google-site-kit'
+											) }
+											description={ __(
+												'Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.',
+												'google-site-kit'
+											) }
+											type={ NOTICE_TYPES.ERROR }
+										/>
+									</div>
+								) }
+						</AdaptiveFooterLayout>
 					</Cell>
 				</Row>
 			</Grid>

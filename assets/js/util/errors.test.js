@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import {
-	isWPError,
-	isPermissionScopeError,
-	isInsufficientPermissionsError,
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-	ERROR_REASON_FORBIDDEN,
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_INVALID_JSON,
+	ERROR_REASON_FORBIDDEN,
+	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+	getReportErrorMessage,
 	isAuthError,
 	isErrorRetryable,
-	getReportErrorMessage,
+	isInsufficientPermissionsError,
+	isPermissionScopeError,
+	isWPError,
 } from './errors';
 
 describe( 'Error Utilities', () => {

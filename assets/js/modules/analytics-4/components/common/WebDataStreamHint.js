@@ -19,19 +19,19 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
+import StepHint from '@/js/components/setup/StepHint';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import Link from '@/js/components/Link';
-import StepHint from '@/js/components/setup/StepHint';
 
 export default function WebDataStreamHint() {
 	const viewContext = useViewContext();

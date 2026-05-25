@@ -17,25 +17,56 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import { get } from 'lodash';
 import classnames from 'classnames';
+import { get } from 'lodash';
+import type { ComponentType, ElementType, FC, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
 import MetricTileWrapper from './MetricTileWrapper';
 
-export default function MetricTileTable( {
+type MetricTileRow = Record< string, unknown >;
+type MetricTileError =
+	| Record< string, unknown >
+	| Array< Record< string, unknown > >;
+
+interface ColumnComponentProps {
+	row: MetricTileRow;
+	fieldValue?: unknown;
+}
+
+interface MetricTileTableColumn {
+	Component?: ComponentType< ColumnComponentProps >;
+	field?: string;
+	className?: string;
+}
+
+interface MetricTileTableProps {
+	rows?: MetricTileRow[];
+	columns?: MetricTileTableColumn[];
+	limit?: number;
+	ZeroState?: ElementType;
+	Widget: ElementType;
+	loading?: boolean;
+	error?: MetricTileError;
+	title?: string;
+	headerLabel?: string;
+	infoTooltip?: ReactNode;
+	moduleSlug: string;
+	widgetSlug?: string;
+}
+
+const MetricTileTable: FC< MetricTileTableProps > = ( {
 	rows = [],
 	columns = [],
 	limit,
 	ZeroState,
 	...props
-} ) {
-	let tileBody = null;
+} ) => {
+	let tileBody: ReactNode = null;
 
-	if ( rows?.length > 0 ) {
+	if ( rows.length > 0 ) {
 		tileBody = rows
 			.slice( 0, limit || rows.length )
 			.map( ( row, rowIndex ) => (
@@ -61,14 +92,15 @@ export default function MetricTileTable( {
 											fieldValue={ fieldValue }
 										/>
 									) }
-									{ ! Component && fieldValue }
+									{ ! Component &&
+										( fieldValue as ReactNode ) }
 								</div>
 							);
 						}
 					) }
 				</div>
 			) );
-	} else if ( !! ZeroState ) {
+	} else if ( ZeroState ) {
 		tileBody = (
 			<div className="googlesitekit-table__body-row googlesitekit-table__body-row--no-data">
 				<div className="googlesitekit-table__body-zero-data">
@@ -79,6 +111,7 @@ export default function MetricTileTable( {
 	}
 
 	return (
+		// @ts-expect-error - The `MetricTileWrapper` component is not typed yet.
 		<MetricTileWrapper
 			className="googlesitekit-km-widget-tile--table"
 			{ ...props }
@@ -88,11 +121,6 @@ export default function MetricTileTable( {
 			</div>
 		</MetricTileWrapper>
 	);
-}
-
-MetricTileTable.propTypes = {
-	rows: PropTypes.array,
-	columns: PropTypes.array,
-	limit: PropTypes.number,
-	ZeroState: PropTypes.elementType,
 };
+
+export default MetricTileTable;

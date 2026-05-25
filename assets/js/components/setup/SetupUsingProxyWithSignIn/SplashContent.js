@@ -25,37 +25,27 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	useCallback,
-	Fragment,
-} from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Checkbox from '@/js/googlesitekit/components-gm2/Checkbox';
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
-import Badge from '@/js/components/Badge';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
+import { Cell, Row } from '@/js/material-components';
+import SplashBackground from '@/svg/graphics/splash-graphic.svg';
+import AnalyticsOptIn from './AnalyticsOptIn';
 import ResetNotice from './ResetNotice';
 import SplashScreenshotSVG from './SetupFlowSVG';
-import SplashBackground from '@/svg/graphics/splash-graphic.svg';
-import Typography from '@/js/components/Typography';
-import useFormValue from '@/js/hooks/useFormValue';
-import useViewContext from '@/js/hooks/useViewContext';
-import {
-	ANALYTICS_NOTICE_CHECKBOX,
-	ANALYTICS_NOTICE_FORM_NAME,
-} from '@/js/components/setup/constants';
-import { Cell, Row } from '@/js/material-components';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
-import { useDispatch, useSelect } from '@/js/googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { trackEvent } from '@/js/util';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -70,64 +60,28 @@ export default function SplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
-	const viewContext = useViewContext();
-
 	// Add the initial setup class to the body when the component mounts.
 	useMount( () => {
 		global.document.body.classList.add( 'googlesitekit-setup-flow' );
 	} );
 
-	const { setValues } = useDispatch( CORE_FORMS );
-
-	const checked = useFormValue(
-		ANALYTICS_NOTICE_FORM_NAME,
-		ANALYTICS_NOTICE_CHECKBOX
-	);
-
-	const handleOnChange = useCallback(
-		( event ) => {
-			setValues( ANALYTICS_NOTICE_FORM_NAME, {
-				[ ANALYTICS_NOTICE_CHECKBOX ]: event.target.checked,
-			} );
-		},
-		[ setValues ]
-	);
+	const breakpoint = useBreakpoint();
+	const isMobileOrTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
-		: { smSize: 4, mdSize: 7, lgSize: 6 };
-
-	const learnMoreLink = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'setup-update-ga4-account'
-		);
-	} );
+		: { smSize: 4, mdSize: 8, lgSize: 6 };
 
 	return (
 		<Fragment>
 			<ResetNotice />
 			<Row className="googlesitekit-setup__content">
-				<Cell
-					smSize={ 4 }
-					mdSize={ 8 }
-					lgSize={ 6 }
-					className="googlesitekit-setup__icon"
-				>
-					<SplashBackground
-						className="googlesitekit-setup__splash-graphic-background"
-						width="508"
-						height="466"
-					/>
-					<div className="googlesitekit-setup__splash-graphic-screenshot">
-						<SplashScreenshotSVG />
-					</div>
-				</Cell>
-
 				<Cell { ...cellDetailsProp }>
 					<Typography
 						as="h1"
 						className="googlesitekit-setup__title"
-						size="medium"
+						size={ isMobileOrTablet ? 'small' : 'medium' }
 						type="headline"
 					>
 						{ title }
@@ -187,58 +141,26 @@ export default function SplashContent( {
 						) }
 
 					{ analyticsModuleAvailable && ! analyticsModuleActive && (
-						<div className="googlesitekit-setup__analytics-opt-in-wrapper">
-							<Checkbox
-								id="googlesitekit-analytics-setup-opt-in"
-								name="googlesitekit-analytics-setup-opt-in"
-								description={ createInterpolateElement(
-									__(
-										'To get better insights about your site, Site Kit will update your Analytics account, for example by enabling enhanced measurement. <LearnMoreLink /> <RecommendedBadge />',
-										'google-site-kit'
-									),
-									{
-										LearnMoreLink: (
-											<Link
-												href={ learnMoreLink }
-												onClick={ () => {
-													trackEvent(
-														viewContext,
-														'click_learn_more_link',
-														'analytics_checkbox'
-													);
-												} }
-												external
-											>
-												{ __(
-													'Learn more',
-													'google-site-kit'
-												) }
-											</Link>
-										),
-										RecommendedBadge: (
-											<Badge
-												className="googlesitekit-splash__analytics-recommended-badge"
-												label={ __(
-													'Recommended',
-													'google-site-kit'
-												) }
-											/>
-										),
-									}
-								) }
-								checked={ checked }
-								onChange={ handleOnChange }
-								value="1"
-							>
-								{ __(
-									'Get visitor insights by connecting Google Analytics as part of setup',
-									'google-site-kit'
-								) }
-							</Checkbox>
-						</div>
+						<AnalyticsOptIn />
 					) }
 
 					<CompatibilityChecks>{ children }</CompatibilityChecks>
+				</Cell>
+
+				<Cell
+					smSize={ 4 }
+					mdSize={ 8 }
+					lgSize={ 6 }
+					className="googlesitekit-setup__screenshot"
+				>
+					<SplashBackground
+						className="googlesitekit-setup__splash-graphic-background"
+						width="508"
+						height="466"
+					/>
+					<div className="googlesitekit-setup__splash-graphic-screenshot">
+						<SplashScreenshotSVG />
+					</div>
 				</Cell>
 			</Row>
 		</Fragment>

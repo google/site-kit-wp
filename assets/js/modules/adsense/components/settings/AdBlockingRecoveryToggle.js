@@ -31,21 +31,20 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import P from '@/js/components/Typography/P';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import {
 	AD_BLOCKING_FORM_SETTINGS,
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import { parseAccountIDFromExistingTag } from '@/js/modules/adsense/util';
-import Notice from '@/js/components/Notice';
-import useFormValue from '@/js/hooks/useFormValue';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { trackEvent } from '@/js/util';
 
 export default function AdBlockingRecoveryToggle() {
 	const viewContext = useViewContext();
@@ -73,16 +72,14 @@ export default function AdBlockingRecoveryToggle() {
 	const learnMoreURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getDocumentationLinkURL( 'ad-blocking-recovery' )
 	);
-	const adBlockingRecoveryToggle = useFormValue(
-		AD_BLOCKING_FORM_SETTINGS,
-		'adBlockingRecoveryToggle'
-	);
-	const adBlockingRecoveryErrorToggle = useFormValue(
-		AD_BLOCKING_FORM_SETTINGS,
-		'adBlockingRecoveryErrorToggle'
-	);
+	const [ adBlockingRecoveryToggle, setAdBlockingRecoveryToggle ] =
+		useFormValue( AD_BLOCKING_FORM_SETTINGS, 'adBlockingRecoveryToggle' );
+	const [ adBlockingRecoveryErrorToggle, setAdBlockingRecoveryErrorToggle ] =
+		useFormValue(
+			AD_BLOCKING_FORM_SETTINGS,
+			'adBlockingRecoveryErrorToggle'
+		);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const {
 		setUseAdBlockingRecoverySnippet,
 		setUseAdBlockingRecoveryErrorSnippet,
@@ -90,9 +87,7 @@ export default function AdBlockingRecoveryToggle() {
 
 	function handleAdBlockingRecoveryToggleClick() {
 		const toggleValue = ! adBlockingRecoveryToggle;
-		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockingRecoveryToggle: toggleValue,
-		} );
+		setAdBlockingRecoveryToggle( toggleValue );
 		setUseAdBlockingRecoverySnippet( toggleValue );
 
 		trackEvent(
@@ -104,9 +99,7 @@ export default function AdBlockingRecoveryToggle() {
 
 	function handleErrorProtectionToggleClick() {
 		const toggleValue = ! adBlockingRecoveryErrorToggle;
-		setValues( AD_BLOCKING_FORM_SETTINGS, {
-			adBlockingRecoveryErrorToggle: toggleValue,
-		} );
+		setAdBlockingRecoveryErrorToggle( toggleValue );
 		setUseAdBlockingRecoveryErrorSnippet( toggleValue );
 
 		trackEvent(
@@ -117,12 +110,8 @@ export default function AdBlockingRecoveryToggle() {
 	}
 
 	useMount( () => {
-		const initialToggleValues = {
-			adBlockingRecoveryToggle: adBlockingRecoverySnippet,
-			adBlockingRecoveryErrorToggle: adBlockingRecoveryErrorSnippet,
-		};
-
-		setValues( AD_BLOCKING_FORM_SETTINGS, initialToggleValues );
+		setAdBlockingRecoveryToggle( adBlockingRecoverySnippet );
+		setAdBlockingRecoveryErrorToggle( adBlockingRecoveryErrorSnippet );
 	} );
 
 	let existingAdBlockingRecoveryTagMessage;

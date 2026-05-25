@@ -17,16 +17,12 @@
  */
 
 /**
- * Node dependencies
- */
-const path = require( 'path' );
-
-/**
  * External dependencies
  */
-const ESLintPlugin = require( 'eslint-webpack-plugin' );
-const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
 const CreateFileWebpack = require( 'create-file-webpack' );
+const ESLintPlugin = require( 'eslint-webpack-plugin' );
+const path = require( 'path' );
+const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -61,6 +57,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-datastore-location':
 				'./js/googlesitekit-datastore-location.js',
 			'googlesitekit-datastore-ui': './js/googlesitekit-datastore-ui.js',
+			'googlesitekit-datastore-pdf':
+				'./js/googlesitekit-datastore-pdf.ts',
 			'googlesitekit-modules': './js/googlesitekit-modules.js',
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.js',

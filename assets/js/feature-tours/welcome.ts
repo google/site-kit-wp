@@ -26,7 +26,32 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import {
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
 import { WELCOME_TOUR } from './constants';
+
+interface WelcomeTourStep {
+	slug?: string;
+	target: string;
+	floaterProps: {
+		target: string;
+		styles?: {
+			arrow: {
+				margin: number;
+			};
+		};
+	};
+	title: string;
+	content: string;
+	offset: number;
+	spotlightPadding: number;
+	placement: string;
+	isResponsive?: boolean;
+}
 
 /**
  * Gets the dashboard sharing step configuration based on user context.
@@ -50,6 +75,11 @@ function getDashboardSharingStep(
 			target: '.googlesitekit-header',
 			floaterProps: {
 				target: '.googlesitekit-view-only-menu',
+				styles: {
+					arrow: {
+						margin: 8,
+					},
+				},
 			},
 			title: __(
 				'Get instant access to insights, no setup',
@@ -122,6 +152,34 @@ function getActivateAnalyticsStep() {
 }
 
 /**
+ * Returns the top search queries step.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The top search queries step object.
+ */
+function getTopSearchQueriesStep() {
+	return {
+		target: '.googlesitekit-widget--searchConsolePopularKeywords',
+		floaterProps: {
+			target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
+		},
+		title: __(
+			'Track how your site is doing on Search',
+			'google-site-kit'
+		),
+		content: __(
+			'Know what’s driving growth and bringing your site more visitors',
+			'google-site-kit'
+		),
+		offset: 0,
+		spotlightPadding: 0,
+		placement: 'top',
+		isResponsive: true,
+	};
+}
+
+/**
  * Gets the welcome tour configuration based on the current user context.
  *
  * @since 1.173.0
@@ -131,6 +189,8 @@ function getActivateAnalyticsStep() {
  * @param {boolean} params.canAuthenticate                        Whether the user can authenticate.
  * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
  * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
+ * @param {boolean} params.isKeyMetricsWidgetPresent              Whether the key metrics widget is present.
+ * @param {boolean} params.isAudienceSegmentationWidgetPresent    Whether audience segmentation widget is present.
  * @return {Object} The welcome tour configuration object.
  */
 export function getWelcomeTour( {
@@ -138,14 +198,18 @@ export function getWelcomeTour( {
 	canAuthenticate,
 	isAnalyticsConnected,
 	isActivateAnalyticsNotificationPresent,
+	isKeyMetricsWidgetPresent,
+	isAudienceSegmentationWidgetPresent,
 }: {
 	isViewOnly: boolean;
 	canAuthenticate: boolean;
 	isAnalyticsConnected: boolean;
 	isActivateAnalyticsNotificationPresent: boolean;
+	isKeyMetricsWidgetPresent: boolean;
+	isAudienceSegmentationWidgetPresent: boolean;
 } ) {
 	if ( ! isAnalyticsConnected ) {
-		const steps = [
+		const steps: WelcomeTourStep[] = [
 			{
 				target: '.googlesitekit-widget--searchFunnelGA4',
 				floaterProps: {
@@ -164,24 +228,7 @@ export function getWelcomeTour( {
 				placement: 'top',
 				isResponsive: true,
 			},
-			{
-				target: '.googlesitekit-widget--searchConsolePopularKeywords',
-				floaterProps: {
-					target: '.googlesitekit-widget--searchConsolePopularKeywords .googlesitekit-table__wrapper',
-				},
-				title: __(
-					'Track how your site is doing on Search',
-					'google-site-kit'
-				),
-				content: __(
-					'Know what’s driving growth and bringing your site more visitors',
-					'google-site-kit'
-				),
-				offset: 0,
-				spotlightPadding: 0,
-				placement: 'top',
-				isResponsive: true,
-			},
+			getTopSearchQueriesStep(),
 			getDashboardSharingStep( isViewOnly, canAuthenticate, false ),
 		];
 
@@ -199,6 +246,13 @@ export function getWelcomeTour( {
 			],
 			gaEventCategory: ( viewContext: string ) =>
 				`${ viewContext }_dashboard-tour-sc`,
+			// Preload the widget areas that contain the targets referenced
+			// in the tour steps so they are visible immediately when the
+			// step is triggered, instead of waiting to be scrolled into view.
+			preloadWidgetAreas: [
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+			],
 			steps,
 		};
 	}
@@ -212,8 +266,17 @@ export function getWelcomeTour( {
 		],
 		gaEventCategory: ( viewContext: string ) =>
 			`${ viewContext }_dashboard-tour-ga4`,
+		// Preload the widget areas that contain the targets referenced
+		// in the tour steps so they are visible immediately when the
+		// step is triggered, instead of waiting to be scrolled into view.
+		preloadWidgetAreas: [
+			AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION,
+			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+		],
 		steps: [
-			{
+			isKeyMetricsWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',
 				floaterProps: {
 					target: '.googlesitekit-km-change-metrics-cta',
@@ -249,7 +312,7 @@ export function getWelcomeTour( {
 				placement: 'top',
 				isResponsive: true,
 			},
-			{
+			isAudienceSegmentationWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
 				floaterProps: {
 					target: '.googlesitekit-widget-audience-tiles__body .googlesitekit-widget--analyticsAudienceTiles:last-child .googlesitekit-audience-segmentation-tile__header-title',
@@ -267,6 +330,9 @@ export function getWelcomeTour( {
 				placement: 'top',
 				isResponsive: true,
 			},
+			( ! isKeyMetricsWidgetPresent ||
+				! isAudienceSegmentationWidgetPresent ) &&
+				getTopSearchQueriesStep(),
 			{
 				target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
 				floaterProps: {
@@ -286,6 +352,6 @@ export function getWelcomeTour( {
 				isResponsive: true,
 			},
 			getDashboardSharingStep( isViewOnly, canAuthenticate, true ),
-		],
+		].filter( Boolean ),
 	};
 }

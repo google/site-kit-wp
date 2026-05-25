@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -34,12 +32,12 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  */
 import {
 	commonActions,
-	createRegistrySelector,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '@/js/util';
 import { negateDefined } from '@/js/util/negate';
+import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY, CORE_SITE } from './constants';
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
@@ -92,6 +90,7 @@ export const actions = {
 		};
 	},
 
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets `siteKitAutoUpdatesEnabled` value; if set to `true` this will
 	 * enable auto-updates for Site Kit. Set to `false` to disable this

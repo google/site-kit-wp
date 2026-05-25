@@ -24,15 +24,15 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import BannerModal from '@/js/components/BannerModal/index';
-import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.svg';
 import Link from '@/js/components/Link';
+import SiteGoalsIntroModalGraphic from '@/svg/graphics/site-goals-intro-modal.svg';
 import type { IntroModalVariantProps } from './types';
 
 const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
@@ -57,7 +57,6 @@ const IntroModalEcommerceAndLead: FC< IntroModalVariantProps > = ( {
 					b: <strong />,
 					a: (
 						<Link
-							// @ts-expect-error `Link` component is not currently typed.
 							href="#site-goals" // TODO: Update with actual link to site goals documentation.
 							aria-label={ __(
 								'Learn more about site goals',

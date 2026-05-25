@@ -64,17 +64,20 @@ class Email {
 	/**
 	 * Sends an email using wp_mail with error tracking.
 	 *
-	 * Wraps wp_mail with a scoped listener for wp_mail_failed hook
-	 * to capture any errors during sending. When text_content is provided,
-	 * it will be set as the AltBody for multipart/alternative MIME emails.
+	 * Captures wp_mail_failed errors during sending. Adds a default
+	 * Content-Type: text/html; charset=UTF-8 header when no caller header is
+	 * supplied, so wp_mail replacements that bypass PHPMailer still deliver
+	 * HTML. When text_content is provided, it's set as the AltBody for
+	 * multipart/alternative MIME emails.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
 	 * @param string       $content      Message contents (HTML).
-	 * @param array        $headers      Optional. Additional headers. Default empty array.
+	 * @param array        $headers      Optional. Additional headers. A default text/html Content-Type is added when none is supplied. Default empty array.
 	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool|WP_Error True if the email was sent successfully, WP_Error on failure.
 	 */
@@ -98,12 +101,16 @@ class Email {
 	/**
 	 * Sends an email via wp_mail while capturing any errors.
 	 *
-	 * Attaches a temporary listener to the wp_mail_failed hook to capture
-	 * any errors that occur during sending. When text_content is provided,
-	 * uses phpmailer_init hook to set AltBody for multipart MIME emails.
+	 * Attaches a temporary listener to wp_mail_failed to capture errors during
+	 * sending. Injects a default Content-Type: text/html header when no caller
+	 * Content-Type is present, so wp_mail replacements that respect the headers
+	 * argument deliver HTML. When text_content is set, uses phpmailer_init to
+	 * attach it as AltBody. PHPMailer then upgrades the content type to
+	 * multipart/alternative.
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
+	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -112,8 +119,18 @@ class Email {
 	 * @param string       $text_content Optional. Plain text alternative content. Default empty string.
 	 * @return bool Whether the email was sent successfully.
 	 */
-	protected function send_email_and_catch_errors( $to, $subject, $content, $headers, $text_content = '' ) {
+	protected function send_email_and_catch_errors( $to, $subject, $content, $headers = array(), $text_content = '' ) {
 		add_action( 'wp_mail_failed', array( $this, 'set_last_error' ) );
+
+		if ( ! is_array( $headers ) ) {
+			$headers = array();
+		}
+
+		// Default to text/html so wp_mail replacements that don't fire
+		// phpmailer_init still deliver as HTML.
+		if ( ! $this->headers_contain_content_type( $headers ) ) {
+			$headers[] = 'Content-Type: text/html; charset=UTF-8';
+		}
 
 		// Set up AltBody for multipart MIME email if text content is provided.
 		$alt_body_callback = null;
@@ -134,6 +151,30 @@ class Email {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Checks whether the headers array already contains a Content-Type header.
+	 *
+	 * Detection is case-insensitive and skips non-string entries.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $headers Headers array passed to wp_mail.
+	 * @return bool True if a Content-Type header is present, false otherwise.
+	 */
+	private function headers_contain_content_type( array $headers ): bool {
+		foreach ( $headers as $header ) {
+			if ( ! is_string( $header ) ) {
+				continue;
+			}
+
+			if ( 0 === stripos( ltrim( $header ), 'Content-Type:' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

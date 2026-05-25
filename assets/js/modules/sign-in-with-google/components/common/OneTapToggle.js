@@ -23,13 +23,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Switch, HelperText } from 'googlesitekit-components';
+import { HelperText, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import Link from '@/js/components/Link';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
+import { trackEvent } from '@/js/util';
 
 export default function OneTapToggle() {
 	const viewContext = useViewContext();

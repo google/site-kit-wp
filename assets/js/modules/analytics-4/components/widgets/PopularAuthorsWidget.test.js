@@ -19,34 +19,34 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-	freezeFetch,
-	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import PopularAuthorsWidget from './PopularAuthorsWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
+import { render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+	provideUserAuthentication,
+} from '../../../../../../tests/js/utils';
+import PopularAuthorsWidget from './PopularAuthorsWidget';
 
 describe( 'PopularAuthorsWidget', () => {
 	let registry;
@@ -80,11 +80,12 @@ describe( 'PopularAuthorsWidget', () => {
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveIsCustomDimensionGatheringData(
-				KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
-					.requiredCustomDimensions[ 0 ],
-				false
-			);
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension:
+					KEY_METRICS_WIDGETS[ KM_ANALYTICS_POPULAR_AUTHORS ]
+						.requiredCustomDimensions[ 0 ],
+				gatheringData: false,
+			} );
 	} );
 
 	it( 'should render correctly with the expected metrics', async () => {

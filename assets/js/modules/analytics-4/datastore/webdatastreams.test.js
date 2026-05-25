@@ -25,6 +25,7 @@ import { pick } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -34,9 +35,8 @@ import {
 	untilResolved,
 	waitForDefaultTimeouts,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
 import * as fixtures from './__fixtures__';
-import { populateAccountSummaries } from '@/js/modules/analytics-4/utils/account';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 webdatastreams', () => {
 	let registry;

@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { Page, ElementHandle } from 'puppeteer';
+/**
+ * External dependencies
+ */
+import { ElementHandle, Page } from 'puppeteer';
 
 /**
  * Asserts the given page/element has the given value.

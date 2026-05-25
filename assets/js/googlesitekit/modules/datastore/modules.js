@@ -16,14 +16,12 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
-import memize from 'memize';
 import invariant from 'invariant';
-import { defaults, merge, isPlainObject } from 'lodash';
+import { defaults, isPlainObject, merge } from 'lodash';
+import memize from 'memize';
 
 /**
  * WordPress dependencies
@@ -31,30 +29,30 @@ import { defaults, merge, isPlainObject } from 'lodash';
 // This is used for JSDoc purposes.
 // eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	createRegistryControl,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
+import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { listFormat } from '@/js/util';
 import {
 	CORE_MODULES,
 	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
 } from './constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { listFormat } from '@/js/util';
-import DefaultSettingsSetupIncomplete from '@/js/components/settings/DefaultSettingsSetupIncomplete';
-import DefaultSettingsStatus from '@/js/components/settings/SettingsActiveModule/DefaultSettingsStatus';
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -242,10 +240,10 @@ const baseActions = {
 	 *                  consent screen.
 	 */
 	*activateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation(
+		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
-			true
-		);
+			active: true,
+		} );
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
@@ -272,10 +270,10 @@ const baseActions = {
 	 * @return {Object}      Object with `{response, error}`.
 	 */
 	*deactivateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation(
+		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
-			false
-		);
+			active: false,
+		} );
 
 		return { response, error };
 	},
@@ -289,16 +287,17 @@ const baseActions = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param {string}  slug   Slug of the module to activate/deactivate.
-	 * @param {boolean} active `true` to activate; `false` to deactivate.
+	 * @param {Object}  options        Options object.
+	 * @param {string}  options.slug   Slug of the module to activate/deactivate.
+	 * @param {boolean} options.active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with `{response, error}`.
 	 */
 	setModuleActivation: createValidatedAction(
-		( slug, active ) => {
+		( { slug, active } ) => {
 			invariant( slug, 'slug is required.' );
 			invariant( active !== undefined, 'active is required.' );
 		},
-		function* ( slug, active ) {
+		function* ( { slug, active } ) {
 			const { response, error } =
 				yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
 					slug,

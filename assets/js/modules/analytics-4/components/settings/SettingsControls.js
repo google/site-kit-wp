@@ -22,25 +22,33 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	AccountSelect,
+	PropertySelect,
+	WebDataStreamNameInput,
+	WebDataStreamSelect,
+} from '@/js/modules/analytics-4/components/common';
 import {
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	AccountSelect,
-	PropertySelect,
-	WebDataStreamSelect,
-	WebDataStreamNameInput,
-} from '@/js/modules/analytics-4/components/common';
-import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import AnalyticsSettingsNotice from './AnalyticsSettingsNotice';
 import PropertyOrWebDataStreamNotAvailableError from './PropertyOrWebDataStreamNotAvailableError';
+import SettingsUseSnippetSwitch from './SettingsUseSnippetSwitch';
 
 export default function SettingsControls( props ) {
+	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
+
 	const { hasModuleAccess } = props;
 
 	const propertyID = useSelect( ( select ) =>
@@ -62,22 +70,51 @@ export default function SettingsControls( props ) {
 				isDisabled={ ! propertyID }
 			/>
 
-			<div className="googlesitekit-setup-module__inputs">
-				<AccountSelect hasModuleAccess={ hasModuleAccess } />
-				<PropertySelect
-					hasModuleAccess={ hasModuleAccess }
-					isDisabled={ ! propertyID }
-				/>
-				<WebDataStreamSelect
-					hasModuleAccess={ hasModuleAccess }
-					isDisabled={ ! propertyID }
-				/>
-			</div>
-
-			{ webDataStreamID === WEBDATASTREAM_CREATE && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<WebDataStreamNameInput />
+			{ setupFlowRefreshEnabled && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--grid-layout">
+					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--account">
+						<AccountSelect hasModuleAccess={ hasModuleAccess } />
+					</div>
+					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--property">
+						<PropertySelect
+							hasModuleAccess={ hasModuleAccess }
+							isDisabled={ ! propertyID }
+						/>
+					</div>
+					<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
+						<WebDataStreamSelect
+							hasModuleAccess={ hasModuleAccess }
+							isDisabled={ ! propertyID }
+						/>
+					</div>
+					{ webDataStreamID === WEBDATASTREAM_CREATE && (
+						<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream-name">
+							<WebDataStreamNameInput />
+						</div>
+					) }
 				</div>
+			) }
+
+			{ ! setupFlowRefreshEnabled && (
+				<Fragment>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect hasModuleAccess={ hasModuleAccess } />
+						<PropertySelect
+							hasModuleAccess={ hasModuleAccess }
+							isDisabled={ ! propertyID }
+						/>
+						<WebDataStreamSelect
+							hasModuleAccess={ hasModuleAccess }
+							isDisabled={ ! propertyID }
+						/>
+					</div>
+
+					{ webDataStreamID === WEBDATASTREAM_CREATE && (
+						<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+							<WebDataStreamNameInput />
+						</div>
+					) }
+				</Fragment>
 			) }
 
 			<AnalyticsSettingsNotice

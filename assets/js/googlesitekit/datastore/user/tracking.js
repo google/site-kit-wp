@@ -16,20 +16,18 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createReducer,
-	commonActions,
 	combineStores,
+	commonActions,
+	createReducer,
 } from 'googlesitekit-data';
-import { CORE_USER } from './constants';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_USER } from './constants';
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
 const fetchStoreReducerCallback = createReducer( ( state, tracking ) => {
@@ -62,6 +60,7 @@ const baseInitialState = {
 const SET_TRACKING_ENABLED_SAVING_ACTION = 'SET_TRACKING_ENABLED_SAVING_ACTION';
 
 const baseActions = {
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Sets user tracking settings.
 	 *

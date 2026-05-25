@@ -25,35 +25,35 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserAuthentication,
-	provideUserInfo,
-	provideUserCapabilities,
-	muteFetch,
-	fireEvent,
-	provideSiteInfo,
-	waitFor,
-	within,
-	provideModuleRegistrations,
-	act,
-} from '../../../../../tests/js/test-utils';
-import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
-import {
 	ANALYTICS_NOTICE_CHECKBOX,
 	ANALYTICS_NOTICE_FORM_NAME,
 } from '@/js/components/setup/constants';
+import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
-import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	muteFetch,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
+	provideUserInfo,
+	render,
+	waitFor,
+	within,
+} from '../../../../../tests/js/test-utils';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
@@ -82,6 +82,9 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAudienceSettings( {} );
 
 		muteFetch(
 			new RegExp( '^/google-site-kit/v1/core/site/data/connection' )
@@ -450,7 +453,13 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-			fireEvent.click( getByRole( 'link', { name: /Learn more/i } ) );
+			const learnMoreLink = getByRole( 'link', { name: /Learn more/i } );
+			// Add click handler to prevent navigation.
+			learnMoreLink.addEventListener( 'click', ( event ) =>
+				event.preventDefault()
+			);
+
+			fireEvent.click( learnMoreLink );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 

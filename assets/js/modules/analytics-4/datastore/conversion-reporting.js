@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -27,6 +25,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -39,15 +38,14 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { safelySort } from '@/js/util';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
-import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**
@@ -191,29 +189,34 @@ export const selectors = {
 	 *
 	 * @since 1.141.0
 	 *
-	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @param {Object}  options              Options object.
+	 * @param {boolean} options.useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} TRUE if current site purpose will have any ACR key metrics widgets assigned to it, FALSE otherwise, and undefined if metrics are not loaded.
 	 */
 	haveConversionEventsForTailoredMetrics: createRegistrySelector(
-		( select ) => ( state, useNewEvents ) => {
-			const conversionReportingEventsChange = useNewEvents
-				? select(
-						MODULES_ANALYTICS_4
-				  ).getConversionReportingEventsChange()?.newEvents
-				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+		( select ) =>
+			( state, { useNewEvents } = {} ) => {
+				const conversionReportingEventsChange = useNewEvents
+					? select(
+							MODULES_ANALYTICS_4
+					  ).getConversionReportingEventsChange()?.newEvents
+					: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
 
-			const currentTailoredMetrics =
-				select( CORE_USER ).getAnswerBasedMetrics();
+				const currentTailoredMetrics =
+					select( CORE_USER ).getAnswerBasedMetrics();
 
-			const tailoredMetricsWithNewEvents = select(
-				CORE_USER
-			).getAnswerBasedMetrics( null, conversionReportingEventsChange );
+				const tailoredMetricsWithNewEvents = select(
+					CORE_USER
+				).getAnswerBasedMetrics(
+					null,
+					conversionReportingEventsChange
+				);
 
-			return tailoredMetricsWithNewEvents?.some(
-				( metric, index ) =>
-					metric !== currentTailoredMetrics?.[ index ]
-			);
-		}
+				return tailoredMetricsWithNewEvents?.some(
+					( metric, index ) =>
+						metric !== currentTailoredMetrics?.[ index ]
+				);
+			}
 	),
 
 	/**
@@ -340,31 +343,33 @@ export const selectors = {
 	 *
 	 * @since 1.142.0
 	 *
-	 * @param {boolean} useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
+	 * @param {Object}  options              Options object.
+	 * @param {boolean} options.useNewEvents Flag inclusion of detected new events, otherwise initial detected events will be used.
 	 * @return {boolean|undefined} `true` if there are any ACR key metrics based on the users existing selected metrics, `false` otherwise. Will return `undefined` if the data is not loaded yet.
 	 */
 	haveConversionEventsForUserPickedMetrics: createRegistrySelector(
-		( select ) => ( state, useNewEvents ) => {
-			const conversionEventWidgets =
-				select(
-					MODULES_ANALYTICS_4
-				).getKeyMetricsConversionEventWidgets();
-
-			const userPickedKeyMetrics =
-				select( CORE_USER ).getUserPickedMetrics();
-
-			const conversionReportingEventsChange = useNewEvents
-				? select(
+		( select ) =>
+			( state, { useNewEvents } = {} ) => {
+				const conversionEventWidgets =
+					select(
 						MODULES_ANALYTICS_4
-				  ).getConversionReportingEventsChange()?.newEvents
-				: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+					).getKeyMetricsConversionEventWidgets();
 
-			return conversionReportingEventsChange?.some( ( event ) =>
-				conversionEventWidgets[ event ]?.some( ( widget ) => {
-					return ! userPickedKeyMetrics?.includes( widget );
-				} )
-			);
-		}
+				const userPickedKeyMetrics =
+					select( CORE_USER ).getUserPickedMetrics();
+
+				const conversionReportingEventsChange = useNewEvents
+					? select(
+							MODULES_ANALYTICS_4
+					  ).getConversionReportingEventsChange()?.newEvents
+					: select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+				return conversionReportingEventsChange?.some( ( event ) =>
+					conversionEventWidgets[ event ]?.some( ( widget ) => {
+						return ! userPickedKeyMetrics?.includes( widget );
+					} )
+				);
+			}
 	),
 
 	/**
@@ -394,6 +399,34 @@ export const selectors = {
 
 		return undefined;
 	} ),
+
+	/**
+	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} primaryEvent The primary ecommerce event to exclude.
+	 * @return {(Array|undefined)} Array of secondary ecommerce event names, or undefined if events not yet loaded.
+	 */
+	getSecondaryEcommerceEvents: createRegistrySelector(
+		( select ) => ( state, primaryEvent ) => {
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
+			const primaryIndex =
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS.indexOf( primaryEvent );
+
+			// Secondary events are those below the primary in hierarchy order.
+			return CONVERSION_REPORTING_ECOMMERCE_EVENTS.slice(
+				primaryIndex + 1
+			).filter( ( event ) => detectedEvents.includes( event ) );
+		}
+	),
 
 	/**
 	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.
@@ -484,7 +517,9 @@ export const selectors = {
 
 			const userPickedMetrics = getUserPickedMetrics();
 			const haveNewConversionEventsForUserPickedMetrics =
-				haveConversionEventsForUserPickedMetrics( true );
+				haveConversionEventsForUserPickedMetrics( {
+					useNewEvents: true,
+				} );
 
 			if (
 				userPickedMetrics?.length &&
@@ -518,7 +553,9 @@ export const selectors = {
 			// metrics CTA", don't show the "View metrics" variation.
 			if (
 				! userPickedMetrics?.length &&
-				( haveConversionEventsForTailoredMetrics( true ) ||
+				( haveConversionEventsForTailoredMetrics( {
+					useNewEvents: true,
+				} ) ||
 					haveAllConversionEventMetrics )
 			) {
 				return false;

@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable sitekit/jsdoc-no-unnamed-boolean-params */
-
 /**
  * External dependencies
  */
@@ -28,16 +26,16 @@ import invariant from 'invariant';
  */
 import { set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getDateString } from '@/js/util';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 const RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA =
 	'RECEIVE_CUSTOM_DIMENSION_GATHERING_DATA';
@@ -92,11 +90,15 @@ const baseActions = {
 	 * @since 1.113.0
 	 * @private
 	 *
-	 * @param {string}  customDimension Custom dimension slug.
-	 * @param {boolean} gatheringData   Gathering data.
+	 * @param {Object}  options                 Options object.
+	 * @param {string}  options.customDimension Custom dimension slug.
+	 * @param {boolean} options.gatheringData   Gathering data.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveIsCustomDimensionGatheringData( customDimension, gatheringData ) {
+	receiveIsCustomDimensionGatheringData( {
+		customDimension,
+		gatheringData,
+	} = {} ) {
 		invariant(
 			'string' === typeof customDimension && customDimension.length > 0,
 			'customDimension must be a non-empty string.'
@@ -136,10 +138,10 @@ const baseActions = {
 				customDimension
 			)
 		) {
-			yield baseActions.receiveIsCustomDimensionGatheringData(
+			yield baseActions.receiveIsCustomDimensionGatheringData( {
 				customDimension,
-				true
-			);
+				gatheringData: true,
+			} );
 			return;
 		}
 
@@ -148,10 +150,10 @@ const baseActions = {
 		);
 
 		if ( ! select( CORE_USER ).isAuthenticated() ) {
-			yield baseActions.receiveIsCustomDimensionGatheringData(
+			yield baseActions.receiveIsCustomDimensionGatheringData( {
 				customDimension,
-				true
-			);
+				gatheringData: true,
+			} );
 			return;
 		}
 
@@ -162,10 +164,10 @@ const baseActions = {
 		);
 
 		if ( ! reportArgs ) {
-			yield baseActions.receiveIsCustomDimensionGatheringData(
+			yield baseActions.receiveIsCustomDimensionGatheringData( {
 				customDimension,
-				true
-			);
+				gatheringData: true,
+			} );
 			return;
 		}
 
@@ -179,10 +181,10 @@ const baseActions = {
 
 		const isGatheringData = hasReportError || ! report?.rows?.length;
 
-		yield baseActions.receiveIsCustomDimensionGatheringData(
+		yield baseActions.receiveIsCustomDimensionGatheringData( {
 			customDimension,
-			isGatheringData
-		);
+			gatheringData: isGatheringData,
+		} );
 
 		if ( ! isGatheringData ) {
 			yield fetchSaveCustomDimensionDataAvailableStateStore.actions.fetchSaveCustomDimensionDataAvailableState(
@@ -235,10 +237,10 @@ const baseResolvers = {
 
 		// If dataAvailableOnLoad is true, set gatheringData to false and do nothing else.
 		if ( dataAvailableOnLoad ) {
-			yield baseActions.receiveIsCustomDimensionGatheringData(
+			yield baseActions.receiveIsCustomDimensionGatheringData( {
 				customDimension,
-				false
-			);
+				gatheringData: false,
+			} );
 			return;
 		}
 

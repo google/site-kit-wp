@@ -17,23 +17,25 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ElementType, FC } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useEffect } from '@wordpress/element';
 
 /**
- * External dependencies
- */
-import { FC, ElementType } from 'react';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { useRefocus } from '@/js/hooks/useRefocus';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 	MODULES_READER_REVENUE_MANAGER,
@@ -42,12 +44,9 @@ import {
 	READER_REVENUE_MANAGER_NOTICES_FORM,
 	SYNC_PUBLICATION,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import useFormValue from '@/js/hooks/useFormValue';
-import PendingVerification from './PendingVerification';
 import OnboardingActionRequired from './OnboardingActionRequired';
 import OnboardingComplete from './OnboardingComplete';
-import PolicyViolation from '@/js/modules/reader-revenue-manager/components/dashboard/RRMSetupSuccessSubtleNotification/PolicyViolation';
+import PendingVerification from './PendingVerification';
 
 const {
 	ONBOARDING_COMPLETE,
@@ -102,10 +101,8 @@ const RRMSetupSuccessSubtleNotification: FC<
 		[]
 	);
 
-	const shouldSyncPublicationValue = useFormValue(
-		READER_REVENUE_MANAGER_NOTICES_FORM,
-		SYNC_PUBLICATION
-	);
+	const [ shouldSyncPublicationValue, setShouldSyncPublicationValue ] =
+		useFormValue( READER_REVENUE_MANAGER_NOTICES_FORM, SYNC_PUBLICATION );
 
 	const shouldSyncPublication =
 		shouldSyncPublicationValue &&
@@ -129,7 +126,6 @@ const RRMSetupSuccessSubtleNotification: FC<
 		[]
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );
 	const { syncPublicationOnboardingState } = useDispatch(
 		MODULES_READER_REVENUE_MANAGER
@@ -145,9 +141,7 @@ const RRMSetupSuccessSubtleNotification: FC<
 		if (
 			actionableOnboardingStates.includes( publicationOnboardingState )
 		) {
-			setValues( READER_REVENUE_MANAGER_NOTICES_FORM, {
-				[ SYNC_PUBLICATION ]: true,
-			} );
+			setShouldSyncPublicationValue( true );
 		}
 
 		global.open( url, '_blank' );

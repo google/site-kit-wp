@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import useViewContext from '@/js/hooks/useViewContext';
-import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import TileZeroDataContent from './TileZeroDataContent';
 
 const TileZeroDataContentWithIntersectionObserver =

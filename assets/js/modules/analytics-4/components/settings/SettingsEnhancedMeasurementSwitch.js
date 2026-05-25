@@ -29,8 +29,9 @@ import { useEffect, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import useFormValue from '@/js/hooks/useFormValue';
+import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
@@ -38,22 +39,18 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import EnhancedMeasurementSwitch from '@/js/modules/analytics-4/components/common/EnhancedMeasurementSwitch';
 import {
 	isValidPropertyID,
 	isValidPropertySelection,
 	isValidWebDataStreamID,
 	isValidWebDataStreamSelection,
 } from '@/js/modules/analytics-4/utils/validation';
-import useFormValue from '@/js/hooks/useFormValue';
 
 export default function SettingsEnhancedMeasurementSwitch( {
 	hasModuleAccess,
 } ) {
-	const isEnhancedMeasurementEnabled = useFormValue(
-		ENHANCED_MEASUREMENT_FORM,
-		ENHANCED_MEASUREMENT_ENABLED
-	);
+	const [ isEnhancedMeasurementEnabled, setIsEnhancedMeasurementEnabled ] =
+		useFormValue( ENHANCED_MEASUREMENT_FORM, ENHANCED_MEASUREMENT_ENABLED );
 
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
@@ -177,7 +174,6 @@ export default function SettingsEnhancedMeasurementSwitch( {
 		]
 	);
 
-	const { setValues } = useDispatch( CORE_FORMS );
 	const { setEnhancedMeasurementStreamEnabled } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
@@ -211,19 +207,16 @@ export default function SettingsEnhancedMeasurementSwitch( {
 			propertyID === PROPERTY_CREATE ||
 			webDataStreamID === WEBDATASTREAM_CREATE
 		) {
-			setValues( ENHANCED_MEASUREMENT_FORM, {
-				[ ENHANCED_MEASUREMENT_ENABLED ]: true,
-			} );
+			setIsEnhancedMeasurementEnabled( true );
 		} else {
-			setValues( ENHANCED_MEASUREMENT_FORM, {
-				[ ENHANCED_MEASUREMENT_ENABLED ]:
-					isEnhancedMeasurementStreamEnabled,
-			} );
+			setIsEnhancedMeasurementEnabled(
+				isEnhancedMeasurementStreamEnabled
+			);
 		}
 	}, [
 		isEnhancedMeasurementStreamEnabled,
 		propertyID,
-		setValues,
+		setIsEnhancedMeasurementEnabled,
 		webDataStreamID,
 	] );
 

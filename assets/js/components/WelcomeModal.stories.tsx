@@ -24,14 +24,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import WelcomeModal from './WelcomeModal';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import WelcomeModal from './WelcomeModal';
 
 function Template( {
 	setupRegistry,
