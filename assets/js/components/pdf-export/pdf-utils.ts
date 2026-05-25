@@ -94,3 +94,25 @@ export function getPDFFilename(
 
 	return `${ segments.join( '-' ) }.pdf`;
 }
+
+/**
+ * Triggers a browser download for the given blob URL by creating a temporary
+ * anchor element with the `download` attribute, clicking it programmatically,
+ * and removing it from the DOM.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url      Blob URL pointing to the generated file.
+ * @param {string} filename Suggested filename for the downloaded file.
+ * @return {void}
+ */
+export function triggerDownload( url: string, filename: string ): void {
+	const link = global.document.createElement( 'a' );
+	link.href = url;
+	link.download = filename;
+	link.rel = 'noopener';
+	link.style.display = 'none';
+	global.document.body.appendChild( link );
+	link.click();
+	global.document.body.removeChild( link );
+}

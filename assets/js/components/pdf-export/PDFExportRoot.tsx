@@ -35,6 +35,14 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
 
+/**
+ * Hosts the report snackbars and conditionally mounts the orchestrator
+ * when `PDF_EXPORTING_KEY` is set in `core/ui`.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} React element containing the snackbar host and orchestrator.
+ */
 const PDFExportRoot: FC = () => {
 	const isExporting = useSelect(
 		( select: Select ) => select( CORE_UI ).getValue( PDF_EXPORTING_KEY ),

@@ -22,11 +22,6 @@
 import type { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useCallback } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
@@ -35,6 +30,13 @@ import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 import PDFReportProgressSnackbar from './PDFReportProgressSnackbar';
 import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
 
+/**
+ * Reads `core/pdf` status and renders the matching snackbar variant.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object|null} The active snackbar element, or null when idle.
+ */
 const PDFReportSnackbarHost: FC = () => {
 	const status = useSelect(
 		( select: Select ) => select( CORE_PDF ).getStatus(),
@@ -47,19 +49,11 @@ const PDFReportSnackbarHost: FC = () => {
 
 	const { requestCancel, clearExport } = useDispatch( CORE_PDF );
 
-	const handleCancel = useCallback( () => {
-		requestCancel();
-	}, [ requestCancel ] );
-
-	const handleDismiss = useCallback( () => {
-		clearExport();
-	}, [ clearExport ] );
-
 	if ( status === 'progress' ) {
 		return (
 			<PDFReportProgressSnackbar
 				progress={ ( progress ?? 0 ) / 100 }
-				onCancel={ handleCancel }
+				onCancel={ requestCancel }
 			/>
 		);
 	}
@@ -67,8 +61,8 @@ const PDFReportSnackbarHost: FC = () => {
 	if ( status === 'success' ) {
 		return (
 			<PDFReportSuccessSnackbar
-				onDismiss={ handleDismiss }
-				onAutoDismiss={ handleDismiss }
+				onDismiss={ clearExport }
+				onAutoDismiss={ clearExport }
 			/>
 		);
 	}
@@ -76,8 +70,8 @@ const PDFReportSnackbarHost: FC = () => {
 	if ( status === 'error' ) {
 		return (
 			<PDFReportErrorSnackbar
-				onRetry={ handleDismiss }
-				onDismiss={ handleDismiss }
+				onRetry={ clearExport }
+				onDismiss={ clearExport }
 			/>
 		);
 	}

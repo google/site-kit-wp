@@ -35,7 +35,7 @@ import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import DashboardReport from './components/DashboardReport';
-import { getPDFFilename } from './pdf-utils';
+import { getPDFFilename, triggerDownload } from './pdf-utils';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -72,6 +72,15 @@ type Action = { type: 'TRANSITION'; nextStage: Stage };
 
 const initialState: State = { stage: STAGE_IDLE };
 
+/**
+ * Validates and applies stage transitions for the export state machine.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state  Current reducer state.
+ * @param {Object} action Dispatched action with a `nextStage` payload.
+ * @return {Object} Next state, unchanged when the transition is invalid.
+ */
 function reducer( state: State, action: Action ): State {
 	if ( action.type === 'TRANSITION' ) {
 		const allowed = VALID_TRANSITIONS[ state.stage ];
@@ -84,10 +93,27 @@ function reducer( state: State, action: Action ): State {
 	return state;
 }
 
+/**
+ * Determines whether the given error is an `AbortError` DOMException.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} error The caught value.
+ * @return {boolean} `true` when the error is an AbortError.
+ */
 function isAbortError( error: unknown ): boolean {
 	return error instanceof DOMException && error.name === 'AbortError';
 }
 
+/**
+ * Returns a promise that resolves on the next animation frame, or rejects
+ * if the signal is aborted before the frame fires.
+ *
+ * @since n.e.x.t
+ *
+ * @param {AbortSignal} signal Abort signal to observe.
+ * @return {Promise} Resolves on the next frame, rejects on abort.
+ */
 function nextFrame( signal: AbortSignal ): Promise< void > {
 	return new Promise( ( resolve, reject ) => {
 		if ( signal.aborted ) {
@@ -109,21 +135,20 @@ function nextFrame( signal: AbortSignal ): Promise< void > {
 	} );
 }
 
-function triggerDownload( url: string, filename: string ): void {
-	const link = document.createElement( 'a' );
-	link.href = url;
-	link.download = filename;
-	link.rel = 'noopener';
-	link.style.display = 'none';
-	document.body.appendChild( link );
-	link.click();
-	document.body.removeChild( link );
-}
-
 export interface PDFExportOrchestratorProps {
 	onComplete: () => void;
 }
 
+/**
+ * Drives the PDF export pipeline through IDLE, LOADING, BUILDING,
+ * COMPLETE, and ERROR stages. Renders nothing.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   props            Component props.
+ * @param {Function} props.onComplete Called when the export finishes or aborts.
+ * @return {null} Always null.
+ */
 const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
