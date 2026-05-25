@@ -18,13 +18,3 @@
 
 /// <reference types="@testing-library/jest-dom" />
 /// <reference types="@wordpress/jest-console" />
-
-/**
- * External dependencies
- */
-import fetchMockType from 'fetch-mock';
-
-declare global {
-	// eslint-disable-next-line no-var
-	var fetchMock: typeof fetchMockType;
-}
