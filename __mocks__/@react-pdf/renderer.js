@@ -22,6 +22,10 @@
 // The mock is written in CommonJS to match the rest of the repo's `__mocks__/`
 // layout (see `__mocks__/tabbable.js`). The matching `@wordpress/jest-preset`
 // transforms keep the import surface identical to the real package.
+
+/**
+ * External dependencies
+ */
 const React = require( 'react' );
 
 function passthrough( name ) {

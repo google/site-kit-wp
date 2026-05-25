@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { FC } from 'react';
 
 /**

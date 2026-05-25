@@ -29,11 +29,11 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
+import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 import PDFReportProgressSnackbar from './PDFReportProgressSnackbar';
 import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
-import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 
 const PDFReportSnackbarHost: FC = () => {
 	const status = useSelect(

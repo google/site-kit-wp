@@ -30,10 +30,10 @@ import { useCallback, useEffect, useReducer, useRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import DashboardReport from './components/DashboardReport';
 import { getPDFFilename } from './pdf-utils';
 
@@ -158,9 +158,9 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	const stageTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
 		null
 	);
-	const completeTimeoutRef = useRef<
-		ReturnType< typeof setTimeout > | null
-	>( null );
+	const completeTimeoutRef = useRef< ReturnType< typeof setTimeout > | null >(
+		null
+	);
 	const timeoutAbortRef = useRef( false );
 	const onCompleteRef = useRef( onComplete );
 

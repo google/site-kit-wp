@@ -29,9 +29,9 @@ import { Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { type Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_EXPORTING_KEY } from '@/js/components/pdf-generation/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
 
@@ -50,7 +50,9 @@ const PDFExportRoot: FC = () => {
 	return (
 		<Fragment>
 			<PDFReportSnackbarHost />
-			{ isExporting && <PDFExportOrchestrator onComplete={ stopExport } /> }
+			{ isExporting && (
+				<PDFExportOrchestrator onComplete={ stopExport } />
+			) }
 		</Fragment>
 	);
 };
