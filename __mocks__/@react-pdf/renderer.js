@@ -16,12 +16,8 @@
  * limitations under the License.
  */
 
-// The real `@react-pdf/renderer` package ships ESM that pulls in canvas and
-// other native modules, both of which fail to resolve in jsdom. Jest's manual
-// mock convention auto-loads this file for any `@react-pdf/renderer` import.
-// The mock is written in CommonJS to match the rest of the repo's `__mocks__/`
-// layout (see `__mocks__/tabbable.js`). The matching `@wordpress/jest-preset`
-// transforms keep the import surface identical to the real package.
+// Manual Jest mock for `@react-pdf/renderer`. The real package ships ESM
+// with native deps that fail in jsdom. CommonJS to match `__mocks__/tabbable.js`.
 
 /**
  * External dependencies

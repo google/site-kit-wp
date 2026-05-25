@@ -153,7 +153,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
 	const [ , dispatch ] = useReducer( reducer, initialState );
-
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
 
@@ -161,7 +160,6 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 		( select: Select ) => select( CORE_PDF ).isCancelRequested(),
 		[]
 	);
-
 	const siteName = useSelect(
 		( select: Select ) => select( CORE_SITE ).getSiteName(),
 		[]
@@ -254,8 +252,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 
 				armStageTimeout( BUILDING_TIMEOUT_MS );
 
-				// The PDF footer records the actual generation time, which is
-				// distinct from the dashboard's analytics reference date.
+				// Footer timestamp uses the real generation time, not the dashboard date range.
 				// eslint-disable-next-line sitekit/no-direct-date
 				const generatedAt = new Date().toLocaleString();
 				const filename = getPDFFilename(
@@ -303,9 +300,8 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			} catch ( error ) {
 				clearStageTimeout();
 
-				// User-initiated cancellation is silent. A timeout uses the
-				// same `abort()` plumbing but routes to the error path so the
-				// snackbar surfaces the failure to the user.
+				// User cancel is silent (IDLE). Timeout abort routes to ERROR
+				// so the snackbar shows the failure.
 				if ( isAbortError( error ) && ! timeoutAbortRef.current ) {
 					dispatch( {
 						type: 'TRANSITION',
@@ -333,8 +329,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 			}
 			controller.abort();
 		};
-		// Run once on mount. Inputs are sampled at mount time. The AC does
-		// not require re-running when site or user info changes mid-export.
+		// Runs once on mount. Site and user data are read at start, not re-fetched mid-export.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [] );
 
