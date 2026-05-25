@@ -24,12 +24,12 @@ import type { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { type Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { PDF_EXPORTING_KEY } from '@/js/components/pdf-generation/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
@@ -51,9 +51,9 @@ const PDFExportRoot: FC = () => {
 
 	const { setValue } = useDispatch( CORE_UI );
 
-	const stopExport = useCallback( () => {
+	function stopExport() {
 		setValue( PDF_EXPORTING_KEY, false );
-	}, [ setValue ] );
+	}
 
 	return (
 		<Fragment>
