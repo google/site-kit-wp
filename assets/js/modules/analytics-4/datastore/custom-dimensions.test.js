@@ -39,7 +39,7 @@ import {
 	provideUserAuthentication,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from './constants';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {
 	let registry;
@@ -73,6 +73,30 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 
 	afterAll( () => {
 		setUsingCache( true );
+	} );
+
+	describe( 'CUSTOM_DIMENSION_DEFINITIONS', () => {
+		it( 'should include googlesitekit_event_provider with EVENT scope', () => {
+			expect(
+				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_event_provider
+			).toEqual(
+				expect.objectContaining( {
+					parameterName: 'googlesitekit_event_provider',
+					scope: 'EVENT',
+				} )
+			);
+		} );
+
+		it( 'should include googlesitekit_form_id with EVENT scope', () => {
+			expect(
+				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_form_id
+			).toEqual(
+				expect.objectContaining( {
+					parameterName: 'googlesitekit_form_id',
+					scope: 'EVENT',
+				} )
+			);
+		} );
 	} );
 
 	describe( 'actions', () => {
