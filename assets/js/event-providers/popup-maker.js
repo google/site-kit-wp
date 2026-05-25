@@ -32,10 +32,14 @@ import { classifyPII, getUserData } from './utils';
 				? getUserDataFromPMForm( form )
 				: undefined;
 
-		global._googlesitekit?.gtagEvent?.(
-			'submit_lead_form',
-			userData ? { user_data: userData } : undefined
-		);
+		// eslint-disable-next-line sitekit/acronym-case
+		const popupID = args?.popupId;
+
+		global._googlesitekit?.gtagEvent?.( 'submit_lead_form', {
+			googlesitekit_event_provider: 'popup-maker',
+			...( popupID ? { googlesitekit_form_id: String( popupID ) } : {} ),
+			...( userData ? { user_data: userData } : {} ),
+		} );
 	} );
 } )( global.jQuery, global.PUM );
 

@@ -26,10 +26,14 @@ global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
 		? getUserDataFromForm( event.target )
 		: null;
 
+	// eslint-disable-next-line sitekit/acronym-case
+	const { contactFormId: formID } = event.detail;
+
 	global._googlesitekit?.gtagEvent?.( 'contact', {
-		// eslint-disable-next-line sitekit/acronym-case
-		event_category: event.detail.contactFormId,
+		event_category: formID,
 		event_label: event.detail.unitTag,
+		googlesitekit_event_provider: 'contact-form-7',
+		googlesitekit_form_id: String( formID ),
 		...( userData ? { user_data: userData } : {} ),
 	} );
 } );
