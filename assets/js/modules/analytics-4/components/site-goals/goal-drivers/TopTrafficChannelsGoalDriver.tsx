@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,14 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -45,13 +40,18 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import type {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	getDimensionFiltersForEvents,
+	normalizePrimaryEvents,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
@@ -59,6 +59,7 @@ interface ReportRow {
 }
 
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,9 +69,10 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	onExpandableRowsChange,
 } ) => {
 	const title =
-		goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Top traffic channels driving sales', 'google-site-kit' )
-			: __( 'Top traffic channels driving leads', 'google-site-kit' );
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Top traffic channels by total sales', 'google-site-kit' )
+			: __( 'Top traffic channels by total leads', 'google-site-kit' ) );
 
 	const dates = useSelect(
 		( select: Select ) =>
@@ -238,7 +240,6 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
 		);
 	}, [ onExpandableRowsChange, rows.length ] );
-
 	const noDataMetricLabel =
 		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
 

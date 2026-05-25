@@ -31,11 +31,11 @@ import { isURL } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { isPermissionScopeError, isErrorRetryable } from '@/js/util/errors';
-import Notice from './Notice';
-import { sanitizeHTML } from '@/js/util';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { sanitizeHTML } from '@/js/util';
+import { isErrorRetryable, isPermissionScopeError } from '@/js/util/errors';
+import Notice from './Notice';
 
 export default function ErrorNotice( {
 	className,

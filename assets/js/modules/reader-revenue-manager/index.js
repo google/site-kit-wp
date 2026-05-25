@@ -25,19 +25,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	ERROR_CODE_NON_HTTPS_SITE,
-} from './datastore/constants';
-import { SetupMain } from './components/setup';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
 import {
 	SettingsEdit,
 	SettingsStatus,
 	SettingsView,
 } from './components/settings';
-import ReaderRevenueManagerIcon from '@/svg/graphics/reader-revenue-manager.svg';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import { SetupMain } from './components/setup';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from './constants';
+import {
+	ERROR_CODE_NON_HTTPS_SITE,
+	MODULES_READER_REVENUE_MANAGER,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerNotifications } from './notifications';

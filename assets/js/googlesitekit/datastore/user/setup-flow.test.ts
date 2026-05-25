@@ -24,21 +24,21 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
-} from 'tests/js/utils';
-import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+} from '../../../../../tests/js/utils';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 describe( 'core/user setup flow', () => {
 	let registry: WPDataRegistry;

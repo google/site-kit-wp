@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideUserAuthentication } from '../../../../tests/js/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import AuthError from './AuthError';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { provideUserAuthentication } from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import AuthError from './AuthError';
 
 const NotificationWithComponentProps =
 	withNotificationComponentProps( 'auth-error' )( AuthError );

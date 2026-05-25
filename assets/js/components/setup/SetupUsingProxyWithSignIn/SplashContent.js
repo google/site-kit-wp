@@ -25,22 +25,27 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Link from '@/js/components/Link';
+import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
+import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
+import { Cell, Row } from '@/js/material-components';
+import SplashBackground from '@/svg/graphics/splash-graphic.svg';
+import AnalyticsOptIn from './AnalyticsOptIn';
 import ResetNotice from './ResetNotice';
 import SplashScreenshotSVG from './SetupFlowSVG';
-import AnalyticsOptIn from './AnalyticsOptIn';
-import SplashBackground from '@/svg/graphics/splash-graphic.svg';
-import Typography from '@/js/components/Typography';
-import { Cell, Row } from '@/js/material-components';
-import { DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function SplashContent( {
 	analyticsModuleActive,
@@ -60,9 +65,13 @@ export default function SplashContent( {
 		global.document.body.classList.add( 'googlesitekit-setup-flow' );
 	} );
 
+	const breakpoint = useBreakpoint();
+	const isMobileOrTablet =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
-		: { smSize: 4, mdSize: 7, lgSize: 6 };
+		: { smSize: 4, mdSize: 8, lgSize: 6 };
 
 	return (
 		<Fragment>
@@ -72,7 +81,7 @@ export default function SplashContent( {
 					<Typography
 						as="h1"
 						className="googlesitekit-setup__title"
-						size="medium"
+						size={ isMobileOrTablet ? 'small' : 'medium' }
 						type="headline"
 					>
 						{ title }

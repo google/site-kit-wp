@@ -19,13 +19,13 @@
 /**
  * Internal dependencies
  */
+import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
+import { RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID } from '@/js/modules/reader-revenue-manager/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import ProductIDContributionsNotification from './ProductIDContributionsNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

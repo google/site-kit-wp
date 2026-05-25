@@ -22,17 +22,21 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '@/js/material-components';
+import { Story as StoryType } from '@/js/types/Story';
 import {
 	provideModules,
 	provideUserCapabilities,
 } from '../../../../../tests/js/utils';
-import Widget, { WidgetProps } from './Widget';
-import { Cell, Grid, Row } from '@/js/material-components';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
-import { Story as StoryType } from '@/js/types/Story';
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import Widget, { WidgetProps } from './Widget';
 
 const BoxesWidgets: FC = ( { children } ) => {
 	return (

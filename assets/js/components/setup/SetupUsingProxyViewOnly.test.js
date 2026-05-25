@@ -19,8 +19,9 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render } from '../../../../tests/js/test-utils';
+import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { fireEvent, render } from '../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -28,9 +29,8 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 } from '../../../../tests/js/utils';
-import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
-import SetupUsingProxyViewOnly from './SetupUsingProxyViewOnly';
 import { SHARED_DASHBOARD_SPLASH_ITEM_KEY } from './constants';
+import SetupUsingProxyViewOnly from './SetupUsingProxyViewOnly';
 
 describe( 'SetupUsingProxyViewOnly', () => {
 	mockLocation();

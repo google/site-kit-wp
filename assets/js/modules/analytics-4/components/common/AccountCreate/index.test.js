@@ -19,6 +19,21 @@
 /**
  * Internal dependencies
  */
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	EDIT_SCOPE,
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+	PROVISIONING_SCOPE,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
+import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instance-id';
 import {
 	cleanup,
 	createTestRegistry,
@@ -30,23 +45,7 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../../../../tests/js/test-utils';
-import { mockLocation } from '../../../../../../../tests/js/mock-browser-utils';
-import { mockUseInstanceID } from '../../../../../../../tests/js/mock-use-instance-id';
-
-import {
-	EDIT_SCOPE,
-	GTM_SCOPE,
-	MODULES_ANALYTICS_4,
-	PROVISIONING_SCOPE,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { createCacheKey } from '@/js/googlesitekit/api';
-import { getKeys, setItem } from '@/js/googlesitekit/api/cache';
 import AccountCreate from '.';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );

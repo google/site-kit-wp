@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
-import { debounce } from 'lodash';
 import classnames from 'classnames';
+import { debounce } from 'lodash';
+import PropTypes from 'prop-types';
 import { useEvent } from 'react-use';
 
 /**

@@ -19,17 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export default function LostEventsSubtleNotification( {
 	onSelectMetricsCallback,

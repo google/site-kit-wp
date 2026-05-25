@@ -24,16 +24,16 @@ import { useMemo } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import {
-	KEY_METRICS_GROUP_CURRENT,
-	KEY_METRICS_GROUP_SUGGESTED,
 	KEY_METRICS_GROUP_CONTENT_PERFORMANCE,
+	KEY_METRICS_GROUP_CURRENT,
 	KEY_METRICS_GROUP_DRIVING_TRAFFIC,
 	KEY_METRICS_GROUP_GENERATING_LEADS,
 	KEY_METRICS_GROUP_SELLING_PRODUCTS,
+	KEY_METRICS_GROUP_SUGGESTED,
 	KEY_METRICS_GROUP_VISITORS,
 } from '@/js/components/KeyMetrics/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
  * Computes the key metrics groups and supporting flags for tailoring.

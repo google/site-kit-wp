@@ -24,14 +24,14 @@ import { useCallback, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalEcommerce from './IntroModalEcommerce';
+import IntroModalEcommerceAndLead from './IntroModalEcommerceAndLead';
 import IntroModalLead from './IntroModalLead';
 import { IntroModalVariantProps } from './types';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 export const SITE_GOALS_INTRO_MODAL_BANNER = 'site_goals_intro_modal_banner';
 

@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CTA from '@/js/components/notifications/CTA';
 import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActions';
+import CTA from '@/js/components/notifications/CTA';
 import ViewContextContext from '@/js/components/Root/ViewContextContext';
-import { trackEvent } from '@/js/util';
 import P from '@/js/components/Typography/P';
+import { trackEvent } from '@/js/util';
 
 class GoogleChartErrorHandler extends Component {
 	constructor( props ) {

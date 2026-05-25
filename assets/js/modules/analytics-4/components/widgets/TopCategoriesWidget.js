@@ -29,26 +29,26 @@ import { compose } from '@wordpress/compose';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import {
-	CORE_USER,
-	KM_ANALYTICS_TOP_CATEGORIES,
-} from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { listFormat, numFmt } from '@/js/util';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
 import {
 	MetricTileTable,
 	MetricTileTablePlainText,
 } from '@/js/components/KeyMetrics';
-import whenActive from '@/js/util/when-active';
-import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
-import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_CATEGORIES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { splitCategories } from '@/js/modules/analytics-4/utils';
+import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
+import { listFormat, numFmt } from '@/js/util';
+import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 /**
  * Gets the report options for the Top Categories widget.

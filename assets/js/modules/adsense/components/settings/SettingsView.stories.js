@@ -19,24 +19,24 @@
 /**
  * Internal dependencies
  */
-import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
-import SettingsView from './SettingsView';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	ACCOUNT_STATUS_PENDING,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SettingsView from './SettingsView';
 
 const adSenseSettings = {
 	accountID: fixtures.accounts[ 0 ]._id,

@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from './constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { MODULES_ADS } from './constants';
 
 describe( 'modules/ads properties', () => {
 	let registry;

@@ -17,27 +17,31 @@
  */
 
 /**
+ * External dependencies
+ */
+import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
+
+/**
  * Internal dependencies
  */
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { getWelcomeTour } from '@/js/feature-tours/welcome';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
-	render,
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	provideSiteInfo,
 	provideUserCapabilities,
-	fireEvent,
+	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import * as tracking from '@/js/util/tracking';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import HelpMenu from './HelpMenu';
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
@@ -50,6 +54,8 @@ const mockWelcomeTour = getWelcomeTour( {
 	canAuthenticate: true,
 	isAnalyticsConnected: false,
 	isActivateAnalyticsNotificationPresent: false,
+	isAudienceSegmentationWidgetPresent: false,
+	isKeyMetricsWidgetPresent: false,
 } );
 
 function provideFeatureTourMenuItemData(

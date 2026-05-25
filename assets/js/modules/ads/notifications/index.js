@@ -24,29 +24,29 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	PAXSetupSuccessSubtleNotification,
-	SetupSuccessSubtleNotification,
-	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
-	AdsModuleSetupCTABanner,
-} from '@/js/modules/ads/components/notifications';
-import {
-	NOTIFICATION_GROUPS,
-	NOTIFICATION_AREAS,
-	PRIORITY,
-} from '@/js/googlesitekit/notifications/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import {
+	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
+	AdsModuleSetupCTABanner,
+	PAXSetupSuccessSubtleNotification,
+	SetupSuccessSubtleNotification,
+} from '@/js/modules/ads/components/notifications';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {

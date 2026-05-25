@@ -19,23 +19,23 @@
 /**
  * Internal dependencies
  */
-import DashboardPopularKeywordsWidget from './DashboardPopularKeywordsWidget';
-import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	getSearchConsoleMockResponse,
-	provideSearchConsoleMockReports,
-} from '@/js/modules/search-console/util/data-mock';
-import { provideModules } from '../../../../../../tests/js/utils';
-import { replaceValuesInSearchConsoleReportWithZeroData } from '@/js/util/zero-reports';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import {
+	getSearchConsoleMockResponse,
+	provideSearchConsoleMockReports,
+} from '@/js/modules/search-console/util/data-mock';
+import { replaceValuesInSearchConsoleReportWithZeroData } from '@/js/util/zero-reports';
+import { provideModules } from '../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import DashboardPopularKeywordsWidget from './DashboardPopularKeywordsWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'searchConsolePopularKeywords'

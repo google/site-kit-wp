@@ -19,29 +19,29 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-	freezeFetch,
-} from '../../../../../../tests/js/utils';
-import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import NewVisitorsWidget from './NewVisitorsWidget';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { DATE_RANGE_OFFSET } from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideKeyMetrics,
+	provideModuleRegistrations,
+	provideModules,
+} from '../../../../../../tests/js/utils';
+import NewVisitorsWidget from './NewVisitorsWidget';
 
 describe( 'NewVisitorsWidget', () => {
 	let registry;

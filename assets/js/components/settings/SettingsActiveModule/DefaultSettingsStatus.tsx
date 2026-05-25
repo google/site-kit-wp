@@ -30,12 +30,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect, type Select } from '@/js/googlesitekit/data';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { Button } from '@/js/googlesitekit-components';
+import { Select, useDispatch, useSelect } from '@/js/googlesitekit/data';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
-import { Button } from '@/js/googlesitekit-components';
-import P from '@/js/components/Typography/P';
 import ConnectedIcon from '@/svg/icons/connected.svg';
 import WarningIcon from '@/svg/icons/warning-v2.svg';
 

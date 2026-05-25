@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { render, waitFor, act } from '../../../../tests/js/test-utils';
+/**
+ * Internal dependencies
+ */
+import { act, render, waitFor } from '../../../../tests/js/test-utils';
 import {
 	getViewportHeight,
 	setViewportHeight,

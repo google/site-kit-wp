@@ -19,25 +19,25 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
 import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect } from 'googlesitekit-data';
 import { ProgressBar } from 'googlesitekit-components';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { parseAccountID } from '@/js/modules/adsense/util/parsing';
-import {
-	ErrorNotices,
-	UseSnippetSwitch,
-	AutoAdExclusionSwitches,
-} from '@/js/modules/adsense/components/common';
-import WebStoriesAdUnitSelect from '@/js/modules/adsense/components/common/WebStoriesAdUnitSelect';
+import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	AutoAdExclusionSwitches,
+	ErrorNotices,
+	UseSnippetSwitch,
+} from '@/js/modules/adsense/components/common';
+import WebStoriesAdUnitSelect from '@/js/modules/adsense/components/common/WebStoriesAdUnitSelect';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { parseAccountID } from '@/js/modules/adsense/util/parsing';
 import AdBlockingRecoverySetupCTANotice from './AdBlockingRecoverySetupCTANotice';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 

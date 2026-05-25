@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Email;
 
 use Google\Site_Kit\Core\Email\Email;
+use Google\Site_Kit\Tests\Pre_WP_Mail_Skip_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 
@@ -18,6 +19,8 @@ use WP_Error;
  * @group Email
  */
 class EmailTest extends TestCase {
+
+	use Pre_WP_Mail_Skip_Trait;
 
 	/**
 	 * @var Email
@@ -221,15 +224,6 @@ class EmailTest extends TestCase {
 		$this->assertEquals( 'text/html', $captured_initial_content_type, 'PHPMailer ContentType should be text/html from the default Site Kit header before AltBody upgrade.' );
 		$this->assertEquals( 'Plain text content', $captured_alt_body, 'AltBody should be set so PHPMailer can produce a multipart/alternative message.' );
 		$this->assertStringStartsWith( 'multipart/alternative', $captured_final_content_type, 'PHPMailer should upgrade ContentType to multipart/alternative when AltBody is set alongside the default text/html Content-Type.' );
-	}
-
-	/**
-	 * Skips the test if the pre_wp_mail filter (WordPress 5.7+) isn't available.
-	 */
-	private function skip_if_pre_wp_mail_unsupported() {
-		if ( version_compare( $GLOBALS['wp_version'], '5.7', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.7 or higher for the pre_wp_mail filter.' );
-		}
 	}
 
 	/**

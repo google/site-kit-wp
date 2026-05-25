@@ -15,6 +15,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
@@ -25,13 +30,12 @@ import { __ } from '@wordpress/i18n';
  */
 import { Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
-import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
-import PropTypes from 'prop-types';
-import ErrorNotice from '@/js/components/ErrorNotice';
+import ConfirmDisableConversionTrackingDialog from './ConfirmDisableConversionTrackingDialog';
 
 export default function ConversionTrackingToggle( { children, loading } ) {
 	const viewContext = useViewContext();

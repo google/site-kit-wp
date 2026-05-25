@@ -21,26 +21,26 @@
  */
 import { set } from 'googlesitekit-api';
 import {
-	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
-	MODULES_ANALYTICS_4,
-	CUSTOM_DIMENSION_DEFINITIONS,
-	DATE_RANGE_OFFSET,
-	SITE_KIT_AUDIENCE_DEFINITIONS,
-	RESOURCE_TYPE_AUDIENCE,
-} from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
 	combineStores,
+	commonActions,
 	createReducer,
 	createRegistrySelector,
-	commonActions,
 } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
 import { getPreviousDate } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
-import { validateAudience } from '@/js/modules/analytics-4/utils/validation';
+import {
+	AUDIENCE_ITEM_NEW_BADGE_SLUG_PREFIX,
+	CUSTOM_DIMENSION_DEFINITIONS,
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+	RESOURCE_TYPE_AUDIENCE,
+	SITE_KIT_AUDIENCE_DEFINITIONS,
+} from './constants';
 
 const MAX_INITIAL_AUDIENCES = 2;
 const START_AUDIENCES_SETUP = 'START_AUDIENCES_SETUP';

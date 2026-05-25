@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render, fireEvent } from '../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../tests/js/test-utils';
 import MaybeTooltip from './MaybeTooltip';
 
 describe( 'MaybeTooltip', () => {

@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import ConfirmSitePurposeChangeModal from './ConfirmSitePurposeChangeModal';
-import {
-	provideKeyMetricsUserInputSettings,
-	provideUserAuthentication,
-	provideSiteInfo,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
 	USER_INPUT_QUESTIONS_PURPOSE,
 } from '@/js/components/user-input/util/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	provideKeyMetricsUserInputSettings,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import ConfirmSitePurposeChangeModal from './ConfirmSitePurposeChangeModal';
 
 function Template( args ) {
 	function handleDialog() {}

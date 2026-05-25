@@ -19,15 +19,19 @@
 /**
  * Internal dependencies
  */
-import { GOAL_DRIVER_IDS } from './constants';
-import { resolveGoalDriverIDs } from './registry';
+import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
+import {
+	getGoalDriverOptions,
+	resolveGoalDriverIDs,
+	resolveGoalDriverSelectionState,
+} from './registry';
 
 describe( 'resolveGoalDriverIDs', () => {
 	it( 'returns defaults sorted by order when no IDs are provided', () => {
 		expect( resolveGoalDriverIDs() ).toEqual( [
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
-			GOAL_DRIVER_IDS.TOP_PAGES,
-			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.CITIES,
 		] );
 	} );
 
@@ -35,10 +39,14 @@ describe( 'resolveGoalDriverIDs', () => {
 		expect(
 			resolveGoalDriverIDs( [
 				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.CITIES,
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 			] )
 		).toEqual( [
 			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.CITIES,
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 		] );
 	} );
@@ -48,8 +56,95 @@ describe( 'resolveGoalDriverIDs', () => {
 			resolveGoalDriverIDs( [
 				'unsupportedGoalDriver',
 				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.COUNTRIES,
 				'anotherUnsupportedGoalDriver',
 			] )
-		).toEqual( [ GOAL_DRIVER_IDS.TOP_PAGES ] );
+		).toEqual( [ GOAL_DRIVER_IDS.TOP_PAGES, GOAL_DRIVER_IDS.COUNTRIES ] );
+	} );
+
+	it( 'caps selected IDs to six', () => {
+		expect(
+			resolveGoalDriverIDs( [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.CITIES,
+				GOAL_DRIVER_IDS.COUNTRIES,
+				GOAL_DRIVER_IDS.DEVICE_TYPE,
+			] )
+		).toEqual( [
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			GOAL_DRIVER_IDS.TOP_PAGES,
+			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			GOAL_DRIVER_IDS.CITIES,
+			GOAL_DRIVER_IDS.COUNTRIES,
+		] );
+	} );
+
+	it( 'returns empty array for explicitly empty selection', () => {
+		expect( resolveGoalDriverIDs( [] ) ).toEqual( [] );
+	} );
+
+	it( 'limits resolved IDs to max 6', () => {
+		expect(
+			resolveGoalDriverIDs( [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.VISITOR_TYPE,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+			] )
+		).toHaveLength( 3 );
+	} );
+} );
+
+describe( 'getGoalDriverOptions', () => {
+	it( 'returns goal-type labels', () => {
+		expect( getGoalDriverOptions( GOAL_TYPES.ECOMMERCE ) ).toContainEqual(
+			expect.objectContaining( {
+				id: GOAL_DRIVER_IDS.TOP_PAGES,
+				title: 'Top pages driving sales',
+			} )
+		);
+
+		expect( getGoalDriverOptions( GOAL_TYPES.LEAD ) ).toContainEqual(
+			expect.objectContaining( {
+				id: GOAL_DRIVER_IDS.TOP_PAGES,
+				title: 'Top pages driving leads',
+			} )
+		);
+	} );
+} );
+
+describe( 'resolveGoalDriverSelectionState', () => {
+	it( 'returns defaults when selection is undefined', () => {
+		expect( resolveGoalDriverSelectionState() ).toEqual( {
+			ecommerce: [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.CITIES,
+			],
+			lead: [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+				GOAL_DRIVER_IDS.VISITOR_TYPE,
+			],
+		} );
+	} );
+
+	it( 'resolves both goal-type selections with invalid IDs ignored', () => {
+		expect(
+			resolveGoalDriverSelectionState( {
+				ecommerce: [ GOAL_DRIVER_IDS.TOP_PAGES, 'unknown-id' ],
+				lead: [ GOAL_DRIVER_IDS.VISITOR_TYPE ],
+			} )
+		).toEqual( {
+			ecommerce: [ GOAL_DRIVER_IDS.TOP_PAGES ],
+			lead: [ GOAL_DRIVER_IDS.VISITOR_TYPE ],
+		} );
 	} );
 } );

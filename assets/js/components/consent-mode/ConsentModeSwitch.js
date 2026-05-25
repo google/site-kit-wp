@@ -18,9 +18,9 @@
  * WordPress dependencies
  */
 import {
+	Fragment,
 	createInterpolateElement,
 	useState,
-	Fragment,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -28,17 +28,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Switch } from 'googlesitekit-components';
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import Link from '@/js/components/Link';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
-import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
-import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
-import useViewContext from '@/js/hooks/useViewContext';
-import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
-import ErrorNotice from '@/js/components/ErrorNotice';
 import P from '@/js/components/Typography/P';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { DAY_IN_SECONDS, trackEvent } from '@/js/util';
+import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
+import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 
 export default function ConsentModeSwitch( { loading } ) {
 	const viewContext = useViewContext();

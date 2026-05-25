@@ -19,30 +19,30 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
-	useState,
 	useCallback,
 	useEffect,
+	useState,
 } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import InfoTooltip from '@/js/components/InfoTooltip';
+import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import InfoTooltip from '@/js/components/InfoTooltip';
-import Link from '@/js/components/Link';
 import { useDebounce } from '@/js/hooks/useDebounce';
-import InviteUserList from './InviteUserList';
 import InviteSearchInput from './InviteSearchInput';
+import InviteUserList from './InviteUserList';
 
 const SEARCH_THRESHOLD = 6;
 

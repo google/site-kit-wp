@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import LockIcon from '@/svg/icons/lock.svg';
 import Typography from '@/js/components/Typography';
+import LockIcon from '@/svg/icons/lock.svg';
 
 function SettingsOverlay( { compress } ) {
 	return (

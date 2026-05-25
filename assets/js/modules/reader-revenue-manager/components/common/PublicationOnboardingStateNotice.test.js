@@ -19,6 +19,12 @@
 /**
  * Internal dependencies.
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
@@ -28,12 +34,6 @@ import {
 	render,
 	waitFor,
 } from '../../../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import * as tracking from '@/js/util/tracking';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

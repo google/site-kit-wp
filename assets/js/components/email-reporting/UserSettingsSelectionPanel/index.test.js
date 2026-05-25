@@ -19,7 +19,17 @@
 /**
  * Internal dependencies
  */
-
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
+import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -32,17 +42,6 @@ import {
 	render,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
-import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
-import SelectionPanelFooter from '@/js/components/email-reporting/UserSettingsSelectionPanel/SelectionPanelFooter';
-import { mockSurveyEndpoints } from '../../../../../tests/js/mock-survey-endpoints';
 
 // This suite tests panel behavior; mock the invite list to avoid async datastore
 // updates from child-level fetching that are covered in InviteOthersToSubscribe tests.

@@ -20,13 +20,13 @@
  *
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserInfo,
 } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from './constants';
 
 describe( 'module/sign-in-with-google service store', () => {

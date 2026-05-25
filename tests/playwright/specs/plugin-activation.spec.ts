@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { test, expect, TestDetails, WordPressFixture } from '../playwright';
+import { TestDetails, WordPressFixture, expect, test } from '../playwright';
 import { asUser, withPlugins } from '../wordpress';
 
 /**

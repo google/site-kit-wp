@@ -20,10 +20,10 @@
  *
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { MODULES_READER_REVENUE_MANAGER } from './constants';
 
 describe( 'modules/reader-revenue-manager service store', () => {
 	const userData = {

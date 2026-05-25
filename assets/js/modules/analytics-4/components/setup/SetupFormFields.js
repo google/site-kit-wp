@@ -19,32 +19,32 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	AccountSelect,
+	PropertyHint,
+	PropertySelect,
+	WebDataStreamHint,
+	WebDataStreamNameInput,
+	WebDataStreamSelect,
+} from '@/js/modules/analytics-4/components/common';
 import {
 	ENHANCED_MEASUREMENT_ENABLED,
 	ENHANCED_MEASUREMENT_FORM,
 	MODULES_ANALYTICS_4,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import {
-	AccountSelect,
-	PropertyHint,
-	PropertySelect,
-	WebDataStreamHint,
-	WebDataStreamSelect,
-	WebDataStreamNameInput,
-} from '@/js/modules/analytics-4/components/common';
+import { isValidAccountID } from '@/js/modules/analytics-4/utils/validation';
 import SetupEnhancedMeasurementSwitch from './SetupEnhancedMeasurementSwitch';
 import SetupUseSnippetSwitch from './SetupUseSnippetSwitch';
-import { useFeature } from '@/js/hooks/useFeature';
 
 export default function SetupFormFields() {
 	const accounts =

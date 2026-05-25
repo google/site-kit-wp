@@ -25,14 +25,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useDispatch } from 'googlesitekit-data';
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
-import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { useDispatch, useInViewSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { trackEvent } from '@/js/util';
 import PencilIcon from '@/svg/icons/pencil-alt.svg';
+import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 
 export default function ChangeGroupsLink() {
 	const viewContext = useViewContext();

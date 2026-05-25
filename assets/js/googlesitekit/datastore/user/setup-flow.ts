@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { createRegistrySelector, Select } from 'googlesitekit-data';
+import { Select, createRegistrySelector } from 'googlesitekit-data';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import {
 	CORE_USER,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 
 export const selectors = {
 	/**

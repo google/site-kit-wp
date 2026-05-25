@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import SetupMain from './SetupMain';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import SetupMain from './SetupMain';
 
 const defaultSettings = {
 	accountID: '',

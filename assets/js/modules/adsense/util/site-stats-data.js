@@ -30,11 +30,11 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
+	calculateDifferenceBetweenChartValues,
+	getChartDifferenceArrow,
 	getLocale,
 	numFmt,
-	getChartDifferenceArrow,
 	stringToDate,
-	calculateDifferenceBetweenChartValues,
 } from '@/js/util';
 import { adsenseDateToInstance } from './date';
 

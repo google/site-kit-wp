@@ -30,8 +30,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import MetricItem from '@/js/components/KeyMetrics/MetricsSelectionPanel/MetricItem';
-import NoSelectedItemsSVG from '@/svg/graphics/key-metrics-no-selected-items.svg';
 import P from '@/js/components/Typography/P';
+import NoSelectedItemsSVG from '@/svg/graphics/key-metrics-no-selected-items.svg';
 
 export default function TabContent( {
 	activeMetricItems,

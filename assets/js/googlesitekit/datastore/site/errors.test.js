@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from './constants';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_SITE } from './constants';
 
 describe( 'core/site errors', () => {
 	const internalServerError = {

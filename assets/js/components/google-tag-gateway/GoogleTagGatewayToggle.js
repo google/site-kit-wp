@@ -33,14 +33,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import Badge from '@/js/components/Badge';
 import Link from '@/js/components/Link';
+import Notice from '@/js/components/Notice';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 const SubtleNotificationWithIntersectionObserver =
 	withIntersectionObserver( Notice );

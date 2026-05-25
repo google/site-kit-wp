@@ -29,16 +29,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import DataBlock from '@/js/components/DataBlock';
+import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import { calculateChange } from '@/js/util';
-import DataBlock from '@/js/components/DataBlock';
-import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
 
 function WPDashboardUniqueVisitorsGA4( { WPDashboardReportError } ) {
 	const isGatheringData = useInViewSelect( ( select ) =>

@@ -24,7 +24,11 @@ import { useIntersection as mockUseIntersection } from 'react-use';
 /**
  * Internal dependencies
  */
-import AudienceTileError from '.';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	fireEvent,
@@ -38,11 +42,7 @@ import {
 	provideUserInfo,
 	waitForDefaultTimeouts,
 } from '../../../../../../../../../../tests/js/utils';
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import * as tracking from '@/js/util/tracking';
+import AudienceTileError from '.';
 
 jest.mock( 'react-use', () => ( {
 	...jest.requireActual( 'react-use' ),

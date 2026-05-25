@@ -19,6 +19,17 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import {
+	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
+	MODULES_ADSENSE,
+} from '@/js/modules/adsense/datastore/constants';
+import {
+	ACCOUNT_STATUS_READY,
+	SITE_STATUS_READY,
+} from '@/js/modules/adsense/util';
+import * as tracking from '@/js/util/tracking';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -26,17 +37,6 @@ import {
 	provideSiteInfo,
 	render,
 } from '../../../../../../tests/js/test-utils';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import * as tracking from '@/js/util/tracking';
-import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import {
-	ACCOUNT_STATUS_READY,
-	SITE_STATUS_READY,
-} from '@/js/modules/adsense/util';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

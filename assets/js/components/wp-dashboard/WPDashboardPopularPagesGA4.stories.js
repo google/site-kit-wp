@@ -19,19 +19,19 @@
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { withWPDashboardWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 import {
 	provideAnalytics4ReportTitles,
+	setupAnalytics4Error,
+	setupAnalytics4GatheringData,
+	setupAnalytics4Loading,
 	setupAnalytics4MockReports,
 	setupAnalytics4ZeroData,
-	setupAnalytics4Loading,
-	setupAnalytics4Error,
 	widgetDecorators,
-	setupAnalytics4GatheringData,
 } from './common-GA4-stories';
+import WPDashboardPopularPagesGA4 from './WPDashboardPopularPagesGA4';
 
 const WidgetWithComponentProps = withWPDashboardWidgetComponentProps(
 	'widget-slug'

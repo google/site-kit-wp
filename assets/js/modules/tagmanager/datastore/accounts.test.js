@@ -21,17 +21,10 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import {
-	CORE_SITE,
 	AMP_MODE_PRIMARY,
 	AMP_MODE_SECONDARY,
+	CORE_SITE,
 } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	MODULES_TAGMANAGER,
-	ACCOUNT_CREATE,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	CONTAINER_CREATE,
-} from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -40,6 +33,13 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import {
+	ACCOUNT_CREATE,
+	CONTAINER_CREATE,
+	CONTEXT_AMP,
+	CONTEXT_WEB,
+	MODULES_TAGMANAGER,
+} from './constants';
 
 describe( 'modules/tagmanager accounts', () => {
 	let registry;

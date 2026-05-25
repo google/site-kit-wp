@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import { useMount, useUnmount } from 'react-use';
 import { FC, ReactNode } from 'react';
+import { useMount, useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useState, useRef } from '@wordpress/element';
+import { useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies

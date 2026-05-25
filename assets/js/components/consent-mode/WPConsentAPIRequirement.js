@@ -18,6 +18,10 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import Typography from '@/js/components/Typography';
 
 export default function WPConsentAPIRequirement( {
