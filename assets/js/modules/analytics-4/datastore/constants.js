@@ -86,6 +86,20 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 		description: 'Created by Site Kit: Content type of a post',
 		scope: 'EVENT',
 	},
+	googlesitekit_event_provider: {
+		parameterName: 'googlesitekit_event_provider',
+		displayName: 'WordPress Event Provider',
+		description:
+			'Created by Site Kit: Plugin source that triggered a conversion event',
+		scope: 'EVENT',
+	},
+	googlesitekit_form_id: {
+		parameterName: 'googlesitekit_form_id',
+		displayName: 'WordPress Form ID',
+		description:
+			'Created by Site Kit: ID of the form that triggered a lead generation event',
+		scope: 'EVENT',
+	},
 };
 
 export const ENUM_CONVERSION_EVENTS = {
