@@ -21,27 +21,27 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
+import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	createTestRegistry,
-	untilResolved,
+	muteFetch,
+	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
-	provideModuleRegistrations,
-	muteFetch,
+	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { cloneDeep } from 'lodash';
 
 describe( 'modules/reader-revenue-manager publications', () => {
 	let registry;

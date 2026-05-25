@@ -20,15 +20,15 @@
  * Internal dependencies
  */
 import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import { shouldNotificationBeAddedToQueue } from './shouldNotificationBeAddedToQueue';
-import {
 	VIEW_CONTEXT_ADMIN_BAR,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 } from '@/js/googlesitekit/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
+import { shouldNotificationBeAddedToQueue } from './shouldNotificationBeAddedToQueue';
 
 describe( 'shouldNotificationBeAddedToQueue', () => {
 	const id = 'test-notification-id';

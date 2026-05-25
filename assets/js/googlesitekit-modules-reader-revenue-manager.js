@@ -23,9 +23,9 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import Notifications from 'googlesitekit-notifications';
 import {
-	registerStore,
 	registerModule,
 	registerNotifications,
+	registerStore,
 } from './modules/reader-revenue-manager';
 
 registerStore( Data );

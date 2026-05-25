@@ -26,8 +26,8 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
 } from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';

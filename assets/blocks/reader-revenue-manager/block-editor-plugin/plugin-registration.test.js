@@ -40,16 +40,23 @@ jest.mock( './tracking', () => ( {
 	initializeTracking: jest.fn(),
 } ) );
 
-import Data from 'googlesitekit-data';
-import SettingPanel from './SettingPanel';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { registerStore as registerCoreModulesStore } from '@/js/googlesitekit/modules';
-import { registerStore as registerCoreUserStore } from '@/js/googlesitekit/datastore/user';
-import { registerStore as registerReaderRevenueManagerStore } from '@/js/modules/reader-revenue-manager/datastore';
-import { provideModules, provideUserInfo } from '../../../../tests/js/utils';
+/**
+ * WordPress dependencies
+ */
 import { registerPlugin } from '@wordpress-core/plugins';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { registerStore as registerCoreUserStore } from '@/js/googlesitekit/datastore/user';
+import { registerStore as registerCoreModulesStore } from '@/js/googlesitekit/modules';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { registerStore as registerReaderRevenueManagerStore } from '@/js/modules/reader-revenue-manager/datastore';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { provideModules, provideUserInfo } from '../../../../tests/js/utils';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
+import SettingPanel from './SettingPanel';
 
 const { dispatch } = Data;
 

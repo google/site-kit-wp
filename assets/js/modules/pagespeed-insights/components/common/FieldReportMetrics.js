@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -31,15 +31,15 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ReportMetric from './ReportMetric';
-import MetricsLearnMoreLink from './MetricsLearnMoreLink';
-import INPLearnMoreLink from './INPLearnMoreLink';
-import ReportErrorActions from '@/js/components/ReportErrorActions';
-import { getReportErrorMessage } from '@/js/util/errors';
-import { CATEGORY_AVERAGE } from '@/js/modules/pagespeed-insights/util/constants';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
+import { CATEGORY_AVERAGE } from '@/js/modules/pagespeed-insights/util/constants';
+import { getReportErrorMessage } from '@/js/util/errors';
+import INPLearnMoreLink from './INPLearnMoreLink';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import ReportMetric from './ReportMetric';
 
 export default function FieldReportMetrics( { data, error } ) {
 	const {

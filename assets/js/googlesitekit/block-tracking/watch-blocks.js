@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import { trackEvent } from '@/js/util';
-import { subscribe, select } from 'googlesitekit-data';
+import { select, subscribe } from 'googlesitekit-data';
 import { VIEW_CONTEXT_WP_BLOCK_EDITOR } from '@/js/googlesitekit/constants';
+import { trackEvent } from '@/js/util';
 import { createGetBlockTitle } from './create-get-blocks-titles';
 
 /**

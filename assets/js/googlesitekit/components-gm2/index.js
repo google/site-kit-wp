@@ -20,9 +20,9 @@
  * External dependencies
  */
 import Dialog, {
-	DialogTitle,
 	DialogContent,
 	DialogFooter,
+	DialogTitle,
 } from '@material/react-dialog';
 import { Option } from '@material/react-select';
 import Tab from '@material/react-tab';

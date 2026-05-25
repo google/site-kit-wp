@@ -29,8 +29,8 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import InViewProvider from '@/js/components/InViewProvider';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
@@ -38,9 +38,9 @@ import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
 	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
-import useFormValue from '@/js/hooks/useFormValue';
-import InViewProvider from '@/js/components/InViewProvider';
 import SelectionPanel from '@/js/components/SelectionPanel';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import useFormValue from '@/js/hooks/useFormValue';
 import PanelContent from './PanelContent';
 
 const PDFSectionsSelectionPanel: FC = () => {

@@ -31,20 +31,20 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { invalidateCache } from 'googlesitekit-api';
-import { useSelect, useDispatch } from 'googlesitekit-data';
+import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import ReportDetailsLink from '@/js/modules/pagespeed-insights/components/common/ReportDetailsLink';
+import Spinner from '@/js/components/Spinner';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import ReportDetailsLink from '@/js/modules/pagespeed-insights/components/common/ReportDetailsLink';
+import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
 import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
 	DATA_SRC_LAB,
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
 	UI_DATA_SOURCE,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
-import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
-import Spinner from '@/js/components/Spinner';
 
 export default function Footer( { isFetching } ) {
 	const referenceURL = useSelect( ( select ) =>

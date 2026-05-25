@@ -20,27 +20,27 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { pick, difference } from 'lodash';
+import { difference, pick } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
-import { createValidatedAction } from '@/js/googlesitekit/data/utils';
-import { MODULES_ANALYTICS_4, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	isValidPropertyID,
 	isValidWebDataStreamName,
 } from '@/js/modules/analytics-4/utils/validation';
+import { MAX_WEBDATASTREAMS_PER_BATCH, MODULES_ANALYTICS_4 } from './constants';
 
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',

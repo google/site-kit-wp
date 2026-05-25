@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import { resetGlobals } from './utils/resetGlobals';
 
 resetGlobals();

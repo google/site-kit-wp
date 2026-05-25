@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,15 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
@@ -46,35 +40,40 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import type {
 	GoalDriverComponentProps,
 	GoalDriverRow,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	getDimensionFiltersForEvents,
+	normalizePrimaryEvents,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
+import { numFmt } from '@/js/util';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
 	metricValues?: Array< { value?: string } >;
 }
 
-const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
-	const {
-		goalType,
-		limit,
-		rows: providedRows,
-		loading: providedLoading,
-		error: providedError,
-		primaryEvent,
-		onExpandableRowsChange,
-	} = props;
-	let title = __( 'Top pages driving leads', 'google-site-kit' );
-
-	if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-		title = __( 'Top pages driving sales', 'google-site-kit' );
-	}
-
+const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
+	title: providedTitle,
+	goalType,
+	limit,
+	rows: providedRows,
+	loading: providedLoading,
+	error: providedError,
+	primaryEvent,
+	onExpandableRowsChange,
+} ) => {
+	const title =
+		providedTitle ||
+		( goalType === GOAL_TYPES.ECOMMERCE
+			? __( 'Top pages driving sales', 'google-site-kit' )
+			: __( 'Top pages driving leads', 'google-site-kit' ) );
 	const headerLabel = __( 'Events', 'google-site-kit' );
 	const dates = useSelect(
 		( select: Select ) =>

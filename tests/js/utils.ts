@@ -29,15 +29,31 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { NotificationSettings } from '@/js/googlesitekit/notifications/datastore/NotificationSettings';
+import { singleQuestionSurvey } from '@/js/components/surveys/__fixtures__';
 import * as coreForms from '@/js/googlesitekit/datastore/forms';
 import * as coreLocation from '@/js/googlesitekit/datastore/location';
-import * as coreModules from '@/js/googlesitekit/modules';
+import * as corePdf from '@/js/googlesitekit/datastore/pdf';
 import * as coreSite from '@/js/googlesitekit/datastore/site';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as coreUi from '@/js/googlesitekit/datastore/ui';
 import * as coreUser from '@/js/googlesitekit/datastore/user';
-import * as coreWidgets from '@/js/googlesitekit/widgets';
+import {
+	CORE_USER,
+	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_RETURNING_VISITORS,
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_MANAGE_OPTIONS,
+	PERMISSION_SETUP,
+	PERMISSION_VIEW_DASHBOARD,
+	PERMISSION_VIEW_MODULE_DETAILS,
+	PERMISSION_VIEW_POSTS_INSIGHTS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import * as coreModules from '@/js/googlesitekit/modules';
+import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import * as coreNotifications from '@/js/googlesitekit/notifications';
+import { NotificationSettings } from '@/js/googlesitekit/notifications/datastore/NotificationSettings';
+import * as coreWidgets from '@/js/googlesitekit/widgets';
 import * as modulesAds from '@/js/modules/ads';
 import * as modulesAdSense from '@/js/modules/adsense';
 import * as modulesAnalytics4 from '@/js/modules/analytics-4';
@@ -46,26 +62,12 @@ import * as modulesReaderRevenueManager from '@/js/modules/reader-revenue-manage
 import * as modulesSearchConsole from '@/js/modules/search-console';
 import * as modulesSignInWithGoogle from '@/js/modules/sign-in-with-google';
 import * as modulesTagManager from '@/js/modules/tagmanager';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	PERMISSION_AUTHENTICATE,
-	PERMISSION_SETUP,
-	PERMISSION_VIEW_POSTS_INSIGHTS,
-	PERMISSION_VIEW_DASHBOARD,
-	PERMISSION_VIEW_MODULE_DETAILS,
-	PERMISSION_MANAGE_OPTIONS,
-	CORE_USER,
-	KM_ANALYTICS_RETURNING_VISITORS,
-	KM_ANALYTICS_NEW_VISITORS,
-} from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import coreModulesFixture from '@/js/googlesitekit/modules/datastore/__fixtures__';
-import { singleQuestionSurvey } from '@/js/components/surveys/__fixtures__';
 
 const allCoreStores = [
 	coreForms,
 	coreLocation,
 	coreModules,
+	corePdf,
 	coreSite,
 	coreUser,
 	coreUi,

@@ -20,22 +20,22 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteInfo,
-	provideUserCapabilities,
-	renderHook,
-	actHook as act,
-	waitForDefaultTimeouts,
-} from '../../../tests/js/test-utils';
-import { mockLocation } from '../../../tests/js/mock-browser-utils';
-import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { mockLocation } from '../../../tests/js/mock-browser-utils';
+import {
+	actHook as act,
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserCapabilities,
+	renderHook,
+	waitForDefaultTimeouts,
+} from '../../../tests/js/test-utils';
 import useCompleteModuleActivationCallback from './useCompleteModuleActivationCallback';
 
 describe( 'useCompleteModuleActivationCallback', () => {

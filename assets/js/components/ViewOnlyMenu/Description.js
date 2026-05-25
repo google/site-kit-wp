@@ -20,8 +20,8 @@
  * WordPress dependencies
  */
 import {
-	createInterpolateElement,
 	Fragment,
+	createInterpolateElement,
 	useCallback,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
@@ -29,19 +29,19 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useDispatch } from 'googlesitekit-data';
 import { Button } from 'googlesitekit-components';
+import { useDispatch, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
+import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { trackEvent } from '@/js/util';
-import Link from '@/js/components/Link';
 import useViewContext from '@/js/hooks/useViewContext';
-import { setItem } from '@/js/googlesitekit/api/cache';
+import { trackEvent } from '@/js/util';
 
 export default function Description() {
 	const viewContext = useViewContext();

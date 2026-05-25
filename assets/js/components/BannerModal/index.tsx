@@ -25,19 +25,19 @@ import { FC, MouseEvent, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
-import P from '@/js/components/Typography/P';
-import Typography from '@/js/components/Typography';
-import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
-import CloseIcon from '@/svg/icons/close.svg';
 import NewBadge from '@/js/components/NewBadge';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
+import { Dialog, DialogContent, DialogFooter } from '@/js/material-components';
+import CloseIcon from '@/svg/icons/close.svg';
+import { GraphicContainerWithIntersectionObserver } from './GraphicContainer';
 
 export interface BannerModalProps {
 	className?: string;

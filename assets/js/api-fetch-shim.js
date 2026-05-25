@@ -24,10 +24,10 @@ import apiFetch from '@wordpress/api-fetch__non-shim';
 /**
  * Internal dependencies
  */
-import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
 import createDedupeMiddleware, {
 	logDuplicate,
 } from '@/js/googlesitekit/api/middleware/deduplication';
+import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
 
 const { nonce, nonceEndpoint, preloadedData, rootURL } =
 	global._googlesitekitAPIFetchData || {};

@@ -1,8 +1,8 @@
 /**
  * Internal dependencies
  */
-import { wpApiFetch } from './wp-api-fetch';
 import { testClientConfig } from './test-client-config';
+import { wpApiFetch } from './wp-api-fetch';
 
 /**
  * Sets oAuth client configuration used by Site Kit.

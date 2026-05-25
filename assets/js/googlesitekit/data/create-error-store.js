@@ -17,15 +17,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import md5 from 'md5';
+
+/**
  * WordPress dependencies
  */
 import { createRegistrySelector } from '@wordpress/data';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import invariant from 'invariant';
-import md5 from 'md5';
+import { createReducer } from 'googlesitekit-data';
+import { stringifyObject } from '@/js/util';
 
 const SET_ERROR_FOR_SELECTOR = 'SET_ERROR_FOR_SELECTOR';
 const SET_ERROR_FOR_ACTION = 'SET_ERROR_FOR_ACTION';
@@ -33,12 +39,6 @@ const CLEAR_SELECTOR_ERROR = 'CLEAR_SELECTOR_ERROR';
 const CLEAR_SELECTOR_ERRORS = 'CLEAR_SELECTOR_ERRORS';
 const CLEAR_ACTION_ERROR = 'CLEAR_ACTION_ERROR';
 const CLEAR_ACTION_ERRORS = 'CLEAR_ACTION_ERRORS';
-
-/**
- * Internal dependencies
- */
-import { stringifyObject } from '@/js/util';
-import { createReducer } from 'googlesitekit-data';
 
 export function generateErrorKey( baseName, args ) {
 	if ( args && Array.isArray( args ) ) {

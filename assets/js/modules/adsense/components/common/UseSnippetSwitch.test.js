@@ -24,13 +24,13 @@ import apiFetchMock from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import UseSnippetSwitch from './UseSnippetSwitch';
-import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	subscribeUntil,
 } from '../../../../../../tests/js/utils';
-import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import UseSnippetSwitch from './UseSnippetSwitch';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );

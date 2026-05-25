@@ -29,11 +29,11 @@ import { forwardRef } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import useViewContext from '@/js/hooks/useViewContext';
-import { trackEvent } from '@/js/util';
 import InfoTooltip from '@/js/components/InfoTooltip';
+import useViewContext from '@/js/hooks/useViewContext';
 import AudienceTileCollectingData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileCollectingData';
 import AudienceTileCollectingDataHideable from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/AudienceTile/AudienceTileCollectingDataHideable';
+import { trackEvent } from '@/js/util';
 
 const TileZeroDataContent = forwardRef(
 	(

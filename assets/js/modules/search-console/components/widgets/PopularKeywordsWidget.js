@@ -29,24 +29,24 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useSelect, useInViewSelect } from 'googlesitekit-data';
+import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import {
+	MetricTileTable,
+	MetricTileTablePlainText,
+} from '@/js/components/KeyMetrics';
+import Link from '@/js/components/Link';
 import {
 	CORE_USER,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
+import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_SEARCH_CONSOLE,
 } from '@/js/modules/search-console/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
 import { numFmt } from '@/js/util';
-import Link from '@/js/components/Link';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import {
-	MetricTileTable,
-	MetricTileTablePlainText,
-} from '@/js/components/KeyMetrics';
-import { ZeroDataMessage } from '@/js/modules/search-console/components/common';
 
 export default function PopularKeywordsWidget( { Widget } ) {
 	const viewOnlyDashboard = useViewOnly();

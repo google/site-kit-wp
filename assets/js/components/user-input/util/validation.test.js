@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-import { hasErrorForAnswer, getErrorMessageForAnswer } from './validation';
+/**
+ * Internal dependencies
+ */
+import { getErrorMessageForAnswer, hasErrorForAnswer } from './validation';
 
 describe( 'User Input Validation Utilities', () => {
 	describe( 'hasErrorForAnswer', () => {

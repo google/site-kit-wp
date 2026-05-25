@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import SetupUsingGCP from '@/js/components/legacy-setup/SetupUsingGCP';
+import SetupUsingProxyViewOnly from '@/js/components/setup/SetupUsingProxyViewOnly';
+import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import SetupUsingProxyWithSignIn from '@/js/components/setup/SetupUsingProxyWithSignIn';
-import SetupUsingProxyViewOnly from '@/js/components/setup/SetupUsingProxyViewOnly';
-import SetupUsingGCP from '@/js/components/legacy-setup/SetupUsingGCP';
 
 export default function DashboardSplashApp() {
 	const usingProxy = useSelect( ( select ) =>

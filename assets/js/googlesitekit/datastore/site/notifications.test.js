@@ -19,10 +19,9 @@
 /**
  * Internal dependencies
  */
-import { actions, selectors } from './index';
-
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_SITE } from './constants';
+import { actions, selectors } from './index';
 
 describe( 'core/site notifications', () => {
 	let registry;

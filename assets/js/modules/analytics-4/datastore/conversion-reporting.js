@@ -25,6 +25,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import { createRegistrySelector } from 'googlesitekit-data';
+import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -37,15 +38,14 @@ import {
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { safelySort } from '@/js/util';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
 	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
 } from './constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
-import { safelySort } from '@/js/util';
 
 export const selectors = {
 	/**
@@ -399,6 +399,34 @@ export const selectors = {
 
 		return undefined;
 	} ),
+
+	/**
+	 * Returns detected ecommerce events excluding the given primaryEvent, in hierarchy order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state        Data store's state.
+	 * @param {string} primaryEvent The primary ecommerce event to exclude.
+	 * @return {(Array|undefined)} Array of secondary ecommerce event names, or undefined if events not yet loaded.
+	 */
+	getSecondaryEcommerceEvents: createRegistrySelector(
+		( select ) => ( state, primaryEvent ) => {
+			const detectedEvents =
+				select( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+			if ( detectedEvents === undefined ) {
+				return undefined;
+			}
+
+			const primaryIndex =
+				CONVERSION_REPORTING_ECOMMERCE_EVENTS.indexOf( primaryEvent );
+
+			// Secondary events are those below the primary in hierarchy order.
+			return CONVERSION_REPORTING_ECOMMERCE_EVENTS.slice(
+				primaryIndex + 1
+			).filter( ( event ) => detectedEvents.includes( event ) );
+		}
+	),
 
 	/**
 	 * Returns detected events intersected with CONVERSION_REPORTING_LEAD_EVENTS.

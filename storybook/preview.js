@@ -19,9 +19,9 @@
 /**
  * External dependencies
  */
-import { useFirstMountState, useUnmount } from 'react-use';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
+import { useFirstMountState, useUnmount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -37,13 +37,13 @@ import './assets/sass/stories/type-scale.scss';
 import './polyfill-globals';
 import { setUsingCache } from 'googlesitekit-api';
 import { RegistryProvider } from 'googlesitekit-data';
-import { resetGlobals } from './utils/resetGlobals';
-import { bootstrapFetchMocks } from './fetch-mocks';
+import FeaturesProvider from '../assets/js/components/FeaturesProvider';
+import InViewProvider from '../assets/js/components/InViewProvider';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { createTestRegistry, provideUserInfo } from '../tests/js/test-utils';
-import InViewProvider from '../assets/js/components/InViewProvider';
-import FeaturesProvider from '../assets/js/components/FeaturesProvider';
+import { bootstrapFetchMocks } from './fetch-mocks';
+import { resetGlobals } from './utils/resetGlobals';
 
 setUsingCache( false );
 

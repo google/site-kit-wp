@@ -20,15 +20,15 @@
  *
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util/status';
-import { MODULES_ADSENSE } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { MODULES_ADSENSE } from './constants';
 
 describe( 'module/adsense service store', () => {
 	const userData = {

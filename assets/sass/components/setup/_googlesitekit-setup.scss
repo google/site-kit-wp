@@ -150,10 +150,14 @@
 		}
 
 		.googlesitekit-setup__reset-notice {
-			margin-right: $grid-gap-phone;
+			margin: $grid-gap-phone $grid-gap-phone 0 $grid-gap-phone;
+
+			@media (min-width: $bp-nonMobile) {
+				margin: $grid-gap-desktop $grid-gap-desktop 0 $grid-gap-desktop;
+			}
 
 			@media (min-width: $bp-desktop) {
-				margin-right: $grid-gap-desktop;
+				margin: 0 10px 0 0;
 			}
 		}
 	}

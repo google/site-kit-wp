@@ -20,10 +20,10 @@
  * Internal dependencies
  */
 import {
-	getURLPath,
 	getFullURL,
-	normalizeURL,
+	getURLPath,
 	isHashOnly,
+	normalizeURL,
 	shortenURL,
 } from './urls';
 

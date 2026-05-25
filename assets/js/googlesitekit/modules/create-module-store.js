@@ -25,18 +25,18 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
 import {
 	createSettingsStore,
-	makeDefaultSubmitChanges,
 	makeDefaultCanSubmitChanges,
-	makeDefaultRollbackChanges,
 	makeDefaultHaveSettingsChanged,
+	makeDefaultRollbackChanges,
+	makeDefaultSubmitChanges,
 } from '@/js/googlesitekit/data/create-settings-store';
-import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
+import { createValidationSelector } from '@/js/googlesitekit/data/utils';
 import { createInfoStore } from './create-info-store';
 import { createSubmitChangesStore } from './create-submit-changes-store';
-import { createValidationSelector } from '@/js/googlesitekit/data/utils';
 
 /**
  * Creates a base store object for a Site Kit module.

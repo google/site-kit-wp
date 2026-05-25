@@ -25,18 +25,18 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import DisplaySetting from '@/js/components/DisplaySetting';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import Typography from '@/js/components/Typography';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/common';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
 	SIGN_IN_WITH_GOOGLE_TEXTS,
 	SIGN_IN_WITH_GOOGLE_THEMES,
 } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { SettingsNotice } from '@/js/modules/sign-in-with-google/components/common';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
-import DisplaySetting from '@/js/components/DisplaySetting';
-import Typography from '@/js/components/Typography';
-import P from '@/js/components/Typography/P';
 
 export default function SettingsView() {
 	const clientID = useSelect( ( select ) =>

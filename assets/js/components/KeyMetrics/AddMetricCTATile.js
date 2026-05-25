@@ -20,12 +20,12 @@
  * External dependencies
  */
 import propTypes from 'prop-types';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { useIntersection } from 'react-use';
 import { __ } from '@wordpress/i18n';
 import { ENTER, SPACE } from '@wordpress/keycodes';
 
@@ -34,10 +34,10 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
  */
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import PlusIcon from '@/svg/icons/plus.svg';
-import { trackEvent } from '@/js/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import { trackEvent } from '@/js/util';
+import PlusIcon from '@/svg/icons/plus.svg';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 export default function AddMetricCTATile( { Widget } ) {
 	const trackingRef = useRef();

@@ -30,14 +30,14 @@ import {
 /**
  * Internal dependencies
  */
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	deactivateUtilityPlugins,
-	resetSiteKit,
-	useRequestInterception,
-	setupSiteKit,
 	ignorePermissionScopeErrors,
+	resetSiteKit,
+	setupSiteKit,
+	useRequestInterception,
 } from '../../../utils';
-import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 const interceptions = {
 	'analytics-4/data/create-account-ticket': {

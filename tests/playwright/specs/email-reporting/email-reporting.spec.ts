@@ -17,8 +17,8 @@
 /**
  * Internal dependencies
  */
-import { test, expect } from '../../playwright';
-import { asUser, withPlugins, withFixtures } from '../../wordpress';
+import { expect, test } from '../../playwright';
+import { asUser, withFixtures, withPlugins } from '../../wordpress';
 import {
 	EmailReportingPage,
 	VerifyPanelStateOptions,

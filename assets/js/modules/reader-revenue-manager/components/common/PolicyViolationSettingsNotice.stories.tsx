@@ -24,14 +24,14 @@ import type { ElementType, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { createTestRegistry } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import PolicyViolationSettingsNotice from './PolicyViolationSettingsNotice';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	CONTENT_POLICY_STATES,
-	PUBLICATION_ONBOARDING_STATES,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 const {
 	CONTENT_POLICY_VIOLATION_GRACE_PERIOD,

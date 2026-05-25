@@ -25,8 +25,8 @@ import type { MouseEvent } from 'react';
 /**
  * Internal dependencies
  */
-import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
 import { act, render } from '../../../../tests/js/test-utils';
+import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
 
 describe( 'PDFReportSuccessSnackbar', () => {
 	beforeEach( () => {

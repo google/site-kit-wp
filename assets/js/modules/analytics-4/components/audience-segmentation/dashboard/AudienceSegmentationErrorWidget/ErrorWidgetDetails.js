@@ -29,9 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import P from '@/js/components/Typography/P';
 import { Button } from 'googlesitekit-components';
 import ReportErrorActions from '@/js/components/ReportErrorActions';
+import P from '@/js/components/Typography/P';
 import GetHelpLink from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/GetHelpLink';
 
 export default function ErrorWidgetDetails( {

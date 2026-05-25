@@ -30,13 +30,13 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ReportMetric from './ReportMetric';
-import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import ErrorNotice from '@/js/components/ErrorNotice';
+import ReportErrorActions from '@/js/components/ReportErrorActions';
+import P from '@/js/components/Typography/P';
 import { getScoreCategory } from '@/js/modules/pagespeed-insights/util';
 import { getReportErrorMessage } from '@/js/util/errors';
-import ReportErrorActions from '@/js/components/ReportErrorActions';
-import ErrorNotice from '@/js/components/ErrorNotice';
-import P from '@/js/components/Typography/P';
+import MetricsLearnMoreLink from './MetricsLearnMoreLink';
+import ReportMetric from './ReportMetric';
 
 export default function LabReportMetrics( { data, error } ) {
 	const largestContentfulPaint =

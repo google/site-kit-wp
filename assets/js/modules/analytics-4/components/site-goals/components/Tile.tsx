@@ -17,20 +17,23 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
 import classnames from 'classnames';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useSelect, type Select } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import ReportError from '@/js/components/ReportError';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
 import GoalTile from './GoalTile';
 
@@ -41,6 +44,8 @@ export interface TileProps {
 	infoTooltip?: ReactNode;
 	currentValue: number;
 	previousValue: number;
+	loading?: boolean;
+	error?: unknown;
 	format: {
 		style: 'percent' | 'decimal';
 		signDisplay?: 'never' | 'always';
@@ -56,6 +61,8 @@ export const Tile: FC< TileProps > = ( {
 	infoTooltip,
 	currentValue,
 	previousValue,
+	loading = false,
+	error,
 	format,
 	primary,
 } ) => {
@@ -77,29 +84,49 @@ export const Tile: FC< TileProps > = ( {
 			title={ title }
 			infoTooltip={ infoTooltip }
 		>
-			<div className="googlesitekit-site-goals-tile__metric-container">
-				<div className="googlesitekit-site-goals-tile__metric">
-					{ numFmt( currentValue, format ) }
+			{ loading && (
+				<div className="googlesitekit-site-goals-tile__loading">
+					<PreviewBlock width="100%" height="24px" />
+					<PreviewBlock width="100%" height="16px" />
 				</div>
-				<p className="googlesitekit-site-goals-tile__subtext">
-					{ subtitle }
-				</p>
-			</div>
-			<div className="googlesitekit-site-goals-tile__change-container">
-				<ChangeBadge
-					previousValue={ previousValue }
-					currentValue={ currentValue }
-				/>
-				{ comparisonDays && previousValue !== 0 && (
-					<p className="googlesitekit-site-goals-tile__comparison-label">
-						{ sprintf(
-							/* translators: %d: number of days in the comparison period */
-							__( 'Vs. prev. %d days', 'google-site-kit' ),
-							comparisonDays
+			) }
+
+			{ ! loading && !! error && (
+				<div className="googlesitekit-site-goals-tile__error">
+					<ReportError moduleSlug="analytics-4" error={ error } />
+				</div>
+			) }
+
+			{ ! loading && ! error && (
+				<Fragment>
+					<div className="googlesitekit-site-goals-tile__metric-container">
+						<div className="googlesitekit-site-goals-tile__metric">
+							{ numFmt( currentValue, format ) }
+						</div>
+						<p className="googlesitekit-site-goals-tile__subtext">
+							{ subtitle }
+						</p>
+					</div>
+					<div className="googlesitekit-site-goals-tile__change-container">
+						<ChangeBadge
+							previousValue={ previousValue }
+							currentValue={ currentValue }
+						/>
+						{ comparisonDays && previousValue !== 0 && (
+							<p className="googlesitekit-site-goals-tile__comparison-label">
+								{ sprintf(
+									/* translators: %d: number of days in the comparison period */
+									__(
+										'Vs. prev. %d days',
+										'google-site-kit'
+									),
+									comparisonDays
+								) }
+							</p>
 						) }
-					</p>
-				) }
-			</div>
+					</div>
+				</Fragment>
+			) }
 		</GoalTile>
 	);
 };

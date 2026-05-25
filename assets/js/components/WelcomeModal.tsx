@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ReactElement } from 'react';
+
+/**
  * WordPress dependencies
  */
 import {
@@ -28,33 +33,28 @@ import {
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
- */
-import { ReactElement } from 'react';
-
-/**
  * Internal dependencies
  */
-import { useSelect, useDispatch, type Select } from 'googlesitekit-data';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import BannerModal from '@/js/components/BannerModal/index';
+import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
 import {
 	CORE_USER,
+	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 	WELCOME_WITH_TOUR_DISMISSED_ITEM_SLUG,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import BannerModal from '@/js/components/BannerModal/index';
-import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
-import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import WelcomeModalDataGatheringCompleteGraphic from '@/svg/graphics/welcome-modal-data-gathering-complete-graphic.svg';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { trackEvent, WEEK_IN_SECONDS } from '@/js/util';
-import { deleteItem, getItem } from '@/js/googlesitekit/api/cache';
-import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import useViewContext from '@/js/hooks/useViewContext';
+import WelcomeModalGraphic from '@/svg/graphics/welcome-modal-graphic.svg';
 
 enum MODAL_VARIANT {
 	DATA_AVAILABLE,
@@ -181,6 +181,14 @@ export default function WelcomeModal() {
 		),
 		dismissLabel: __( 'Got it', 'google-site-kit' ),
 		gaTrackingEventLabel: VARIANT_TRACKING_LABELS[ modalVariant ],
+		floaterProps: {
+			styles: {
+				arrow: {
+					margin: 42,
+				},
+			},
+		},
+		isCenteredOnMobile: false,
 	};
 
 	const showTooltip = useShowTooltip( tooltipSettings );

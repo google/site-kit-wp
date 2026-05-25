@@ -19,6 +19,10 @@
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
+import * as tracking from '@/js/util/tracking';
 import {
 	fireEvent,
 	render,
@@ -28,10 +32,6 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import * as tracking from '@/js/util/tracking';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
-import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

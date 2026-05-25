@@ -20,17 +20,17 @@
  * Internal dependencies
  */
 import {
-	createTestRegistry,
-	renderHook,
-	provideUserAuthentication,
-} from '../../../../../tests/js/test-utils';
-import useCurrentlyActiveEvents from './useCurrentlyActiveEvents';
-import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_NEW_VISITORS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { registerStore as registerAnalytics4Store } from '@/js/modules/analytics-4/datastore';
+import {
+	createTestRegistry,
+	provideUserAuthentication,
+	renderHook,
+} from '../../../../../tests/js/test-utils';
+import useCurrentlyActiveEvents from './useCurrentlyActiveEvents';
 
 describe( 'useCurrentlyActiveEvents', () => {
 	let registry;

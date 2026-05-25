@@ -25,7 +25,7 @@ import { ENTER, ESCAPE, SPACE, TAB } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import { render, fireEvent } from '../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../tests/js/test-utils';
 import { useKeyCodesInside } from './useKeyCodesInside';
 
 function TestComponent( { onKeyCodeInside } ) {

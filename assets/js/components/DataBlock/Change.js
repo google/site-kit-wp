@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -30,8 +30,8 @@ import { sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { numFmt } from '@/js/util';
 import ChangeArrow from '@/js/components/ChangeArrow';
+import { numFmt } from '@/js/util';
 
 function Change( { change, changeDataUnit, period, invertChangeColor } ) {
 	let changeFormatted = change;

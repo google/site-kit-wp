@@ -16,6 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import {
+	CORE_USER,
+	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
+	KM_ANALYTICS_MOST_ENGAGING_PAGES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import {
+	mockSurveyEndpoints,
+	surveyTriggerEndpoint,
+} from '../../../../tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -26,18 +39,8 @@ import {
 	provideUserInfo,
 	render,
 } from '../../../../tests/js/test-utils';
-import {
-	mockSurveyEndpoints,
-	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
-import {
-	CORE_USER,
-	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-} from '@/js/googlesitekit/datastore/user/constants';
 import ChangeMetricsLink from './ChangeMetricsLink';
+import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 
 describe( 'ChangeMetricsLink', () => {
 	let registry;

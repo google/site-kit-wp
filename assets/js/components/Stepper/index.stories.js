@@ -25,8 +25,8 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import Step from './Step';
 import Stepper from '.';
+import Step from './Step';
 
 function Template( { activeStep: initialActiveStep } ) {
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );

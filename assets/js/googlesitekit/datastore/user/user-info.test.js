@@ -24,8 +24,8 @@ import {
 	subscribeUntil,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { initialState } from './index';
 import { CORE_USER } from './constants';
+import { initialState } from './index';
 
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';

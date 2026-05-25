@@ -26,18 +26,18 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 import {
-	createRegistrySelector,
-	commonActions,
 	combineStores,
+	commonActions,
 	createReducer,
+	createRegistrySelector,
 } from 'googlesitekit-data';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
+import { ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_TAGMANAGER } from '@/js/modules/tagmanager/constants';
 import { isValidAccountSelection } from '@/js/modules/tagmanager/util/validation';
-import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constants';
+import { CONTAINER_CREATE, MODULES_TAGMANAGER } from './constants';
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';

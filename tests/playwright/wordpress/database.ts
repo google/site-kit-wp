@@ -17,10 +17,10 @@
 /**
  * External dependencies
  */
-import { join } from 'path';
+import { type TestInfo } from '@playwright/test';
 import { readFileSync } from 'fs';
 import { Connection, RowDataPacket } from 'mysql2/promise';
-import { type TestInfo } from '@playwright/test';
+import { join } from 'path';
 
 const BACKUP_SQL_PATH = join( __dirname, '../docker/mariadb/backup.sql' );
 

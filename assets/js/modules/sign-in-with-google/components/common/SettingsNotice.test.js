@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { render } from '../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserCapabilities,
 } from '../../../../../../tests/js/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import SettingsNotice from './SettingsNotice';
 
 describe( 'SettingsNotice', () => {

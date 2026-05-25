@@ -17,17 +17,21 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import { useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import CronSchedulerErrorNotice from '@/js/components/email-reporting/notices/errors/CronSchedulerErrorNotice';
 import PermissionsErrorNotice from '@/js/components/email-reporting/notices/errors/PermissionsErrorNotice';
 import ReportErrorNotice from '@/js/components/email-reporting/notices/errors/ReportErrorNotice';
 import SendingErrorNotice from '@/js/components/email-reporting/notices/errors/SendingErrorNotice';
-import CronSchedulerErrorNotice from '@/js/components/email-reporting/notices/errors/CronSchedulerErrorNotice';
 import ServerErrorNotice from '@/js/components/email-reporting/notices/errors/ServerErrorNotice';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function EmailReportingErrorNotices( { onGoToSettings } ) {
 	const isViewOnly = useViewOnly();

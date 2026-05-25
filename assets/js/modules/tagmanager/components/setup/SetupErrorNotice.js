@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import ErrorNotice from '@/js/components/ErrorNotice';
+import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 
 export default function SetupErrorNotice() {
 	const analyticsModuleAvailable = useSelect( ( select ) =>

@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import AdsenseIcon from '@/svg/graphics/adsense.svg';
 import {
 	createTestRegistry,
 	provideModules,
 	render,
 } from '../../../tests/js/test-utils';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import ModuleIcon from './ModuleIcon';
-import AdsenseIcon from '@/svg/graphics/adsense.svg';
 
 describe( 'Module Icon', () => {
 	let registry;

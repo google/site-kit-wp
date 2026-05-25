@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { set } from 'googlesitekit-api';
-import { createRegistrySelector, combineStores } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
+import { combineStores, createRegistrySelector } from 'googlesitekit-data';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from './constants';
 
 const fetchResetStore = createFetchStore( {
 	baseName: 'reset',

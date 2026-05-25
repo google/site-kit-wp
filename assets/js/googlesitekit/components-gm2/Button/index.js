@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -32,8 +32,8 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { MDCRipple } from '@/js/material-components';
-import SemanticButton from './SemanticButton';
 import MaybeTooltip from './MaybeTooltip';
+import SemanticButton from './SemanticButton';
 
 const Button = forwardRef(
 	(

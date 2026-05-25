@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { MODULES_SEARCH_CONSOLE } from './constants';
 import * as fixtures from './__fixtures__';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'modules/search-console properties', () => {
 	let registry;

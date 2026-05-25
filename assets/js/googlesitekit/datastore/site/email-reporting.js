@@ -27,16 +27,16 @@ import { isPlainObject } from 'lodash';
  */
 import { get, set } from 'googlesitekit-api';
 import {
-	createReducer,
-	commonActions,
 	combineStores,
+	commonActions,
+	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { CORE_SITE } from './constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { stringifyObject } from '@/js/util';
+import { CORE_SITE } from './constants';
 
 const START_INVITING_USER = 'START_INVITING_USER';
 const FINISH_INVITING_USER = 'FINISH_INVITING_USER';

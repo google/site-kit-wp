@@ -23,11 +23,11 @@ import containersAMPOnly from './get-containers--amp.json';
 import containersWebOnly from './get-containers--web.json';
 import liveContainerVersionAMPWithGA from './live-container-version--amp-ga.json';
 import liveContainerVersionAMPNoGA from './live-container-version--amp-no-ga.json';
-import liveContainerVersionWebNoGAWithVariable from './live-container-version--web-no-ga-with-variable.json';
 import liveContainerVersionWebGAWithOverride from './live-container-version--web-ga-with-override.json';
 import liveContainerVersionWebGAWithVariable from './live-container-version--web-ga-with-variable.json';
-import liveContainerVersionWebGoogleTag from './live-container-version--web-google-tag.json';
 import liveContainerVersionWebGoogleTagWithVariable from './live-container-version--web-google-tag-with-variable.json';
+import liveContainerVersionWebGoogleTag from './live-container-version--web-google-tag.json';
+import liveContainerVersionWebNoGAWithVariable from './live-container-version--web-no-ga-with-variable.json';
 
 export { default as accounts } from './accounts.json';
 export { default as createContainer } from './create-container.json';

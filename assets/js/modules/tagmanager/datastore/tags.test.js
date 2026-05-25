@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { MODULES_TAGMANAGER } from './constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	untilResolved,
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
+import { MODULES_TAGMANAGER } from './constants';
 
 describe( 'modules/tagmanager existing-tag', () => {
 	let registry;

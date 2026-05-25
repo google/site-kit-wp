@@ -19,17 +19,17 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	render,
-} from '../../../../../../../../tests/js/test-utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	createTestRegistry,
+	render,
+} from '../../../../../../../../tests/js/test-utils';
 import IntroModal from './index';
-import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );
 

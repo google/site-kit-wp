@@ -111,6 +111,22 @@ class Email_Reporting_PointerTest extends TestCase {
 		$this->assertFalse( $pointer->is_active( 'index.php' ), 'Pointer should be inactive when the pointer was previously dismissed by the user.' );
 	}
 
+	public function test_active_callback__dismissed_wp_pointers_meta_is_array() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$this->user_options->switch_user( $user_id );
+		$this->set_user_access_token( $user_id, 'test-access-token' );
+		$this->user_options->set( Verification::OPTION, 'verified' );
+
+		// Simulate corrupted or third-party-written meta stored as an array.
+		// Reading this value must not fatal when the active_callback runs.
+		update_user_meta( $user_id, 'dismissed_wp_pointers', array( 'foo' ) );
+
+		$pointer = $this->get_registered_pointer();
+
+		$this->assertTrue( $pointer->is_active( 'index.php' ), 'Pointer should remain active when dismissed_wp_pointers meta is an array that does not contain the pointer slug, without triggering a TypeError.' );
+	}
+
 	public function test_active_callback__subscribed_user_bails() {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
