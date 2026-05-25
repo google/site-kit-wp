@@ -42,10 +42,10 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import DataSourceLink from './DataSourceLink';
 import DimensionTabs from './DimensionTabs';
+import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 
 function DashboardAllTrafficWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;

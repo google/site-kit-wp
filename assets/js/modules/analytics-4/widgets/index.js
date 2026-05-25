@@ -75,8 +75,8 @@ import {
 	DashboardAllTrafficWidgetGA4,
 	DashboardOverallPageMetricsWidgetGA4,
 } from '@/js/modules/analytics-4/components/dashboard';
-import DashboardAllTrafficWidgetGA4PDF from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF';
 import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
+import DashboardAllTrafficWidgetGA4PDF from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import {
 	LeadGenerationPerformanceWidget,
