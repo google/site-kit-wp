@@ -29,7 +29,6 @@ import { useEvent, useKey } from 'react-use';
  */
 import { Fragment, useCallback, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -135,22 +134,19 @@ export default function UserDimensionsPieChart( props ) {
 		[ isTooltipOpen ]
 	);
 
-	const handleEscapeKey = useCallback(
-		( event ) => {
-			if ( event?.keyCode === ESCAPE && isTooltipOpen ) {
-				setIsTooltipOpen( false );
-				setValues( {
-					[ UI_DIMENSION_VALUE ]: '',
-					[ UI_DIMENSION_COLOR ]: '',
-					[ UI_ACTIVE_ROW_INDEX ]: null,
-				} );
-			}
-		},
-		[ isTooltipOpen, setValues ]
-	);
+	const handleEscapeKey = useCallback( () => {
+		if ( isTooltipOpen ) {
+			setIsTooltipOpen( false );
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+		}
+	}, [ isTooltipOpen, setValues ] );
 
 	useEvent( 'click', handleTooltipClick, containerRef.current );
-	useEvent( 'click', handleExitClick, global );
+	useEvent( 'click', handleExitClick, window );
 	useKey( 'Escape', handleEscapeKey, { event: 'keyup' }, [
 		handleEscapeKey,
 	] );
