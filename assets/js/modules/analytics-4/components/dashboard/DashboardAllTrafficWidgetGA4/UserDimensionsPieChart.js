@@ -146,7 +146,7 @@ export default function UserDimensionsPieChart( props ) {
 	}, [ isTooltipOpen, setValues ] );
 
 	useEvent( 'click', handleTooltipClick, containerRef.current );
-	useEvent( 'click', handleExitClick, window );
+	useEvent( 'click', handleExitClick );
 	useKey( 'Escape', handleEscapeKey, { event: 'keyup' }, [
 		handleEscapeKey,
 	] );
