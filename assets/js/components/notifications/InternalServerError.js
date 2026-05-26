@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect, useRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
@@ -27,16 +32,28 @@ import BannerNotification, {
 import Notification from '@/js/googlesitekit/notifications/components/Notification';
 
 export default function InternalServerError() {
+	const notificationRef = useRef();
 	const error = useSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
+
+	// Scroll to the notification when the error is present.
+	useEffect( () => {
+		if ( error ) {
+			notificationRef.current?.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'nearest',
+				inline: 'nearest',
+			} );
+		}
+	}, [ error ] );
 
 	if ( ! error ) {
 		return null;
 	}
 
 	return (
-		<Notification id="internal-server-error">
+		<Notification id="internal-server-error" ref={ notificationRef }>
 			<BannerNotification
 				notificationID="internal-server-error"
 				type={ TYPES.ERROR }
