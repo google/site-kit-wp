@@ -17,10 +17,17 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	SITE_GOALS_EFFECTIVE_DRIVERS,
 	SITE_GOALS_EFFECTIVE_VISITOR_ENGAGEMENT,
@@ -33,8 +40,11 @@ import {
 	GOAL_DRIVER_IDS,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	EDIT_SCOPE,
 	ENUM_CONVERSION_EVENTS,
+	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { mockBrowserScrolling } from '../../../../../../../tests/js/mock-browser-utils';
@@ -45,10 +55,18 @@ import {
 } from '../../../../../../../tests/js/test-utils';
 import {
 	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
 import SiteGoalsSelectionPanel from '.';
+
+jest.mock( '@/js/googlesitekit/data/create-snapshot-store', () => ( {
+	...jest.requireActual( '@/js/googlesitekit/data/create-snapshot-store' ),
+	snapshotAllStores: jest.fn( () => Promise.resolve() ),
+} ) );
 
 describe( 'SiteGoalsSelectionPanel', () => {
 	let registry: ReturnType< typeof createTestRegistry >;
@@ -61,6 +79,14 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		registry = createTestRegistry();
 
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		provideSiteInfo( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				connected: true,
+			},
+		] );
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -380,6 +406,269 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			document.querySelectorAll(
 				`${ ecommerceGoalDriverCheckboxSelector }:checked`
 			).length
-		).toBe( 7 );
+		).toBe(
+			document.querySelectorAll( ecommerceGoalDriverCheckboxSelector )
+				.length
+		);
+	} );
+
+	it( 'shows a custom dimensions warning when Top Authors is selected and the author dimension is missing', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [],
+		} );
+
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		expect(
+			getByText(
+				'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+			)
+		).toBeInTheDocument();
+		expect( getByText( 'Set up' ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not show a custom dimensions warning when the author dimension is available', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+
+		const { queryByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		expect(
+			queryByText(
+				'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+			)
+		).not.toBeInTheDocument();
+		expect( queryByText( 'Set up' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'starts the custom dimensions setup flow when setup is clicked without edit scope', async () => {
+		( snapshotAllStores as jest.Mock ).mockClear();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			availableCustomDimensions: [],
+		} );
+
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up' } ) );
+
+		expect( snapshotAllStores ).toHaveBeenCalledWith( registry );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'customDimensions' )
+		).toEqual( [ 'googlesitekit_post_author' ] );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'autoSubmit' )
+		).toBe( true );
+		await waitFor( () => {
+			expect(
+				registry.select( CORE_USER ).getPermissionScopeError()
+			).toMatchObject( {
+				data: {
+					scopes: [ EDIT_SCOPE ],
+					skipModal: true,
+				},
+			} );
+		} );
+	} );
+
+	it( 'preserves staged selection after returning from custom dimensions OAuth', async () => {
+		registry.dispatch( CORE_FORMS ).setValues( SITE_GOALS_SELECTION_FORM, {
+			[ SITE_GOALS_EFFECTIVE_DRIVERS ]: {
+				[ GOAL_TYPES.ECOMMERCE ]: [
+					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				],
+				[ GOAL_TYPES.LEAD ]: [],
+			},
+			[ SITE_GOALS_SELECTED_DRIVERS ]: {
+				[ GOAL_TYPES.ECOMMERCE ]: [
+					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+					GOAL_DRIVER_IDS.TOP_AUTHORS,
+				],
+				[ GOAL_TYPES.LEAD ]: [],
+			},
+		} );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				autoSubmit: true,
+				customDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+		render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					SITE_GOALS_SELECTION_FORM,
+					SITE_GOALS_SELECTED_DRIVERS
+				)
+		).toEqual( {
+			[ GOAL_TYPES.ECOMMERCE ]: [
+				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
+				GOAL_DRIVER_IDS.TOP_AUTHORS,
+			],
+			[ GOAL_TYPES.LEAD ]: [],
+		} );
+	} );
+
+	it( 'shows the custom dimensions warning after syncing stale dimensions with edit scope', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{
+				body: [],
+				status: 200,
+			}
+		);
+
+		const { getByText } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		await waitFor( () => {
+			expect(
+				getByText(
+					'The "Top authors driving sales" metric you\'ve selected requires more data tracking. To enable it, you will be directed to update your Analytics property. Complete the setup and save your selection.'
+				)
+			).toBeInTheDocument();
+		} );
+	} );
+
+	it( 'creates the author custom dimension when setup is clicked with edit scope', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
+			widgetSlugs: [],
+			isWidgetHidden: false,
+		} );
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: { values: [], scope: 'site' },
+			postFrequency: { values: [], scope: 'user' },
+			goals: { values: [], scope: 'user' },
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [],
+		} );
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+			),
+			{
+				body: {
+					parameterName: 'googlesitekit_post_author',
+					displayName: 'WordPress Post Author',
+					description:
+						'Created by Site Kit: WordPress name of the post author',
+					scope: 'EVENT',
+				},
+				status: 200,
+			}
+		);
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{
+				body: [ 'googlesitekit_post_author' ],
+				status: 200,
+			}
+		);
+
+		const { getByRole } = render( <SiteGoalsSelectionPanel />, {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		fireEvent.click(
+			document.querySelector(
+				'#site-goals-selection-topAuthors-ecommerce'
+			) as Element
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Set up' } ) );
+
+		await waitFor( () => {
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+		} );
+
+		expect(
+			registry.select( CORE_USER ).getPermissionScopeError()
+		).toBeNull();
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getAvailableCustomDimensions()
+		).toEqual( [ 'googlesitekit_post_author' ] );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					SITE_GOALS_SELECTION_FORM,
+					SITE_GOALS_SELECTED_DRIVERS
+				)
+		).toMatchObject( {
+			[ GOAL_TYPES.ECOMMERCE ]: expect.arrayContaining( [
+				GOAL_DRIVER_IDS.TOP_AUTHORS,
+			] ),
+		} );
 	} );
 } );
