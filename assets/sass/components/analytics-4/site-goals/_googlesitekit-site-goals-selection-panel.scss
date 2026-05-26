@@ -20,6 +20,10 @@
 
 	.googlesitekit-site-goals-selection-panel {
 
+		@media (min-width: $bp-tablet) {
+			width: 578px;
+		}
+
 		.googlesitekit-selection-panel-header {
 			padding: $grid-gap-desktop $grid-gap-desktop 0;
 		}
@@ -32,6 +36,19 @@
 
 		.googlesitekit-site-goals-selection-panel__footer-container {
 			margin-top: auto;
+		}
+
+		.googlesitekit-site-goals-selection-panel__custom-dimensions-notice {
+			align-items: end;
+			flex-direction: column;
+			padding: $grid-gap-phone $grid-gap-desktop;
+			row-gap: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex-direction: row;
+				padding: 10px $grid-gap-desktop;
+			}
 		}
 
 		.googlesitekit-notice--side-panel {
