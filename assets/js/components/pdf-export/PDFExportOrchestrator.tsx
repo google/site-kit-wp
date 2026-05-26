@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { pdf } from '@react-pdf/renderer';
-import type { FC } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies

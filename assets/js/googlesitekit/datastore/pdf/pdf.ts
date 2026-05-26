@@ -263,7 +263,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Object} Redux-style action.
+	 * @return Redux-style action.
 	 */
 	startExporting() {
 		return {
@@ -277,7 +277,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {Object} Redux-style action.
+	 * @return Redux-style action.
 	 */
 	finishExporting() {
 		return {
@@ -431,8 +431,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {PDFState} state Data store's state.
-	 * @return {boolean} `true` when exporting.
+	 * @param state Data store's state.
+	 * @return `true` when exporting.
 	 */
 	isExporting( state: PDFState ): boolean {
 		return state.isExporting;
