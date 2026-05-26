@@ -164,43 +164,18 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasPrimaryStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasTotalStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ totalReportOptions ] );
-			const hasPrimaryFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-			const hasTotalFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ totalReportOptions ] );
-
-			if (
-				( hasPrimaryStarted && ! hasPrimaryFinished ) ||
-				( hasTotalStarted && ! hasTotalFinished )
-			) {
-				return true;
-			}
-
-			const primaryReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-			const totalReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ totalReportOptions ] );
-
 			return (
-				( hasPrimaryStarted &&
-					report === undefined &&
-					! primaryReportError ) ||
-				( hasTotalStarted &&
-					totalReport === undefined &&
-					! totalReportError )
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+				) ||
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ totalReportOptions ]
+				)
 			);
 		},
-		[ report, reportOptions, totalReport, totalReportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 
 	const sourceRows: ReportRow[] = report?.rows || [];
