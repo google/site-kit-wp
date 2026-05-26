@@ -20,11 +20,14 @@
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { mockBrowserScrolling } from '../../../../tests/js/mock-browser-utils';
 import { createTestRegistry, render } from '../../../../tests/js/test-utils';
 import InternalServerError from './InternalServerError';
 
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
+
+	mockBrowserScrolling();
 
 	it( 'should display the notification when the internal server error is set', () => {
 		const error = {
@@ -51,5 +54,31 @@ describe( 'InternalServerError', () => {
 
 		const { container } = render( <InternalServerError />, { registry } );
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should scroll the notification into view when the internal server error is set', () => {
+		const error = {
+			id: 'module-setup-error',
+			title: 'Test Error',
+			description: 'Error message',
+		};
+
+		registry.dispatch( CORE_SITE ).setInternalServerError( error );
+
+		render( <InternalServerError />, { registry } );
+
+		expect( Element.prototype.scrollIntoView ).toHaveBeenCalledWith( {
+			behavior: 'smooth',
+			block: 'nearest',
+			inline: 'nearest',
+		} );
+	} );
+
+	it( 'should not scroll into view when the internal server error is not set', () => {
+		registry.dispatch( CORE_SITE ).clearInternalServerError();
+
+		render( <InternalServerError />, { registry } );
+
+		expect( Element.prototype.scrollIntoView ).not.toHaveBeenCalled();
 	} );
 } );
