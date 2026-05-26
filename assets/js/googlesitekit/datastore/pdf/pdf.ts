@@ -34,6 +34,8 @@ const SET_BLOB = 'SET_BLOB' as const;
 const CLEAR_EXPORT = 'CLEAR_EXPORT' as const;
 const REQUEST_CANCEL = 'REQUEST_CANCEL' as const;
 const CLEAR_CANCEL_REQUEST = 'CLEAR_CANCEL_REQUEST' as const;
+const START_EXPORTING = 'START_EXPORTING' as const;
+const FINISH_EXPORTING = 'FINISH_EXPORTING' as const;
 
 export type PDFStatus = 'idle' | 'progress' | 'success' | 'error';
 
@@ -54,6 +56,7 @@ export interface PDFState {
 	blobURL: string | null;
 	blobFilename: string | null;
 	cancelRequested: boolean;
+	isExporting: boolean;
 }
 
 type Action =
@@ -66,7 +69,9 @@ type Action =
 	| {
 			type: typeof CLEAR_CANCEL_REQUEST;
 			payload: Record< string, never >;
-	  };
+	  }
+	| { type: typeof START_EXPORTING; payload: Record< string, never > }
+	| { type: typeof FINISH_EXPORTING; payload: Record< string, never > };
 
 /**
  * Determines whether the given value is an array of strings.
@@ -93,6 +98,7 @@ export const initialState: PDFState = {
 	blobURL: null,
 	blobFilename: null,
 	cancelRequested: false,
+	isExporting: false,
 };
 
 export const actions = {
@@ -251,6 +257,34 @@ export const actions = {
 			type: CLEAR_CANCEL_REQUEST,
 		};
 	},
+
+	/**
+	 * Marks the PDF export as in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	startExporting() {
+		return {
+			payload: {},
+			type: START_EXPORTING,
+		};
+	},
+
+	/**
+	 * Marks the PDF export as finished.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	finishExporting() {
+		return {
+			payload: {},
+			type: FINISH_EXPORTING,
+		};
+	},
 };
 
 export const controls = {};
@@ -287,6 +321,14 @@ export const reducer = createReducer( ( state: PDFState, action: Action ) => {
 
 		case CLEAR_CANCEL_REQUEST:
 			state.cancelRequested = false;
+			break;
+
+		case START_EXPORTING:
+			state.isExporting = true;
+			break;
+
+		case FINISH_EXPORTING:
+			state.isExporting = false;
 			break;
 
 		default:
@@ -382,6 +424,18 @@ export const selectors = {
 	 */
 	isCancelRequested( state: PDFState ): boolean {
 		return state.cancelRequested;
+	},
+
+	/**
+	 * Determines whether a PDF export is currently in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {PDFState} state Data store's state.
+	 * @return {boolean} `true` when exporting.
+	 */
+	isExporting( state: PDFState ): boolean {
+		return state.isExporting;
 	},
 };
 

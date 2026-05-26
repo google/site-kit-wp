@@ -21,9 +21,9 @@
  */
 import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_EXPORTING_KEY,
 	PDF_SECTIONS,
 } from '@/js/components/pdf-generation/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	act,
@@ -115,9 +115,7 @@ describe( 'PDFSectionsSelectionPanel', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Download report' } ) );
 
 		await waitFor( () => {
-			expect(
-				registry.select( CORE_UI ).getValue( PDF_EXPORTING_KEY )
-			).toBe( true );
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( true );
 		} );
 
 		expect(

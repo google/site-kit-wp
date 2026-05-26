@@ -31,10 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import {
-	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_EXPORTING_KEY,
-} from '@/js/components/pdf-generation/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
@@ -45,7 +42,7 @@ interface FooterProps {
 
 const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 	const isExporting = useSelect(
-		( select: Select ) => select( CORE_UI ).getValue( PDF_EXPORTING_KEY ),
+		( select: Select ) => select( CORE_PDF ).isExporting(),
 		[]
 	);
 	const exportStatus = useSelect(
@@ -54,10 +51,11 @@ const Footer: FC< FooterProps > = ( { closePanel, hasSelection } ) => {
 	);
 
 	const { setValue } = useDispatch( CORE_UI );
+	const { startExporting } = useDispatch( CORE_PDF );
 
 	function handleDownloadClick() {
 		setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, false );
-		setValue( PDF_EXPORTING_KEY, true );
+		startExporting();
 	}
 
 	const inFlight = !! isExporting || exportStatus === 'progress';

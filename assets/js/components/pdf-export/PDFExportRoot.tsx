@@ -30,28 +30,23 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { PDF_EXPORTING_KEY } from '@/js/components/pdf-generation/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import PDFExportOrchestrator from './PDFExportOrchestrator';
 import PDFReportSnackbarHost from './PDFReportSnackbarHost';
 
 const PDFExportRoot: FC = () => {
 	const isExporting = useSelect(
-		( select: Select ) => select( CORE_UI ).getValue( PDF_EXPORTING_KEY ),
+		( select: Select ) => select( CORE_PDF ).isExporting(),
 		[]
 	);
 
-	const { setValue } = useDispatch( CORE_UI );
-
-	function stopExport() {
-		setValue( PDF_EXPORTING_KEY, false );
-	}
+	const { finishExporting } = useDispatch( CORE_PDF );
 
 	return (
 		<Fragment>
 			<PDFReportSnackbarHost />
 			{ isExporting && (
-				<PDFExportOrchestrator onComplete={ stopExport } />
+				<PDFExportOrchestrator onComplete={ finishExporting } />
 			) }
 		</Fragment>
 	);
