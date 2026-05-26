@@ -281,7 +281,6 @@
 
 			&.googlesitekit-site-goals-goal-drivers-section__tile--empty {
 				display: none;
-				min-height: 168px;
 				padding: 0;
 
 				@media (min-width: $bp-tablet) {
@@ -344,10 +343,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: normal;
-
-			@media (min-width: $bp-tablet) {
-				white-space: nowrap;
-			}
 		}
 
 		.googlesitekit-table-tile__header-label.googlesitekit-typography {
