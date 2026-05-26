@@ -17,12 +17,13 @@
 /**
  * External dependencies
  */
+import useMergedRef from '@react-hook/merged-ref';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { forwardRef, useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,72 +34,74 @@ import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasB
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 import ViewedStateObserver from './ViewedStateObserver';
 
-export default function Notification( {
-	id,
-	className,
-	gaTrackingEventArgs,
-	children,
-	onView,
-} ) {
-	const ref = useRef();
-	const viewed = useHasBeenViewed( id );
-	const trackEvents = useNotificationEvents(
-		id,
-		gaTrackingEventArgs?.category,
-		{ viewAction: gaTrackingEventArgs?.viewAction }
-	);
+const Notification = forwardRef(
+	(
+		{ id, className, gaTrackingEventArgs, children, onView },
+		forwardedRef
+	) => {
+		const ref = useRef();
+		const mergedRef = useMergedRef( forwardedRef, ref );
+		const viewed = useHasBeenViewed( id );
+		const trackEvents = useNotificationEvents(
+			id,
+			gaTrackingEventArgs?.category,
+			{ viewAction: gaTrackingEventArgs?.viewAction }
+		);
 
-	const [ isViewedOnce, setIsViewedOnce ] = useState( false );
+		const [ isViewedOnce, setIsViewedOnce ] = useState( false );
 
-	const viewedDates = useSelect( ( select ) =>
-		select( CORE_NOTIFICATIONS ).getNotificationSeenDates( id )
-	);
+		const viewedDates = useSelect( ( select ) =>
+			select( CORE_NOTIFICATIONS ).getNotificationSeenDates( id )
+		);
 
-	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
+		const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
 
-	// Track view once and check if notification should be dismissed.
-	useEffect( () => {
-		if ( ! isViewedOnce && viewed ) {
-			trackEvents.view(
-				gaTrackingEventArgs?.label,
-				gaTrackingEventArgs?.value
-			);
+		// Track view once and check if notification should be dismissed.
+		useEffect( () => {
+			if ( ! isViewedOnce && viewed ) {
+				trackEvents.view(
+					gaTrackingEventArgs?.label,
+					gaTrackingEventArgs?.value
+				);
 
-			onView?.();
+				onView?.();
 
-			setIsViewedOnce( true );
-		}
+				setIsViewedOnce( true );
+			}
 
-		// If the notification has been viewed on 3 distinct days, dismiss it permanently for the next view.
-		if ( viewedDates?.length >= 3 ) {
-			dismissNotification( id, { skipHidingFromQueue: true } );
-		}
-	}, [
-		viewed,
-		trackEvents,
-		isViewedOnce,
-		gaTrackingEventArgs,
-		onView,
-		viewedDates,
-		dismissNotification,
-		id,
-	] );
+			// If the notification has been viewed on 3 distinct days, dismiss it permanently for the next view.
+			if ( viewedDates?.length >= 3 ) {
+				dismissNotification( id, { skipHidingFromQueue: true } );
+			}
+		}, [
+			viewed,
+			trackEvents,
+			isViewedOnce,
+			gaTrackingEventArgs,
+			onView,
+			viewedDates,
+			dismissNotification,
+			id,
+		] );
 
-	return (
-		<section id={ id } ref={ ref } className={ className }>
-			{ children }
+		return (
+			<section id={ id } ref={ mergedRef } className={ className }>
+				{ children }
 
-			{ /* Encapsulate observer to dispose when no longer needed. */ }
-			{ ! viewed && (
-				<ViewedStateObserver
-					id={ id }
-					observeRef={ ref }
-					threshold={ 0.5 }
-				/>
-			) }
-		</section>
-	);
-}
+				{ /* Encapsulate observer to dispose when no longer needed. */ }
+				{ ! viewed && (
+					<ViewedStateObserver
+						id={ id }
+						observeRef={ ref }
+						threshold={ 0.5 }
+					/>
+				) }
+			</section>
+		);
+	}
+);
+
+export default Notification;
 
 Notification.propTypes = {
 	id: PropTypes.string,
