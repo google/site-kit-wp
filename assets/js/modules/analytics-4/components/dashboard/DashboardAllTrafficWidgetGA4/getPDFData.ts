@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -27,13 +32,15 @@ import type {
 } from '@/js/modules/analytics-4/datastore/types';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
+// `WPDataRegistry` from `@wordpress/data` does not expose `resolveSelect` in its
+// types, but the runtime registry instance returned by `createRegistry()` does.
+// Extend locally so callers can pass a real registry without an `as any` cast.
+export type PDFDataRegistry = WPDataRegistry & {
+	resolveSelect: WPDataRegistry[ 'select' ];
+};
+
 export interface GetPDFDataParams {
-	registry: {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
-		resolveSelect: ( storeName: string ) => any;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
-		select: ( storeName: string ) => any;
-	};
+	registry: PDFDataRegistry;
 	dates: Pick<
 		ReportOptions,
 		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate'

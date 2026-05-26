@@ -17,60 +17,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock-jest';
+import { createTestRegistry, provideSiteInfo } from 'tests/js/utils';
+
+/**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import getPDFData, { GetPDFDataParams } from './getPDFData';
-import { GRAPH_REPORT_ID, TOTALS_REPORT_ID } from './reportOptions';
+import getPDFData, { PDFDataRegistry } from './getPDFData';
+import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
 
-type Registry = GetPDFDataParams[ 'registry' ];
-
-interface MockGetReport {
-	( args: Record< string, unknown > ): Promise< Record< string, unknown > >;
-	mock: { calls: Array< [ Record< string, unknown > ] > };
-}
-
-function buildRegistry( {
-	totalsReport,
-	graphReport,
-	entityURL,
-}: {
-	totalsReport: Record< string, unknown >;
-	graphReport: Record< string, unknown >;
-	entityURL?: string;
-} ): { registry: Registry; getReport: MockGetReport } {
-	const getReport = jest.fn( ( args: Record< string, unknown > ) => {
-		if ( args.reportID === TOTALS_REPORT_ID ) {
-			return Promise.resolve( totalsReport );
-		}
-		if ( args.reportID === GRAPH_REPORT_ID ) {
-			return Promise.resolve( graphReport );
-		}
-		return Promise.resolve( undefined );
-	} );
-
-	const resolveSelect = jest.fn( ( storeName: string ) => {
-		if ( storeName === MODULES_ANALYTICS_4 ) {
-			return { getReport };
-		}
-		throw new Error( `Unexpected resolveSelect store: ${ storeName }` );
-	} );
-
-	const select = jest.fn( ( storeName: string ) => {
-		if ( storeName === CORE_SITE ) {
-			return {
-				getCurrentEntityURL: () => entityURL || null,
-			};
-		}
-		throw new Error( `Unexpected select store: ${ storeName }` );
-	} );
-
-	return {
-		registry: { resolveSelect, select },
-		getReport: getReport as unknown as MockGetReport,
-	};
-}
+const reportEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/report'
+);
 
 const dates = {
 	startDate: '2025-01-08',
@@ -80,70 +41,65 @@ const dates = {
 };
 
 describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
+	let registry: PDFDataRegistry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as PDFDataRegistry;
+		provideSiteInfo( registry );
+	} );
+
 	it( 'resolves both totals and graph reports in parallel and returns the expected shape', async () => {
 		const totalsReport = {
 			totals: [ { metricValues: [ { value: '100' } ] } ],
 		};
-		const graphReport = { rows: [ { metricValues: [ { value: '10' } ] } ] };
-		const { registry, getReport } = buildRegistry( {
-			totalsReport,
-			graphReport,
+		const graphReport = {
+			rows: [ { metricValues: [ { value: '10' } ] } ],
+		};
+
+		const totalsArgs = getTotalsReportArgs( dates );
+		const graphArgs = getGraphReportArgs( {
+			startDate: dates.startDate,
+			endDate: dates.endDate,
 		} );
 
-		const signal = new AbortController().signal;
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( totalsReport, { options: totalsArgs } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( graphReport, { options: graphArgs } );
 
 		const result = await getPDFData( {
 			registry,
 			dates,
-			signal,
+			signal: new AbortController().signal,
 		} );
 
 		expect( result ).toEqual( {
-			data: {
-				totalsReport,
-				graphReport,
-			},
+			data: { totalsReport, graphReport },
 		} );
 
-		// Both reports were requested.
-		expect( getReport.mock.calls ).toHaveLength( 2 );
-
-		const reportIDs = getReport.mock.calls.map(
-			( [ args ] ) => args.reportID
-		);
-		expect( reportIDs ).toEqual(
-			expect.arrayContaining( [ TOTALS_REPORT_ID, GRAPH_REPORT_ID ] )
-		);
-
-		// The totals request includes the comparison dates.
-		const totalsReportRequest = getReport.mock.calls.find(
-			( [ args ] ) => args.reportID === TOTALS_REPORT_ID
-		);
-		expect( totalsReportRequest?.[ 0 ] ).toMatchObject( {
-			startDate: dates.startDate,
-			endDate: dates.endDate,
-			compareStartDate: dates.compareStartDate,
-			compareEndDate: dates.compareEndDate,
-			metrics: [ { name: 'totalUsers' } ],
-		} );
-
-		// The graph request includes the date dimension.
-		const graphReportRequest = getReport.mock.calls.find(
-			( [ args ] ) => args.reportID === GRAPH_REPORT_ID
-		);
-		expect( graphReportRequest?.[ 0 ] ).toMatchObject( {
-			startDate: dates.startDate,
-			endDate: dates.endDate,
-			dimensions: [ 'date' ],
-			metrics: [ { name: 'totalUsers' } ],
-		} );
+		// The resolver short-circuits when data is already present, so no
+		// network request should have been made.
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
 	it( 'forwards the current entity URL when one is set', async () => {
-		const { registry, getReport } = buildRegistry( {
-			totalsReport: {},
-			graphReport: {},
-			entityURL: 'https://example.com/post-1',
+		const entityURL = 'https://example.com/post-1';
+		provideSiteInfo( registry, { currentEntityURL: entityURL } );
+
+		fetchMock.get( reportEndpoint, ( url ) => {
+			const requestedURL = new URL(
+				url.startsWith( 'http' ) ? url : `http://example.com${ url }`
+			);
+			const requestedID =
+				requestedURL.searchParams.get( 'reportID' ) || '';
+			return {
+				body: requestedID.endsWith( 'graphArgs' )
+					? { rows: [] }
+					: { totals: [] },
+				status: 200,
+			};
 		} );
 
 		await getPDFData( {
@@ -152,17 +108,14 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			signal: new AbortController().signal,
 		} );
 
-		for ( const [ args ] of getReport.mock.calls ) {
-			expect( args.url ).toBe( 'https://example.com/post-1' );
+		const calls = fetchMock.calls( reportEndpoint );
+		expect( calls ).toHaveLength( 2 );
+		for ( const [ requestedURL ] of calls ) {
+			expect( requestedURL ).toContain( encodeURIComponent( entityURL ) );
 		}
 	} );
 
 	it( 'stops building the report without dispatching a request when signal is already aborted', async () => {
-		const { registry, getReport } = buildRegistry( {
-			totalsReport: {},
-			graphReport: {},
-		} );
-
 		const controller = new AbortController();
 		controller.abort();
 
@@ -173,42 +126,44 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		} );
 
 		expect( result ).toEqual( { data: null } );
-		expect( getReport ).not.toHaveBeenCalled();
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
 	it( 'stops building the report when signal aborts after the request is dispatched but is not yet resolved', async () => {
 		const controller = new AbortController();
-		const totalsReport = { totals: [] };
-		const graphReport = { rows: [] };
+		const deferredResolvers: Array< () => void > = [];
 
-		const getReport = jest.fn( ( args: Record< string, unknown > ) => {
-			// Abort between dispatch (call site) and resolution.
-			return new Promise( ( resolve ) => {
-				setTimeout( () => {
-					controller.abort();
-					if ( args.reportID === TOTALS_REPORT_ID ) {
-						resolve( totalsReport );
-					} else {
-						resolve( graphReport );
-					}
-				}, 0 );
-			} );
+		fetchMock.get( reportEndpoint, () => {
+			return new Promise< { body: unknown; status: number } >(
+				( resolve ) => {
+					deferredResolvers.push( () =>
+						resolve( {
+							body: { rows: [] },
+							status: 200,
+						} )
+					);
+				}
+			);
 		} );
 
-		const registry: Registry = {
-			resolveSelect: jest.fn( () => ( { getReport } ) ),
-			select: jest.fn( () => ( {
-				getCurrentEntityURL: () => null,
-			} ) ),
-		};
-
-		const result = await getPDFData( {
+		const pdfPromise = getPDFData( {
 			registry,
 			dates,
 			signal: controller.signal,
 		} );
 
+		// Wait for both `resolveSelect( ... ).getReport( ... )` calls to dispatch
+		// their fetches before aborting.
+		while ( deferredResolvers.length < 2 ) {
+			await new Promise( ( advance ) => setTimeout( advance, 0 ) );
+		}
+
+		controller.abort();
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
+		const result = await pdfPromise;
+
 		expect( result ).toEqual( { data: null } );
-		expect( getReport ).toHaveBeenCalledTimes( 2 );
+		expect( fetchMock ).toHaveFetched( reportEndpoint );
 	} );
 } );
