@@ -138,25 +138,11 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
 			if (
-				hasReportStarted &&
-				report === undefined &&
-				! currentReportError
+				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getReport',
+					[ reportOptions ]
+				)
 			) {
 				return true;
 			}
