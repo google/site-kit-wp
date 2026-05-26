@@ -295,8 +295,12 @@ export default function DashboardMainApp() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
+	const hasAccessToFeatureTour = useSelect( ( select ) =>
+		select( CORE_USER ).hasAccessToFeatureTour()
+	);
+
 	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
+		if ( ! setupFlowRefreshEnabled || ! hasAccessToFeatureTour ) {
 			return false;
 		}
 
@@ -366,7 +370,7 @@ export default function DashboardMainApp() {
 				<DateRangeSelector />
 				{ pdfGenerationEnabled && <PDFDownloadButton /> }
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu showFeatureTour />
+				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
 			</Header>
 
 			<div className="googlesitekit-page-content">
