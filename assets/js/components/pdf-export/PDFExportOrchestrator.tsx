@@ -140,16 +140,6 @@ export interface PDFExportOrchestratorProps {
 	onComplete: () => void;
 }
 
-/**
- * Drives the PDF export pipeline through IDLE, LOADING, BUILDING,
- * COMPLETE, and ERROR stages. Renders nothing.
- *
- * @since n.e.x.t
- *
- * @param props            Component props.
- * @param props.onComplete Called when the export finishes or aborts.
- * @return Always null.
- */
 const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
