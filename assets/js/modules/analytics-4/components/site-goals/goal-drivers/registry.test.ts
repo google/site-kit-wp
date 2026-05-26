@@ -21,6 +21,7 @@
  */
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import {
+	GOAL_DRIVER_CATALOG,
 	getGoalDriverOptions,
 	resolveGoalDriverIDs,
 	resolveGoalDriverSelectionState,
@@ -68,6 +69,7 @@ describe( 'resolveGoalDriverIDs', () => {
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 				GOAL_DRIVER_IDS.TOP_PAGES,
+				GOAL_DRIVER_IDS.TOP_AUTHORS,
 				GOAL_DRIVER_IDS.VISITOR_TYPE,
 				GOAL_DRIVER_IDS.CITIES,
 				GOAL_DRIVER_IDS.COUNTRIES,
@@ -77,9 +79,9 @@ describe( 'resolveGoalDriverIDs', () => {
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS,
 			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 			GOAL_DRIVER_IDS.TOP_PAGES,
+			GOAL_DRIVER_IDS.TOP_AUTHORS,
 			GOAL_DRIVER_IDS.VISITOR_TYPE,
 			GOAL_DRIVER_IDS.CITIES,
-			GOAL_DRIVER_IDS.COUNTRIES,
 		] );
 	} );
 
@@ -117,6 +119,26 @@ describe( 'getGoalDriverOptions', () => {
 				title: 'Top pages driving leads',
 			} )
 		);
+	} );
+
+	it( 'includes complete Top Authors goal-type metadata', () => {
+		expect(
+			GOAL_DRIVER_CATALOG[ GOAL_DRIVER_IDS.TOP_AUTHORS ].copyByGoalType[
+				GOAL_TYPES.ECOMMERCE
+			]
+		).toMatchObject( {
+			title: 'Top authors driving sales',
+			description: 'Whose content is best at converting buyers?',
+		} );
+
+		expect(
+			GOAL_DRIVER_CATALOG[ GOAL_DRIVER_IDS.TOP_AUTHORS ].copyByGoalType[
+				GOAL_TYPES.LEAD
+			]
+		).toMatchObject( {
+			title: 'Top authors driving leads',
+			description: 'Whose content is best at converting readers?',
+		} );
 	} );
 } );
 
