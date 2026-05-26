@@ -138,26 +138,12 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 				return false;
 			}
 
-			const hasReportStarted = select(
-				MODULES_ANALYTICS_4
-			).hasStartedResolution( 'getReport', [ reportOptions ] );
-			const hasReportFinished = select(
-				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getReport', [ reportOptions ] );
-
-			if ( hasReportStarted && ! hasReportFinished ) {
-				return true;
-			}
-
-			const currentReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-
-			return (
-				hasReportStarted && report === undefined && ! currentReportError
+			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getReport',
+				[ reportOptions ]
 			);
 		},
-		[ report, reportOptions ]
+		[ reportOptions ]
 	);
 	const sourceRows: ReportRow[] = report?.rows || [];
 	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {
