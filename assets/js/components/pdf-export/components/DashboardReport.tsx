@@ -75,20 +75,6 @@ export interface DashboardReportProps {
 	pageHeight?: number;
 }
 
-/**
- * Renders the MVP PDF Document with a header, placeholder body, and footer
- * using `@react-pdf/renderer` primitives.
- *
- * @since n.e.x.t
- *
- * @param props              Component props.
- * @param props.siteName     The site name shown in the header.
- * @param [props.dateRange]  Optional date range shown below the site name.
- * @param [props.userName]   Optional user name shown in the footer.
- * @param props.generatedAt  Generation timestamp shown in the footer.
- * @param [props.pageHeight] Page height in points, defaults to 792.
- * @return A react-pdf Document element.
- */
 const DashboardReport: FC< DashboardReportProps > = ( {
 	siteName,
 	dateRange,

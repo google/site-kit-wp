@@ -30,13 +30,6 @@ import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 import PDFReportProgressSnackbar from './PDFReportProgressSnackbar';
 import PDFReportSuccessSnackbar from './PDFReportSuccessSnackbar';
 
-/**
- * Reads `core/pdf` status and renders the matching snackbar variant.
- *
- * @since n.e.x.t
- *
- * @return The active snackbar element, or null when idle.
- */
 const PDFReportSnackbarHost: FC = () => {
 	const status = useSelect(
 		( select: Select ) => select( CORE_PDF ).getStatus(),
