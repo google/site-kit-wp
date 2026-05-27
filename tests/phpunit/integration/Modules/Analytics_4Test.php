@@ -445,8 +445,8 @@ class Analytics_4Test extends TestCase {
 				$redirect->get_location(),
 				'Should redirect to dashboard with user cancel error.'
 			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
+			// Ensure transient is not deleted by the method when there is an error.
+			$this->assertEquals( $_GET['accountTicketId'], get_transient( $account_ticked_id_transient ), 'Account ticket transient should not be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
 	}
@@ -634,8 +634,8 @@ class Analytics_4Test extends TestCase {
 				$redirect->get_location(),
 				'Should redirect to Analytics setup screen with the account creation error code.'
 			);
-			// Ensure transient was deleted by the method despite error.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted when user cancels.' );
+			// Ensure transient was not deleted by the method when there is an error.
+			$this->assertEquals( $_GET['accountTicketId'], get_transient( $account_ticked_id_transient ), 'Account ticket transient should not be deleted when user cancels.' );
 		}
 		unset( $_GET['error'] );
 	}

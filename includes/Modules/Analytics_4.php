@@ -1131,9 +1131,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			exit;
 		}
 
-		// At this point, the accountTicketId is a match and params are loaded, so we can safely delete the transient.
-		$this->transients->delete( $account_ticket_transient_key );
-
 		// Next, check for a returned error.
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
@@ -1142,6 +1139,9 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			);
 			exit;
 		}
+
+		// As the account has been created without an error, we can safely delete the transient.
+		$this->transients->delete( $account_ticket_transient_key );
 
 		$account_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountId' ) ?? '' );
 

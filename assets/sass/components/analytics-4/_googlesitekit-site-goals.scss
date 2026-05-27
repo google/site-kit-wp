@@ -344,10 +344,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: normal;
-
-			@media (min-width: $bp-tablet) {
-				white-space: nowrap;
-			}
 		}
 
 		.googlesitekit-table-tile__header-label.googlesitekit-typography {
