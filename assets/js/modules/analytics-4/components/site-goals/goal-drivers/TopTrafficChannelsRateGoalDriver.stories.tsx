@@ -62,6 +62,7 @@ export const Ready = Template.bind(
 ) as Story< TopTrafficChannelsRateGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'ecommerce',
+	title: 'Top traffic channels by sales rate',
 	rows: [
 		{ label: 'Direct', value: '7.5%' },
 		{ label: 'Organic search', value: '4.7%' },

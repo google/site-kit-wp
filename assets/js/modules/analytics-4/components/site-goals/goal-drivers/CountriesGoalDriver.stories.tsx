@@ -117,6 +117,7 @@ export const Ready = Template.bind(
 ) as Story< CountriesGoalDriverStoryProps >;
 Ready.args = {
 	goalType: 'ecommerce',
+	title: 'Sales by countries',
 	rows: [
 		{ label: 'Germany', value: '30.5%' },
 		{ label: 'France', value: '24.7%' },
