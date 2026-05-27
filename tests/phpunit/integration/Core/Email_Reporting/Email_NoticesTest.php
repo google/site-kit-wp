@@ -223,15 +223,11 @@ class Email_NoticesTest extends TestCase {
 				$this->assertArrayHasKey( 'redirect', $query_args, 'Expected connect URL to include redirect destination.' );
 
 				$redirect_destination = rawurldecode( (string) $query_args['redirect'] );
-				$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to go through dashboard golink.' );
-				$this->assertStringContainsString( 'to=dashboard', $redirect_destination, 'Expected redirect destination to use dashboard golink.' );
-				$this->assertStringContainsString( 'slug=' . Analytics_4::MODULE_SLUG, $redirect_destination, 'Expected redirect destination to include Analytics module slug.' );
-				$this->assertStringContainsString( 'reAuth=true', $redirect_destination, 'Expected redirect destination to include reAuth=true.' );
+				$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to go through golink action.' );
+				$this->assertStringContainsString( 'to=connect-analytics-4', $redirect_destination, 'Expected redirect destination to use connect-analytics-4 golink.' );
 			} else {
-				$this->assertSame( Golinks::ACTION_GO, $query_args['action'], 'Expected redirect to dashboard golink action.' );
-				$this->assertSame( 'dashboard', $query_args['to'], 'Expected redirect to dashboard golink.' );
-				$this->assertSame( Analytics_4::MODULE_SLUG, $query_args['slug'], 'Expected redirect to Analytics setup flow.' );
-				$this->assertSame( 'true', $query_args['reAuth'], 'Expected reAuth parameter in redirect URL.' );
+				$this->assertSame( Golinks::ACTION_GO, $query_args['action'], 'Expected redirect to golink action.' );
+				$this->assertSame( 'connect-analytics-4', $query_args['to'], 'Expected redirect to connect-analytics-4 golink.' );
 			}
 		}
 
@@ -281,10 +277,8 @@ class Email_NoticesTest extends TestCase {
 			$this->assertArrayHasKey( 'redirect', $query_args, 'Expected connect URL to include redirect destination.' );
 
 			$redirect_destination = rawurldecode( (string) $query_args['redirect'] );
-			$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to use dashboard golink action.' );
-			$this->assertStringContainsString( 'to=dashboard', $redirect_destination, 'Expected redirect destination to use dashboard golink.' );
-			$this->assertStringContainsString( 'slug=' . Analytics_4::MODULE_SLUG, $redirect_destination, 'Expected redirect destination to include Analytics module slug.' );
-			$this->assertStringContainsString( 'reAuth=true', $redirect_destination, 'Expected redirect destination to include reAuth=true.' );
+			$this->assertStringContainsString( 'action=' . Golinks::ACTION_GO, $redirect_destination, 'Expected redirect destination to use golink action.' );
+			$this->assertStringContainsString( 'to=connect-analytics-4', $redirect_destination, 'Expected redirect destination to use connect-analytics-4 golink.' );
 		}
 
 		$state = $this->get_notice_prompt_state( $user_id, Analytics_Setup_Email_Notice::DISMISSAL_SLUG );

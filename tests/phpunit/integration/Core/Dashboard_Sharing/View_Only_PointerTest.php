@@ -138,6 +138,24 @@ class View_Only_PointerTest extends TestCase {
 		$this->assertFalse( $view_only_pointer->is_active( 'index.php' ) );
 	}
 
+	public function test_active_callback__dismissed_wp_pointers_meta_is_array() {
+		$user_id = $this->create_editor_user();
+
+		$this->grant_editors_view_only_dashboard_access();
+
+		$this->register_permissions_for_user( $user_id );
+
+		// Simulate corrupted or third-party-written meta stored as an array.
+		// Reading this value must not fatal when the active_callback runs.
+		update_user_meta( $user_id, 'dismissed_wp_pointers', array( 'foo' ) );
+
+		$view_only_pointer = $this->get_registered_pointer();
+
+		// Should remain active because the array does not contain the pointer slug,
+		// and must not throw a TypeError when calling explode() on the meta value.
+		$this->assertTrue( $view_only_pointer->is_active( 'index.php' ) );
+	}
+
 	private function get_registered_pointer() {
 		$pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
 		return array_pop( $pointers );
