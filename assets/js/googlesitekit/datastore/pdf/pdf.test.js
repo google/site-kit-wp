@@ -40,6 +40,7 @@ describe( 'core/pdf store', () => {
 				blobURL: null,
 				blobFilename: null,
 				cancelRequested: false,
+				isExporting: false,
 			} );
 		} );
 
@@ -63,6 +64,7 @@ describe( 'core/pdf store', () => {
 			expect( registry.select( CORE_PDF ).isCancelRequested() ).toBe(
 				false
 			);
+			expect( registry.select( CORE_PDF ).isExporting() ).toBe( false );
 		} );
 	} );
 
@@ -351,6 +353,31 @@ describe( 'core/pdf store', () => {
 				registry.dispatch( CORE_PDF ).clearCancelRequest();
 
 				expect( registry.select( CORE_PDF ).isCancelRequested() ).toBe(
+					false
+				);
+			} );
+		} );
+
+		describe( 'startExporting', () => {
+			it( 'should flip isExporting to true', () => {
+				expect( registry.select( CORE_PDF ).isExporting() ).toBe(
+					false
+				);
+
+				registry.dispatch( CORE_PDF ).startExporting();
+
+				expect( registry.select( CORE_PDF ).isExporting() ).toBe(
+					true
+				);
+			} );
+		} );
+
+		describe( 'finishExporting', () => {
+			it( 'should flip isExporting back to false', () => {
+				registry.dispatch( CORE_PDF ).startExporting();
+				registry.dispatch( CORE_PDF ).finishExporting();
+
+				expect( registry.select( CORE_PDF ).isExporting() ).toBe(
 					false
 				);
 			} );

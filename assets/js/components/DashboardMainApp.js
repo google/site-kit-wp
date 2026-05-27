@@ -89,6 +89,7 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFDownloadButton from './pdf-generation/PDFDownloadButton';
 import PDFSectionsSelectionPanel from './pdf-generation/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
@@ -457,7 +458,12 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && <PDFSectionsSelectionPanel /> }
+			{ pdfGenerationEnabled && (
+				<Fragment>
+					<PDFSectionsSelectionPanel />
+					<PDFExportRoot />
+				</Fragment>
+			) }
 
 			{ emailReportingEnabled && (
 				<Fragment>
