@@ -138,43 +138,23 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ totalReportOptions ]
 	);
 	const reportError = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! totalReportOptions ) {
-				return undefined;
-			}
-
-			const primaryReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-			const totalError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ totalReportOptions ] );
-
-			if ( primaryReportError && totalError ) {
-				return [ primaryReportError, totalError ];
-			}
-
-			return primaryReportError || totalError || undefined;
-		},
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
+				  )
+				: undefined,
 		[ reportOptions, totalReportOptions ]
 	);
 	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! totalReportOptions ) {
-				return false;
-			}
-
-			return (
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ reportOptions ]
-				) ||
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ totalReportOptions ]
-				)
-			);
-		},
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).areReportsLoading(
+						reportOptions,
+						totalReportOptions
+				  )
+				: false,
 		[ reportOptions, totalReportOptions ]
 	);
 

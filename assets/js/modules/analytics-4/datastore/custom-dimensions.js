@@ -35,7 +35,6 @@ import {
 } from 'googlesitekit-data';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -43,11 +42,7 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
-import {
-	CUSTOM_DIMENSION_DEFINITIONS,
-	FORM_CUSTOM_DIMENSIONS_CREATE,
-	MODULES_ANALYTICS_4,
-} from './constants';
+import { CUSTOM_DIMENSION_DEFINITIONS, MODULES_ANALYTICS_4 } from './constants';
 
 const customDimensionFields = [
 	'parameterName',
@@ -116,7 +111,7 @@ const baseActions = {
 	 *
 	 * @since 1.113.0
 	 *
-	 * @param {Array<string>} customDimensions Optional custom dimensions to create.
+	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 */
 	*createCustomDimensions( customDimensions ) {
 		const registry = yield commonActions.getRegistry();
@@ -133,9 +128,6 @@ const baseActions = {
 		const selectedMetricTiles = registry
 			.select( CORE_USER )
 			.getKeyMetrics();
-		const formCustomDimensions = registry
-			.select( CORE_FORMS )
-			.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, 'customDimensions' );
 
 		// Extract required custom dimensions from selected metric tiles.
 		const keyMetricsRequiredCustomDimensions = selectedMetricTiles.flatMap(
@@ -146,7 +138,7 @@ const baseActions = {
 		);
 		const requestedCustomDimensions = Array.isArray( customDimensions )
 			? customDimensions
-			: formCustomDimensions;
+			: [];
 		const requiredCustomDimensions = [
 			...keyMetricsRequiredCustomDimensions,
 			...( Array.isArray( requestedCustomDimensions )

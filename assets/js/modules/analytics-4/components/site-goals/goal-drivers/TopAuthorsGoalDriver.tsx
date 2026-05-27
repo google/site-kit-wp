@@ -58,67 +58,15 @@ import {
 import useCustomDimensionsData from '@/js/modules/analytics-4/hooks/useCustomDimensionsData';
 import { numFmt } from '@/js/util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
+import TopAuthorsZeroState from './TopAuthorsZeroState';
 
 interface ReportRow {
 	dimensionValues?: Array< { value?: string } >;
 	metricValues?: Array< { value?: string } >;
 }
 
-interface TopAuthorsZeroStateProps {
-	hasMissingCustomDimensions: boolean;
-	isGatheringData: boolean | null | undefined;
-	customDimensionsLoading: boolean;
-	onCreateCustomDimensions: () => void;
-}
-
-const TopAuthorsZeroState: FC< TopAuthorsZeroStateProps > = ( {
-	hasMissingCustomDimensions,
-	isGatheringData,
-	customDimensionsLoading,
-	onCreateCustomDimensions,
-} ) => {
-	if ( hasMissingCustomDimensions ) {
-		return (
-			<div className="googlesitekit-table-tile__custom-dimensions-missing">
-				<p className="googlesitekit-table-tile__custom-dimensions-missing-title">
-					{ __( 'No data to show', 'google-site-kit' ) }
-				</p>
-				<p className="googlesitekit-table-tile__custom-dimensions-missing-description">
-					{ __(
-						'Update Analytics to track metric',
-						'google-site-kit'
-					) }
-				</p>
-				<div className="googlesitekit-table-tile__custom-dimensions-missing-actions">
-					<button
-						type="button"
-						className="googlesitekit-table-tile__custom-dimensions-missing-button"
-						onClick={ onCreateCustomDimensions }
-						disabled={ customDimensionsLoading }
-					>
-						{ __( 'Update', 'google-site-kit' ) }
-					</button>
-				</div>
-			</div>
-		);
-	}
-
-	if ( isGatheringData ) {
-		return (
-			<span>
-				{ __(
-					'Setup successful: Analytics is gathering data for this metric',
-					'google-site-kit'
-				) }
-			</span>
-		);
-	}
-
-	return null;
-};
-
 const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -127,18 +75,6 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const defaultTitles = {
-		[ GOAL_TYPES.ECOMMERCE ]: __(
-			'Top authors driving sales',
-			'google-site-kit'
-		),
-		[ GOAL_TYPES.LEAD ]: __(
-			'Top authors driving leads',
-			'google-site-kit'
-		),
-	};
-	const title =
-		providedTitle ?? defaultTitles[ goalType ] ?? defaultTitles.lead;
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
@@ -233,39 +169,23 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ enabledTotalReportOptions ]
 	);
 	const reportError = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! enabledTotalReportOptions ) {
-				return undefined;
-			}
-
-			const authorsReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ reportOptions ] );
-			const totalReportError = select(
-				MODULES_ANALYTICS_4
-			).getErrorForSelector( 'getReport', [ enabledTotalReportOptions ] );
-
-			return authorsReportError || totalReportError || undefined;
-		},
+		( select: Select ) =>
+			reportOptions && enabledTotalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						enabledTotalReportOptions
+				  )
+				: undefined,
 		[ enabledTotalReportOptions, reportOptions ]
 	);
 	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions || ! enabledTotalReportOptions ) {
-				return false;
-			}
-
-			return (
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ reportOptions ]
-				) ||
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ enabledTotalReportOptions ]
-				)
-			);
-		},
+		( select: Select ) =>
+			reportOptions && enabledTotalReportOptions
+				? select( MODULES_ANALYTICS_4 ).areReportsLoading(
+						reportOptions,
+						enabledTotalReportOptions
+				  )
+				: false,
 		[ enabledTotalReportOptions, reportOptions ]
 	);
 	const {
