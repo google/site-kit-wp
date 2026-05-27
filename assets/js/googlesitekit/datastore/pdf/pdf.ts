@@ -76,7 +76,7 @@ type Action =
 /**
  * Determines whether the given value is an array of strings.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @param {*} value Value to test.
  * @return {boolean} `true` if `value` is an array whose every element is a string.
@@ -105,7 +105,7 @@ export const actions = {
 	/**
 	 * Sets the current PDF export selection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object}   selection              The selection object.
 	 * @param {string[]} selection.contextSlugs Selected dashboard context slugs.
@@ -137,7 +137,7 @@ export const actions = {
 	/**
 	 * Sets the current PDF export status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {string} status One of 'idle', 'progress', 'success', 'error'.
 	 * @return {Object} Redux-style action.
@@ -164,7 +164,7 @@ export const actions = {
 	/**
 	 * Sets the current PDF export progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {number} progress Progress value between 0 and 100, inclusive.
 	 * @return {Object} Redux-style action.
@@ -187,7 +187,7 @@ export const actions = {
 	/**
 	 * Sets the generated PDF blob URL and filename.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object} blob          The blob descriptor.
 	 * @param {string} blob.url      The blob URL.
@@ -219,7 +219,7 @@ export const actions = {
 	 * Leaves `selection` untouched so the side sheet retains the user's choices
 	 * between exports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -233,7 +233,7 @@ export const actions = {
 	/**
 	 * Requests cancellation of the in-flight PDF export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -247,7 +247,7 @@ export const actions = {
 	/**
 	 * Clears a previously-set cancel request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -342,7 +342,7 @@ export const selectors = {
 	/**
 	 * Gets the `slugs` used to generate content for the PDF export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {PDFSelection} Current selection: `{ contextSlugs, widgetSlugs }`.
@@ -354,7 +354,7 @@ export const selectors = {
 	/**
 	 * Gets the currently selected dashboard context slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {string[]} Selected context slugs.
@@ -366,7 +366,7 @@ export const selectors = {
 	/**
 	 * Gets the currently selected widget slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {string[]} Selected widget slugs.
@@ -378,7 +378,7 @@ export const selectors = {
 	/**
 	 * Gets the current PDF export status.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {PDFStatus} One of 'idle', 'progress', 'success', 'error'.
@@ -390,7 +390,7 @@ export const selectors = {
 	/**
 	 * Gets the current PDF export progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {number} Progress value between 0 and 100, inclusive.
@@ -402,7 +402,7 @@ export const selectors = {
 	/**
 	 * Gets the generated PDF blob descriptor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {PDFBlob} Blob descriptor: `{ url, filename }`.
@@ -417,7 +417,7 @@ export const selectors = {
 	/**
 	 * Determines whether cancellation has been requested for the in-flight export.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {boolean} `true` if cancellation has been requested.

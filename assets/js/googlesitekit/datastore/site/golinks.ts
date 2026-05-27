@@ -38,7 +38,7 @@ export const selectors = {
 	 * the server-side `Golinks::get_url` contract. The server decides handler validity
 	 * at click time, so the selector still produces a URL for unknown keys.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object} state  Data store's state.
 	 * @param {string} key    Golink handler key (e.g. `dashboard`).

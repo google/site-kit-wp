@@ -1194,7 +1194,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * surfaced inline. Otherwise, the legacy dashboard redirect with the
 	 * `error_code` query parameter is used.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param string $error_code    The error code to surface.
 	 * @param bool   $show_progress Whether the initial setup flow's progress
