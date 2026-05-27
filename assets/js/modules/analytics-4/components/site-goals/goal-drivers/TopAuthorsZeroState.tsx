@@ -45,12 +45,14 @@ const TopAuthorsZeroState: FC< TopAuthorsZeroStateProps > = ( {
 				<p className="googlesitekit-table-tile__custom-dimensions-missing-title">
 					{ __( 'No data to show', 'google-site-kit' ) }
 				</p>
+
 				<p className="googlesitekit-table-tile__custom-dimensions-missing-description">
 					{ __(
 						'Update Analytics to track metric',
 						'google-site-kit'
 					) }
 				</p>
+
 				<div className="googlesitekit-table-tile__custom-dimensions-missing-actions">
 					<button
 						type="button"
