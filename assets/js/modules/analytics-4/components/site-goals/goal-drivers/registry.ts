@@ -155,7 +155,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.VISITOR_TYPE ]: {
 		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
 		order: 10,
-		defaultEnabled: false,
+		defaultEnabled: true,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by visitor type', 'google-site-kit' ),
@@ -177,7 +177,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 	[ GOAL_DRIVER_IDS.CITIES ]: {
 		id: GOAL_DRIVER_IDS.CITIES,
 		order: 10,
-		defaultEnabled: true,
+		defaultEnabled: false,
 		copyByGoalType: {
 			[ GOAL_TYPES.ECOMMERCE ]: {
 				title: __( 'Sales by cities', 'google-site-kit' ),
