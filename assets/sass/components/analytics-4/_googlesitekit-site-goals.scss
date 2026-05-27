@@ -27,7 +27,11 @@
 			display: flex;
 			gap: 12px;
 			justify-content: space-between;
-			margin-bottom: 12px;
+			margin-bottom: 14px;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 18px;
+			}
 		}
 
 		.googlesitekit-site-goals-tiles-group__title {
@@ -95,7 +99,7 @@
 			margin-bottom: 6px;
 
 			.googlesitekit-info-tooltip {
-				color: $c-teal-t-500;
+				color: $c-neutral-n-500;
 				height: 16px;
 			}
 		}
