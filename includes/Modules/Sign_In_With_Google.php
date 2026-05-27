@@ -633,6 +633,18 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
+	 * Builds a `Hashed_User_ID` accessor scoped to a specific user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID to scope the accessor to.
+	 * @return Hashed_User_ID
+	 */
+	private function get_hashed_user_id( $user_id ) {
+		return new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+	}
+
+	/**
 	 * Gets an array of debug field definitions.
 	 *
 	 * @since 1.140.0
@@ -705,18 +717,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
-		$settings  = $this->get_settings()->get();
-		$client_id = $settings['clientID'];
-
-		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
-
-		if ( $tag->is_tag_blocked() ) {
-			return;
-		}
-
-		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
-
-		if ( ! $tag->can_register() ) {
+		$tag = $this->build_registrable_tag();
+		if ( null === $tag ) {
 			return;
 		}
 
@@ -724,6 +726,33 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$tag->set_is_wp_login( $is_wp_login );
 		$tag->set_redirect_to( $this->context->input()->filter( INPUT_GET, 'redirect_to' ) );
 		$tag->register();
+	}
+
+	/**
+	 * Builds a `Web_Tag` instance and runs the shared registration guards.
+	 *
+	 * Returns `null` when the tag is blocked or its guard refuses registration,
+	 * so callers can short-circuit before configuring setters and rendering.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Web_Tag|null
+	 */
+	private function build_registrable_tag(): ?Web_Tag {
+		$settings  = $this->get_settings()->get();
+		$client_id = $settings['clientID'] ?? '';
+
+		$tag = new Web_Tag( $client_id, self::MODULE_SLUG );
+		if ( $tag->is_tag_blocked() ) {
+			return null;
+		}
+
+		$tag->use_guard( new Tag_Guard( $this->get_settings() ) );
+		if ( ! $tag->can_register() ) {
+			return null;
+		}
+
+		return $tag;
 	}
 
 	/**
@@ -824,7 +853,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		// Only allow this action for admins or users own setting.
 		if ( current_user_can( 'edit_user', $user_id ) ) {
-			$hashed_user_id = new Hashed_User_ID( new User_Options( $this->context, $user_id ) );
+			$hashed_user_id = $this->get_hashed_user_id( $user_id );
 			$hashed_user_id->delete();
 			wp_safe_redirect( add_query_arg( 'updated', true, get_edit_user_link( $user_id ) ) );
 			exit;
@@ -846,7 +875,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
-		$hashed_user_id         = new Hashed_User_ID( new User_Options( $this->context, $user->ID ) );
+		$hashed_user_id         = $this->get_hashed_user_id( $user->ID );
 		$current_user_google_id = $hashed_user_id->get();
 
 		// Don't show if the user does not have a Google ID saved in user meta.
