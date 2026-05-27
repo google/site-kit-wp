@@ -59,7 +59,7 @@ interface ReportRow {
 }
 
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title: providedTitle,
+	title = '',
 	goalType,
 	limit,
 	rows: providedRows,
@@ -68,12 +68,6 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	primaryEvent,
 	onExpandableRowsChange,
 } ) => {
-	const title =
-		providedTitle ||
-		( goalType === GOAL_TYPES.ECOMMERCE
-			? __( 'Top traffic channels by total sales', 'google-site-kit' )
-			: __( 'Top traffic channels by total leads', 'google-site-kit' ) );
-
 	const dates = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( {
