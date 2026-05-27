@@ -10,11 +10,9 @@
 
 namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Web_Tag;
-use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -220,5 +218,59 @@ class Web_TagTest extends TestCase {
 		$wp_query->is_preview = $previous_preview;
 
 		$this->assertStringNotContainsString( 'google.accounts.id.prompt()', $output, 'One Tap should not be invoked on preview pages, even when the visitor is logged out.' );
+	}
+
+	public function test_register__hooks_admin_footer_only_for_connect_existing_profile_flow() {
+		remove_all_actions( 'wp_footer' );
+		remove_all_actions( 'login_footer' );
+		remove_all_actions( 'admin_footer' );
+
+		$this->web_tag->set_is_connect_existing_profile( true );
+		$this->web_tag->register();
+
+		$this->assertTrue( has_action( 'admin_footer' ), 'admin_footer should be hooked when is_connect_existing_profile is true.' );
+		$this->assertFalse( has_action( 'wp_footer' ), 'wp_footer should not be hooked when is_connect_existing_profile is true.' );
+		$this->assertFalse( has_action( 'login_footer' ), 'login_footer should not be hooked when is_connect_existing_profile is true.' );
+	}
+
+	public function test_render_tag__emits_connect_markers_only_when_flag_on() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		// With the flag on, the rendered script tags the request as the connect-existing-profile
+		// flow and includes the matching nonce.
+		$this->web_tag->set_is_connect_existing_profile( true );
+		$output = $this->capture_render_tag_output();
+		$this->assertStringContainsString( "response.integration='connect_existing_profile'", $output, 'Rendered script should set the connect_existing_profile integration when the flag is on.' );
+		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'Rendered script should include the connect nonce assignment when the flag is on.' );
+		$this->assertStringContainsString( wp_create_nonce( Authenticator::CONNECT_NONCE_ACTION ), $output, 'Rendered nonce should match wp_create_nonce for CONNECT_NONCE_ACTION.' );
+
+		// Toggling the flag off on the same instance guards against a vacuous pass if the marker
+		// strings ever change. The positive phase above fails first when that happens, signalling
+		// that the negative assertions below need updating too.
+		$this->web_tag->set_is_connect_existing_profile( false );
+		$output = $this->capture_render_tag_output();
+		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'Rendered script should not include the connect integration when the flag is off.' );
+		$this->assertStringNotContainsString( 'response.connect_nonce=', $output, 'Rendered script should not include the connect nonce when the flag is off.' );
+	}
+
+	public function test_render_tag__forces_button_render_loop_on_connect_flow_even_when_logged_in() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$this->web_tag->set_is_connect_existing_profile( true );
+
+		$output = $this->capture_render_tag_output();
+
+		// Logged-in users normally skip the button render loop. The connect flow flips that gate
+		// so the placeholder div on the profile page can still be wired up.
+		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'Connect flow should force the button render loop even when the user is logged in.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should target the SiwG placeholder class.' );
+	}
+
+	private function capture_render_tag_output() {
+		ob_start();
+		$this->web_tag->render_tag();
+		return ob_get_clean();
 	}
 }
