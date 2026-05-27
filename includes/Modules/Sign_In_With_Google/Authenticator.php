@@ -44,20 +44,29 @@ class Authenticator implements Authenticator_Interface {
 	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
 
 	/**
+	 * Nonce action used by the profile-page connect flow.
+	 *
+	 * @since n.e.x.t
+	 */
+	const CONNECT_NONCE_ACTION = 'googlesitekit_connect_existing_profile';
+
+	/**
 	 * User options instance.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
 	 * @var User_Options
 	 */
-	private $user_options;
+	protected $user_options;
 
 	/**
 	 * Profile reader instance.
 	 *
 	 * @since 1.141.0
+	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
 	 * @var Profile_Reader_Interface
 	 */
-	private $profile_reader;
+	protected $profile_reader;
 
 	/**
 	 * Constructor.
@@ -291,11 +300,12 @@ class Authenticator implements Authenticator_Interface {
 	 * Gets the hashed Google user ID from the provided payload.
 	 *
 	 * @since 1.145.0
+	 * @since n.e.x.t Made `protected` so subclasses can reuse it.
 	 *
 	 * @param array $payload Google auth payload.
 	 * @return string Hashed Google user ID.
 	 */
-	private function get_hashed_google_user_id( $payload ) {
+	protected function get_hashed_google_user_id( $payload ) {
 		return md5( $payload['sub'] );
 	}
 

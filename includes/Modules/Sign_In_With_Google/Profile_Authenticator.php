@@ -1,0 +1,129 @@
+<?php
+/**
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Authenticator
+ *
+ * @package   Google\Site_Kit\Modules\Sign_In_With_Google
+ * @copyright 2026 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Modules\Sign_In_With_Google;
+
+use Google\Site_Kit\Core\Util\Input;
+use WP_User;
+
+/**
+ * Authenticator used when a signed-in user initiates Sign in with Google
+ * from their own profile page to link an existing WordPress account to a
+ * Google account.
+ *
+ * @since n.e.x.t
+ * @access private
+ * @ignore
+ */
+class Profile_Authenticator extends Authenticator {
+
+	/**
+	 * Error code surfaced when the Google account is already linked to another user.
+	 *
+	 * @since n.e.x.t
+	 */
+	const ERROR_ACCOUNT_ALREADY_CONNECTED = 'googlesitekit_auth_account_already_connected';
+
+	/**
+	 * Query arg for the profile connect-flow error. Namespaced to avoid
+	 * WordPress core's empty `?error=` notice on `wp-admin/profile.php` and `wp-admin/user-edit.php`.
+	 *
+	 * @since n.e.x.t
+	 */
+	const ERROR_QUERY_ARG = 'googlesitekit_error';
+
+	/**
+	 * Authenticates the current WordPress user against the provided Google
+	 * credential and stores the hashed Google user ID against their profile.
+	 *
+	 * Differences from the base `Authenticator`:
+	 *
+	 * - The currently authenticated WordPress user is the target, regardless
+	 *   of the Google account's email address.
+	 * - A new user is never created. Open registration is irrelevant.
+	 * - If the Google account is already linked to another WordPress user,
+	 *   the flow errors out without mutating any user meta.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Redirect URL.
+	 */
+	public function authenticate_user( Input $input ): string {
+		$current_user = wp_get_current_user();
+		if ( ! $current_user instanceof WP_User || empty( $current_user->ID ) ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+		}
+
+		// Tie the link request to the current WordPress session so a
+		// cross-site request can't piggyback on the user's auth cookie.
+		$nonce = $input->filter( INPUT_POST, 'connect_nonce' );
+		if ( ! wp_verify_nonce( $nonce, self::CONNECT_NONCE_ACTION ) ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+		}
+
+		$credential = $input->filter( INPUT_POST, 'credential' );
+		$payload    = $this->profile_reader->get_profile_data( $credential );
+
+		if ( is_wp_error( $payload ) ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+		}
+
+		$g_user_hid = $this->get_hashed_google_user_id( $payload );
+
+		// Block the link if another WordPress user already has this Google
+		// account stored against their profile.
+		$existing_users = get_users(
+			array(
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'   => $this->user_options->get_meta_key( Hashed_User_ID::OPTION ),
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'meta_value' => $g_user_hid,
+				'number'     => 1,
+				'exclude'    => array( $current_user->ID ),
+				'fields'     => 'ID',
+			)
+		);
+
+		if ( ! empty( $existing_users ) ) {
+			return $this->get_error_redirect_url( self::ERROR_ACCOUNT_ALREADY_CONNECTED );
+		}
+
+		// Link the Google account by writing the hashed user ID to the current user.
+		$user_options = clone $this->user_options;
+		$user_options->switch_user( $current_user->ID );
+		$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+
+		return get_edit_user_link( $current_user->ID );
+	}
+
+	/**
+	 * Builds the redirect URL used when an error needs to be surfaced.
+	 *
+	 * The base `Authenticator` redirects to `wp-login.php` for error display,
+	 * but the profile-page connect flow lives in the WordPress admin, so
+	 * we redirect back to the user's edit profile page with the error
+	 * appended as a query argument.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $code Error code.
+	 * @return string Redirect URL.
+	 */
+	protected function get_error_redirect_url( $code ): string {
+		$user_id = get_current_user_id();
+		$target  = $user_id ? get_edit_user_link( $user_id ) : admin_url( 'profile.php' );
+
+		// A Site Kit-specific query arg avoids the empty error notice WP core
+		// emits on `wp-admin/profile.php` and `wp-admin/user-edit.php` for any
+		// unrecognized `?error=`.
+		return add_query_arg( self::ERROR_QUERY_ARG, $code, $target );
+	}
+}
