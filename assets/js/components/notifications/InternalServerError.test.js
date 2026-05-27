@@ -20,14 +20,28 @@
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { mockBrowserScrolling } from '../../../../tests/js/mock-browser-utils';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import * as scrollUtils from '@/js/util/scroll';
 import { createTestRegistry, render } from '../../../../tests/js/test-utils';
 import InternalServerError from './InternalServerError';
+
+jest.mock( '@/js/hooks/useBreakpoint' );
+
+const getNavigationalScrollTopSpy = jest.spyOn(
+	scrollUtils,
+	'getNavigationalScrollTop'
+);
+const scrollToSpy = jest.spyOn( global, 'scrollTo' );
 
 describe( 'InternalServerError', () => {
 	const registry = createTestRegistry();
 
-	mockBrowserScrolling();
+	beforeEach( () => {
+		registry.dispatch( CORE_SITE ).clearInternalServerError();
+		useBreakpoint.mockReturnValue( 'small' );
+		getNavigationalScrollTopSpy.mockReturnValue( 100 );
+		scrollToSpy.mockClear();
+	} );
 
 	it( 'should display the notification when the internal server error is set', () => {
 		const error = {
@@ -67,10 +81,13 @@ describe( 'InternalServerError', () => {
 
 		render( <InternalServerError />, { registry } );
 
-		expect( Element.prototype.scrollIntoView ).toHaveBeenCalledWith( {
+		expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
+			'#internal-server-error',
+			'small'
+		);
+		expect( scrollToSpy ).toHaveBeenCalledWith( {
+			top: 100,
 			behavior: 'smooth',
-			block: 'nearest',
-			inline: 'nearest',
 		} );
 	} );
 
@@ -79,6 +96,6 @@ describe( 'InternalServerError', () => {
 
 		render( <InternalServerError />, { registry } );
 
-		expect( Element.prototype.scrollIntoView ).not.toHaveBeenCalled();
+		expect( scrollToSpy ).not.toHaveBeenCalled();
 	} );
 } );
