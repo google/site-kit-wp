@@ -253,16 +253,16 @@ export function normalizeImportSource( source: string ): string {
 		return '~1~' + source;
 	}
 	if ( source.startsWith( '@tests/' ) ) {
-		return '~1~' + source;
-	}
-	if ( source.startsWith( '../' ) ) {
 		return '~2~' + source;
 	}
-	if ( source.startsWith( './' ) ) {
+	if ( source.startsWith( '../' ) ) {
 		return '~3~' + source;
 	}
+	if ( source.startsWith( './' ) ) {
+		return '~4~' + source;
+	}
 	if ( source === '.' ) {
-		return '~3~.';
+		return '~5~.';
 	}
 	return source;
 }
