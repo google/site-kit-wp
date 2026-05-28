@@ -42,7 +42,6 @@ import Typography from '@/js/components/Typography';
 import useFormValue from '@/js/hooks/useFormValue';
 import Footer from './Footer';
 import Header from './Header';
-import PDFGeneratingNotice from './PDFGeneratingNotice';
 import PDFSectionCheckboxes from './PDFSectionCheckboxes';
 
 interface PanelContentProps {
@@ -96,7 +95,6 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 					}
 				/>
 			) }
-			<PDFGeneratingNotice />
 			<Footer closePanel={ closePanel } hasSelection={ hasSelection } />
 		</Fragment>
 	);

@@ -187,12 +187,6 @@ class Analytics_Setup_Email_Notice implements Email_Notice_Interface {
 			return $this->golinks->get_url( 'dashboard' );
 		}
 
-		return add_query_arg(
-			array(
-				'slug'   => Analytics_4::MODULE_SLUG,
-				'reAuth' => 'true',
-			),
-			$this->golinks->get_url( 'dashboard' )
-		);
+		return $this->golinks->get_url( 'connect-analytics-4' );
 	}
 }

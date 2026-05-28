@@ -31,7 +31,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
  * Returns the value of a form field.
  *
  * @since 1.160.0
- * @since n.e.x.t Update the hook to return a function to set the value in addition to the value itself.
+ * @since 1.180.0 Update the hook to return a function to set the value in addition to the value itself.
  *
  * @param {string} formName The name of the form.
  * @param {string} key      The key of the form field.
@@ -43,7 +43,7 @@ export default function useFormValue( formName, key ) {
 	/**
 	 * Sets the value of the form field in question.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {string|number|boolean|Array|Object|undefined} value The value of the form field.
 	 */

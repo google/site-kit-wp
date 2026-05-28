@@ -28,10 +28,12 @@
  */
 import { createElement } from 'react';
 
-function makePrimitive( tag ) {
-	return function PDFPrimitive( props ) {
+function makePrimitive( name, tag ) {
+	function PDFPrimitive( props ) {
 		return createElement( tag, props, props.children );
-	};
+	}
+	PDFPrimitive.displayName = name;
+	return PDFPrimitive;
 }
 
 export const StyleSheet = {
@@ -46,38 +48,49 @@ export const StyleSheet = {
 	},
 };
 
-export const Document = makePrimitive( 'pdf-document' );
-export const Page = makePrimitive( 'pdf-page' );
-export const View = makePrimitive( 'pdf-view' );
-export const Text = makePrimitive( 'pdf-text' );
-export const Image = makePrimitive( 'pdf-image' );
-export const Link = makePrimitive( 'pdf-link' );
-export const Svg = makePrimitive( 'pdf-svg' );
-export const Path = makePrimitive( 'pdf-path' );
-export const G = makePrimitive( 'pdf-g' );
-export const Rect = makePrimitive( 'pdf-rect' );
-export const Circle = makePrimitive( 'pdf-circle' );
-export const Line = makePrimitive( 'pdf-line' );
-export const Polygon = makePrimitive( 'pdf-polygon' );
-export const Polyline = makePrimitive( 'pdf-polyline' );
+export const Document = makePrimitive( 'Document', 'pdf-document' );
+export const Page = makePrimitive( 'Page', 'pdf-page' );
+export const View = makePrimitive( 'View', 'pdf-view' );
+export const Text = makePrimitive( 'Text', 'pdf-text' );
+export const Image = makePrimitive( 'Image', 'pdf-image' );
+export const Link = makePrimitive( 'Link', 'pdf-link' );
+export const Note = makePrimitive( 'Note', 'pdf-note' );
+export const Canvas = makePrimitive( 'Canvas', 'pdf-canvas' );
+export const Svg = makePrimitive( 'Svg', 'pdf-svg' );
+export const Path = makePrimitive( 'Path', 'pdf-path' );
+export const G = makePrimitive( 'G', 'pdf-g' );
+export const Rect = makePrimitive( 'Rect', 'pdf-rect' );
+export const Circle = makePrimitive( 'Circle', 'pdf-circle' );
+export const Line = makePrimitive( 'Line', 'pdf-line' );
+export const Polygon = makePrimitive( 'Polygon', 'pdf-polygon' );
+export const Polyline = makePrimitive( 'Polyline', 'pdf-polyline' );
 
 export const Font = {
-	register: () => {},
-	registerHyphenationCallback: () => {},
+	register: jest.fn(),
+	registerHyphenationCallback: jest.fn(),
+	getRegisteredFonts: jest.fn( () => [] ),
+	clear: jest.fn(),
 };
 
-export function pdf() {
-	return {
-		toBlob: () => Promise.resolve( new Blob() ),
-		toBuffer: () => Promise.resolve( Buffer.from( '' ) ),
-		toString: () => Promise.resolve( '' ),
-	};
-}
+export const pdf = jest.fn( () => ( {
+	toBlob: jest.fn( () =>
+		Promise.resolve(
+			new Blob( [ 'mock-pdf' ], { type: 'application/pdf' } )
+		)
+	),
+	toBuffer: jest.fn( () => Promise.resolve( Buffer.from( 'mock-pdf' ) ) ),
+	toString: jest.fn( () => Promise.resolve( 'mock-pdf' ) ),
+	updateContainer: jest.fn(),
+	on: jest.fn(),
+} ) );
 
-export const PDFViewer = makePrimitive( 'pdf-viewer' );
-export const PDFDownloadLink = makePrimitive( 'pdf-download-link' );
+export const PDFViewer = makePrimitive( 'PDFViewer', 'pdf-viewer' );
+export const PDFDownloadLink = makePrimitive(
+	'PDFDownloadLink',
+	'pdf-download-link'
+);
 export function BlobProvider( { children } ) {
 	return typeof children === 'function'
 		? children( { blob: null, url: null, loading: false, error: null } )
-		: children;
+		: null;
 }

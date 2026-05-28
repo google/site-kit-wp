@@ -45,13 +45,6 @@ TermsOfServiceNotAccepted.args = {
 	onRetry: () => {},
 };
 
-export const AccountLimitReached = Template.bind( {} );
-AccountLimitReached.storyName = 'Account limit reached';
-AccountLimitReached.args = {
-	errorCode: 'max_accounts_reached',
-	onRetry: () => {},
-};
-
 export const GenericError = Template.bind( {} );
 GenericError.storyName = 'Generic error';
 GenericError.args = {
