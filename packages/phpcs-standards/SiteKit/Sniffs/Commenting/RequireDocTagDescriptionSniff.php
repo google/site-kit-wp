@@ -88,7 +88,7 @@ class RequireDocTagDescriptionSniff implements Sniff {
 				continue;
 			}
 
-			// $tag_name === '@return'.
+			// $tag_name is '@return' at this point.
 			if ( ! $this->has_return_description( $content ) ) {
 				$phpcs_file->addError(
 					'@return tag must include a description.',
