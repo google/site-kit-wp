@@ -30,6 +30,17 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	const CONVERSION_EVENT_PROVIDER_SLUG = 'easy-digital-downloads';
 
 	/**
+	 * Gets the provider category.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provider category.
+	 */
+	public function get_category() {
+		return self::CATEGORY_ECOMMERCE;
+	}
+
+	/**
 	 * Checks if the Easy Digital Downloads plugin is active.
 	 *
 	 * @since 1.130.0
