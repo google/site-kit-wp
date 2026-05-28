@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { isFeatureEnabled } from '@/js/features';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -758,6 +759,8 @@ export function registerWidgets( widgets ) {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					!! select( CORE_SITE ).hasActiveEcommerceEventProviders(),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
@@ -770,6 +773,8 @@ export function registerWidgets( widgets ) {
 				priority: 2,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				isActive: ( select ) =>
+					!! select( CORE_SITE ).hasActiveLeadEventProviders(),
 			},
 			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 		);
