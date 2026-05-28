@@ -7,7 +7,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 /**
  * ConsentModeSetupCTABanner component tests.
  *
@@ -31,7 +31,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConsentModeSetupCTABanner from './ConsentModeSetupCTABanner';
 import { CONSENT_MODE_SETUP_CTA_WIDGET_SLUG } from './constants';
 

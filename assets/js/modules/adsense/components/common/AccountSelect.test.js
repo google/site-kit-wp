@@ -26,7 +26,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {

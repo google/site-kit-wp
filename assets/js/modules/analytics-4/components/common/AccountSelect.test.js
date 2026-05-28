@@ -25,16 +25,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
-import {
-	fireEvent,
-	freezeFetch,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
+import { fireEvent, freezeFetch, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import AccountSelect from './AccountSelect';
 
 describe( 'AccountSelect', () => {

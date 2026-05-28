@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ModuleIcon from './ModuleIcon';
 
 describe( 'Module Icon', () => {

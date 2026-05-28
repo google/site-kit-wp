@@ -25,7 +25,7 @@ import {
 	subscribeUntil,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { availableAudiences as availableAudiencesFixture } from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 

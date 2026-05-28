@@ -34,7 +34,7 @@ import {
 	render,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import Footer from './Footer';
 
 describe( 'Footer', () => {

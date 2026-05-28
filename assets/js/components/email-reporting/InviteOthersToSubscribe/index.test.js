@@ -30,7 +30,7 @@ import {
 	provideUserInfo,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import InviteOthersToSubscribe from '.';
 
 describe( 'InviteOthersToSubscribe', () => {

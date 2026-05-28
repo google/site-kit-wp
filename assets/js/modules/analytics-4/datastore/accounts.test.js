@@ -29,7 +29,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { FORM_ACCOUNT_CREATE, MODULES_ANALYTICS_4 } from './constants';
 

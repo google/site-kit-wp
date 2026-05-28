@@ -30,7 +30,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConfirmDisconnect from '.';
 
 describe( 'ConfirmDisconnect', () => {

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import type { ReactNode } from 'react';
-import { renderHook } from 'tests/js/test-utils';
 
 /**
  * Internal dependencies
@@ -29,6 +28,7 @@ import {
 	Provider as WidgetContextProvider,
 	type WidgetContextValue,
 } from '@/js/googlesitekit/widgets/components/WidgetContext';
+import { renderHook } from '@tests/js/test-utils';
 import useWidget from './useWidget';
 
 describe( 'useWidget', () => {

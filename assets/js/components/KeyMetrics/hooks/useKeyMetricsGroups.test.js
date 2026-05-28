@@ -25,7 +25,7 @@ import {
 	KEY_METRICS_GROUP_SELLING_PRODUCTS,
 	KEY_METRICS_GROUP_SUGGESTED,
 } from '@/js/components/KeyMetrics/constants';
-import { renderHook } from '../../../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import useKeyMetricsGroups from './useKeyMetricsGroups';
 
 describe( 'useKeyMetricsGroups', () => {

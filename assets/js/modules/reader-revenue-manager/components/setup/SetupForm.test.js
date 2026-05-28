@@ -21,16 +21,8 @@
  */
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import SetupForm from './SetupForm';
 
 describe( 'SetupForm', () => {

@@ -25,7 +25,7 @@ import {
 	muteFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as factories from './__factories__';
 import { parseLiveContainerVersionIDs as parseIDs } from './__factories__/utils';
 import * as fixtures from './__fixtures__';

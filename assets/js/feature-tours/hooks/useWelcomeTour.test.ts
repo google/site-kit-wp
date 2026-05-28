@@ -47,7 +47,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	renderHook,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { useWelcomeTour } from './useWelcomeTour';
 
 describe( 'useWelcomeTour', () => {

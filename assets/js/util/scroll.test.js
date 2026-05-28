@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { BREAKPOINT_SMALL, BREAKPOINT_TABLET } from '@/js/hooks/useBreakpoint';
-import { mockElementOffsets } from '../../../tests/js/mock-browser-utils';
+import { mockElementOffsets } from '@tests/js/mock-browser-utils';
 import {
 	getStickyHeaderHeight,
 	getStickyHeaderHeightWithoutNav,

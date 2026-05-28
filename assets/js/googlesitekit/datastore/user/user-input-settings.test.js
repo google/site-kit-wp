@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { surveyTriggerEndpoint } from '../../../../../tests/js/mock-survey-endpoints';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -28,7 +28,7 @@ import {
 	provideUserAuthentication,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user user-input-settings', () => {

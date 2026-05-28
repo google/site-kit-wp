@@ -26,18 +26,18 @@ import fetchMock from 'fetch-mock';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { dismissItemEndpoint } from '../../../../../../../../tests/js/mock-dismiss-item-endpoints';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
-import { getSiteGoalsTour } from '../../feature-tours/site-goals';
+} from '@tests/js/test-utils';
 import IntroModal from './index';
 
 jest.mock( '@/js/googlesitekit/notifications/hooks/useNotificationEvents' );

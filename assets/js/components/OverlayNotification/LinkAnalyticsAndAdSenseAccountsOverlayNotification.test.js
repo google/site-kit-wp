@@ -43,7 +43,7 @@ import {
 	fireEvent,
 	provideModules,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import LinkAnalyticsAndAdSenseAccountsOverlayNotification, {
 	LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION,
 } from './LinkAnalyticsAndAdSenseAccountsOverlayNotification';

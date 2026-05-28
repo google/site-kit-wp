@@ -48,11 +48,8 @@ import {
 	render,
 	waitFor,
 	waitForElementToBeRemoved,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import EnhancedMeasurementActivationBanner from './index';
 
 describe( 'EnhancedMeasurementActivationBanner', () => {

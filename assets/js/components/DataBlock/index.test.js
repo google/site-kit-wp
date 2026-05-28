@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { NOTICE_STYLE } from '@/js/components/GatheringDataNotice';
-import { fireEvent, render } from '../../../../tests/js/test-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import DataBlock from './index';
 
 describe( 'DataBlock', () => {

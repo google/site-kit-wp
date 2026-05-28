@@ -26,8 +26,8 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import {
 	provideModules,
 	provideUserAuthentication,
-} from '../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/test-utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { createTestRegistry, render } from '../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import GoogleTagGatewaySetupSuccessSubtleNotification from './GoogleTagGatewaySetupSuccessSubtleNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

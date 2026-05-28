@@ -29,7 +29,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import * as searchConsoleFixtures from '@/js/modules/search-console/datastore/__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -41,7 +41,7 @@ import {
 	render,
 	waitFor,
 	waitForTimeouts,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -29,7 +29,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	renderHook,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useCurrentlyActiveEvents from './useCurrentlyActiveEvents';
 
 describe( 'useCurrentlyActiveEvents', () => {

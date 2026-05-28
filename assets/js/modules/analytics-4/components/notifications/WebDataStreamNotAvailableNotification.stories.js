@@ -21,7 +21,7 @@
  */
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import WebDataStreamNotAvailableNotification from './WebDataStreamNotAvailableNotification';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

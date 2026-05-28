@@ -20,14 +20,14 @@
  * Internal dependencies
  */
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ExitSetup from './ExitSetup';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

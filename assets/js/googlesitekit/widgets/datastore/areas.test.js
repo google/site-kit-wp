@@ -21,7 +21,7 @@
  */
 import Null from '@/js/components/Null';
 import SiteKitLogo from '@/svg/graphics/logo-sitekit.svg';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_WIDGETS } from './constants';
 
 describe( 'core/widgets Widget areas', () => {

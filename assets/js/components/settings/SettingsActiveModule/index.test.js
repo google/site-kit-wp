@@ -38,7 +38,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsActiveModule from '.';
 
 describe( 'SettingsModule', () => {

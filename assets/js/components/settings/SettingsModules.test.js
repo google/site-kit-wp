@@ -32,7 +32,7 @@ import {
 	muteFetch,
 	provideModules,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsModules from './SettingsModules';
 
 describe( 'SettingsModules', () => {

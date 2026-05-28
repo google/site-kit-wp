@@ -21,7 +21,7 @@
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { createTestRegistry, render } from '../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import ManageEmailReports from './ManageEmailReports';
 
 describe( 'ManageEmailReports', () => {

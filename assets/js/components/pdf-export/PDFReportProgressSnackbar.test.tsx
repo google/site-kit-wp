@@ -25,7 +25,7 @@ import type { MouseEvent } from 'react';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import PDFReportProgressSnackbar from './PDFReportProgressSnackbar';
 
 describe( 'PDFReportProgressSnackbar', () => {

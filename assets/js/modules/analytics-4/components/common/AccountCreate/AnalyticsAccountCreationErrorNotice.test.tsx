@@ -17,16 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	createTestRegistry,
-	fireEvent,
-	provideSiteInfo,
-	render,
-} from 'tests/js/test-utils';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -36,6 +26,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import * as tracking from '@/js/util/tracking';
+import {
+	createTestRegistry,
+	fireEvent,
+	provideSiteInfo,
+	render,
+} from '@tests/js/test-utils';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

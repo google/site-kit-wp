@@ -48,7 +48,7 @@ import {
 	provideNotifications,
 	provideUserAuthentication,
 	subscribeUntil,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import {
 	accountBuilder,
 	buildAccountWithContainers,

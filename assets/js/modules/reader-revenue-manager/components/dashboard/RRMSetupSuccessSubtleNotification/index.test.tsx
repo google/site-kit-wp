@@ -21,7 +21,6 @@
  */
 import fetchMock from 'fetch-mock';
 import { mocked } from 'jest-mock';
-import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 
 /**
  * Internal dependencies
@@ -51,6 +50,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -60,7 +60,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import RRMSetupSuccessSubtleNotification from '.';
 
 jest.mock( '../../../../../hooks/useQueryArg' );

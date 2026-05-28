@@ -24,8 +24,8 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import { freezeFetch } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { freezeFetch } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import GoogleTagGatewayToggle from './GoogleTagGatewayToggle';
 
 function Template() {

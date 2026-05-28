@@ -43,7 +43,7 @@ import {
 	untilResolved,
 	waitFor,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupCTA from './SetupCTA';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

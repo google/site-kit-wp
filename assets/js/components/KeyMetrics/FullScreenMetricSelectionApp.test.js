@@ -38,7 +38,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -50,7 +50,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import FullScreenMetricSelectionApp from './FullScreenMetricSelectionApp';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 import { provideKeyMetricsWidgetRegistrations } from './test-utils';

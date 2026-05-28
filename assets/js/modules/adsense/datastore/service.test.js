@@ -26,8 +26,8 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '@/js/modules/adsense/util/status';
-import { decodeServiceURL } from '../../../../../tests/js/mock-accountChooserURL-utils';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
 describe( 'module/adsense service store', () => {

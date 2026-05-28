@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { getDateString } from '@/js/util';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user date-range', () => {

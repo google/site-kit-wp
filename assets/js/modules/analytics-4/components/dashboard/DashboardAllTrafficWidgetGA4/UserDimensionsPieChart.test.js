@@ -23,13 +23,13 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
-import { render } from '../../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 
 describe( 'UserDimensionsPieChart', () => {

@@ -32,7 +32,7 @@ import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -44,7 +44,7 @@ import {
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import {
 	audiences as audiencesFixture,
 	availableAudiences as availableAudiencesFixture,
