@@ -21,23 +21,20 @@
  * `TextEncoder` and other Node streams that JSDOM does not provide. None of
  * that machinery is meaningful in unit tests: we only need the primitives to
  * render as identifiable React host components so we can inspect the tree.
- *
- * This file is written in CommonJS to match the rest of `__mocks__/` (Jest
- * manual mocks in this project use `module.exports`/`require`).
  */
 
 /**
  * External dependencies
  */
-const React = require( 'react' );
+import { createElement } from 'react';
 
 function makePrimitive( tag ) {
 	return function PDFPrimitive( props ) {
-		return React.createElement( tag, props, props.children );
+		return createElement( tag, props, props.children );
 	};
 }
 
-const StyleSheet = {
+export const StyleSheet = {
 	create( styles ) {
 		return styles;
 	},
@@ -49,35 +46,38 @@ const StyleSheet = {
 	},
 };
 
-module.exports = {
-	Document: makePrimitive( 'pdf-document' ),
-	Page: makePrimitive( 'pdf-page' ),
-	View: makePrimitive( 'pdf-view' ),
-	Text: makePrimitive( 'pdf-text' ),
-	Image: makePrimitive( 'pdf-image' ),
-	Link: makePrimitive( 'pdf-link' ),
-	Svg: makePrimitive( 'pdf-svg' ),
-	Path: makePrimitive( 'pdf-path' ),
-	G: makePrimitive( 'pdf-g' ),
-	Rect: makePrimitive( 'pdf-rect' ),
-	Circle: makePrimitive( 'pdf-circle' ),
-	Line: makePrimitive( 'pdf-line' ),
-	Polygon: makePrimitive( 'pdf-polygon' ),
-	Polyline: makePrimitive( 'pdf-polyline' ),
-	StyleSheet,
-	Font: {
-		register: () => {},
-		registerHyphenationCallback: () => {},
-	},
-	pdf: () => ( {
+export const Document = makePrimitive( 'pdf-document' );
+export const Page = makePrimitive( 'pdf-page' );
+export const View = makePrimitive( 'pdf-view' );
+export const Text = makePrimitive( 'pdf-text' );
+export const Image = makePrimitive( 'pdf-image' );
+export const Link = makePrimitive( 'pdf-link' );
+export const Svg = makePrimitive( 'pdf-svg' );
+export const Path = makePrimitive( 'pdf-path' );
+export const G = makePrimitive( 'pdf-g' );
+export const Rect = makePrimitive( 'pdf-rect' );
+export const Circle = makePrimitive( 'pdf-circle' );
+export const Line = makePrimitive( 'pdf-line' );
+export const Polygon = makePrimitive( 'pdf-polygon' );
+export const Polyline = makePrimitive( 'pdf-polyline' );
+
+export const Font = {
+	register: () => {},
+	registerHyphenationCallback: () => {},
+};
+
+export function pdf() {
+	return {
 		toBlob: () => Promise.resolve( new Blob() ),
 		toBuffer: () => Promise.resolve( Buffer.from( '' ) ),
 		toString: () => Promise.resolve( '' ),
-	} ),
-	PDFViewer: makePrimitive( 'pdf-viewer' ),
-	PDFDownloadLink: makePrimitive( 'pdf-download-link' ),
-	BlobProvider: ( { children } ) =>
-		typeof children === 'function'
-			? children( { blob: null, url: null, loading: false, error: null } )
-			: children,
-};
+	};
+}
+
+export const PDFViewer = makePrimitive( 'pdf-viewer' );
+export const PDFDownloadLink = makePrimitive( 'pdf-download-link' );
+export function BlobProvider( { children } ) {
+	return typeof children === 'function'
+		? children( { blob: null, url: null, loading: false, error: null } )
+		: children;
+}
