@@ -33,8 +33,9 @@ class Authenticator implements Authenticator_Interface {
 	/**
 	 * Error codes.
 	 */
-	const ERROR_INVALID_REQUEST = 'googlesitekit_auth_invalid_request';
-	const ERROR_SIGNIN_FAILED   = 'googlesitekit_auth_failed';
+	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
+	const ERROR_INVALID_CSRF_TOKEN = 'googlesitekit_auth_invalid_g_csrf_token';
+	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
 
 	/**
 	 * User meta key marking users created via Sign in with Google.
@@ -81,6 +82,15 @@ class Authenticator implements Authenticator_Interface {
 	 * @return string Redirect URL.
 	 */
 	public function authenticate_user( Input $input ) {
+		// Validate the CSRF token set by the Google Identity Services library.
+		// The library sets the same token in both the g_csrf_token cookie and the
+		// POST body; comparing them prevents cross-site request forgery.
+		$csrf_cookie = $input->filter( INPUT_COOKIE, 'g_csrf_token' );
+		$csrf_post   = $input->filter( INPUT_POST, 'g_csrf_token' );
+		if ( ! $csrf_cookie || ! $csrf_post || ! hash_equals( $csrf_cookie, $csrf_post ) ) {
+			return $this->get_error_redirect_url( self::ERROR_INVALID_CSRF_TOKEN );
+		}
+
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
 		$user    = null;
