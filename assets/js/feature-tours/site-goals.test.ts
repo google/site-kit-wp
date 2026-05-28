@@ -1,0 +1,92 @@
+/**
+ * Site Goals tour tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { getSiteGoalsTour } from './site-goals';
+
+describe( 'getSiteGoalsTour', () => {
+	it( 'should return the Site Goals tour with the right slug', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.slug ).toBe( 'site-goals-feature-tour' );
+	} );
+
+	it( 'should be repeatable so the user can replay it from the Help menu', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.isRepeatable ).toBe( true );
+	} );
+
+	it( 'should be scoped to the main dashboard', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.contexts ).toEqual( [ 'mainDashboard' ] );
+	} );
+
+	it( 'should preload the Site Goals widget area so the targets are in view before the first callout opens', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.preloadWidgetAreas ).toEqual( [
+			'mainDashboardSiteGoalsPrimary',
+		] );
+	} );
+
+	it( 'should prefix the Google Analytics event category with the current view context', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.gaEventCategory( 'test-context' ) ).toBe(
+			'test-context_site-goals-tour'
+		);
+	} );
+
+	it( 'should return three steps anchored to the key action, the breakdown notice, and the goal drivers', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.steps ).toHaveLength( 3 );
+
+		expect( tour.steps[ 0 ].target ).toBe(
+			'.googlesitekit-site-goals-primary-action'
+		);
+		// TODO: Step 2 uses the key action tile as a placeholder. Update
+		// to the breakdown notice target once #12800 ships it.
+		expect( tour.steps[ 1 ].target ).toBe(
+			'.googlesitekit-site-goals-primary-action'
+		);
+		expect( tour.steps[ 2 ].target ).toBe(
+			'.googlesitekit-site-goals-goal-drivers-group'
+		);
+	} );
+
+	it( 'should use the leads copy in step 2 when isEcommerceOnly is false', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: false } );
+
+		expect( tour.steps[ 1 ].content ).toBe(
+			'Want to know which specific form is bringing in the most interest? You can break these numbers down to see the performance of each individual form on your site.'
+		);
+	} );
+
+	it( 'should use the sales copy in step 2 when isEcommerceOnly is true', () => {
+		const tour = getSiteGoalsTour( { isEcommerceOnly: true } );
+
+		expect( tour.steps[ 1 ].content ).toBe(
+			'Want to see whether WooCommerce or Easy Digital Downloads is driving more success? You can break these numbers down to see the performance of each plugin.'
+		);
+	} );
+} );
