@@ -46,6 +46,15 @@ export interface GetPDFDataParams {
 		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate'
 	>;
 	signal: AbortSignal;
+interface GetPDFDataParams {
+	registry: {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
+		resolveSelect: ( storeName: string ) => any;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Registry selectors are loosely typed in this codebase.
+		select: ( storeName: string ) => any;
+	};
+	dates: Pick< ReportOptions, 'startDate', 'endDate', 'compareStartDate', 'compareEndDate' >;
+	signal: AbortSignal;
 }
 
 export interface AllTrafficPDFData {
