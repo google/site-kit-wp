@@ -2975,6 +2975,28 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( 'invalid_analytics_4_report_metrics', $data->get_error_code(), 'Error code should be invalid_analytics_4_report_metrics for invalid metric names.' );
 	}
 
+	public function test_validate_shared_dimensions__accepts_new_custom_event_dimensions() {
+		$request_helpers = new \Google\Site_Kit\Modules\Analytics_4\Report\RequestHelpers( $this->context );
+
+		$dimensions = array_map(
+			function ( $name ) {
+				$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
+				$dimension->setName( $name );
+				return $dimension;
+			},
+			array(
+				'customEvent:googlesitekit_event_provider',
+				'customEvent:googlesitekit_form_id',
+			)
+		);
+
+		// Calling validate_shared_dimensions should not throw an exception when these
+		// dimensions are part of the default shareable dimensions list.
+		$request_helpers->validate_shared_dimensions( $dimensions );
+
+		$this->addToAssertionCount( 1 );
+	}
+
 	public function test_report__shared_dimension_validation() {
 		$property_id = '123456789';
 
@@ -3845,6 +3867,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
 			'Custom dimensions data available should be initialized with all dimensions set to false when module is connected but no data is available.'
@@ -3947,6 +3971,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
 			'Custom dimensions data available should show post_author as true and others as false after setting custom dimension data available.'
@@ -3993,6 +4019,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change.'
@@ -4013,6 +4041,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$inline_modules_data['analytics-4']['customDimensionsDataAvailable'],
 			'Custom dimensions data available should remain unchanged after measurement ID change when module is still connected.'
@@ -4059,6 +4089,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$custom_dimensions_data_available->get_data_availability(),
 			'Custom dimensions data available should show post_author as true and others as false before module deactivation.'
@@ -4072,6 +4104,8 @@ class Analytics_4Test extends TestCase {
 				'googlesitekit_post_type'       => false,
 				'googlesitekit_post_date'       => false,
 				'googlesitekit_post_categories' => false,
+				'googlesitekit_event_provider'  => false,
+				'googlesitekit_form_id'         => false,
 			),
 			$custom_dimensions_data_available->get_data_availability(),
 			'Custom dimensions data available should be reset to all false after module deactivation.'

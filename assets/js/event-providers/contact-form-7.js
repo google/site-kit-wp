@@ -26,10 +26,17 @@ global.document.addEventListener( 'wpcf7mailsent', ( event ) => {
 		? getUserDataFromForm( event.target )
 		: null;
 
+	// Disabled because the data/property names in this form are
+	// not controlled by Site Kit, thus don't conform to our ESLint
+	// rules on casing.
+	// eslint-disable-next-line sitekit/acronym-case
+	const { contactFormId: formID } = event.detail;
+
 	global._googlesitekit?.gtagEvent?.( 'contact', {
-		// eslint-disable-next-line sitekit/acronym-case
-		event_category: event.detail.contactFormId,
+		event_category: formID,
 		event_label: event.detail.unitTag,
+		googlesitekit_event_provider: 'contact-form-7',
+		googlesitekit_form_id: String( formID ),
 		...( userData ? { user_data: userData } : {} ),
 	} );
 } );
