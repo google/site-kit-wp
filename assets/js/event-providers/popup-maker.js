@@ -32,6 +32,9 @@ import { classifyPII, getUserData } from './utils';
 				? getUserDataFromPMForm( form )
 				: undefined;
 
+		// Disabled because the data/property names in this form are
+		// not controlled by Site Kit, thus don't conform to our ESLint
+		// rules on casing.
 		// eslint-disable-next-line sitekit/acronym-case
 		const popupID = args?.popupId;
 
