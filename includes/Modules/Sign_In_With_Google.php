@@ -146,7 +146,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.137.0
 	 * @since 1.141.0 Add functionality to allow users to disconnect their own account and admins to disconnect any user.
-	 * @since n.e.x.t Allow signed-in users to connect their existing WordPress account from the profile page.
+	 * @since n.e.x.t Allow signed-in users to connect their existing WordPress account from their own profile page.
 	 */
 	public function register() {
 		$this->register_inline_data();
@@ -174,13 +174,21 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, array( $this, 'handle_disconnect_user' ) );
 
-		// Render the Sign in with Google profile section. The user's own profile
-		// shows connect or disconnect, other editable profiles show disconnect only.
+		// Render the Sign in with Google profile section.
+		// If this profile belongs to the current user (eg. they're editing
+		// their own profile): show the "connect a Google account" if
+		// they don't have a Google Account associated with their profile,
+		// or the "Disconnect your Google account" option if they do have
+		// a Google Account associated with their profile
+		//
+		// If this profile belongs to another user (eg. we're an admin editing
+		// another user's profile), only the "Disconnect Google Account"
+		// option is shown.
 		add_action( 'show_user_profile', $this->get_method_proxy( 'render_sign_in_with_google_profile' ) );
 		add_action( 'edit_user_profile', $this->get_method_proxy( 'render_sign_in_with_google_profile' ) );
 
 		// Output the Sign in with Google init script so the placeholder above
-		// becomes a real button on the user's own unlinked profile.
+		// becomes a real button on the user's own, unlinked profile.
 		add_action( 'admin_footer', $this->get_method_proxy( 'maybe_render_profile_signinwithgoogle' ) );
 
 		// Surface the already-connected error from the profile-page connect flow.
@@ -235,7 +243,14 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	}
 
 	/**
-	 * Resolves the authenticator class to instantiate for an auth callback.
+	 * Get the authenticator class to use for the integration specified.
+	 *
+	 * Returns the name of the class to load for this Sign in with Google
+	 * authentication flow (eg. for WooCommerce, connecting an existing
+	 * user, etc.)
+	 *
+	 * Returns the base authenticator class's class name if no integration
+	 * matches the one supplied.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -664,7 +679,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param int $user_id User ID to scope the accessor to.
+	 * @param int $user_id User ID to use to build the hashed ID.
 	 * @return Hashed_User_ID
 	 */
 	private function get_hashed_user_id( $user_id ) {
@@ -784,7 +799,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 	/**
 	 * Outputs the Sign in with Google init script that turns the placeholder
-	 * from `render_sign_in_with_google_profile()` into a real button.
+	 * `<div>` from `render_sign_in_with_google_profile()` into a real button.
 	 *
 	 * Hooks `admin_footer` so `did_action( 'show_user_profile' )` reliably
 	 * reports whether the section actually rendered.
@@ -792,8 +807,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @since n.e.x.t
 	 */
 	private function maybe_render_profile_signinwithgoogle() {
-		// `show_user_profile` only fires on the user's own profile, so this runs
-		// only there. The connect button never renders for other users.
+		// `show_user_profile` only fires on the user's own profile.
+		// The connect button should never render for other users.
 		if ( ! did_action( 'show_user_profile' ) ) {
 			return;
 		}
@@ -844,7 +859,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 
 		printf(
 			'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
-			esc_html__( 'A profile is already connected to this Google account.', 'google-site-kit' )
+			esc_html__( 'Another user on this site already connected this Google account to their profile.', 'google-site-kit' )
 		);
 	}
 
@@ -965,7 +980,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.141.0
 	 * @since n.e.x.t Renamed from `render_disconnect_profile` and added the
-	 *                connect-existing-profile branch.
+	 *                the ability to connect an existing profile.
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */
@@ -979,8 +994,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		$is_own_profile         = get_current_user_id() === $user->ID;
 		$is_unlinked            = empty( $current_user_google_id );
 
-		// Skip when there's no linked account and the connect button can't show
-		// anyway (other user's profile, or module not connected).
+		// Skip when there's no linked account and the connect button shouldn't
+		// appear (eg. when on another user's profile or Sign in with Google is
+		// not connected).
 		if ( $is_unlinked && ( ! $is_own_profile || ! $this->is_connected() ) ) {
 			return;
 		}

@@ -48,7 +48,7 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since n.e.x.t
 	 */
-	const CONNECT_NONCE_ACTION = 'googlesitekit_connect_existing_profile';
+	const CONNECT_EXISTING_PROFILE_NONCE_ACTION = 'googlesitekit_connect_existing_profile';
 
 	/**
 	 * User options instance.

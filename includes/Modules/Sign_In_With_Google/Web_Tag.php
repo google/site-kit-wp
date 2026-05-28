@@ -191,7 +191,7 @@ class Web_Tag extends Module_Web_Tag {
 		<?php if ( ! is_preview() ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		<?php if ( $this->is_connect_existing_profile ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'connect_existing_profile';
-		response.connect_nonce = <?php echo wp_json_encode( wp_create_nonce( Authenticator::CONNECT_NONCE_ACTION ) ); ?>;
+		response.connect_nonce = <?php echo wp_json_encode( wp_create_nonce( Authenticator::CONNECT_EXISTING_PROFILE_NONCE_ACTION ) ); ?>;
 		<?php elseif ( $is_woocommerce && ! $this->is_wp_login ) : // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>
 		response.integration = 'woocommerce';
 		<?php endif; // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect ?>

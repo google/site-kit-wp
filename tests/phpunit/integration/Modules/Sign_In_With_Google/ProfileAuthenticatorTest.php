@@ -50,7 +50,7 @@ class ProfileAuthenticatorTest extends TestCase {
 
 	private function do_authenticate_user( $profile_reader_data = array(), $with_valid_nonce = true ) {
 		if ( $with_valid_nonce ) {
-			$_POST['connect_nonce'] = wp_create_nonce( Authenticator::CONNECT_NONCE_ACTION );
+			$_POST['connect_nonce'] = wp_create_nonce( Authenticator::CONNECT_EXISTING_PROFILE_NONCE_ACTION );
 		}
 
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -127,7 +127,7 @@ class ProfileAuthenticatorTest extends TestCase {
 		$this->assertEquals( $expected, $actual, 'Should redirect with already-connected error when another user owns the Google account.' );
 		$this->assertEmpty(
 			get_user_option( Hashed_User_ID::OPTION, $current_user_id ),
-			'Current user should not gain a Google link when another user owns the Google account.'
+			'Current user should not be associated with a Google account already linked to another WordPress user on the site.'
 		);
 	}
 

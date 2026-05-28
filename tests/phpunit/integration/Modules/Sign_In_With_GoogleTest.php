@@ -406,7 +406,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'Connect your account to sign in with Google.', $output, 'Connect copy should render on own profile when no Google user id stored.' );
 		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Connect branch should reuse the profile-settings id.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Connect branch should render the SiwG button placeholder.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Connect branch should render the Sign in with Google button placeholder.' );
 		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__profile-connect-button', $output, 'Connect branch should tag the placeholder with the profile-connect class.' );
 		$this->assertStringNotContainsString( 'Disconnect Google Account', $output, 'Connect branch should not render the disconnect button.' );
 		$this->assertSame( 1, substr_count( $output, '<h2>' ), 'Connect branch should render only one <h2>.' );
@@ -422,7 +422,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// connected (no `clientID`), the connect section should not render
 		// at all because the button JS would never wire it up.
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertEmpty( $output, 'Connect branch should not render when SiwG module is not connected.' );
+		$this->assertEmpty( $output, 'Connect branch should not render when Sign in with Google module is not connected.' );
 	}
 
 	public function test_render_sign_in_with_google_profile__skips_connect_branch_on_other_user_profile() {
@@ -441,17 +441,17 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// branch's other short-circuit can't fire. The only thing keeping
 		// the section out is the admin viewing someone else's profile.
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $editor_id ) );
-		$this->assertEmpty( $output, 'Section should not render on another user profile when that user has no linked Google account.' );
+		$this->assertEmpty( $output, "Section should never render on a profile that is not the current user's profile." );
 	}
 
-	public function test_render_profile_admin_notices__shows_error_on_profile_page() {
+	public function test_render_profile_admin_notices__shows_error_on_profile_page_when_profile_has_linked_google_account() {
 		$_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] = Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
 		set_current_screen( 'profile' );
 
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected copy on profile.php.' );
+		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected error.' );
 
 		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
 	}
@@ -463,7 +463,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected copy on user-edit.php.' );
+		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected error.' );
 
 		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
 	}
@@ -475,7 +475,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertEmpty( $output, 'Admin notice should not render outside of profile.php or user-edit.php.' );
+		$this->assertEmpty( $output, 'Errors related to a Google Account already being connected should not appear outside of profile.php or user-edit.php.' );
 
 		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
 	}
@@ -516,7 +516,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'admin_footer should not emit the connect script outside the profile page.' );
+		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'admin_footer should not render the connect script outside the profile page.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__skips_when_user_already_linked() {

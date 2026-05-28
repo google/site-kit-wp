@@ -49,7 +49,7 @@ class Profile_Authenticator extends Authenticator {
 	 *   of the Google account's email address.
 	 * - A new user is never created. Open registration is irrelevant.
 	 * - If the Google account is already linked to another WordPress user,
-	 *   the flow errors out without mutating any user meta.
+	 *   an error is triggered.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -65,7 +65,7 @@ class Profile_Authenticator extends Authenticator {
 		// Tie the link request to the current WordPress session so a
 		// cross-site request can't piggyback on the user's auth cookie.
 		$nonce = $input->filter( INPUT_POST, 'connect_nonce' );
-		if ( ! wp_verify_nonce( $nonce, self::CONNECT_NONCE_ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::CONNECT_EXISTING_PROFILE_NONCE_ACTION ) ) {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 
@@ -78,9 +78,12 @@ class Profile_Authenticator extends Authenticator {
 
 		$g_user_hid = $this->get_hashed_google_user_id( $payload );
 
-		// Block the link if another WordPress user already has this Google
-		// account stored against their profile.
-		$existing_users = get_users(
+		// Check to see if the Google user ID for the Google Account we signed in
+		// with is already in use (eg. registered to another user on the site).
+		//
+		// If this is the case, we'll trigger an error instance of associating
+		// this Google Account with the current user.
+		$existing_user = get_users(
 			array(
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 				'meta_key'   => $this->user_options->get_meta_key( Hashed_User_ID::OPTION ),
@@ -92,7 +95,7 @@ class Profile_Authenticator extends Authenticator {
 			)
 		);
 
-		if ( ! empty( $existing_users ) ) {
+		if ( ! empty( $existing_user ) ) {
 			return $this->get_error_redirect_url( self::ERROR_ACCOUNT_ALREADY_CONNECTED );
 		}
 
@@ -121,9 +124,9 @@ class Profile_Authenticator extends Authenticator {
 		$user_id = get_current_user_id();
 		$target  = $user_id ? get_edit_user_link( $user_id ) : admin_url( 'profile.php' );
 
-		// A Site Kit-specific query arg avoids the empty error notice WP core
-		// emits on `wp-admin/profile.php` and `wp-admin/user-edit.php` for any
-		// unrecognized `?error=`.
+		// Do not use `error=` as a query arg here, because
+		// `wp-admin/profile.php` and `wp-admin/user-edit.php` will
+		// show an error for any unrecognized `?error=` value.
 		return add_query_arg( self::ERROR_QUERY_ARG, $code, $target );
 	}
 }

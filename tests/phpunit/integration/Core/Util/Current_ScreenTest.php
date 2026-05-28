@@ -25,7 +25,7 @@ class Current_ScreenTest extends TestCase {
 		$screen = Current_Screen::get();
 
 		$this->assertInstanceOf( WP_Screen::class, $screen, 'Should return a WP_Screen instance when the profile screen is active.' );
-		$this->assertSame( 'profile', $screen->id, 'Returned screen ID should match the active profile screen.' );
+		$this->assertSame( 'profile', $screen->id, "Returned screen ID should match the current user's profile screen." );
 	}
 
 	public function test_returns_wp_screen_for_user_edit_screen() {
@@ -40,6 +40,6 @@ class Current_ScreenTest extends TestCase {
 	public function test_returns_null_when_no_current_screen_is_set() {
 		unset( $GLOBALS['current_screen'] );
 
-		$this->assertNull( Current_Screen::get(), 'Should return null when no current screen has been set.' );
+		$this->assertNull( Current_Screen::get(), 'Should return null (eg. should not throw an error) when no current screen has been set.' );
 	}
 }

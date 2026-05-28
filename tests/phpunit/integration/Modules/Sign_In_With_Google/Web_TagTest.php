@@ -243,7 +243,7 @@ class Web_TagTest extends TestCase {
 		$output = $this->capture_render_tag_output();
 		$this->assertStringContainsString( "response.integration='connect_existing_profile'", $output, 'Rendered script should set the connect_existing_profile integration when the flag is on.' );
 		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'Rendered script should include the connect nonce assignment when the flag is on.' );
-		$this->assertStringContainsString( wp_create_nonce( Authenticator::CONNECT_NONCE_ACTION ), $output, 'Rendered nonce should match wp_create_nonce for CONNECT_NONCE_ACTION.' );
+		$this->assertStringContainsString( wp_create_nonce( Authenticator::CONNECT_EXISTING_PROFILE_NONCE_ACTION ), $output, 'Rendered nonce should be a valid wp_create_nonce.' );
 
 		// Toggling the flag off on the same instance guards against a vacuous pass if the marker
 		// strings ever change. The positive phase above fails first when that happens, signalling
@@ -265,7 +265,7 @@ class Web_TagTest extends TestCase {
 		// Logged-in users normally skip the button render loop. The connect flow flips that gate
 		// so the placeholder div on the profile page can still be wired up.
 		$this->assertStringContainsString( 'google.accounts.id.renderButton', $output, 'Connect flow should force the button render loop even when the user is logged in.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should target the SiwG placeholder class.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Render loop should target the Sign in with Google placeholder class.' );
 	}
 
 	private function capture_render_tag_output() {
