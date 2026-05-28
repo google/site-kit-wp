@@ -34,7 +34,7 @@ class Current_ScreenTest extends TestCase {
 		$screen = Current_Screen::get();
 
 		$this->assertInstanceOf( WP_Screen::class, $screen, 'Should return a WP_Screen instance when the user-edit screen is active.' );
-		$this->assertSame( 'user-edit', $screen->id, 'Returned screen ID should match the active user-edit screen.' );
+		$this->assertSame( 'user-edit', $screen->id, 'Returned screen ID should match the user-edit screen when it is the current screen.' );
 	}
 
 	public function test_returns_null_when_no_current_screen_is_set() {

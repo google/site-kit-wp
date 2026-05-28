@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Authenticator
+ * Class Google\Site_Kit\Modules\Sign_In_With_Google\Existing_User_Authenticator
  *
  * @package   Google\Site_Kit\Modules\Sign_In_With_Google
  * @copyright 2026 Google LLC
@@ -22,7 +22,7 @@ use WP_User;
  * @access private
  * @ignore
  */
-class Profile_Authenticator extends Authenticator {
+class Existing_User_Authenticator extends Authenticator {
 
 	/**
 	 * Error code surfaced when the Google account is already linked to another user.
@@ -32,7 +32,7 @@ class Profile_Authenticator extends Authenticator {
 	const ERROR_ACCOUNT_ALREADY_CONNECTED = 'googlesitekit_auth_account_already_connected';
 
 	/**
-	 * Query arg for the profile connect-flow error. Namespaced to avoid
+	 * Query arg for the existing-user link flow error. Namespaced to avoid
 	 * WordPress core's empty `?error=` notice on `wp-admin/profile.php` and `wp-admin/user-edit.php`.
 	 *
 	 * @since n.e.x.t
@@ -62,10 +62,10 @@ class Profile_Authenticator extends Authenticator {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 
-		// Tie the link request to the current WordPress session so a
-		// cross-site request can't piggyback on the user's auth cookie.
+		// Tie the link request to the current WordPress session so the
+		// user's auth cookie alone can't validate a cross-site request.
 		$nonce = $input->filter( INPUT_POST, 'connect_nonce' );
-		if ( ! wp_verify_nonce( $nonce, self::CONNECT_EXISTING_PROFILE_NONCE_ACTION ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::CONNECT_EXISTING_USER_NONCE_ACTION ) ) {
 			return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
 		}
 
@@ -81,7 +81,7 @@ class Profile_Authenticator extends Authenticator {
 		// Check to see if the Google user ID for the Google Account we signed in
 		// with is already in use (eg. registered to another user on the site).
 		//
-		// If this is the case, we'll trigger an error instance of associating
+		// If this is the case, we'll trigger an error instead of associating
 		// this Google Account with the current user.
 		$existing_user = get_users(
 			array(
@@ -100,9 +100,7 @@ class Profile_Authenticator extends Authenticator {
 		}
 
 		// Link the Google account by writing the hashed user ID to the current user.
-		$user_options = clone $this->user_options;
-		$user_options->switch_user( $current_user->ID );
-		$user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
+		$this->user_options->set( Hashed_User_ID::OPTION, $g_user_hid );
 
 		return get_edit_user_link( $current_user->ID );
 	}
@@ -111,9 +109,9 @@ class Profile_Authenticator extends Authenticator {
 	 * Builds the redirect URL used when an error needs to be surfaced.
 	 *
 	 * The base `Authenticator` redirects to `wp-login.php` for error display,
-	 * but the profile-page connect flow lives in the WordPress admin, so
-	 * we redirect back to the user's edit profile page with the error
-	 * appended as a query argument.
+	 * but the existing-user link flow lives in the WordPress admin, so we
+	 * redirect back to the user's edit profile page with the error appended
+	 * as a query argument.
 	 *
 	 * @since n.e.x.t
 	 *

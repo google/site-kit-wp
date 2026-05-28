@@ -39,8 +39,8 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_User_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Sign_In_With_Google_Block;
@@ -191,8 +191,9 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		// becomes a real button on the user's own, unlinked profile.
 		add_action( 'admin_footer', $this->get_method_proxy( 'maybe_render_profile_signinwithgoogle' ) );
 
-		// Surface the already-connected error from the profile-page connect flow.
-		add_action( 'admin_notices', $this->get_method_proxy( 'render_profile_admin_notices' ) );
+		// Show an error when a user tries to link a Google account that's
+		// already linked to a different WordPress user.
+		add_action( 'admin_notices', $this->get_method_proxy( 'render_profile_admin_errors' ) );
 
 		// Output the Sign in with Google <div> in the WooCommerce login form.
 		add_action( 'woocommerce_login_form_start', $this->get_method_proxy( 'render_signinwithgoogle_woocommerce' ) );
@@ -258,12 +259,12 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @return string Fully qualified authenticator class name.
 	 */
 	private function resolve_authenticator_class( $integration ): string {
-		if ( 'woocommerce' === $integration && class_exists( 'WooCommerce' ) ) {
-			return WooCommerce_Authenticator::class;
+		if ( 'existing_user' === $integration && is_user_logged_in() ) {
+			return Existing_User_Authenticator::class;
 		}
 
-		if ( 'connect_existing_profile' === $integration && is_user_logged_in() ) {
-			return Profile_Authenticator::class;
+		if ( 'woocommerce' === $integration && class_exists( 'WooCommerce' ) ) {
+			return WooCommerce_Authenticator::class;
 		}
 
 		return Authenticator::class;
@@ -773,8 +774,11 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Builds a `Web_Tag` instance and runs the shared registration guards.
 	 *
-	 * Returns `null` when the tag is blocked or its guard refuses registration,
-	 * so callers can short-circuit before configuring setters and rendering.
+	 * Returns `null` when the tag can't be rendered. A tag is blocked when
+	 * another integration turns tag output off for the current request. The
+	 * guard also rejects the tag when the module's settings are incomplete.
+	 * Callers can return early before setting any values on the tag and
+	 * rendering it.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -801,7 +805,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Outputs the Sign in with Google init script that turns the placeholder
 	 * `<div>` from `render_sign_in_with_google_profile()` into a real button.
 	 *
-	 * Hooks `admin_footer` so `did_action( 'show_user_profile' )` reliably
+	 * Runs on `admin_footer` so `did_action( 'show_user_profile' )` reliably
 	 * reports whether the section actually rendered.
 	 *
 	 * @since n.e.x.t
@@ -829,20 +833,17 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 		}
 
 		$tag->set_settings( $this->get_settings()->get() );
-		$tag->set_is_connect_existing_profile( true );
-
-		// Already inside `admin_footer`, so render inline instead of queuing
-		// another callback.
-		$tag->render_tag();
+		$tag->set_is_existing_user_flow( true );
+		$tag->register();
 	}
 
 	/**
-	 * Renders the profile-page admin notice when the connect flow surfaces
-	 * an error (e.g. the Google account is already linked to another user).
+	 * Shows an error on the profile page when linking the Google account
+	 * fails (e.g. it is already linked to another user).
 	 *
 	 * @since n.e.x.t
 	 */
-	private function render_profile_admin_notices() {
+	private function render_profile_admin_errors() {
 		$current_screen = Current_Screen::get();
 
 		if (
@@ -852,8 +853,8 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
-		$error_code = $this->context->input()->filter( INPUT_GET, Profile_Authenticator::ERROR_QUERY_ARG );
-		if ( Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED !== $error_code ) {
+		$error_code = $this->context->input()->filter( INPUT_GET, Existing_User_Authenticator::ERROR_QUERY_ARG );
+		if ( Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED !== $error_code ) {
 			return;
 		}
 
@@ -980,7 +981,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 *
 	 * @since 1.141.0
 	 * @since n.e.x.t Renamed from `render_disconnect_profile` and added the
-	 *                the ability to connect an existing profile.
+	 *                ability to connect an existing profile.
 	 *
 	 * @param WP_User $user WordPress user object.
 	 */
@@ -1030,16 +1031,16 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	</p>
 		<?php
 		/**
-		 * Renders the Sign in with Google button for the profile-connect flow.
+		 * Renders the Sign in with Google button for the existing-user link flow.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param array $args Button attributes. Sets `class` for the profile-connect placement.
+		 * @param array $args Button attributes. Sets `class` for the existing-user link placement.
 		 */
 		do_action(
 			'googlesitekit_render_sign_in_with_google_button',
 			array(
-				'class' => 'googlesitekit-sign-in-with-google__profile-connect-button',
+				'class' => 'googlesitekit-sign-in-with-google__existing-user-connect-button',
 			)
 		);
 		?>

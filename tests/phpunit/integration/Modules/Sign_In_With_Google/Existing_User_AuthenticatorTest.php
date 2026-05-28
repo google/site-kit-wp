@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Modules\Sign_In_With_Google\ProfileAuthenticatorTest
+ * Class Google\Site_Kit\Tests\Modules\Sign_In_With_Google\Existing_User_AuthenticatorTest
  *
  * @package   Google\Site_Kit\Tests\Modules\Sign_In_With_Google
  * @copyright 2026 Google LLC
@@ -13,8 +13,8 @@ namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_User_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
@@ -24,7 +24,7 @@ use WP_Error;
  * @group Modules
  * @group Sign_In_With_Google
  */
-class ProfileAuthenticatorTest extends TestCase {
+class Existing_User_AuthenticatorTest extends TestCase {
 
 	private static $payload = array(
 		'sub'   => 'google-sub-12345',
@@ -50,7 +50,7 @@ class ProfileAuthenticatorTest extends TestCase {
 
 	private function do_authenticate_user( $profile_reader_data = array(), $with_valid_nonce = true ) {
 		if ( $with_valid_nonce ) {
-			$_POST['connect_nonce'] = wp_create_nonce( Authenticator::CONNECT_EXISTING_PROFILE_NONCE_ACTION );
+			$_POST['connect_nonce'] = wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION );
 		}
 
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -58,7 +58,7 @@ class ProfileAuthenticatorTest extends TestCase {
 									->setMethods( array( 'get_profile_data' ) )
 									->getMock();
 		$mock_profile_reader->method( 'get_profile_data' )->willReturn( $profile_reader_data );
-		$authenticator = new Profile_Authenticator( $user_options, $mock_profile_reader );
+		$authenticator = new Existing_User_Authenticator( $user_options, $mock_profile_reader );
 
 		return $authenticator->authenticate_user( new MutableInput() );
 	}
@@ -96,7 +96,7 @@ class ProfileAuthenticatorTest extends TestCase {
 			)
 		) )->get_total();
 
-		$this->assertEquals( $users_before, $users_after, 'Profile_Authenticator must never create a new WordPress user.' );
+		$this->assertEquals( $users_before, $users_after, 'Existing_User_Authenticator must never create a new WordPress user.' );
 	}
 
 	public function test_links_current_user_even_when_email_does_not_match() {
@@ -121,7 +121,7 @@ class ProfileAuthenticatorTest extends TestCase {
 		$current_user_id = $this->factory()->user->create();
 		wp_set_current_user( $current_user_id );
 
-		$expected = add_query_arg( Profile_Authenticator::ERROR_QUERY_ARG, Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED, get_edit_user_link( $current_user_id ) );
+		$expected = add_query_arg( Existing_User_Authenticator::ERROR_QUERY_ARG, Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED, get_edit_user_link( $current_user_id ) );
 		$actual   = $this->do_authenticate_user( self::$payload );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect with already-connected error when another user owns the Google account.' );
@@ -135,10 +135,10 @@ class ProfileAuthenticatorTest extends TestCase {
 		$current_user_id = $this->factory()->user->create();
 		wp_set_current_user( $current_user_id );
 
-		$expected = add_query_arg( Profile_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
+		$expected = add_query_arg( Existing_User_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
-		$this->assertEquals( $expected, $actual, 'Should redirect with invalid-request error when the profile reader fails.' );
+		$this->assertEquals( $expected, $actual, 'Should redirect with invalid-request error when the profile reader returns a WP_Error.' );
 		$this->assertEmpty(
 			get_user_option( Hashed_User_ID::OPTION, $current_user_id ),
 			'Profile reader error should not result in any Hashed_User_ID being stored.'
@@ -148,7 +148,7 @@ class ProfileAuthenticatorTest extends TestCase {
 	public function test_returns_error_redirect_when_no_user_is_signed_in() {
 		wp_set_current_user( 0 );
 
-		$expected = add_query_arg( Profile_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, admin_url( 'profile.php' ) );
+		$expected = add_query_arg( Existing_User_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, admin_url( 'profile.php' ) );
 		$actual   = $this->do_authenticate_user( self::$payload );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect with invalid-request error when no user is signed in.' );
@@ -158,7 +158,7 @@ class ProfileAuthenticatorTest extends TestCase {
 		$current_user_id = $this->factory()->user->create();
 		wp_set_current_user( $current_user_id );
 
-		$expected = add_query_arg( Profile_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
+		$expected = add_query_arg( Existing_User_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
 		$actual   = $this->do_authenticate_user( self::$payload, false );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect with invalid-request error when the connect nonce is missing.' );
@@ -174,7 +174,7 @@ class ProfileAuthenticatorTest extends TestCase {
 
 		$_POST['connect_nonce'] = 'invalid';
 
-		$expected = add_query_arg( Profile_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
+		$expected = add_query_arg( Existing_User_Authenticator::ERROR_QUERY_ARG, Authenticator::ERROR_INVALID_REQUEST, get_edit_user_link( $current_user_id ) );
 		$actual   = $this->do_authenticate_user( self::$payload, false );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect with invalid-request error when the connect nonce is invalid.' );

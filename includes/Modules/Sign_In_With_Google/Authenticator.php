@@ -44,11 +44,11 @@ class Authenticator implements Authenticator_Interface {
 	const CREATED_BY_META_KEY = 'googlesitekitpersistent_created_by';
 
 	/**
-	 * Nonce action used by the profile-page connect flow.
+	 * Nonce action used by the existing-user link flow.
 	 *
 	 * @since n.e.x.t
 	 */
-	const CONNECT_EXISTING_PROFILE_NONCE_ACTION = 'googlesitekit_connect_existing_profile';
+	const CONNECT_EXISTING_USER_NONCE_ACTION = 'googlesitekit_connect_existing_user';
 
 	/**
 	 * User options instance.

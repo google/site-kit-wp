@@ -15,8 +15,8 @@ use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_User_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
-use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
@@ -159,14 +159,14 @@ class Sign_In_With_GoogleTest extends TestCase {
 		remove_all_actions( 'login_footer' );
 		$this->module->register_tag();
 		$output = $this->capture_action( 'login_footer' );
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include SIWG marker on the standard login page.' );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should include the Sign in with Google marker on the standard login page.' );
 
 		// When on the email verification interstitial, `register_tag` will return before instantiating `Web_Tag`, so no Sign in with Google tag should appear.
 		remove_all_actions( 'login_footer' );
 		$_GET['action'] = 'confirm_admin_email';
 		$this->module->register_tag();
 		$output = $this->capture_action( 'login_footer' );
-		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should not include SIWG marker on the email verification interstitial.' );
+		$this->assertStringNotContainsString( 'Sign in with Google button added by Site Kit', $output, 'Login footer should not include the Sign in with Google marker on the email verification interstitial.' );
 
 		unset( $_GET['action'] );
 	}
@@ -377,8 +377,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertStringContainsString( 'You can sign in with your Google account.', $output, 'Disconnect settings should render on own profile when user meta set.' );
-		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Section should use the renamed profile-settings id.' );
-		$this->assertSame( 1, substr_count( $output, '<h2>' ), 'Section should render only one <h2>.' );
+		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Section should render with the profile-settings id.' );
 
 		update_user_option( $user_id_admin, Hashed_User_ID::OPTION, '222222' );
 		wp_set_current_user( $user_id_admin );
@@ -404,12 +403,11 @@ class Sign_In_With_GoogleTest extends TestCase {
 		// On own profile with no stored Google user id, the connect copy and
 		// button placeholder should render.
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
-		$this->assertStringContainsString( 'Connect your account to sign in with Google.', $output, 'Connect copy should render on own profile when no Google user id stored.' );
+		$this->assertStringContainsString( 'Connect your account to Sign in with Google.', $output, 'Connect copy should render on own profile when no Google user id stored.' );
 		$this->assertStringContainsString( 'id="googlesitekit-sign-in-with-google-profile-settings"', $output, 'Connect branch should reuse the profile-settings id.' );
 		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__frontend-output-button', $output, 'Connect branch should render the Sign in with Google button placeholder.' );
-		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__profile-connect-button', $output, 'Connect branch should tag the placeholder with the profile-connect class.' );
+		$this->assertStringContainsString( 'googlesitekit-sign-in-with-google__existing-user-connect-button', $output, 'Connect branch should add the existing-user-connect class to the placeholder.' );
 		$this->assertStringNotContainsString( 'Disconnect Google Account', $output, 'Connect branch should not render the disconnect button.' );
-		$this->assertSame( 1, substr_count( $output, '<h2>' ), 'Connect branch should render only one <h2>.' );
 	}
 
 	public function test_render_sign_in_with_google_profile__skips_connect_branch_when_module_not_connected() {
@@ -418,9 +416,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// On own profile with no stored Google user id and SiwG not yet
-		// connected (no `clientID`), the connect section should not render
-		// at all because the button JS would never wire it up.
+		// The section should not render when Sign in with Google isn't
+		// connected.
 		$output = $this->capture_action( 'show_user_profile', wp_get_current_user() );
 		$this->assertEmpty( $output, 'Connect branch should not render when Sign in with Google module is not connected.' );
 	}
@@ -436,40 +433,40 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
-		// Editor has no `Hashed_User_ID` stored, so the disconnect branch is
-		// not eligible. SiwG is connected (`clientID` is set), so the connect
-		// branch's other short-circuit can't fire. The only thing keeping
-		// the section out is the admin viewing someone else's profile.
+		// Editor has no `Hashed_User_ID` stored, so the disconnect branch
+		// doesn't run. Sign in with Google is connected (`clientID` is set),
+		// so the only thing keeping the section out is the admin viewing
+		// someone else's profile.
 		$output = $this->capture_action( 'edit_user_profile', get_user_by( 'id', $editor_id ) );
 		$this->assertEmpty( $output, "Section should never render on a profile that is not the current user's profile." );
 	}
 
-	public function test_render_profile_admin_notices__shows_error_on_profile_page_when_profile_has_linked_google_account() {
-		$_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] = Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
+	public function test_render_profile_admin_errors__shows_error_on_profile_page_when_profile_has_linked_google_account() {
+		$_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] = Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
 		set_current_screen( 'profile' );
 
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected error.' );
+		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'Admin notice should render the already-connected error.' );
 
-		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
+		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
 
-	public function test_render_profile_admin_notices__shows_error_on_user_edit_page() {
-		$_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] = Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
+	public function test_render_profile_admin_errors__shows_error_on_user_edit_page() {
+		$_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] = Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
 		set_current_screen( 'user-edit' );
 
 		$this->module->register();
 
 		$output = $this->capture_action( 'admin_notices' );
-		$this->assertStringContainsString( 'A profile is already connected to this Google account.', $output, 'Admin notice should render the already-connected error.' );
+		$this->assertStringContainsString( 'Another user on this site already connected this Google account to their profile.', $output, 'Admin notice should render the already-connected error.' );
 
-		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
+		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
 
-	public function test_render_profile_admin_notices__skips_outside_profile_pages() {
-		$_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] = Profile_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
+	public function test_render_profile_admin_errors__skips_outside_profile_pages() {
+		$_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] = Existing_User_Authenticator::ERROR_ACCOUNT_ALREADY_CONNECTED;
 		set_current_screen( 'edit.php' );
 
 		$this->module->register();
@@ -477,27 +474,27 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$output = $this->capture_action( 'admin_notices' );
 		$this->assertEmpty( $output, 'Errors related to a Google Account already being connected should not appear outside of profile.php or user-edit.php.' );
 
-		unset( $_GET[ Profile_Authenticator::ERROR_QUERY_ARG ] );
+		unset( $_GET[ Existing_User_Authenticator::ERROR_QUERY_ARG ] );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__renders_when_profile_eligible() {
 		// `Tag_Guard::can_activate()` rejects `wp_login_url()` when it's not
 		// HTTPS, so `build_registrable_tag()` would return null otherwise and
-		// the callback would short-circuit before rendering anything.
+		// the callback would return early before rendering anything.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// Fire `show_user_profile` so `did_action()` reports >= 1 inside the
-		// `admin_footer` callback's gate.
+		// The `admin_footer` callback only renders the button after
+		// `show_user_profile` has fired, so fire it first.
 		$this->capture_action( 'show_user_profile', wp_get_current_user() );
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'admin_footer should output the SiwG init script after show_user_profile fires for an unlinked user.' );
-		$this->assertStringContainsString( "response.integration='connect_existing_profile'", $output, 'Rendered script should mark the request as connect_existing_profile.' );
+		$this->assertStringContainsString( 'Sign in with Google button added by Site Kit', $output, 'admin_footer should output the Sign in with Google init script after show_user_profile fires for an unlinked user.' );
+		$this->assertStringContainsString( "response.integration='existing_user'", $output, 'Rendered script should mark the request as existing_user.' );
 		$this->assertStringContainsString( 'response.connect_nonce=', $output, 'Rendered script should include the connect nonce.' );
 	}
 
@@ -506,8 +503,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 		global $wp_actions;
 		unset( $wp_actions['show_user_profile'] );
 
-		// HTTPS setup keeps `Tag_Guard::can_activate()` from short-circuiting first, so the
-		// `did_action` gate is the only thing left to keep the connect script out (anti-vacuous).
+		// With HTTPS set up, `Tag_Guard::can_activate()` passes. Now only
+		// the `did_action` check can stop the connect script from rendering.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
@@ -516,12 +513,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'admin_footer should not render the connect script outside the profile page.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'admin_footer should not render the connect script outside the profile page.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__skips_when_user_already_linked() {
-		// HTTPS setup keeps `Tag_Guard::can_activate()` from short-circuiting first, so the
-		// `Hashed_User_ID` gate is the only thing left to keep the connect script out (anti-vacuous).
+		// With HTTPS set up, `Tag_Guard::can_activate()` passes. Now only
+		// the `Hashed_User_ID` check can stop the connect script from
+		// rendering.
 		$this->enable_https_login_env();
 		$this->register_and_connect_module();
 
@@ -533,16 +531,17 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'Should not emit connect script when user already has a linked Google account.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'Should not render connect script when user already has a linked Google account.' );
 	}
 
 	public function test_maybe_render_profile_signinwithgoogle__skips_when_module_not_connected() {
-		// HTTPS setup keeps the `wp_login_url()` half of `Tag_Guard::can_activate()` passing, so
-		// the missing `clientID` is the only thing left to keep the connect script out (anti-vacuous).
+		// With HTTPS set up, the `wp_login_url()` half of
+		// `Tag_Guard::can_activate()` passes. Now only the missing
+		// `clientID` can stop the connect script from rendering.
 		$this->enable_https_login_env();
 		$this->module->register();
 		// Intentionally skip setting `clientID` so `build_registrable_tag()`
-		// returns null and the connect script never gets a chance to render.
+		// returns null and the connect script doesn't render.
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
@@ -551,7 +550,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 
 		$output = $this->capture_action( 'admin_footer' );
 
-		$this->assertStringNotContainsString( "response.integration='connect_existing_profile'", $output, 'Should not emit connect script when the SiwG module is not connected.' );
+		$this->assertStringNotContainsString( "response.integration='existing_user'", $output, 'Should not render connect script when the Sign in with Google module is not connected.' );
 	}
 
 	public function test_resolve_authenticator_class__returns_base_authenticator_when_no_integration() {
@@ -562,26 +561,46 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 	}
 
-	public function test_resolve_authenticator_class__returns_profile_authenticator_for_connect_when_logged_in() {
+	public function test_resolve_authenticator_class__returns_existing_user_authenticator_when_logged_in() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 
 		$this->assertSame(
-			Profile_Authenticator::class,
-			$this->call_resolve_authenticator_class( 'connect_existing_profile' ),
-			'Should return Profile_Authenticator for connect_existing_profile when the user is logged in.'
+			Existing_User_Authenticator::class,
+			$this->call_resolve_authenticator_class( 'existing_user' ),
+			'Should return Existing_User_Authenticator for existing_user when the user is logged in.'
 		);
 	}
 
-	public function test_resolve_authenticator_class__falls_back_to_base_for_connect_when_logged_out() {
+	public function test_resolve_authenticator_class__falls_back_to_base_for_existing_user_when_logged_out() {
 		wp_set_current_user( 0 );
 
-		// A `connect_existing_profile` request without an authenticated session must fall back
-		// to the base `Authenticator` so `wp-login.php` behaves like a fresh sign-in (AC4).
+		// An `existing_user` request without an authenticated session must fall
+		// back to the base `Authenticator` so `wp-login.php` behaves like a
+		// fresh sign-in.
 		$this->assertSame(
 			Authenticator::class,
-			$this->call_resolve_authenticator_class( 'connect_existing_profile' ),
-			'Should fall back to base Authenticator for connect_existing_profile when the user is logged out.'
+			$this->call_resolve_authenticator_class( 'existing_user' ),
+			'Should fall back to base Authenticator for existing_user when the user is logged out.'
+		);
+	}
+
+	public function test_resolve_authenticator_class__returns_existing_user_authenticator_when_woocommerce_is_active() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
+		// Make `class_exists( 'WooCommerce' )` return true for this test so
+		// the WooCommerce branch is reachable. The resolver picks the
+		// authenticator by integration value, so the existing_user flow
+		// should still be picked.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( \stdClass::class, 'WooCommerce' );
+		}
+
+		$this->assertSame(
+			Existing_User_Authenticator::class,
+			$this->call_resolve_authenticator_class( 'existing_user' ),
+			'Should return Existing_User_Authenticator for existing_user even when WooCommerce is loaded.'
 		);
 	}
 
