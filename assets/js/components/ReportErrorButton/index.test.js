@@ -25,7 +25,7 @@ import copyToClipboard from 'clipboard-copy';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import ReportErrorButton from './';
 
 jest.mock( 'clipboard-copy', () => jest.fn() );

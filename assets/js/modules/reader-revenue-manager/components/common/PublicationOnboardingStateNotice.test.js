@@ -33,7 +33,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PublicationOnboardingStateNotice from './PublicationOnboardingStateNotice';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

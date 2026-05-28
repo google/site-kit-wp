@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_PDF } from './constants';
 import { initialState } from './pdf';
 

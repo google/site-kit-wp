@@ -40,7 +40,7 @@ import {
 	createTestRegistry,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
 

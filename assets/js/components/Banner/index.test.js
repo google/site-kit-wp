@@ -24,7 +24,7 @@ import { createElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import Banner from './index';
 
 describe( 'Banner', () => {

@@ -40,14 +40,14 @@ import {
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
-import { render } from '../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import TopConvertingTrafficSourceWidget from './TopConvertingTrafficSourceWidget';
 
 describe( 'TopConvertingTrafficSourceWidget', () => {

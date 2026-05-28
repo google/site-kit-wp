@@ -26,11 +26,8 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getDateString } from '@/js/util';
-import {
-	provideModules,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideUserAuthentication } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import GA4AdSenseLinkedNotification from './GA4AdSenseLinkedNotification';
 
 // Generate referenced dates.

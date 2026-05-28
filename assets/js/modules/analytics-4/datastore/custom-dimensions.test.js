@@ -38,7 +38,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 describe( 'modules/analytics-4 custom-dimensions', () => {

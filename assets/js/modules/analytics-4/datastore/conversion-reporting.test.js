@@ -36,7 +36,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	CONVERSION_REPORTING_LEAD_EVENTS,

@@ -31,16 +31,8 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import RRMIntroductoryOverlayNotification, {
 	RRM_INTRODUCTORY_OVERLAY_NOTIFICATION,
 } from './RRMIntroductoryOverlayNotification';

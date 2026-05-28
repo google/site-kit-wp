@@ -25,7 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConversionTrackingToggle from './ConversionTrackingToggle';
 
 function Template() {

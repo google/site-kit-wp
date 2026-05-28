@@ -28,7 +28,7 @@ import {
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -38,7 +38,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ChangeMetricsLink from './ChangeMetricsLink';
 import { KEY_METRICS_SELECTION_PANEL_OPENED_KEY } from './constants';
 

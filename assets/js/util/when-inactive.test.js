@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../tests/js/test-utils';
-import { createTestRegistry, provideModules } from '../../../tests/js/utils';
+import { render } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import whenInactive from './when-inactive';
 
 describe( 'whenInactive', () => {

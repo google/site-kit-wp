@@ -21,11 +21,7 @@
  */
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-generation/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import PDFDownloadButton from './PDFDownloadButton';
 
 describe( 'PDFDownloadButton', () => {

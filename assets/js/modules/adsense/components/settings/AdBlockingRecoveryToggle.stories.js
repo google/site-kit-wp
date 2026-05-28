@@ -28,11 +28,8 @@ import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util';
-import {
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdBlockingRecoveryToggle from './AdBlockingRecoveryToggle';
 
 function Template() {

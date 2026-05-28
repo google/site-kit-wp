@@ -32,7 +32,7 @@ import {
 	provideGatheringDataState,
 	provideModules,
 	renderHook,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useDisplayCTAWidget from './useDisplayCTAWidget';
 
 describe( 'useDisplayCTAWidget hook', () => {

@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
 describe( 'modules/adsense report', () => {

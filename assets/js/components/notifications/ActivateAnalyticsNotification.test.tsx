@@ -42,7 +42,7 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
-import { dismissPromptEndpoint } from '../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -50,7 +50,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ActivateAnalyticsNotification from './ActivateAnalyticsNotification';
 
 jest.mock( '@/js/hooks/useActivateModuleCallback' );

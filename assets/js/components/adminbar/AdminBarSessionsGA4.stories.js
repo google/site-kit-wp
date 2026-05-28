@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdminBarSessionsGA4 from './AdminBarSessionsGA4';
 import {
 	setupAnalytics4Error,

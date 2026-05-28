@@ -27,7 +27,7 @@ import {
 	muteFetch,
 	provideTracking,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import OptIn from './';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

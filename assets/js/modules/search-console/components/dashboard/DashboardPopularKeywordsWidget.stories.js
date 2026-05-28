@@ -33,8 +33,8 @@ import {
 	provideSearchConsoleMockReports,
 } from '@/js/modules/search-console/util/data-mock';
 import { replaceValuesInSearchConsoleReportWithZeroData } from '@/js/util/zero-reports';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import DashboardPopularKeywordsWidget from './DashboardPopularKeywordsWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

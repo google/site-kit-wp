@@ -21,11 +21,7 @@
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import InviteUserRow from './InviteUserRow';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

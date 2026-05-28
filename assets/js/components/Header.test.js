@@ -31,7 +31,7 @@ import {
 	provideUserInfo,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import Header from './Header';
 import Null from './Null';
 

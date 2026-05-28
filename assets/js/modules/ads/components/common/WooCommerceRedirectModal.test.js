@@ -32,7 +32,7 @@ import {
 } from '@/js/modules/ads/datastore/constants';
 import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -43,7 +43,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WooCommerceRedirectModal from './WooCommerceRedirectModal';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -32,12 +32,9 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { act, fireEvent, render } from '../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../tests/js/utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import PublicationApprovedOverlayNotification, {
 	RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION,
 } from './PublicationApprovedOverlayNotification';

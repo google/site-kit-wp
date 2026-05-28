@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConfirmDisableConsentModeDialog from './ConfirmDisableConsentModeDialog';
 
 describe( 'ConfirmDisableConsentModeDialog', () => {

@@ -29,8 +29,8 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { createTestRegistry } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PolicyViolationSettingsNotice from './PolicyViolationSettingsNotice';
 
 const {

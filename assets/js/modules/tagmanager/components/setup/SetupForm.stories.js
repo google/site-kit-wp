@@ -38,8 +38,8 @@ import {
 	provideModuleRegistrations,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 
 function selectFirstWebContainer( registry, accountID ) {
 	const [ webContainer ] = registry

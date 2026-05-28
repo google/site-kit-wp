@@ -26,7 +26,7 @@ import {
 	provideModules,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user initial setup settings', () => {

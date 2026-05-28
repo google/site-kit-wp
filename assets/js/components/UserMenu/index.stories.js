@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { provideSiteInfo, provideUserInfo } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideSiteInfo, provideUserInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import UserMenu from '.';
 
 function Template( args ) {

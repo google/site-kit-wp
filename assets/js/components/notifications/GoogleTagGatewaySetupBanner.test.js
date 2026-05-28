@@ -47,7 +47,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import GoogleTagGatewaySetupBanner from './GoogleTagGatewaySetupBanner';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

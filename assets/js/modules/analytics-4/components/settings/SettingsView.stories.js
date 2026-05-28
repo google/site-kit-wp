@@ -24,8 +24,8 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
 
 const { accountSummaries, webDataStreamsBatch, googleTagSettings } = fixtures;

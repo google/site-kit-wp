@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { provideSiteInfo } from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ResetButton from './ResetButton';
 
 function Template() {

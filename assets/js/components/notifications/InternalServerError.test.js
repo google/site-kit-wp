@@ -22,7 +22,7 @@
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import * as scrollUtils from '@/js/util/scroll';
-import { createTestRegistry, render } from '../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import InternalServerError from './InternalServerError';
 
 jest.mock( '@/js/hooks/useBreakpoint' );

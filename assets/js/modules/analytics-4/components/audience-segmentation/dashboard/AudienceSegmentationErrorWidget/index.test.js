@@ -39,11 +39,8 @@ import {
 	provideUserInfo,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceSegmentationErrorWidget from '.';
 
 jest.mock( 'react-use', () => ( {

@@ -27,11 +27,8 @@ import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { createTestRegistry, provideModules } from '@tests/js/test-utils';
 import getMultiDimensionalObjectFromParams from '../../../../tests/e2e/utils/get-multi-dimensional-object-from-params';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../tests/js/test-utils';
 
 const GA4_ADSENSE_LINKED_NOTIFICATION =
 	'top-earning-pages-success-notification';

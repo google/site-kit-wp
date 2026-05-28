@@ -32,7 +32,7 @@ import {
 	provideModules,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsView from './SettingsView';
 
 describe( 'SettingsView', () => {

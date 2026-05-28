@@ -33,8 +33,8 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideKeyMetrics } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideKeyMetrics } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ConnectGA4CTAWidget from './ConnectGA4CTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

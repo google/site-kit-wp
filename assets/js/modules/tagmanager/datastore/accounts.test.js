@@ -30,7 +30,7 @@ import {
 	muteFetch,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 import {

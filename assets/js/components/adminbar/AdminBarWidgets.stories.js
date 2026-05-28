@@ -30,8 +30,8 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 import {
 	setupAnalytics4Loading,

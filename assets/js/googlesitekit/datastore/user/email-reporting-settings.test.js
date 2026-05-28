@@ -22,7 +22,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user email reporting settings', () => {

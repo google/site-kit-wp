@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	subscribeUntil,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, subscribeUntil } from '@tests/js/utils';
 import { CORE_SITE } from './constants';
 
 describe( 'core/site reset', () => {

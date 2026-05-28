@@ -27,7 +27,7 @@ import { withQuery } from '@storybook/addon-queryparams';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import KeyMetricsSetupApp from './KeyMetricsSetupApp';
 
 function Template() {

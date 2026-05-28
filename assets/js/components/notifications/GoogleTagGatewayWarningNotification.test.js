@@ -43,7 +43,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import GoogleTagGatewayWarningNotification from './GoogleTagGatewayWarningNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import CronSchedulerErrorNotice from './CronSchedulerErrorNotice';
 
 describe( 'CronSchedulerErrorNotice', () => {

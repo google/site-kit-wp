@@ -27,7 +27,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { properties } from './__fixtures__';
 import {
 	DATE_RANGE_OFFSET,

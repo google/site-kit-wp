@@ -23,11 +23,8 @@ import { useSelect } from 'googlesitekit-data';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AudienceTileError from '.';
 
 function AudienceTileErrorWrapper( { ...args } ) {

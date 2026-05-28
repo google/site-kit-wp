@@ -32,7 +32,7 @@ import { Fragment, createInterpolateElement } from '@wordpress/element';
  */
 import { Button } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import Link from './../components/Link';
 import TourTooltips from './../components/TourTooltips';
 import { CORE_UI } from './../googlesitekit/datastore/ui/constants';

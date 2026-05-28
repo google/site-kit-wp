@@ -37,11 +37,11 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { WEEK_IN_SECONDS } from '@/js/util';
-import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -51,7 +51,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );

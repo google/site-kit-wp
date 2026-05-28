@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import {
 	MODULES_SIGN_IN_WITH_GOOGLE,
 	SIGN_IN_WITH_GOOGLE_SHAPES,
