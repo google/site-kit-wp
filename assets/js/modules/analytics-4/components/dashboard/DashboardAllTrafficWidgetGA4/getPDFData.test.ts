@@ -23,11 +23,18 @@ import fetchMock from 'fetch-mock-jest';
 import { createTestRegistry, provideSiteInfo } from 'tests/js/utils';
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import getPDFData, { PDFDataRegistry } from './getPDFData';
+import getPDFData, { GetPDFDataParams } from './getPDFData';
 import { getGraphReportArgs, getTotalsReportArgs } from './reportOptions';
+
+type Registry = WPDataRegistry & GetPDFDataParams[ 'registry' ];
 
 const reportEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -41,10 +48,10 @@ const dates = {
 };
 
 describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
-	let registry: PDFDataRegistry;
+	let registry: Registry;
 
 	beforeEach( () => {
-		registry = createTestRegistry() as PDFDataRegistry;
+		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
 	} );
 

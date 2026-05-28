@@ -77,7 +77,6 @@ describe( 'DashboardAllTrafficWidgetGA4 PDF', () => {
 		expect( json ).toContain( 'compared to the previous 28 days' );
 		// Chart placeholder block uses our fixed background color.
 		expect( json ).toContain( '#f5f5f5' );
-		// No "No data available" placeholder rendered.
 		expect( json ).not.toContain( 'No data available' );
 	} );
 

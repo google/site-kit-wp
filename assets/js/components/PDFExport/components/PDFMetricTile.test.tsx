@@ -105,9 +105,7 @@ describe( 'PDFMetricTile', () => {
 
 		const json = JSON.stringify( tree );
 		expect( json ).toContain( '12.5%' );
-		// Up arrow path.
 		expect( json ).toContain( 'M4,0 L8,8 L0,8 Z' );
-		// Success color.
 		expect( json ).toContain( '#34a853' );
 	} );
 
@@ -121,9 +119,7 @@ describe( 'PDFMetricTile', () => {
 
 		const json = JSON.stringify( tree );
 		expect( json ).toContain( '5.0%' );
-		// Down arrow path.
 		expect( json ).toContain( 'M0,0 L8,0 L4,8 Z' );
-		// Error color.
 		expect( json ).toContain( '#ea4335' );
 	} );
 
