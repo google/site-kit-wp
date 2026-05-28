@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { provideGatheringDataState } from 'tests/js/gathering-data-utils';
-
-/**
  * Internal dependencies
  */
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
@@ -33,6 +28,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -41,7 +37,7 @@ import {
 	provideUserCapabilities,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import HelpMenu from './HelpMenu';
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );

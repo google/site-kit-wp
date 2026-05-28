@@ -22,8 +22,8 @@
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
-import { fireEvent, render } from '../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../tests/js/utils';
+import { fireEvent, render } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import UserInputPreviewGroup from './UserInputPreviewGroup';
 import {
 	USER_INPUT_CURRENTLY_EDITING_KEY,

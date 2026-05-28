@@ -33,7 +33,7 @@ import {
 	provideUserInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import UserMenu from '.';
 
 describe( 'UserMenu', () => {

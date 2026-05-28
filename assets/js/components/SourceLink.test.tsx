@@ -28,7 +28,7 @@ import {
 	type WidgetContextValue,
 } from '@/js/googlesitekit/widgets/components/WidgetContext';
 import * as tracking from '@/js/util/tracking';
-import { fireEvent, render } from '../../../tests/js/test-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import SourceLink from './SourceLink';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

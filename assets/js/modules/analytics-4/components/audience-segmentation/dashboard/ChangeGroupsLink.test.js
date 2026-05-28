@@ -24,11 +24,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 import ChangeGroupsLink from './ChangeGroupsLink';
 

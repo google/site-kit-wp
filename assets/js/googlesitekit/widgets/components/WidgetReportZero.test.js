@@ -26,7 +26,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WidgetReportZero from './WidgetReportZero';
 
 describe( 'WidgetReportZero', () => {

@@ -43,7 +43,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WPDashboardWidgets from './WPDashboardWidgets';
 
 jest.mock( 'react-use', () => ( {

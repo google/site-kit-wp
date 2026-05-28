@@ -40,7 +40,7 @@ import {
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -48,7 +48,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from './constants';
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,

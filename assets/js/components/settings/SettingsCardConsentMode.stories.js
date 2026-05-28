@@ -27,8 +27,8 @@ import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { freezeFetch, provideModules } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { freezeFetch, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 
 function Template() {

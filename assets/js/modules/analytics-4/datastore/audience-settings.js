@@ -318,7 +318,7 @@ const baseSelectors = {
 	/**
 	 * Checks if audience segmentation has been set up.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if audience segmentation has been setup, otherwise `false`.

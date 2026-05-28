@@ -24,8 +24,8 @@ import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
-import { act, fireEvent, render } from '../../../../../tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -34,7 +34,7 @@ import {
 	provideTracking,
 	provideUserCapabilities,
 	provideUserInfo,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import Actions from './Actions';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

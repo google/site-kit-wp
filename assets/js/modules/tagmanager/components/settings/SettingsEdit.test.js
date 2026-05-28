@@ -34,16 +34,13 @@ import {
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import {
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SettingsEdit from './SettingsEdit';
 
 describe( 'SettingsEdit', () => {

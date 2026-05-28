@@ -31,7 +31,7 @@ import {
 	fireEvent,
 	provideUserAuthentication,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PropertySelect from './PropertySelect';
 
 const accountID = fixtures.accountSummaries.accountSummaries[ 1 ]._id;

@@ -28,7 +28,7 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import UnsatisfiedScopesAlertGTE from './UnsatisfiedScopesAlertGTE';
 
 const NotificationWithComponentProps = withNotificationComponentProps(

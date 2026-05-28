@@ -17,7 +17,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import Typography from './index';
 
 describe( 'Typography', () => {

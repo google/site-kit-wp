@@ -24,11 +24,8 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import * as fixtures from '@/js/modules/adsense/datastore/__fixtures__';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import {
-	provideModules,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SetupMain from './SetupMain';
 
 const defaultSettings = {

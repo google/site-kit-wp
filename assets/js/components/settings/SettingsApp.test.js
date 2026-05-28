@@ -42,7 +42,7 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsApp from './SettingsApp';
 
 const coreUserTrackingSettingsEndpointRegExp = new RegExp(
@@ -51,15 +51,11 @@ const coreUserTrackingSettingsEndpointRegExp = new RegExp(
 const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
 
 jest.mock( '@/js/components/email-reporting/UserSettingsSelectionPanel', () => {
-	const {
-		mockCreateComponent,
-	} = require( '../../../../tests/js/mock-component-utils' );
+	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
 	return mockCreateComponent( 'UserSettingsSelectionPanel' );
 } );
 jest.mock( './SettingsModules', () => {
-	const {
-		mockCreateComponent,
-	} = require( '../../../../tests/js/mock-component-utils' );
+	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
 	return mockCreateComponent( 'SettingsModules' );
 } );
 

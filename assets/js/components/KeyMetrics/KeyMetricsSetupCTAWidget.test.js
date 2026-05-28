@@ -34,7 +34,7 @@ import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/co
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -45,7 +45,7 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import KeyMetricsSetupCTAWidget from './KeyMetricsSetupCTAWidget';
 
 jest.mock( 'react-use' );

@@ -33,13 +33,13 @@ import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PUESurveyTriggers from './PUESurveyTriggers';
 import {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,

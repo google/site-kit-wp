@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 
 describe( 'modules/search-console base data store', () => {

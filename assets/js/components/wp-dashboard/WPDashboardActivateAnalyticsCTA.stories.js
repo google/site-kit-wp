@@ -26,8 +26,8 @@ import {
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { widgetDecorators } from './common-GA4-stories';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 

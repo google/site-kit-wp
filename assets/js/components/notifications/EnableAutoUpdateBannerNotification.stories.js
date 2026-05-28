@@ -27,7 +27,7 @@ import fetchMock from 'fetch-mock';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from './EnableAutoUpdateBannerNotification';

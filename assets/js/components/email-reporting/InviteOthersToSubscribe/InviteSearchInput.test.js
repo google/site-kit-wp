@@ -24,7 +24,7 @@ import { fireEvent } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import { createTestRegistry, render } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import InviteSearchInput from './InviteSearchInput';
 
 describe( 'InviteSearchInput', () => {

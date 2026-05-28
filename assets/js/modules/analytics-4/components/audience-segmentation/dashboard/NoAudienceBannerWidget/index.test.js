@@ -36,8 +36,8 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../../../tests/js/mock-browser-utils';
-import { fireEvent, render } from '../../../../../../../../tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -45,7 +45,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import NoAudienceBannerWidget from '.';
 
 jest.mock( 'react-use', () => ( {

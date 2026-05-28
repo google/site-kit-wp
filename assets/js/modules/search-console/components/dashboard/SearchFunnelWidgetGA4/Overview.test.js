@@ -34,11 +34,8 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
-} from '../../../../../../../tests/js/test-utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/test-utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import Overview from './Overview';
 
 describe( 'Overview', () => {

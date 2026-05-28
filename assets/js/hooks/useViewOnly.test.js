@@ -26,7 +26,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { renderHook } from '../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import useViewOnly from './useViewOnly';
 
 describe( 'useViewOnly', () => {

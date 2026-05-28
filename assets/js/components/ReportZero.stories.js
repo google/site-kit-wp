@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { provideModules } from './../../../tests/js/utils';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { createModuleStore } from './../googlesitekit/modules/create-module-store';
 import ReportZero from './ReportZero';
 

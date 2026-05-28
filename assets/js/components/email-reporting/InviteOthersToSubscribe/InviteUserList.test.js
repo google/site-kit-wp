@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, render } from '../../../../../tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import InviteUserList from './InviteUserList';
 
 describe( 'InviteUserList', () => {

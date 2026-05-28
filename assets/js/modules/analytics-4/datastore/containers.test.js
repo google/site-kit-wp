@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 

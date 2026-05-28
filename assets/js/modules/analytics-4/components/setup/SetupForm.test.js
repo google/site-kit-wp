@@ -31,13 +31,8 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_TAGMANAGER } from '@/js/modules/tagmanager/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import {
-	act,
-	fireEvent,
-	render,
-	within,
-} from '../../../../../../tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -45,7 +40,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SetupForm from './SetupForm';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

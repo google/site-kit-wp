@@ -35,7 +35,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -43,7 +43,7 @@ import {
 	render,
 	waitFor,
 	waitForDefaultTimeouts,
-} from '../../../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupSuccess, {
 	SHOW_SETTINGS_VISITOR_GROUPS_SUCCESS_NOTIFICATION,
 } from '.';

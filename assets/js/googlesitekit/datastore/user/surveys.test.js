@@ -24,14 +24,14 @@ import {
 	surveyEventEndpoint,
 	surveyTimeoutsEndpoint,
 	surveyTriggerEndpoint,
-} from '../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	muteFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_USER, GLOBAL_SURVEYS_TIMEOUT_SLUG } from './constants';
 
 describe( 'core/user surveys', () => {

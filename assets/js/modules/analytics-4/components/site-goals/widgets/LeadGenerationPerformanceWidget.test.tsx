@@ -39,7 +39,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;

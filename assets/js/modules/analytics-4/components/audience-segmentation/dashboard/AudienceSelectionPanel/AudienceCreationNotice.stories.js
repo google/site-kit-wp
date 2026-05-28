@@ -25,8 +25,8 @@ import {
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideUserAuthentication } from '../../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+import { provideUserAuthentication } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AudienceCreationNotice from './AudienceCreationNotice';
 
 function Template( {} ) {

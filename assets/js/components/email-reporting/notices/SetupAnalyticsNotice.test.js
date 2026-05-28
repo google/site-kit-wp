@@ -27,7 +27,7 @@ import { act, waitFor } from '@testing-library/react';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -38,7 +38,7 @@ import {
 	provideUserCapabilities,
 	render,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupAnalyticsNotice, {
 	EMAIL_REPORTS_SETUP_ANALYTICS_NOTICE,
 } from './SetupAnalyticsNotice';

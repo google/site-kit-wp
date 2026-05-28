@@ -24,10 +24,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { enableTracking } from '@/js/util/tracking';
 import { DATA_LAYER } from '@/js/util/tracking/constants';
-import {
-	freezeFetch,
-	unexpectedSuccess,
-} from '../../../../tests/js/test-utils';
+import { freezeFetch, unexpectedSuccess } from '@tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,

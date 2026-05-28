@@ -46,7 +46,7 @@ import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { render } from '../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -55,7 +55,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import PopularProductsWidget from './PopularProductsWidget';
 
 describe( 'PopularProductsWidget', () => {

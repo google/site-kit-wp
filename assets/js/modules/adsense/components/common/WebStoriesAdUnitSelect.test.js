@@ -26,7 +26,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WebStoriesAdUnitSelect from './WebStoriesAdUnitSelect';
 
 const TEST_ACCOUNT_ID = '123';

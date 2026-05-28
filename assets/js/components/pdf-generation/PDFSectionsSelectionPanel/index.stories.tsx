@@ -29,18 +29,16 @@ import { useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { useDispatch } from 'googlesitekit-data';
 import {
 	DEFAULT_SELECTED_SECTIONS,
 	FORM_PDF_DOWNLOAD,
 	FORM_PDF_DOWNLOAD_SELECTED_SECTIONS,
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
-	PDF_GENERATING_KEY,
 } from '@/js/components/pdf-generation/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useFormValue from '@/js/hooks/useFormValue';
-import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PDFSectionsSelectionPanel from './index';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.
@@ -67,20 +65,6 @@ function EmptyTemplate() {
 	return <PDFSectionsSelectionPanel />;
 }
 
-function GeneratingTemplate() {
-	const { setValue } = useDispatch( CORE_UI );
-
-	// The panel's `onSideSheetOpen` resets `PDF_GENERATING_KEY` to false on
-	// every mount. Setting it back to true from this Template's `useEffect`
-	// runs after the panel's reset, so the story renders with the
-	// "generating" notice visible.
-	useEffect( () => {
-		setValue( PDF_GENERATING_KEY, true );
-	}, [ setValue ] );
-
-	return <PDFSectionsSelectionPanel />;
-}
-
 export const Default = DefaultTemplate.bind( {} );
 Default.storyName = 'Default (all selected)';
 Default.scenario = {};
@@ -88,10 +72,6 @@ Default.scenario = {};
 export const Empty = EmptyTemplate.bind( {} );
 Empty.storyName = 'All deselected (error state)';
 Empty.scenario = {};
-
-export const Generating = GeneratingTemplate.bind( {} );
-Generating.storyName = 'Generating state';
-Generating.scenario = {};
 
 export default {
 	title: 'Components/PDFGeneration/PDFSectionsSelectionPanel',

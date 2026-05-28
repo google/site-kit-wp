@@ -36,12 +36,7 @@ import {
 } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import { replaceValuesOrRemoveRowForDateRangeInAnalyticsReport } from '@/js/util/zero-reports';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../../../../../tests/js/test-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -51,11 +46,8 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../../tests/js/utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceTilesWidget from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

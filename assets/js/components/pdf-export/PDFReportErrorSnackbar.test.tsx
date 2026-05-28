@@ -35,7 +35,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PDFReportErrorSnackbar from './PDFReportErrorSnackbar';
 
 describe( 'PDFReportErrorSnackbar', () => {

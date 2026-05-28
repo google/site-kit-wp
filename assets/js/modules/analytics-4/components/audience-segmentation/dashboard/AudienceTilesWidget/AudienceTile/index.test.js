@@ -45,11 +45,7 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
-import {
-	act,
-	fireEvent,
-	render,
-} from '../../../../../../../../../tests/js/test-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -58,11 +54,8 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 	waitForTimeouts,
-} from '../../../../../../../../../tests/js/utils';
-import {
-	getViewportWidth,
-	setViewportWidth,
-} from '../../../../../../../../../tests/js/viewport-utils';
+} from '@tests/js/utils';
+import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceTile from '.';
 
 jest.mock( 'react-use', () => ( {

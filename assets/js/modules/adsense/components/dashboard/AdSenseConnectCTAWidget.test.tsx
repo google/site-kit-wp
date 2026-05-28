@@ -41,7 +41,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdSenseConnectCTAWidget from './AdSenseConnectCTAWidget';
 
 const mockShowTooltip = jest.fn();

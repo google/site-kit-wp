@@ -22,7 +22,7 @@
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -32,7 +32,7 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import Header from './Header';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

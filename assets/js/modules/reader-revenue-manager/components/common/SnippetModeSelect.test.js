@@ -21,11 +21,7 @@
  */
 import { SNIPPET_MODES } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '../../../../../../tests/js/test-utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import SnippetModeSelect from './SnippetModeSelect';
 
 describe( 'SnippetModeSelect', () => {

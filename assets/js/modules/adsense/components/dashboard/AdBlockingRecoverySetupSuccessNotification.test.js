@@ -33,7 +33,7 @@ import * as tracking from '@/js/util/tracking';
 import {
 	mockSurveyEndpoints,
 	surveyTriggerEndpoint,
-} from '../../../../../../tests/js/mock-survey-endpoints';
+} from '@tests/js/mock-survey-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -42,7 +42,7 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdBlockingRecoverySetupSuccessNotification from './AdBlockingRecoverySetupSuccessNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

@@ -52,9 +52,12 @@ export function useWelcomeTour() {
 		[]
 	);
 
-	const isAnalyticsConnected = useSelect(
+	const isAnalyticsViewable = useSelect(
 		( select: Select ) =>
-			!! select( CORE_MODULES ).isModuleConnected(
+			select( CORE_MODULES ).isModuleConnected(
+				MODULE_SLUG_ANALYTICS_4
+			) &&
+			select( CORE_USER ).hasAccessToShareableModule(
 				MODULE_SLUG_ANALYTICS_4
 			),
 		[]
@@ -83,26 +86,26 @@ export function useWelcomeTour() {
 
 	const isKeyMetricsWidgetPresent = useSelect(
 		( select: Select ) =>
-			isAnalyticsConnected &&
+			isAnalyticsViewable &&
 			!! select( CORE_SITE ).isKeyMetricsSetupCompleted() &&
 			! select( CORE_USER ).isKeyMetricsWidgetHidden(),
-		[ isAnalyticsConnected ]
+		[ isAnalyticsViewable ]
 	);
 
 	const isAudienceSegmentationWidgetPresent = useSelect(
 		( select: Select ) =>
-			isAnalyticsConnected &&
+			isAnalyticsViewable &&
 			!! select(
 				MODULES_ANALYTICS_4
 			).isAudienceSegmentationSetupCompleted() &&
 			! select( CORE_USER ).isAudienceSegmentationWidgetHidden(),
-		[ isAnalyticsConnected ]
+		[ isAnalyticsViewable ]
 	);
 
 	return getWelcomeTour( {
 		isViewOnly,
 		canAuthenticate,
-		isAnalyticsConnected,
+		isAnalyticsConnected: !! isAnalyticsViewable,
 		isActivateAnalyticsNotificationPresent,
 		isKeyMetricsWidgetPresent,
 		isAudienceSegmentationWidgetPresent,

@@ -51,8 +51,8 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../tests/js/utils';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
 import Header from './Header';

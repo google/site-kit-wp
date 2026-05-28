@@ -23,7 +23,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { Story } from '@/js/types/Story';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { Tile } from './Tile';
 import { TilesGroup, TilesGroupProps } from './TilesGroup';
 

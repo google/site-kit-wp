@@ -26,10 +26,7 @@ import { createRegistry } from '@wordpress/data';
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
 import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
-import {
-	untilResolved,
-	waitForDefaultTimeouts,
-} from '../../../../tests/js/utils';
+import { untilResolved, waitForDefaultTimeouts } from '@tests/js/utils';
 import { createGatheringDataStore } from './create-gathering-data-store';
 
 const MODULE_SLUG = 'test-slug';

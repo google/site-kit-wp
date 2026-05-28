@@ -21,10 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import * as factories from './__factories__';
 import { MODULES_TAGMANAGER } from './constants';
 

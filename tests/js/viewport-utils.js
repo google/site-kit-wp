@@ -44,7 +44,7 @@ export function setViewportWidth( viewportWidth ) {
 /**
  * Retrieves the viewport height.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @return {number} The current viewport height.
  */
@@ -55,7 +55,7 @@ export function getViewportHeight() {
 /**
  * Sets the viewport height.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @param {number} viewportHeight The viewport height to set.
  */

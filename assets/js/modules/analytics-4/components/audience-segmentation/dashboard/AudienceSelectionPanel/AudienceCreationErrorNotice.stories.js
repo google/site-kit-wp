@@ -25,8 +25,8 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
-} from '../../../../../../../../tests/js/test-utils';
-import WithRegistrySetup from '../../../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/test-utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AudienceCreationErrorNotice from './AudienceCreationErrorNotice';
 
 function Template( args ) {

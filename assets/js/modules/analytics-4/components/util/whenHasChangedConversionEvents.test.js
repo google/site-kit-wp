@@ -18,8 +18,8 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { render } from '../../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { render } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import whenHasChangedConversionEvents from './whenHasChangedConversionEvents';
 
 function TestComponent() {

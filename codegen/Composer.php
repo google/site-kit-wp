@@ -10,6 +10,8 @@
  * phpcs:disable WordPress.WP.AlternativeFunctions
  * phpcs:disable WordPress.PHP.DiscouragedPHPFunctions
  * phpcs:disable WordPressVIPMinimum
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Codegen;

@@ -32,7 +32,7 @@ import {
 	fireEvent,
 	freezeFetch,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import EmailReportingCardNotice, {
 	EMAIL_REPORTING_CARD_NOTICE,
 } from './EmailReportingCardNotice';

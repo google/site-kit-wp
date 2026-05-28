@@ -26,15 +26,15 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { fireEvent, render } from '../../../../../../tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserCapabilities,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import AccountLinkedViaGoogleForWooCommerceSubtleNotification from './AccountLinkedViaGoogleForWooCommerceSubtleNotification';
 
 const NOTIFICATION_ID = 'account-linked-via-google-for-woocommerce';

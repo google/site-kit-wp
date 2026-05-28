@@ -36,7 +36,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import withCustomDimensions from './withCustomDimensions';
 
 describe( 'withCustomDimensions', () => {

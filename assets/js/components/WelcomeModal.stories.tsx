@@ -30,7 +30,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { Story } from '@/js/types/Story';
-import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import WelcomeModal from './WelcomeModal';
 
 function Template( {

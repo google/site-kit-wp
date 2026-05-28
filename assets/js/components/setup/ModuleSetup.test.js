@@ -27,20 +27,15 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analyticsFixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import {
-	act,
-	fireEvent,
-	render,
-	waitFor,
-} from '../../../../tests/js/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../tests/js/utils';
+} from '@tests/js/utils';
 import ModuleSetup from './ModuleSetup';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
