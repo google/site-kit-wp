@@ -24,8 +24,8 @@ import {
 	ACCOUNT_CREATE,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import { act, render } from '../../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../../tests/js/utils';
+import { act, render } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import ContainerSelect from './ContainerSelect';
 
 describe( 'ContainerSelect', () => {

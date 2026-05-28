@@ -39,8 +39,8 @@ import {
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AccountCreate from '.';
 
 const { accountSummaries } = fixtures;

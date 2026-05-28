@@ -20,8 +20,6 @@
  * External dependencies
  */
 import fetchMock from 'fetch-mock';
-import { mockLocation } from 'tests/js/mock-browser-utils';
-import { dismissItemEndpoint } from 'tests/js/mock-dismiss-item-endpoints';
 
 /**
  * Internal dependencies
@@ -36,6 +34,8 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -45,7 +45,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConnectMoreServicesNotification from './ConnectMoreServicesNotification';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

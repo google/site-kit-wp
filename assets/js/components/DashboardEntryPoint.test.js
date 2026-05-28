@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { mockCreateComponent } from '../../../tests/js/mock-component-utils';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
 	render,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import DashboardEntryPoint from './DashboardEntryPoint';
 
 jest.mock( './setup/ModuleSetup', () => mockCreateComponent( 'ModuleSetup' ) );

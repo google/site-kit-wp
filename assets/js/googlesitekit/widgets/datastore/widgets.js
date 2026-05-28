@@ -51,7 +51,7 @@ export const initialState = {
 /**
  * PDF export configuration for a widget.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @typedef {Object} WidgetPDFConfig
  * @property {WPComponent} Component React component (from `@react-pdf/renderer`) used to render this widget in the PDF. Receives `{ data, chartImages }` props.
@@ -86,7 +86,7 @@ export const actions = {
 	 * @since 1.9.0
 	 * @since 1.12.0  Added wrapWidget setting.
 	 * @since 1.138.0 Added hideOnBreakpoints setting.
-	 * @since n.e.x.t Added pdf setting.
+	 * @since 1.180.0 Added pdf setting.
 	 *
 	 * @param {string}                slug                         Widget's slug.
 	 * @param {Object}                settings                     Widget's settings.

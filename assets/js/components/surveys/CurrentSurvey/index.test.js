@@ -36,7 +36,7 @@ import {
 	provideCurrentSurvey,
 	render,
 	waitFor,
-} from '../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import CurrentSurvey from '.';
 
 // Text input should only allow up to 200 characters of input.

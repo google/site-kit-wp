@@ -26,7 +26,7 @@ import {
 	fireEvent,
 	provideUserAuthentication,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import PublicationSelect from './PublicationSelect';
 
 describe( 'PublicationSelect', () => {

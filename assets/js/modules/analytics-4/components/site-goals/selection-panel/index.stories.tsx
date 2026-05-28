@@ -46,7 +46,7 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SiteGoalsSelectionPanel from './index';
 
 interface TemplateProps {

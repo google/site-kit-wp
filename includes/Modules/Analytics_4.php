@@ -6,6 +6,8 @@
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 // phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
@@ -1194,7 +1196,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * surfaced inline. Otherwise, the legacy dashboard redirect with the
 	 * `error_code` query parameter is used.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param string $error_code    The error code to surface.
 	 * @param bool   $show_progress Whether the initial setup flow's progress

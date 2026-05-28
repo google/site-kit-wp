@@ -36,7 +36,7 @@ import {
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,

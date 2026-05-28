@@ -28,7 +28,7 @@ import {
 	fireEvent,
 	render,
 	waitFor,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

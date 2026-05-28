@@ -38,7 +38,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SettingsEdit from './SettingsEdit';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

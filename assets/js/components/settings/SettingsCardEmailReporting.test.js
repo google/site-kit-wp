@@ -21,14 +21,14 @@
  */
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SettingsCardEmailReporting from './SettingsCardEmailReporting';
 
 describe( 'SettingsCardEmailReporting', () => {

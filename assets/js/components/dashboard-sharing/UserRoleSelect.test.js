@@ -31,8 +31,8 @@ import {
 	createTestRegistry,
 	fireEvent,
 	render,
-} from '../../../../tests/js/test-utils';
-import { waitForTimeouts } from '../../../../tests/js/utils';
+} from '@tests/js/test-utils';
+import { waitForTimeouts } from '@tests/js/utils';
 import UserRoleSelect from './UserRoleSelect';
 
 const dashboardSharingDataBaseVar = '_googlesitekitDashboardSharingData';

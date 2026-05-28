@@ -28,13 +28,13 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { dismissedPromptsEndpoint } from '../../../../../tests/js/mock-dismiss-prompt-endpoints';
-import { render, waitFor } from '../../../../../tests/js/test-utils';
+import { dismissedPromptsEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
+import { render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideNotifications,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { CORE_NOTIFICATIONS } from './constants';
 
 describe( 'core/notifications Notifications', () => {

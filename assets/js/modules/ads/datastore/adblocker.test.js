@@ -31,7 +31,7 @@ import {
 	muteFetch,
 	provideModules,
 	untilResolved,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import { MODULES_ADS } from './constants';
 
 jest.mock( 'just-detect-adblock' );

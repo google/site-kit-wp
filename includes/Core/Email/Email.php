@@ -72,7 +72,7 @@ class Email {
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
-	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
+	 * @since 1.180.0 Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -110,7 +110,7 @@ class Email {
 	 *
 	 * @since 1.168.0
 	 * @since 1.170.0 Added $text_content parameter for plain text alternative.
-	 * @since n.e.x.t Inject default text/html Content-Type when none is supplied.
+	 * @since 1.180.0 Inject default text/html Content-Type when none is supplied.
 	 *
 	 * @param string|array $to           Array or comma-separated list of email addresses to send message.
 	 * @param string       $subject      Email subject.
@@ -158,7 +158,7 @@ class Email {
 	 *
 	 * Detection is case-insensitive and skips non-string entries.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.180.0
 	 *
 	 * @param array $headers Headers array passed to wp_mail.
 	 * @return bool True if a Content-Type header is present, false otherwise.

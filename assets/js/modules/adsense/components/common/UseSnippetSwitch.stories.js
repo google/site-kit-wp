@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import UseSnippetSwitch from './UseSnippetSwitch';
 
 function Template() {

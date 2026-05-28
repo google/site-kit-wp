@@ -35,14 +35,8 @@ import {
 	FORM_SETUP,
 	MODULES_TAGMANAGER,
 } from '@/js/modules/tagmanager/datastore/constants';
-import {
-	createTestRegistry,
-	render,
-} from '../../../../../../tests/js/test-utils';
-import {
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../../../tests/js/utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
+import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import SetupMain from './SetupMain';
 
 describe( 'SetupMain', () => {

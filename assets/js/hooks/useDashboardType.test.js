@@ -26,7 +26,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
-import { renderHook } from '../../../tests/js/test-utils';
+import { renderHook } from '@tests/js/test-utils';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,

@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { CORE_UI } from './constants';
 
 describe( 'core/ui store', () => {

@@ -154,7 +154,7 @@ function getActivateAnalyticsStep() {
 /**
  * Returns the top search queries step.
  *
- * @since n.e.x.t
+ * @since 1.180.0
  *
  * @return {Object} The top search queries step object.
  */

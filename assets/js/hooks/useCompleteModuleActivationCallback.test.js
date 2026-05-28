@@ -25,7 +25,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { mockLocation } from '../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	actHook as act,
 	createTestRegistry,
@@ -35,7 +35,7 @@ import {
 	provideUserCapabilities,
 	renderHook,
 	waitForDefaultTimeouts,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useCompleteModuleActivationCallback from './useCompleteModuleActivationCallback';
 
 describe( 'useCompleteModuleActivationCallback', () => {

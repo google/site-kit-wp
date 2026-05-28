@@ -22,12 +22,12 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
-import { render } from '../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../tests/js/utils';
+} from '@tests/js/utils';
 import AdBlockerWarning from './AdBlockerWarning';
 
 describe( 'AdBlockerWarning', () => {

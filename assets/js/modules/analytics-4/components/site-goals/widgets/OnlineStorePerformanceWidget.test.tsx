@@ -40,11 +40,8 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
-import { render } from '../../../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
+import { render } from '@tests/js/test-utils';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;

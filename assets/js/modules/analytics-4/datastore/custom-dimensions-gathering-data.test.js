@@ -28,7 +28,7 @@ let {
 	provideUserAuthentication,
 	muteFetch,
 	provideModules,
-} = require( '../../../../../tests/js/utils' );
+} = require( '@tests/js/utils' );
 import { properties } from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 
@@ -237,7 +237,7 @@ describe( 'modules/analytics-4 custom-dimensions-gathering-data', () => {
 				untilResolved,
 				provideUserAuthentication,
 				muteFetch,
-			} = require( '../../../../../tests/js/utils' ) );
+			} = require( '@tests/js/utils' ) );
 
 			registry = createTestRegistry();
 

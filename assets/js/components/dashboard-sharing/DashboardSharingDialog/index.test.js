@@ -40,13 +40,13 @@ import {
 	provideSiteConnection,
 	provideUserInfo,
 	render,
-} from '../../../../../tests/js/test-utils';
-import DashboardSharingDialog from '.';
+} from '@tests/js/test-utils';
 import {
 	modules,
 	roles,
 	sharingSettings,
 } from './../DashboardSharingSettings/__fixtures__';
+import DashboardSharingDialog from '.';
 
 describe( 'DashboardSharingDialog', () => {
 	let registry;

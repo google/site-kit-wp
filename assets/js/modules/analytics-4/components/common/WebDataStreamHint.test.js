@@ -21,7 +21,7 @@
  */
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -29,7 +29,7 @@ import {
 	render,
 	waitFor,
 	within,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import WebDataStreamHint from './WebDataStreamHint';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

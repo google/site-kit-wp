@@ -21,8 +21,8 @@
  */
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { actHook as act, renderHook } from '../../../../../tests/js/test-utils';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
+import { createTestRegistry } from '@tests/js/utils';
 import useExistingTagEffect from './useExistingTagEffect';
 
 describe( 'useExistingTagEffect', () => {

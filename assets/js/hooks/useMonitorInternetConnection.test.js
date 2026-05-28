@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	renderHook,
 	waitForTimeouts,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import { useMonitorInternetConnection } from './useMonitorInternetConnection';
 
 describe( 'useMonitorInternetConnection', () => {

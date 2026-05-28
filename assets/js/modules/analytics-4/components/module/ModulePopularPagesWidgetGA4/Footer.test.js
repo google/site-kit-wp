@@ -31,7 +31,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import Footer from './Footer';
 
 describe( 'Footer', () => {

@@ -6,6 +6,8 @@
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
+ *
+ * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
 namespace Google\Site_Kit\Modules;
@@ -696,7 +698,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * Registers the Sign in with Google tag.
 	 *
 	 * @since 1.159.0
-	 * @since n.e.x.t Skip on the WordPress email verification interstitial.
+	 * @since 1.180.0 Skip on the WordPress email verification interstitial.
 	 */
 	public function register_tag() {
 		// Skip on the WordPress email verification interstitial (wp-login.php?action=confirm_admin_email).

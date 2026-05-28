@@ -24,7 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { render } from '../../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import CitiesGoalDriver from './CitiesGoalDriver';
 import { GOAL_DRIVER_IDS, GOAL_TYPES } from './constants';
 import CountriesGoalDriver from './CountriesGoalDriver';

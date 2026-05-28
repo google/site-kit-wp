@@ -26,10 +26,7 @@ import fetchMock from 'fetch-mock';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import { createPaxServices } from './services';
 
 const getTokenEndpoint = new RegExp(

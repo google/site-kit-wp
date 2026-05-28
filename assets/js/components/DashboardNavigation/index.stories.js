@@ -33,11 +33,8 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	freezeFetch,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { freezeFetch, provideUserAuthentication } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import DashboardNavigation from './';
 import { setupDefaultChips } from './test-utils';
 

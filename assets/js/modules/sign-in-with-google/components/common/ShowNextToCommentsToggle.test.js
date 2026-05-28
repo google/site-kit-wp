@@ -28,7 +28,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ShowNextToCommentsToggle from './ShowNextToCommentsToggle';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

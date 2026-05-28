@@ -54,7 +54,7 @@ import { registerStore as registerCoreModulesStore } from '@/js/googlesitekit/mo
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { registerStore as registerReaderRevenueManagerStore } from '@/js/modules/reader-revenue-manager/datastore';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { provideModules, provideUserInfo } from '../../../../tests/js/utils';
+import { provideModules, provideUserInfo } from '@tests/js/utils';
 import { registerReaderRevenueManagerPlugin } from './plugin-registration';
 import SettingPanel from './SettingPanel';
 

@@ -31,6 +31,8 @@ global.document.addEventListener( 'om.Analytics.track', ( { detail } ) => {
 		const eventData = {
 			campaignID: detail.Campaign.id,
 			campaignType: detail.Campaign.type,
+			googlesitekit_event_provider: 'optin-monster',
+			googlesitekit_form_id: String( detail.Campaign.id ),
 		};
 
 		if ( userData ) {

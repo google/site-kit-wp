@@ -26,8 +26,8 @@ import {
 	ACCOUNT_STATUS_READY,
 	SITE_STATUS_READY,
 } from '@/js/modules/adsense/util';
-import { provideModules } from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import AdBlockingRecoverySetupCTAWidget from './AdBlockingRecoverySetupCTAWidget';
 
 const WidgetWithComponentProps = withWidgetComponentProps(

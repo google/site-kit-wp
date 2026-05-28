@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SetupForm from './SetupForm';
 
 // Store-level notices are unrelated to duplicate Conversion ID behavior

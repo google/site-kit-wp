@@ -24,11 +24,8 @@ import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	provideKeyMetrics,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideKeyMetrics, provideUserAuthentication } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import ChangeMetricsLink from './ChangeMetricsLink';
 
 function Template() {

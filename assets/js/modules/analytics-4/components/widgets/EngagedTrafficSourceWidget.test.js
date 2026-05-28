@@ -33,14 +33,14 @@ import {
 	ERROR_INTERNAL_SERVER_ERROR,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
-import { render } from '../../../../../../tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import EngagedTrafficSourceWidget from './EngagedTrafficSourceWidget';
 
 describe( 'EngagedTrafficSourceWidget', () => {

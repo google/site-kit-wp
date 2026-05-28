@@ -25,7 +25,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import * as tracking from '@/js/util/tracking';
-import { render, waitFor } from '../../../../tests/js/test-utils';
+import { render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -33,7 +33,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
-} from '../../../../tests/js/utils';
+} from '@tests/js/utils';
 import SettingsEmailReporting from './SettingsEmailReporting';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

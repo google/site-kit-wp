@@ -21,7 +21,7 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '@/js/googlesitekit/data/create-settings-store';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	INVARIANT_INVALID_PROPERTY_SELECTION,

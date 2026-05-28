@@ -26,7 +26,7 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from './EnhancedConversionsNotification';

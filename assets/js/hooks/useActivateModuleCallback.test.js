@@ -30,7 +30,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
@@ -38,7 +38,7 @@ import {
 	provideSiteInfo,
 	provideUserCapabilities,
 	renderHook,
-} from '../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );

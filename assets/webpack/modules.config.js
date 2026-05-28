@@ -177,6 +177,18 @@ module.exports = function ( mode, rules ) {
 				},
 			},
 		},
-		resolve,
+		resolve: {
+			...resolve,
+			alias: {
+				...resolve.alias,
+				// Webpack 5 requires file extensions in ESM imports.
+				// `@react-pdf/renderer` omits them, so we alias the
+				// two paths it needs.
+				'react/jsx-runtime': require.resolve( 'react/jsx-runtime' ),
+				'react/jsx-dev-runtime': require.resolve(
+					'react/jsx-dev-runtime'
+				),
+			},
+		},
 	};
 };

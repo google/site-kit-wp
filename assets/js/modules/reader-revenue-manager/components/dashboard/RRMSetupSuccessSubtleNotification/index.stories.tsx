@@ -32,11 +32,8 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import {
-	provideModuleRegistrations,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import RRMSetupSuccessSubtleNotification from '.';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `@wordpress/data` is not typed yet.

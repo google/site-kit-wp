@@ -30,8 +30,8 @@ import { SITE_KIT_SETUP_SUCCESS_NOTIFICATION } from '@/js/googlesitekit/notifica
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
-import { mockLocation } from '../../../../tests/js/mock-browser-utils';
-import { mockSurveyEndpoints } from '../../../../tests/js/mock-survey-endpoints';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -39,7 +39,7 @@ import {
 	provideUserAuthentication,
 	provideUserInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import SiteKitSetupSuccessNotification from './SiteKitSetupSuccessNotification';
 
 describe( 'SiteKitSetupSuccessNotification', () => {

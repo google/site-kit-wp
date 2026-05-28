@@ -33,8 +33,8 @@ import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
-} from '../../../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+} from '@tests/js/utils';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import PagesPerVisitWidget from './PagesPerVisitWidget';
 
 const reportOptions = {

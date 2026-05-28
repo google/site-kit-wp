@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	provideSiteInfo,
 	render,
-} from '../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import ConversionReportingSettingsSubtleNotification from './ConversionReportingSettingsSubtleNotification';
 
 describe( 'ConversionReportingSettingsSubtleNotification', () => {

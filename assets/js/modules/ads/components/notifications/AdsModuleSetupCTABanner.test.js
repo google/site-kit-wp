@@ -27,8 +27,8 @@ import { withNotificationComponentProps } from '@/js/googlesitekit/notifications
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
 import { ADS_NOTIFICATIONS } from '@/js/modules/ads/notifications';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
-import { dismissPromptEndpoint } from '../../../../../../tests/js/mock-dismiss-prompt-endpoints';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -38,7 +38,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import AdsModuleSetupCTABanner from './AdsModuleSetupCTABanner';
 
 const mockShowTooltip = jest.fn();

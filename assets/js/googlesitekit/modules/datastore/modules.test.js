@@ -42,7 +42,7 @@ import {
 	provideUserInfo,
 	untilResolved,
 	waitForDefaultTimeouts,
-} from '../../../../../tests/js/utils';
+} from '@tests/js/utils';
 import FIXTURES, { withActive } from './__fixtures__';
 import {
 	CORE_MODULES,

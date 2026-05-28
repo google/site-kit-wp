@@ -21,13 +21,13 @@
  */
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '../../../../../../tests/js/mock-browser-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideSiteInfo,
 	render,
-} from '../../../../../../tests/js/test-utils';
+} from '@tests/js/test-utils';
 import EnhancedMeasurementSwitch from './EnhancedMeasurementSwitch';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
